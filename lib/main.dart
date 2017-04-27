@@ -1,6 +1,9 @@
-import 'package:flutter/material.dart';
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
+
+import 'package:flutter/material.dart';
 
 void main() {
   runApp(new MyApp());
@@ -49,10 +52,11 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   HttpClient _client = new HttpClient();
-  int _counter = 0;
+  String _imgUrl = "https://blog.vczf.io/img/sketches_144234.jpg";
+  Random _rand = new Random();
 
   Future _incrementCounter() async {
-    int newCount = await _getPost(1111);
+    var newImgUrl = await _getPostImgUrl(_rand.nextInt(1196667));
     setState(() {
       // This call to setState tells the Flutter framework that
       // something has changed in this State, which causes it to rerun
@@ -60,15 +64,26 @@ class _MyHomePageState extends State<MyHomePage> {
       // updated values. If we changed _counter without calling
       // setState(), then the build method would not be called again,
       // and so nothing would appear to happen.
-      _counter = newCount;
+      _imgUrl  = newImgUrl;
     });
   }
 
-  Future<int> _getPost(int id) async {
+  Future<String> _getPostImgUrl(int id) async {
     HttpClientRequest req = await _client.getUrl(Uri.parse(
-          "https://e621.net/post/show.json?id=1111"));
+          "https://e621.net/post/show.json?id=${id}"));
     HttpClientResponse response = await req.close();
-    return response.statusCode;
+
+    var completer = new Completer();
+    var contents = new StringBuffer();
+
+    response.transform(UTF8.decoder).listen((String data) {
+      contents.write(data);
+    }, onDone: () {
+      Map post = JSON.decode(contents.toString());
+      completer.complete(post['file_url']);
+    });
+
+    return completer.future;
   }
 
   @override
@@ -87,9 +102,7 @@ class _MyHomePageState extends State<MyHomePage> {
         title: new Text(widget.title),
       ),
       body: new Center(
-        child: new Text(
-          'Button tapped $_counter time${ _counter == 1 ? '' : 's' }.',
-        ),
+        child: new Image.network(_imgUrl),
       ),
       floatingActionButton: new FloatingActionButton(
         onPressed: _incrementCounter,
