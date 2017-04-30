@@ -76,9 +76,32 @@ class _E1547AppState extends State<E1547App> {
   Widget build(BuildContext context) {
     _loadPosts();
     return new MaterialApp(
-        title: 'E1547',
+        title: 'e1547',
         theme: new ThemeData.dark(),
         home: new Scaffold(
-            appBar: new AppBar(title: new Text("E1547")), body: _body()));
+          appBar: new AppBar(title: new Text("e1547")),
+          body: _body(),
+          drawer: new Drawer(
+              child: new ListView(children: [
+            new UserAccountsDrawerHeader(
+                // TODO: account name and email
+                accountName: new Text("perlatus"),
+                accountEmail: new Text("perlatus@vczf.io")),
+            new AboutListTile(),
+          ])),
+          floatingActionButton: new _SearchFab(),
+        ));
+  }
+}
+
+class _SearchFab extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return new FloatingActionButton(
+        onPressed: () {
+          print("pressed FAB");
+          Scaffold.of(context).showBottomSheet((context) => new Text("bottom sheet?"));
+        },
+        child: new Icon(Icons.search));
   }
 }
