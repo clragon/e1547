@@ -17,10 +17,12 @@ class PostPreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new Card(
-        child: new Center(
-          child: new Image.network(post['sample_url'],
-            fit: BoxFit.fitWidth)));
+    return new GestureDetector(
+        onTap: () => print("tapped post ${post['id']}"),
+        child: new Card(
+            child: new Center(
+                child: new Image.network(post['sample_url'],
+                    fit: BoxFit.fitWidth))));
   }
 }
 
@@ -40,7 +42,8 @@ class _E1547AppState extends State<E1547App> {
     }
 
     HttpClientResponse response = await _http
-        .getUrl(Uri.parse("https://e621.net/post/index.json?page=1&tags=photonoko&limit=5"))
+        .getUrl(Uri.parse(
+            "https://e621.net/post/index.json?page=1&tags=photonoko&limit=5"))
         .then((HttpClientRequest req) => req.close());
 
     var body = new StringBuffer();
@@ -51,13 +54,22 @@ class _E1547AppState extends State<E1547App> {
   }
 
   Widget _body() {
-    return new ListView.builder(
+    var index = new ListView.builder(
+      controller: new ScrollController(),
       itemBuilder: (ctx, i) {
-        return _posts.length > i
-            ? new PostPreview(_posts[i])
-            : null;
+        return _posts.length > i ? new PostPreview(_posts[i]) : null;
       },
     );
+
+    var scroll = index.controller;
+    scroll.addListener(() {
+      var pos = scroll.position;
+      double begin = pos.extentBefore;
+      double end = pos.extentBefore + pos.extentInside;
+      print("visible: [$begin, $end]");
+    });
+
+    return index;
   }
 
   @override
