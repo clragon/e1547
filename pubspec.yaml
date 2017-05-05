@@ -2,7 +2,6 @@ name: e1547
 description: A new flutter project.
 
 dependencies:
-  json_god: ^2.0.0-beta
   flutter:
     sdk: flutter
 

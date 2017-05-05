@@ -5,6 +5,16 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
+class ZoomableImage extends StatelessWidget {
+  ZoomableImage(this.image, {Key key}) : super(key: key);
+  final Image image;
+
+  @override
+  Widget build(BuildContext context) {
+    return new Center(child: image);
+  }
+}
+
 void main() {
   runApp(new E1547App());
 }
@@ -18,11 +28,18 @@ class PostPreview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new GestureDetector(
-        onTap: () => print("tapped post ${post['id']}"),
+        onTap: () {
+          print("tapped post ${post['id']}");
+          Navigator.of(context).push(new MaterialPageRoute<Null>(
+              builder: (context) {
+                return new ZoomableImage(new Image.network(post['sample_url']));
+              },
+              fullscreenDialog: true));
+        },
         child: new Card(
             child: new Center(
-                child: new Image.network(post['sample_url'],
-                    fit: BoxFit.fitWidth))));
+                child: new Image.network(post['preview_url'],
+                    fit: BoxFit.cover))));
   }
 }
 
@@ -54,7 +71,7 @@ class _E1547AppState extends State<E1547App> {
     // TODO: detect network failures => offline
     HttpClientResponse response = await _http
         .getUrl(Uri.parse(
-            "https://e621.net/post/index.json?page=1&tags=photonoko&limit=5"))
+            "https://e621.net/post/index.json?page=1&tags=photonoko&limit=30"))
         .then((HttpClientRequest req) => req.close(), onError: (e) {
       print("error with request: $e");
     });
@@ -74,8 +91,11 @@ class _E1547AppState extends State<E1547App> {
   }
 
   Widget _body() {
-    var index = new ListView.builder(
+    var index = new GridView.builder(
       controller: new ScrollController(),
+      gridDelegate: new SliverGridDelegateWithMaxCrossAxisExtent(
+        maxCrossAxisExtent: 150.0,
+      ),
       itemBuilder: (ctx, i) {
         return _posts.length > i ? new PostPreview(_posts[i]) : null;
       },
