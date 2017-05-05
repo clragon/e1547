@@ -38,7 +38,7 @@ class _E1547AppState extends State<E1547App> {
 
   bool _offline = false;
 
-  Future<Null> _loadPosts() async {
+  Future<Null> _loadPostsIfNotAlreadyLoaded() async {
     if (!_posts.isEmpty) {
       return;
     }
@@ -47,6 +47,10 @@ class _E1547AppState extends State<E1547App> {
       return;
     }
 
+    _loadPosts();
+  }
+
+  Future<Null> _loadPosts() async {
     // TODO: detect network failures => offline
     HttpClientResponse response = await _http
         .getUrl(Uri.parse(
@@ -90,24 +94,30 @@ class _E1547AppState extends State<E1547App> {
 
   AppBar _buildAppBar() {
     List<Widget> widgets = [];
-    if (_offline) {
-      widgets.add(new IconButton(
-        icon: new Icon(Icons.cloud_off),
-        tooltip: "Reconnect",
-        onPressed: () {
-          print("pressed the cloud_off icon");
-          _offline = false;
-          _loadPosts();
-        },
-      ));
-    }
+    widgets.add(_offline
+        ? new IconButton(
+            icon: new Icon(Icons.cloud_off),
+            tooltip: "Reconnect",
+            onPressed: () {
+              print("pressed the cloud_off icon");
+              _offline = false;
+              _loadPosts();
+            })
+        : new IconButton(
+            icon: new Icon(Icons.refresh),
+            tooltip: "Refresh",
+            onPressed: () {
+              print("pressed the reload icon");
+              _offline = false;
+              _loadPosts();
+            }));
 
     return new AppBar(title: new Text("e1547"), actions: widgets);
   }
 
   @override
   Widget build(BuildContext context) {
-    _loadPosts();
+    _loadPostsIfNotAlreadyLoaded();
     return new MaterialApp(
         title: 'e1547',
         theme: new ThemeData.dark(),
@@ -133,9 +143,7 @@ class _SearchFab extends StatelessWidget {
     return new FloatingActionButton(
         onPressed: () {
           print("pressed FAB");
-          Scaffold
-              .of(context)
-              .showBottomSheet((context) => new Text("bottom sheet?"));
+          Scaffold.of(context).showBottomSheet((context) => new TextField());
         },
         child: new Icon(Icons.search));
   }
