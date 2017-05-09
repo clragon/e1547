@@ -20,49 +20,58 @@ class _ZoomableImageState extends State<ZoomableImage> {
 
   final ImageProvider imageProvider;
 
-  // Where the image is.
-  Offset _box = const Offset(20.0, 10.0);
+  Offset _startingFocalPoint;
+  Offset _previousOffset;
+  Offset _offset = Offset.zero;
 
-  Offset _finger;
+  double _previousZoom;
+  double _zoom = 1.0;
+
+  void _handleScaleStart(ScaleStartDetails d) {
+    setState(() {
+      _startingFocalPoint = d.focalPoint;
+      _previousOffset = _offset;
+      _previousZoom = _zoom;
+    });
+  }
+
+  void _handleScaleUpdate(ScaleUpdateDetails d) {
+    setState(() {
+      _zoom = _previousZoom * d.scale;
+
+      // Ensure that item under the focal point stays in the same place despite zooming
+      final Offset normalizedOffset =
+          (_startingFocalPoint - _previousOffset) / _previousZoom;
+      _offset = d.focalPoint - normalizedOffset * _zoom;
+    });
+  }
 
   @override
   Widget build(BuildContext ctx) {
     return new GestureDetector(
       child: new CustomPaint(
-            painter: new _ZoomableImagePainter(offset: _box)),
-      onScaleStart: (d) {
-        setState(() {
-          _finger = d.focalPoint;
-        });
-      },
-      onScaleUpdate: (d) {
-        var delta = d.focalPoint - _finger;
-        var next = _box + delta;
-        print("$delta	$next");
-
-        setState(() {
-          _box = next;
-          _finger = d.focalPoint;
-        });
-      },
+          painter: new _ZoomableImagePainter(offset: _offset, zoom: _zoom)),
+      onScaleStart: _handleScaleStart,
+      onScaleUpdate: _handleScaleUpdate,
     );
   }
 }
 
 class _ZoomableImagePainter extends CustomPainter {
-  const _ZoomableImagePainter({this.offset});
+  const _ZoomableImagePainter({this.offset, this.zoom});
 
   final Offset offset;
+  final double zoom;
 
   @override
   void paint(Canvas canvas, Size size) {
-    canvas.drawRect(offset & const Size(50.0, 50.0),
-        new Paint()..color = const Color(0xFF00FF00));
+    canvas.drawRect(
+        offset & (size * zoom), new Paint()..color = const Color(0xFF00FF00));
   }
 
   @override
-  bool shouldRepaint(_ZoomableImagePainter oldPainter) {
-    return oldPainter.offset != offset;
+  bool shouldRepaint(_ZoomableImagePainter old) {
+    return old.offset != offset || old.zoom != zoom;
   }
 }
 
