@@ -20,14 +20,31 @@ class _ZoomableImageState extends State<ZoomableImage> {
 
   final ImageProvider imageProvider;
 
-  Offset _offset = new Offset(10.0, 20.0);
+  // Where the image is.
+  Offset _box = const Offset(20.0, 10.0);
+
+  Offset _finger;
 
   @override
   Widget build(BuildContext ctx) {
     return new GestureDetector(
       child: new CustomPaint(
-            painter: new _ZoomableImagePainter(offset: _offset)),
-      onScaleUpdate: (d) => print(d),
+            painter: new _ZoomableImagePainter(offset: _box)),
+      onScaleStart: (d) {
+        setState(() {
+          _finger = d.focalPoint;
+        });
+      },
+      onScaleUpdate: (d) {
+        var delta = d.focalPoint - _finger;
+        var next = _box + delta;
+        print("$delta	$next");
+
+        setState(() {
+          _box = next;
+          _finger = d.focalPoint;
+        });
+      },
     );
   }
 }
