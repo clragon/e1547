@@ -1,26 +1,25 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 
 class ZoomableImage extends StatefulWidget {
-  ZoomableImage(this.imageProvider, {Key key}) : super(key: key);
+  ZoomableImage(this.image, {Key key}) : super(key: key);
 
-  final ImageProvider imageProvider;
+  final ImageProvider image;
 
   @override
-  _ZoomableImageState createState() => new _ZoomableImageState(imageProvider);
+  _ZoomableImageState createState() => new _ZoomableImageState();
 }
 
+// See /flutter/examples/layers/widgets/gestures.dart
 class _ZoomableImageState extends State<ZoomableImage> {
-  _ZoomableImageState(this.imageProvider);
-
-  final ImageProvider imageProvider;
-
   Offset _startingFocalPoint;
+
   Offset _previousOffset;
   Offset _offset = Offset.zero;
 
@@ -28,11 +27,9 @@ class _ZoomableImageState extends State<ZoomableImage> {
   double _zoom = 1.0;
 
   void _handleScaleStart(ScaleStartDetails d) {
-    setState(() {
-      _startingFocalPoint = d.focalPoint;
-      _previousOffset = _offset;
-      _previousZoom = _zoom;
-    });
+    _startingFocalPoint = d.focalPoint;
+    _previousOffset = _offset;
+    _previousZoom = _zoom;
   }
 
   void _handleScaleUpdate(ScaleUpdateDetails d) {
@@ -46,11 +43,47 @@ class _ZoomableImageState extends State<ZoomableImage> {
     });
   }
 
+  ImageStream _imageStream;
+  ui.Image _image;
+
+  @override
+  void didChangeDependencies() {
+    _resolveImage();
+    super.didChangeDependencies();
+  }
+
+  @override
+  void reassemble() {
+    _resolveImage(); // in case the image cache was flushed
+    super.reassemble();
+  }
+
+  void _resolveImage() {
+    _imageStream = widget.image.resolve(createLocalImageConfiguration(context));
+    _imageStream.addListener(_handleImageLoaded);
+  }
+
+  void _handleImageLoaded(ImageInfo info, bool synchronousCall) {
+    print("image loaded: $info");
+    setState(() {
+      _image = info.image;
+    });
+  }
+
+  @override
+  void dispose() {
+    _imageStream.removeListener(_handleImageLoaded);
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext ctx) {
     return new GestureDetector(
-      child: new CustomPaint(
-          painter: new _ZoomableImagePainter(offset: _offset, zoom: _zoom)),
+      child: _image != null
+          ? new CustomPaint(
+              painter: new _ZoomableImagePainter(
+                  image: _image, offset: _offset, zoom: _zoom))
+          : null,
       onScaleStart: _handleScaleStart,
       onScaleUpdate: _handleScaleUpdate,
     );
@@ -58,20 +91,22 @@ class _ZoomableImageState extends State<ZoomableImage> {
 }
 
 class _ZoomableImagePainter extends CustomPainter {
-  const _ZoomableImagePainter({this.offset, this.zoom});
+  const _ZoomableImagePainter({this.image, this.offset, this.zoom});
 
+  final ui.Image image;
   final Offset offset;
   final double zoom;
 
   @override
   void paint(Canvas canvas, Size size) {
-    canvas.drawRect(
-        offset & (size * zoom), new Paint()..color = const Color(0xFF00FF00));
+    canvas.drawImage(image, offset, new Paint());
+    // canvas.drawRect(
+    // offset & (size * zoom), new Paint()..color = const Color(0xFF00FF00));
   }
 
   @override
   bool shouldRepaint(_ZoomableImagePainter old) {
-    return old.offset != offset || old.zoom != zoom;
+    return old.image != image || old.offset != offset || old.zoom != zoom;
   }
 }
 
@@ -131,7 +166,7 @@ class _E1547AppState extends State<E1547App> {
     // TODO: detect network failures => offline
     HttpClientResponse response = await _http
         .getUrl(Uri.parse(
-            "https://e621.net/post/index.json?page=1&tags=photonoko&limit=30"))
+            "https://e621.net/post/index.json?page=1&tags=photonoko&limit=5"))
         .then((HttpClientRequest req) => req.close(), onError: (e) {
       print("error with request: $e");
     });
