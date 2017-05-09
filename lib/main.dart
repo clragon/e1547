@@ -4,14 +4,48 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 
-class ZoomableImage extends StatelessWidget {
-  ZoomableImage(this.image, {Key key}) : super(key: key);
-  final Image image;
+class ZoomableImage extends StatefulWidget {
+  ZoomableImage(this.imageProvider, {Key key}) : super(key: key);
+
+  final ImageProvider imageProvider;
 
   @override
-  Widget build(BuildContext context) {
-    return new Center(child: image);
+  _ZoomableImageState createState() => new _ZoomableImageState(imageProvider);
+}
+
+class _ZoomableImageState extends State<ZoomableImage> {
+  _ZoomableImageState(this.imageProvider);
+
+  final ImageProvider imageProvider;
+
+  Offset _offset = new Offset(10.0, 20.0);
+
+  @override
+  Widget build(BuildContext ctx) {
+    return new GestureDetector(
+      child: new CustomPaint(
+            painter: new _ZoomableImagePainter(offset: _offset)),
+      onScaleUpdate: (d) => print(d),
+    );
+  }
+}
+
+class _ZoomableImagePainter extends CustomPainter {
+  const _ZoomableImagePainter({this.offset});
+
+  final Offset offset;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    canvas.drawRect(offset & const Size(50.0, 50.0),
+        new Paint()..color = const Color(0xFF00FF00));
+  }
+
+  @override
+  bool shouldRepaint(_ZoomableImagePainter oldPainter) {
+    return oldPainter.offset != offset;
   }
 }
 
@@ -31,10 +65,10 @@ class PostPreview extends StatelessWidget {
         onTap: () {
           print("tapped post ${post['id']}");
           Navigator.of(context).push(new MaterialPageRoute<Null>(
-              builder: (context) {
-                return new ZoomableImage(new Image.network(post['sample_url']));
-              },
-              fullscreenDialog: true));
+            builder: (context) {
+              return new ZoomableImage(new NetworkImage(post['sample_url']));
+            },
+          ));
         },
         child: new Card(
             child: new Center(
