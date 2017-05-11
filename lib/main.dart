@@ -8,6 +8,8 @@ import 'package:flutter/services.dart';
 
 import 'src/zoomable_image/zoomable_image.dart';
 
+const String APP_VERSION = '0.0.1-alpha';
+
 void main() {
   runApp(new E1547App());
 }
@@ -58,7 +60,7 @@ class E1547App extends StatefulWidget {
 }
 
 class _E1547AppState extends State<E1547App> {
-  HttpClient _http = new HttpClient();
+  HttpClient _http = new HttpClient()..userAgent = "e1547/$APP_VERSION (perlatus)";
 
   String _host = "e926.net";
 
