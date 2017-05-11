@@ -38,8 +38,12 @@ class PostPreview extends StatelessWidget {
             child: new ButtonBar(
           alignment: MainAxisAlignment.spaceAround,
           children: <Widget>[
-            new IconButton(icon: const Icon(Icons.favorite), onPressed: () => print("pressed fav")),
-            new IconButton(icon: const Icon(Icons.chat), onPressed: () => print("pressed chat")),
+            new IconButton(
+                icon: const Icon(Icons.favorite),
+                onPressed: () => print("pressed fav")),
+            new IconButton(
+                icon: const Icon(Icons.chat),
+                onPressed: () => print("pressed chat")),
             new Text(post['rating'].toUpperCase()),
           ],
         ))
@@ -55,6 +59,8 @@ class E1547App extends StatefulWidget {
 
 class _E1547AppState extends State<E1547App> {
   HttpClient _http = new HttpClient();
+
+  String _host = "e926.net";
 
   List<Map> _posts = [];
   ScrollController _scrollController = new ScrollController();
@@ -76,8 +82,12 @@ class _E1547AppState extends State<E1547App> {
   Future<Null> _loadPosts() async {
     // TODO: detect network failures => offline
     HttpClientResponse response = await _http
-        .getUrl(Uri.parse(
-            "https://e621.net/post/index.json?page=1&tags=$tags&limit=100"))
+        .getUrl(new Uri(
+      scheme: 'https',
+      host: _host,
+      path: '/post/index.json',
+      queryParameters: {'tags': tags, 'limit': "100"},
+    ))
         .then((HttpClientRequest req) => req.close(), onError: (e) {
       print("error with request: $e");
     });
@@ -142,6 +152,16 @@ class _E1547AppState extends State<E1547App> {
     return new AppBar(title: new Text("e1547"), actions: widgets);
   }
 
+  Widget _buildHostField() {
+    return new TextField(
+      controller: new TextEditingController(text: _host),
+      onChanged: (String h) {
+        print("new host value: $h");
+        _host = h;
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     _loadPostsIfNotAlreadyLoaded();
@@ -157,6 +177,7 @@ class _E1547AppState extends State<E1547App> {
                 // TODO: account name and email
                 accountName: new Text("<username>"),
                 accountEmail: new Text("<email>")),
+            _buildHostField(),
             new AboutListTile(),
           ])),
           floatingActionButton: new _SearchFab(
