@@ -1,8 +1,3 @@
 # e1547
 
-A new flutter project.
-
-## Getting Started
-
-For help getting started with Flutter, view our online
-[documentation](http://flutter.io/).
+A mobile app for browsing e926.net and friends.
