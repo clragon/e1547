@@ -31,8 +31,8 @@ class PostPreview extends StatelessWidget {
         },
         child: new Card(
             child: new Center(
-                child: new Image.network(post['preview_url'],
-                    fit: BoxFit.cover))));
+                child:
+                    new Image.network(post['sample_url'], fit: BoxFit.cover))));
   }
 }
 
@@ -47,6 +47,8 @@ class _E1547AppState extends State<E1547App> {
   List<Map> _posts = [];
 
   bool _offline = false;
+
+  String tags = "";
 
   Future<Null> _loadPostsIfNotAlreadyLoaded() async {
     if (!_posts.isEmpty) {
@@ -64,7 +66,7 @@ class _E1547AppState extends State<E1547App> {
     // TODO: detect network failures => offline
     HttpClientResponse response = await _http
         .getUrl(Uri.parse(
-            "https://e621.net/post/index.json?page=1&tags=photonoko&limit=5"))
+            "https://e621.net/post/index.json?page=1&tags=$tags&limit=5"))
         .then((HttpClientRequest req) => req.close(), onError: (e) {
       print("error with request: $e");
     });
@@ -83,24 +85,17 @@ class _E1547AppState extends State<E1547App> {
     setState(() => this._posts = posts);
   }
 
+  void _onSearch(String tags) {
+    this.tags = tags;
+    _loadPosts();
+  }
+
   Widget _body() {
-    var index = new GridView.builder(
-      controller: new ScrollController(),
-      gridDelegate: new SliverGridDelegateWithMaxCrossAxisExtent(
-        maxCrossAxisExtent: 150.0,
-      ),
+    var index = new ListView.builder(
       itemBuilder: (ctx, i) {
         return _posts.length > i ? new PostPreview(_posts[i]) : null;
       },
     );
-
-    var scroll = index.controller;
-    scroll.addListener(() {
-      var pos = scroll.position;
-      double begin = pos.extentBefore;
-      double end = pos.extentBefore + pos.extentInside;
-      print("visible: [$begin, $end]");
-    });
 
     return index;
   }
@@ -145,19 +140,35 @@ class _E1547AppState extends State<E1547App> {
                 accountEmail: new Text("perlatus@vczf.io")),
             new AboutListTile(),
           ])),
-          floatingActionButton: new _SearchFab(),
+          floatingActionButton: new _SearchFab(
+            onSearch: _onSearch,
+            controller: new TextEditingController(text: tags),
+          ),
         ));
   }
 }
 
 class _SearchFab extends StatelessWidget {
+  _SearchFab({
+    Key key,
+    ValueChanged<String> this.onSearch,
+    TextEditingController this.controller,
+  }) : super(key: key);
+
+  final ValueChanged<String> onSearch;
+  final TextEditingController controller;
+
   @override
   Widget build(BuildContext context) {
     return new FloatingActionButton(
         onPressed: () {
-          print("pressed FAB");
-          Scaffold.of(context).showBottomSheet((context) => new TextField());
+          Scaffold.of(context).showBottomSheet((context) => new TextField(
+                autofocus: true,
+                controller: controller,
+                onSubmitted: onSearch,
+          ));
         },
+
         child: new Icon(Icons.search));
   }
 }
