@@ -1,16 +1,24 @@
 import 'dart:async';
-import 'dart:convert';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 
-import 'src/zoomable_image/zoomable_image.dart';
+import 'package:logging/logging.dart' show Level, Logger, LogRecord;
 
-const String APP_VERSION = '0.0.1-alpha';
+import 'vars.dart';
+
+import 'src/zoomable_image/zoomable_image.dart';
+import 'src/e1547/e1547.dart';
+
+final Logger _log = new Logger('main');
 
 void main() {
+  Logger.root.level = Level.ALL;
+  Logger.root.onRecord.listen((LogRecord rec) {
+    print('${rec.level.name}: ${rec.time}: ${rec.message}: ${rec.object??""}');
+  });
+
   runApp(new E1547App());
 }
 
@@ -27,7 +35,7 @@ class PostPreview extends StatelessWidget {
       children: <Widget>[
         new GestureDetector(
             onTap: () {
-              print("tapped post ${post['id']}");
+              _log.fine("tapped post ${post['id']}");
               Navigator.of(context).push(new MaterialPageRoute<Null>(
                 builder: (context) {
                   return new ZoomableImage(new NetworkImage(post['file_url']),
@@ -42,10 +50,10 @@ class PostPreview extends StatelessWidget {
           children: <Widget>[
             new IconButton(
                 icon: const Icon(Icons.favorite),
-                onPressed: () => print("pressed fav")),
+                onPressed: () => _log.fine("pressed fav")),
             new IconButton(
                 icon: const Icon(Icons.chat),
-                onPressed: () => print("pressed chat")),
+                onPressed: () => _log.fine("pressed chat")),
             new Text(post['rating'].toUpperCase()),
           ],
         ))
@@ -60,70 +68,48 @@ class E1547App extends StatefulWidget {
 }
 
 class _E1547AppState extends State<E1547App> {
-  HttpClient _http = new HttpClient()..userAgent = "e1547/$APP_VERSION (perlatus)";
+  E1547Client _e1547 = new E1547Client()..host = DEFAULT_ENDPOINT;
 
-  String _host = "e926.net";
-
+  // Current tags being displayed or searched.
+  String _tags = "order:score";
+  // Current posts being displayed.
   List<Map> _posts = [];
-  ScrollController _scrollController = new ScrollController();
+
+  // If we're currently offline, meaning a request has failed.
   bool _offline = false;
-  String tags = "";
 
-  Future<Null> _loadPostsIfNotAlreadyLoaded() async {
-    if (!_posts.isEmpty) {
-      return;
-    }
+  // Controller for our list of posts.
+  ScrollController _scrollController = new ScrollController();
 
-    if (_offline) {
-      return;
-    }
-
-    _loadPosts();
+  @override
+  void initState() {
+    super.initState();
+    _log.info("Performing initial search");
+    _onSearch(_tags);
   }
 
-  Future<Null> _loadPosts() async {
-    // TODO: detect network failures => offline
-    HttpClientResponse response = await _http
-        .getUrl(new Uri(
-      scheme: 'https',
-      host: _host,
-      path: '/post/index.json',
-      queryParameters: {'tags': tags, 'limit': "100"},
-    ))
-        .then((HttpClientRequest req) => req.close(), onError: (e) {
-      print("error with request: $e");
-    });
-
-    setState(() {
-      _offline = response == null;
-    });
-    if (_offline) {
-      return;
+  Future<Null> _onSearch(String tags) async {
+    _offline = false; // Let's be optimistic. Doesn't update UI until setState()
+    try {
+      this._tags = tags;
+      List<Map> newPosts = await _e1547.posts(tags);
+      _scrollController.jumpTo(0.0);
+      setState(() {
+        _posts = newPosts;
+      });
+    } catch (e) {
+      _log.info("Going offline: $e", e);
+      setState(() {
+        _offline = true;
+      });
     }
-
-    var body = new StringBuffer();
-    await response.transform(UTF8.decoder).forEach((s) => body.write(s));
-
-    var posts = JSON.decode(body.toString());
-    posts.removeWhere((p) {
-      String ext = p['file_ext'];
-      return ext == "webm" || ext == "swf";
-    });
-
-    _scrollController.jumpTo(0.0);
-    setState(() => this._posts = posts);
-  }
-
-  void _onSearch(String tags) {
-    this.tags = tags;
-    _loadPosts();
   }
 
   Widget _body() {
     var index = new ListView.builder(
       controller: _scrollController,
       itemBuilder: (ctx, i) {
-        print("loading post $i");
+        _log.fine("loading post $i");
         return _posts.length > i ? new PostPreview(_posts[i]) : null;
       },
     );
@@ -137,38 +123,29 @@ class _E1547AppState extends State<E1547App> {
         ? new IconButton(
             icon: const Icon(Icons.cloud_off),
             tooltip: "Reconnect",
-            onPressed: () {
-              print("pressed the cloud_off icon");
-              _offline = false;
-              _loadPosts();
-            })
+            onPressed: () => _onSearch(_tags))
         : new IconButton(
             icon: const Icon(Icons.refresh),
             tooltip: "Refresh",
-            onPressed: () {
-              print("pressed the reload icon");
-              _offline = false;
-              _loadPosts();
-            }));
+            onPressed: () => _onSearch(_tags)));
 
-    return new AppBar(title: new Text("e1547"), actions: widgets);
+    return new AppBar(title: new Text(APP_NAME), actions: widgets);
   }
 
   Widget _buildHostField() {
     return new TextField(
-      controller: new TextEditingController(text: _host),
-      onChanged: (String h) {
-        print("new host value: $h");
-        _host = h;
+      controller: new TextEditingController(text: _e1547.host),
+      onSubmitted: (String h) {
+        _log.info("new host value: $h");
+        _e1547.host = h;
       },
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    _loadPostsIfNotAlreadyLoaded();
     return new MaterialApp(
-        title: 'e1547',
+        title: APP_NAME,
         theme: new ThemeData.dark(),
         home: new Scaffold(
           appBar: _buildAppBar(),
@@ -184,7 +161,7 @@ class _E1547AppState extends State<E1547App> {
           ])),
           floatingActionButton: new _SearchFab(
             onSearch: _onSearch,
-            controller: new TextEditingController(text: tags),
+            controller: new TextEditingController(text: _tags),
           ),
         ));
   }
