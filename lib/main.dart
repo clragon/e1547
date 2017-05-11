@@ -25,7 +25,8 @@ class PostPreview extends StatelessWidget {
           print("tapped post ${post['id']}");
           Navigator.of(context).push(new MaterialPageRoute<Null>(
             builder: (context) {
-              return new ZoomableImage(new NetworkImage(post['file_url']));
+              return new ZoomableImage( new NetworkImage(post['file_url']),
+                  scale: 4.0);
             },
           ));
         },

@@ -18,9 +18,14 @@ class ZoomableImage extends StatefulWidget {
 
 // See /flutter/examples/layers/widgets/gestures.dart
 class _ZoomableImageState extends State<ZoomableImage> {
-  _ZoomableImageState(this._scale) : _zoom = _scale;
+  _ZoomableImageState(this._scale);
 
   final double _scale;
+
+  ImageStream _imageStream;
+  ui.Image _image;
+
+  // These values are treated as if unscaled.
 
   Offset _startingFocalPoint;
 
@@ -28,27 +33,33 @@ class _ZoomableImageState extends State<ZoomableImage> {
   Offset _offset = Offset.zero;
 
   double _previousZoom;
-  double _zoom;
+  double _zoom = 1.0;
 
   void _handleScaleStart(ScaleStartDetails d) {
-    _startingFocalPoint = d.focalPoint;
+    _startingFocalPoint = d.focalPoint / _scale;
     _previousOffset = _offset;
     _previousZoom = _zoom;
   }
 
-  void _handleScaleUpdate(ScaleUpdateDetails d) {
+  void _handleScaleUpdate(Size size, ScaleUpdateDetails d) {
+    double newZoom = _previousZoom * d.scale;
+    print("newZoom: $newZoom	d.scale: ${d.scale}");
+
+    bool tooZoomedIn = _image.width * _scale / newZoom <= size.width ||
+        _image.height * _scale / newZoom <= size.height;
+    if (tooZoomedIn) {
+      return;
+    }
+
     setState(() {
-      _zoom = _previousZoom * d.scale;
+      _zoom = newZoom;
 
       // Ensure that item under the focal point stays in the same place despite zooming
       final Offset normalizedOffset =
           (_startingFocalPoint - _previousOffset) / _previousZoom;
-      _offset = d.focalPoint - normalizedOffset * _zoom;
+      _offset = d.focalPoint / _scale - normalizedOffset * _zoom;
     });
   }
-
-  ImageStream _imageStream;
-  ui.Image _image;
 
   @override
   void didChangeDependencies() {
@@ -93,8 +104,8 @@ class _ZoomableImageState extends State<ZoomableImage> {
     Widget bloated = new CustomPaint(
       painter: new _ZoomableImagePainter(
         image: _image,
-        offset: _offset / _scale,
-        zoom: _zoom / _scale / _scale,
+        offset: _offset,
+        zoom: _zoom / _scale,
       ),
     );
 
@@ -109,7 +120,7 @@ class _ZoomableImageState extends State<ZoomableImage> {
     return new GestureDetector(
       child: _child(),
       onScaleStart: _handleScaleStart,
-      onScaleUpdate: _handleScaleUpdate,
+      onScaleUpdate: (d) => _handleScaleUpdate(ctx.size, d),
     );
   }
 }
