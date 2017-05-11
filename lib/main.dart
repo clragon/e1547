@@ -94,6 +94,10 @@ class _E1547AppState extends State<E1547App> {
     await response.transform(UTF8.decoder).forEach((s) => body.write(s));
 
     var posts = JSON.decode(body.toString());
+    posts.removeWhere((p) {
+      String ext = p['file_ext'];
+      return ext == "webm" || ext == "swf";
+    });
     setState(() => this._posts = posts);
   }
 
