@@ -20,20 +20,31 @@ class PostPreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new GestureDetector(
-        onTap: () {
-          print("tapped post ${post['id']}");
-          Navigator.of(context).push(new MaterialPageRoute<Null>(
-            builder: (context) {
-              return new ZoomableImage( new NetworkImage(post['file_url']),
-                  scale: 4.0);
+    return new Card(
+        child: new Column(
+      children: <Widget>[
+        new GestureDetector(
+            onTap: () {
+              print("tapped post ${post['id']}");
+              Navigator.of(context).push(new MaterialPageRoute<Null>(
+                builder: (context) {
+                  return new ZoomableImage(new NetworkImage(post['file_url']),
+                      scale: 4.0);
+                },
+              ));
             },
-          ));
-        },
-        child: new Card(
-            child: new Center(
-                child:
-                    new Image.network(post['sample_url'], fit: BoxFit.cover))));
+            child: new Image.network(post['sample_url'], fit: BoxFit.cover)),
+        new ButtonTheme.bar(
+            child: new ButtonBar(
+          alignment: MainAxisAlignment.spaceAround,
+          children: <Widget>[
+            const IconButton(icon: const Icon(Icons.favorite)),
+            const IconButton(icon: const Icon(Icons.chat)),
+            new Text(post['rating']),
+          ],
+        ))
+      ],
+    ));
   }
 }
 
@@ -105,7 +116,7 @@ class _E1547AppState extends State<E1547App> {
     List<Widget> widgets = [];
     widgets.add(_offline
         ? new IconButton(
-            icon: new Icon(Icons.cloud_off),
+            icon: const Icon(Icons.cloud_off),
             tooltip: "Reconnect",
             onPressed: () {
               print("pressed the cloud_off icon");
@@ -113,7 +124,7 @@ class _E1547AppState extends State<E1547App> {
               _loadPosts();
             })
         : new IconButton(
-            icon: new Icon(Icons.refresh),
+            icon: const Icon(Icons.refresh),
             tooltip: "Refresh",
             onPressed: () {
               print("pressed the reload icon");
@@ -121,7 +132,7 @@ class _E1547AppState extends State<E1547App> {
               _loadPosts();
             }));
 
-    return new AppBar(title: new Text("e1547"), actions: widgets);
+    return new AppBar(title: const Text("e1547"), actions: widgets);
   }
 
   @override
@@ -154,7 +165,8 @@ class _SearchFab extends StatelessWidget {
     Key key,
     ValueChanged<String> this.onSearch,
     TextEditingController this.controller,
-  }) : super(key: key);
+  })
+      : super(key: key);
 
   final ValueChanged<String> onSearch;
   final TextEditingController controller;
@@ -167,9 +179,8 @@ class _SearchFab extends StatelessWidget {
                 autofocus: true,
                 controller: controller,
                 onSubmitted: onSearch,
-          ));
+              ));
         },
-
-        child: new Icon(Icons.search));
+        child: const Icon(Icons.search));
   }
 }
