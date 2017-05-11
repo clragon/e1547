@@ -1,4 +1,4 @@
-package com.yourcompany.e1547;
+package io.vczf.e1547;
 
 import android.os.Bundle;
 
