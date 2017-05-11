@@ -43,8 +43,6 @@ class _ZoomableImageState extends State<ZoomableImage> {
 
   void _handleScaleUpdate(Size size, ScaleUpdateDetails d) {
     double newZoom = _previousZoom * d.scale;
-    print("newZoom: $newZoom	d.scale: ${d.scale}");
-
     bool tooZoomedIn = _image.width * _scale / newZoom <= size.width ||
         _image.height * _scale / newZoom <= size.height;
     if (tooZoomedIn) {

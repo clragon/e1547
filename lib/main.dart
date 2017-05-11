@@ -77,7 +77,7 @@ class _E1547AppState extends State<E1547App> {
     // TODO: detect network failures => offline
     HttpClientResponse response = await _http
         .getUrl(Uri.parse(
-            "https://e621.net/post/index.json?page=1&tags=$tags&limit=50"))
+            "https://e621.net/post/index.json?page=1&tags=$tags&limit=100"))
         .then((HttpClientRequest req) => req.close(), onError: (e) {
       print("error with request: $e");
     });
