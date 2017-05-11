@@ -57,9 +57,8 @@ class _E1547AppState extends State<E1547App> {
   HttpClient _http = new HttpClient();
 
   List<Map> _posts = [];
-
+  ScrollController _scrollController = new ScrollController();
   bool _offline = false;
-
   String tags = "";
 
   Future<Null> _loadPostsIfNotAlreadyLoaded() async {
@@ -78,7 +77,7 @@ class _E1547AppState extends State<E1547App> {
     // TODO: detect network failures => offline
     HttpClientResponse response = await _http
         .getUrl(Uri.parse(
-            "https://e621.net/post/index.json?page=1&tags=$tags&limit=5"))
+            "https://e621.net/post/index.json?page=1&tags=$tags&limit=50"))
         .then((HttpClientRequest req) => req.close(), onError: (e) {
       print("error with request: $e");
     });
@@ -98,6 +97,8 @@ class _E1547AppState extends State<E1547App> {
       String ext = p['file_ext'];
       return ext == "webm" || ext == "swf";
     });
+
+    _scrollController.jumpTo(0.0);
     setState(() => this._posts = posts);
   }
 
@@ -108,7 +109,9 @@ class _E1547AppState extends State<E1547App> {
 
   Widget _body() {
     var index = new ListView.builder(
+      controller: _scrollController,
       itemBuilder: (ctx, i) {
+        print("loading post $i");
         return _posts.length > i ? new PostPreview(_posts[i]) : null;
       },
     );
