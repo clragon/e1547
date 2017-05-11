@@ -2,6 +2,7 @@ name: e1547
 description: A new flutter project.
 
 dependencies:
+  vector_math: any
   flutter:
     sdk: flutter
 

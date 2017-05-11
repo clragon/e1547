@@ -4,25 +4,31 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 
+import 'package:vector_math/vector_math_64.dart';
 
 class ZoomableImage extends StatefulWidget {
-  ZoomableImage(this.image, {Key key}) : super(key: key);
+  ZoomableImage(this.image, {Key key, this.scale = 2.0}) : super(key: key);
 
   final ImageProvider image;
+  final double scale;
 
   @override
-  _ZoomableImageState createState() => new _ZoomableImageState();
+  _ZoomableImageState createState() => new _ZoomableImageState(scale);
 }
 
 // See /flutter/examples/layers/widgets/gestures.dart
 class _ZoomableImageState extends State<ZoomableImage> {
+  _ZoomableImageState(this._scale) : _zoom = _scale;
+
+  final double _scale;
+
   Offset _startingFocalPoint;
 
   Offset _previousOffset;
   Offset _offset = Offset.zero;
 
   double _previousZoom;
-  double _zoom = 1.0;
+  double _zoom;
 
   void _handleScaleStart(ScaleStartDetails d) {
     _startingFocalPoint = d.focalPoint;
@@ -74,14 +80,34 @@ class _ZoomableImageState extends State<ZoomableImage> {
     super.dispose();
   }
 
+  Widget _child() {
+    if (_image == null) {
+      return null;
+    }
+
+    // Painting in a small box and blowing it up works, whereas painting in a large box and
+    // shrinking it down doesn't because the gesture area becomes smaller than the screen.
+    //
+    // This is bit counterintuitive because it's backwards, but it works.
+
+    Widget bloated = new CustomPaint(
+      painter: new _ZoomableImagePainter(
+        image: _image,
+        offset: _offset / _scale,
+        zoom: _zoom / _scale / _scale,
+      ),
+    );
+
+    return new Transform(
+      transform: new Matrix4.diagonal3Values(_scale, _scale, _scale),
+      child: bloated,
+    );
+  }
+
   @override
   Widget build(BuildContext ctx) {
     return new GestureDetector(
-      child: _image != null
-          ? new CustomPaint(
-              painter: new _ZoomableImagePainter(
-                  image: _image, offset: _offset, zoom: _zoom))
-          : null,
+      child: _child(),
       onScaleStart: _handleScaleStart,
       onScaleUpdate: _handleScaleUpdate,
     );
