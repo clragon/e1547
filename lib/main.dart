@@ -40,7 +40,7 @@ void main() {
 
 // Preview of a post that appears in lists of posts. Mostly just the image.
 class PostPreview extends StatelessWidget {
-  PostPreview(Map this.post, {Key key}) : super(key: key);
+  PostPreview(this.post, {Key key}) : super(key: key);
 
   final Map post;
 
@@ -186,8 +186,8 @@ class _E1547AppState extends State<E1547App> {
 class _SearchFab extends StatelessWidget {
   _SearchFab({
     Key key,
-    ValueChanged<String> this.onSearch,
-    TextEditingController this.controller,
+    this.onSearch,
+    this.controller,
   })
       : super(key: key);
 
