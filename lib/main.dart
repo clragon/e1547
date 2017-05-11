@@ -38,9 +38,9 @@ class PostPreview extends StatelessWidget {
             child: new ButtonBar(
           alignment: MainAxisAlignment.spaceAround,
           children: <Widget>[
-            const IconButton(icon: const Icon(Icons.favorite)),
-            const IconButton(icon: const Icon(Icons.chat)),
-            new Text(post['rating']),
+            new IconButton(icon: const Icon(Icons.favorite), onPressed: () => print("pressed fav")),
+            new IconButton(icon: const Icon(Icons.chat), onPressed: () => print("pressed chat")),
+            new Text(post['rating'].toUpperCase()),
           ],
         ))
       ],
@@ -136,7 +136,7 @@ class _E1547AppState extends State<E1547App> {
               _loadPosts();
             }));
 
-    return new AppBar(title: const Text("e1547"), actions: widgets);
+    return new AppBar(title: new Text("e1547"), actions: widgets);
   }
 
   @override
@@ -152,8 +152,8 @@ class _E1547AppState extends State<E1547App> {
               child: new ListView(children: [
             new UserAccountsDrawerHeader(
                 // TODO: account name and email
-                accountName: new Text("perlatus"),
-                accountEmail: new Text("perlatus@vczf.io")),
+                accountName: new Text("<username>"),
+                accountEmail: new Text("<email>")),
             new AboutListTile(),
           ])),
           floatingActionButton: new _SearchFab(
