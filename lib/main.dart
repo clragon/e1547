@@ -47,6 +47,31 @@ class PostPreview extends StatelessWidget {
 
   final Map post;
 
+  Widget _buildScore() {
+    int score = post['score'];
+    String scoreString = score.toString();
+    Color c;
+    if (score > 0) {
+      scoreString = '+' + scoreString;
+      c = Colors.green;
+    } else if (score < 0) {
+      c = Colors.red;
+    }
+
+    return new Text(scoreString, style: new TextStyle(color: c));
+  }
+
+  Widget _buildSafetyRating() {
+    const Map<String, Color> colors = const {
+      "E": Colors.red,
+      "S": Colors.green,
+      "Q": Colors.yellow,
+    };
+
+    String safety = post['rating'].toUpperCase();
+    return new Text(safety, style: new TextStyle(color: colors[safety]));
+  }
+
   @override
   Widget build(BuildContext context) {
     return new Card(
@@ -67,17 +92,21 @@ class PostPreview extends StatelessWidget {
             child: new ButtonBar(
           alignment: MainAxisAlignment.spaceAround,
           children: <Widget>[
+            _buildScore(),
+            _buildSafetyRating(),
             new IconButton(
                 icon: const Icon(Icons.favorite),
+                tooltip: "Add post to favorites",
                 onPressed: () => _log.fine("pressed fav")),
             new IconButton(
                 icon: const Icon(Icons.chat),
+                tooltip: "Go to comments",
                 onPressed: () => _log.fine("pressed chat")),
-            new Text(post['rating'].toUpperCase()),
             new IconButton(
                 icon: const Icon(Icons.open_in_browser),
                 tooltip: "Open in browser",
-                onPressed: () => url.launch(_e1547.postUrl(post['id']).toString())),
+                onPressed: () =>
+                    url.launch(_e1547.postUrl(post['id']).toString())),
           ],
         ))
       ],
