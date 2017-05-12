@@ -38,7 +38,12 @@ void main() {
     print('${rec.level.name}: ${rec.time}: ${rec.message}: ${rec.object??""}');
   });
 
-  runApp(new E1547App());
+  runApp(new MaterialApp(
+    title: APP_NAME,
+    theme: new ThemeData.dark(),
+    routes: <String, WidgetBuilder>{},
+    home: new E1547Home(),
+  ));
 }
 
 // Preview of a post that appears in lists of posts. Mostly just the image.
@@ -62,7 +67,7 @@ class PostPreview extends StatelessWidget {
   }
 
   Widget _buildSafetyRating() {
-    const Map<String, Color> colors = const {
+    const colors = const <String, Color>{
       "E": Colors.red,
       "S": Colors.green,
       "Q": Colors.yellow,
@@ -114,12 +119,12 @@ class PostPreview extends StatelessWidget {
   }
 }
 
-class E1547App extends StatefulWidget {
+class E1547Home extends StatefulWidget {
   @override
-  _E1547AppState createState() => new _E1547AppState();
+  _E1547HomeState createState() => new _E1547HomeState();
 }
 
-class _E1547AppState extends State<E1547App> {
+class _E1547HomeState extends State<E1547Home> {
   // Current tags being displayed or searched.
   String _tags = "";
   // Current posts being displayed.
@@ -195,26 +200,28 @@ class _E1547AppState extends State<E1547App> {
 
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
-        title: APP_NAME,
-        theme: new ThemeData.dark(),
-        home: new Scaffold(
-          appBar: _buildAppBar(),
-          body: _body(),
-          drawer: new Drawer(
-              child: new ListView(children: [
-            new UserAccountsDrawerHeader(
-                // TODO: account name and email
-                accountName: new Text("<username>"),
-                accountEmail: new Text("<email>")),
-            _buildHostField(),
-            new AboutListTile(),
-          ])),
-          floatingActionButton: new _SearchFab(
-            onSearch: _onSearch,
-            controller: new TextEditingController(text: _tags),
-          ),
-        ));
+    return new Scaffold(
+      appBar: _buildAppBar(),
+      body: _body(),
+      drawer: new Drawer(
+          child: new ListView(children: [
+        new UserAccountsDrawerHeader(
+            // TODO: account name and email
+            accountName: new Text("<username>"),
+            accountEmail: new Text("<email>")),
+        _buildHostField(),
+        new Divider(),
+        new ListTile(
+            leading: const Icon(Icons.settings),
+            title: new Text('Settings'),
+            onTap: () => _log.info('Tapped Settings')),
+        new AboutListTile(icon: const Icon(Icons.help)),
+      ])),
+      floatingActionButton: new _SearchFab(
+        onSearch: _onSearch,
+        controller: new TextEditingController(text: _tags),
+      ),
+    );
   }
 }
 
