@@ -22,6 +22,47 @@ import 'package:logging/logging.dart' show Logger;
 
 import '../../vars.dart';
 
+typedef Future<List<E>> PageGenerator<E>(int pageIndex);
+
+class Pagination<E> {
+  final Logger _log = new Logger('Pagination');
+
+  Pagination(this.pageSize, this.pageGenerator);
+
+  final int pageSize;
+  final PageGenerator<E> pageGenerator;
+
+  Map<int, E> _map = {};
+
+  Future<E> operator [](int elementIndex) async {
+    _log.fine("requested element $elementIndex");
+    _log.finest("current map: $_map");
+    if (_map.containsKey(elementIndex)) {
+      _log.finest("map contained key");
+      return _map[elementIndex];
+    }
+
+    // We don't have the element yet, so we need to load in a new page.
+    int requiredPage = elementIndex ~/ pageSize;
+    int firstIndex = requiredPage * pageSize;
+
+    _log.finest("loading page $requiredPage");
+    List<E> newPage = await pageGenerator(requiredPage);
+    _log.finest("got back page length ${newPage.length}");
+    for (int i = 0; i < newPage.length; i++) {
+      int mapIndex = firstIndex + i;
+      assert(!_map.containsKey(mapIndex));
+      _map[mapIndex] = newPage[i];
+    }
+
+    _log.fine("new map: $_map");
+
+    return _map[elementIndex];
+  }
+}
+
+const int _PAGE_SIZE = 75;
+
 class E1547Client {
   final Logger _log = new Logger("E1547Client");
 
@@ -40,35 +81,44 @@ class E1547Client {
     );
   }
 
-  Future<List<Map>> posts(String tags) async {
+  Future<List<Map>> _getPageOfPosts(int p, String tags) async {
+    try {
+      _log.finest("pageGenerator called for page $p");
+      _log.finest("host: $host, tags: $tags, limit: $_PAGE_SIZE, page: $p");
+      Uri url = new Uri(
+          scheme: 'https',
+          host: host,
+          path: '/post/index.json',
+          queryParameters: {'tags': tags, 'limit': _PAGE_SIZE.toString(), 'page': p.toString()},
+          );
+
+      _log.fine("url: $url");
+
+      HttpClientRequest request = await _http.getUrl(url);
+      HttpClientResponse response = await request.close();
+      _log.info(
+          "response.statusCode: ${response.statusCode} (${response.reasonPhrase})");
+
+      var body = new StringBuffer();
+      await response.transform(UTF8.decoder).forEach((s) => body.write(s));
+      _log.fine("response body: $body");
+      var posts = JSON.decode(body.toString());
+
+      // Remove webm/video and swf/flash posts because we can't display them.
+      posts.removeWhere((p) {
+        String ext = p['file_ext'];
+        return ext == "webm" || ext == "swf";
+      });
+
+      return posts;
+    } catch (e) {
+      _log.warning(e);
+      throw e;
+    }
+  }
+
+  Pagination<Map> posts(String tags) {
     _log.info("Requesting posts with tags: '$tags'");
-
-    Uri url = new Uri(
-      scheme: 'https',
-      host: host,
-      path: '/post/index.json',
-      queryParameters: {'tags': tags, 'limit': "100"},
-    );
-
-    _log.fine("url: $url");
-
-    HttpClientRequest request = await _http.getUrl(url);
-
-    HttpClientResponse response = await request.close();
-    _log.info(
-        "response.statusCode: ${response.statusCode} (${response.reasonPhrase})");
-
-    var body = new StringBuffer();
-    await response.transform(UTF8.decoder).forEach((s) => body.write(s));
-    _log.fine("response body: $body");
-    var posts = JSON.decode(body.toString());
-
-    // Remove webm/video and swf/flash posts because we can't display them.
-    posts.removeWhere((p) {
-      String ext = p['file_ext'];
-      return ext == "webm" || ext == "swf";
-    });
-
-    return posts;
+    return new Pagination<Map>(_PAGE_SIZE, (p) => _getPageOfPosts(p, tags));
   }
 }

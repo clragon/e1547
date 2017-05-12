@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-import 'dart:async';
+import 'dart:async' show Future;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -25,7 +25,6 @@ import 'package:url_launcher/url_launcher.dart' as url show launch;
 import 'package:zoomable_image/zoomable_image.dart' show ZoomableImage;
 
 import 'vars.dart';
-
 import 'src/e1547/e1547.dart';
 
 final Logger _log = new Logger('main');
@@ -33,7 +32,7 @@ final Logger _log = new Logger('main');
 E1547Client _e1547 = new E1547Client()..host = DEFAULT_ENDPOINT;
 
 void main() {
-  Logger.root.level = Level.ALL;
+  Logger.root.level = Level.INFO;
   Logger.root.onRecord.listen((LogRecord rec) {
     print('${rec.level.name}: ${rec.time}: ${rec.message}: ${rec.object??""}');
   });
@@ -50,9 +49,31 @@ void main() {
 class PostPreview extends StatelessWidget {
   PostPreview(this.post, {Key key}) : super(key: key);
 
-  final Map post;
+  final Future<Map> post;
 
-  Widget _buildScore() {
+  Widget buildImage(BuildContext context, Map post) {
+    return new GestureDetector(
+        onTap: () {
+          if (post != null) {
+            _log.fine("tapped post ${post['id']}");
+            Navigator.of(context).push(new MaterialPageRoute(
+              builder: (context) {
+                return new ZoomableImage(new NetworkImage(post['file_url']),
+                    scale: 4.0);
+              },
+            ));
+          }
+        },
+        child: post == null
+            ? new Container(height: 300.0, child: const Icon(Icons.help))
+            : new Image.network(post['sample_url'], fit: BoxFit.cover));
+  }
+
+  Widget buildScore(Map post) {
+    if (post == null) {
+      return new Text('?');
+    }
+
     int score = post['score'];
     String scoreString = score.toString();
     Color c;
@@ -66,57 +87,57 @@ class PostPreview extends StatelessWidget {
     return new Text(scoreString, style: new TextStyle(color: c));
   }
 
-  Widget _buildSafetyRating() {
+  Widget buildSafetyRating(Map post) {
+    if (post == null) {
+      return new Text('?');
+    }
+
     const colors = const <String, Color>{
-      "E": Colors.red,
-      "S": Colors.green,
-      "Q": Colors.yellow,
+      'E': Colors.red,
+      'S': Colors.green,
+      'Q': Colors.yellow,
     };
 
     String safety = post['rating'].toUpperCase();
     return new Text(safety, style: new TextStyle(color: colors[safety]));
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return new Card(
-        child: new Column(
+  Widget buildBar(Map post) {
+    return new ButtonTheme.bar(
+        child: new ButtonBar(
+      alignment: MainAxisAlignment.spaceAround,
       children: <Widget>[
-        new GestureDetector(
-            onTap: () {
-              _log.fine("tapped post ${post['id']}");
-              Navigator.of(context).push(new MaterialPageRoute<Null>(
-                builder: (context) {
-                  return new ZoomableImage(new NetworkImage(post['file_url']),
-                      scale: 4.0);
-                },
-              ));
-            },
-            child: new Image.network(post['sample_url'], fit: BoxFit.cover)),
-        new ButtonTheme.bar(
-            child: new ButtonBar(
-          alignment: MainAxisAlignment.spaceAround,
-          children: <Widget>[
-            _buildScore(),
-            _buildSafetyRating(),
-            new IconButton(
-                icon: const Icon(Icons.favorite),
-                tooltip: "Add post to favorites",
-                onPressed: () => _log.fine("pressed fav")),
-            new IconButton(
-                icon: const Icon(Icons.chat),
-                tooltip: "Go to comments",
-                onPressed: () => _log.fine("pressed chat")),
-            new IconButton(
-                icon: const Icon(Icons.open_in_browser),
-                tooltip: "Open in browser",
-                onPressed: () =>
-                    url.launch(_e1547.postUrl(post['id']).toString())),
-          ],
-        ))
+        buildScore(post),
+        buildSafetyRating(post),
+        new IconButton(
+            icon: const Icon(Icons.favorite),
+            tooltip: "Add post to favorites",
+            onPressed: () => _log.fine("pressed fav")),
+        new IconButton(
+            icon: const Icon(Icons.chat),
+            tooltip: "Go to comments",
+            onPressed: () => _log.fine("pressed chat")),
+        new Text(post == null ? "?" : post['rating'].toUpperCase()),
+        new IconButton(
+            icon: const Icon(Icons.open_in_browser),
+            tooltip: "Open in browser",
+            onPressed: () {
+              if (post != null) {
+                url.launch(_e1547.postUrl(post['id']).toString());
+              }
+            }),
       ],
     ));
   }
+
+  @override
+  Widget build(BuildContext context) => new FutureBuilder(
+      future: post,
+      builder: (context, snapshot) => new Card(
+              child: new Column(children: <Widget>[
+            buildImage(context, snapshot.data),
+            buildBar(snapshot.data)
+          ])));
 }
 
 class E1547Home extends StatefulWidget {
@@ -128,7 +149,7 @@ class _E1547HomeState extends State<E1547Home> {
   // Current tags being displayed or searched.
   String _tags = "";
   // Current posts being displayed.
-  List<Map> _posts = [];
+  Pagination<Map> _posts = _e1547.posts("");
 
   // If we're currently offline, meaning a request has failed.
   bool _offline = false;
@@ -143,11 +164,11 @@ class _E1547HomeState extends State<E1547Home> {
     _onSearch(_tags);
   }
 
-  Future<Null> _onSearch(String tags) async {
+  void _onSearch(String tags) {
     _offline = false; // Let's be optimistic. Doesn't update UI until setState()
     try {
       this._tags = tags;
-      List<Map> newPosts = await _e1547.posts(tags);
+      Pagination<Map> newPosts = _e1547.posts(tags);
       _scrollController.jumpTo(0.0);
       setState(() {
         _posts = newPosts;
@@ -164,8 +185,7 @@ class _E1547HomeState extends State<E1547Home> {
     var index = new ListView.builder(
       controller: _scrollController,
       itemBuilder: (ctx, i) {
-        _log.fine("loading post $i");
-        return _posts.length > i ? new PostPreview(_posts[i]) : null;
+        return new PostPreview(_posts[i]);
       },
     );
 
