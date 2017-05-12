@@ -2,8 +2,14 @@ name: e1547
 description: A new flutter project.
 
 dependencies:
+  # Mine
+  zoomable_image: any
+
+  # Flutter
   logging: any
   vector_math: any
+  url_launcher: any
+
   flutter:
     sdk: flutter
 

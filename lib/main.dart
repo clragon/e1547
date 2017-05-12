@@ -21,13 +21,16 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 
 import 'package:logging/logging.dart' show Level, Logger, LogRecord;
+import 'package:url_launcher/url_launcher.dart' as url show launch;
+import 'package:zoomable_image/zoomable_image.dart' show ZoomableImage;
 
 import 'vars.dart';
 
-import 'src/zoomable_image/zoomable_image.dart';
 import 'src/e1547/e1547.dart';
 
 final Logger _log = new Logger('main');
+
+E1547Client _e1547 = new E1547Client()..host = DEFAULT_ENDPOINT;
 
 void main() {
   Logger.root.level = Level.ALL;
@@ -71,6 +74,10 @@ class PostPreview extends StatelessWidget {
                 icon: const Icon(Icons.chat),
                 onPressed: () => _log.fine("pressed chat")),
             new Text(post['rating'].toUpperCase()),
+            new IconButton(
+                icon: const Icon(Icons.open_in_browser),
+                tooltip: "Open in browser",
+                onPressed: () => url.launch(_e1547.postUrl(post['id']).toString())),
           ],
         ))
       ],
@@ -84,8 +91,6 @@ class E1547App extends StatefulWidget {
 }
 
 class _E1547AppState extends State<E1547App> {
-  E1547Client _e1547 = new E1547Client()..host = DEFAULT_ENDPOINT;
-
   // Current tags being displayed or searched.
   String _tags = "order:score";
   // Current posts being displayed.

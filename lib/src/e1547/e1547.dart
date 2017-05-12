@@ -31,6 +31,15 @@ class E1547Client {
   // For example, "e926.net"
   String host;
 
+  // Get the URL for the HTML version of the desired post.
+  Uri postUrl(int postId) {
+    return new Uri(
+      scheme: 'https',
+      host: host,
+      path: '/post/show/$postId',
+    );
+  }
+
   Future<List<Map>> posts(String tags) async {
     _log.info("Requesting posts with tags: '$tags'");
 
@@ -46,7 +55,8 @@ class E1547Client {
     HttpClientRequest request = await _http.getUrl(url);
 
     HttpClientResponse response = await request.close();
-    _log.info("response.statusCode: ${response.statusCode} (${response.reasonPhrase})");
+    _log.info(
+        "response.statusCode: ${response.statusCode} (${response.reasonPhrase})");
 
     var body = new StringBuffer();
     await response.transform(UTF8.decoder).forEach((s) => body.write(s));
