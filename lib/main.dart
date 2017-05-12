@@ -92,7 +92,7 @@ class E1547App extends StatefulWidget {
 
 class _E1547AppState extends State<E1547App> {
   // Current tags being displayed or searched.
-  String _tags = "order:score";
+  String _tags = "";
   // Current posts being displayed.
   List<Map> _posts = [];
 
@@ -159,6 +159,7 @@ class _E1547AppState extends State<E1547App> {
       onSubmitted: (String h) {
         _log.info("new host value: $h");
         _e1547.host = h;
+        _onSearch(_tags);
       },
     );
   }
