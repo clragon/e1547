@@ -25,6 +25,8 @@ import '../../vars.dart';
 typedef Future<List<E>> PageGenerator<E>(int pageIndex);
 
 class Pagination<E> {
+  final Logger _log = new Logger('Pagination');
+
   Pagination(this.pageSize, this.pageGenerator);
 
   final int pageSize;
@@ -33,21 +35,27 @@ class Pagination<E> {
   Map<int, E> _map = {};
 
   Future<E> operator [](int elementIndex) async {
-    print(_map);
+    _log.fine("requested element $elementIndex");
+    _log.finest("current map: $_map");
     if (_map.containsKey(elementIndex)) {
+      _log.finest("map contained key");
       return _map[elementIndex];
     }
 
     // We don't have the element yet, so we need to load in a new page.
     int requiredPage = elementIndex ~/ pageSize;
     int firstIndex = requiredPage * pageSize;
-    List<E> newPage = await pageGenerator(requiredPage);
 
+    _log.finest("loading page $requiredPage");
+    List<E> newPage = await pageGenerator(requiredPage);
+    _log.finest("got back page length ${newPage.length}");
     for (int i = 0; i < newPage.length; i++) {
       int mapIndex = firstIndex + i;
       assert(!_map.containsKey(mapIndex));
       _map[mapIndex] = newPage[i];
     }
+
+    _log.fine("new map: $_map");
 
     return _map[elementIndex];
   }
@@ -73,21 +81,20 @@ class E1547Client {
     );
   }
 
-  Pagination<Map> posts(String tags) {
-    _log.info("Requesting posts with tags: '$tags'");
-
-    return new Pagination<Map>(_PAGE_SIZE, (int p) async {
+  Future<List<Map>> _getPageOfPosts(int p, String tags) async {
+    try {
+      _log.finest("pageGenerator called for page $p");
+      _log.finest("host: $host, tags: $tags, limit: $_PAGE_SIZE, page: $p");
       Uri url = new Uri(
-        scheme: 'https',
-        host: host,
-        path: '/post/index.json',
-        queryParameters: {'tags': tags, 'limit': _PAGE_SIZE, 'page': p},
-      );
+          scheme: 'https',
+          host: host,
+          path: '/post/index.json',
+          queryParameters: {'tags': tags, 'limit': _PAGE_SIZE.toString(), 'page': p.toString()},
+          );
 
       _log.fine("url: $url");
 
       HttpClientRequest request = await _http.getUrl(url);
-
       HttpClientResponse response = await request.close();
       _log.info(
           "response.statusCode: ${response.statusCode} (${response.reasonPhrase})");
@@ -104,6 +111,14 @@ class E1547Client {
       });
 
       return posts;
-    });
+    } catch (e) {
+      _log.warning(e);
+      throw e;
+    }
+  }
+
+  Pagination<Map> posts(String tags) {
+    _log.info("Requesting posts with tags: '$tags'");
+    return new Pagination<Map>(_PAGE_SIZE, (p) => _getPageOfPosts(p, tags));
   }
 }

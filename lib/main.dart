@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
+import 'dart:async' show Future;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
@@ -30,7 +32,7 @@ final Logger _log = new Logger('main');
 E1547Client _e1547 = new E1547Client()..host = DEFAULT_ENDPOINT;
 
 void main() {
-  Logger.root.level = Level.ALL;
+  Logger.root.level = Level.INFO;
   Logger.root.onRecord.listen((LogRecord rec) {
     print('${rec.level.name}: ${rec.time}: ${rec.message}: ${rec.object??""}');
   });
@@ -42,44 +44,58 @@ void main() {
 class PostPreview extends StatelessWidget {
   PostPreview(this.post, {Key key}) : super(key: key);
 
-  final Map post;
+  final Future<Map> post;
 
-  @override
-  Widget build(BuildContext context) {
-    return new Card(
-        child: new Column(
+  Widget buildImage(BuildContext context, Map post) {
+    return new GestureDetector(
+        onTap: () {
+          if (post != null) {
+            _log.fine("tapped post ${post['id']}");
+            Navigator.of(context).push(new MaterialPageRoute(
+              builder: (context) {
+                return new ZoomableImage(new NetworkImage(post['file_url']),
+                    scale: 4.0);
+              },
+            ));
+          }
+        },
+        child: post == null
+            ? new Container(height: 300.0, child: const Icon(Icons.help))
+            : new Image.network(post['sample_url'], fit: BoxFit.cover));
+  }
+
+  Widget buildBar(Map post) {
+    return new ButtonTheme.bar(
+        child: new ButtonBar(
+      alignment: MainAxisAlignment.spaceAround,
       children: <Widget>[
-        new GestureDetector(
-            onTap: () {
-              _log.fine("tapped post ${post['id']}");
-              Navigator.of(context).push(new MaterialPageRoute<Null>(
-                builder: (context) {
-                  return new ZoomableImage(new NetworkImage(post['file_url']),
-                      scale: 4.0);
-                },
-              ));
-            },
-            child: new Image.network(post['sample_url'], fit: BoxFit.cover)),
-        new ButtonTheme.bar(
-            child: new ButtonBar(
-          alignment: MainAxisAlignment.spaceAround,
-          children: <Widget>[
-            new IconButton(
-                icon: const Icon(Icons.favorite),
-                onPressed: () => _log.fine("pressed fav")),
-            new IconButton(
-                icon: const Icon(Icons.chat),
-                onPressed: () => _log.fine("pressed chat")),
-            new Text(post['rating'].toUpperCase()),
-            new IconButton(
-                icon: const Icon(Icons.open_in_browser),
-                tooltip: "Open in browser",
-                onPressed: () => url.launch(_e1547.postUrl(post['id']).toString())),
-          ],
-        ))
+        new IconButton(
+            icon: const Icon(Icons.favorite),
+            onPressed: () => _log.fine("pressed fav")),
+        new IconButton(
+            icon: const Icon(Icons.chat),
+            onPressed: () => _log.fine("pressed chat")),
+        new Text(post == null ? "?" : post['rating'].toUpperCase()),
+        new IconButton(
+            icon: const Icon(Icons.open_in_browser),
+            tooltip: "Open in browser",
+            onPressed: () {
+              if (post != null) {
+                url.launch(_e1547.postUrl(post['id']).toString());
+              }
+            }),
       ],
     ));
   }
+
+  @override
+  Widget build(BuildContext context) => new FutureBuilder(
+      future: post,
+      builder: (context, snapshot) => new Card(
+              child: new Column(children: <Widget>[
+            buildImage(context, snapshot.data),
+            buildBar(snapshot.data)
+          ])));
 }
 
 class E1547App extends StatefulWidget {
@@ -91,7 +107,7 @@ class _E1547AppState extends State<E1547App> {
   // Current tags being displayed or searched.
   String _tags = "";
   // Current posts being displayed.
-  Pagination<Map> _posts;
+  Pagination<Map> _posts = _e1547.posts("");
 
   // If we're currently offline, meaning a request has failed.
   bool _offline = false;
@@ -126,10 +142,8 @@ class _E1547AppState extends State<E1547App> {
   Widget _body() {
     var index = new ListView.builder(
       controller: _scrollController,
-      itemBuilder: (ctx, i) async {
-        _log.fine("loading post $i");
-        var p = await _posts[i];
-        return p == null ? new PostPreview(p) : null;
+      itemBuilder: (ctx, i) {
+        return new PostPreview(_posts[i]);
       },
     );
 
