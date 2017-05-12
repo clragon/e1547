@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
@@ -25,7 +23,6 @@ import 'package:url_launcher/url_launcher.dart' as url show launch;
 import 'package:zoomable_image/zoomable_image.dart' show ZoomableImage;
 
 import 'vars.dart';
-
 import 'src/e1547/e1547.dart';
 
 final Logger _log = new Logger('main');
@@ -94,7 +91,7 @@ class _E1547AppState extends State<E1547App> {
   // Current tags being displayed or searched.
   String _tags = "";
   // Current posts being displayed.
-  List<Map> _posts = [];
+  Pagination<Map> _posts;
 
   // If we're currently offline, meaning a request has failed.
   bool _offline = false;
@@ -109,11 +106,11 @@ class _E1547AppState extends State<E1547App> {
     _onSearch(_tags);
   }
 
-  Future<Null> _onSearch(String tags) async {
+  void _onSearch(String tags) {
     _offline = false; // Let's be optimistic. Doesn't update UI until setState()
     try {
       this._tags = tags;
-      List<Map> newPosts = await _e1547.posts(tags);
+      Pagination<Map> newPosts = _e1547.posts(tags);
       _scrollController.jumpTo(0.0);
       setState(() {
         _posts = newPosts;
@@ -129,9 +126,10 @@ class _E1547AppState extends State<E1547App> {
   Widget _body() {
     var index = new ListView.builder(
       controller: _scrollController,
-      itemBuilder: (ctx, i) {
+      itemBuilder: (ctx, i) async {
         _log.fine("loading post $i");
-        return _posts.length > i ? new PostPreview(_posts[i]) : null;
+        var p = await _posts[i];
+        return p == null ? new PostPreview(p) : null;
       },
     );
 
