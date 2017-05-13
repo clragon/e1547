@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
+import 'dart:convert' show JsonEncoder;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
@@ -110,6 +112,29 @@ class PostPreview extends StatelessWidget {
                 tooltip: "Open in browser",
                 onPressed: () =>
                     url.launch(_e1547.postUrl(post['id']).toString())),
+            new IconButton(
+                icon: const Icon(Icons.more_horiz),
+                tooltip: "More options",
+                onPressed: () => showDialog(
+                    context: context,
+                    child: new SimpleDialog(
+                        title: new Text("post #${post['id']}"),
+                        children: <Widget>[
+                          new ListTile(
+                            leading: const Icon(Icons.info_outline),
+                            title: new Text("Info"),
+                            onTap: () => showDialog(
+                                  context: context,
+                                  child: new SimpleDialog(
+                                    title: new Text("post #${post['id']} info"),
+                                    children: <Widget>[
+                                      new Text(new JsonEncoder.withIndent('  ')
+                                          .convert(post))
+                                    ],
+                                  ),
+                                ),
+                          )
+                        ]))),
           ],
         ))
       ],
