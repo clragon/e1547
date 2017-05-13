@@ -94,34 +94,44 @@ class PostPreview extends StatelessWidget {
             new IconButton(
                 icon: const Icon(Icons.more_horiz),
                 tooltip: "More options",
-                onPressed: () => showDialog(
-                    context: context,
-                    child: new SimpleDialog(
-                        title: new Text("post #${post.id}"),
-                        children: <Widget>[
-                          new ListTile(
-                            leading: const Icon(Icons.info_outline),
-                            title: new Text("Info"),
-                            onTap: () => showDialog(
-                                  context: context,
-                                  child: new SimpleDialog(
-                                    title: new Text("post #${post.id} info"),
-                                    children: <Widget>[
-                                      new TextField(
-                                          maxLines: 10, // TODO: Make this relative to screen size.
-                                          style: new TextStyle(fontFamily: "Courier"),
-                                          controller: new TextEditingController(
-                                              text: new JsonEncoder.withIndent(
-                                                      '  ')
-                                                  .convert(post.raw)))
-                                    ],
-                                  ),
-                                ),
-                          )
-                        ]))),
+                onPressed: () =>
+                    showDialog(context: context, child: new _MoreDialog(post))),
           ],
         ))
       ],
     ));
+  }
+}
+
+class _MoreDialog extends StatelessWidget {
+  final Post post;
+  _MoreDialog(this.post);
+
+  Widget _buildPostInfo(BuildContext context) {
+    return new ListTile(
+      leading: const Icon(Icons.info_outline),
+      title: new Text("Info"),
+      onTap: () => showDialog(
+            context: context,
+            child: new SimpleDialog(
+              title: new Text("post #${post.id} info"),
+              children: <Widget>[
+                new TextField(
+                    maxLines: 10, // TODO: Make this relative to screen size.
+                    style: new TextStyle(fontFamily: "Courier"),
+                    controller: new TextEditingController(
+                        text:
+                            new JsonEncoder.withIndent('  ').convert(post.raw)))
+              ],
+            ),
+          ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return new SimpleDialog(
+        title: new Text("post #${post.id}"),
+        children: <Widget>[_buildPostInfo(context)]);
   }
 }
