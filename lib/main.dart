@@ -134,9 +134,6 @@ class _E1547HomeState extends State<E1547Home> {
   // If we're currently offline, meaning a request has failed.
   bool _offline = false;
 
-  // Controller for our list of posts.
-  ScrollController _scrollController = new ScrollController();
-
   @override
   void initState() {
     super.initState();
@@ -144,30 +141,23 @@ class _E1547HomeState extends State<E1547Home> {
     _loadNextPage();
   }
 
-  _onSearch(String tags) async {
+  _onSearch(String tags) {
     _tags = tags;
     _page = _STARTING_PAGE;
     _posts.clear();
-    _log.fine("Jumping to top of post list");
-    _scrollController.jumpTo(0.0);
-    _log.fine(_scrollController.offset);
-
-    await _loadNextPage();
+    _loadNextPage();
   }
 
   _loadNextPage() async {
     _offline = false; // Let's be optimistic. Doesn't update UI until setState()
-    int thisPage = _page;
-    _page++;
     try {
-      List<Map> newPosts = await _e1547.posts(_tags, thisPage);
+      List<Map> newPosts = await _e1547.posts(_tags, _page);
       setState(() {
         _posts.addAll(newPosts);
       });
+      _page++;
     } catch (e) {
       _log.info("Going offline: $e", e);
-      _log.fine("Setting page from $_page to $thisPage");
-      _page = thisPage;
       setState(() {
         _offline = true;
       });
@@ -176,7 +166,6 @@ class _E1547HomeState extends State<E1547Home> {
 
   Widget _body() {
     var index = new ListView.builder(
-      controller: _scrollController,
       itemBuilder: (ctx, i) {
         _log.fine("loading post $i");
         if (i < _posts.length) {
