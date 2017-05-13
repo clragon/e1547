@@ -14,16 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-import 'dart:convert' show JsonEncoder;
-
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 
 import 'package:logging/logging.dart' show Level, Logger, LogRecord;
-import 'package:url_launcher/url_launcher.dart' as url show launch;
-import 'package:zoomable_image/zoomable_image.dart' show ZoomableImage;
 
+import 'post_preview.dart';
 import 'vars.dart';
 
 import 'src/e1547/e1547.dart';
@@ -46,102 +43,6 @@ void main() {
   ));
 }
 
-// Preview of a post that appears in lists of posts. Mostly just the image.
-class PostPreview extends StatelessWidget {
-  PostPreview(this.post, {Key key}) : super(key: key);
-
-  final Map post;
-
-  Widget _buildScore() {
-    int score = post['score'];
-    String scoreString = score.toString();
-    Color c;
-    if (score > 0) {
-      scoreString = '+' + scoreString;
-      c = Colors.green;
-    } else if (score < 0) {
-      c = Colors.red;
-    }
-
-    return new Text(scoreString, style: new TextStyle(color: c));
-  }
-
-  Widget _buildSafetyRating() {
-    const colors = const <String, Color>{
-      "E": Colors.red,
-      "S": Colors.green,
-      "Q": Colors.yellow,
-    };
-
-    String safety = post['rating'].toUpperCase();
-    return new Text(safety, style: new TextStyle(color: colors[safety]));
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return new Card(
-        child: new Column(
-      children: <Widget>[
-        new GestureDetector(
-            onTap: () {
-              _log.fine("tapped post ${post['id']}");
-              Navigator.of(context).push(new MaterialPageRoute<Null>(
-                builder: (context) {
-                  return new ZoomableImage(new NetworkImage(post['file_url']),
-                      scale: 4.0);
-                },
-              ));
-            },
-            child: new Image.network(post['sample_url'], fit: BoxFit.cover)),
-        new ButtonTheme.bar(
-            child: new ButtonBar(
-          alignment: MainAxisAlignment.spaceAround,
-          children: <Widget>[
-            _buildScore(),
-            _buildSafetyRating(),
-            new IconButton(
-                icon: const Icon(Icons.favorite),
-                tooltip: "Add post to favorites",
-                onPressed: () => _log.fine("pressed fav")),
-            new IconButton(
-                icon: const Icon(Icons.chat),
-                tooltip: "Go to comments",
-                onPressed: () => _log.fine("pressed chat")),
-            new IconButton(
-                icon: const Icon(Icons.open_in_browser),
-                tooltip: "Open in browser",
-                onPressed: () =>
-                    url.launch(_e1547.postUrl(post['id']).toString())),
-            new IconButton(
-                icon: const Icon(Icons.more_horiz),
-                tooltip: "More options",
-                onPressed: () => showDialog(
-                    context: context,
-                    child: new SimpleDialog(
-                        title: new Text("post #${post['id']}"),
-                        children: <Widget>[
-                          new ListTile(
-                            leading: const Icon(Icons.info_outline),
-                            title: new Text("Info"),
-                            onTap: () => showDialog(
-                                  context: context,
-                                  child: new SimpleDialog(
-                                    title: new Text("post #${post['id']} info"),
-                                    children: <Widget>[
-                                      new Text(new JsonEncoder.withIndent('  ')
-                                          .convert(post))
-                                    ],
-                                  ),
-                                ),
-                          )
-                        ]))),
-          ],
-        ))
-      ],
-    ));
-  }
-}
-
 const int _STARTING_PAGE = 1; // Pages are 1-indexed
 
 class E1547Home extends StatefulWidget {
@@ -153,7 +54,7 @@ class _E1547HomeState extends State<E1547Home> {
   // Current tags being displayed or searched.
   String _tags = "";
   // Current posts being displayed.
-  List<Map> _posts = [];
+  List<Post> _posts = [];
   int _page = _STARTING_PAGE;
 
   // If we're currently offline, meaning a request has failed.
@@ -176,7 +77,7 @@ class _E1547HomeState extends State<E1547Home> {
   _loadNextPage() async {
     _offline = false; // Let's be optimistic. Doesn't update UI until setState()
     try {
-      List<Map> newPosts = await _e1547.posts(_tags, _page);
+      List newPosts = await _e1547.posts(_tags, _page);
       setState(() {
         _posts.addAll(newPosts);
       });

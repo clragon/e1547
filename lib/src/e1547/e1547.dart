@@ -31,16 +31,7 @@ class E1547Client {
   // For example, "e926.net"
   String host;
 
-  // Get the URL for the HTML version of the desired post.
-  Uri postUrl(int postId) {
-    return new Uri(
-      scheme: 'https',
-      host: host,
-      path: '/post/show/$postId',
-    );
-  }
-
-  Future<List<Map>> posts(String tags, int page) async {
+  Future<List<Post>> posts(String tags, int page) async {
     _log.info("Requesting posts with tags: '$tags'");
 
     Uri url = new Uri(
@@ -60,14 +51,48 @@ class E1547Client {
     var body = new StringBuffer();
     await response.transform(UTF8.decoder).forEach((s) => body.write(s));
     _log.fine("response body: $body");
-    var posts = JSON.decode(body.toString());
+    var rawPosts = JSON.decode(body.toString());
 
     // Remove webm/video and swf/flash posts because we can't display them.
-    posts.removeWhere((p) {
+    rawPosts.removeWhere((p) {
       String ext = p['file_ext'];
       return ext == "webm" || ext == "swf";
     });
 
+    List<Post> posts = [];
+    for (var rp in rawPosts) {
+      posts.add(new Post.fromRaw(rp, host));
+    }
+
     return posts;
+  }
+}
+
+class Post {
+  Map raw;
+  String _host;
+
+  // Get the URL for the HTML version of the desired post.
+  Uri get url => new Uri(scheme: 'https', host: _host, path: '/post/show/$id');
+
+  int id;
+  int score;
+  int fav_count;
+  String file_url;
+  String file_ext;
+  String sample_url;
+  String rating;
+
+  Post.fromRaw(Map raw, String host) {
+    this.raw = raw;
+    this._host = host;
+
+    id = raw['id'];
+    score = raw['score'];
+    fav_count = raw['fav_count'];
+    file_url = raw['file_url'];
+    file_ext = raw['file_ext'];
+    sample_url = raw['sample_url'];
+    rating = raw['rating'].toUpperCase();
   }
 }
