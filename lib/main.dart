@@ -254,7 +254,10 @@ class _SearchFab extends StatelessWidget {
         onPressed: () {
           Scaffold.of(context).showBottomSheet((context) => new TextField(
                 autofocus: true,
-                controller: controller,
+                controller: controller
+                  ..selection = new TextSelection(
+                      baseOffset: controller.value.text.length,
+                      extentOffset: controller.value.text.length),
                 onSubmitted: onSearch,
               ));
         },
