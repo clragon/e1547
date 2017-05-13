@@ -107,8 +107,13 @@ class PostPreview extends StatelessWidget {
                                   child: new SimpleDialog(
                                     title: new Text("post #${post.id} info"),
                                     children: <Widget>[
-                                      new Text(new JsonEncoder.withIndent('  ')
-                                          .convert(post.raw))
+                                      new TextField(
+                                          maxLines: 10, // TODO: Make this relative to screen size.
+                                          style: new TextStyle(fontFamily: "Courier"),
+                                          controller: new TextEditingController(
+                                              text: new JsonEncoder.withIndent(
+                                                      '  ')
+                                                  .convert(post.raw)))
                                     ],
                                   ),
                                 ),
