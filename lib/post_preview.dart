@@ -57,47 +57,61 @@ class PostPreview extends StatelessWidget {
         style: new TextStyle(color: colors[post.rating]));
   }
 
+  Widget _buildImagePreview(BuildContext context) {
+    return new GestureDetector(
+        onTap: () {
+          _log.fine("tapped post ${post.id}");
+          Navigator.of(context).push(new MaterialPageRoute<Null>(
+            builder: (context) {
+              return new ZoomableImage(new NetworkImage(post.file_url),
+                  scale: 4.0);
+            },
+          ));
+        },
+        child: new Image.network(post.sample_url, fit: BoxFit.cover));
+  }
+
+  Widget _buildPostInfo(BuildContext context) {
+    return new Row(children: <Widget>[
+      _buildScore(),
+      _buildSafetyRating(),
+    ]);
+  }
+
+  Widget _buildButtonBar(BuildContext context) {
+    return new ButtonTheme.bar(
+        child: new ButtonBar(
+      alignment: MainAxisAlignment.spaceAround,
+      children: <Widget>[
+        new IconButton(
+            icon: const Icon(Icons.favorite),
+            tooltip: "Add post to favorites",
+            onPressed: () => _log.fine("pressed fav")),
+        new IconButton(
+            icon: const Icon(Icons.chat),
+            tooltip: "Go to comments",
+            onPressed: () => _log.fine("pressed chat")),
+        new IconButton(
+            icon: const Icon(Icons.open_in_browser),
+            tooltip: "Open in browser",
+            onPressed: () => url.launch(post.url.toString())),
+        new IconButton(
+            icon: const Icon(Icons.more_horiz),
+            tooltip: "More options",
+            onPressed: () =>
+                showDialog(context: context, child: new _MoreDialog(post))),
+      ],
+    ));
+  }
+
   @override
   Widget build(BuildContext context) {
     return new Card(
         child: new Column(
       children: <Widget>[
-        new GestureDetector(
-            onTap: () {
-              _log.fine("tapped post ${post.id}");
-              Navigator.of(context).push(new MaterialPageRoute<Null>(
-                builder: (context) {
-                  return new ZoomableImage(new NetworkImage(post.file_url),
-                      scale: 4.0);
-                },
-              ));
-            },
-            child: new Image.network(post.sample_url, fit: BoxFit.cover)),
-        new ButtonTheme.bar(
-            child: new ButtonBar(
-          alignment: MainAxisAlignment.spaceAround,
-          children: <Widget>[
-            _buildScore(),
-            _buildSafetyRating(),
-            new IconButton(
-                icon: const Icon(Icons.favorite),
-                tooltip: "Add post to favorites",
-                onPressed: () => _log.fine("pressed fav")),
-            new IconButton(
-                icon: const Icon(Icons.chat),
-                tooltip: "Go to comments",
-                onPressed: () => _log.fine("pressed chat")),
-            new IconButton(
-                icon: const Icon(Icons.open_in_browser),
-                tooltip: "Open in browser",
-                onPressed: () => url.launch(post.url.toString())),
-            new IconButton(
-                icon: const Icon(Icons.more_horiz),
-                tooltip: "More options",
-                onPressed: () =>
-                    showDialog(context: context, child: new _MoreDialog(post))),
-          ],
-        ))
+        _buildImagePreview(context),
+        _buildPostInfo(context),
+        _buildButtonBar(context),
       ],
     ));
   }
