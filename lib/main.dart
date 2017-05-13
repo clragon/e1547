@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
@@ -119,6 +117,8 @@ class PostPreview extends StatelessWidget {
   }
 }
 
+const int _STARTING_PAGE = 1; // Pages are 1-indexed
+
 class E1547Home extends StatefulWidget {
   @override
   _E1547HomeState createState() => new _E1547HomeState();
@@ -129,6 +129,7 @@ class _E1547HomeState extends State<E1547Home> {
   String _tags = "";
   // Current posts being displayed.
   List<Map> _posts = [];
+  int _page = _STARTING_PAGE;
 
   // If we're currently offline, meaning a request has failed.
   bool _offline = false;
@@ -140,20 +141,33 @@ class _E1547HomeState extends State<E1547Home> {
   void initState() {
     super.initState();
     _log.info("Performing initial search");
-    _onSearch(_tags);
+    _loadNextPage();
   }
 
-  Future<Null> _onSearch(String tags) async {
+  _onSearch(String tags) async {
+    _tags = tags;
+    _page = _STARTING_PAGE;
+    _posts.clear();
+    _log.fine("Jumping to top of post list");
+    _scrollController.jumpTo(0.0);
+    _log.fine(_scrollController.offset);
+
+    await _loadNextPage();
+  }
+
+  _loadNextPage() async {
     _offline = false; // Let's be optimistic. Doesn't update UI until setState()
+    int thisPage = _page;
+    _page++;
     try {
-      this._tags = tags;
-      List<Map> newPosts = await _e1547.posts(tags);
-      _scrollController.jumpTo(0.0);
+      List<Map> newPosts = await _e1547.posts(_tags, thisPage);
       setState(() {
-        _posts = newPosts;
+        _posts.addAll(newPosts);
       });
     } catch (e) {
       _log.info("Going offline: $e", e);
+      _log.fine("Setting page from $_page to $thisPage");
+      _page = thisPage;
       setState(() {
         _offline = true;
       });
@@ -165,7 +179,16 @@ class _E1547HomeState extends State<E1547Home> {
       controller: _scrollController,
       itemBuilder: (ctx, i) {
         _log.fine("loading post $i");
-        return _posts.length > i ? new PostPreview(_posts[i]) : null;
+        if (i < _posts.length) {
+          return new PostPreview(_posts[i]);
+        } else if (i == _posts.length) {
+          return new RaisedButton(
+            child: new Text("load more"),
+            onPressed: _loadNextPage,
+          );
+        } else {
+          return null;
+        }
       },
     );
 

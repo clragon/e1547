@@ -40,20 +40,19 @@ class E1547Client {
     );
   }
 
-  Future<List<Map>> posts(String tags) async {
+  Future<List<Map>> posts(String tags, int page) async {
     _log.info("Requesting posts with tags: '$tags'");
 
     Uri url = new Uri(
       scheme: 'https',
       host: host,
       path: '/post/index.json',
-      queryParameters: {'tags': tags, 'limit': "100"},
+      queryParameters: {'tags': tags, 'page': page.toString()},
     );
 
     _log.fine("url: $url");
 
     HttpClientRequest request = await _http.getUrl(url);
-
     HttpClientResponse response = await request.close();
     _log.info(
         "response.statusCode: ${response.statusCode} (${response.reasonPhrase})");
