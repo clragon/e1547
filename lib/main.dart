@@ -20,7 +20,7 @@ import 'package:flutter/rendering.dart';
 import 'package:logging/logging.dart' show Level, Logger, LogRecord;
 
 import 'post_preview.dart';
-import 'persistence.dart' show getHost, setHost;
+import 'persistence.dart' show getHost, setHost, getTags, setTags;
 import 'vars.dart';
 
 import 'src/e1547/e1547.dart';
@@ -71,6 +71,7 @@ class _E1547HomeState extends State<E1547Home> {
   }
 
   _onSearch(String tags) {
+    setTags(tags);
     _tags = tags;
     _page = _STARTING_PAGE;
     _posts.clear();
@@ -81,7 +82,7 @@ class _E1547HomeState extends State<E1547Home> {
     _offline = false; // Let's be optimistic. Doesn't update UI until setState()
     try {
       _e1547.host = await getHost() ?? DEFAULT_ENDPOINT;
-      List newPosts = await _e1547.posts(_tags, _page);
+      List newPosts = await _e1547.posts(await getTags() ?? _tags, _page);
       setState(() {
         _posts.addAll(newPosts);
       });

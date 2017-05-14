@@ -20,8 +20,12 @@ import 'package:shared_preferences/shared_preferences.dart'
     show SharedPreferences;
 
 const _HOST = "host";
+const _TAGS = "tags";
 
 Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
 Future<String> getHost() async => (await _prefs).getString(_HOST);
 setHost(String host) async => (await _prefs).setString(_HOST, host);
+
+Future<String> getTags() async => (await _prefs).getString(_TAGS);
+setTags(String tags) async => (await _prefs).setString(_TAGS, tags);
