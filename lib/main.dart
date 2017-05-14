@@ -60,6 +60,8 @@ class _E1547HomeState extends State<E1547Home> {
   // If we're currently offline, meaning a request has failed.
   bool _offline = false;
 
+  TextEditingController _hostController = new TextEditingController(text: _e1547.host);
+
   @override
   void initState() {
     super.initState();
@@ -127,7 +129,7 @@ class _E1547HomeState extends State<E1547Home> {
 
   Widget _buildHostField() {
     return new TextField(
-      controller: new TextEditingController(text: _e1547.host),
+      controller: _hostController..text = _e1547.host,
       onSubmitted: (String h) {
         _log.info("new host value: $h");
         _e1547.host = h;
@@ -180,10 +182,7 @@ class _SearchFab extends StatelessWidget {
         onPressed: () {
           Scaffold.of(context).showBottomSheet((context) => new TextField(
                 autofocus: true,
-                controller: controller
-                  ..selection = new TextSelection(
-                      baseOffset: controller.value.text.length,
-                      extentOffset: controller.value.text.length),
+                controller: controller,
                 onSubmitted: onSearch,
               ));
         },
