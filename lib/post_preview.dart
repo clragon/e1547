@@ -43,7 +43,7 @@ class PostPreview extends StatelessWidget {
       c = Colors.red;
     }
 
-    return new Text(scoreString, style: new TextStyle(color: c));
+    return new Text("score: $scoreString", style: new TextStyle(color: c));
   }
 
   Widget _buildSafetyRating() {
@@ -53,7 +53,7 @@ class PostPreview extends StatelessWidget {
       "Q": Colors.yellow,
     };
 
-    return new Text(post.rating,
+    return new Text("rating: ${post.rating}",
         style: new TextStyle(color: colors[post.rating]));
   }
 
@@ -68,16 +68,21 @@ class PostPreview extends StatelessWidget {
             },
           ));
         },
-        child: new Image.network(post.sample_url,
-            width: post.sample_width.toDouble(),
-            height: post.sample_height.toDouble(),
-            fit: BoxFit.cover));
+        child: new LayoutBuilder(
+            builder: (context, constraints) => new Image.network(
+                post.sample_url,
+                // Make the image width as large as possible with the card.
+                width: constraints.maxWidth,
+                // Make the height so that it keeps the original aspect ratio.
+                height: constraints.maxWidth *
+                    (post.sample_height / post.sample_width),
+                fit: BoxFit.cover)));
   }
 
   Widget _buildPostInfo(BuildContext context) {
     return new Row(children: <Widget>[
-      _buildScore(),
-      _buildSafetyRating(),
+      new Expanded(child: _buildScore()),
+      new Expanded(child: _buildSafetyRating()),
     ]);
   }
 
