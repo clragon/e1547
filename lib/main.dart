@@ -16,7 +16,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter/services.dart';
 
 import 'package:logging/logging.dart' show Level, Logger, LogRecord;
 
@@ -60,7 +59,8 @@ class _E1547HomeState extends State<E1547Home> {
   // If we're currently offline, meaning a request has failed.
   bool _offline = false;
 
-  TextEditingController _hostController = new TextEditingController(text: _e1547.host);
+  TextEditingController _hostController =
+      new TextEditingController(text: _e1547.host);
 
   @override
   void initState() {
