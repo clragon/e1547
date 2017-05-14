@@ -82,7 +82,8 @@ class _E1547HomeState extends State<E1547Home> {
     _offline = false; // Let's be optimistic. Doesn't update UI until setState()
     try {
       _e1547.host = await getHost() ?? DEFAULT_ENDPOINT;
-      List newPosts = await _e1547.posts(await getTags() ?? _tags, _page);
+      _tags = await getTags() ?? _tags;
+      List newPosts = await _e1547.posts(_tags, _page);
       setState(() {
         _posts.addAll(newPosts);
       });
