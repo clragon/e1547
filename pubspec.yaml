@@ -8,6 +8,7 @@ dependencies:
   # Flutter
   logging: any
   vector_math: any
+  shared_preferences: any
   url_launcher: any
 
   flutter:

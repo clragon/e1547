@@ -20,13 +20,14 @@ import 'package:flutter/rendering.dart';
 import 'package:logging/logging.dart' show Level, Logger, LogRecord;
 
 import 'post_preview.dart';
+import 'persistence.dart' show getHost, setHost;
 import 'vars.dart';
 
 import 'src/e1547/e1547.dart';
 
 final Logger _log = new Logger('main');
 
-E1547Client _e1547 = new E1547Client()..host = DEFAULT_ENDPOINT;
+E1547Client _e1547 = new E1547Client();
 
 void main() {
   Logger.root.level = Level.ALL;
@@ -79,6 +80,7 @@ class _E1547HomeState extends State<E1547Home> {
   _loadNextPage() async {
     _offline = false; // Let's be optimistic. Doesn't update UI until setState()
     try {
+      _e1547.host = await getHost() ?? DEFAULT_ENDPOINT;
       List newPosts = await _e1547.posts(_tags, _page);
       setState(() {
         _posts.addAll(newPosts);
@@ -134,6 +136,7 @@ class _E1547HomeState extends State<E1547Home> {
         _log.info("new host value: $h");
         _e1547.host = h;
         _onSearch(_tags);
+        setHost(h);
       },
     );
   }
