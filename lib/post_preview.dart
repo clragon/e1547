@@ -68,7 +68,10 @@ class PostPreview extends StatelessWidget {
             },
           ));
         },
-        child: new Image.network(post.sample_url, fit: BoxFit.cover));
+        child: new Image.network(post.sample_url,
+            width: post.sample_width.toDouble(),
+            height: post.sample_height.toDouble(),
+            fit: BoxFit.cover));
   }
 
   Widget _buildPostInfo(BuildContext context) {

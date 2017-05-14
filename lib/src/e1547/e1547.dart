@@ -81,6 +81,8 @@ class Post {
   String file_url;
   String file_ext;
   String sample_url;
+  int sample_width;
+  int sample_height;
   String rating;
 
   Post.fromRaw(Map raw, String host) {
@@ -93,6 +95,9 @@ class Post {
     file_url = raw['file_url'];
     file_ext = raw['file_ext'];
     sample_url = raw['sample_url'];
+    sample_width = raw['sample_width'];
+    sample_height = raw['sample_height'];
+
     rating = raw['rating'].toUpperCase();
   }
 }
