@@ -131,16 +131,32 @@ class _E1547HomeState extends State<E1547Home> {
     return new AppBar(title: new Text(APP_NAME), actions: widgets);
   }
 
-  Widget _buildHostField() {
-    return new TextField(
-      controller: _hostController..text = _e1547.host,
-      onSubmitted: (String h) {
-        _log.info("new host value: $h");
-        _e1547.host = h;
-        _onSearch(_tags);
-        setHost(h);
-      },
-    );
+  _onNewHost(BuildContext context, String host) {
+    _log.info("new host value: $host");
+    _e1547.host = host;
+    _onSearch(_tags);
+    setHost(host);
+    Navigator.of(context).pop();
+  }
+
+  Widget _buildHostField(BuildContext context) {
+    return new Column(children: <Widget>[
+      new TextField(
+        autofocus: true,
+        controller: _hostController
+          ..text = _e1547.host
+          ..selection = new TextSelection(
+              baseOffset: 0,
+              extentOffset: _hostController.value.text.indexOf('.')),
+        onSubmitted: (h) => _onNewHost(context, h),
+      ),
+      new Align(
+          alignment: FractionalOffset.topRight,
+          child: new RaisedButton(
+            child: new Text("save"),
+            onPressed: () => _onNewHost(context, _hostController.value.text),
+          )),
+    ]);
   }
 
   @override
@@ -154,7 +170,7 @@ class _E1547HomeState extends State<E1547Home> {
             // TODO: account name and email
             accountName: new Text("<username>"),
             accountEmail: new Text("<email>")),
-        _buildHostField(),
+        _buildHostField(context),
         new Divider(),
         new ListTile(
             leading: const Icon(Icons.settings),
@@ -203,7 +219,8 @@ class _TagEntryPage extends StatelessWidget {
               ),
               new RaisedButton(
                 child: new Text("save"),
-                onPressed: () => Navigator.of(context).pop(_controller.value.text),
+                onPressed: () =>
+                    Navigator.of(context).pop(_controller.value.text),
               ),
             ],
           ),
