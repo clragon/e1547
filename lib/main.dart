@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
+import 'dart:async' show Future;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/rendering.dart';
@@ -59,9 +61,6 @@ class _E1547HomeState extends State<E1547Home> {
 
   // If we're currently offline, meaning a request has failed.
   bool _offline = false;
-
-  TextEditingController _hostController =
-      new TextEditingController(text: _e1547.host);
 
   @override
   void initState() {
@@ -131,32 +130,6 @@ class _E1547HomeState extends State<E1547Home> {
     return new AppBar(title: new Text(APP_NAME), actions: widgets);
   }
 
-  _onNewHost(BuildContext context, String host) {
-    _log.info("new host value: $host");
-    _e1547.host = host;
-    _onSearch(_tags);
-    setHost(host);
-    Navigator.of(context).pop();
-  }
-
-  Widget _buildHostField(BuildContext context) {
-    return new Row(children: <Widget>[
-      new Expanded(
-          child: new TextField(
-              autofocus: true,
-              controller: _hostController
-                ..text = _e1547.host
-                ..selection = new TextSelection(
-                    baseOffset: 0,
-                    extentOffset: _hostController.value.text.indexOf('.')),
-              onSubmitted: (h) => _onNewHost(context, h))),
-      new RaisedButton(
-        child: new Text("save"),
-        onPressed: () => _onNewHost(context, _hostController.value.text),
-      ),
-    ]);
-  }
-
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
@@ -168,12 +141,15 @@ class _E1547HomeState extends State<E1547Home> {
             // TODO: account name and email
             accountName: new Text("<username>"),
             accountEmail: new Text("<email>")),
-        _buildHostField(context),
-        new Divider(),
         new ListTile(
             leading: const Icon(Icons.settings),
             title: new Text('Settings'),
-            onTap: () => _log.info('Tapped Settings')),
+            onTap: () {
+              Navigator.of(context)
+                ..pop()
+                ..push(new MaterialPageRoute<Null>(
+                  builder: (context) => new _SettingsPage()));
+            }),
         new AboutListTile(icon: const Icon(Icons.help)),
       ])),
       floatingActionButton: new FloatingActionButton(
@@ -207,8 +183,7 @@ class _TagEntryPageState extends State<_TagEntryPage> {
   Widget build(BuildContext context) {
     _controller ??= new TextEditingController(text: widget.tags)
       ..selection = new TextSelection(
-          baseOffset: widget.tags.length,
-          extentOffset: widget.tags.length);
+          baseOffset: widget.tags.length, extentOffset: widget.tags.length);
 
     return new Scaffold(
         appBar: new AppBar(title: new Text("tags")),
@@ -233,5 +208,53 @@ class _TagEntryPageState extends State<_TagEntryPage> {
                 ],
               ),
             ])));
+  }
+}
+
+class _SettingsPage extends StatefulWidget {
+  @override
+  _SettingsPageState createState() => new _SettingsPageState();
+}
+
+class _SettingsPageState extends State<_SettingsPage> {
+  Future<String> _initialHost = getHost();
+
+  TextEditingController _hostController;
+
+  Widget _buildAppBar(BuildContext context) =>
+      new AppBar(title: new Text("Settings"), actions: <Widget>[
+        new IconButton(
+            icon: const Icon(Icons.check),
+            tooltip: "Save changes",
+            onPressed: () async {
+              setHost((await _hostController).value.text);
+              Navigator.of(context).pop();
+            })
+      ]);
+
+  Widget _buildBody(BuildContext context) {
+    _initialHost.then((String host) {
+      if (host == null) {
+        host = DEFAULT_ENDPOINT;
+      }
+      setState(() {
+        _hostController ??= new TextEditingController(text: host)
+          ..selection = new TextSelection(
+              baseOffset: 0, extentOffset: host.indexOf('.'));
+      });
+    });
+    return new Container(
+        padding: new EdgeInsets.all(10.0),
+        child: _hostController == null
+            ? new Container()
+            : new TextField(autofocus: true, controller: _hostController));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return new Scaffold(
+      appBar: _buildAppBar(context),
+      body: _buildBody(context),
+    );
   }
 }
