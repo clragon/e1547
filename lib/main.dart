@@ -192,13 +192,24 @@ class _E1547HomeState extends State<E1547Home> {
   }
 }
 
-class _TagEntryPage extends StatelessWidget {
-  final TextEditingController _controller;
-  _TagEntryPage(String tags)
-      : _controller = new TextEditingController(text: tags);
+class _TagEntryPage extends StatefulWidget {
+  final String tags;
+  _TagEntryPage(this.tags);
+
+  @override
+  _TagEntryPageState createState() => new _TagEntryPageState();
+}
+
+class _TagEntryPageState extends State<_TagEntryPage> {
+  TextEditingController _controller;
 
   @override
   Widget build(BuildContext context) {
+    _controller ??= new TextEditingController(text: widget.tags)
+      ..selection = new TextSelection(
+          baseOffset: widget.tags.length,
+          extentOffset: widget.tags.length);
+
     return new Scaffold(
         appBar: new AppBar(title: new Text("tags")),
         body: new Container(
@@ -206,10 +217,7 @@ class _TagEntryPage extends StatelessWidget {
             child: new Column(children: <Widget>[
               new TextField(
                   autofocus: true,
-                  controller: _controller
-                    ..selection = new TextSelection(
-                        baseOffset: _controller.value.text.length,
-                        extentOffset: _controller.value.text.length),
+                  controller: _controller,
                   onSubmitted: (t) => Navigator.of(context).pop(t)),
               new Row(
                 children: <Widget>[
