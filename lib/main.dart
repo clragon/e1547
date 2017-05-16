@@ -15,7 +15,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart' show FractionalOffset;
+import 'package:flutter/painting.dart';
 import 'package:flutter/rendering.dart';
 
 import 'package:logging/logging.dart' show Level, Logger, LogRecord;
@@ -140,22 +140,20 @@ class _E1547HomeState extends State<E1547Home> {
   }
 
   Widget _buildHostField(BuildContext context) {
-    return new Column(children: <Widget>[
-      new TextField(
-        autofocus: true,
-        controller: _hostController
-          ..text = _e1547.host
-          ..selection = new TextSelection(
-              baseOffset: 0,
-              extentOffset: _hostController.value.text.indexOf('.')),
-        onSubmitted: (h) => _onNewHost(context, h),
+    return new Row(children: <Widget>[
+      new Expanded(
+          child: new TextField(
+              autofocus: true,
+              controller: _hostController
+                ..text = _e1547.host
+                ..selection = new TextSelection(
+                    baseOffset: 0,
+                    extentOffset: _hostController.value.text.indexOf('.')),
+              onSubmitted: (h) => _onNewHost(context, h))),
+      new RaisedButton(
+        child: new Text("save"),
+        onPressed: () => _onNewHost(context, _hostController.value.text),
       ),
-      new Align(
-          alignment: FractionalOffset.topRight,
-          child: new RaisedButton(
-            child: new Text("save"),
-            onPressed: () => _onNewHost(context, _hostController.value.text),
-          )),
     ]);
   }
 
@@ -203,27 +201,29 @@ class _TagEntryPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return new Scaffold(
         appBar: new AppBar(title: new Text("tags")),
-        body: new Column(children: <Widget>[
-          new TextField(
-              autofocus: true,
-              controller: _controller
-                ..selection = new TextSelection(
-                    baseOffset: _controller.value.text.length,
-                    extentOffset: _controller.value.text.length),
-              onSubmitted: (t) => Navigator.of(context).pop(t)),
-          new Row(
-            children: <Widget>[
-              new FlatButton(
-                child: new Text("cancel"),
-                onPressed: () => Navigator.of(context).pop(),
+        body: new Container(
+            padding: new EdgeInsets.all(10.0),
+            child: new Column(children: <Widget>[
+              new TextField(
+                  autofocus: true,
+                  controller: _controller
+                    ..selection = new TextSelection(
+                        baseOffset: _controller.value.text.length,
+                        extentOffset: _controller.value.text.length),
+                  onSubmitted: (t) => Navigator.of(context).pop(t)),
+              new Row(
+                children: <Widget>[
+                  new FlatButton(
+                    child: new Text("cancel"),
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
+                  new RaisedButton(
+                    child: new Text("save"),
+                    onPressed: () =>
+                        Navigator.of(context).pop(_controller.value.text),
+                  ),
+                ],
               ),
-              new RaisedButton(
-                child: new Text("save"),
-                onPressed: () =>
-                    Navigator.of(context).pop(_controller.value.text),
-              ),
-            ],
-          ),
-        ]));
+            ])));
   }
 }
