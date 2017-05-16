@@ -192,6 +192,7 @@ class _TagEntryPageState extends State<_TagEntryPage> {
             child: new Column(children: <Widget>[
               new TextField(
                   autofocus: true,
+                  maxLines: 50,
                   controller: _controller,
                   onSubmitted: (t) => Navigator.of(context).pop(t)),
               new Row(
