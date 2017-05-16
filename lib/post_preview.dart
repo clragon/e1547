@@ -57,6 +57,10 @@ class PostPreview extends StatelessWidget {
         style: new TextStyle(color: colors[post.rating]));
   }
 
+  Widget _buildArtists() {
+    return new Text(post.artist.join('+'));
+  }
+
   Widget _buildImagePreview(BuildContext context) {
     return new GestureDetector(
         onTap: () {
@@ -83,6 +87,7 @@ class PostPreview extends StatelessWidget {
     return new Row(children: <Widget>[
       new Expanded(child: _buildScore()),
       new Expanded(child: _buildSafetyRating()),
+      new Expanded(child: _buildArtists()),
     ]);
   }
 

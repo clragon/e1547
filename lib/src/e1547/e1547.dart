@@ -84,6 +84,7 @@ class Post {
   int sample_width;
   int sample_height;
   String rating;
+  List<String> artist;
 
   Post.fromRaw(Map raw, String host) {
     this.raw = raw;
@@ -99,5 +100,7 @@ class Post {
     sample_height = raw['sample_height'];
 
     rating = raw['rating'].toUpperCase();
+
+    artist = raw['artist'];
   }
 }
