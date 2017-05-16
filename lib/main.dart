@@ -15,6 +15,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart' show FractionalOffset;
 import 'package:flutter/rendering.dart';
 
 import 'package:logging/logging.dart' show Level, Logger, LogRecord;
@@ -38,7 +39,6 @@ void main() {
   runApp(new MaterialApp(
     title: APP_NAME,
     theme: new ThemeData.dark(),
-    routes: <String, WidgetBuilder>{},
     home: new E1547Home(),
   ));
 }
@@ -162,35 +162,51 @@ class _E1547HomeState extends State<E1547Home> {
             onTap: () => _log.info('Tapped Settings')),
         new AboutListTile(icon: const Icon(Icons.help)),
       ])),
-      floatingActionButton: new _SearchFab(
-        onSearch: _onSearch,
-        controller: new TextEditingController(text: _tags),
-      ),
+      floatingActionButton: new FloatingActionButton(
+          child: const Icon(Icons.search),
+          onPressed: () => Navigator
+                  .of(context)
+                  .push(new MaterialPageRoute<String>(
+                      builder: (context) => new _TagEntryPage(_tags)))
+                  .then((t) {
+                _log.fine("edited tags: '$t'");
+                if (t != null && t != _tags) {
+                  _onSearch(t);
+                }
+              }).catchError((e) => _log.warning(e))),
     );
   }
 }
 
-class _SearchFab extends StatelessWidget {
-  _SearchFab({
-    Key key,
-    this.onSearch,
-    this.controller,
-  })
-      : super(key: key);
-
-  final ValueChanged<String> onSearch;
-  final TextEditingController controller;
+class _TagEntryPage extends StatelessWidget {
+  final TextEditingController _controller;
+  _TagEntryPage(String tags)
+      : _controller = new TextEditingController(text: tags);
 
   @override
   Widget build(BuildContext context) {
-    return new FloatingActionButton(
-        onPressed: () {
-          Scaffold.of(context).showBottomSheet((context) => new TextField(
-                autofocus: true,
-                controller: controller,
-                onSubmitted: onSearch,
-              ));
-        },
-        child: const Icon(Icons.search));
+    return new Scaffold(
+        appBar: new AppBar(title: new Text("tags")),
+        body: new Column(children: <Widget>[
+          new TextField(
+              autofocus: true,
+              controller: _controller
+                ..selection = new TextSelection(
+                    baseOffset: _controller.value.text.length,
+                    extentOffset: _controller.value.text.length),
+              onSubmitted: (t) => Navigator.of(context).pop(t)),
+          new Row(
+            children: <Widget>[
+              new FlatButton(
+                child: new Text("cancel"),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+              new RaisedButton(
+                child: new Text("save"),
+                onPressed: () => Navigator.of(context).pop(_controller.value.text),
+              ),
+            ],
+          ),
+        ]));
   }
 }
