@@ -115,8 +115,9 @@ class _E1547HomeState extends State<E1547Home> {
     return index;
   }
 
-  AppBar _buildAppBar() {
+  AppBar _buildAppBar(BuildContext context) {
     List<Widget> widgets = [];
+
     widgets.add(_offline
         ? new IconButton(
             icon: const Icon(Icons.cloud_off),
@@ -127,13 +128,33 @@ class _E1547HomeState extends State<E1547Home> {
             tooltip: "Refresh",
             onPressed: () => _onSearch(_tags)));
 
+    widgets.add(new PopupMenuButton<String>(
+        child: const IconButton(
+            icon: const Icon(Icons.sort), disabledColor: Colors.white),
+        itemBuilder: (context) => <PopupMenuEntry<String>>[
+              const PopupMenuItem(child: const Text("New"), value: ""),
+              const PopupMenuItem(
+                  child: const Text("Score"), value: "order:score"),
+              const PopupMenuItem(
+                  child: const Text("Favorites"), value: "order:favcount")
+            ],
+        onSelected: (String orderTag) {
+          _tags = (orderTag +
+                  ' ' +
+                  // Strip out all order:* tags
+                  _tags.replaceAll(new RegExp(r'order:\w+\b'), ""))
+              .trimLeft();
+
+          _onSearch(_tags);
+        }));
+
     return new AppBar(title: new Text(APP_NAME), actions: widgets);
   }
 
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      appBar: _buildAppBar(),
+      appBar: _buildAppBar(context),
       body: _body(),
       drawer: new Drawer(
           child: new ListView(children: [
@@ -148,7 +169,7 @@ class _E1547HomeState extends State<E1547Home> {
               Navigator.of(context)
                 ..pop()
                 ..push(new MaterialPageRoute<Null>(
-                  builder: (context) => new _SettingsPage()));
+                    builder: (context) => new _SettingsPage()));
             }),
         new AboutListTile(icon: const Icon(Icons.help)),
       ])),
@@ -240,8 +261,8 @@ class _SettingsPageState extends State<_SettingsPage> {
       }
       setState(() {
         _hostController ??= new TextEditingController(text: host)
-          ..selection = new TextSelection(
-              baseOffset: 0, extentOffset: host.indexOf('.'));
+          ..selection =
+              new TextSelection(baseOffset: 0, extentOffset: host.indexOf('.'));
       });
     });
     return new Container(
