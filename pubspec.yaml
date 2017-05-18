@@ -3,6 +3,7 @@ description: A new flutter project.
 
 dependencies:
   # Mine
+  fullscreen_mode: any
   zoomable_image: any
 
   # Flutter

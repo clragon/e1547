@@ -20,26 +20,34 @@ import 'dart:ui' show Color;
 import 'package:flutter/material.dart';
 
 import 'package:logging/logging.dart' show Logger;
+import 'package:fullscreen_mode/fullscreen_mode.dart' show FullscreenMode;
 import 'package:url_launcher/url_launcher.dart' as url show launch;
 import 'package:zoomable_image/zoomable_image.dart' show ZoomableImage;
 
 import 'src/e1547/e1547.dart' show Post;
 
 // Preview of a post that appears in lists of posts. Mostly just the image.
-class PostPreview extends StatelessWidget {
-  static final Logger _log = new Logger("PostPreview");
-
+class PostPreview extends StatefulWidget {
   PostPreview(this.post, {Key key}) : super(key: key);
 
   final Post post;
 
+  @override
+  PostPreviewState createState() => new PostPreviewState();
+}
+
+class PostPreviewState extends State<PostPreview> {
+  static final Logger _log = new Logger("PostPreview");
+
+  bool _isFullscreen = false;
+
   Widget _buildScore() {
-    String scoreString = post.score.toString();
+    String scoreString = widget.post.score.toString();
     Color c;
-    if (post.score > 0) {
+    if (widget.post.score > 0) {
       scoreString = '+' + scoreString;
       c = Colors.green;
-    } else if (post.score < 0) {
+    } else if (widget.post.score < 0) {
       c = Colors.red;
     }
 
@@ -53,33 +61,41 @@ class PostPreview extends StatelessWidget {
       "Q": Colors.yellow,
     };
 
-    return new Text("rating: ${post.rating}",
-        style: new TextStyle(color: colors[post.rating]));
+    return new Text("rating: ${widget.post.rating}",
+        style: new TextStyle(color: colors[widget.post.rating]));
   }
 
   Widget _buildArtists() {
-    return new Text(post.artist.join('+'));
+    return new Text(widget.post.artist.join('+'));
   }
 
   Widget _buildImagePreview(BuildContext context) {
     return new GestureDetector(
         onTap: () {
-          _log.fine("tapped post ${post.id}");
+          _log.fine("tapped post ${widget.post.id}");
           Navigator.of(context).push(new MaterialPageRoute<Null>(
             builder: (context) {
-              return new ZoomableImage(new NetworkImage(post.file_url),
-                  scale: 4.0);
+              return new ZoomableImage(new NetworkImage(widget.post.file_url),
+                  scale: 4.0, onTap: () {
+                _log.fine(_isFullscreen);
+                _isFullscreen = !_isFullscreen;
+                if (_isFullscreen) {
+                  FullscreenMode.setFullscreen();
+                } else {
+                  FullscreenMode.setNormal();
+                }
+              });
             },
           ));
         },
         child: new LayoutBuilder(
             builder: (context, constraints) => new Image.network(
-                post.sample_url,
+                widget.post.sample_url,
                 // Make the image width as large as possible with the card.
                 width: constraints.maxWidth,
                 // Make the height so that it keeps the original aspect ratio.
                 height: constraints.maxWidth *
-                    (post.sample_height / post.sample_width),
+                    (widget.post.sample_height / widget.post.sample_width),
                 fit: BoxFit.cover)));
   }
 
@@ -107,12 +123,12 @@ class PostPreview extends StatelessWidget {
         new IconButton(
             icon: const Icon(Icons.open_in_browser),
             tooltip: "Open in browser",
-            onPressed: () => url.launch(post.url.toString())),
+            onPressed: () => url.launch(widget.post.url.toString())),
         new IconButton(
             icon: const Icon(Icons.more_horiz),
             tooltip: "More options",
-            onPressed: () =>
-                showDialog(context: context, child: new _MoreDialog(post))),
+            onPressed: () => showDialog(
+                context: context, child: new _MoreDialog(widget.post))),
       ],
     ));
   }
