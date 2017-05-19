@@ -69,12 +69,12 @@ class PostPreviewState extends State<PostPreview> {
     return new Text(widget.post.artist.join('+'));
   }
 
-  Widget _buildImagePreview(BuildContext context) {
+  Widget _buildImagePreview(BuildContext ctx) {
     return new GestureDetector(
         onTap: () async {
           _log.fine("tapped post ${widget.post.id}");
-          await Navigator.of(context).push(new MaterialPageRoute<Null>(
-            builder: (context) {
+          await Navigator.of(ctx).push(new MaterialPageRoute<Null>(
+            builder: (ctx) {
               return new ZoomableImage(new NetworkImage(widget.post.file_url),
                   scale: 4.0, onTap: () {
                 _log.fine(_isFullscreen);
@@ -90,7 +90,7 @@ class PostPreviewState extends State<PostPreview> {
           FullscreenMode.setNormal();
         },
         child: new LayoutBuilder(
-            builder: (context, constraints) => new Image.network(
+            builder: (ctx, constraints) => new Image.network(
                 widget.post.sample_url,
                 // Make the image width as large as possible with the card.
                 width: constraints.maxWidth,
@@ -100,7 +100,7 @@ class PostPreviewState extends State<PostPreview> {
                 fit: BoxFit.cover)));
   }
 
-  Widget _buildPostInfo(BuildContext context) {
+  Widget _buildPostInfo(BuildContext ctx) {
     return new Row(children: <Widget>[
       new Expanded(child: _buildScore()),
       new Expanded(child: _buildSafetyRating()),
@@ -108,7 +108,7 @@ class PostPreviewState extends State<PostPreview> {
     ]);
   }
 
-  Widget _buildButtonBar(BuildContext context) {
+  Widget _buildButtonBar(BuildContext ctx) {
     return new ButtonTheme.bar(
         child: new ButtonBar(
       alignment: MainAxisAlignment.spaceAround,
@@ -129,19 +129,19 @@ class PostPreviewState extends State<PostPreview> {
             icon: const Icon(Icons.more_horiz),
             tooltip: "More options",
             onPressed: () => showDialog(
-                context: context, child: new _MoreDialog(widget.post))),
+                context: ctx, child: new _MoreDialog(widget.post))),
       ],
     ));
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext ctx) {
     return new Card(
         child: new Column(
       children: <Widget>[
-        _buildImagePreview(context),
-        _buildPostInfo(context),
-        _buildButtonBar(context),
+        _buildImagePreview(ctx),
+        _buildPostInfo(ctx),
+        _buildButtonBar(ctx),
       ],
     ));
   }
@@ -151,12 +151,12 @@ class _MoreDialog extends StatelessWidget {
   final Post post;
   _MoreDialog(this.post);
 
-  Widget _buildPostInfo(BuildContext context) {
+  Widget _buildPostInfo(BuildContext ctx) {
     return new ListTile(
       leading: const Icon(Icons.info_outline),
       title: new Text("Info"),
       onTap: () => showDialog(
-            context: context,
+            context: ctx,
             child: new SimpleDialog(
               title: new Text("post #${post.id} info"),
               children: <Widget>[
@@ -173,9 +173,9 @@ class _MoreDialog extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext ctx) {
     return new SimpleDialog(
         title: new Text("post #${post.id}"),
-        children: <Widget>[_buildPostInfo(context)]);
+        children: <Widget>[_buildPostInfo(ctx)]);
   }
 }

@@ -115,7 +115,7 @@ class _E1547HomeState extends State<E1547Home> {
     return index;
   }
 
-  AppBar _buildAppBar(BuildContext context) {
+  AppBar _buildAppBar(BuildContext ctx) {
     List<Widget> widgets = [];
 
     widgets.add(_offline
@@ -129,14 +129,16 @@ class _E1547HomeState extends State<E1547Home> {
             onPressed: () => _onSearch(_tags)));
 
     widgets.add(new PopupMenuButton<String>(
-        child: const IconButton(
-            icon: const Icon(Icons.sort), disabledColor: Colors.white),
-        itemBuilder: (context) => <PopupMenuEntry<String>>[
-              const PopupMenuItem(child: const Text("New"), value: ""),
-              const PopupMenuItem(
-                  child: const Text("Score"), value: "order:score"),
-              const PopupMenuItem(
-                  child: const Text("Favorites"), value: "order:favcount")
+        child: new IconButton(
+            icon: const Icon(Icons.sort),
+            disabledColor: Colors.white,
+            onPressed: () {}),
+        itemBuilder: (ctx) => <PopupMenuEntry<String>>[
+              new PopupMenuItem(child: new Text("New"), value: ""),
+              new PopupMenuItem(
+                  child: new Text("Score"), value: "order:score"),
+              new PopupMenuItem(
+                  child: new Text("Favorites"), value: "order:favcount")
             ],
         onSelected: (String orderTag) {
           _tags = (orderTag +
@@ -152,9 +154,9 @@ class _E1547HomeState extends State<E1547Home> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext ctx) {
     return new Scaffold(
-      appBar: _buildAppBar(context),
+      appBar: _buildAppBar(ctx),
       body: _body(),
       drawer: new Drawer(
           child: new ListView(children: [
@@ -166,19 +168,19 @@ class _E1547HomeState extends State<E1547Home> {
             leading: const Icon(Icons.settings),
             title: new Text('Settings'),
             onTap: () {
-              Navigator.of(context)
+              Navigator.of(ctx)
                 ..pop()
                 ..push(new MaterialPageRoute<Null>(
-                    builder: (context) => new _SettingsPage()));
+                    builder: (ctx) => new _SettingsPage()));
             }),
         new AboutListTile(icon: const Icon(Icons.help)),
       ])),
       floatingActionButton: new FloatingActionButton(
           child: const Icon(Icons.search),
           onPressed: () => Navigator
-                  .of(context)
+                  .of(ctx)
                   .push(new MaterialPageRoute<String>(
-                      builder: (context) => new _TagEntryPage(_tags)))
+                      builder: (ctx) => new _TagEntryPage(_tags)))
                   .then((t) {
                 _log.fine("edited tags: '$t'");
                 if (t != null && t != _tags) {
@@ -201,7 +203,7 @@ class _TagEntryPageState extends State<_TagEntryPage> {
   TextEditingController _controller;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext ctx) {
     _controller ??= new TextEditingController(text: widget.tags)
       ..selection = new TextSelection(
           baseOffset: widget.tags.length, extentOffset: widget.tags.length);
@@ -215,17 +217,17 @@ class _TagEntryPageState extends State<_TagEntryPage> {
                   autofocus: true,
                   maxLines: 50,
                   controller: _controller,
-                  onSubmitted: (t) => Navigator.of(context).pop(t)),
+                  onSubmitted: (t) => Navigator.of(ctx).pop(t)),
               new Row(
                 children: <Widget>[
                   new FlatButton(
                     child: new Text("cancel"),
-                    onPressed: () => Navigator.of(context).pop(),
+                    onPressed: () => Navigator.of(ctx).pop(),
                   ),
                   new RaisedButton(
                     child: new Text("save"),
                     onPressed: () =>
-                        Navigator.of(context).pop(_controller.value.text),
+                        Navigator.of(ctx).pop(_controller.value.text),
                   ),
                 ],
               ),
@@ -243,18 +245,18 @@ class _SettingsPageState extends State<_SettingsPage> {
 
   TextEditingController _hostController;
 
-  Widget _buildAppBar(BuildContext context) =>
+  Widget _buildAppBar(BuildContext ctx) =>
       new AppBar(title: new Text("Settings"), actions: <Widget>[
         new IconButton(
             icon: const Icon(Icons.check),
             tooltip: "Save changes",
             onPressed: () async {
               setHost((await _hostController).value.text);
-              Navigator.of(context).pop();
+              Navigator.of(ctx).pop();
             })
       ]);
 
-  Widget _buildBody(BuildContext context) {
+  Widget _buildBody(BuildContext ctx) {
     _initialHost.then((String host) {
       if (host == null) {
         host = DEFAULT_ENDPOINT;
@@ -273,10 +275,10 @@ class _SettingsPageState extends State<_SettingsPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext ctx) {
     return new Scaffold(
-      appBar: _buildAppBar(context),
-      body: _buildBody(context),
+      appBar: _buildAppBar(ctx),
+      body: _buildBody(ctx),
     );
   }
 }
