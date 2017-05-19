@@ -20,13 +20,13 @@ import 'dart:io' show HttpClient, HttpClientRequest, HttpClientResponse;
 
 import 'package:logging/logging.dart' show Logger;
 
-import '../../vars.dart';
+import '../../vars.dart' as vars;
 
-class E1547Client {
+class Client {
   final Logger _log = new Logger("E1547Client");
 
   HttpClient _http = new HttpClient()
-    ..userAgent = "$APP_NAME/$APP_VERSION (perlatus)";
+    ..userAgent = "${vars.APP_NAME}/${vars.APP_VERSION} (perlatus)";
 
   // For example, "e926.net"
   String host;

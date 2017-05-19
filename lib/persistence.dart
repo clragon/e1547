@@ -24,8 +24,8 @@ const _TAGS = "tags";
 
 Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
-Future<String> getHost() async => (await _prefs).getString(_HOST);
-setHost(String host) async => (await _prefs).setString(_HOST, host);
+Future<String> getHost() => _prefs.then((p) => p.getString(_HOST));
+setHost(String host) => _prefs.then((p) => psetString(_HOST, host));
 
-Future<String> getTags() async => (await _prefs).getString(_TAGS);
-setTags(String tags) async => (await _prefs).setString(_TAGS, tags);
+Future<String> getTags() => _prefs.then((p) => p.getString(_TAGS));
+setTags(String tags) => _prefs.then((p) => p.setString(_TAGS, tags));

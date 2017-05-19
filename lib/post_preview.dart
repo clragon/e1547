@@ -21,7 +21,7 @@ import 'package:flutter/material.dart';
 
 import 'package:logging/logging.dart' show Logger;
 import 'package:fullscreen_mode/fullscreen_mode.dart' show FullscreenMode;
-import 'package:url_launcher/url_launcher.dart' as url show launch;
+import 'package:url_launcher/url_launcher.dart' as url;
 import 'package:zoomable_image/zoomable_image.dart' show ZoomableImage;
 
 import 'src/e1547/e1547.dart' show Post;
@@ -73,20 +73,20 @@ class PostPreviewState extends State<PostPreview> {
     return new GestureDetector(
         onTap: () async {
           _log.fine("tapped post ${widget.post.id}");
+
           await Navigator.of(ctx).push(new MaterialPageRoute<Null>(
-            builder: (ctx) {
-              return new ZoomableImage(new NetworkImage(widget.post.file_url),
-                  scale: 4.0, onTap: () {
-                _log.fine(_isFullscreen);
-                _isFullscreen = !_isFullscreen;
-                if (_isFullscreen) {
-                  FullscreenMode.setFullscreen();
-                } else {
-                  FullscreenMode.setNormal();
-                }
-              });
-            },
-          ));
+              builder: (ctx) => new ZoomableImage(
+                      new NetworkImage(widget.post.file_url),
+                      scale: 4.0, onTap: () {
+                    _log.fine(_isFullscreen);
+                    _isFullscreen = !_isFullscreen;
+                    if (_isFullscreen) {
+                      FullscreenMode.setFullscreen();
+                    } else {
+                      FullscreenMode.setNormal();
+                    }
+                  })));
+
           FullscreenMode.setNormal();
         },
         child: new LayoutBuilder(
@@ -128,8 +128,8 @@ class PostPreviewState extends State<PostPreview> {
         new IconButton(
             icon: const Icon(Icons.more_horiz),
             tooltip: "More options",
-            onPressed: () => showDialog(
-                context: ctx, child: new _MoreDialog(widget.post))),
+            onPressed: () =>
+                showDialog(context: ctx, child: new _MoreDialog(widget.post))),
       ],
     ));
   }
