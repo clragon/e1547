@@ -71,9 +71,9 @@ class PostPreviewState extends State<PostPreview> {
 
   Widget _buildImagePreview(BuildContext context) {
     return new GestureDetector(
-        onTap: () {
+        onTap: () async {
           _log.fine("tapped post ${widget.post.id}");
-          Navigator.of(context).push(new MaterialPageRoute<Null>(
+          await Navigator.of(context).push(new MaterialPageRoute<Null>(
             builder: (context) {
               return new ZoomableImage(new NetworkImage(widget.post.file_url),
                   scale: 4.0, onTap: () {
@@ -87,6 +87,7 @@ class PostPreviewState extends State<PostPreview> {
               });
             },
           ));
+          FullscreenMode.setNormal();
         },
         child: new LayoutBuilder(
             builder: (context, constraints) => new Image.network(
