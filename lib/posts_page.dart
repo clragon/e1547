@@ -165,7 +165,9 @@ class _PostsPageState extends State<PostsPage> {
         new UserAccountsDrawerHeader(
             // TODO: account name and email
             accountName: new Text("<username>"),
-            accountEmail: new Text("<email>")),
+            currentAccountPicture: new CircleAvatar(
+              backgroundColor: Colors.brown.shade800,
+              child: new Text('UU'))),
         new ListTile(
             leading: const Icon(Icons.settings),
             title: new Text('Settings'),
