@@ -19,6 +19,7 @@ import 'package:flutter/widgets.dart' as widgets;
 import 'package:logging/logging.dart' show Level, Logger, LogRecord;
 
 import 'posts_page.dart' show PostsPage;
+import 'settings_page.dart' show SettingsPage;
 import 'vars.dart' as vars;
 
 void main() {
@@ -34,8 +35,9 @@ void main() {
   widgets.runApp(new MaterialApp(
       title: vars.APP_NAME,
       theme: new ThemeData.dark(),
+      initialRoute: '/posts',
       routes: <String, widgets.WidgetBuilder>{
-        '/posts': (ctx) => new PostsPage()
-      },
-      initialRoute: '/posts'));
+        '/posts': (ctx) => new PostsPage(),
+        '/settings': (ctx) => new SettingsPage(),
+      }));
 }

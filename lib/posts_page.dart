@@ -14,16 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-import 'dart:async' show Future;
-
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 import 'package:logging/logging.dart' show Logger;
 
-import 'post_preview.dart' show PostPreview;
 import 'persistence.dart' as persistence;
-
+import 'post_preview.dart' show PostPreview;
 import 'vars.dart' as vars;
 
 import 'src/e1547/e1547.dart' show client, Post;
@@ -151,12 +148,7 @@ class _PostsPageState extends State<PostsPage> {
         new ListTile(
             leading: const Icon(Icons.settings),
             title: new Text('Settings'),
-            onTap: () {
-              Navigator.of(ctx)
-                ..pop()
-                ..push(new MaterialPageRoute<Null>(
-                    builder: (ctx) => new _SettingsPage()));
-            }),
+            onTap: () => Navigator.popAndPushNamed(ctx, '/settings')),
         new AboutListTile(icon: const Icon(Icons.help)),
       ])),
       floatingActionButton: new FloatingActionButton(
@@ -216,53 +208,5 @@ class _TagEntryPageState extends State<_TagEntryPage> {
                 ],
               ),
             ])));
-  }
-}
-
-class _SettingsPage extends StatefulWidget {
-  @override
-  _SettingsPageState createState() => new _SettingsPageState();
-}
-
-class _SettingsPageState extends State<_SettingsPage> {
-  Future<String> _initialHost = persistence.getHost();
-
-  TextEditingController _hostController;
-
-  Widget _buildAppBar(BuildContext ctx) =>
-      new AppBar(title: new Text("Settings"), actions: <Widget>[
-        new IconButton(
-            icon: const Icon(Icons.check),
-            tooltip: "Save changes",
-            onPressed: () async {
-              persistence.setHost((await _hostController).value.text);
-              Navigator.of(ctx).pop();
-            })
-      ]);
-
-  Widget _buildBody(BuildContext ctx) {
-    _initialHost.then((String host) {
-      if (host == null) {
-        host = vars.DEFAULT_ENDPOINT;
-      }
-      setState(() {
-        _hostController ??= new TextEditingController(text: host)
-          ..selection =
-              new TextSelection(baseOffset: 0, extentOffset: host.indexOf('.'));
-      });
-    });
-    return new Container(
-        padding: new EdgeInsets.all(10.0),
-        child: _hostController == null
-            ? new Container()
-            : new TextField(autofocus: true, controller: _hostController));
-  }
-
-  @override
-  Widget build(BuildContext ctx) {
-    return new Scaffold(
-      appBar: _buildAppBar(ctx),
-      body: _buildBody(ctx),
-    );
   }
 }
