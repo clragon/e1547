@@ -25,7 +25,7 @@ const _TAGS = "tags";
 Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
 Future<String> getHost() => _prefs.then((p) => p.getString(_HOST));
-setHost(String host) => _prefs.then((p) => psetString(_HOST, host));
+setHost(String host) => _prefs.then((p) => p.setString(_HOST, host));
 
 Future<String> getTags() => _prefs.then((p) => p.getString(_TAGS));
 setTags(String tags) => _prefs.then((p) => p.setString(_TAGS, tags));

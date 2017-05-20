@@ -22,6 +22,8 @@ import 'package:logging/logging.dart' show Logger;
 
 import '../../vars.dart' as vars;
 
+final client = new Client();
+
 class Client {
   final Logger _log = new Logger("E1547Client");
 

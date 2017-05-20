@@ -26,9 +26,7 @@ import 'persistence.dart' as persistence;
 
 import 'vars.dart' as vars;
 
-import 'src/e1547/e1547.dart' as e1547;
-
-e1547.Client _client = new e1547.Client();
+import 'src/e1547/e1547.dart' show client, Post;
 
 const int _STARTING_PAGE = 1; // Pages are 1-indexed
 
@@ -43,7 +41,7 @@ class _PostsPageState extends State<PostsPage> {
   // Current tags being displayed or searched.
   String _tags = "";
   // Current posts being displayed.
-  List<e1547.Post> _posts = [];
+  List<Post> _posts = [];
   int _page = _STARTING_PAGE;
 
   // If we're currently offline, meaning a request has failed.
@@ -67,9 +65,9 @@ class _PostsPageState extends State<PostsPage> {
   _loadNextPage() async {
     _offline = false; // Let's be optimistic. Doesn't update UI until setState()
     try {
-      _client.host = await persistence.getHost() ?? vars.DEFAULT_ENDPOINT;
+      client.host = await persistence.getHost() ?? vars.DEFAULT_ENDPOINT;
       _tags = await persistence.getTags() ?? _tags;
-      List newPosts = await _client.posts(_tags, _page);
+      List newPosts = await client.posts(_tags, _page);
       setState(() {
         _posts.addAll(newPosts);
       });
