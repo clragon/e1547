@@ -47,6 +47,7 @@ class _PostsPageState extends State<PostsPage> {
   @override
   void initState() {
     super.initState();
+
     _log.info("Performing initial search");
     _loadNextPage();
   }
@@ -100,15 +101,20 @@ class _PostsPageState extends State<PostsPage> {
   AppBar _buildAppBar(BuildContext ctx) {
     List<Widget> widgets = [];
 
-    widgets.add(_offline
-        ? new IconButton(
-            icon: const Icon(Icons.cloud_off),
-            tooltip: "Reconnect",
-            onPressed: () => _onSearch(_tags))
-        : new IconButton(
-            icon: const Icon(Icons.refresh),
-            tooltip: "Refresh",
-            onPressed: () => _onSearch(_tags)));
+    // TODO: offline indicator
+
+    widgets.add(new PopupMenuButton<String>(
+        child: new IconButton(
+            icon: const Icon(Icons.view_carousel),
+            disabledColor: Colors.white,
+            onPressed: null),
+        itemBuilder: (ctx) => <PopupMenuEntry<String>>[
+              new PopupMenuItem(child: new Text("Cards"), value: "cards"),
+              new PopupMenuItem(child: new Text("Swipe"), value: "swipe"),
+            ],
+        onSelected: (String viewType) {
+          _log.info("Selected view: $viewType");
+        }));
 
     widgets.add(new PopupMenuButton<String>(
         child: new IconButton(
@@ -129,6 +135,21 @@ class _PostsPageState extends State<PostsPage> {
               .trimLeft();
 
           _onSearch(_tags);
+        }));
+
+    widgets.add(new PopupMenuButton<String>(
+        itemBuilder: (ctx) => <PopupMenuEntry<String>>[
+              new PopupMenuItem(
+                value: 'refresh',
+                child: new Text('Refresh'),
+              )
+            ],
+        onSelected: (String action) {
+          if (action == 'refresh') {
+            _onSearch(_tags);
+          } else {
+            _log.warning("Unknown action type: '$action'");
+          }
         }));
 
     return new AppBar(title: new Text(vars.APP_NAME), actions: widgets);
