@@ -104,10 +104,7 @@ class _PostsPageState extends State<PostsPage> {
     // TODO: offline indicator
 
     widgets.add(new PopupMenuButton<String>(
-        child: new IconButton(
-            icon: const Icon(Icons.view_carousel),
-            disabledColor: Colors.white,
-            onPressed: null),
+        child: const Icon(Icons.view_carousel),
         itemBuilder: (ctx) => <PopupMenuEntry<String>>[
               new PopupMenuItem(child: new Text("Cards"), value: "cards"),
               new PopupMenuItem(child: new Text("Swipe"), value: "swipe"),
@@ -117,10 +114,7 @@ class _PostsPageState extends State<PostsPage> {
         }));
 
     widgets.add(new PopupMenuButton<String>(
-        child: new IconButton(
-            icon: const Icon(Icons.sort),
-            disabledColor: Colors.white,
-            onPressed: null),
+        child:  const Icon(Icons.sort),
         itemBuilder: (ctx) => <PopupMenuEntry<String>>[
               new PopupMenuItem(child: new Text("New"), value: ""),
               new PopupMenuItem(child: new Text("Score"), value: "order:score"),
