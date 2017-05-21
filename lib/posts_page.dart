@@ -105,6 +105,7 @@ class _PostsPageState extends State<PostsPage> {
 
     widgets.add(new PopupMenuButton<String>(
         icon: const Icon(Icons.view_carousel),
+        tooltip: 'Change view',
         itemBuilder: (ctx) => <PopupMenuEntry<String>>[
               new PopupMenuItem(child: new Text('Cards'), value: 'cards'),
               new PopupMenuItem(child: new Text('Swipe'), value: 'swipe'),
@@ -115,6 +116,7 @@ class _PostsPageState extends State<PostsPage> {
 
     widgets.add(new PopupMenuButton<String>(
         icon: const Icon(Icons.filter_list),
+        tooltip: 'Filter by',
         itemBuilder: (ctx) => <PopupMenuEntry<String>>[
               new PopupMenuItem(child: new Text('Score'), value: 'score'),
               new PopupMenuItem(
@@ -127,6 +129,7 @@ class _PostsPageState extends State<PostsPage> {
 
     widgets.add(new PopupMenuButton<String>(
         icon: const Icon(Icons.sort),
+        tooltip: 'Sort by',
         itemBuilder: (ctx) => <PopupMenuEntry<String>>[
               new PopupMenuItem(child: new Text('New'), value: ''),
               new PopupMenuItem(child: new Text('Score'), value: 'order:score'),
@@ -145,6 +148,7 @@ class _PostsPageState extends State<PostsPage> {
         }));
 
     widgets.add(new PopupMenuButton<String>(
+        tooltip: 'More actions',
         itemBuilder: (ctx) => <PopupMenuEntry<String>>[
               new PopupMenuItem(
                 value: 'refresh',
