@@ -36,7 +36,7 @@ class _PostsPageState extends State<PostsPage> {
   final Logger _log = new Logger('PostsPage');
 
   // Current tags being displayed or searched.
-  String _tags = "";
+  String _tags = '';
   // Current posts being displayed.
   List<Post> _posts = [];
   int _page = _STARTING_PAGE;
@@ -48,7 +48,7 @@ class _PostsPageState extends State<PostsPage> {
   void initState() {
     super.initState();
 
-    _log.info("Performing initial search");
+    _log.info('Performing initial search');
     _loadNextPage();
   }
 
@@ -71,7 +71,7 @@ class _PostsPageState extends State<PostsPage> {
       });
       _page++;
     } catch (e) {
-      _log.info("Going offline: $e", e);
+      _log.info('Going offline: $e', e);
       setState(() {
         _offline = true;
       });
@@ -81,12 +81,12 @@ class _PostsPageState extends State<PostsPage> {
   Widget _body() {
     var index = new ListView.builder(
       itemBuilder: (ctx, i) {
-        _log.fine("loading post $i");
+        _log.fine('loading post $i');
         if (i < _posts.length) {
           return new PostPreview(_posts[i]);
         } else if (i == _posts.length) {
           return new RaisedButton(
-            child: new Text("load more"),
+            child: new Text('load more'),
             onPressed: _loadNextPage,
           );
         } else {
@@ -106,39 +106,39 @@ class _PostsPageState extends State<PostsPage> {
     widgets.add(new PopupMenuButton<String>(
         child: const Icon(Icons.view_carousel),
         itemBuilder: (ctx) => <PopupMenuEntry<String>>[
-              new PopupMenuItem(child: new Text("Cards"), value: "cards"),
-              new PopupMenuItem(child: new Text("Swipe"), value: "swipe"),
+              new PopupMenuItem(child: new Text('Cards'), value: 'cards'),
+              new PopupMenuItem(child: new Text('Swipe'), value: 'swipe'),
             ],
         onSelected: (String viewType) {
-          _log.info("Selected view: $viewType");
+          _log.info('Selected view: $viewType');
         }));
 
     widgets.add(new PopupMenuButton<String>(
         child: const Icon(Icons.filter_list),
         itemBuilder: (ctx) => <PopupMenuEntry<String>>[
-              new PopupMenuItem(child: new Text("Score"), value: 'score'),
+              new PopupMenuItem(child: new Text('Score'), value: 'score'),
               new PopupMenuItem(
-                  child: new Text("Favorites"), value: 'favorites'),
-              new PopupMenuItem(child: new Text("Views"), value: 'views'),
+                  child: new Text('Favorites'), value: 'favorites'),
+              new PopupMenuItem(child: new Text('Views'), value: 'views'),
             ],
         onSelected: (String filterType) {
-          _log.info("filter type: $filterType");
+          _log.info('filter type: $filterType');
         }));
 
     widgets.add(new PopupMenuButton<String>(
         child: const Icon(Icons.sort),
         itemBuilder: (ctx) => <PopupMenuEntry<String>>[
-              new PopupMenuItem(child: new Text("New"), value: ""),
-              new PopupMenuItem(child: new Text("Score"), value: "order:score"),
+              new PopupMenuItem(child: new Text('New'), value: ''),
+              new PopupMenuItem(child: new Text('Score'), value: 'order:score'),
               new PopupMenuItem(
-                  child: new Text("Favorites"), value: "order:favcount"),
-              new PopupMenuItem(child: new Text("Views"), value: "order:views"),
+                  child: new Text('Favorites'), value: 'order:favcount'),
+              new PopupMenuItem(child: new Text('Views'), value: 'order:views'),
             ],
         onSelected: (String orderTag) {
           _tags = (orderTag +
                   ' ' +
                   // Strip out all order:* tags
-                  _tags.replaceAll(new RegExp(r'order:\w+\b'), ""))
+                  _tags.replaceAll(new RegExp(r'order:\w+\b'), ''))
               .trimLeft();
 
           _onSearch(_tags);
@@ -155,7 +155,7 @@ class _PostsPageState extends State<PostsPage> {
           if (action == 'refresh') {
             _onSearch(_tags);
           } else {
-            _log.warning("Unknown action type: '$action'");
+            _log.warning('Unknown action type: "$action"');
           }
         }));
 
@@ -171,7 +171,7 @@ class _PostsPageState extends State<PostsPage> {
           child: new ListView(children: [
         new UserAccountsDrawerHeader(
             // TODO: account name and email
-            accountName: new Text("<username>"),
+            accountName: new Text('<username>'),
             currentAccountPicture: new CircleAvatar(
                 backgroundColor: Colors.brown.shade800, child: new Text('UU'))),
         new ListTile(
@@ -187,7 +187,7 @@ class _PostsPageState extends State<PostsPage> {
                   .push(new MaterialPageRoute<String>(
                       builder: (ctx) => new _TagEntryPage(_tags)))
                   .then((t) {
-                _log.fine("edited tags: '$t'");
+                _log.fine('edited tags: "$t"');
                 if (t != null && t != _tags) {
                   _onSearch(t);
                 }
@@ -214,7 +214,7 @@ class _TagEntryPageState extends State<_TagEntryPage> {
           baseOffset: widget.tags.length, extentOffset: widget.tags.length);
 
     return new Scaffold(
-        appBar: new AppBar(title: new Text("tags")),
+        appBar: new AppBar(title: new Text('tags')),
         body: new Container(
             padding: new EdgeInsets.all(10.0),
             child: new Column(children: <Widget>[
@@ -226,11 +226,11 @@ class _TagEntryPageState extends State<_TagEntryPage> {
               new Row(
                 children: <Widget>[
                   new FlatButton(
-                    child: new Text("cancel"),
+                    child: new Text('cancel'),
                     onPressed: () => Navigator.of(ctx).pop(),
                   ),
                   new RaisedButton(
-                    child: new Text("save"),
+                    child: new Text('save'),
                     onPressed: () =>
                         Navigator.of(ctx).pop(_controller.value.text),
                   ),

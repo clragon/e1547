@@ -25,16 +25,16 @@ import '../../vars.dart' as vars;
 final client = new Client();
 
 class Client {
-  final Logger _log = new Logger("E1547Client");
+  final Logger _log = new Logger('E1547Client');
 
   HttpClient _http = new HttpClient()
-    ..userAgent = "${vars.APP_NAME}/${vars.APP_VERSION} (perlatus)";
+    ..userAgent = '${vars.APP_NAME}/${vars.APP_VERSION} (perlatus)';
 
-  // For example, "e926.net"
+  // For example, 'e926.net'
   String host;
 
   Future<List<Post>> posts(String tags, int page) async {
-    _log.info("Requesting posts with tags: '$tags'");
+    _log.info('Requesting posts with tags: "$tags"');
 
     Uri url = new Uri(
       scheme: 'https',
@@ -43,22 +43,22 @@ class Client {
       queryParameters: {'tags': tags, 'page': page.toString()},
     );
 
-    _log.fine("url: $url");
+    _log.fine('url: $url');
 
     HttpClientRequest request = await _http.getUrl(url);
     HttpClientResponse response = await request.close();
     _log.info(
-        "response.statusCode: ${response.statusCode} (${response.reasonPhrase})");
+        'response.statusCode: ${response.statusCode} (${response.reasonPhrase})');
 
     var body = new StringBuffer();
     await response.transform(UTF8.decoder).forEach((s) => body.write(s));
-    _log.fine("response body: $body");
+    _log.fine('response body: $body');
     var rawPosts = JSON.decode(body.toString());
 
     // Remove webm/video and swf/flash posts because we can't display them.
     rawPosts.removeWhere((p) {
       String ext = p['file_ext'];
-      return ext == "webm" || ext == "swf";
+      return ext == 'webm' || ext == 'swf';
     });
 
     List<Post> posts = [];

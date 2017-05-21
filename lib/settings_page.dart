@@ -33,10 +33,10 @@ class SettingsPageState extends State<SettingsPage> {
   TextEditingController _hostController;
 
   Widget _buildAppBar(BuildContext ctx) =>
-      new AppBar(title: new Text("Settings"), actions: <Widget>[
+      new AppBar(title: new Text('Settings'), actions: <Widget>[
         new IconButton(
             icon: const Icon(Icons.check),
-            tooltip: "Save changes",
+            tooltip: 'Save changes',
             onPressed: () async {
               persistence.setHost((await _hostController).value.text);
               Navigator.of(ctx).pop();

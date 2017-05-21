@@ -37,7 +37,7 @@ class PostPreview extends StatefulWidget {
 }
 
 class PostPreviewState extends State<PostPreview> {
-  static final Logger _log = new Logger("PostPreview");
+  static final Logger _log = new Logger('PostPreview');
 
   bool _isFullscreen = false;
 
@@ -51,17 +51,17 @@ class PostPreviewState extends State<PostPreview> {
       c = Colors.red;
     }
 
-    return new Text("score: $scoreString", style: new TextStyle(color: c));
+    return new Text('score: $scoreString', style: new TextStyle(color: c));
   }
 
   Widget _buildSafetyRating() {
     const colors = const <String, Color>{
-      "E": Colors.red,
-      "S": Colors.green,
-      "Q": Colors.yellow,
+      'E': Colors.red,
+      'S': Colors.green,
+      'Q': Colors.yellow,
     };
 
-    return new Text("rating: ${widget.post.rating}",
+    return new Text('rating: ${widget.post.rating}',
         style: new TextStyle(color: colors[widget.post.rating]));
   }
 
@@ -72,7 +72,7 @@ class PostPreviewState extends State<PostPreview> {
   Widget _buildImagePreview(BuildContext ctx) {
     return new GestureDetector(
         onTap: () async {
-          _log.fine("tapped post ${widget.post.id}");
+          _log.fine('tapped post ${widget.post.id}');
 
           await Navigator.of(ctx).push(new MaterialPageRoute<Null>(
               builder: (ctx) => new ZoomableImage(
@@ -115,19 +115,19 @@ class PostPreviewState extends State<PostPreview> {
       children: <Widget>[
         new IconButton(
             icon: const Icon(Icons.favorite),
-            tooltip: "Add post to favorites",
-            onPressed: () => _log.fine("pressed fav")),
+            tooltip: 'Add post to favorites',
+            onPressed: () => _log.fine('pressed fav')),
         new IconButton(
             icon: const Icon(Icons.chat),
-            tooltip: "Go to comments",
-            onPressed: () => _log.fine("pressed chat")),
+            tooltip: 'Go to comments',
+            onPressed: () => _log.fine('pressed chat')),
         new IconButton(
             icon: const Icon(Icons.open_in_browser),
-            tooltip: "Open in browser",
+            tooltip: 'Open in browser',
             onPressed: () => url.launch(widget.post.url.toString())),
         new IconButton(
             icon: const Icon(Icons.more_horiz),
-            tooltip: "More options",
+            tooltip: 'More options',
             onPressed: () =>
                 showDialog(context: ctx, child: new _MoreDialog(widget.post))),
       ],
@@ -154,15 +154,15 @@ class _MoreDialog extends StatelessWidget {
   Widget _buildPostInfo(BuildContext ctx) {
     return new ListTile(
       leading: const Icon(Icons.info_outline),
-      title: new Text("Info"),
+      title: new Text('Info'),
       onTap: () => showDialog(
             context: ctx,
             child: new SimpleDialog(
-              title: new Text("post #${post.id} info"),
+              title: new Text('post #${post.id} info'),
               children: <Widget>[
                 new TextField(
                     maxLines: 10, // TODO: Make this relative to screen size.
-                    style: new TextStyle(fontFamily: "Courier"),
+                    style: new TextStyle(fontFamily: 'Courier'),
                     controller: new TextEditingController(
                         text:
                             new JsonEncoder.withIndent('  ').convert(post.raw)))
@@ -175,7 +175,7 @@ class _MoreDialog extends StatelessWidget {
   @override
   Widget build(BuildContext ctx) {
     return new SimpleDialog(
-        title: new Text("post #${post.id}"),
+        title: new Text('post #${post.id}'),
         children: <Widget>[_buildPostInfo(ctx)]);
   }
 }
