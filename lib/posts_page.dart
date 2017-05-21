@@ -125,6 +125,7 @@ class _PostsPageState extends State<PostsPage> {
             ],
         onSelected: (String filterType) {
           _log.info('filter type: $filterType');
+          showDialog(context: ctx, child: new _RangeDialog(title: filterType));
         }));
 
     widgets.add(new PopupMenuButton<String>(
@@ -241,5 +242,37 @@ class _TagEntryPageState extends State<_TagEntryPage> {
                 ],
               ),
             ])));
+  }
+}
+
+class _RangeDialog extends StatefulWidget {
+  _RangeDialog({this.title, this.value, this.min, this.max});
+
+  final String title;
+  final int value;
+  final int min;
+  final int max;
+
+  @override
+  _RangeDialogState createState() => new _RangeDialogState();
+}
+
+class _RangeDialogState extends State<_RangeDialog> {
+  final Logger _log = new Logger('_RangeDialog');
+
+  double _value = widget.value.asDouble();
+
+  @override
+  Widget build(BuildContext ctx) {
+    return new SimpleDialog(
+        title: new Text('Filter by ${widget.title}'),
+        children: <Widget>[
+          new Slider(min: widget.min.asDouble(), max: widget.max.asDouble(),
+            value: _value,
+            onChanged: (v) {
+              _log.info('${widget.title} filter value: $v');
+              setState(() => _value = v);
+            })
+        ]);
   }
 }
