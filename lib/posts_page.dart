@@ -141,7 +141,7 @@ class _PostsPageState extends State<PostsPage> {
           _tags = (orderTag +
                   ' ' +
                   // Strip out all order:* tags
-                  _tags.replaceAll(new RegExp(r'order:\w+\b'), ''))
+                  _tags.replaceAll(new RegExp(r'order:\w+\b'), '').trim())
               .trimLeft();
 
           _onSearch(_tags);
