@@ -114,12 +114,25 @@ class _PostsPageState extends State<PostsPage> {
         }));
 
     widgets.add(new PopupMenuButton<String>(
-        child:  const Icon(Icons.sort),
+        child: const Icon(Icons.filter_list),
+        itemBuilder: (ctx) => <PopupMenuEntry<String>>[
+              new PopupMenuItem(child: new Text("Score"), value: 'score'),
+              new PopupMenuItem(
+                  child: new Text("Favorites"), value: 'favorites'),
+              new PopupMenuItem(child: new Text("Views"), value: 'views'),
+            ],
+        onSelected: (String filterType) {
+          _log.info("filter type: $filterType");
+        }));
+
+    widgets.add(new PopupMenuButton<String>(
+        child: const Icon(Icons.sort),
         itemBuilder: (ctx) => <PopupMenuEntry<String>>[
               new PopupMenuItem(child: new Text("New"), value: ""),
               new PopupMenuItem(child: new Text("Score"), value: "order:score"),
               new PopupMenuItem(
-                  child: new Text("Favorites"), value: "order:favcount")
+                  child: new Text("Favorites"), value: "order:favcount"),
+              new PopupMenuItem(child: new Text("Views"), value: "order:views"),
             ],
         onSelected: (String orderTag) {
           _tags = (orderTag +
@@ -160,8 +173,7 @@ class _PostsPageState extends State<PostsPage> {
             // TODO: account name and email
             accountName: new Text("<username>"),
             currentAccountPicture: new CircleAvatar(
-              backgroundColor: Colors.brown.shade800,
-              child: new Text('UU'))),
+                backgroundColor: Colors.brown.shade800, child: new Text('UU'))),
         new ListTile(
             leading: const Icon(Icons.settings),
             title: new Text('Settings'),
