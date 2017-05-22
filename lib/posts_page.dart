@@ -125,7 +125,9 @@ class _PostsPageState extends State<PostsPage> {
             ],
         onSelected: (String filterType) {
           _log.info('filter type: $filterType');
-          showDialog(context: ctx, child: new _RangeDialog(title: filterType));
+          showDialog(
+              context: ctx,
+              child: new _RangeDialog(title: filterType, value: 0, max: 500));
         }));
 
     widgets.add(new PopupMenuButton<String>(
@@ -246,11 +248,10 @@ class _TagEntryPageState extends State<_TagEntryPage> {
 }
 
 class _RangeDialog extends StatefulWidget {
-  _RangeDialog({this.title, this.value, this.min, this.max});
+  _RangeDialog({this.title, this.value, this.max});
 
   final String title;
   final int value;
-  final int min;
   final int max;
 
   @override
@@ -260,19 +261,38 @@ class _RangeDialog extends StatefulWidget {
 class _RangeDialogState extends State<_RangeDialog> {
   final Logger _log = new Logger('_RangeDialog');
 
-  double _value = widget.value.asDouble();
+  TextEditingController _controller = new TextEditingController();
+  int _value;
+
+  void _setValue(String v) {
+    setState(() {
+      _value = int.parse(v);
+    });
+  }
 
   @override
   Widget build(BuildContext ctx) {
+    _value = _value ?? widget.value;
     return new SimpleDialog(
-        title: new Text('Filter by ${widget.title}'),
+        title: new Text('Posts with ${widget.title} greater than'),
         children: <Widget>[
-          new Slider(min: widget.min.asDouble(), max: widget.max.asDouble(),
-            value: _value,
-            onChanged: (v) {
-              _log.info('${widget.title} filter value: $v');
-              setState(() => _value = v);
-            })
+          new TextField(
+            controller: _controller..text = _value.toString(),
+            onChanged: _setValue,
+            onSubmitted: (v) {
+              _setValue(v);
+              Navigator.of(ctx).pop();
+            },
+          ),
+          new Slider(
+              min: 0.0,
+              max: widget.max.toDouble(),
+              divisions: 50,
+              value: _value.toDouble(),
+              onChanged: (v) {
+                _log.info('${widget.title} filter value: $v');
+                setState(() => _value = v.toInt());
+              })
         ]);
   }
 }
