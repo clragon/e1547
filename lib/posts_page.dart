@@ -123,11 +123,24 @@ class _PostsPageState extends State<PostsPage> {
                   child: new Text('Favorites'), value: 'favorites'),
               new PopupMenuItem(child: new Text('Views'), value: 'views'),
             ],
-        onSelected: (String filterType) {
+        onSelected: (String filterType) async {
           _log.info('filter type: $filterType');
-          showDialog(
+
+          int min = await showDialog<int>(
               context: ctx,
               child: new _RangeDialog(title: filterType, value: 0, max: 500));
+          _log.info('filter min value: $min');
+          if (min == null) {
+            return;
+          }
+
+          String tags = _tags.replaceAll(new RegExp('${filterType}:.+?(\\s|\$)'), '').trim();
+          _log.info('stripped: $tags');
+          if (min != 0) {
+            tags = ('${filterType}:>=${min} ' + tags).trim();
+          }
+
+          _onSearch(tags);
         }));
 
     widgets.add(new PopupMenuButton<String>(
@@ -274,15 +287,12 @@ class _RangeDialogState extends State<_RangeDialog> {
   Widget build(BuildContext ctx) {
     _value = _value ?? widget.value;
     return new SimpleDialog(
-        title: new Text('Posts with ${widget.title} greater than'),
+        title: new Text('Posts with ${widget.title} at least'),
         children: <Widget>[
           new TextField(
             controller: _controller..text = _value.toString(),
             onChanged: _setValue,
-            onSubmitted: (v) {
-              _setValue(v);
-              Navigator.of(ctx).pop();
-            },
+            onSubmitted: (v) => Navigator.of(ctx).pop(int.parse(v)),
           ),
           new Slider(
               min: 0.0,
@@ -292,7 +302,19 @@ class _RangeDialogState extends State<_RangeDialog> {
               onChanged: (v) {
                 _log.info('${widget.title} filter value: $v');
                 setState(() => _value = v.toInt());
-              })
+              }),
+          new Row(
+            children: [
+              new FlatButton(
+                child: new Text('cancel'),
+                onPressed: () => Navigator.of(ctx).pop(),
+              ),
+              new RaisedButton(
+                child: new Text('save'),
+                onPressed: () => Navigator.of(ctx).pop(_value),
+              ),
+            ],
+          ),
         ]);
   }
 }
