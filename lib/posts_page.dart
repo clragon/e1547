@@ -81,7 +81,11 @@ class _PostsPageState extends State<PostsPage> {
   }
 
   Widget _body() {
-    var index = new ListView.builder(
+    if (_offline) {
+      return const Center(child: const Icon(Icons.cloud_off));
+    }
+
+    return new ListView.builder(
       itemBuilder: (ctx, i) {
         _log.fine('loading post $i');
         if (i < _posts.length) {
@@ -96,8 +100,6 @@ class _PostsPageState extends State<PostsPage> {
         }
       },
     );
-
-    return index;
   }
 
   AppBar _buildAppBar(BuildContext ctx) {
