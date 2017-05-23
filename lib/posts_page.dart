@@ -55,6 +55,7 @@ class _PostsPageState extends State<PostsPage> {
   }
 
   _search() {
+    persistence.setTags(_tags);
     _page = _STARTING_PAGE;
     _posts.clear();
     _loadNextPage();
