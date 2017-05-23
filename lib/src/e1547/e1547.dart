@@ -64,7 +64,7 @@ class Client {
 
     List<Post> posts = [];
     for (var rp in rawPosts) {
-      posts.add(new Post.fromRaw(rp, host));
+      posts.add(new Post.fromRaw(rp));
     }
 
     return posts;
