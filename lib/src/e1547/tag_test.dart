@@ -57,11 +57,13 @@ void main() {
   group('Tagset:', () {
     test('Parse simple tagstring', () {
       Tagset tset = new Tagset.parse('kikurage cute_fangs');
-      for (Tag t in tset) {
-        print(t);
-      }
-      expect(tset, contains(new Tag('kikurage')));
+      expect(tset, orderedEquals([new Tag('kikurage'), new Tag('cute_fangs')]));
     });
+
+    test('Parse simple tagstring with whitespace', () {
+      Tagset tset = new Tagset.parse('  kikurage \t \ncute_fangs\t \n');
+      expect(tset, orderedEquals([new Tag('kikurage'), new Tag('cute_fangs')]));
+    });;
 
     test('Check URL', () {
       Uri url = (new Tagset.parse('cute_fangs order:score')).url('e1547.io');

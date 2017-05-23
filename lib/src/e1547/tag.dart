@@ -65,7 +65,7 @@ class Tagset extends Object with IterableMixin<Tag> {
         );
 
   Tagset.parse(String tagString) : _tags = new Map() {
-    for (String ts in tagString.split(' ')) {
+    for (String ts in tagString.trim().split(new RegExp(r'\s+'))) {
       Tag t = new Tag.parse(ts);
       _log.fine('parsed tag: "$t"');
       _tags[t.name] = t;
