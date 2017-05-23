@@ -16,10 +16,9 @@
 
 class Post {
   Map raw;
-  String _host;
 
   // Get the URL for the HTML version of the desired post.
-  Uri get url => new Uri(scheme: 'https', host: _host, path: '/post/show/$id');
+  Uri url(String host) => new Uri(scheme: 'https', host: host, path: '/post/show/$id');
 
   int id;
   int score;
@@ -32,9 +31,8 @@ class Post {
   String rating;
   List<String> artist;
 
-  Post.fromRaw(Map raw, String host) {
+  Post.fromRaw(Map raw) {
     this.raw = raw;
-    this._host = host;
 
     id = raw['id'];
     score = raw['score'];

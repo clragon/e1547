@@ -25,6 +25,8 @@ import 'package:fullscreen_mode/fullscreen_mode.dart' show FullscreenMode;
 import 'package:url_launcher/url_launcher.dart' as url;
 import 'package:zoomable_image/zoomable_image.dart' show ZoomableImage;
 
+import 'persistence.dart' as persistence;
+
 import 'src/e1547/post.dart' show Post;
 
 // Preview of a post that appears in lists of posts. Mostly just the image.
@@ -125,7 +127,8 @@ class PostPreviewState extends State<PostPreview> {
         new IconButton(
             icon: const Icon(Icons.open_in_browser),
             tooltip: 'Open in browser',
-            onPressed: () => url.launch(widget.post.url.toString())),
+            onPressed: () async => url.launch(
+                widget.post.url(await persistence.getHost()).toString())),
         new IconButton(
             icon: const Icon(Icons.more_horiz),
             tooltip: 'More options',
@@ -177,10 +180,10 @@ class _MoreDialog extends StatelessWidget {
     return new ListTile(
       leading: const Icon(Icons.content_copy),
       title: new Text('Copy link'),
-      onTap: () {
-        Clipboard
-            .setData(new ClipboardData(text: post.url.toString()))
-            .whenComplete(() => Navigator.of(ctx).pop());
+      onTap: () async {
+        await Clipboard.setData(new ClipboardData(
+            text: post.url(await persistence.getHost()).toString()));
+        Navigator.of(ctx).pop();
       },
     );
   }
