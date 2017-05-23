@@ -78,7 +78,7 @@ class Tagset extends Object with IterableMixin<Tag> {
     return _tags.containsKey(tagName);
   }
 
-  String operator[](String name) {
+  String operator [](String name) {
     Tag t = _tags[name];
     if (t == null) {
       return null;
@@ -96,8 +96,30 @@ class Tagset extends Object with IterableMixin<Tag> {
   @override
   Iterator<Tag> get iterator => _tags.values.iterator;
 
+  // The toString order isn't the same as the iteration order. We order the metatags ahead of the
+  // normal tags.
   @override
   String toString() {
-    return _tags.values.join(' ');
+    List<Tag> meta = [];
+    List<Tag> normal = [];
+
+    for (Tag t in _tags.values) {
+      if (t.value != null) {
+        meta.add(t);
+      } else {
+        normal.add(t);
+      }
+    }
+
+    // This isn't terribly efficient, but it probably doesn't matter since the strings are tiny.
+    // Something that could be interesting to use here since it would be lazy:
+    //    https://www.dartdocs.org/documentation/quiver/0.25.0/quiver.iterables/concat.html
+    //
+    //    Iterable<T> concat<T>(
+    //      Iterable<Iterable<T>> iterables
+    //    )
+
+    meta.addAll(normal);
+    return meta.join(' ');
   }
 }

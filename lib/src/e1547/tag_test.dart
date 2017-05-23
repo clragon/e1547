@@ -66,9 +66,9 @@ void main() {
     });;
 
     test('Check URL', () {
-      Uri url = (new Tagset.parse('cute_fangs order:score')).url('e1547.io');
+      Uri url = (new Tagset.parse('order:score cute_fangs')).url('e1547.io');
       Uri ans =
-          Uri.parse('https://e1547.io/post?tags=cute_fangs+order%3Ascore');
+          Uri.parse('https://e1547.io/post?tags=order%3Ascore+cute_fangs');
       expect(url, equals(ans));
     });
 
@@ -95,19 +95,18 @@ void main() {
       expect(tset['order'], equals('score'));
     });
 
-    test('Preserve tag ordering', () {
+    test('Metatags first toString', () {
       Tagset tset = new Tagset.parse('photonoko favorites:<=100 female order:score -digimon');
+      expect(tset.toString(), equals('favorites:<=100 order:score photonoko female -digimon'));
+
       tset['favorites'] = '>2000';
-      expect(tset, orderedEquals(new Tagset.parse(
-              'photonoko favorites:>2000 female order:score -digimon')));
+      expect(tset.toString(), equals('favorites:>2000 order:score photonoko female -digimon'));
 
       tset.remove('female');
-      expect(tset, orderedEquals(new Tagset.parse(
-              'photonoko favorites:>2000 order:score -digimon')));
+      expect(tset.toString(), equals('favorites:>2000 order:score photonoko -digimon'));
 
       tset['order'] = 'favcount';
-      expect(tset, orderedEquals(new Tagset.parse(
-              'photonoko favorites:>2000 order:favcount -digimon')));
+      expect(tset.toString(), equals('favorites:>2000 order:favcount photonoko -digimon'));
     });
   });
 }
