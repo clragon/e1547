@@ -42,6 +42,14 @@ class Tagset extends Object with IterableMixin<Tag> {
 
   final Set<Tag> _tags;
 
+  // Get the URL for this search/tagset.
+  Uri url(String host) => new Uri(
+        scheme: 'https',
+        host: host,
+        path: '/post',
+        queryParameters: {'tags': this.toString()},
+      );
+
   Tagset(this._tags);
   Tagset.parse(String tagString) : _tags = new Set() {
     for (String ts in tagString.split(' ')) {

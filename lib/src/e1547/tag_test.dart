@@ -46,5 +46,12 @@ void main() {
       }
       expect(tset, contains(new Tag('kikurage')));
     });
+
+    test('Check URL', () {
+      Uri url = (new Tagset.parse('cute_fangs order:score')).url('e1547.io');
+      Uri ans =
+          Uri.parse('https://e1547.io/post?tags=cute_fangs+order%3Ascore');
+      expect(url, equals(ans));
+    });
   });
 }
