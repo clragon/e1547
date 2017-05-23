@@ -104,11 +104,13 @@ class PostPreviewState extends State<PostPreview> {
   }
 
   Widget _buildPostInfo(BuildContext ctx) {
-    return new Row(children: <Widget>[
-      new Expanded(child: _buildScore()),
-      new Expanded(child: _buildSafetyRating()),
-      new Expanded(child: _buildArtists()),
-    ]);
+    return new Container(
+        padding: const EdgeInsets.all(10.0),
+        child: new Row(children: <Widget>[
+          new Expanded(child: _buildScore()),
+          new Expanded(child: _buildSafetyRating()),
+          new Expanded(child: _buildArtists()),
+        ]));
   }
 
   Widget _buildButtonBar(BuildContext ctx) {
