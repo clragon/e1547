@@ -90,6 +90,11 @@ void main() {
       expect(tset, orderedEquals([new Tag('cute_fangs'), new Tag('order', 'favcount')]));
     });
 
+    test('Get metatag value', () {
+      Tagset tset = new Tagset.parse('cute_fangs order:score');
+      expect(tset['order'], equals('score'));
+    });
+
     test('Preserve tag ordering', () {
       Tagset tset = new Tagset.parse('photonoko favorites:<=100 female order:score -digimon');
       tset['favorites'] = '>2000';

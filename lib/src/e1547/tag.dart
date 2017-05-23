@@ -78,9 +78,18 @@ class Tagset extends Object with IterableMixin<Tag> {
     return _tags.containsKey(tagName);
   }
 
+  String operator[](String name) {
+    Tag t = _tags[name];
+    if (t == null) {
+      return null;
+    }
+
+    return t.value;
+  }
+
   operator []=(String name, String value) => _tags[name] = new Tag(name, value);
 
-  void remove(String name) {
+  remove(String name) {
     _tags.remove(name);
   }
 

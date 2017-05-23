@@ -127,9 +127,14 @@ class _PostsPageState extends State<PostsPage> {
         onSelected: (String filterType) async {
           _log.info('filter type: $filterType');
 
+          String valueString = _tags[filterType];
+          int value =
+              valueString == null ? 0 : int.parse(valueString.substring(2));
+
           int min = await showDialog<int>(
               context: ctx,
-              child: new _RangeDialog(title: filterType, value: 0, max: 500));
+              child:
+                  new _RangeDialog(title: filterType, value: value, max: 500));
           _log.info('filter min value: $min');
           if (min == null) {
             return;
