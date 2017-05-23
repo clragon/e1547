@@ -18,6 +18,7 @@ import 'dart:convert' show JsonEncoder;
 import 'dart:ui' show Color;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show Clipboard, ClipboardData;
 
 import 'package:logging/logging.dart' show Logger;
 import 'package:fullscreen_mode/fullscreen_mode.dart' show FullscreenMode;
@@ -172,10 +173,25 @@ class _MoreDialog extends StatelessWidget {
     );
   }
 
+  Widget _buildCopy(BuildContext ctx) {
+    return new ListTile(
+      leading: const Icon(Icons.content_copy),
+      title: new Text('Copy link'),
+      onTap: () {
+        Clipboard
+            .setData(new ClipboardData(text: post.url.toString()))
+            .whenComplete(() => Navigator.of(ctx).pop());
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext ctx) {
     return new SimpleDialog(
         title: new Text('post #${post.id}'),
-        children: <Widget>[_buildPostInfo(ctx)]);
+        children: <Widget>[
+          _buildPostInfo(ctx),
+          _buildCopy(ctx),
+        ]);
   }
 }
