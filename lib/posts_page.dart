@@ -85,6 +85,10 @@ class _PostsPageState extends State<PostsPage> {
       return const Center(child: const Icon(Icons.cloud_off));
     }
 
+    if (_posts.isEmpty) {
+      return const Center(child: const Icon(Icons.refresh));
+    }
+
     return new ListView.builder(
       itemBuilder: (ctx, i) {
         _log.fine('loading post $i');
@@ -104,8 +108,6 @@ class _PostsPageState extends State<PostsPage> {
 
   AppBar _buildAppBar(BuildContext ctx) {
     List<Widget> widgets = [];
-
-    // TODO: offline indicator
 
     widgets.add(new PopupMenuButton<String>(
         icon: const Icon(Icons.view_carousel),
