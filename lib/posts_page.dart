@@ -148,22 +148,19 @@ class _PostsPageState extends State<PostsPage> {
         icon: const Icon(Icons.sort),
         tooltip: 'Sort by',
         itemBuilder: (ctx) => <PopupMenuEntry<String>>[
-              new PopupMenuItem(child: new Text('New'), value: ''),
-              new PopupMenuItem(child: new Text('Score'), value: 'order:score'),
+              new PopupMenuItem(child: new Text('New'), value: 'new'),
+              new PopupMenuItem(child: new Text('Score'), value: 'score'),
               new PopupMenuItem(
-                  child: new Text('Favorites'), value: 'order:favcount'),
-              new PopupMenuItem(child: new Text('Views'), value: 'order:views'),
+                  child: new Text('Favorites'), value: 'favcount'),
+              new PopupMenuItem(child: new Text('Views'), value: 'views'),
             ],
-        onSelected: (String orderTag) {
-          /*
-          _tags = (orderTag +
-                  ' ' +
-                  // Strip out all order:* tags
-                  _tags.replaceAll(new RegExp(r'order:\w+\b'), '').trim())
-              .trimLeft();
-
-          _onSearch(_tags);
-          */
+        onSelected: (String orderType) {
+          if (orderType == 'new') {
+            _tags.remove('order');
+          } else {
+            _tags['order'] = orderType;
+          }
+          _search();
         }));
 
     widgets.add(new PopupMenuButton<String>(
