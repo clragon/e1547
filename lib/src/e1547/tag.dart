@@ -35,6 +35,13 @@ class Tag {
 
   @override
   String toString() => value == null ? name : '$name:$value';
+
+  @override
+  bool operator ==(Tag other) =>
+      this.name == other.name && this.value == other.value;
+
+  @override
+  int get hashCode => this.toString().hashCode;
 }
 
 class Tagset extends Object with IterableMixin<Tag> {
