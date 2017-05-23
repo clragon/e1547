@@ -72,6 +72,12 @@ void main() {
       expect(url, equals(ans));
     });
 
+    test('Remove tag', () {
+      Tagset tset = new Tagset.parse('kikurage cute_fangs');
+      tset.remove('kikurage');
+      expect(tset, orderedEquals(new Tagset.parse('cute_fangs')));
+    });
+
     test('Set metatag value', () {
       Tagset tset = new Tagset.parse('cute_fangs');
       tset['order'] = 'score';
@@ -90,9 +96,13 @@ void main() {
       expect(tset, orderedEquals(new Tagset.parse(
               'photonoko favorites:>2000 female order:score -digimon')));
 
+      tset.remove('female');
+      expect(tset, orderedEquals(new Tagset.parse(
+              'photonoko favorites:>2000 order:score -digimon')));
+
       tset['order'] = 'favcount';
       expect(tset, orderedEquals(new Tagset.parse(
-              'photonoko favorites:>2000 female order:favcount -digimon')));
+              'photonoko favorites:>2000 order:favcount -digimon')));
     });
   });
 }
