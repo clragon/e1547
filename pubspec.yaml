@@ -6,9 +6,12 @@ dependencies:
   fullscreen_mode: any
   zoomable_image: any
 
-  # Flutter
+  # Dart
   logging: any
+  test: any
   vector_math: any
+
+  # Flutter
   shared_preferences: any
   url_launcher: any
 
