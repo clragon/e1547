@@ -22,6 +22,7 @@ import 'package:logging/logging.dart' show Logger;
 
 import '../../vars.dart' as vars;
 import 'post.dart';
+import 'tag.dart';
 
 final client = new Client();
 
@@ -34,14 +35,14 @@ class Client {
   // For example, 'e926.net'
   String host;
 
-  Future<List<Post>> posts(String tags, int page) async {
+  Future<List<Post>> posts(Tagset tags, int page) async {
     _log.info('Requesting posts with tags: "$tags"');
 
     Uri url = new Uri(
       scheme: 'https',
       host: host,
       path: '/post/index.json',
-      queryParameters: {'tags': tags, 'page': page.toString()},
+      queryParameters: {'tags': tags.toString(), 'page': page.toString()},
     );
 
     _log.fine('url: $url');

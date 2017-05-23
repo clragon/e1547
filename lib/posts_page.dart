@@ -25,6 +25,7 @@ import 'vars.dart' as vars;
 
 import 'src/e1547/e1547.dart' show client;
 import 'src/e1547/post.dart' show Post;
+import 'src/e1547/tag.dart' show Tagset;
 
 const int _STARTING_PAGE = 1; // Pages are 1-indexed
 
@@ -37,7 +38,7 @@ class _PostsPageState extends State<PostsPage> {
   final Logger _log = new Logger('PostsPage');
 
   // Current tags being displayed or searched.
-  String _tags = '';
+  Tagset _tags;
   // Current posts being displayed.
   List<Post> _posts = [];
   int _page = _STARTING_PAGE;
@@ -53,9 +54,7 @@ class _PostsPageState extends State<PostsPage> {
     _loadNextPage();
   }
 
-  _onSearch(String tags) {
-    persistence.setTags(tags);
-    _tags = tags;
+  _search() {
     _page = _STARTING_PAGE;
     _posts.clear();
     _loadNextPage();
@@ -65,7 +64,7 @@ class _PostsPageState extends State<PostsPage> {
     _offline = false; // Let's be optimistic. Doesn't update UI until setState()
     try {
       client.host = await persistence.getHost() ?? vars.DEFAULT_ENDPOINT;
-      _tags = await persistence.getTags() ?? _tags;
+      _tags = _tags ?? await persistence.getTags();
       List newPosts = await client.posts(_tags, _page);
       setState(() {
         _posts.addAll(newPosts);
@@ -127,6 +126,7 @@ class _PostsPageState extends State<PostsPage> {
         onSelected: (String filterType) async {
           _log.info('filter type: $filterType');
 
+          /*
           int min = await showDialog<int>(
               context: ctx,
               child: new _RangeDialog(title: filterType, value: 0, max: 500));
@@ -141,7 +141,8 @@ class _PostsPageState extends State<PostsPage> {
             tags = ('${filterType}:>=${min} ' + tags).trim();
           }
 
-          _onSearch(tags);
+          _onSearch();
+          */
         }));
 
     widgets.add(new PopupMenuButton<String>(
@@ -155,6 +156,7 @@ class _PostsPageState extends State<PostsPage> {
               new PopupMenuItem(child: new Text('Views'), value: 'order:views'),
             ],
         onSelected: (String orderTag) {
+          /*
           _tags = (orderTag +
                   ' ' +
                   // Strip out all order:* tags
@@ -162,6 +164,7 @@ class _PostsPageState extends State<PostsPage> {
               .trimLeft();
 
           _onSearch(_tags);
+          */
         }));
 
     widgets.add(new PopupMenuButton<String>(
@@ -174,7 +177,7 @@ class _PostsPageState extends State<PostsPage> {
             ],
         onSelected: (String action) {
           if (action == 'refresh') {
-            _onSearch(_tags);
+            _search();
           } else {
             _log.warning('Unknown action type: "$action"');
           }
@@ -186,34 +189,35 @@ class _PostsPageState extends State<PostsPage> {
   @override
   Widget build(BuildContext ctx) {
     return new Scaffold(
-      appBar: _buildAppBar(ctx),
-      body: _body(),
-      drawer: new Drawer(
-          child: new ListView(children: [
-        new UserAccountsDrawerHeader(
-            // TODO: account name and email
-            accountName: new Text('<username>'),
-            currentAccountPicture: new CircleAvatar(
-                backgroundColor: Colors.brown.shade800, child: new Text('UU'))),
-        new ListTile(
-            leading: const Icon(Icons.settings),
-            title: new Text('Settings'),
-            onTap: () => Navigator.popAndPushNamed(ctx, '/settings')),
-        new AboutListTile(icon: const Icon(Icons.help)),
-      ])),
-      floatingActionButton: new FloatingActionButton(
-          child: const Icon(Icons.search),
-          onPressed: () => Navigator
-                  .of(ctx)
-                  .push(new MaterialPageRoute<String>(
-                      builder: (ctx) => new _TagEntryPage(_tags)))
-                  .then((t) {
-                _log.fine('edited tags: "$t"');
-                if (t != null && t != _tags) {
-                  _onSearch(t);
-                }
-              }).catchError((e) => _log.warning(e))),
-    );
+        appBar: _buildAppBar(ctx),
+        body: _body(),
+        drawer: new Drawer(
+            child: new ListView(children: [
+          new UserAccountsDrawerHeader(
+              // TODO: account name and email
+              accountName: new Text('<username>'),
+              currentAccountPicture: new CircleAvatar(
+                  backgroundColor: Colors.brown.shade800,
+                  child: new Text('UU'))),
+          new ListTile(
+              leading: const Icon(Icons.settings),
+              title: new Text('Settings'),
+              onTap: () => Navigator.popAndPushNamed(ctx, '/settings')),
+          new AboutListTile(icon: const Icon(Icons.help)),
+        ])),
+        floatingActionButton: new FloatingActionButton(
+            child: const Icon(Icons.search),
+            onPressed: () async {
+              String tagString = await Navigator.of(ctx).push(
+                  new MaterialPageRoute<String>(
+                      builder: (ctx) => new _TagEntryPage(_tags.toString())));
+
+              _log.fine('edited tags: "$tagString"');
+              if (tagString != null) {
+                _tags = new Tagset.parse(tagString);
+                _search();
+              }
+            }));
   }
 }
 

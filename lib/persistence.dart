@@ -19,6 +19,8 @@ import 'dart:async' show Future;
 import 'package:shared_preferences/shared_preferences.dart'
     show SharedPreferences;
 
+import 'src/e1547/tag.dart' show Tagset;
+
 const _HOST = 'host';
 const _TAGS = 'tags';
 
@@ -27,5 +29,5 @@ Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 Future<String> getHost() => _prefs.then((p) => p.getString(_HOST));
 setHost(String host) => _prefs.then((p) => p.setString(_HOST, host));
 
-Future<String> getTags() => _prefs.then((p) => p.getString(_TAGS));
-setTags(String tags) => _prefs.then((p) => p.setString(_TAGS, tags));
+Future<Tagset> getTags() => _prefs.then((p) => new Tagset.parse(p.getString(_TAGS) ?? ''));
+setTags(Tagset tags) => _prefs.then((p) => p.setString(_TAGS, tags.toString()));
