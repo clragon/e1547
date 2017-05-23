@@ -224,7 +224,7 @@ class _PostsPageState extends State<PostsPage> {
 
 class _TagEntryPage extends StatefulWidget {
   final String tags;
-  _TagEntryPage(this.tags);
+  _TagEntryPage(String tags) : this.tags = tags + ' ';
 
   @override
   _TagEntryPageState createState() => new _TagEntryPageState();
