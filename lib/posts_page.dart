@@ -126,7 +126,6 @@ class _PostsPageState extends State<PostsPage> {
         onSelected: (String filterType) async {
           _log.info('filter type: $filterType');
 
-          /*
           int min = await showDialog<int>(
               context: ctx,
               child: new _RangeDialog(title: filterType, value: 0, max: 500));
@@ -135,14 +134,13 @@ class _PostsPageState extends State<PostsPage> {
             return;
           }
 
-          String tags = _tags.replaceAll(new RegExp('${filterType}:.+?(\\s|\$)'), '').trim();
-          _log.info('stripped: $tags');
-          if (min != 0) {
-            tags = ('${filterType}:>=${min} ' + tags).trim();
+          if (min == 0) {
+            _tags.remove(filterType);
+          } else {
+            _tags[filterType] = '>=${min}';
           }
 
-          _onSearch();
-          */
+          _search();
         }));
 
     widgets.add(new PopupMenuButton<String>(

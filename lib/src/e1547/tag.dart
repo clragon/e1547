@@ -47,7 +47,7 @@ class Tag {
 class Tagset extends Object with IterableMixin<Tag> {
   final Logger _log = new Logger('Tagset');
 
-  final Set<Tag> _tags;
+  final Map<String, Tag> _tags;
 
   // Get the URL for this search/tagset.
   Uri url(String host) => new Uri(
@@ -57,26 +57,38 @@ class Tagset extends Object with IterableMixin<Tag> {
         queryParameters: {'tags': this.toString()},
       );
 
-  Tagset(this._tags);
-  Tagset.parse(String tagString) : _tags = new Set() {
+  Tagset(Set<Tag> tags)
+      : _tags = new Map.fromIterable(
+          tags,
+          key: (t) => t.name,
+          value: (t) => t,
+        );
+
+  Tagset.parse(String tagString) : _tags = new Map() {
     for (String ts in tagString.split(' ')) {
       Tag t = new Tag.parse(ts);
       _log.fine('parsed tag: "$t"');
-      _tags.add(t);
+      _tags[t.name] = t;
     }
 
     _log.fine('tagset tags: $_tags');
   }
 
-  bool contains(Tag t) {
-    return _tags.contains(t);
+  bool contains(String tagName) {
+    return _tags.containsKey(tagName);
+  }
+
+  operator []=(String name, String value) => _tags[name] = new Tag(name, value);
+
+  void remove(String name) {
+    _tags.remove(name);
   }
 
   @override
-  Iterator<Tag> get iterator => _tags.iterator;
+  Iterator<Tag> get iterator => _tags.values.iterator;
 
   @override
   String toString() {
-    return _tags.join(' ');
+    return _tags.values.join(' ');
   }
 }
