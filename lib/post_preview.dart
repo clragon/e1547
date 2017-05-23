@@ -25,7 +25,7 @@ import 'package:fullscreen_mode/fullscreen_mode.dart' show FullscreenMode;
 import 'package:url_launcher/url_launcher.dart' as url;
 import 'package:zoomable_image/zoomable_image.dart' show ZoomableImage;
 
-import 'src/e1547/e1547.dart' show Post;
+import 'src/e1547/post.dart' show Post;
 
 // Preview of a post that appears in lists of posts. Mostly just the image.
 class PostPreview extends StatefulWidget {

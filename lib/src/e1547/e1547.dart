@@ -21,6 +21,7 @@ import 'dart:io' show HttpClient, HttpClientRequest, HttpClientResponse;
 import 'package:logging/logging.dart' show Logger;
 
 import '../../vars.dart' as vars;
+import 'post.dart';
 
 final client = new Client();
 
@@ -67,42 +68,5 @@ class Client {
     }
 
     return posts;
-  }
-}
-
-class Post {
-  Map raw;
-  String _host;
-
-  // Get the URL for the HTML version of the desired post.
-  Uri get url => new Uri(scheme: 'https', host: _host, path: '/post/show/$id');
-
-  int id;
-  int score;
-  int fav_count;
-  String file_url;
-  String file_ext;
-  String sample_url;
-  int sample_width;
-  int sample_height;
-  String rating;
-  List<String> artist;
-
-  Post.fromRaw(Map raw, String host) {
-    this.raw = raw;
-    this._host = host;
-
-    id = raw['id'];
-    score = raw['score'];
-    fav_count = raw['fav_count'];
-    file_url = raw['file_url'];
-    file_ext = raw['file_ext'];
-    sample_url = raw['sample_url'];
-    sample_width = raw['sample_width'];
-    sample_height = raw['sample_height'];
-
-    rating = raw['rating'].toUpperCase();
-
-    artist = raw['artist'];
   }
 }

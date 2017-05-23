@@ -23,7 +23,8 @@ import 'persistence.dart' as persistence;
 import 'post_preview.dart' show PostPreview;
 import 'vars.dart' as vars;
 
-import 'src/e1547/e1547.dart' show client, Post;
+import 'src/e1547/e1547.dart' show client;
+import 'src/e1547/post.dart' show Post;
 
 const int _STARTING_PAGE = 1; // Pages are 1-indexed
 
