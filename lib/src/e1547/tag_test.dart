@@ -71,5 +71,28 @@ void main() {
           Uri.parse('https://e1547.io/post?tags=cute_fangs+order%3Ascore');
       expect(url, equals(ans));
     });
+
+    test('Set metatag value', () {
+      Tagset tset = new Tagset.parse('cute_fangs');
+      tset['order'] = 'score';
+      expect(tset, orderedEquals([new Tag('cute_fangs'), new Tag('order', 'score')]));
+    });
+
+    test('Set metatag value existing', () {
+      Tagset tset = new Tagset.parse('cute_fangs order:score');
+      tset['order'] = 'favcount';
+      expect(tset, orderedEquals([new Tag('cute_fangs'), new Tag('order', 'favcount')]));
+    });
+
+    test('Preserve tag ordering', () {
+      Tagset tset = new Tagset.parse('photonoko favorites:<=100 female order:score -digimon');
+      tset['favorites'] = '>2000';
+      expect(tset, orderedEquals(new Tagset.parse(
+              'photonoko favorites:>2000 female order:score -digimon')));
+
+      tset['order'] = 'favcount';
+      expect(tset, orderedEquals(new Tagset.parse(
+              'photonoko favorites:>2000 female order:favcount -digimon')));
+    });
   });
 }
