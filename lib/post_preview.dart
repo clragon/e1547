@@ -68,10 +68,6 @@ class PostPreviewState extends State<PostPreview> {
         style: new TextStyle(color: colors[widget.post.rating]));
   }
 
-  Widget _buildArtists() {
-    return new Text(widget.post.artist.join('+'));
-  }
-
   Widget _buildImagePreview(BuildContext ctx) {
     return new GestureDetector(
         onTap: () async {
@@ -109,7 +105,8 @@ class PostPreviewState extends State<PostPreview> {
         child: new Row(children: <Widget>[
           new Expanded(child: _buildScore()),
           new Expanded(child: _buildSafetyRating()),
-          new Expanded(child: _buildArtists()),
+          new Expanded(child: new Text(widget.post.file_ext)),
+          new Expanded(child: new Text(widget.post.artist.join('+'))),
         ]));
   }
 
