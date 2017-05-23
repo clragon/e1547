@@ -16,6 +16,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter/services.dart' show Clipboard, ClipboardData;
 
 import 'package:logging/logging.dart' show Logger;
 
@@ -174,11 +175,18 @@ class _PostsPageState extends State<PostsPage> {
               new PopupMenuItem(
                 value: 'refresh',
                 child: new Text('Refresh'),
-              )
+              ),
+              new PopupMenuItem(
+                value: 'copy',
+                child: new Text('Copy link'),
+              ),
             ],
         onSelected: (String action) {
           if (action == 'refresh') {
             _search();
+          } else if (action == 'copy') {
+            Clipboard.setData(
+                new ClipboardData(text: _tags.url(client.host).toString()));
           } else {
             _log.warning('Unknown action type: "$action"');
           }
