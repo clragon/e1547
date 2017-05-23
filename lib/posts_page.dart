@@ -307,11 +307,13 @@ class _RangeDialogState extends State<_RangeDialog> {
     return new SimpleDialog(
         title: new Text('Posts with ${widget.title} at least'),
         children: <Widget>[
-          new TextField(
-            controller: _controller..text = _value.toString(),
-            onChanged: _setValue,
-            onSubmitted: (v) => Navigator.of(ctx).pop(int.parse(v)),
-          ),
+          new Container(
+              padding: const EdgeInsets.all(10.0),
+              child: new TextField(
+                controller: _controller..text = _value.toString(),
+                onChanged: _setValue,
+                onSubmitted: (v) => Navigator.of(ctx).pop(int.parse(v)),
+              )),
           new Slider(
               min: 0.0,
               max: widget.max.toDouble(),
