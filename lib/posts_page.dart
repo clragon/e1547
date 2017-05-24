@@ -21,7 +21,7 @@ import 'package:flutter/services.dart' show Clipboard, ClipboardData;
 import 'package:logging/logging.dart' show Logger;
 
 import 'persistence.dart' as persistence;
-import 'post_preview.dart' show PostPreview;
+import 'post.dart' show PostPreview;
 import 'vars.dart' as vars;
 
 import 'src/e1547/e1547.dart' show client;

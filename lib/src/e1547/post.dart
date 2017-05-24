@@ -29,6 +29,7 @@ class Post {
   int sample_width;
   int sample_height;
   String rating;
+  bool has_comments;
   List<String> artist;
 
   Post.fromRaw(Map raw) {
@@ -44,6 +45,8 @@ class Post {
     sample_height = raw['sample_height'];
 
     rating = raw['rating'].toUpperCase();
+
+    has_comments = raw['has_comments'];
 
     artist = raw['artist'];
   }
