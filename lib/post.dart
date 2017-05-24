@@ -58,15 +58,45 @@ class PostWidget extends StatefulWidget {
 class _PostWidgetState extends State<PostWidget> {
   static final Logger _log = new Logger('PostWidget');
 
+  bool _isFullscreen = false;
+
+  _fullscreen(BuildContext ctx) async {
+    await Navigator.of(ctx).push(new MaterialPageRoute<Null>(
+          builder: (ctx) => new ZoomableImage(
+                  new NetworkImage(widget.post.file_url), onTap: () {
+                _isFullscreen = !_isFullscreen;
+                if (_isFullscreen) {
+                  FullscreenMode.setFullscreen();
+                } else {
+                  FullscreenMode.setNormal();
+                }
+              }),
+        ));
+    FullscreenMode.setNormal();
+    _isFullscreen = false;
+  }
+
   @override
   Widget build(BuildContext ctx) {
     return new Scaffold(
       appBar: new AppBar(title: new Text('#' + widget.post.id.toString())),
       body: new Column(mainAxisSize: MainAxisSize.min, children: [
         new Flexible(
-          fit: FlexFit.tight,
-          child: new Image.network(widget.post.sample_url),
-        ),
+            child: new GestureDetector(
+          onTap: () => _fullscreen(ctx),
+          child: new Stack(children: [
+            new Image.network(widget.post.sample_url),
+            new Positioned(
+              right: 0.0,
+              bottom: 0.0,
+              child: new Container(
+                padding: const EdgeInsets.all(12.0),
+                color: Colors.black38,
+                child: const Icon(Icons.fullscreen),
+              ),
+            ),
+          ]),
+        )),
         _buildButtonBar(ctx),
       ]),
     );
