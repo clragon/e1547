@@ -15,7 +15,6 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 import 'dart:convert' show JsonEncoder;
-import 'dart:ui' show Color;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show Clipboard, ClipboardData;
@@ -28,23 +27,6 @@ import 'package:zoomable_image/zoomable_image.dart' show ZoomableImage;
 import 'persistence.dart' as persistence;
 
 import 'src/e1547/post.dart' show Post;
-
-/*
-          await Navigator.of(ctx).push(new MaterialPageRoute<Null>(
-              builder: (ctx) => new ZoomableImage(
-                      new NetworkImage(widget.post.file_url),
-                      scale: 4.0, onTap: () {
-                    _log.fine(_isFullscreen);
-                    _isFullscreen = !_isFullscreen;
-                    if (_isFullscreen) {
-                      FullscreenMode.setFullscreen();
-                    } else {
-                      FullscreenMode.setNormal();
-                    }
-                  })));
-
-          FullscreenMode.setNormal();
-          */
 
 // Main widget for presenting and interacting with individual posts.
 class PostWidget extends StatefulWidget {
@@ -102,7 +84,6 @@ class _PostWidgetState extends State<PostWidget> {
     );
   }
 
-  // TODO: use this
   Widget _buildButtonBar(BuildContext ctx) {
     return new ButtonTheme.bar(
         child: new ButtonBar(

@@ -82,11 +82,11 @@ class _PostsPageState extends State<PostsPage> {
 
   Widget _body() {
     if (_offline) {
-      return const Center(child: const Icon(Icons.cloud_off));
+      return new Center(child: const Icon(Icons.cloud_off));
     }
 
     if (_posts.isEmpty) {
-      return const Center(child: const Icon(Icons.refresh));
+      return new Center(child: const Icon(Icons.refresh));
     }
 
     return new ListView.builder(
@@ -209,6 +209,7 @@ class _PostsPageState extends State<PostsPage> {
           new UserAccountsDrawerHeader(
               // TODO: account name and email
               accountName: new Text('<username>'),
+              accountEmail: new Text('<email>'),
               currentAccountPicture: new CircleAvatar(
                   backgroundColor: Colors.brown.shade800,
                   child: new Text('UU'))),
