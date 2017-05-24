@@ -62,7 +62,13 @@ class _PostWidgetState extends State<PostWidget> {
   Widget build(BuildContext ctx) {
     return new Scaffold(
       appBar: new AppBar(title: new Text('#' + widget.post.id.toString())),
-      body: new Text('hello'),
+      body: new Column(mainAxisSize: MainAxisSize.min, children: [
+        new Flexible(
+          fit: FlexFit.tight,
+          child: new Image.network(widget.post.sample_url),
+        ),
+        _buildButtonBar(ctx),
+      ]),
     );
   }
 
@@ -106,15 +112,15 @@ class PostPreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext ctx) => new GestureDetector(
-        onTap: () => Navigator.of(ctx).push(new MaterialPageRoute<Null>(
-            builder: (ctx) => new PostWidget(post))),
-        child: new Card(
-            child: new Column(
-          children: <Widget>[
-            _buildImagePreview(ctx),
-            _buildPostInfo(ctx),
-          ],
-        )));
+      onTap: () => Navigator.of(ctx).push(
+          new MaterialPageRoute<Null>(builder: (ctx) => new PostWidget(post))),
+      child: new Card(
+          child: new Column(
+        children: <Widget>[
+          _buildImagePreview(ctx),
+          _buildPostInfo(ctx),
+        ],
+      )));
 
   Widget _buildImagePreview(BuildContext ctx) => new LayoutBuilder(
       builder: (ctx, constraints) => new Image.network(post.sample_url,
