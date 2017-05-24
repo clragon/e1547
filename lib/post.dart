@@ -45,7 +45,8 @@ class _PostWidgetState extends State<PostWidget> {
   _fullscreen(BuildContext ctx) async {
     await Navigator.of(ctx).push(new MaterialPageRoute<Null>(
           builder: (ctx) => new ZoomableImage(
-                  new NetworkImage(widget.post.file_url), onTap: () {
+                  new NetworkImage(widget.post.file_url),
+                  scale: 16.0, onTap: () {
                 _isFullscreen = !_isFullscreen;
                 if (_isFullscreen) {
                   FullscreenMode.setFullscreen();
