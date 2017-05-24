@@ -65,20 +65,24 @@ class _PostWidgetState extends State<PostWidget> {
       body: new Column(mainAxisSize: MainAxisSize.min, children: [
         new Flexible(
             child: new GestureDetector(
-          onTap: () => _fullscreen(ctx),
-          child: new Stack(children: [
-            new Image.network(widget.post.sample_url),
-            new Positioned(
-              right: 0.0,
-              bottom: 0.0,
-              child: new Container(
-                padding: const EdgeInsets.all(12.0),
-                color: Colors.black38,
-                child: const Icon(Icons.fullscreen),
-              ),
-            ),
-          ]),
-        )),
+                onTap: () => _fullscreen(ctx),
+                child: new Container(
+                  color: Colors.black,
+                  constraints: const BoxConstraints.expand(),
+                  child: new Stack(children: [
+                    new Center(
+                        child: new Image.network(widget.post.sample_url)),
+                    new Positioned(
+                      right: 0.0,
+                      bottom: 0.0,
+                      child: new Container(
+                        padding: const EdgeInsets.all(12.0),
+                        color: Colors.black38,
+                        child: const Icon(Icons.fullscreen),
+                      ),
+                    ),
+                  ]),
+                ))),
         _buildButtonBar(ctx),
       ]),
     );
