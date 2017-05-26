@@ -22,6 +22,7 @@ import 'package:logging/logging.dart' show Logger;
 
 import 'persistence.dart' as persistence;
 import 'post.dart' show PostPreview;
+import 'tag_entry.dart' show TagEntryPage;
 import 'vars.dart' as vars;
 
 import 'src/e1547/e1547.dart' show client;
@@ -224,7 +225,7 @@ class _PostsPageState extends State<PostsPage> {
             onPressed: () async {
               String tagString = await Navigator.of(ctx).push(
                   new MaterialPageRoute<String>(
-                      builder: (ctx) => new _TagEntryPage(_tags.toString())));
+                      builder: (ctx) => new TagEntryPage(_tags.toString())));
 
               _log.fine('edited tags: "$tagString"');
               if (tagString != null) {
@@ -232,50 +233,6 @@ class _PostsPageState extends State<PostsPage> {
                 _search();
               }
             }));
-  }
-}
-
-class _TagEntryPage extends StatefulWidget {
-  final String tags;
-  _TagEntryPage(String tags) : this.tags = tags + ' ';
-
-  @override
-  _TagEntryPageState createState() => new _TagEntryPageState();
-}
-
-class _TagEntryPageState extends State<_TagEntryPage> {
-  TextEditingController _controller;
-
-  @override
-  Widget build(BuildContext ctx) {
-    _controller ??= new TextEditingController(text: widget.tags)
-      ..selection = new TextSelection(
-          baseOffset: widget.tags.length, extentOffset: widget.tags.length);
-
-    return new Scaffold(
-        appBar: new AppBar(title: new Text('tags')),
-        body: new Container(
-            padding: new EdgeInsets.all(10.0),
-            child: new Column(children: <Widget>[
-              new TextField(
-                  autofocus: true,
-                  maxLines: 50,
-                  controller: _controller,
-                  onSubmitted: (t) => Navigator.of(ctx).pop(t)),
-              new Row(
-                children: <Widget>[
-                  new FlatButton(
-                    child: new Text('cancel'),
-                    onPressed: () => Navigator.of(ctx).pop(),
-                  ),
-                  new RaisedButton(
-                    child: new Text('save'),
-                    onPressed: () =>
-                        Navigator.of(ctx).pop(_controller.value.text),
-                  ),
-                ],
-              ),
-            ])));
   }
 }
 
