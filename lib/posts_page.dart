@@ -81,6 +81,20 @@ class _PostsPageState extends State<PostsPage> {
     }
   }
 
+  Widget _itemBuilder(BuildContext ctx, int i) {
+    _log.fine('loading post $i');
+    if (i < _posts.length) {
+      return new PostPreview(_posts[i]);
+    } else if (i == _posts.length) {
+      return new RaisedButton(
+        child: new Text('load more'),
+        onPressed: _loadNextPage,
+      );
+    } else {
+      return null;
+    }
+  }
+
   Widget _body() {
     if (_offline) {
       return new Center(child: const Icon(Icons.cloud_off));
@@ -90,20 +104,12 @@ class _PostsPageState extends State<PostsPage> {
       return new Center(child: const Icon(Icons.refresh));
     }
 
-    return new ListView.builder(
-      itemBuilder: (ctx, i) {
-        _log.fine('loading post $i');
-        if (i < _posts.length) {
-          return new PostPreview(_posts[i]);
-        } else if (i == _posts.length) {
-          return new RaisedButton(
-            child: new Text('load more'),
-            onPressed: _loadNextPage,
-          );
-        } else {
-          return null;
-        }
-      },
+    return new GridView.custom(
+      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+        maxCrossAxisExtent: 250.0,
+        childAspectRatio: 9 / 17,
+      ),
+      childrenDelegate: new SliverChildBuilderDelegate(_itemBuilder),
     );
   }
 

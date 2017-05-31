@@ -117,9 +117,6 @@ class _PostWidgetState extends State<PostWidget> {
   }
 }
 
-const double _infoSquareVerticalPadding = 10.0;
-const double _infoSquareHorizontalPadding = 5.0;
-
 // Preview of a post that appears in lists of posts. Mostly just the image.
 class PostPreview extends StatelessWidget {
   static final Logger _log = new Logger('PostPreview');
@@ -138,20 +135,18 @@ class PostPreview extends StatelessWidget {
         ],
       )));
 
-  Widget _buildImagePreview(BuildContext ctx) => new LayoutBuilder(
-      builder: (ctx, constraints) => new Image.network(post.sample_url,
-          // Make the image width as large as possible with the card.
-          width: constraints.maxWidth,
-          // Make the height so that it keeps the original aspect ratio.
-          height:
-              constraints.maxWidth * (post.sample_height / post.sample_width),
-          fit: BoxFit.cover));
+  Widget _buildImagePreview(BuildContext ctx) => new Flexible(
+      child: new Container(
+          color: Colors.grey[800],
+          constraints: const BoxConstraints.expand(),
+          child: new Image.network(post.sample_url, fit: BoxFit.contain)));
 
   Widget _buildPostInfo(BuildContext ctx) {
     return new Padding(
         padding: const EdgeInsets.all(10.0),
         child: new Row(children: [
-          _buildInfoSquare(ctx),
+          new InfoSquare(
+              post.score, post.fav_count, post.has_comments, post.rating),
           new Padding(
               padding: const EdgeInsets.only(left: 10.0),
               child: new Column(children: [
@@ -160,6 +155,21 @@ class PostPreview extends StatelessWidget {
               ])),
         ]));
   }
+}
+
+const double _infoSquareVerticalPadding = 3.0;
+const double _infoSquareHorizontalPadding = 2.0;
+
+//    <score>    <comments>
+//    <favcount> <safety rating>
+class InfoSquare extends StatelessWidget {
+  final int score;
+  final int fav_count;
+  final bool has_comments;
+  final String rating;
+  InfoSquare(this.score, this.fav_count, this.has_comments, this.rating,
+      {Key key})
+      : super(key: key);
 
   // This builds a small icon followed by a text. Used for the info square.
   Widget _iconTextPair(IconData icon, String text) {
@@ -167,10 +177,10 @@ class PostPreview extends StatelessWidget {
       new Padding(
           padding: const EdgeInsets.only(right: 3.0),
           child: IconTheme.merge(
-            data: new IconThemeData(size: 16.0),
+            data: new IconThemeData(size: 12.0),
             child: new Icon(icon),
           )),
-      new Text(text),
+      new Text(text, style: new TextStyle(fontSize: 12.0)),
     ]);
   }
 
@@ -205,28 +215,25 @@ class PostPreview extends StatelessWidget {
   // </AWFUL>
   //
 
-  // Info square contains a table of:
-  //    <score>    <comments>
-  //    <favcount> <safety rating>
-  Widget _buildInfoSquare(BuildContext ctx) {
+  @override
+  Widget build(BuildContext ctx) {
     return new Table(
       // IntrinsicColumnWidth is expensive but also the only one that seems to work.
       defaultColumnWidth: const IntrinsicColumnWidth(),
       children: <TableRow>[
         new TableRow(
           children: [
-            _padTopLeft(post.score >= 0
-                ? _iconTextPair(Icons.arrow_upward, '+' + post.score.toString())
-                : _iconTextPair(Icons.arrow_downward, post.score.toString())),
-            _padTopRight(_iconTextPair(
-                Icons.question_answer, post.has_comments ? '+' : '0')),
+            _padTopLeft(score >= 0
+                ? _iconTextPair(Icons.arrow_upward, '+' + score.toString())
+                : _iconTextPair(Icons.arrow_downward, score.toString())),
+            _padTopRight(
+                _iconTextPair(Icons.question_answer, has_comments ? '+' : '0')),
           ],
         ),
         new TableRow(
           children: [
-            _padBottomLeft(
-                _iconTextPair(Icons.favorite, post.fav_count.toString())),
-            _padBottomRight(_iconTextPair(Icons.warning, post.rating)),
+            _padBottomLeft(_iconTextPair(Icons.favorite, fav_count.toString())),
+            _padBottomRight(_iconTextPair(Icons.warning, rating)),
           ],
         ),
       ],

@@ -18,13 +18,17 @@ class Post {
   Map raw;
 
   // Get the URL for the HTML version of the desired post.
-  Uri url(String host) => new Uri(scheme: 'https', host: host, path: '/post/show/$id');
+  Uri url(String host) =>
+      new Uri(scheme: 'https', host: host, path: '/post/show/$id');
 
   int id;
   int score;
   int fav_count;
   String file_url;
   String file_ext;
+  String preview_url;
+  int preview_width;
+  int preview_height;
   String sample_url;
   int sample_width;
   int sample_height;
@@ -40,6 +44,9 @@ class Post {
     fav_count = raw['fav_count'];
     file_url = raw['file_url'];
     file_ext = raw['file_ext'];
+    preview_url = raw['preview_url'];
+    preview_width = raw['preview_width'];
+    preview_height = raw['preview_height'];
     sample_url = raw['sample_url'];
     sample_width = raw['sample_width'];
     sample_height = raw['sample_height'];
