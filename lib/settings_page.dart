@@ -45,9 +45,7 @@ class SettingsPageState extends State<SettingsPage> {
 
   Widget _buildBody(BuildContext ctx) {
     _initialHost.then((String host) {
-      if (host == null) {
-        host = vars.DEFAULT_ENDPOINT;
-      }
+      assert(host != null); // set in persistence.dart
       setState(() {
         _hostController ??= new TextEditingController(text: host)
           ..selection =

@@ -66,7 +66,7 @@ class _PostsPageState extends State<PostsPage> {
   _loadNextPage() async {
     _offline = false; // Let's be optimistic. Doesn't update UI until setState()
     try {
-      client.host = await persistence.getHost() ?? vars.DEFAULT_ENDPOINT;
+      client.host = await persistence.getHost();
       _tags = _tags ?? await persistence.getTags();
       List newPosts = await client.posts(_tags, _page);
       setState(() {
