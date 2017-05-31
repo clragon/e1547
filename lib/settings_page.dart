@@ -32,15 +32,18 @@ class SettingsPageState extends State<SettingsPage> {
 
   TextEditingController _hostController;
 
+  void _onSubmitted(BuildContext ctx) async {
+    persistence.setHost((await _hostController).value.text);
+    Navigator.of(ctx).pop();
+  }
+
   Widget _buildAppBar(BuildContext ctx) =>
       new AppBar(title: new Text('Settings'), actions: <Widget>[
         new IconButton(
-            icon: const Icon(Icons.check),
-            tooltip: 'Save changes',
-            onPressed: () async {
-              persistence.setHost((await _hostController).value.text);
-              Navigator.of(ctx).pop();
-            })
+          icon: const Icon(Icons.check),
+          tooltip: 'Save changes',
+          onPressed: () => _onSubmitted(ctx),
+        ),
       ]);
 
   Widget _buildBody(BuildContext ctx) {
@@ -56,7 +59,11 @@ class SettingsPageState extends State<SettingsPage> {
         padding: new EdgeInsets.all(10.0),
         child: _hostController == null
             ? new Container()
-            : new TextField(autofocus: true, controller: _hostController));
+            : new TextField(
+                autofocus: true,
+                controller: _hostController,
+                onSubmitted: (v) => _onSubmitted(ctx),
+              ));
   }
 
   @override
