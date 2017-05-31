@@ -106,8 +106,8 @@ class _PostsPageState extends State<PostsPage> {
 
     return new GridView.custom(
       gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-        maxCrossAxisExtent: 250.0,
-        childAspectRatio: 9 / 17,
+        maxCrossAxisExtent: 150.0,
+        childAspectRatio: 3 / 5,
       ),
       childrenDelegate: new SliverChildBuilderDelegate(_itemBuilder),
     );

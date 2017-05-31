@@ -140,7 +140,7 @@ class PostPreview extends StatelessWidget {
     Widget image = new Container(
         color: Colors.grey[800],
         constraints: const BoxConstraints.expand(),
-        child: new Image.network(post.sample_url, fit: BoxFit.contain));
+        child: new Image.network(post.preview_url, fit: BoxFit.contain));
 
     Widget flexibleChild = image;
 
@@ -164,15 +164,15 @@ class PostPreview extends StatelessWidget {
   Widget _buildPostInfo(BuildContext ctx) {
     return new Padding(
         padding: const EdgeInsets.all(10.0),
-        child: new Row(children: [
+        child: new Column(children: [
           new InfoSquare(
               post.score, post.fav_count, post.has_comments, post.rating),
           new Padding(
-            padding: const EdgeInsets.only(left: 10.0),
+            padding: const EdgeInsets.only(top: 10.0),
             child: new Text(post.artist.join(',\n'),
                 style: const TextStyle(fontSize: 12.0),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis), // TODO: overflow doesn't work?
+                softWrap: false,
+                overflow: TextOverflow.ellipsis),
           ),
         ]));
   }
