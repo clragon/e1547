@@ -17,6 +17,7 @@
 import 'dart:convert' show JsonEncoder;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart' show TextOverflow;
 import 'package:flutter/services.dart' show Clipboard, ClipboardData;
 
 import 'package:logging/logging.dart' show Logger;
@@ -135,11 +136,30 @@ class PostPreview extends StatelessWidget {
         ],
       )));
 
-  Widget _buildImagePreview(BuildContext ctx) => new Flexible(
-      child: new Container(
-          color: Colors.grey[800],
-          constraints: const BoxConstraints.expand(),
-          child: new Image.network(post.sample_url, fit: BoxFit.contain)));
+  Widget _buildImagePreview(BuildContext ctx) {
+    Widget image = new Container(
+        color: Colors.grey[800],
+        constraints: const BoxConstraints.expand(),
+        child: new Image.network(post.sample_url, fit: BoxFit.contain));
+
+    Widget flexibleChild = image;
+
+    if (post.file_ext == 'gif') {
+      _log.fine('post ${post.id} was gif');
+      Widget gif = new Container(
+        padding: EdgeInsets.zero,
+        color: Colors.black38,
+        child: const Icon(Icons.gif),
+      );
+
+      flexibleChild = new Stack(children: [
+        image,
+        new Positioned(top: 0.0, right: 0.0, child: gif),
+      ]);
+    }
+
+    return new Flexible(child: flexibleChild);
+  }
 
   Widget _buildPostInfo(BuildContext ctx) {
     return new Padding(
@@ -148,11 +168,12 @@ class PostPreview extends StatelessWidget {
           new InfoSquare(
               post.score, post.fav_count, post.has_comments, post.rating),
           new Padding(
-              padding: const EdgeInsets.only(left: 10.0),
-              child: new Column(children: [
-                new Text(post.artist.join('+')),
-                new Text(post.file_ext),
-              ])),
+            padding: const EdgeInsets.only(left: 10.0),
+            child: new Text(post.artist.join(',\n'),
+                style: const TextStyle(fontSize: 12.0),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis), // TODO: overflow doesn't work?
+          ),
         ]));
   }
 }
