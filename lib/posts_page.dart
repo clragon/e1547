@@ -16,7 +16,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter/services.dart' show Clipboard, ClipboardData;
+import 'package:flutter/services.dart'
+    show Clipboard, ClipboardData, TextInputType;
 
 import 'package:logging/logging.dart' show Logger;
 
@@ -272,8 +273,12 @@ class _RangeDialogState extends State<_RangeDialog> {
         title: new Text('Posts with ${widget.title} at least'),
         children: <Widget>[
           new Container(
-              padding: const EdgeInsets.all(10.0),
+              padding: const EdgeInsets.only(bottom: 20.0),
               child: new TextField(
+                keyboardType: TextInputType.number,
+                style: const TextStyle(fontSize: 48.0),
+                textAlign: TextAlign.center,
+                decoration: const InputDecoration(hideDivider: true),
                 controller: _controller..text = _value.toString(),
                 onChanged: _setValue,
                 onSubmitted: (v) => Navigator.of(ctx).pop(int.parse(v)),
@@ -288,7 +293,7 @@ class _RangeDialogState extends State<_RangeDialog> {
                 setState(() => _value = v.toInt());
               }),
           new Padding(
-              padding: const EdgeInsets.only(top: 10.0, right: 10.0),
+              padding: const EdgeInsets.only(top: 20.0, right: 10.0),
               child: new Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
