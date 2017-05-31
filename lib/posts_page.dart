@@ -287,19 +287,21 @@ class _RangeDialogState extends State<_RangeDialog> {
                 _log.info('${widget.title} filter value: $v');
                 setState(() => _value = v.toInt());
               }),
-          new Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              new FlatButton(
-                child: new Text('cancel'),
-                onPressed: () => Navigator.of(ctx).pop(),
-              ),
-              new RaisedButton(
-                child: new Text('save'),
-                onPressed: () => Navigator.of(ctx).pop(_value),
-              ),
-            ],
-          ),
+          new Padding(
+              padding: const EdgeInsets.only(top: 10.0, right: 10.0),
+              child: new Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  new FlatButton(
+                    child: new Text('cancel'),
+                    onPressed: () => Navigator.of(ctx).pop(),
+                  ),
+                  new RaisedButton(
+                    child: new Text('save'),
+                    onPressed: () => Navigator.of(ctx).pop(_value),
+                  ),
+                ],
+              )),
         ]);
   }
 }
