@@ -44,6 +44,7 @@ class TagEntryPageState extends State<TagEntryPage> {
                   controller: _controller,
                   onSubmitted: (t) => Navigator.of(ctx).pop(t)),
               new Row(
+                mainAxisAlignment: MainAxisAlignment.end,
                 children: <Widget>[
                   new FlatButton(
                     child: new Text('cancel'),
