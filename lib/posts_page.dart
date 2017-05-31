@@ -288,6 +288,7 @@ class _RangeDialogState extends State<_RangeDialog> {
                 setState(() => _value = v.toInt());
               }),
           new Row(
+            mainAxisAlignment: MainAxisAlignment.end,
             children: [
               new FlatButton(
                 child: new Text('cancel'),
