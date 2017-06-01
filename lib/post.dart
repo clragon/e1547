@@ -105,9 +105,29 @@ class _PostWidgetState extends State<PostWidget> {
             onPressed: () => _log.fine('pressed chat')),
         new IconButton(
             icon: const Icon(Icons.open_in_browser),
-            tooltip: 'Open in browser',
-            onPressed: () async => url.launch(
-                widget.post.url(await persistence.getHost()).toString())),
+            tooltip: 'View in browser',
+            onPressed: () => showDialog(
+                context: ctx,
+                child: new SimpleDialog(
+                    title: new ListTile(
+                        leading: const Icon(Icons.open_in_browser),
+                        title: new Text(
+                            'View post #${widget.post.id} in browser')),
+                    children: [
+                      new ListTile(
+                          title: new Text('View post'),
+                          onTap: () async {
+                            String host = await persistence.getHost();
+                            url.launch(widget.post.url(host).toString());
+                            Navigator.of(ctx).pop();
+                          }),
+                      new ListTile(
+                          title: new Text('View direct content'),
+                          onTap: () {
+                            url.launch(widget.post.file_url);
+                            Navigator.of(ctx).pop();
+                          }),
+                    ]))),
         new IconButton(
             icon: const Icon(Icons.more_horiz),
             tooltip: 'More options',
@@ -289,14 +309,34 @@ class _MoreDialog extends StatelessWidget {
 
   Widget _buildCopy(BuildContext ctx) {
     return new ListTile(
-      leading: const Icon(Icons.content_copy),
-      title: new Text('Copy link'),
-      onTap: () async {
-        await Clipboard.setData(new ClipboardData(
-            text: post.url(await persistence.getHost()).toString()));
-        Navigator.of(ctx).pop();
-      },
-    );
+        leading: const Icon(Icons.content_copy),
+        title: new Text('Copy...'),
+        trailing: const Icon(Icons.arrow_right),
+        onTap: () => showDialog(
+            context: ctx,
+            child: new SimpleDialog(
+                title: new ListTile(
+                    leading: const Icon(Icons.content_copy),
+                    title: new Text('Copy from post #${post.id}')),
+                children: <Widget>[
+                  new ListTile(
+                      title: new Text('Copy link'),
+                      onTap: () async {
+                        String host = await persistence.getHost();
+                        await Clipboard.setData(
+                            new ClipboardData(text: post.url(host).toString()));
+                        Navigator.of(ctx).pop();
+                        Navigator.of(ctx).pop();
+                      }),
+                  new ListTile(
+                      title: new Text('Copy direct link'),
+                      onTap: () async {
+                        await Clipboard
+                            .setData(new ClipboardData(text: post.file_url));
+                        Navigator.of(ctx).pop();
+                        Navigator.of(ctx).pop();
+                      }),
+                ])));
   }
 
   @override
