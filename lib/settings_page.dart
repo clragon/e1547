@@ -20,7 +20,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 import 'persistence.dart' as persistence;
-import 'vars.dart' as vars;
 
 class SettingsPage extends StatefulWidget {
   @override
@@ -32,7 +31,7 @@ class SettingsPageState extends State<SettingsPage> {
 
   TextEditingController _hostController;
 
-  void _onSubmitted(BuildContext ctx) async {
+  _onSubmitted(BuildContext ctx) async {
     persistence.setHost((await _hostController).value.text);
     Navigator.of(ctx).pop();
   }
