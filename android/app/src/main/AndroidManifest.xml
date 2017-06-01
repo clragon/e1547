@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="io.vczf.e1547"
     android:versionCode="10"
-    android:versionName="0.0.10-alpha">
+    android:versionName="0.1.0-alpha">
 
     <uses-sdk android:minSdkVersion="16" android:targetSdkVersion="21" />
 
