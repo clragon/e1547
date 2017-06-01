@@ -170,7 +170,7 @@ class PostPreview extends StatelessWidget {
           new Padding(
             padding: const EdgeInsets.only(top: 10.0),
             child: new Text(post.artist.join(',\n'),
-                style: const TextStyle(fontSize: 12.0),
+                style: new TextStyle(fontSize: 12.0),
                 softWrap: false,
                 overflow: TextOverflow.ellipsis),
           ),

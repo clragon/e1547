@@ -17,12 +17,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/services.dart'
-    show Clipboard, ClipboardData, TextInputType;
+    show Clipboard, ClipboardData;
 
 import 'package:logging/logging.dart' show Logger;
 
 import 'persistence.dart' as persistence;
 import 'post.dart' show PostPreview;
+import 'range_dialog.dart' show RangeDialog;
 import 'tag_entry.dart' show TagEntryPage;
 import 'vars.dart' as vars;
 
@@ -106,7 +107,7 @@ class _PostsPageState extends State<PostsPage> {
     }
 
     return new GridView.custom(
-      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+      gridDelegate: new SliverGridDelegateWithMaxCrossAxisExtent(
         maxCrossAxisExtent: 150.0,
         childAspectRatio: 3 / 5,
       ),
@@ -147,7 +148,7 @@ class _PostsPageState extends State<PostsPage> {
           int min = await showDialog<int>(
               context: ctx,
               child:
-                  new _RangeDialog(title: filterType, value: value, max: 500));
+                  new RangeDialog(title: filterType, value: value, max: 500));
           _log.info('filter min value: $min');
           if (min == null) {
             return;
@@ -240,73 +241,5 @@ class _PostsPageState extends State<PostsPage> {
                 _search();
               }
             }));
-  }
-}
-
-class _RangeDialog extends StatefulWidget {
-  _RangeDialog({this.title, this.value, this.max});
-
-  final String title;
-  final int value;
-  final int max;
-
-  @override
-  _RangeDialogState createState() => new _RangeDialogState();
-}
-
-class _RangeDialogState extends State<_RangeDialog> {
-  final Logger _log = new Logger('_RangeDialog');
-
-  TextEditingController _controller = new TextEditingController();
-  int _value;
-
-  void _setValue(String v) {
-    setState(() {
-      _value = int.parse(v);
-    });
-  }
-
-  @override
-  Widget build(BuildContext ctx) {
-    _value = _value ?? widget.value;
-    return new SimpleDialog(
-        title: new Text('Posts with ${widget.title} at least'),
-        children: <Widget>[
-          new Container(
-              padding: const EdgeInsets.only(bottom: 20.0),
-              child: new TextField(
-                keyboardType: TextInputType.number,
-                style: const TextStyle(fontSize: 48.0),
-                textAlign: TextAlign.center,
-                decoration: const InputDecoration(hideDivider: true),
-                controller: _controller..text = _value.toString(),
-                onChanged: _setValue,
-                onSubmitted: (v) => Navigator.of(ctx).pop(int.parse(v)),
-              )),
-          new Slider(
-              min: 0.0,
-              max: widget.max.toDouble(),
-              divisions: 50,
-              value: _value.toDouble(),
-              onChanged: (v) {
-                _log.info('${widget.title} filter value: $v');
-                setState(() => _value = v.toInt());
-              }),
-          new Padding(
-              padding: const EdgeInsets.only(top: 20.0, right: 10.0),
-              child: new Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  new FlatButton(
-                    child: new Text('cancel'),
-                    onPressed: () => Navigator.of(ctx).pop(),
-                  ),
-                  new RaisedButton(
-                    child: new Text('save'),
-                    onPressed: () => Navigator.of(ctx).pop(_value),
-                  ),
-                ],
-              )),
-        ]);
   }
 }
