@@ -67,7 +67,13 @@ class _PostWidgetState extends State<PostWidget> {
       body: new Column(mainAxisSize: MainAxisSize.min, children: [
         new Flexible(
             child: new GestureDetector(
-                onTap: () => _fullscreen(ctx),
+                onTap: () {
+                  if (widget.post.file_ext == 'gif') {
+                    url.launch(widget.post.file_url);
+                  } else {
+                    _fullscreen(ctx);
+                  }
+                },
                 child: new Container(
                   color: Colors.black,
                   constraints: const BoxConstraints.expand(),
