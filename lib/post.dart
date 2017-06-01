@@ -302,11 +302,11 @@ class _MoreDialog extends StatelessWidget {
               title: new Text('post #${post.id} info'),
               children: <Widget>[
                 new TextField(
-                    maxLines: 10, // TODO: Make this relative to screen size.
-                    style: new TextStyle(fontFamily: 'Courier'),
-                    controller: new TextEditingController(
-                        text:
-                            new JsonEncoder.withIndent('  ').convert(post.raw)))
+                  maxLines: 15,
+                  decoration: new InputDecoration(hideDivider: true),
+                  style: new TextStyle(fontFamily: 'Courier'),
+                  controller: new TextEditingController(
+                    text: new JsonEncoder.withIndent('  ').convert(post.raw)))
               ],
             ),
           ),
