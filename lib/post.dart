@@ -46,7 +46,7 @@ class _PostWidgetState extends State<PostWidget> {
   _fullscreen(BuildContext ctx) async {
     await Navigator.of(ctx).push(new MaterialPageRoute<Null>(
           builder: (ctx) => new ZoomableImage(
-                  new NetworkImage(widget.post.file_url),
+                  new NetworkImage(widget.post.fileUrl),
                   scale: 16.0, onTap: () {
                 _isFullscreen = !_isFullscreen;
                 if (_isFullscreen) {
@@ -68,8 +68,8 @@ class _PostWidgetState extends State<PostWidget> {
         new Flexible(
             child: new GestureDetector(
                 onTap: () {
-                  if (widget.post.file_ext == 'gif') {
-                    url.launch(widget.post.file_url);
+                  if (widget.post.fileExt == 'gif') {
+                    url.launch(widget.post.fileUrl);
                   } else {
                     _fullscreen(ctx);
                   }
@@ -79,7 +79,7 @@ class _PostWidgetState extends State<PostWidget> {
                   constraints: const BoxConstraints.expand(),
                   child: new Stack(children: [
                     new Center(
-                        child: new Image.network(widget.post.sample_url)),
+                        child: new Image.network(widget.post.sampleUrl)),
                     new Positioned(
                       right: 0.0,
                       bottom: 0.0,
@@ -130,7 +130,7 @@ class _PostWidgetState extends State<PostWidget> {
                       new ListTile(
                           title: new Text('View direct content'),
                           onTap: () {
-                            url.launch(widget.post.file_url);
+                            url.launch(widget.post.fileUrl);
                             Navigator.of(ctx).pop();
                           }),
                     ]))),
@@ -166,11 +166,11 @@ class PostPreview extends StatelessWidget {
     Widget image = new Container(
         color: Colors.grey[800],
         constraints: const BoxConstraints.expand(),
-        child: new Image.network(post.preview_url, fit: BoxFit.contain));
+        child: new Image.network(post.previewUrl, fit: BoxFit.contain));
 
     Widget flexibleChild = image;
 
-    if (post.file_ext == 'gif') {
+    if (post.fileExt == 'gif') {
       _log.fine('post ${post.id} was gif');
       Widget gif = new Container(
         padding: EdgeInsets.zero,
@@ -192,7 +192,7 @@ class PostPreview extends StatelessWidget {
         padding: const EdgeInsets.all(10.0),
         child: new Column(children: [
           new InfoSquare(
-              post.score, post.fav_count, post.has_comments, post.rating),
+              post.score, post.favCount, post.hasComments, post.rating),
           new Padding(
             padding: const EdgeInsets.only(top: 10.0),
             child: new Text(post.artist.join(',\n'),
@@ -211,10 +211,10 @@ const double _infoSquareHorizontalPadding = 2.0;
 //    <favcount> <safety rating>
 class InfoSquare extends StatelessWidget {
   final int score;
-  final int fav_count;
-  final bool has_comments;
+  final int favCount;
+  final bool hasComments;
   final String rating;
-  InfoSquare(this.score, this.fav_count, this.has_comments, this.rating,
+  InfoSquare(this.score, this.favCount, this.hasComments, this.rating,
       {Key key})
       : super(key: key);
 
@@ -274,12 +274,12 @@ class InfoSquare extends StatelessWidget {
                 ? _iconTextPair(Icons.arrow_upward, '+' + score.toString())
                 : _iconTextPair(Icons.arrow_downward, score.toString())),
             _padTopRight(
-                _iconTextPair(Icons.question_answer, has_comments ? '+' : '0')),
+                _iconTextPair(Icons.question_answer, hasComments ? '+' : '0')),
           ],
         ),
         new TableRow(
           children: [
-            _padBottomLeft(_iconTextPair(Icons.favorite, fav_count.toString())),
+            _padBottomLeft(_iconTextPair(Icons.favorite, favCount.toString())),
             _padBottomRight(_iconTextPair(Icons.warning, rating)),
           ],
         ),
@@ -338,7 +338,7 @@ class _MoreDialog extends StatelessWidget {
                       title: new Text('Copy direct link'),
                       onTap: () async {
                         await Clipboard
-                            .setData(new ClipboardData(text: post.file_url));
+                            .setData(new ClipboardData(text: post.fileUrl));
                         Navigator.of(ctx).pop();
                         Navigator.of(ctx).pop();
                       }),

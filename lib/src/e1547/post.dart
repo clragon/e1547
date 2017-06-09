@@ -23,17 +23,17 @@ class Post {
 
   int id;
   int score;
-  int fav_count;
-  String file_url;
-  String file_ext;
-  String preview_url;
-  int preview_width;
-  int preview_height;
-  String sample_url;
-  int sample_width;
-  int sample_height;
+  int favCount;
+  String fileUrl;
+  String fileExt;
+  String previewUrl;
+  int previewWidth;
+  int previewHeight;
+  String sampleUrl;
+  int sampleWidth;
+  int sampleHeight;
   String rating;
-  bool has_comments;
+  bool hasComments;
   List<String> artist;
 
   Post.fromRaw(Map raw) {
@@ -41,19 +41,19 @@ class Post {
 
     id = raw['id'];
     score = raw['score'];
-    fav_count = raw['fav_count'];
-    file_url = raw['file_url'];
-    file_ext = raw['file_ext'];
-    preview_url = raw['preview_url'];
-    preview_width = raw['preview_width'];
-    preview_height = raw['preview_height'];
-    sample_url = raw['sample_url'];
-    sample_width = raw['sample_width'];
-    sample_height = raw['sample_height'];
+    favCount = raw['fav_count'];
+    fileUrl = raw['file_url'];
+    fileExt = raw['file_ext'];
+    previewUrl = raw['preview_url'];
+    previewWidth = raw['preview_width'];
+    previewHeight = raw['preview_height'];
+    sampleUrl = raw['sample_url'];
+    sampleWidth = raw['sample_width'];
+    sampleHeight = raw['sample_height'];
 
     rating = raw['rating'].toUpperCase();
 
-    has_comments = raw['has_comments'];
+    hasComments = raw['has_comments'];
 
     artist = raw['artist'];
   }

@@ -37,7 +37,7 @@ class Tag {
   String toString() => value == null ? name : '$name:$value';
 
   @override
-  bool operator ==(Tag other) =>
+  bool operator ==(other) =>
       this.name == other.name && this.value == other.value;
 
   @override
@@ -74,7 +74,7 @@ class Tagset extends Object with IterableMixin<Tag> {
     _log.fine('tagset tags: $_tags');
   }
 
-  bool contains(String tagName) {
+  bool contains(Object tagName) {
     return _tags.containsKey(tagName);
   }
 

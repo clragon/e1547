@@ -32,7 +32,7 @@ class SettingsPageState extends State<SettingsPage> {
   TextEditingController _hostController;
 
   _onSubmitted(BuildContext ctx) async {
-    persistence.setHost((await _hostController).value.text);
+    persistence.setHost(_hostController.value.text);
     Navigator.of(ctx).pop();
   }
 

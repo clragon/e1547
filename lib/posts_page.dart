@@ -70,7 +70,7 @@ class _PostsPageState extends State<PostsPage> {
     try {
       client.host = await persistence.getHost();
       _tags = _tags ?? await persistence.getTags();
-      List newPosts = await client.posts(_tags, _page);
+      var newPosts = await client.posts(_tags, _page);
       setState(() {
         _posts.addAll(newPosts);
       });

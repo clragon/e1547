@@ -63,7 +63,7 @@ void main() {
     test('Parse simple tagstring with whitespace', () {
       Tagset tset = new Tagset.parse('  kikurage \t \ncute_fangs\t \n');
       expect(tset, orderedEquals([new Tag('kikurage'), new Tag('cute_fangs')]));
-    });;
+    });
 
     test('Check URL', () {
       Uri url = (new Tagset.parse('order:score cute_fangs')).url('e1547.io');
