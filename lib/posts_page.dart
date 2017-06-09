@@ -119,17 +119,6 @@ class _PostsPageState extends State<PostsPage> {
     List<Widget> widgets = [];
 
     widgets.add(new PopupMenuButton<String>(
-        icon: const Icon(Icons.view_carousel),
-        tooltip: 'Change view',
-        itemBuilder: (ctx) => <PopupMenuEntry<String>>[
-              new PopupMenuItem(child: new Text('Cards'), value: 'cards'),
-              new PopupMenuItem(child: new Text('Swipe'), value: 'swipe'),
-            ],
-        onSelected: (String viewType) {
-          _log.info('Selected view: $viewType');
-        }));
-
-    widgets.add(new PopupMenuButton<String>(
         icon: const Icon(Icons.filter_list),
         tooltip: 'Filter by',
         itemBuilder: (ctx) => <PopupMenuEntry<String>>[
