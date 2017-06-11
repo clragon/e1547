@@ -36,6 +36,14 @@ class SettingsPageState extends State<SettingsPage> {
     Navigator.of(ctx).pop();
   }
 
+  @override
+  Widget build(BuildContext ctx) {
+    return new Scaffold(
+      appBar: _buildAppBar(ctx),
+      body: _buildBody(ctx),
+    );
+  }
+
   Widget _buildAppBar(BuildContext ctx) =>
       new AppBar(title: new Text('Settings'), actions: <Widget>[
         new IconButton(
@@ -50,26 +58,21 @@ class SettingsPageState extends State<SettingsPage> {
       assert(host != null); // set in persistence.dart
       setState(() {
         _hostController ??= new TextEditingController(text: host)
-          ..selection =
-              new TextSelection(baseOffset: 0, extentOffset: host.indexOf('.'));
+          ..selection = new TextSelection(
+            baseOffset: 0,
+            extentOffset: host.indexOf('.'),
+          );
       });
     });
-    return new Container(
-        padding: new EdgeInsets.all(10.0),
-        child: _hostController == null
-            ? new Container()
-            : new TextField(
-                autofocus: true,
-                controller: _hostController,
-                onSubmitted: (v) => _onSubmitted(ctx),
-              ));
-  }
 
-  @override
-  Widget build(BuildContext ctx) {
-    return new Scaffold(
-      appBar: _buildAppBar(ctx),
-      body: _buildBody(ctx),
-    );
+    Widget body = _hostController == null
+        ? new Container()
+        : new TextField(
+            autofocus: true,
+            controller: _hostController,
+            onSubmitted: (v) => _onSubmitted(ctx),
+          );
+
+    return new Container(padding: new EdgeInsets.all(10.0), child: body);
   }
 }

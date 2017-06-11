@@ -29,34 +29,39 @@ class TagEntryPageState extends State<TagEntryPage> {
 
   @override
   Widget build(BuildContext ctx) {
+    return new Scaffold(
+        appBar: new AppBar(title: new Text('tags')), body: _buildBody(ctx));
+  }
+
+  Widget _buildBody(BuildContext ctx) {
     _controller ??= new TextEditingController(text: widget.tags)
       ..selection = new TextSelection(
-          baseOffset: widget.tags.length, extentOffset: widget.tags.length);
+        baseOffset: widget.tags.length,
+        extentOffset: widget.tags.length,
+      );
 
-    return new Scaffold(
-        appBar: new AppBar(title: new Text('tags')),
-        body: new Container(
-            padding: new EdgeInsets.all(10.0),
-            child: new Column(children: <Widget>[
-              new TextField(
-                  autofocus: true,
-                  maxLines: 50,
-                  controller: _controller,
-                  onSubmitted: (t) => Navigator.of(ctx).pop(t)),
-              new Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: <Widget>[
-                  new FlatButton(
-                    child: new Text('cancel'),
-                    onPressed: () => Navigator.of(ctx).pop(),
-                  ),
-                  new RaisedButton(
-                    child: new Text('save'),
-                    onPressed: () =>
-                        Navigator.of(ctx).pop(_controller.value.text),
-                  ),
-                ],
-              ),
-            ])));
+    Widget tagEntry = new TextField(
+        autofocus: true,
+        maxLines: 50,
+        controller: _controller,
+        onSubmitted: (t) => Navigator.of(ctx).pop(t));
+
+    List<Widget> buttons = [
+      new FlatButton(
+        child: new Text('cancel'),
+        onPressed: () => Navigator.of(ctx).pop(),
+      ),
+      new RaisedButton(
+        child: new Text('save'),
+        onPressed: () => Navigator.of(ctx).pop(_controller.value.text),
+      ),
+    ];
+
+    return new Container(
+        padding: new EdgeInsets.all(10.0),
+        child: new Column(children: <Widget>[
+          tagEntry,
+          new Row(mainAxisAlignment: MainAxisAlignment.end, children: buttons)
+        ]));
   }
 }

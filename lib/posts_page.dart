@@ -16,8 +16,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter/services.dart'
-    show Clipboard, ClipboardData;
+import 'package:flutter/services.dart' show Clipboard, ClipboardData;
 
 import 'package:logging/logging.dart' show Logger;
 
@@ -41,14 +40,11 @@ class PostsPage extends StatefulWidget {
 class _PostsPageState extends State<PostsPage> {
   final Logger _log = new Logger('PostsPage');
 
-  // Current tags being displayed or searched.
-  Tagset _tags;
-  // Current posts being displayed.
-  List<Post> _posts = [];
+  Tagset _tags; // Tags used for searching for posts.
+  List<Post> _posts = []; // Posts being displayed.
   int _page = _STARTING_PAGE;
 
-  // If we're currently offline, meaning a request has failed.
-  bool _offline = false;
+  bool _offline = false; // If true, the last request has failed.
 
   @override
   void initState() {
@@ -58,22 +54,18 @@ class _PostsPageState extends State<PostsPage> {
     _loadNextPage();
   }
 
-  _search() {
-    persistence.setTags(_tags);
-    _page = _STARTING_PAGE;
-    _posts.clear();
-    _loadNextPage();
-  }
-
   _loadNextPage() async {
     _offline = false; // Let's be optimistic. Doesn't update UI until setState()
+
     try {
       client.host = await persistence.getHost();
       _tags = _tags ?? await persistence.getTags();
+
       var newPosts = await client.posts(_tags, _page);
       setState(() {
         _posts.addAll(newPosts);
       });
+
       _page++;
     } catch (e) {
       _log.info('Going offline: $e', e);
@@ -83,35 +75,20 @@ class _PostsPageState extends State<PostsPage> {
     }
   }
 
-  Widget _itemBuilder(BuildContext ctx, int i) {
-    _log.fine('loading post $i');
-    if (i < _posts.length) {
-      return new PostPreview(_posts[i]);
-    } else if (i == _posts.length) {
-      return new RaisedButton(
-        child: new Text('load more'),
-        onPressed: _loadNextPage,
-      );
-    } else {
-      return null;
-    }
+  _search() {
+    persistence.setTags(_tags);
+    _page = _STARTING_PAGE;
+    _posts.clear();
+    _loadNextPage();
   }
 
-  Widget _body() {
-    if (_offline) {
-      return new Center(child: const Icon(Icons.cloud_off));
-    }
-
-    if (_posts.isEmpty) {
-      return new Center(child: const Icon(Icons.refresh));
-    }
-
-    return new GridView.custom(
-      gridDelegate: new SliverGridDelegateWithMaxCrossAxisExtent(
-        maxCrossAxisExtent: 150.0,
-        childAspectRatio: 3 / 5,
-      ),
-      childrenDelegate: new SliverChildBuilderDelegate(_itemBuilder),
+  @override
+  Widget build(BuildContext ctx) {
+    return new Scaffold(
+      appBar: _buildAppBar(ctx),
+      body: _buildBody(ctx),
+      drawer: _buildDrawer(ctx),
+      floatingActionButton: _buildFloatingActionButton(ctx),
     );
   }
 
@@ -197,38 +174,68 @@ class _PostsPageState extends State<PostsPage> {
     return new AppBar(title: new Text(vars.APP_NAME), actions: widgets);
   }
 
-  @override
-  Widget build(BuildContext ctx) {
-    return new Scaffold(
-        appBar: _buildAppBar(ctx),
-        body: _body(),
-        drawer: new Drawer(
-            child: new ListView(children: [
-          new UserAccountsDrawerHeader(
-              // TODO: account name and email
-              accountName: new Text('<username>'),
-              accountEmail: new Text('<email>'),
-              currentAccountPicture: new CircleAvatar(
-                  backgroundColor: Colors.brown.shade800,
-                  child: new Text('UU'))),
-          new ListTile(
-              leading: const Icon(Icons.settings),
-              title: new Text('Settings'),
-              onTap: () => Navigator.popAndPushNamed(ctx, '/settings')),
-          new AboutListTile(icon: const Icon(Icons.help)),
-        ])),
-        floatingActionButton: new FloatingActionButton(
-            child: const Icon(Icons.search),
-            onPressed: () async {
-              String tagString = await Navigator.of(ctx).push(
-                  new MaterialPageRoute<String>(
-                      builder: (ctx) => new TagEntryPage(_tags.toString())));
+  Widget _buildBody(BuildContext ctx) {
+    if (_offline) {
+      return new Center(child: const Icon(Icons.cloud_off));
+    }
 
-              _log.fine('edited tags: "$tagString"');
-              if (tagString != null) {
-                _tags = new Tagset.parse(tagString);
-                _search();
-              }
-            }));
+    if (_posts.isEmpty) {
+      return new Center(child: const Icon(Icons.refresh));
+    }
+
+    return new GridView.custom(
+      gridDelegate: new SliverGridDelegateWithMaxCrossAxisExtent(
+        maxCrossAxisExtent: 150.0,
+        childAspectRatio: 3 / 5,
+      ),
+      childrenDelegate: new SliverChildBuilderDelegate(_itemBuilder),
+    );
+  }
+
+  Widget _itemBuilder(BuildContext ctx, int i) {
+    _log.fine('loading post $i');
+    if (i < _posts.length) {
+      return new PostPreview(_posts[i]);
+    } else if (i == _posts.length) {
+      return new RaisedButton(
+        child: new Text('load more'),
+        onPressed: _loadNextPage,
+      );
+    } else {
+      return null;
+    }
+  }
+
+  Widget _buildDrawer(BuildContext ctx) {
+    return new Drawer(
+        child: new ListView(children: [
+      new UserAccountsDrawerHeader(
+          // TODO: account name and email
+          accountName: new Text('<username>'),
+          accountEmail: new Text('<email>'),
+          currentAccountPicture: new CircleAvatar(
+              backgroundColor: Colors.brown.shade800, child: new Text('UU'))),
+      new ListTile(
+          leading: const Icon(Icons.settings),
+          title: new Text('Settings'),
+          onTap: () => Navigator.popAndPushNamed(ctx, '/settings')),
+      new AboutListTile(icon: const Icon(Icons.help)),
+    ]));
+  }
+
+  Widget _buildFloatingActionButton(BuildContext ctx) {
+    return new FloatingActionButton(
+        child: const Icon(Icons.search),
+        onPressed: () async {
+          String tagString = await Navigator.of(ctx).push(
+              new MaterialPageRoute<String>(
+                  builder: (ctx) => new TagEntryPage(_tags.toString())));
+
+          _log.fine('edited tags: "$tagString"');
+          if (tagString != null) {
+            _tags = new Tagset.parse(tagString);
+            _search();
+          }
+        });
   }
 }

@@ -48,41 +48,61 @@ class RangeDialogState extends State<RangeDialog> {
     return new SimpleDialog(
         title: new Text('Posts with ${widget.title} at least'),
         children: <Widget>[
-          new Container(
-              padding: const EdgeInsets.only(bottom: 20.0),
-              child: new TextField(
-                keyboardType: TextInputType.number,
-                style: new TextStyle(fontSize: 48.0),
-                textAlign: TextAlign.center,
-                decoration: const InputDecoration(hideDivider: true),
-                controller: _controller..text = _value.toString(),
-                onChanged: _setValue,
-                onSubmitted: (v) => Navigator.of(ctx).pop(int.parse(v)),
-              )),
-          new Slider(
-              min: 0.0,
-              max: widget.max.toDouble(),
-              divisions: 50,
-              value: _value.toDouble(),
-              onChanged: (v) {
-                _log.info('${widget.title} filter value: $v');
-                setState(() => _value = v.toInt());
-              }),
-          new Padding(
-              padding: const EdgeInsets.only(top: 20.0, right: 10.0),
-              child: new Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  new FlatButton(
-                    child: new Text('cancel'),
-                    onPressed: () => Navigator.of(ctx).pop(),
-                  ),
-                  new RaisedButton(
-                    child: new Text('save'),
-                    onPressed: () => Navigator.of(ctx).pop(_value),
-                  ),
-                ],
-              )),
+          _buildNumber(ctx),
+          _buildSlider(ctx),
+          _buildButtons(ctx),
         ]);
+  }
+
+  Widget _buildNumber(BuildContext ctx) {
+    _controller.text = _value.toString();
+
+    Widget number = new TextField(
+      keyboardType: TextInputType.number,
+      style: new TextStyle(fontSize: 48.0),
+      textAlign: TextAlign.center,
+      decoration: const InputDecoration(hideDivider: true),
+      controller: _controller,
+      onChanged: _setValue,
+      onSubmitted: (v) => Navigator.of(ctx).pop(int.parse(v)),
+    );
+
+    return new Container(
+      padding: const EdgeInsets.only(bottom: 20.0),
+      child: number,
+    );
+  }
+
+  Widget _buildSlider(BuildContext ctx) {
+    return new Slider(
+        min: 0.0,
+        max: widget.max.toDouble(),
+        divisions: 50,
+        value: _value.toDouble(),
+        onChanged: (v) {
+          _log.info('${widget.title} filter value: $v');
+          setState(() => _value = v.toInt());
+        });
+  }
+
+  Widget _buildButtons(BuildContext ctx) {
+    List<Widget> buttons = [
+      new FlatButton(
+        child: new Text('cancel'),
+        onPressed: () => Navigator.of(ctx).pop(),
+      ),
+      new RaisedButton(
+        child: new Text('save'),
+        onPressed: () => Navigator.of(ctx).pop(_value),
+      ),
+    ];
+
+    return new Padding(
+      padding: const EdgeInsets.only(top: 20.0, right: 10.0),
+      child: new Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: buttons,
+      ),
+    );
   }
 }

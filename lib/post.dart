@@ -78,8 +78,7 @@ class _PostWidgetState extends State<PostWidget> {
                   color: Colors.black,
                   constraints: const BoxConstraints.expand(),
                   child: new Stack(children: [
-                    new Center(
-                        child: new Image.network(widget.post.sampleUrl)),
+                    new Center(child: new Image.network(widget.post.sampleUrl)),
                     new Positioned(
                       right: 0.0,
                       bottom: 0.0,
@@ -112,28 +111,7 @@ class _PostWidgetState extends State<PostWidget> {
         new IconButton(
             icon: const Icon(Icons.open_in_browser),
             tooltip: 'View in browser',
-            onPressed: () => showDialog(
-                context: ctx,
-                child: new SimpleDialog(
-                    title: new ListTile(
-                        leading: const Icon(Icons.open_in_browser),
-                        title: new Text(
-                            'View post #${widget.post.id} in browser')),
-                    children: [
-                      new ListTile(
-                          title: new Text('View post'),
-                          onTap: () async {
-                            String host = await persistence.getHost();
-                            url.launch(widget.post.url(host).toString());
-                            Navigator.of(ctx).pop();
-                          }),
-                      new ListTile(
-                          title: new Text('View direct content'),
-                          onTap: () {
-                            url.launch(widget.post.fileUrl);
-                            Navigator.of(ctx).pop();
-                          }),
-                    ]))),
+            onPressed: () => _viewInBrowserButtonOnPressed(ctx)),
         new IconButton(
             icon: const Icon(Icons.more_horiz),
             tooltip: 'More options',
@@ -141,6 +119,33 @@ class _PostWidgetState extends State<PostWidget> {
                 showDialog(context: ctx, child: new _MoreDialog(widget.post))),
       ],
     ));
+  }
+
+  _viewInBrowserButtonOnPressed(BuildContext ctx) {
+    SimpleDialog dialog;
+    Widget title = new ListTile(
+      leading: const Icon(Icons.open_in_browser),
+      title: new Text('View post #${widget.post.id} in browser'),
+    );
+
+    List<Widget> children = <Widget>[
+      new ListTile(
+          title: new Text('View post'),
+          onTap: () async {
+            String host = await persistence.getHost();
+            url.launch(widget.post.url(host).toString());
+            Navigator.of(ctx).pop();
+          }),
+      new ListTile(
+          title: new Text('View direct content'),
+          onTap: () {
+            url.launch(widget.post.fileUrl);
+            Navigator.of(ctx).pop();
+          }),
+    ];
+
+    dialog = new SimpleDialog(title: title, children: children);
+    showDialog(context: ctx, child: dialog);
   }
 }
 
@@ -150,10 +155,15 @@ class PostPreview extends StatelessWidget {
   final Post post;
   PostPreview(this.post, {Key key}) : super(key: key);
 
+  _showFullPost(BuildContext ctx) {
+    Route postRoute =
+        new MaterialPageRoute<Null>(builder: (ctx) => new PostWidget(post));
+    Navigator.of(ctx).push(postRoute);
+  }
+
   @override
   Widget build(BuildContext ctx) => new GestureDetector(
-      onTap: () => Navigator.of(ctx).push(
-          new MaterialPageRoute<Null>(builder: (ctx) => new PostWidget(post))),
+      onTap: () => _showFullPost(ctx),
       child: new Card(
           child: new Column(
         children: <Widget>[
@@ -164,9 +174,10 @@ class PostPreview extends StatelessWidget {
 
   Widget _buildImagePreview(BuildContext ctx) {
     Widget image = new Container(
-        color: Colors.grey[800],
-        constraints: const BoxConstraints.expand(),
-        child: new Image.network(post.previewUrl, fit: BoxFit.contain));
+      color: Colors.grey[800],
+      constraints: const BoxConstraints.expand(),
+      child: new Image.network(post.previewUrl, fit: BoxFit.contain),
+    );
 
     Widget flexibleChild = image;
 
@@ -188,18 +199,22 @@ class PostPreview extends StatelessWidget {
   }
 
   Widget _buildPostInfo(BuildContext ctx) {
+    Widget info = new InfoSquare(
+        post.score, post.favCount, post.hasComments, post.rating);
+
+    Widget artists = new Text(
+      post.artist.join(',\n'),
+      style: new TextStyle(fontSize: 12.0),
+      softWrap: false,
+      overflow: TextOverflow.ellipsis,
+    );
+
     return new Padding(
         padding: const EdgeInsets.all(10.0),
         child: new Column(children: [
-          new InfoSquare(
-              post.score, post.favCount, post.hasComments, post.rating),
+          info,
           new Padding(
-            padding: const EdgeInsets.only(top: 10.0),
-            child: new Text(post.artist.join(',\n'),
-                style: new TextStyle(fontSize: 12.0),
-                softWrap: false,
-                overflow: TextOverflow.ellipsis),
-          ),
+              padding: const EdgeInsets.only(top: 10.0), child: artists),
         ]));
   }
 }
@@ -229,6 +244,33 @@ class InfoSquare extends StatelessWidget {
           )),
       new Text(text, style: new TextStyle(fontSize: 12.0)),
     ]);
+  }
+
+  @override
+  Widget build(BuildContext ctx) {
+    Widget scoreInfo = score >= 0
+        ? _iconTextPair(Icons.arrow_upward, '+' + score.toString())
+        : _iconTextPair(Icons.arrow_downward, score.toString());
+
+    Widget commentsInfo =
+        _iconTextPair(Icons.question_answer, hasComments ? '+' : '0');
+
+    Widget favoritesInfo = _iconTextPair(Icons.favorite, favCount.toString());
+    Widget ratingInfo = _iconTextPair(Icons.warning, rating);
+
+    return new Table(
+        // IntrinsicColumnWidth is expensive but also the only one that seems to work.
+        defaultColumnWidth: const IntrinsicColumnWidth(),
+        children: <TableRow>[
+          new TableRow(children: [
+            _padTopLeft(scoreInfo),
+            _padTopRight(commentsInfo),
+          ]),
+          new TableRow(children: [
+            _padBottomLeft(favoritesInfo),
+            _padBottomRight(ratingInfo),
+          ]),
+        ]);
   }
 
   //
@@ -261,36 +303,19 @@ class InfoSquare extends StatelessWidget {
   //
   // </AWFUL>
   //
-
-  @override
-  Widget build(BuildContext ctx) {
-    return new Table(
-      // IntrinsicColumnWidth is expensive but also the only one that seems to work.
-      defaultColumnWidth: const IntrinsicColumnWidth(),
-      children: <TableRow>[
-        new TableRow(
-          children: [
-            _padTopLeft(score >= 0
-                ? _iconTextPair(Icons.arrow_upward, '+' + score.toString())
-                : _iconTextPair(Icons.arrow_downward, score.toString())),
-            _padTopRight(
-                _iconTextPair(Icons.question_answer, hasComments ? '+' : '0')),
-          ],
-        ),
-        new TableRow(
-          children: [
-            _padBottomLeft(_iconTextPair(Icons.favorite, favCount.toString())),
-            _padBottomRight(_iconTextPair(Icons.warning, rating)),
-          ],
-        ),
-      ],
-    );
-  }
 }
 
 class _MoreDialog extends StatelessWidget {
   final Post post;
   _MoreDialog(this.post);
+
+  @override
+  Widget build(BuildContext ctx) {
+    return new SimpleDialog(title: new Text('post #${post.id}'), children: [
+      _buildPostInfo(ctx),
+      _buildCopy(ctx),
+    ]);
+  }
 
   Widget _buildPostInfo(BuildContext ctx) {
     return new ListTile(
@@ -302,11 +327,12 @@ class _MoreDialog extends StatelessWidget {
               title: new Text('post #${post.id} info'),
               children: <Widget>[
                 new TextField(
-                  maxLines: 15,
-                  decoration: new InputDecoration(hideDivider: true),
-                  style: new TextStyle(fontFamily: 'Courier'),
-                  controller: new TextEditingController(
-                    text: new JsonEncoder.withIndent('  ').convert(post.raw)))
+                    maxLines: 15,
+                    decoration: new InputDecoration(hideDivider: true),
+                    style: new TextStyle(fontFamily: 'Courier'),
+                    controller: new TextEditingController(
+                        text:
+                            new JsonEncoder.withIndent('  ').convert(post.raw)))
               ],
             ),
           ),
@@ -315,43 +341,41 @@ class _MoreDialog extends StatelessWidget {
 
   Widget _buildCopy(BuildContext ctx) {
     return new ListTile(
-        leading: const Icon(Icons.content_copy),
-        title: new Text('Copy...'),
-        trailing: const Icon(Icons.arrow_right),
-        onTap: () => showDialog(
-            context: ctx,
-            child: new SimpleDialog(
-                title: new ListTile(
-                    leading: const Icon(Icons.content_copy),
-                    title: new Text('Copy from post #${post.id}')),
-                children: <Widget>[
-                  new ListTile(
-                      title: new Text('Copy link'),
-                      onTap: () async {
-                        String host = await persistence.getHost();
-                        await Clipboard.setData(
-                            new ClipboardData(text: post.url(host).toString()));
-                        Navigator.of(ctx).pop();
-                        Navigator.of(ctx).pop();
-                      }),
-                  new ListTile(
-                      title: new Text('Copy direct link'),
-                      onTap: () async {
-                        await Clipboard
-                            .setData(new ClipboardData(text: post.fileUrl));
-                        Navigator.of(ctx).pop();
-                        Navigator.of(ctx).pop();
-                      }),
-                ])));
+      leading: const Icon(Icons.content_copy),
+      title: new Text('Copy...'),
+      trailing: const Icon(Icons.arrow_right),
+      onTap: () => _showCopyDialog(ctx),
+    );
   }
 
-  @override
-  Widget build(BuildContext ctx) {
-    return new SimpleDialog(
-        title: new Text('post #${post.id}'),
-        children: <Widget>[
-          _buildPostInfo(ctx),
-          _buildCopy(ctx),
-        ]);
+  _showCopyDialog(BuildContext ctx) {
+    Widget dialog;
+
+    Widget title = new ListTile(
+        leading: const Icon(Icons.content_copy),
+        title: new Text('Copy from post #${post.id}'));
+
+    Widget copyLink = new ListTile(
+        title: new Text('Copy link'),
+        onTap: () async {
+          String host = await persistence.getHost();
+          String link = post.url(host).toString();
+          _copyAndPopPop(ctx, link);
+        });
+
+    Widget copyDirectLink = new ListTile(
+        title: new Text('Copy direct link'),
+        onTap: () => _copyAndPopPop(ctx, post.fileUrl));
+
+    dialog =
+        new SimpleDialog(title: title, children: [copyLink, copyDirectLink]);
+
+    showDialog(context: ctx, child: dialog);
+  }
+
+  _copyAndPopPop(BuildContext ctx, String text) async {
+    await Clipboard.setData(new ClipboardData(text: text));
+    Navigator.of(ctx).pop();
+    Navigator.of(ctx).pop();
   }
 }
