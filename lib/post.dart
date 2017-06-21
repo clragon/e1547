@@ -68,7 +68,8 @@ class _PostWidgetState extends State<PostWidget> {
         new Flexible(
             child: new GestureDetector(
                 onTap: () {
-                  if (widget.post.fileExt == 'gif') {
+                  if (widget.post.fileExt == 'gif' ||
+                      widget.post.fileExt == 'webm') {
                     url.launch(widget.post.fileUrl);
                   } else {
                     _fullscreen(ctx);
@@ -179,21 +180,22 @@ class PostPreview extends StatelessWidget {
       child: new Image.network(post.previewUrl, fit: BoxFit.contain),
     );
 
-    Widget flexibleChild = image;
-
+    Widget specialOverlayIcon;
     if (post.fileExt == 'gif') {
       _log.fine('post ${post.id} was gif');
-      Widget gif = new Container(
+      specialOverlayIcon = new Container(
         padding: EdgeInsets.zero,
         color: Colors.black38,
         child: const Icon(Icons.gif),
       );
-
-      flexibleChild = new Stack(children: [
-        image,
-        new Positioned(top: 0.0, right: 0.0, child: gif),
-      ]);
     }
+
+    Widget flexibleChild = specialOverlayIcon == null
+        ? image
+        : new Stack(children: [
+            image,
+            new Positioned(top: 0.0, right: 0.0, child: specialOverlayIcon),
+          ]);
 
     return new Flexible(child: flexibleChild);
   }

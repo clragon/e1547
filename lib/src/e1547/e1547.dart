@@ -55,11 +55,8 @@ class Client {
     _log.fine('response body: $body');
     var rawPosts = JSON.decode(body.toString());
 
-    // Remove webm/video and swf/flash posts because we can't display them.
-    rawPosts.removeWhere((p) {
-      String ext = p['file_ext'];
-      return ext == 'webm' || ext == 'swf';
-    });
+    // Remove swf/flash posts because we can't display them.
+    rawPosts.removeWhere((p) => p['file_ext'] == 'swf');
 
     List<Post> posts = [];
     for (var rp in rawPosts) {
