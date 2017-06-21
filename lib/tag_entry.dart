@@ -42,7 +42,7 @@ class TagEntryPageState extends State<TagEntryPage> {
 
     Widget tagEntry = new TextField(
         autofocus: true,
-        maxLines: 50,
+        maxLines: 1,
         controller: _controller,
         onSubmitted: (t) => Navigator.of(ctx).pop(t));
 
