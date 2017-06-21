@@ -18,9 +18,9 @@ import 'package:flutter/material.dart' show MaterialApp, ThemeData;
 import 'package:flutter/widgets.dart' as widgets;
 import 'package:logging/logging.dart' show Level, Logger, LogRecord;
 
+import 'consts.dart' as consts;
 import 'posts_page.dart' show PostsPage;
 import 'settings_page.dart' show SettingsPage;
-import 'vars.dart' as vars;
 
 void main() {
   Logger.root.level = Level.ALL;
@@ -33,7 +33,7 @@ void main() {
   });
 
   widgets.runApp(new MaterialApp(
-      title: vars.APP_NAME,
+      title: consts.APP_NAME,
       theme: new ThemeData.dark(),
       initialRoute: '/posts',
       routes: <String, widgets.WidgetBuilder>{

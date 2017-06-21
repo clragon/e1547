@@ -20,7 +20,7 @@ import 'dart:io' show HttpClient, HttpClientRequest, HttpClientResponse;
 
 import 'package:logging/logging.dart' show Logger;
 
-import '../../vars.dart' as vars;
+import '../../consts.dart' as consts;
 import 'post.dart';
 import 'tag.dart';
 
@@ -30,7 +30,7 @@ class Client {
   final Logger _log = new Logger('E1547Client');
 
   HttpClient _http = new HttpClient()
-    ..userAgent = '${vars.APP_NAME}/${vars.APP_VERSION} (perlatus)';
+    ..userAgent = '${consts.APP_NAME}/${consts.APP_VERSION} (perlatus)';
 
   // For example, 'e926.net'
   String host;

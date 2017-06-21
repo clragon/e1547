@@ -20,11 +20,11 @@ import 'package:flutter/services.dart' show Clipboard, ClipboardData;
 
 import 'package:logging/logging.dart' show Logger;
 
+import 'consts.dart' as consts;
 import 'persistence.dart' as persistence;
 import 'post.dart' show PostPreview;
 import 'range_dialog.dart' show RangeDialog;
 import 'tag_entry.dart' show TagEntryPage;
-import 'vars.dart' as vars;
 
 import 'src/e1547/e1547.dart' show client;
 import 'src/e1547/post.dart' show Post;
@@ -171,7 +171,7 @@ class _PostsPageState extends State<PostsPage> {
           }
         }));
 
-    return new AppBar(title: new Text(vars.APP_NAME), actions: widgets);
+    return new AppBar(title: new Text(consts.APP_NAME), actions: widgets);
   }
 
   Widget _buildBody(BuildContext ctx) {
