@@ -24,8 +24,6 @@ import '../../consts.dart' as consts;
 import 'post.dart';
 import 'tag.dart';
 
-final client = new Client();
-
 class Client {
   final Logger _log = new Logger('E1547Client');
 

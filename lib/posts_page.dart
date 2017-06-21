@@ -25,8 +25,8 @@ import 'persistence.dart' as persistence;
 import 'post.dart' show PostPreview;
 import 'range_dialog.dart' show RangeDialog;
 import 'tag_entry.dart' show TagEntryPage;
+import 'vars.dart' show client;
 
-import 'src/e1547/e1547.dart' show client;
 import 'src/e1547/post.dart' show Post;
 import 'src/e1547/tag.dart' show Tagset;
 
