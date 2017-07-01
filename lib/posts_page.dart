@@ -40,8 +40,6 @@ class PostsPage extends StatefulWidget {
 class _PostsPageState extends State<PostsPage> {
   final Logger _log = new Logger('PostsPage');
 
-  final ScrollController _controller = new ScrollController();
-
   Tagset _tags; // Tags used for searching for posts.
   List<Post> _posts = []; // Posts being displayed.
   int _page = _STARTING_PAGE;
@@ -81,7 +79,6 @@ class _PostsPageState extends State<PostsPage> {
     persistence.setTags(_tags);
     _page = _STARTING_PAGE;
     _posts.clear();
-    _controller.jumpTo(0.0);
     _loadNextPage();
   }
 
@@ -187,7 +184,6 @@ class _PostsPageState extends State<PostsPage> {
     }
 
     return new GridView.custom(
-      controller: _controller,
       gridDelegate: new SliverGridDelegateWithMaxCrossAxisExtent(
         maxCrossAxisExtent: 150.0,
         childAspectRatio: 3 / 5,

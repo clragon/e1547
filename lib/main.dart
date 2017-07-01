@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-import 'package:flutter/material.dart' show MaterialApp, ThemeData;
+import 'package:flutter/material.dart' show MaterialApp, MaterialPageRoute, ThemeData;
 import 'package:flutter/widgets.dart' as widgets;
 import 'package:logging/logging.dart' show Level, Logger, LogRecord;
 
@@ -35,9 +35,8 @@ void main() {
   widgets.runApp(new MaterialApp(
       title: consts.APP_NAME,
       theme: new ThemeData.dark(),
-      initialRoute: '/posts',
       routes: <String, widgets.WidgetBuilder>{
-        '/posts': (ctx) => new PostsPage(),
+        '/': (ctx) => new PostsPage(),
         '/settings': (ctx) => new SettingsPage(),
       }));
 }
