@@ -154,17 +154,12 @@ class _PostWidgetState extends State<PostWidget> {
 class PostPreview extends StatelessWidget {
   static final Logger _log = new Logger('PostPreview');
   final Post post;
-  PostPreview(this.post, {Key key}) : super(key: key);
-
-  _showFullPost(BuildContext ctx) {
-    Route postRoute =
-        new MaterialPageRoute<Null>(builder: (ctx) => new PostWidget(post));
-    Navigator.of(ctx).push(postRoute);
-  }
+  final VoidCallback onPressed;
+  PostPreview(this.post, {Key key, this.onPressed}) : super(key: key);
 
   @override
   Widget build(BuildContext ctx) => new GestureDetector(
-      onTap: () => _showFullPost(ctx),
+      onTap: onPressed,
       child: new Card(
           child: new Column(
         children: <Widget>[
