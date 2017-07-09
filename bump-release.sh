@@ -18,7 +18,7 @@ zip -0 "${name}.zip" "${name}.apk"
 
 files=(
 	"android/app/src/main/AndroidManifest.xml"
-	"lib/vars.dart"
+	"lib/consts.dart"
 )
 
 # Substitute old version number for new one everywhere
