@@ -25,6 +25,8 @@ class Tag {
   Tag(this.name, [this.value]);
 
   factory Tag.parse(String tag) {
+    assert(tag != null, "Can't parse a null tag.");
+    assert(!tag.trim().isEmpty, "Can't parse an empty tag.");
     List<String> components = tag.trim().split(':');
     assert(components.length == 1 || components.length == 2);
 
@@ -65,7 +67,10 @@ class Tagset extends Object with IterableMixin<Tag> {
         );
 
   Tagset.parse(String tagString) : _tags = new Map() {
-    for (String ts in tagString.trim().split(new RegExp(r'\s+'))) {
+    for (String ts in tagString.split(new RegExp(r'\s+'))) {
+      if (ts.trim().isEmpty) {
+        continue;
+      }
       Tag t = new Tag.parse(ts);
       _log.fine('parsed tag: "$t"');
       _tags[t.name] = t;

@@ -30,6 +30,18 @@ void main() {
   });
 
   group('Tag:', () {
+    test('Parse empty tag', () {
+      expect(() {
+        new Tag.parse('');
+      }, throwsA(new isInstanceOf<AssertionError>()));
+    });
+
+    test('Parse whitespace tag', () {
+      expect(() {
+        new Tag.parse('    \t  \n ');
+      }, throwsA(new isInstanceOf<AssertionError>()));
+    });
+
     test('Parse regular tag', () {
       Tag t = new Tag.parse('cute_fangs');
       expect(t.name, equals('cute_fangs'));
@@ -55,6 +67,16 @@ void main() {
   });
 
   group('Tagset:', () {
+    test('Parse empty tagstring', () {
+      Tagset tset = new Tagset.parse('');
+      expect(tset, isEmpty);
+    });
+
+    test('Parse whitespace tagstring', () {
+      Tagset tset = new Tagset.parse('    \t  \n ');
+      expect(tset, isEmpty);
+    });
+
     test('Parse simple tagstring', () {
       Tagset tset = new Tagset.parse('kikurage cute_fangs');
       expect(tset, orderedEquals([new Tag('kikurage'), new Tag('cute_fangs')]));
@@ -81,13 +103,15 @@ void main() {
     test('Set metatag value', () {
       Tagset tset = new Tagset.parse('cute_fangs');
       tset['order'] = 'score';
-      expect(tset, orderedEquals([new Tag('cute_fangs'), new Tag('order', 'score')]));
+      expect(tset,
+          orderedEquals([new Tag('cute_fangs'), new Tag('order', 'score')]));
     });
 
     test('Set metatag value existing', () {
       Tagset tset = new Tagset.parse('cute_fangs order:score');
       tset['order'] = 'favcount';
-      expect(tset, orderedEquals([new Tag('cute_fangs'), new Tag('order', 'favcount')]));
+      expect(tset,
+          orderedEquals([new Tag('cute_fangs'), new Tag('order', 'favcount')]));
     });
 
     test('Get metatag value', () {
@@ -96,17 +120,22 @@ void main() {
     });
 
     test('Metatags first toString', () {
-      Tagset tset = new Tagset.parse('photonoko favorites:<=100 female order:score -digimon');
-      expect(tset.toString(), equals('favorites:<=100 order:score photonoko female -digimon'));
+      Tagset tset = new Tagset.parse(
+          'photonoko favorites:<=100 female order:score -digimon');
+      expect(tset.toString(),
+          equals('favorites:<=100 order:score photonoko female -digimon'));
 
       tset['favorites'] = '>2000';
-      expect(tset.toString(), equals('favorites:>2000 order:score photonoko female -digimon'));
+      expect(tset.toString(),
+          equals('favorites:>2000 order:score photonoko female -digimon'));
 
       tset.remove('female');
-      expect(tset.toString(), equals('favorites:>2000 order:score photonoko -digimon'));
+      expect(tset.toString(),
+          equals('favorites:>2000 order:score photonoko -digimon'));
 
       tset['order'] = 'favcount';
-      expect(tset.toString(), equals('favorites:>2000 order:favcount photonoko -digimon'));
+      expect(tset.toString(),
+          equals('favorites:>2000 order:favcount photonoko -digimon'));
     });
   });
 }
