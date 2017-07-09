@@ -62,37 +62,49 @@ class _PostWidgetState extends State<PostWidget> {
 
   @override
   Widget build(BuildContext ctx) {
+    Widget fullscreenButton = new Container(
+      padding: const EdgeInsets.all(12.0),
+      color: Colors.black38,
+      child: const Icon(Icons.fullscreen),
+    );
+
+    Widget image = new Image.network(widget.post.sampleUrl);
+
+    Widget content = new Stack(children: [
+      new Center(child: image),
+      new Positioned(
+        right: 0.0,
+        bottom: 0.0,
+        child: fullscreenButton,
+      ),
+    ]);
+
+    content = new Container(
+      color: Colors.black,
+      constraints: const BoxConstraints.expand(),
+      child: content,
+    );
+
+    content = new GestureDetector(
+      onTap: () {
+        if (widget.post.fileExt == 'gif' || widget.post.fileExt == 'webm') {
+          url.launch(widget.post.fileUrl);
+        } else {
+          _fullscreen(ctx);
+        }
+      },
+      child: content,
+    );
+
+    content = new Flexible(child: content);
+
     return new Scaffold(
-      appBar: new AppBar(title: new Text('#' + widget.post.id.toString())),
-      body: new Column(mainAxisSize: MainAxisSize.min, children: [
-        new Flexible(
-            child: new GestureDetector(
-                onTap: () {
-                  if (widget.post.fileExt == 'gif' ||
-                      widget.post.fileExt == 'webm') {
-                    url.launch(widget.post.fileUrl);
-                  } else {
-                    _fullscreen(ctx);
-                  }
-                },
-                child: new Container(
-                  color: Colors.black,
-                  constraints: const BoxConstraints.expand(),
-                  child: new Stack(children: [
-                    new Center(child: new Image.network(widget.post.sampleUrl)),
-                    new Positioned(
-                      right: 0.0,
-                      bottom: 0.0,
-                      child: new Container(
-                        padding: const EdgeInsets.all(12.0),
-                        color: Colors.black38,
-                        child: const Icon(Icons.fullscreen),
-                      ),
-                    ),
-                  ]),
-                ))),
-        _buildButtonBar(ctx),
-      ]),
+      body: new Padding(
+        padding: new EdgeInsets.only(top: MediaQuery.of(context).padding.top),
+        child: new Column(mainAxisSize: MainAxisSize.min, children: [
+          content,
+          _buildButtonBar(ctx),
+        ])),
     );
   }
 
@@ -411,12 +423,32 @@ class _PostGridState extends State<PostGrid> {
       );
     }
 
-    Post p = widget.posts[i];
-
-    return new PostPreview(p, onPressed: () {
+    return new PostPreview(widget.posts[i], onPressed: () {
       Navigator.of(ctx).push(new MaterialPageRoute<Null>(
-            builder: (ctx) => new PostWidget(p),
+            builder: (ctx) => new PostSwipe(widget.posts, startingIndex: i),
           ));
     });
+  }
+}
+
+class PostSwipe extends StatefulWidget {
+  final List<Post> posts;
+  final int startingIndex;
+  PostSwipe(this.posts, {Key key, this.startingIndex = 0}) : super(key: key);
+
+  @override
+  State createState() => new _PostSwipeState();
+}
+
+class _PostSwipeState extends State<PostSwipe> {
+  @override
+  Widget build(BuildContext ctx) {
+    return new PageView.builder(
+        controller: new PageController(initialPage: widget.startingIndex),
+        itemBuilder: (ctx, i) {
+          return i < widget.posts.length
+              ? new PostWidget(widget.posts[i])
+              : null;
+        });
   }
 }
