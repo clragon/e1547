@@ -118,7 +118,7 @@ class _PostWidgetState extends State<PostWidget> {
             onPressed: () => _viewInBrowserButtonOnPressed(ctx)),
         new IconButton(
             icon: const Icon(Icons.more_horiz),
-            tooltip: 'More options',
+            tooltip: 'More actions',
             onPressed: () =>
                 showDialog(context: ctx, child: new _MoreDialog(widget.post))),
       ],
