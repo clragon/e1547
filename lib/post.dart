@@ -376,3 +376,47 @@ class _MoreDialog extends StatelessWidget {
     Navigator.of(ctx).pop();
   }
 }
+
+class PostGrid extends StatefulWidget {
+  final List<Post> posts;
+  final VoidCallback onLoadMore;
+  PostGrid(this.posts, {Key key, this.onLoadMore}) : super(key: key);
+
+  @override
+  State createState() => new _PostGridState();
+}
+
+class _PostGridState extends State<PostGrid> {
+  final Logger _log = new Logger('PostGrid');
+
+  @override
+  Widget build(BuildContext ctx) {
+    return new GridView.custom(
+      gridDelegate: new SliverGridDelegateWithMaxCrossAxisExtent(
+        maxCrossAxisExtent: 150.0,
+        childAspectRatio: 3 / 5,
+      ),
+      childrenDelegate: new SliverChildBuilderDelegate(_itemBuilder),
+    );
+  }
+
+  Widget _itemBuilder(BuildContext ctx, int i) {
+    _log.fine('loading post $i');
+    if (i > widget.posts.length) {
+      return null;
+    } else if (i == widget.posts.length) {
+      return new RaisedButton(
+        child: new Text('load more'),
+        onPressed: widget.onLoadMore,
+      );
+    }
+
+    Post p = widget.posts[i];
+
+    return new PostPreview(p, onPressed: () {
+      Navigator.of(ctx).push(new MaterialPageRoute<Null>(
+            builder: (ctx) => new PostWidget(p),
+          ));
+    });
+  }
+}

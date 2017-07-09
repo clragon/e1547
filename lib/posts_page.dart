@@ -22,7 +22,7 @@ import 'package:logging/logging.dart' show Logger;
 
 import 'consts.dart' as consts;
 import 'persistence.dart' as persistence;
-import 'post.dart' show PostPreview, PostWidget;
+import 'post.dart';
 import 'range_dialog.dart' show RangeDialog;
 import 'tag_entry.dart' show TagEntryPage;
 import 'vars.dart' show client;
@@ -183,31 +183,7 @@ class _PostsPageState extends State<PostsPage> {
       return new Center(child: const Icon(Icons.refresh));
     }
 
-    return new GridView.custom(
-      gridDelegate: new SliverGridDelegateWithMaxCrossAxisExtent(
-        maxCrossAxisExtent: 150.0,
-        childAspectRatio: 3 / 5,
-      ),
-      childrenDelegate: new SliverChildBuilderDelegate(_itemBuilder),
-    );
-  }
-
-  Widget _itemBuilder(BuildContext ctx, int i) {
-    _log.fine('loading post $i');
-    if (i < _posts.length) {
-      return new PostPreview(_posts[i], onPressed: () {
-        Route postRoute = new MaterialPageRoute<Null>(
-            builder: (ctx) => new PostWidget(_posts[i]));
-        Navigator.of(ctx).push(postRoute);
-      });
-    } else if (i == _posts.length) {
-      return new RaisedButton(
-        child: new Text('load more'),
-        onPressed: _loadNextPage,
-      );
-    } else {
-      return null;
-    }
+    return new PostGrid(_posts, onLoadMore: _loadNextPage);
   }
 
   Widget _buildDrawer(BuildContext ctx) {
