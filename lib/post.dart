@@ -18,10 +18,9 @@ import 'dart:convert' show JsonEncoder;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart' show TextOverflow;
-import 'package:flutter/services.dart' show Clipboard, ClipboardData;
+import 'package:flutter/services.dart' show Clipboard, ClipboardData, SystemChrome, SystemUiOverlay;
 
 import 'package:logging/logging.dart' show Logger;
-import 'package:fullscreen_mode/fullscreen_mode.dart' show FullscreenMode;
 import 'package:url_launcher/url_launcher.dart' as url;
 import 'package:zoomable_image/zoomable_image.dart' show ZoomableImage;
 
@@ -41,23 +40,15 @@ class PostWidget extends StatefulWidget {
 class _PostWidgetState extends State<PostWidget> {
   static final Logger _log = new Logger('PostWidget');
 
-  bool _isFullscreen = false;
-
   _fullscreen(BuildContext ctx) async {
+    SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
     await Navigator.of(ctx).push(new MaterialPageRoute<Null>(
           builder: (ctx) => new ZoomableImage(
-                  new NetworkImage(widget.post.fileUrl),
-                  scale: 16.0, onTap: () {
-                _isFullscreen = !_isFullscreen;
-                if (_isFullscreen) {
-                  FullscreenMode.setFullscreen();
-                } else {
-                  FullscreenMode.setNormal();
-                }
-              }),
+                new NetworkImage(widget.post.fileUrl),
+                scale: 16.0,
+              ),
         ));
-    FullscreenMode.setNormal();
-    _isFullscreen = false;
+    SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
   }
 
   @override
@@ -100,11 +91,11 @@ class _PostWidgetState extends State<PostWidget> {
 
     return new Scaffold(
       body: new Padding(
-        padding: new EdgeInsets.only(top: MediaQuery.of(context).padding.top),
-        child: new Column(mainAxisSize: MainAxisSize.min, children: [
-          content,
-          _buildButtonBar(ctx),
-        ])),
+          padding: new EdgeInsets.only(top: MediaQuery.of(context).padding.top),
+          child: new Column(mainAxisSize: MainAxisSize.min, children: [
+            content,
+            _buildButtonBar(ctx),
+          ])),
     );
   }
 
