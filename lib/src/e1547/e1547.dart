@@ -53,13 +53,9 @@ class Client {
     var body = new StringBuffer();
     await response.transform(UTF8.decoder).forEach((s) => body.write(s));
     _log.fine('response body: $body');
-    var rawPosts = JSON.decode(body.toString());
-
-    // Remove swf/flash posts because we can't display them.
-    rawPosts.removeWhere((p) => p['file_ext'] == 'swf');
 
     List<Post> posts = [];
-    for (var rp in rawPosts) {
+    for (var rp in JSON.decode(body.toString())) {
       posts.add(new Post.fromRaw(rp));
     }
 
