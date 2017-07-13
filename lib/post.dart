@@ -54,6 +54,17 @@ class _PostWidgetState extends State<PostWidget> {
 
   @override
   Widget build(BuildContext ctx) {
+    return new Scaffold(
+      body: new Padding(
+          padding: new EdgeInsets.only(top: MediaQuery.of(context).padding.top),
+          child: new Column(mainAxisSize: MainAxisSize.min, children: [
+            _buildPostContents(ctx),
+            _buildButtonBar(ctx),
+          ])),
+    );
+  }
+
+  Widget _buildPostContents(BuildContext ctx) {
     Widget fullscreenButton = new Container(
       padding: const EdgeInsets.all(12.0),
       color: Colors.black38,
@@ -92,16 +103,7 @@ class _PostWidgetState extends State<PostWidget> {
       child: content,
     );
 
-    content = new Flexible(child: content);
-
-    return new Scaffold(
-      body: new Padding(
-          padding: new EdgeInsets.only(top: MediaQuery.of(context).padding.top),
-          child: new Column(mainAxisSize: MainAxisSize.min, children: [
-            content,
-            _buildButtonBar(ctx),
-          ])),
-    );
+    return new Flexible(child: content);
   }
 
   Widget _buildButtonBar(BuildContext ctx) {
