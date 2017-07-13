@@ -119,8 +119,12 @@ class _PostWidgetState extends State<PostWidget> {
             onPressed: () => _log.fine('pressed chat')),
         new IconButton(
             icon: const Icon(Icons.open_in_browser),
-            tooltip: 'View in browser',
-            onPressed: () => _viewInBrowserButtonOnPressed(ctx)),
+            tooltip: 'View post in browser',
+            onPressed: () async {
+              String host = await persistence.getHost();
+              url.launch(widget.post.url(host).toString());
+              Navigator.of(ctx).pop();
+            }),
         new IconButton(
             icon: const Icon(Icons.more_horiz),
             tooltip: 'More actions',
@@ -128,33 +132,6 @@ class _PostWidgetState extends State<PostWidget> {
                 showDialog(context: ctx, child: new _MoreDialog(widget.post))),
       ],
     ));
-  }
-
-  _viewInBrowserButtonOnPressed(BuildContext ctx) {
-    SimpleDialog dialog;
-    Widget title = new ListTile(
-      leading: const Icon(Icons.open_in_browser),
-      title: new Text('View post #${widget.post.id} in browser'),
-    );
-
-    List<Widget> children = <Widget>[
-      new ListTile(
-          title: new Text('View post'),
-          onTap: () async {
-            String host = await persistence.getHost();
-            url.launch(widget.post.url(host).toString());
-            Navigator.of(ctx).pop();
-          }),
-      new ListTile(
-          title: new Text('View direct content'),
-          onTap: () {
-            url.launch(widget.post.fileUrl);
-            Navigator.of(ctx).pop();
-          }),
-    ];
-
-    dialog = new SimpleDialog(title: title, children: children);
-    showDialog(context: ctx, child: dialog);
   }
 }
 
