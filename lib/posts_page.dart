@@ -16,6 +16,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter/painting.dart' show EdgeInsets;
 import 'package:flutter/services.dart' show Clipboard, ClipboardData;
 
 import 'package:logging/logging.dart' show Logger;
@@ -45,6 +46,7 @@ class _PostsPageState extends State<PostsPage> {
   int _page = _STARTING_PAGE;
 
   bool _offline = false; // If true, the last request has failed.
+  String _errorMessage;
 
   @override
   void initState() {
@@ -71,6 +73,7 @@ class _PostsPageState extends State<PostsPage> {
       _log.info('Going offline: $e', e);
       setState(() {
         _offline = true;
+        _errorMessage = e.toString();
       });
     }
   }
@@ -176,7 +179,15 @@ class _PostsPageState extends State<PostsPage> {
 
   Widget _buildBody(BuildContext ctx) {
     if (_offline) {
-      return new Center(child: const Icon(Icons.cloud_off));
+      return new Container(
+          padding: const EdgeInsets.all(50.0),
+          child: new Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.cloud_off),
+                const Divider(),
+                new Text(_errorMessage, textAlign: TextAlign.center),
+              ]));
     }
 
     if (_posts.isEmpty) {
