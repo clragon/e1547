@@ -18,7 +18,8 @@ import 'dart:convert' show JsonEncoder;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart' show TextOverflow;
-import 'package:flutter/services.dart' show Clipboard, ClipboardData, SystemChrome, SystemUiOverlay;
+import 'package:flutter/services.dart'
+    show Clipboard, ClipboardData, SystemChrome, SystemUiOverlay;
 
 import 'package:logging/logging.dart' show Logger;
 import 'package:url_launcher/url_launcher.dart' as url;
@@ -80,7 +81,9 @@ class _PostWidgetState extends State<PostWidget> {
 
     content = new GestureDetector(
       onTap: () {
-        if (widget.post.fileExt == 'gif' || widget.post.fileExt == 'webm') {
+        if (widget.post.fileExt == 'gif' ||
+            widget.post.fileExt == 'webm' ||
+            widget.post.fileExt == 'swf') {
           url.launch(widget.post.fileUrl);
         } else {
           _fullscreen(ctx);
