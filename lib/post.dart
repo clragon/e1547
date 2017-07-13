@@ -59,7 +59,9 @@ class _PostWidgetState extends State<PostWidget> {
       child: const Icon(Icons.fullscreen),
     );
 
-    Widget image = new Image.network(widget.post.sampleUrl);
+    Widget image = widget.post.fileExt == 'swf' || widget.post.fileExt == 'webm'
+        ? new Container()
+        : new Image.network(widget.post.sampleUrl);
 
     Widget content = new Stack(children: [
       new Center(child: image),
