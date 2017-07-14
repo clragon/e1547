@@ -15,6 +15,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 import 'dart:convert' show JsonEncoder;
+import 'dart:ui' show FontWeight;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart' show TextOverflow;
@@ -59,6 +60,8 @@ class _PostWidgetState extends State<PostWidget> {
           padding: new EdgeInsets.only(top: MediaQuery.of(context).padding.top),
           child: new Column(mainAxisSize: MainAxisSize.min, children: [
             _buildPostContents(ctx),
+            _buildPostMetadata(ctx),
+            const Divider(height: 8.0),
             _buildButtonBar(ctx),
           ])),
     );
@@ -104,6 +107,27 @@ class _PostWidgetState extends State<PostWidget> {
     );
 
     return new Flexible(child: content);
+  }
+
+  Widget _buildPostMetadata(BuildContext ctx) {
+    TextStyle secondaryFocus = new TextStyle(
+      color: Colors.white.withOpacity(0.6),
+    );
+
+    Widget metadata = new Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        new Text(widget.post.artist.join(',\n')),
+        new Text('#${widget.post.id}\n${widget.post.author}',
+            textAlign: TextAlign.right,
+            style: new TextStyle(color: Colors.white.withOpacity(0.6))),
+      ],
+    );
+
+    return new Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+      child: metadata,
+    );
   }
 
   Widget _buildButtonBar(BuildContext ctx) {

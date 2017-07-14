@@ -22,6 +22,7 @@ class Post {
       new Uri(scheme: 'https', host: host, path: '/post/show/$id');
 
   int id;
+  String author;
   int score;
   int favCount;
   String fileUrl;
@@ -40,6 +41,7 @@ class Post {
     this.raw = raw;
 
     id = raw['id'];
+    author = raw['author'];
     score = raw['score'];
     favCount = raw['fav_count'];
     fileUrl = raw['file_url'];
