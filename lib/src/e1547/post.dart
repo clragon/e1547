@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
+import 'tag.dart' show Tagset;
+
 class Post {
   Map raw;
 
@@ -22,6 +24,7 @@ class Post {
       new Uri(scheme: 'https', host: host, path: '/post/show/$id');
 
   int id;
+  Tagset tags;
   String author;
   int score;
   int favCount;
@@ -41,6 +44,7 @@ class Post {
     this.raw = raw;
 
     id = raw['id'];
+    tags = new Tagset.parse(raw['tags']);
     author = raw['author'];
     score = raw['score'];
     favCount = raw['fav_count'];
