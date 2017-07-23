@@ -24,6 +24,14 @@ import '../../consts.dart' as consts;
 import 'post.dart';
 import 'tag.dart';
 
+Map<String, String> stringify(Map<String, Object> map) {
+  Map<String, String> stringMap = {};
+  map.forEach((k, v) {
+    stringMap[k] = v.toString();
+  });
+  return stringMap;
+}
+
 class Client {
   final Logger _log = new Logger('E1547Client');
 
@@ -40,7 +48,7 @@ class Client {
       scheme: 'https',
       host: host,
       path: '/post/index.json',
-      queryParameters: {'tags': tags.toString(), 'page': page.toString()},
+      queryParameters: stringify({'tags': tags, 'page': page}),
     );
 
     _log.fine('url: $url');
@@ -61,4 +69,17 @@ class Client {
 
     return posts;
   }
+
+  Future<List<Comment>> comments(int postId, int page) async {
+    _log.info('Requesting comments for post $postId, page $page');
+
+    Uri url = new Uri(
+      scheme: 'https',
+      host: host,
+      path: '/comment/index.json',
+      queryParameters: stringify({'post_id': postId, 'page': page}),
+    );
+  }
 }
+
+class Comment {}
