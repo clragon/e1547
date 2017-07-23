@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-import 'dart:convert' show JsonEncoder;
 import 'dart:ui' show FontWeight;
 
 import 'package:flutter/material.dart';
@@ -329,21 +328,25 @@ class _MoreDialog extends StatelessWidget {
     return new ListTile(
       leading: const Icon(Icons.info_outline),
       title: new Text('Info'),
-      onTap: () => showDialog(
+      onTap: () {
+        StringBuffer info = new StringBuffer();
+        post.raw.forEach((k, v) {
+          info.write('$k: $v\n\n');
+        });
+
+        showDialog(
             context: ctx,
             child: new SimpleDialog(
-              title: new Text('post #${post.id} info'),
-              children: <Widget>[
-                new TextField(
-                    maxLines: 15,
-                    decoration: new InputDecoration(hideDivider: true),
-                    style: new TextStyle(fontFamily: 'Courier'),
-                    controller: new TextEditingController(
-                        text:
-                            new JsonEncoder.withIndent('  ').convert(post.raw)))
-              ],
-            ),
-          ),
+                title: new Text('post #${post.id} info'),
+                children: <Widget>[
+                  new TextField(
+                      maxLines: 15,
+                      decoration: new InputDecoration(hideDivider: true),
+                      style: new TextStyle(fontFamily: 'Courier'),
+                      controller:
+                          new TextEditingController(text: info.toString()))
+                ]));
+      },
     );
   }
 
