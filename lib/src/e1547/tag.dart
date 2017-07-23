@@ -26,7 +26,7 @@ class Tag {
 
   factory Tag.parse(String tag) {
     assert(tag != null, "Can't parse a null tag.");
-    assert(!tag.trim().isEmpty, "Can't parse an empty tag.");
+    assert(tag.trim().isNotEmpty, "Can't parse an empty tag.");
     List<String> components = tag.trim().split(':');
     assert(components.length == 1 || components.length == 2);
 
