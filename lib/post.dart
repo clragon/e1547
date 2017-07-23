@@ -142,7 +142,11 @@ class _PostWidgetState extends State<PostWidget> {
         new IconButton(
             icon: const Icon(Icons.chat),
             tooltip: 'Go to comments',
-            onPressed: () => _log.fine('pressed chat')),
+            onPressed: () {
+              Navigator.of(ctx).push(new MaterialPageRoute<Null>(builder: (ctx) {
+                return new Comments(widget.post);
+              }));
+            }),
         new IconButton(
             icon: const Icon(Icons.open_in_browser),
             tooltip: 'View post in browser',
@@ -158,6 +162,21 @@ class _PostWidgetState extends State<PostWidget> {
                 showDialog(context: ctx, child: new _MoreDialog(widget.post))),
       ],
     ));
+  }
+}
+
+class Comments extends StatefulWidget {
+  final Post post;
+  Comments(this.post, {Key key}) : super(key: key);
+
+  @override
+  State createState() => new _CommentsState();
+}
+
+class _CommentsState extends State<Comments> {
+  @override
+  Widget build(BuildContext ctx) {
+    return new Container(child: new Center(child: new Text('oy')));
   }
 }
 
