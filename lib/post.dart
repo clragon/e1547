@@ -109,17 +109,20 @@ class _PostWidgetState extends State<PostWidget> {
   }
 
   Widget _buildPostMetadata(BuildContext ctx) {
-    TextStyle secondaryFocus = new TextStyle(
-      color: Colors.white.withOpacity(0.6),
-    );
+    Color secondary = Colors.white.withOpacity(0.6);
+    TextStyle secondaryTextStyle = new TextStyle(color: secondary);
 
     Widget metadata = new Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         new Text(widget.post.artist.join(',\n')),
-        new Text('#${widget.post.id}\n${widget.post.author}',
-            textAlign: TextAlign.right,
-            style: new TextStyle(color: Colors.white.withOpacity(0.6))),
+        new Column(children: [
+          new Text('#${widget.post.id}', style: secondaryTextStyle),
+          new Row(children: [
+            new Icon(Icons.person, size: 14.0, color: secondary),
+            new Text(' ${widget.post.author}', style: secondaryTextStyle),
+          ]),
+        ], crossAxisAlignment: CrossAxisAlignment.end),
       ],
     );
 
