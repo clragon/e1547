@@ -79,7 +79,39 @@ class Client {
       path: '/comment/index.json',
       queryParameters: stringify({'post_id': postId, 'page': page}),
     );
+
+    HttpClientRequest request = await _http.getUrl(url);
+    HttpClientResponse response = await request.close();
+    _log.info(
+        'response.statusCode: ${response.statusCode} (${response.reasonPhrase})');
+
+    var body = new StringBuffer();
+    await response.transform(UTF8.decoder).forEach((s) => body.write(s));
+    _log.fine('response body: $body');
+
+    List<Comment> comments = [];
+    for (var rc in JSON.decode(body.toString())) {
+      comments.add(new Comment.fromRaw(rc));
+    }
+
+    return comments;
   }
 }
 
-class Comment {}
+class Comment {
+  Map raw;
+
+  int id;
+  String creator;
+  String body;
+  int score;
+
+  Comment.fromRaw(Map raw) {
+    this.raw = raw;
+
+    id = raw['id'];
+    creator = raw['creator'];
+    body = raw['body'];
+    score = raw['score'];
+  }
+}
