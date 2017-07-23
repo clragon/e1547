@@ -62,8 +62,6 @@ class _PostWidgetState extends State<PostWidget> {
             _buildPostContents(ctx),
             _buildPostMetadata(ctx),
             const Divider(height: 8.0),
-            _buildPostTags(ctx),
-            const Divider(height: 8.0),
             _buildButtonBar(ctx),
           ])),
     );
@@ -129,14 +127,6 @@ class _PostWidgetState extends State<PostWidget> {
     return new Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
       child: metadata,
-    );
-  }
-
-  Widget _buildPostTags(BuildContext ctx) {
-    return new Row(
-      children: widget.post.tags.map((t) {
-        return new Chip(label: new Text(t.toString()));
-      }).toList(growable: false),
     );
   }
 
