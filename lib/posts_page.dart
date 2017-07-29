@@ -104,7 +104,7 @@ class _PostsPageState extends State<PostsPage> {
         itemBuilder: (ctx) => <PopupMenuEntry<String>>[
               new PopupMenuItem(child: new Text('Score'), value: 'score'),
               new PopupMenuItem(
-                  child: new Text('Favorites'), value: 'favorites'),
+                  child: new Text('Favorites'), value: 'favcount'),
               new PopupMenuItem(child: new Text('Views'), value: 'views'),
             ],
         onSelected: (String filterType) async {
