@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
+import 'dart:math' as math show max, min;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -56,6 +58,7 @@ class RangeDialogState extends State<RangeDialog> {
 
   Widget _buildNumber(BuildContext ctx) {
     _controller.text = _value.toString();
+    FocusScope.of(ctx).requestFocus(new FocusNode()); // Clear text entry focus, if any.
 
     Widget number = new TextField(
       keyboardType: TextInputType.number,
@@ -63,7 +66,6 @@ class RangeDialogState extends State<RangeDialog> {
       textAlign: TextAlign.center,
       decoration: const InputDecoration(hideDivider: true),
       controller: _controller,
-      onChanged: _setValue,
       onSubmitted: (v) => Navigator.of(ctx).pop(int.parse(v)),
     );
 
@@ -75,8 +77,8 @@ class RangeDialogState extends State<RangeDialog> {
 
   Widget _buildSlider(BuildContext ctx) {
     return new Slider(
-        min: 0.0,
-        max: widget.max.toDouble(),
+        min: math.min(0.0, _value.toDouble()),
+        max: math.max(widget.max.toDouble(), _value.toDouble()),
         divisions: 50,
         value: _value.toDouble(),
         onChanged: (v) {
@@ -93,7 +95,10 @@ class RangeDialogState extends State<RangeDialog> {
       ),
       new RaisedButton(
         child: new Text('save'),
-        onPressed: () => Navigator.of(ctx).pop(_value),
+        onPressed: () {
+          int textValue = int.parse(_controller.text, onError: (s) => null);
+          Navigator.of(ctx).pop(textValue ?? _value);
+        },
       ),
     ];
 
