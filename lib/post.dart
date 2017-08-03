@@ -149,7 +149,6 @@ class _PostWidgetState extends State<PostWidget> {
             onPressed: () async {
               String host = await persistence.getHost();
               url.launch(widget.post.url(host).toString());
-              Navigator.of(ctx).pop();
             }),
         new IconButton(
             icon: const Icon(Icons.more_horiz),
