@@ -38,12 +38,6 @@ class RangeDialogState extends State<RangeDialog> {
   TextEditingController _controller = new TextEditingController();
   int _value;
 
-  void _setValue(String v) {
-    setState(() {
-      _value = int.parse(v);
-    });
-  }
-
   @override
   Widget build(BuildContext ctx) {
     _value = _value ?? widget.value;
