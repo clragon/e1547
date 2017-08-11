@@ -15,55 +15,32 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 import 'dart:async' show Future;
-import 'dart:convert' show JSON, UTF8;
-import 'dart:io' show HttpClient, HttpClientRequest, HttpClientResponse;
+import 'dart:convert' show JSON;
 
 import 'package:logging/logging.dart' show Logger;
 
-import '../../consts.dart' as consts;
+import 'http.dart';
 import 'post.dart';
 import 'tag.dart';
-
-Map<String, String> stringify(Map<String, Object> map) {
-  Map<String, String> stringMap = {};
-  map.forEach((k, v) {
-    stringMap[k] = v.toString();
-  });
-  return stringMap;
-}
 
 class Client {
   final Logger _log = new Logger('E1547Client');
 
-  HttpClient _http = new HttpClient()
-    ..userAgent = '${consts.APP_NAME}/${consts.APP_VERSION} (perlatus)';
+  HttpCustom _http = new HttpCustom();
 
   // For example, 'e926.net'
   String host;
 
   Future<List<Post>> posts(Tagset tags, int page) async {
-    _log.info('Requesting posts with tags: "$tags"');
+    _log.info('Client.posts(tags="$tags", page="$page")');
 
-    Uri url = new Uri(
-      scheme: 'https',
-      host: host,
-      path: '/post/index.json',
-      queryParameters: stringify({'tags': tags, 'page': page}),
-    );
-
-    _log.fine('url: $url');
-
-    HttpClientRequest request = await _http.getUrl(url);
-    HttpClientResponse response = await request.close();
-    _log.info(
-        'response.statusCode: ${response.statusCode} (${response.reasonPhrase})');
-
-    var body = new StringBuffer();
-    await response.transform(UTF8.decoder).forEach((s) => body.write(s));
-    _log.fine('response body: $body');
+    String body = await _http.get(host, '/post/index.json', query: {
+      'tags': tags,
+      'page': page,
+    }).then((response) => response.body);
 
     List<Post> posts = [];
-    for (var rp in JSON.decode(body.toString())) {
+    for (var rp in JSON.decode(body)) {
       posts.add(new Post.fromRaw(rp));
     }
 
@@ -71,26 +48,15 @@ class Client {
   }
 
   Future<List<Comment>> comments(int postId, int page) async {
-    _log.info('Requesting comments for post $postId, page $page');
+    _log.info('Client.comments(postId="$postId", page="$page")');
 
-    Uri url = new Uri(
-      scheme: 'https',
-      host: host,
-      path: '/comment/index.json',
-      queryParameters: stringify({'post_id': postId, 'page': page}),
-    );
-
-    HttpClientRequest request = await _http.getUrl(url);
-    HttpClientResponse response = await request.close();
-    _log.info(
-        'response.statusCode: ${response.statusCode} (${response.reasonPhrase})');
-
-    var body = new StringBuffer();
-    await response.transform(UTF8.decoder).forEach((s) => body.write(s));
-    _log.fine('response body: $body');
+    String body = await _http.get(host, '/comment/index.json', query: {
+      'post_id': postId,
+      'page': page,
+    }).then((response) => response.body);
 
     List<Comment> comments = [];
-    for (var rc in JSON.decode(body.toString())) {
+    for (var rc in JSON.decode(body)) {
       comments.add(new Comment.fromRaw(rc));
     }
 

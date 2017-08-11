@@ -6,6 +6,7 @@ dependencies:
   zoomable_image: any
 
   # Dart
+  http: any
   logging: any
   test: any
   vector_math: any
