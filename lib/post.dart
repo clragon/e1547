@@ -42,11 +42,14 @@ class _PostWidgetState extends State<PostWidget> {
   _fullscreen(BuildContext ctx) async {
     SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
     await Navigator.of(ctx).push(new MaterialPageRoute<Null>(
-          builder: (ctx) => new ZoomableImage(
-                new NetworkImage(widget.post.fileUrl),
-                scale: 16.0,
-              ),
-        ));
+      builder: (ctx) {
+        return new ZoomableImage(
+          new NetworkImage(widget.post.fileUrl),
+          scale: 16.0,
+          onTap: () => Navigator.of(ctx).pop(),
+        );
+      },
+    ));
     SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
   }
 
@@ -153,7 +156,6 @@ class _PostWidgetState extends State<PostWidget> {
             onPressed: () async {
               String host = await persistence.getHost();
               url.launch(widget.post.url(host).toString());
-              Navigator.of(ctx).pop();
             }),
         new IconButton(
             icon: const Icon(Icons.more_horiz),

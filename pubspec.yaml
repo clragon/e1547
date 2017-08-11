@@ -11,7 +11,7 @@ dependencies:
   vector_math: any
 
   # Flutter
-  shared_preferences: '0.2.4'
+  shared_preferences: any
   url_launcher: any
 
   flutter:
