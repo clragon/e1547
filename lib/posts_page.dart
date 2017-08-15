@@ -28,7 +28,7 @@ import 'range_dialog.dart' show RangeDialog;
 import 'tag_entry.dart' show TagEntryPage;
 import 'vars.dart' show client;
 
-import 'src/e1547/post.dart' show Post;
+import 'src/e1547/models.dart' show Post;
 import 'src/e1547/tag.dart' show Tagset;
 
 const int _STARTING_PAGE = 1; // Pages are 1-indexed

@@ -24,8 +24,9 @@ import 'package:url_launcher/url_launcher.dart' as url;
 import 'package:zoomable_image/zoomable_image.dart' show ZoomableImage;
 
 import 'persistence.dart' as persistence;
+import 'vars.dart' show client;
 
-import 'src/e1547/post.dart' show Post;
+import 'src/e1547/models.dart' show Comment, Post;
 
 // Main widget for presenting and interacting with individual posts.
 class PostWidget extends StatefulWidget {
@@ -145,7 +146,13 @@ class _PostWidgetState extends State<PostWidget> {
         new IconButton(
             icon: const Icon(Icons.chat),
             tooltip: 'Go to comments',
-            onPressed: () => _log.fine('pressed chat')),
+            onPressed: () {
+              Navigator
+                  .of(ctx)
+                  .push(new MaterialPageRoute<Null>(builder: (ctx) {
+                return new Comments(widget.post);
+              }));
+            }),
         new IconButton(
             icon: const Icon(Icons.open_in_browser),
             tooltip: 'View post in browser',
@@ -160,6 +167,66 @@ class _PostWidgetState extends State<PostWidget> {
                 showDialog(context: ctx, child: new _MoreDialog(widget.post))),
       ],
     ));
+  }
+}
+
+class Comments extends StatefulWidget {
+  final Post post;
+  Comments(this.post, {Key key}) : super(key: key);
+
+  @override
+  State createState() => new _CommentsState();
+}
+
+class _CommentsState extends State<Comments> {
+  final Logger _log = new Logger('Comments');
+
+  List<Comment> _comments = [];
+  int _page = 1;
+
+  @override
+  void initState() {
+    super.initState();
+    _log.info('Loading initial page of comments');
+    _loadNextPage();
+  }
+
+  _loadNextPage() async {
+    client.host = await persistence.getHost();
+
+    var newComments = await client.comments(widget.post.id, _page);
+    setState(() {
+      _comments.addAll(newComments);
+    });
+
+    _page++;
+  }
+
+  @override
+  Widget build(BuildContext ctx) {
+    return new Scaffold(
+      appBar: new AppBar(title: new Text('#${widget.post.id} comments')),
+      body: new ListView.builder(
+        itemBuilder: _itemBuilder,
+        padding: const EdgeInsets.all(10.0),
+      ),
+    );
+  }
+
+  Widget _itemBuilder(BuildContext ctx, int i) {
+    if (i.isOdd) {
+      return const Divider();
+    } else if (i > _comments.length) {
+      return null;
+    } else if (i == _comments.length) {
+      return new RaisedButton(
+        child: new Text('load more'),
+        onPressed: _loadNextPage,
+      );
+    } else {
+      Comment c = _comments[i];
+      return new Text('${c.creator}: ${c.body}');
+    }
   }
 }
 
