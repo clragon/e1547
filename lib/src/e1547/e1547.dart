@@ -20,7 +20,7 @@ import 'dart:convert' show JSON;
 import 'package:logging/logging.dart' show Logger;
 
 import 'http.dart';
-import 'post.dart';
+import 'models.dart';
 import 'tag.dart';
 
 class Client {
@@ -61,23 +61,5 @@ class Client {
     }
 
     return comments;
-  }
-}
-
-class Comment {
-  Map raw;
-
-  int id;
-  String creator;
-  String body;
-  int score;
-
-  Comment.fromRaw(Map raw) {
-    this.raw = raw;
-
-    id = raw['id'];
-    creator = raw['creator'];
-    body = raw['body'];
-    score = raw['score'];
   }
 }

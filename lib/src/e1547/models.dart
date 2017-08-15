@@ -60,3 +60,21 @@ class Post {
     artist = raw['artist'];
   }
 }
+
+class Comment {
+  Map raw;
+
+  int id;
+  String creator;
+  String body;
+  int score;
+
+  Comment.fromRaw(Map raw) {
+    this.raw = raw;
+
+    id = raw['id'];
+    creator = raw['creator'];
+    body = raw['body'];
+    score = raw['score'];
+  }
+}
