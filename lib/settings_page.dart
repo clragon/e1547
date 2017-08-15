@@ -29,50 +29,49 @@ class SettingsPage extends StatefulWidget {
 class SettingsPageState extends State<SettingsPage> {
   Future<String> _initialHost = persistence.getHost();
 
-  TextEditingController _hostController;
-
-  _onSubmitted(BuildContext ctx) async {
-    persistence.setHost(_hostController.value.text);
-    Navigator.of(ctx).pop();
-  }
+  String _host;
 
   @override
   Widget build(BuildContext ctx) {
     return new Scaffold(
-      appBar: _buildAppBar(ctx),
+      appBar: new AppBar(title: new Text('Settings')),
       body: _buildBody(ctx),
     );
   }
 
-  Widget _buildAppBar(BuildContext ctx) =>
-      new AppBar(title: new Text('Settings'), actions: <Widget>[
-        new IconButton(
-          icon: const Icon(Icons.check),
-          tooltip: 'Save changes',
-          onPressed: () => _onSubmitted(ctx),
-        ),
-      ]);
+  @override
+  void initState() {
+    super.initState();
+    _initialHost.then(_onNewHostSelected);
+  }
 
   Widget _buildBody(BuildContext ctx) {
-    _initialHost.then((String host) {
-      assert(host != null); // set in persistence.dart
-      setState(() {
-        _hostController ??= new TextEditingController(text: host)
-          ..selection = new TextSelection(
-            baseOffset: 0,
-            extentOffset: host.indexOf('.'),
-          );
-      });
-    });
-
-    Widget body = _hostController == null
-        ? new Container()
-        : new TextField(
-            autofocus: true,
-            controller: _hostController,
-            onSubmitted: (v) => _onSubmitted(ctx),
-          );
+    Widget body = new Column(children:[
+      new RadioListTile<String>(
+        value: 'e926.net',
+        title: new Text('e926.net'),
+        groupValue: _host,
+        onChanged: _onNewHostSelected,
+      ),
+      new RadioListTile<String>(
+        value: 'e621.net',
+        title: new Text('e621.net'),
+        groupValue: _host,
+        onChanged: _onNewHostSelected,
+      ),
+    ]);
 
     return new Container(padding: new EdgeInsets.all(10.0), child: body);
+  }
+
+  void _onNewHostSelected(String host) {
+    print('SettingsPageState._onNewHostSelected(host=$host)');
+    assert(host != null);
+
+    setState(() {
+      _host = host;
+    });
+
+    persistence.setHost(host);
   }
 }
