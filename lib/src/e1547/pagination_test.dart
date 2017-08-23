@@ -83,4 +83,18 @@ void main() {
 
     expect(p.elements, equals(elementsAns));
   });
+
+  test('LinearPagination', () async {
+    LinearPagination<String> p = new LinearPagination<String>(3, numberLoader);
+    List<String> ans = [];
+    for (int i = 0; i <= 3; i++) {
+      expect(await p.loadNextPage(), isTrue);
+      expect(p.elements, equals(ans..addAll(numberLoaderMap[i])));
+    }
+
+    expect(await p.loadNextPage(), isFalse);
+    expect(p.elements, equals(ans..addAll(numberLoaderMap[4])));
+
+    expect(await p.loadNextPage(), isFalse);
+  });
 }

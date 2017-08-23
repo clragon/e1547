@@ -24,7 +24,8 @@ typedef Future<List<E>> PageLoader<E>(int pageNumber);
 ///
 /// All pages must have a number of elements equal to the page size,
 /// except for the last page, which must have at least 1 element and no
-/// more than the the page size.
+/// more than the the page size. If the given [pageLoader] doesn't honor
+/// this, the behavior is undefined.
 class Pagination<T> {
   final int pageSize;
   final PageLoader<T> _loadPage;
@@ -40,17 +41,12 @@ class Pagination<T> {
   /// Load the page at [index] and insert into [elements].
   ///
   /// Returns the number of elements that were loaded.
-  /// TODO do we care about the number of elements, or just that it's
-  /// the last page?
   Future<int> loadPage(int index) async {
     List<T> newPage = await _loadPage(index);
     if (newPage.isEmpty) {
       return 0;
     }
 
-    // TODO test for overflow and growing the length of _elements
-    // TODO test for clobbering elements in next page, too many
-    // elements returned for a single page
     int start = index * pageSize;
     int end = start + newPage.length;
 
@@ -61,8 +57,17 @@ class Pagination<T> {
   }
 }
 
-/*
+/// A restricted [Pagination] that only loads in-order, from page 0 to
+/// the first page with less than [pageSize] elements.
 class LinearPagination<T> extends Pagination<T> {
-  LinearPagination(this.pagesize, this.loadPage);
+  int _page = 0;
+  bool _more = true;
+  LinearPagination(int pageSize, PageLoader<T> loadPage)
+      : super(pageSize, loadPage);
+
+  /// Load the next page. Returns false if there are no more pages to be
+  /// loaded.
+  Future<bool> loadNextPage() async {
+    return _more && (_more = await loadPage(_page++) == pageSize);
+  }
 }
-*/
