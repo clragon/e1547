@@ -22,6 +22,8 @@ typedef Future<List<E>> PageLoader<E>(int pageNumber);
 
 /// Models a paginated list of elements.
 ///
+/// Index starts at 1.
+///
 /// All pages must have a number of elements equal to the page size,
 /// except for the last page, which must have at least 1 element and no
 /// more than the the page size. If the given [pageLoader] doesn't honor
@@ -42,12 +44,14 @@ class Pagination<T> {
   ///
   /// Returns the number of elements that were loaded.
   Future<int> loadPage(int index) async {
+    assert(index >= 1, 'Index must be >= 1');
+
     List<T> newPage = await _loadPage(index);
     if (newPage.isEmpty) {
       return 0;
     }
 
-    int start = index * pageSize;
+    int start = (index - 1) * pageSize;
     int end = start + newPage.length;
 
     _elements.length = math.max(_elements.length, end);
@@ -57,10 +61,10 @@ class Pagination<T> {
   }
 }
 
-/// A restricted [Pagination] that only loads in-order, from page 0 to
+/// A restricted [Pagination] that only loads in-order, from page 1 to
 /// the first page with less than [pageSize] elements.
 class LinearPagination<T> extends Pagination<T> {
-  int _page = 0;
+  int _page = 1;
   bool _more = true;
   LinearPagination(int pageSize, PageLoader<T> loadPage)
       : super(pageSize, loadPage);

@@ -21,6 +21,7 @@ import 'package:logging/logging.dart' show Logger;
 
 import 'http.dart';
 import 'models.dart';
+import 'pagination.dart';
 import 'tag.dart';
 
 class Client {
@@ -31,20 +32,22 @@ class Client {
   // For example, 'e926.net'
   String host;
 
-  Future<List<Post>> posts(Tagset tags, int page) async {
-    _log.info('Client.posts(tags="$tags", page="$page")');
+  LinearPagination<Post> posts(Tagset tags) {
+    _log.info('Client.posts(tags="$tags")');
 
-    String body = await _http.get(host, '/post/index.json', query: {
-      'tags': tags,
-      'page': page,
-    }).then((response) => response.body);
+    return new LinearPagination<Post>(75, (page) async {
+      String body = await _http.get(host, '/post/index.json', query: {
+        'tags': tags,
+        'page': page,
+        'limit': 75,
+      }).then((response) => response.body);
 
-    List<Post> posts = [];
-    for (var rp in JSON.decode(body)) {
-      posts.add(new Post.fromRaw(rp));
-    }
-
-    return posts;
+      List<Post> posts = [];
+      for (var rp in JSON.decode(body)) {
+        posts.add(new Post.fromRaw(rp));
+      }
+      return posts;
+    });
   }
 
   Future<List<Comment>> comments(int postId, int page) async {

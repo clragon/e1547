@@ -29,9 +29,8 @@ import 'tag_entry.dart' show TagEntryPage;
 import 'vars.dart' show client;
 
 import 'src/e1547/models.dart' show Post;
+import 'src/e1547/pagination.dart' show LinearPagination;
 import 'src/e1547/tag.dart' show Tagset;
-
-const int _STARTING_PAGE = 1; // Pages are 1-indexed
 
 class PostsPage extends StatefulWidget {
   @override
@@ -41,9 +40,9 @@ class PostsPage extends StatefulWidget {
 class _PostsPageState extends State<PostsPage> {
   final Logger _log = new Logger('PostsPage');
 
+  LinearPagination<Post> _posts;
+
   Tagset _tags; // Tags used for searching for posts.
-  List<Post> _posts = []; // Posts being displayed.
-  int _page = _STARTING_PAGE;
 
   bool _offline = false; // If true, the last request has failed.
   String _errorMessage;
@@ -51,9 +50,14 @@ class _PostsPageState extends State<PostsPage> {
   @override
   void initState() {
     super.initState();
+    _initSearch();
+  }
 
+  _initSearch() async {
     _log.info('Performing initial search');
-    _loadNextPage();
+    _tags = await persistence.getTags();
+    client.host = await persistence.getHost();
+    _search();
   }
 
   _loadNextPage() async {
@@ -61,14 +65,9 @@ class _PostsPageState extends State<PostsPage> {
 
     try {
       client.host = await persistence.getHost();
-      _tags = _tags ?? await persistence.getTags();
+      await _posts.loadNextPage();
 
-      var newPosts = await client.posts(_tags, _page);
-      setState(() {
-        _posts.addAll(newPosts);
-      });
-
-      _page++;
+      setState(() {});
     } catch (e) {
       _log.info('Going offline: $e', e);
       setState(() {
@@ -80,8 +79,7 @@ class _PostsPageState extends State<PostsPage> {
 
   _search() {
     persistence.setTags(_tags);
-    _page = _STARTING_PAGE;
-    _posts.clear();
+    _posts = client.posts(_tags);
     _loadNextPage();
   }
 
@@ -190,11 +188,11 @@ class _PostsPageState extends State<PostsPage> {
               ]));
     }
 
-    if (_posts.isEmpty) {
+    if (_posts == null || _posts.elements.isEmpty) {
       return new Center(child: const Icon(Icons.refresh));
     }
 
-    return new PostGrid(_posts, onLoadMore: _loadNextPage);
+    return new PostGrid(_posts.elements, onLoadMore: _loadNextPage);
   }
 
   Widget _buildDrawer(BuildContext ctx) {

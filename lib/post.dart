@@ -485,7 +485,6 @@ class _PostGridState extends State<PostGrid> {
   }
 
   Widget _itemBuilder(BuildContext ctx, int i) {
-    _log.fine('loading post $i');
     if (i > widget.posts.length) {
       return null;
     } else if (i == widget.posts.length) {
@@ -495,6 +494,7 @@ class _PostGridState extends State<PostGrid> {
       );
     }
 
+    _log.fine('loading post $i');
     return new PostPreview(widget.posts[i], onPressed: () {
       Navigator.of(ctx).push(new MaterialPageRoute<Null>(
             builder: (ctx) => new PostSwipe(widget.posts, startingIndex: i),
