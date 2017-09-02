@@ -27,6 +27,7 @@ import 'persistence.dart' as persistence;
 import 'vars.dart' show client;
 
 import 'src/e1547/models.dart' show Comment, Post;
+import 'src/e1547/pagination.dart' show LinearPagination;
 
 // Main widget for presenting and interacting with individual posts.
 class PostWidget extends StatefulWidget {
@@ -181,25 +182,22 @@ class Comments extends StatefulWidget {
 class _CommentsState extends State<Comments> {
   final Logger _log = new Logger('Comments');
 
-  List<Comment> _comments = [];
-  int _page = 1;
+  LinearPagination<Comment> _comments;
+  bool _more = true;
 
   @override
   void initState() {
     super.initState();
     _log.info('Loading initial page of comments');
+    _comments = client.comments(widget.post.id);
     _loadNextPage();
   }
 
   _loadNextPage() async {
     client.host = await persistence.getHost();
-
-    var newComments = await client.comments(widget.post.id, _page);
-    setState(() {
-      _comments.addAll(newComments);
-    });
-
-    _page++;
+    _more = await _comments.loadNextPage();
+    _log.info('More comments: $_more');
+    setState(() {});
   }
 
   @override
@@ -213,20 +211,46 @@ class _CommentsState extends State<Comments> {
     );
   }
 
+  // Comments are separated by dividers.
+  //   0:    comment 0
+  //   1:    divider
+  //   2:    comment 1
+  //   3:    divider
+  //   4:    comment 2
+  //   ...
+  //   2n:   comment n-1
+  //   2n+1: <no more comments message>
   Widget _itemBuilder(BuildContext ctx, int i) {
-    if (i.isOdd) {
-      return const Divider();
-    } else if (i > _comments.length) {
-      return null;
-    } else if (i == _comments.length) {
-      return new RaisedButton(
-        child: new Text('load more'),
-        onPressed: _loadNextPage,
-      );
-    } else {
-      Comment c = _comments[i];
+    List<Comment> comments = _comments.elements;
+
+    int lastComment = comments.length * 2 - 1;
+
+    if (i < lastComment) {
+      if (i.isOdd) {
+        return const Divider();
+      }
+      Comment c = comments[i ~/ 2];
       return new Text('${c.creator}: ${c.body}');
     }
+
+    if (i == lastComment) {
+      return new Padding(
+        padding: const EdgeInsets.symmetric(vertical: 30.0),
+        child: _more
+            ? new RaisedButton(
+                child: new Text('load more'),
+                onPressed: _loadNextPage,
+              )
+            : new Text('No more comments',
+                textAlign: TextAlign.center,
+                style: new TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18.0,
+                )),
+      );
+    }
+
+    return null;
   }
 }
 

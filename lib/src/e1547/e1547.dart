@@ -50,19 +50,24 @@ class Client {
     });
   }
 
-  Future<List<Comment>> comments(int postId, int page) async {
-    _log.info('Client.comments(postId="$postId", page="$page")');
+  LinearPagination<Comment> comments(int postId) {
+    _log.info('Client.comments(postId="$postId")');
 
-    String body = await _http.get(host, '/comment/index.json', query: {
-      'post_id': postId,
-      'page': page,
-    }).then((response) => response.body);
+    return new LinearPagination<Comment>(25, (page) async {
+      String body = await _http.get(host, '/comment/index.json', query: {
+        'post_id': postId,
+        'page': page,
+	// Don't return hidden comments. If we don't use this, we get back pages less than 25
+	// because only admins can see hidden comments.
+	'status': 'active',
+      }).then((response) => response.body);
 
-    List<Comment> comments = [];
-    for (var rc in JSON.decode(body)) {
-      comments.add(new Comment.fromRaw(rc));
-    }
+      List<Comment> comments = [];
+      for (var rc in JSON.decode(body)) {
+        comments.add(new Comment.fromRaw(rc));
+      }
 
-    return comments;
+      return comments;
+    });
   }
 }
