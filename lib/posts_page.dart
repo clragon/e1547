@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
+import 'dart:async' show Future;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/painting.dart' show EdgeInsets;
@@ -50,23 +52,26 @@ class _PostsPageState extends State<PostsPage> {
   @override
   void initState() {
     super.initState();
-    _initSearch();
+    () async {
+      _tags = await persistence.getTags();
+      _log.info('Loaded tags: $_tags');
+      _search();
+    }();
   }
 
-  _initSearch() async {
-    _log.info('Performing initial search');
-    _tags = await persistence.getTags();
+  _search() async {
     client.host = await persistence.getHost();
-    _search();
+    persistence.setTags(_tags);
+    _posts = client.posts(_tags);
+    _loadNextPage();
   }
 
-  _loadNextPage() async {
+  Future<bool> _loadNextPage() async {
     _offline = false; // Let's be optimistic. Doesn't update UI until setState()
+    bool more;
 
     try {
-      client.host = await persistence.getHost();
-      await _posts.loadNextPage();
-
+      more = await _posts.loadNextPage();
       setState(() {});
     } catch (e) {
       _log.info('Going offline: $e', e);
@@ -75,12 +80,8 @@ class _PostsPageState extends State<PostsPage> {
         _errorMessage = e.toString();
       });
     }
-  }
 
-  _search() {
-    persistence.setTags(_tags);
-    _posts = client.posts(_tags);
-    _loadNextPage();
+    return more;
   }
 
   @override
@@ -188,7 +189,7 @@ class _PostsPageState extends State<PostsPage> {
               ]));
     }
 
-    if (_posts == null || _posts.elements.isEmpty) {
+    if (_posts == null) {
       return new Center(child: const Icon(Icons.refresh));
     }
 

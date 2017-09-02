@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
+import 'package:flutter/foundation.dart' show AsyncValueGetter;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart' show TextOverflow;
 import 'package:flutter/services.dart'
@@ -487,7 +488,7 @@ class _MoreDialog extends StatelessWidget {
 
 class PostGrid extends StatefulWidget {
   final List<Post> posts;
-  final VoidCallback onLoadMore;
+  final AsyncValueGetter<bool> onLoadMore;
   PostGrid(this.posts, {Key key, this.onLoadMore}) : super(key: key);
 
   @override
@@ -496,6 +497,8 @@ class PostGrid extends StatefulWidget {
 
 class _PostGridState extends State<PostGrid> {
   final Logger _log = new Logger('PostGrid');
+
+  bool _more = true;
 
   @override
   Widget build(BuildContext ctx) {
@@ -512,10 +515,27 @@ class _PostGridState extends State<PostGrid> {
     if (i > widget.posts.length) {
       return null;
     } else if (i == widget.posts.length) {
-      return new RaisedButton(
-        child: new Text('load more'),
-        onPressed: widget.onLoadMore,
-      );
+      return new Center(
+          child: _more
+              ? new RaisedButton(
+                  child: new Text('load more'),
+                  onPressed: () async {
+                    // TODO: Keeping track of the "more" boolean here leads to an additional tap
+                    // needed to show the "No more posts" text. Ideally, it would function like
+                    // Comments, but since we're supporting multiple views into the posts (Grid and
+                    // Swipe, maybe more in the future), we can't inline into PostsPage as easily.
+                    bool more = await widget.onLoadMore();
+                    setState(() {
+                      _more = more;
+                    });
+                  },
+                )
+              : new Text('No more posts',
+                  textAlign: TextAlign.center,
+                  style: new TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18.0,
+                  )));
     }
 
     _log.fine('loading post $i');
