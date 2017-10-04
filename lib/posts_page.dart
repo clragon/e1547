@@ -17,22 +17,20 @@
 import 'dart:async' show Future;
 
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter/painting.dart' show EdgeInsets;
 import 'package:flutter/services.dart' show Clipboard, ClipboardData;
+import 'package:flutter/widgets.dart';
 
 import 'package:logging/logging.dart' show Logger;
 
 import 'consts.dart' as consts;
+import 'pagination.dart' show LinearPagination;
 import 'persistence.dart' as persistence;
 import 'post.dart';
 import 'range_dialog.dart' show RangeDialog;
+import 'tag.dart' show Tagset;
 import 'tag_entry.dart' show TagEntryPage;
 import 'vars.dart' show client;
-
-import 'models.dart' show Post;
-import 'pagination.dart' show LinearPagination;
-import 'tag.dart' show Tagset;
 
 class PostsPage extends StatefulWidget {
   @override

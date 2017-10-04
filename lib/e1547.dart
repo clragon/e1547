@@ -18,9 +18,10 @@ import 'dart:convert' show JSON;
 
 import 'package:logging/logging.dart' show Logger;
 
+import 'comment.dart' show Comment;
 import 'http.dart';
-import 'models.dart';
 import 'pagination.dart';
+import 'post.dart' show Post;
 import 'tag.dart';
 
 class Client {
@@ -56,9 +57,9 @@ class Client {
       String body = await _http.get(host, '/comment/index.json', query: {
         'post_id': postId,
         'page': page,
-	// Don't return hidden comments. If we don't use this, we get back pages less than 25
-	// because only admins can see hidden comments.
-	'status': 'active',
+        // Don't return hidden comments. If we don't use this, we get back pages less than 25
+        // because only admins can see hidden comments.
+        'status': 'active',
       }).then((response) => response.body);
 
       List<Comment> comments = [];

@@ -46,7 +46,7 @@ class SettingsPageState extends State<SettingsPage> {
   }
 
   Widget _buildBody(BuildContext ctx) {
-    Widget body = new Column(children:[
+    Widget body = new Column(children: [
       new RadioListTile<String>(
         value: 'e926.net',
         title: new Text('e926.net'),

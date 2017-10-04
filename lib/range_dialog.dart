@@ -52,7 +52,9 @@ class RangeDialogState extends State<RangeDialog> {
 
   Widget _buildNumber(BuildContext ctx) {
     _controller.text = _value.toString();
-    FocusScope.of(ctx).requestFocus(new FocusNode()); // Clear text entry focus, if any.
+    FocusScope
+        .of(ctx)
+        .requestFocus(new FocusNode()); // Clear text entry focus, if any.
 
     Widget number = new TextField(
       keyboardType: TextInputType.number,

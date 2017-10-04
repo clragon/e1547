@@ -20,7 +20,6 @@ import 'package:shared_preferences/shared_preferences.dart'
     show SharedPreferences;
 
 import 'consts.dart' as consts;
-
 import 'tag.dart' show Tagset;
 
 const _HOST = 'host';
@@ -29,15 +28,15 @@ const _TAGS = 'tags';
 Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
 Future<String> getHost() => _prefs.then((p) {
-  return p.getString(_HOST) ?? consts.DEFAULT_ENDPOINT;
-});
+      return p.getString(_HOST) ?? consts.DEFAULT_ENDPOINT;
+    });
 setHost(String host) => _prefs.then((p) {
-  p.setString(_HOST, host);
-});
+      p.setString(_HOST, host);
+    });
 
 Future<Tagset> getTags() => _prefs.then((p) {
-  return new Tagset.parse(p.getString(_TAGS) ?? '');
-});
+      return new Tagset.parse(p.getString(_TAGS) ?? '');
+    });
 setTags(Tagset tags) => _prefs.then((p) {
-  p.setString(_TAGS, tags.toString());
-});
+      p.setString(_TAGS, tags.toString());
+    });
