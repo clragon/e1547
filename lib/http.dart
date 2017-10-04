@@ -19,7 +19,7 @@ import 'dart:async' show Future;
 import 'package:http/http.dart' as http;
 import 'package:logging/logging.dart' show Logger;
 
-import '../../consts.dart' as consts;
+import 'consts.dart' as consts;
 
 const String USER_AGENT = '${consts.APP_NAME}/${consts.APP_VERSION} (perlatus)';
 

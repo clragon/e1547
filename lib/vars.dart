@@ -14,6 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-import 'src/e1547/e1547.dart' show Client;
+import 'e1547.dart' show Client;
 
 final Client client = new Client();

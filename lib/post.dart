@@ -27,8 +27,8 @@ import 'package:zoomable_image/zoomable_image.dart' show ZoomableImage;
 import 'persistence.dart' as persistence;
 import 'vars.dart' show client;
 
-import 'src/e1547/models.dart' show Comment, Post;
-import 'src/e1547/pagination.dart' show LinearPagination;
+import 'models.dart' show Comment, Post;
+import 'pagination.dart' show LinearPagination;
 
 // Main widget for presenting and interacting with individual posts.
 class PostWidget extends StatefulWidget {

@@ -30,9 +30,9 @@ import 'range_dialog.dart' show RangeDialog;
 import 'tag_entry.dart' show TagEntryPage;
 import 'vars.dart' show client;
 
-import 'src/e1547/models.dart' show Post;
-import 'src/e1547/pagination.dart' show LinearPagination;
-import 'src/e1547/tag.dart' show Tagset;
+import 'models.dart' show Post;
+import 'pagination.dart' show LinearPagination;
+import 'tag.dart' show Tagset;
 
 class PostsPage extends StatefulWidget {
   @override
@@ -125,7 +125,7 @@ class _PostsPageState extends State<PostsPage> {
           if (min == 0) {
             _tags.remove(filterType);
           } else {
-            _tags[filterType] = '>=${min}';
+            _tags[filterType] = '>=$min';
           }
 
           _search();

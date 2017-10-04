@@ -21,7 +21,7 @@ import 'package:shared_preferences/shared_preferences.dart'
 
 import 'consts.dart' as consts;
 
-import 'src/e1547/tag.dart' show Tagset;
+import 'tag.dart' show Tagset;
 
 const _HOST = 'host';
 const _TAGS = 'tags';
