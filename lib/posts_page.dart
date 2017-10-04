@@ -30,7 +30,7 @@ import 'post.dart';
 import 'range_dialog.dart' show RangeDialog;
 import 'tag.dart' show Tagset;
 import 'tag_entry.dart' show TagEntryPage;
-import 'vars.dart' show client;
+import 'client.dart' show client;
 
 class PostsPage extends StatefulWidget {
   @override

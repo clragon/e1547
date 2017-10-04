@@ -21,7 +21,7 @@ import 'package:logging/logging.dart' show Logger;
 import 'pagination.dart' show LinearPagination;
 import 'persistence.dart' as persistence;
 import 'post.dart' show Post;
-import 'vars.dart' show client;
+import 'client.dart' show client;
 
 class Comment {
   Map raw;

@@ -24,6 +24,8 @@ import 'pagination.dart';
 import 'post.dart' show Post;
 import 'tag.dart';
 
+final Client client = new Client();
+
 class Client {
   final Logger _log = new Logger('E1547Client');
 
