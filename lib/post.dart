@@ -34,6 +34,18 @@ class Post {
   Uri url(String host) =>
       new Uri(scheme: 'https', host: host, path: '/post/show/$id');
 
+  ImageProvider get fullImage {
+    return new NetworkImage(fileUrl);
+  }
+
+  ImageProvider get previewImage {
+    return new NetworkImage(previewUrl);
+  }
+
+  ImageProvider get sampleImage {
+    return new NetworkImage(sampleUrl);
+  }
+
   int id;
   String author;
   int score;
@@ -91,7 +103,7 @@ class _PostWidgetState extends State<PostWidget> {
     await Navigator.of(ctx).push(new MaterialPageRoute<Null>(
       builder: (ctx) {
         return new ZoomableImage(
-          new NetworkImage(widget.post.fileUrl),
+          widget.post.fullImage,
           scale: 16.0,
           onTap: () => Navigator.of(ctx).pop(),
         );
@@ -123,7 +135,7 @@ class _PostWidgetState extends State<PostWidget> {
 
     Widget image = widget.post.fileExt == 'swf' || widget.post.fileExt == 'webm'
         ? new Container()
-        : new Image.network(widget.post.sampleUrl);
+        : new Image(image: widget.post.sampleImage);
 
     Widget content = new Stack(children: [
       new Center(child: image),
@@ -238,7 +250,7 @@ class PostPreview extends StatelessWidget {
     Widget image = new Container(
       color: Colors.grey[800],
       constraints: const BoxConstraints.expand(),
-      child: new Image.network(post.previewUrl, fit: BoxFit.contain),
+      child: new Image(image: post.previewImage, fit: BoxFit.contain),
     );
 
     Widget specialOverlayIcon;
