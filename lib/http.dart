@@ -27,16 +27,17 @@ class HttpCustom {
   final Logger _log = new Logger('HttpCustom');
 
   Future<http.Response> get(String host, String path, {Map query}) {
-    Uri url = new Uri(
+    return getUrl(new Uri(
       scheme: 'https',
       host: host,
       path: path,
       queryParameters: stringify(query),
-    );
+    ));
+  }
 
+  Future<http.Response> getUrl(Uri url) {
     _log.fine('url: $url');
-
-    return http.get(url);
+    return http.get(url, headers: {'User-Agent': USER_AGENT});
   }
 }
 
