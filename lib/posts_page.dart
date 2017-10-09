@@ -202,7 +202,7 @@ class _PostsPageState extends State<PostsPage> {
           accountName: new Text('<username>'),
           accountEmail: new Text('<email>'),
           currentAccountPicture: new CircleAvatar(
-              backgroundColor: Colors.brown.shade800, child: new Text('UU'))),
+              backgroundImage: const AssetImage('icons/paw.png'))),
       new ListTile(
           leading: const Icon(Icons.settings),
           title: new Text('Settings'),
