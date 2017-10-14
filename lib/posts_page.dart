@@ -197,12 +197,20 @@ class _PostsPageState extends State<PostsPage> {
   Widget _buildDrawer(BuildContext ctx) {
     return new Drawer(
         child: new ListView(children: [
-      new UserAccountsDrawerHeader(
-          // TODO: account name and email
-          accountName: new Text('<username>'),
-          accountEmail: new Text('<email>'),
-          currentAccountPicture: new CircleAvatar(
-              backgroundImage: const AssetImage('icons/paw.png'))),
+      new DrawerHeader(
+          child: new Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+            const CircleAvatar(
+              backgroundImage: const AssetImage('icons/paw.png'),
+              radius: 48.0,
+            ),
+            new RaisedButton(
+                child: const Text('sign in'),
+                onPressed: () {
+                  _log.fine('Pressed sign in button');
+                }),
+          ])),
       new ListTile(
           leading: const Icon(Icons.settings),
           title: new Text('Settings'),
