@@ -28,7 +28,6 @@ class SettingsPage extends StatefulWidget {
 
 class SettingsPageState extends State<SettingsPage> {
   Future<String> _initialHost = persistence.getHost();
-
   String _host;
 
   @override
@@ -42,36 +41,60 @@ class SettingsPageState extends State<SettingsPage> {
   @override
   void initState() {
     super.initState();
-    _initialHost.then(_onNewHostSelected);
+    _initialHost.then((h) => _host = h);
   }
 
   Widget _buildBody(BuildContext ctx) {
-    Widget body = new Column(children: [
-      new RadioListTile<String>(
-        value: 'e926.net',
-        title: new Text('e926.net'),
-        groupValue: _host,
-        onChanged: _onNewHostSelected,
-      ),
-      new RadioListTile<String>(
-        value: 'e621.net',
-        title: new Text('e621.net'),
-        groupValue: _host,
-        onChanged: _onNewHostSelected,
-      ),
+    Widget body = new ListView(children: [
+      new ListTile(
+          title: const Text('Site backend'),
+          subtitle: _host != null ? new Text(_host) : null,
+          onTap: () async {
+            String newHost = await showDialog<String>(
+              context: ctx,
+              child: new _SiteBackendDialog(_host ?? await _initialHost),
+            );
+
+            if (newHost != null) {
+              persistence.setHost(newHost);
+              setState(() {
+                _host = newHost;
+              });
+            }
+          }),
     ]);
 
     return new Container(padding: new EdgeInsets.all(10.0), child: body);
   }
+}
 
-  void _onNewHostSelected(String host) {
-    print('SettingsPageState._onNewHostSelected(host=$host)');
-    assert(host != null);
+class _SiteBackendDialog extends StatefulWidget {
+  _SiteBackendDialog(this.host);
+  final String host;
 
-    setState(() {
-      _host = host;
-    });
+  @override
+  _SiteBackendDialogState createState() => new _SiteBackendDialogState();
+}
 
-    persistence.setHost(host);
+class _SiteBackendDialogState extends State<_SiteBackendDialog> {
+  @override
+  Widget build(BuildContext ctx) {
+    return new SimpleDialog(
+      title: const Text('Site backend'),
+      children: [
+        new RadioListTile<String>(
+          value: 'e926.net',
+          title: const Text('e926.net'),
+          groupValue: widget.host,
+          onChanged: Navigator.of(ctx).pop,
+        ),
+        new RadioListTile<String>(
+          value: 'e621.net',
+          title: const Text('e621.net'),
+          groupValue: widget.host,
+          onChanged: Navigator.of(ctx).pop,
+        ),
+      ],
+    );
   }
 }
