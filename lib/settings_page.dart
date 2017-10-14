@@ -30,6 +30,9 @@ class SettingsPageState extends State<SettingsPage> {
   Future<String> _initialHost = persistence.getHost();
   String _host;
 
+  Future<bool> _initialHideSwf = persistence.getHideSwf();
+  bool _hideSwf = false;
+
   @override
   Widget build(BuildContext ctx) {
     return new Scaffold(
@@ -41,7 +44,12 @@ class SettingsPageState extends State<SettingsPage> {
   @override
   void initState() {
     super.initState();
-    _initialHost.then((h) => _host = h);
+    _initialHost.then((h) => setState(() {
+          _host = h;
+        }));
+    _initialHideSwf.then((v) => setState(() {
+          _hideSwf = v;
+        }));
   }
 
   Widget _buildBody(BuildContext ctx) {
@@ -62,6 +70,16 @@ class SettingsPageState extends State<SettingsPage> {
               });
             }
           }),
+      new CheckboxListTile(
+        title: const Text('Hide Flash posts'),
+        value: _hideSwf,
+        onChanged: (v) {
+          persistence.setHideSwf(v);
+          setState(() {
+            _hideSwf = v;
+          });
+        },
+      ),
     ]);
 
     return new Container(padding: new EdgeInsets.all(10.0), child: body);
