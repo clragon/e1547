@@ -24,6 +24,7 @@ import 'tag.dart' show Tagset;
 
 const _HOST = 'host';
 const _TAGS = 'tags';
+const _HIDE_SWF = 'hide swf';
 
 Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
@@ -39,4 +40,11 @@ Future<Tagset> getTags() => _prefs.then((p) {
     });
 setTags(Tagset tags) => _prefs.then((p) {
       p.setString(_TAGS, tags.toString());
+    });
+
+Future<bool> getHideSwf() => _prefs.then((p) {
+      return p.getBool(_HIDE_SWF) ?? false;
+    });
+setHideSwf(bool hideSwf) => _prefs.then((p) {
+      p.setBool(_HIDE_SWF, hideSwf);
     });
