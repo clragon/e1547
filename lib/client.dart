@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
+import 'dart:async' show Future;
 import 'dart:convert' show JSON;
 
 import 'package:logging/logging.dart' show Logger;
@@ -21,6 +22,7 @@ import 'package:logging/logging.dart' show Logger;
 import 'comment.dart' show Comment;
 import 'http.dart';
 import 'pagination.dart';
+import 'persistence.dart' as persistence;
 import 'post.dart' show Post;
 import 'tag.dart';
 
@@ -37,6 +39,8 @@ class Client {
   LinearPagination<Post> posts(Tagset tags) {
     _log.info('Client.posts(tags="$tags")');
 
+    Future<bool> hideSwf = persistence.getHideSwf();
+
     return new LinearPagination<Post>(75, (page) async {
       String body = await _http.get(host, '/post/index.json', query: {
         'tags': tags,
@@ -46,7 +50,12 @@ class Client {
 
       List<Post> posts = [];
       for (var rp in JSON.decode(body)) {
-        posts.add(new Post.fromRaw(rp));
+        Post p = new Post.fromRaw(rp);
+        if (await hideSwf && p.fileExt == 'swf') {
+          _log.fine('Hiding swf post #${p.id}');
+          continue;
+        }
+        posts.add(p);
       }
       return posts;
     });
