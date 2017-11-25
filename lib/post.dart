@@ -156,9 +156,7 @@ class _PostWidgetState extends State<PostWidget> {
 
     content = new GestureDetector(
       onTap: () {
-        if (widget.post.fileExt == 'gif' ||
-            widget.post.fileExt == 'webm' ||
-            widget.post.fileExt == 'swf') {
+        if (widget.post.fileExt == 'webm' || widget.post.fileExt == 'swf') {
           url.launch(widget.post.fileUrl);
         } else {
           _fullscreen(ctx);
