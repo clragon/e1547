@@ -41,7 +41,7 @@ class Client {
 
     Future<bool> hideSwf = persistence.getHideSwf();
 
-    return new LinearPagination<Post>(75, (page) async {
+    return new LinearPagination<Post>((page) async {
       String body = await _http.get(host, '/post/index.json', query: {
         'tags': tags,
         'page': page,
@@ -64,13 +64,10 @@ class Client {
   LinearPagination<Comment> comments(int postId) {
     _log.info('Client.comments(postId="$postId")');
 
-    return new LinearPagination<Comment>(25, (page) async {
+    return new LinearPagination<Comment>((page) async {
       String body = await _http.get(host, '/comment/index.json', query: {
         'post_id': postId,
         'page': page,
-        // Don't return hidden comments. If we don't use this, we get back pages less than 25
-        // because only admins can see hidden comments.
-        'status': 'active',
       }).then((response) => response.body);
 
       List<Comment> comments = [];

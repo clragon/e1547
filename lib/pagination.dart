@@ -15,23 +15,16 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 import 'dart:async' show Future;
-import 'dart:math' as math;
 
 /// A function that loads and returns pages of elements.
 typedef Future<List<E>> PageLoader<E>(int pageNumber);
 
-/// Models a paginated list of elements.
+/// Models a paginated list of elements where pages may vary in size.
 ///
-/// Index starts at 1.
-///
-/// All pages must have a number of elements equal to the page size,
-/// except for the last page, which must have at least 1 element and no
-/// more than the the page size. If the given [pageLoader] doesn't honor
-/// this, the behavior is undefined.
-class Pagination<T> {
-  final int pageSize;
-  final PageLoader<T> _loadPage;
-  Pagination(this.pageSize, this._loadPage);
+/// Index starts at 1, not 0.
+class LinearPagination<T> {
+  int _page = 1;
+  bool _more = true;
 
   // List is unmodifiable, but the elements themselves are not.
   // This is just to prevent the size of the list from changing.
@@ -40,38 +33,19 @@ class Pagination<T> {
   List<T> _elements = [];
   List<T> get elements => new List.unmodifiable(_elements);
 
-  /// Load the page at [index] and insert into [elements].
-  ///
-  /// Returns the number of elements that were loaded.
-  Future<int> loadPage(int index) async {
-    assert(index >= 1, 'Index must be >= 1');
-
-    List<T> newPage = await _loadPage(index);
-    if (newPage.isEmpty) {
-      return 0;
-    }
-
-    int start = (index - 1) * pageSize;
-    int end = start + newPage.length;
-
-    _elements.length = math.max(_elements.length, end);
-    _elements.replaceRange(start, end, newPage);
-
-    return newPage.length;
-  }
-}
-
-/// A restricted [Pagination] that only loads in-order, from page 1 to
-/// the first page with less than [pageSize] elements.
-class LinearPagination<T> extends Pagination<T> {
-  int _page = 1;
-  bool _more = true;
-  LinearPagination(int pageSize, PageLoader<T> loadPage)
-      : super(pageSize, loadPage);
+  final PageLoader<T> _loadPage;
+  LinearPagination(this._loadPage);
 
   /// Load the next page. Returns false if there are no more pages to be
   /// loaded.
   Future<bool> loadNextPage() async {
-    return _more && (_more = await loadPage(_page++) == pageSize);
+    if (!_more) {
+      return false;
+    }
+
+    List<T> newPage = await _loadPage(_page++);
+    _elements.addAll(newPage);
+
+    return _more = newPage.isNotEmpty;
   }
 }
