@@ -1,20 +1,19 @@
 #!/bin/bash
 
 if [[ -z "$*" ]]; then
-	>&2 echo "usage: release.sh <oldversion> <newversion>"
+	>&2 echo "usage: bump-release.sh <oldversion> <newversion>"
 	exit
 fi
 
 old="$1"
 new="$2"
 
-flutter build clean
+flutter clean
 flutter build apk --release
 
 name="e1547_v${old}"
 
 cp build/app/outputs/apk/app-release.apk "${name}.apk"
-zip -0 "${name}.zip" "${name}.apk"
 
 files=(
 	"android/app/src/main/AndroidManifest.xml"
