@@ -78,11 +78,16 @@ class _LoginFormFieldsState extends State<_LoginFormFields> {
     List<Widget> columnChildren = [];
 
     columnChildren.add(new TextFormField(
-      autocorrect: false,
-      decoration: const InputDecoration(
-        labelText: 'Username',
-      ),
-    ));
+        autocorrect: false,
+        decoration: const InputDecoration(
+          labelText: 'Username',
+        ),
+        validator: (String username) {
+          username = username.trim();
+          if (username.isEmpty) {
+            return 'You must provide a username.';
+          }
+        }));
 
     columnChildren.add(new TextFormField(
       autocorrect: false,
@@ -97,7 +102,7 @@ class _LoginFormFieldsState extends State<_LoginFormFields> {
               'e.g. 1ca1d165e973d7f8d35b7deb7a2ae54c';
         }
 
-        if (!new RegExp(r"^[a-f0-9].{32}$").hasMatch(apiKey)) {
+        if (!new RegExp(r"^[a-f0-9]{32}$").hasMatch(apiKey)) {
           return 'API key is a 32-character sequence of {a..f} and {0..9}\n'
               'e.g. 1ca1d165e973d7f8d35b7deb7a2ae54c';
         }
