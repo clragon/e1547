@@ -14,9 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
+import 'dart:async' show Future;
+
 import 'package:flutter/material.dart';
 
 import 'package:logging/logging.dart' show Logger;
+import 'package:url_launcher/url_launcher.dart' as url;
+
+import 'persistence.dart' as persistence;
 
 class LoginPage extends StatefulWidget {
   @override
@@ -25,74 +30,67 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   static final Logger _log = new Logger('LoginPage');
-
-  bool _hasApiKey = false;
+  Future<String> _host = persistence.getHost();
 
   @override
   Widget build(BuildContext ctx) {
     List<Widget> columnChildren = [];
 
-    Widget hasApiKeyCheckbox = new CheckboxListTile(
-      title: const Text('I have an API key'),
-      value: _hasApiKey,
-      onChanged: (b) {
-        setState(() {
-          _hasApiKey = b;
-        });
-      },
-    );
-
-    columnChildren.add(hasApiKeyCheckbox);
-
-    if (_hasApiKey) {
-      columnChildren.add(new TextFormField(
-        autocorrect: false,
-        decoration: const InputDecoration(
-          labelText: 'API Key',
+    columnChildren.add(new _InstructionStep(
+      1,
+      new FlatButton(
+        onPressed: () => _host.then((h) {
+              url.launch('https://$h/user/login');
+            }),
+        child: new Text(
+          'Login via web browser',
+          style: new TextStyle(decoration: TextDecoration.underline),
         ),
-      ));
+      ),
+    ));
 
-      columnChildren.add(new Padding(
-        padding: const EdgeInsets.only(top: 20.0),
-        child: new RaisedButton(
-          child: const Text('SAVE & TEST'),
-          onPressed: () {
-            _log.fine('Pressed SAVE & TEST');
-          },
+    columnChildren.add(new _InstructionStep(
+      2,
+      new FlatButton(
+        onPressed: () => _host.then((h) {
+              url.launch('https://$h/user/api_key');
+            }),
+        child: new Text(
+          'Enable API Access',
+          style: new TextStyle(decoration: TextDecoration.underline),
         ),
-      ));
-    } else {
-      columnChildren.add(new TextFormField(
-        decoration: const InputDecoration(
-          labelText: 'Username',
-        ),
-      ));
+      ),
+    ));
 
-      columnChildren.add(new TextFormField(
-        obscureText: true,
-        autocorrect: false,
-        decoration: const InputDecoration(
-          labelText: 'Password',
-        ),
-      ));
+    columnChildren.add(new _InstructionStep(
+      3,
+      new Text('Copy and paste your API key'),
+    ));
 
-      columnChildren.add(const Padding(
-          padding: const EdgeInsets.only(top: 20.0),
-          child: const Text(
-            'Your credentials will be used to request an API key. '
-                'Your password will not be stored.',
-          )));
+    columnChildren.add(new TextFormField(
+      autocorrect: false,
+      decoration: const InputDecoration(
+        labelText: 'Username',
+      ),
+    ));
 
-      columnChildren.add(new Padding(
-        padding: const EdgeInsets.only(top: 20.0),
-        child: new RaisedButton(
-          child: const Text('LOGIN'),
-          onPressed: () {
-            _log.fine('Pressed LOGIN');
-          },
-        ),
-      ));
-    }
+    columnChildren.add(new TextFormField(
+      autocorrect: false,
+      decoration: const InputDecoration(
+        labelText: 'API Key',
+        helperText: 'e.g. 1ca1d165e973d7f8d35b7deb7a2ae54c',
+      ),
+    ));
+
+    columnChildren.add(new Padding(
+      padding: const EdgeInsets.only(top: 20.0),
+      child: new RaisedButton(
+        child: const Text('SAVE & TEST'),
+        onPressed: () {
+          _log.fine('Pressed SAVE & TEST');
+        },
+      ),
+    ));
 
     return new Scaffold(
       appBar: new AppBar(title: const Text('Login')),
@@ -105,6 +103,43 @@ class _LoginPageState extends State<LoginPage> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _InstructionStep extends StatelessWidget {
+  final int _stepNumber;
+  final Widget _content;
+
+  _InstructionStep(this._stepNumber, this._content, {Key key})
+      : super(key: key);
+  @override
+  Widget build(BuildContext ctx) {
+    Widget leadingCircle = new Container(
+      decoration: const ShapeDecoration(
+        color: Colors.white,
+        shape: const CircleBorder(),
+      ),
+      width: 64.0,
+      height: 64.0,
+      alignment: Alignment.center,
+      child: new Text(
+        _stepNumber.toString(),
+        textAlign: TextAlign.center,
+        style: new TextStyle(color: Colors.black, fontSize: 48.0),
+      ),
+    );
+
+    return new Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10.0),
+      child: new Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            leadingCircle,
+            new Expanded(child: new Container()),
+            _content,
+            new Expanded(child: new Container()),
+          ]),
     );
   }
 }
