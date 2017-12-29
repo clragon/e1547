@@ -17,6 +17,7 @@
 import 'dart:async' show Future;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show TextInputFormatter;
 
 import 'package:logging/logging.dart' show Logger;
 import 'package:url_launcher/url_launcher.dart' as url;
@@ -95,6 +96,7 @@ class _LoginFormFieldsState extends State<_LoginFormFields> {
         labelText: 'API Key',
         helperText: 'e.g. 1ca1d165e973d7f8d35b7deb7a2ae54c',
       ),
+      inputFormatters: [new _LowercaseTextInputFormatter()],
       validator: (String apiKey) {
         apiKey = apiKey.trim();
         if (apiKey.isEmpty) {
@@ -163,5 +165,12 @@ class _InstructionStep extends StatelessWidget {
             new Expanded(child: new Container()),
           ]),
     );
+  }
+}
+
+class _LowercaseTextInputFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(prev, current) {
+    return current.copyWith(text: current.text.toLowerCase());
   }
 }
