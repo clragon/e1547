@@ -60,7 +60,10 @@ class TagEntryPageState extends State<TagEntryPage> {
     return new Container(
         padding: new EdgeInsets.all(10.0),
         child: new Column(children: <Widget>[
-          tagEntry,
+          new Padding(
+            child: tagEntry,
+            padding: new EdgeInsets.only(bottom: 10.0),
+          ),
           new Row(mainAxisAlignment: MainAxisAlignment.end, children: buttons)
         ]));
   }
