@@ -19,6 +19,7 @@ import 'package:flutter/widgets.dart' as widgets;
 import 'package:logging/logging.dart' show Level, Logger, LogRecord;
 
 import 'consts.dart' as consts;
+import 'login_page.dart' show LoginPage;
 import 'posts_page.dart' show PostsPage;
 import 'settings_page.dart' show SettingsPage;
 
@@ -37,6 +38,7 @@ void main() {
       theme: new ThemeData.dark(),
       routes: <String, widgets.WidgetBuilder>{
         '/': (ctx) => new PostsPage(),
+        '/login': (ctx) => new LoginPage(),
         '/settings': (ctx) => new SettingsPage(),
       }));
 }

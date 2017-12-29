@@ -206,10 +206,9 @@ class _PostsPageState extends State<PostsPage> {
               radius: 48.0,
             ),
             new RaisedButton(
-                child: const Text('sign in'),
-                onPressed: () {
-                  _log.fine('Pressed sign in button');
-                }),
+              child: const Text('LOGIN'),
+              onPressed: () => Navigator.popAndPushNamed(ctx, '/login'),
+            ),
           ])),
       new ListTile(
           leading: const Icon(Icons.settings),
