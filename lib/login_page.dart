@@ -23,49 +23,59 @@ import 'package:url_launcher/url_launcher.dart' as url;
 
 import 'persistence.dart' as persistence;
 
-class LoginPage extends StatefulWidget {
+class LoginPage extends StatelessWidget {
+  final Future<String> _host = persistence.getHost();
+
   @override
-  _LoginPageState createState() => new _LoginPageState();
+  Widget build(BuildContext ctx) {
+    List<Widget> columnChildren = [
+      new _InstructionStep(
+          1, _buttonLink('Login via web browser', '/user/login')),
+      new _InstructionStep(
+          2, _buttonLink('Enable API Access', '/user/api_key')),
+      new _InstructionStep(3, const Text('Copy and paste your API key')),
+    ];
+
+    columnChildren.add(new _LoginFormFields());
+
+    return new Scaffold(
+      appBar: new AppBar(title: const Text('Login')),
+      body: new SingleChildScrollView(
+          padding: new EdgeInsets.all(10.0),
+          child: new Form(child: new Column(children: columnChildren))),
+    );
+  }
+
+  Function _launch(String path) {
+    return () {
+      _host.then((h) {
+        url.launch('https://$h$path');
+      });
+    };
+  }
+
+  FlatButton _buttonLink(String text, String path) {
+    return new FlatButton(
+      onPressed: _launch(path),
+      child: new Text(
+        text,
+        style: new TextStyle(decoration: TextDecoration.underline),
+      ),
+    );
+  }
 }
 
-class _LoginPageState extends State<LoginPage> {
-  static final Logger _log = new Logger('LoginPage');
-  Future<String> _host = persistence.getHost();
+class _LoginFormFields extends StatefulWidget {
+  @override
+  _LoginFormFieldsState createState() => new _LoginFormFieldsState();
+}
+
+class _LoginFormFieldsState extends State<_LoginFormFields> {
+  static final Logger _log = new Logger('LoginFormFields');
 
   @override
   Widget build(BuildContext ctx) {
     List<Widget> columnChildren = [];
-
-    columnChildren.add(new _InstructionStep(
-      1,
-      new FlatButton(
-        onPressed: () => _host.then((h) {
-              url.launch('https://$h/user/login');
-            }),
-        child: new Text(
-          'Login via web browser',
-          style: new TextStyle(decoration: TextDecoration.underline),
-        ),
-      ),
-    ));
-
-    columnChildren.add(new _InstructionStep(
-      2,
-      new FlatButton(
-        onPressed: () => _host.then((h) {
-              url.launch('https://$h/user/api_key');
-            }),
-        child: new Text(
-          'Enable API Access',
-          style: new TextStyle(decoration: TextDecoration.underline),
-        ),
-      ),
-    ));
-
-    columnChildren.add(new _InstructionStep(
-      3,
-      new Text('Copy and paste your API key'),
-    ));
 
     columnChildren.add(new TextFormField(
       autocorrect: false,
@@ -80,6 +90,20 @@ class _LoginPageState extends State<LoginPage> {
         labelText: 'API Key',
         helperText: 'e.g. 1ca1d165e973d7f8d35b7deb7a2ae54c',
       ),
+      validator: (String apiKey) {
+        apiKey = apiKey.trim();
+        if (apiKey.isEmpty) {
+          return 'You must provide an API key.\n'
+              'e.g. 1ca1d165e973d7f8d35b7deb7a2ae54c';
+        }
+
+        if (!new RegExp(r"^[a-f0-9].{32}$").hasMatch(apiKey)) {
+          return 'API key is a 32-character sequence of {a..f} and {0..9}\n'
+              'e.g. 1ca1d165e973d7f8d35b7deb7a2ae54c';
+        }
+
+        return null;
+      },
     ));
 
     columnChildren.add(new Padding(
@@ -88,21 +112,14 @@ class _LoginPageState extends State<LoginPage> {
         child: const Text('SAVE & TEST'),
         onPressed: () {
           _log.fine('Pressed SAVE & TEST');
+          Form.of(ctx).validate();
         },
       ),
     ));
 
-    return new Scaffold(
-      appBar: new AppBar(title: const Text('Login')),
-      body: new SingleChildScrollView(
-        padding: new EdgeInsets.all(10.0),
-        child: new Form(
-          child: new Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: columnChildren,
-          ),
-        ),
-      ),
+    return new Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: columnChildren,
     );
   }
 }
