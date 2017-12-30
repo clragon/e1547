@@ -13,7 +13,7 @@ flutter build apk --release
 
 name="e1547_v${old}"
 
-cp build/app/outputs/apk/app-release.apk "${name}.apk"
+cp build/app/outputs/apk/release/app-release.apk "${name}.apk"
 
 files=(
 	"android/app/src/main/AndroidManifest.xml"
