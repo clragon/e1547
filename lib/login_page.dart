@@ -17,7 +17,7 @@
 import 'dart:async' show Future;
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show TextInputFormatter;
+import 'package:flutter/services.dart' show TextInputFormatter, Clipboard;
 
 import 'package:logging/logging.dart' show Logger;
 import 'package:url_launcher/url_launcher.dart' as url;
@@ -75,6 +75,8 @@ class _LoginFormFields extends StatefulWidget {
 class _LoginFormFieldsState extends State<_LoginFormFields> {
   static final Logger _log = new Logger('LoginFormFields');
 
+  TextEditingController _apiKeyFieldController = new TextEditingController();
+
   String _username;
   String _apiKey;
 
@@ -96,29 +98,44 @@ class _LoginFormFieldsState extends State<_LoginFormFields> {
       },
     ));
 
-    columnChildren.add(new TextFormField(
-      autocorrect: false,
-      decoration: const InputDecoration(
-        labelText: 'API Key',
-        helperText: 'e.g. 1ca1d165e973d7f8d35b7deb7a2ae54c',
+    columnChildren.add(new Row(children: [
+      new Expanded(
+        child: new TextFormField(
+          autocorrect: false,
+          controller: _apiKeyFieldController,
+          decoration: const InputDecoration(
+            labelText: 'API Key',
+            helperText: 'e.g. 1ca1d165e973d7f8d35b7deb7a2ae54c',
+          ),
+          inputFormatters: [new _LowercaseTextInputFormatter()],
+          onSaved: (a) => _apiKey = a,
+          validator: (String apiKey) {
+            apiKey = apiKey.trim();
+            if (apiKey.isEmpty) {
+              return 'You must provide an API key.\n'
+                  'e.g. 1ca1d165e973d7f8d35b7deb7a2ae54c';
+            }
+
+            if (!new RegExp(r"^[a-f0-9]{32}$").hasMatch(apiKey)) {
+              return 'API key is a 32-character sequence of {a..f} and {0..9}\n'
+                  'e.g. 1ca1d165e973d7f8d35b7deb7a2ae54c';
+            }
+
+            return null;
+          },
+        ),
       ),
-      inputFormatters: [new _LowercaseTextInputFormatter()],
-      onSaved: (a) => _apiKey = a,
-      validator: (String apiKey) {
-        apiKey = apiKey.trim();
-        if (apiKey.isEmpty) {
-          return 'You must provide an API key.\n'
-              'e.g. 1ca1d165e973d7f8d35b7deb7a2ae54c';
-        }
-
-        if (!new RegExp(r"^[a-f0-9]{32}$").hasMatch(apiKey)) {
-          return 'API key is a 32-character sequence of {a..f} and {0..9}\n'
-              'e.g. 1ca1d165e973d7f8d35b7deb7a2ae54c';
-        }
-
-        return null;
-      },
-    ));
+      new IconButton(
+        icon: new Icon(Icons.content_paste),
+        tooltip: 'Paste',
+        onPressed: () async {
+          String contents = (await Clipboard.getData('text/plain')).text;
+          setState(() {
+            _apiKeyFieldController.text = contents;
+          });
+        },
+      ),
+    ]));
 
     columnChildren.add(new Padding(
       padding: const EdgeInsets.only(top: 20.0),
