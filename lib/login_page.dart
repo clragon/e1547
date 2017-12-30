@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-import 'dart:async' show Future;
+import 'dart:async' show Future, Timer;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show TextInputFormatter, Clipboard;
@@ -77,6 +77,9 @@ class _LoginFormFieldsState extends State<_LoginFormFields> {
 
   TextEditingController _apiKeyFieldController = new TextEditingController();
 
+  bool _didJustPaste = false;
+  String _beforePasteText;
+
   String _username;
   String _apiKey;
 
@@ -125,16 +128,40 @@ class _LoginFormFieldsState extends State<_LoginFormFields> {
           },
         ),
       ),
-      new IconButton(
-        icon: new Icon(Icons.content_paste),
-        tooltip: 'Paste',
-        onPressed: () async {
-          String contents = (await Clipboard.getData('text/plain')).text;
-          setState(() {
-            _apiKeyFieldController.text = contents;
-          });
-        },
-      ),
+      _didJustPaste
+          ? new IconButton(
+              icon: new Icon(Icons.undo),
+              tooltip: 'Undo previous paste',
+              onPressed: () {
+                setState(() {
+                  _didJustPaste = false;
+                  _apiKeyFieldController.text = _beforePasteText;
+                });
+              },
+            )
+          : new IconButton(
+              icon: new Icon(Icons.content_paste),
+              tooltip: 'Paste',
+              onPressed: () async {
+                var data = await Clipboard.getData('text/plain');
+                if (data == null || data.text.trim().isEmpty) {
+                  Scaffold.of(ctx).showSnackBar(const SnackBar(
+                      content: const Text('Clipboard is empty')));
+                  return;
+                }
+
+                setState(() {
+                  _didJustPaste = true;
+                  _beforePasteText = _apiKeyFieldController.text;
+                  _apiKeyFieldController.text = data.text;
+                });
+
+                new Timer(const Duration(seconds: 10), () {
+                  setState(() {
+                    _didJustPaste = false;
+                  });
+                });
+              }),
     ]));
 
     columnChildren.add(new Padding(
