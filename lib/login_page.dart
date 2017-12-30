@@ -202,6 +202,8 @@ class _LoginProgressDialogState extends State<_LoginProgressDialog> {
         ]);
   }
 
+  // TODO NEXT: if false, mark fields as invalid. If true, exit and open
+  // navigation drawer to show that we're logged in.
   Widget _buildDone(bool isLoginOk) {
     return new Text(isLoginOk.toString());
   }
