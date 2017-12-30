@@ -227,7 +227,9 @@ class _LoginFormFieldsState extends State<_LoginFormFields> {
   @override
   dispose() {
     super.dispose();
-    _pasteUndoTimer.cancel();
+    if (_pasteUndoTimer != null) {
+      _pasteUndoTimer.cancel();
+    }
   }
 }
 
