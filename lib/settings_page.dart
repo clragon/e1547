@@ -21,6 +21,16 @@ import 'package:flutter/widgets.dart';
 
 import 'persistence.dart' as persistence;
 
+class SettingsPageScaffold extends StatelessWidget {
+  @override
+  Widget build(BuildContext ctx) {
+    return new Scaffold(
+      appBar: new AppBar(title: new Text('Settings')),
+      body: new SettingsPage(),
+    );
+  }
+}
+
 class SettingsPage extends StatefulWidget {
   @override
   SettingsPageState createState() => new SettingsPageState();
@@ -33,13 +43,8 @@ class SettingsPageState extends State<SettingsPage> {
   Future<bool> _initialHideSwf = persistence.getHideSwf();
   bool _hideSwf = false;
 
-  @override
-  Widget build(BuildContext ctx) {
-    return new Scaffold(
-      appBar: new AppBar(title: new Text('Settings')),
-      body: _buildBody(ctx),
-    );
-  }
+  Future<String> _initialUsername = persistence.getUsername();
+  String _username;
 
   @override
   void initState() {
@@ -50,9 +55,13 @@ class SettingsPageState extends State<SettingsPage> {
     _initialHideSwf.then((v) => setState(() {
           _hideSwf = v;
         }));
+    _initialUsername.then((v) => setState(() {
+          _username = v;
+        }));
   }
 
-  Widget _buildBody(BuildContext ctx) {
+  @override
+  Widget build(BuildContext ctx) {
     Widget body = new ListView(children: [
       new ListTile(
           title: const Text('Site backend'),
@@ -78,6 +87,19 @@ class SettingsPageState extends State<SettingsPage> {
           setState(() {
             _hideSwf = v;
           });
+        },
+      ),
+      new ListTile(
+        title: const Text('Sign out'),
+        subtitle: _username != null ? new Text(_username) : null,
+        onTap: () {
+          persistence.setUsername(null);
+          persistence.setApiKey(null);
+
+          Scaffold.of(ctx).showSnackBar(new SnackBar(
+                duration: const Duration(seconds: 5),
+                content: new Text('Forgot login details for $_username'),
+              ));
         },
       ),
     ]);

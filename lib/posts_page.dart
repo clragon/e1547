@@ -41,6 +41,7 @@ class _PostsPageState extends State<PostsPage> {
   final Logger _log = new Logger('PostsPage');
 
   LinearPagination<Post> _posts;
+  Future<String> _username = persistence.getUsername();
 
   Tagset _tags; // Tags used for searching for posts.
 
@@ -197,25 +198,49 @@ class _PostsPageState extends State<PostsPage> {
   Widget _buildDrawer(BuildContext ctx) {
     return new Drawer(
         child: new ListView(children: [
-      new DrawerHeader(
-          child: new Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-            const CircleAvatar(
-              backgroundImage: const AssetImage('icons/paw.png'),
-              radius: 48.0,
-            ),
-            new RaisedButton(
-              child: const Text('LOGIN'),
-              onPressed: () => Navigator.popAndPushNamed(ctx, '/login'),
-            ),
-          ])),
+      _buildDrawerHeader(),
       new ListTile(
-          leading: const Icon(Icons.settings),
-          title: new Text('Settings'),
-          onTap: () => Navigator.popAndPushNamed(ctx, '/settings')),
+        leading: const Icon(Icons.settings),
+        title: new Text('Settings'),
+        onTap: () async {
+          await Navigator.popAndPushNamed(ctx, '/settings');
+          setState(() {
+            // TODO: See if we can DRY this with pop...'/login')
+            _username = persistence.getUsername();
+          });
+        },
+      ),
       new AboutListTile(icon: const Icon(Icons.help)),
     ]));
+  }
+
+  Widget _buildDrawerHeader() {
+    return new FutureBuilder(
+      future: _username,
+      builder: (ctx, snapshot) {
+        return new DrawerHeader(
+            child: new Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+              const CircleAvatar(
+                backgroundImage: const AssetImage('icons/paw.png'),
+                radius: 48.0,
+              ),
+              snapshot.connectionState == ConnectionState.done &&
+                      snapshot.data != null
+                  ? new Text(snapshot.data)
+                  : new RaisedButton(
+                      child: const Text('LOGIN'),
+                      onPressed: () async {
+                        await Navigator.popAndPushNamed(ctx, '/login');
+                        setState(() {
+                          _username = persistence.getUsername();
+                        });
+                      },
+                    ),
+            ]));
+      },
+    );
   }
 
   Widget _buildFloatingActionButton(BuildContext ctx) {
