@@ -17,6 +17,7 @@
 import 'dart:async' show Future;
 import 'dart:convert' show JSON;
 
+import 'package:http/http.dart' as http;
 import 'package:logging/logging.dart' show Logger;
 
 import 'comment.dart' show Comment;
@@ -35,6 +36,41 @@ class Client {
 
   // For example, 'e926.net'
   String host;
+
+  // From https://www.crossdart.info/p/http/0.11.3+16/http.dart.html#line-164
+  Future<T> _withClient<T>(Future<T> fn(http.Client client)) async {
+    var client = new http.Client();
+    try {
+      return await fn(client);
+    } finally {
+      client.close();
+    }
+  }
+
+  // TODO: handle alternative status-codes better. Typical "failure" in this
+  // case is a 302 redirect to /user/index.html
+  //
+  // TODO: Put this logic in ./http.dart, where it belongs and take advantage of
+  // existing helper methods. Refactor to work with other methods in HttpCustom.
+  Future<bool> isValidAuthPair(String username, String apiKey) async {
+    _log.info('client.checkAuthPair(username="$username", apiKey="$apiKey")');
+    return await _withClient<bool>((client) async {
+      var response = await client.send(
+        new http.Request(
+          'GET',
+          new Uri.https(
+            host,
+            '/user/show.json',
+            {'login': username, 'password_hash': apiKey},
+          ),
+        )..followRedirects = false,
+      );
+
+      _log.info('response.statusCode=${response.statusCode}');
+
+      return response.statusCode == 200;
+    });
+  }
 
   LinearPagination<Post> posts(Tagset tags) {
     _log.info('Client.posts(tags="$tags")');

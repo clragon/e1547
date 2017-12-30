@@ -22,6 +22,7 @@ import 'package:flutter/services.dart' show TextInputFormatter;
 import 'package:logging/logging.dart' show Logger;
 import 'package:url_launcher/url_launcher.dart' as url;
 
+import 'client.dart' show client;
 import 'persistence.dart' as persistence;
 
 class LoginPage extends StatelessWidget {
@@ -74,21 +75,26 @@ class _LoginFormFields extends StatefulWidget {
 class _LoginFormFieldsState extends State<_LoginFormFields> {
   static final Logger _log = new Logger('LoginFormFields');
 
+  String _username;
+  String _apiKey;
+
   @override
   Widget build(BuildContext ctx) {
     List<Widget> columnChildren = [];
 
     columnChildren.add(new TextFormField(
-        autocorrect: false,
-        decoration: const InputDecoration(
-          labelText: 'Username',
-        ),
-        validator: (String username) {
-          username = username.trim();
-          if (username.isEmpty) {
-            return 'You must provide a username.';
-          }
-        }));
+      autocorrect: false,
+      decoration: const InputDecoration(
+        labelText: 'Username',
+      ),
+      onSaved: (u) => _username = u,
+      validator: (String u) {
+        u = u.trim();
+        if (u.isEmpty) {
+          return 'You must provide a username.';
+        }
+      },
+    ));
 
     columnChildren.add(new TextFormField(
       autocorrect: false,
@@ -97,6 +103,7 @@ class _LoginFormFieldsState extends State<_LoginFormFields> {
         helperText: 'e.g. 1ca1d165e973d7f8d35b7deb7a2ae54c',
       ),
       inputFormatters: [new _LowercaseTextInputFormatter()],
+      onSaved: (a) => _apiKey = a,
       validator: (String apiKey) {
         apiKey = apiKey.trim();
         if (apiKey.isEmpty) {
@@ -117,10 +124,7 @@ class _LoginFormFieldsState extends State<_LoginFormFields> {
       padding: const EdgeInsets.only(top: 20.0),
       child: new RaisedButton(
         child: const Text('SAVE & TEST'),
-        onPressed: () {
-          _log.fine('Pressed SAVE & TEST');
-          Form.of(ctx).validate();
-        },
+        onPressed: _saveAndTest(ctx),
       ),
     ));
 
@@ -128,6 +132,78 @@ class _LoginFormFieldsState extends State<_LoginFormFields> {
       crossAxisAlignment: CrossAxisAlignment.end,
       children: columnChildren,
     );
+  }
+
+  _saveAndTest(ctx) => () {
+        _log.fine('Pressed SAVE & TEST');
+        FormState form = Form.of(ctx);
+        if (form.validate()) {
+          form.save();
+          _log.fine('username: $_username ; apikey: $_apiKey');
+          showDialog(
+            context: ctx,
+            child: new _LoginProgressDialog(_username, _apiKey),
+          );
+        }
+      };
+}
+
+class _LoginProgressDialog extends StatefulWidget {
+  final String username;
+  final String apiKey;
+  _LoginProgressDialog(this.username, this.apiKey, {Key key}) : super(key: key);
+
+  @override
+  _LoginProgressDialogState createState() => new _LoginProgressDialogState();
+}
+
+class _LoginProgressDialogState extends State<_LoginProgressDialog> {
+  static final Logger _log = new Logger('LoginProgressDialog');
+
+  Future<bool> _isLoginOk;
+
+  @override
+  void initState() {
+    super.initState();
+    _isLoginOk = client.isValidAuthPair(
+      widget.username,
+      widget.apiKey,
+    );
+  }
+
+  @override
+  Widget build(BuildContext ctx) {
+    return new Dialog(
+      child: new Container(
+        padding: const EdgeInsets.all(20.0),
+        child: _buildFutureBuilder(),
+      ),
+    );
+  }
+
+  Widget _buildFutureBuilder() {
+    return new FutureBuilder<bool>(
+      future: _isLoginOk,
+      builder: (BuildContext ctx, AsyncSnapshot<bool> snapshot) {
+        _log.fine('snapshot.connectionState=${snapshot.connectionState}');
+        return snapshot.connectionState != ConnectionState.done
+            ? _buildLoggingIn(ctx)
+            : _buildDone(snapshot.data);
+      },
+    );
+  }
+
+  Widget _buildLoggingIn(BuildContext ctx) {
+    return new Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          const CircularProgressIndicator(),
+          new Text('Logging in as ${widget.username}'),
+        ]);
+  }
+
+  Widget _buildDone(bool isLoginOk) {
+    return new Text(isLoginOk.toString());
   }
 }
 
