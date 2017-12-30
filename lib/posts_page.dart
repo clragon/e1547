@@ -41,7 +41,9 @@ class _PostsPageState extends State<PostsPage> {
   final Logger _log = new Logger('PostsPage');
 
   LinearPagination<Post> _posts;
-  Future<String> _username = persistence.getUsername();
+  Future<String> _username =
+      persistence.getUsername(); // TODO these shouldn't be here
+  Future<String> _apiKey = persistence.getApiKey();
 
   Tagset _tags; // Tags used for searching for posts.
 
@@ -206,7 +208,12 @@ class _PostsPageState extends State<PostsPage> {
           await Navigator.popAndPushNamed(ctx, '/settings');
           setState(() {
             // TODO: See if we can DRY this with pop...'/login')
+            // And don't even do this data wrangling here...
             _username = persistence.getUsername();
+            _apiKey = persistence.getApiKey();
+
+            _username.then((u) => client.username = u);
+            _apiKey.then((a) => client.apiKey = a);
           });
         },
       ),
@@ -235,6 +242,10 @@ class _PostsPageState extends State<PostsPage> {
                         await Navigator.popAndPushNamed(ctx, '/login');
                         setState(() {
                           _username = persistence.getUsername();
+                          _apiKey = persistence.getApiKey();
+
+                          _username.then((u) => client.username = u);
+                          _apiKey.then((a) => client.apiKey = a);
                         });
                       },
                     ),

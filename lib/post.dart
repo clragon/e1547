@@ -24,6 +24,7 @@ import 'package:logging/logging.dart' show Logger;
 import 'package:url_launcher/url_launcher.dart' as url;
 import 'package:zoomable_image/zoomable_image.dart' show ZoomableImage;
 
+import 'client.dart' show client;
 import 'comment.dart' show CommentsWidget;
 import 'persistence.dart' as persistence;
 
@@ -86,17 +87,26 @@ class Post {
   }
 }
 
-// Main widget for presenting and interacting with individual posts.
-class PostWidget extends StatefulWidget {
+class PostWidget extends StatelessWidget {
   final Post post;
   PostWidget(this.post, {Key key}) : super(key: key);
-
   @override
-  State createState() => new _PostWidgetState();
+  Widget build(BuildContext ctx) {
+    return new Scaffold(body: new PostWidgetScaffold(post));
+  }
 }
 
-class _PostWidgetState extends State<PostWidget> {
-  static final Logger _log = new Logger('PostWidget');
+// Main widget for presenting and interacting with individual posts.
+class PostWidgetScaffold extends StatefulWidget {
+  final Post post;
+  PostWidgetScaffold(this.post, {Key key}) : super(key: key);
+
+  @override
+  State createState() => new _PostWidgetScaffoldState();
+}
+
+class _PostWidgetScaffoldState extends State<PostWidgetScaffold> {
+  static final Logger _log = new Logger('PostWidgetScaffold');
 
   _fullscreen(BuildContext ctx) async {
     SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
@@ -114,16 +124,14 @@ class _PostWidgetState extends State<PostWidget> {
 
   @override
   Widget build(BuildContext ctx) {
-    return new Scaffold(
-      body: new Padding(
-          padding: new EdgeInsets.only(top: MediaQuery.of(context).padding.top),
-          child: new Column(mainAxisSize: MainAxisSize.min, children: [
-            _buildPostContents(ctx),
-            _buildPostMetadata(ctx),
-            const Divider(height: 8.0),
-            _buildButtonBar(ctx),
-          ])),
-    );
+    return new Padding(
+        padding: new EdgeInsets.only(top: MediaQuery.of(context).padding.top),
+        child: new Column(mainAxisSize: MainAxisSize.min, children: [
+          _buildPostContents(ctx),
+          _buildPostMetadata(ctx),
+          const Divider(height: 8.0),
+          _buildButtonBar(ctx),
+        ]));
   }
 
   Widget _buildPostContents(BuildContext ctx) {
@@ -198,7 +206,44 @@ class _PostWidgetState extends State<PostWidget> {
         new IconButton(
             icon: const Icon(Icons.favorite),
             tooltip: 'Add post to favorites',
-            onPressed: () => _log.fine('pressed fav')),
+            onPressed: () async {
+              _log.fine('pressed fav');
+              String cmd = await showDialog<String>(
+                  context: ctx,
+                  child: new SimpleDialog(children: [
+                    new SimpleDialogOption(
+                      child: const Text('Add to favorites'),
+                      onPressed: () => Navigator.of(ctx).pop('add'),
+                    ),
+                    new SimpleDialogOption(
+                      child: const Text('Remove from favorites'),
+                      onPressed: () => Navigator.of(ctx).pop('remove'),
+                    ),
+                  ]));
+
+              if (cmd == null) {
+                return;
+              }
+
+              String message;
+              if (cmd == 'add') {
+                message = await client.addAsFavorite(widget.post.id)
+                    ? 'Added post ${widget.post.id} to favorites'
+                    : 'Failed to add post ${widget.post.id} to favorites';
+              } else if (cmd == 'remove') {
+                message = await client.removeAsFavorite(widget.post.id)
+                    ? 'Removed post ${widget.post.id} from favorites'
+                    : 'Failed to remove post ${widget.post.id} from favorites';
+              } else {
+                message = 'Unknown error';
+                _log.warning('Unknown command for favorites: "$cmd"');
+              }
+
+              Scaffold.of(ctx).showSnackBar(new SnackBar(
+                    duration: const Duration(seconds: 5),
+                    content: new Text(message),
+                  ));
+            }),
         new IconButton(
             icon: const Icon(Icons.chat),
             tooltip: 'Go to comments',

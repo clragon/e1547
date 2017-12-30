@@ -35,6 +35,28 @@ class Client {
 
   // For example, 'e926.net'
   String host;
+  String username;
+  String apiKey;
+
+  Future<bool> addAsFavorite(int post) async {
+    return await _http.post(host, '/favorite/create.json', query: {
+      'login': username,
+      'password_hash': apiKey,
+      'id': post,
+    }).then((response) {
+      return response.statusCode == 200;
+    });
+  }
+
+  Future<bool> removeAsFavorite(int post) async {
+    return await _http.post(host, '/favorite/destroy.json', query: {
+      'login': username,
+      'password_hash': apiKey,
+      'id': post,
+    }).then((response) {
+      return response.statusCode == 200;
+    });
+  }
 
   Future<bool> isValidAuthPair(String username, String apiKey) async {
     _log.info('client.isValidAuthPair(username="$username", apiKey="$apiKey")');

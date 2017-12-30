@@ -26,6 +26,16 @@ const String USER_AGENT = '${consts.APP_NAME}/${consts.APP_VERSION} (perlatus)';
 class HttpCustom {
   final Logger _log = new Logger('HttpCustom');
 
+  // TODO PLZ STOP COPY PASTING
+  Future<http.Response> post(String host, String path, {Map query}) {
+    return postUrl(new Uri(
+      scheme: 'https',
+      host: host,
+      path: path,
+      queryParameters: stringify(query),
+    ));
+  }
+
   Future<http.Response> get(String host, String path, {Map query}) {
     return getUrl(new Uri(
       scheme: 'https',
@@ -38,6 +48,11 @@ class HttpCustom {
   Future<http.Response> getUrl(Uri url) {
     _log.fine('url: $url');
     return http.get(url, headers: {'User-Agent': USER_AGENT});
+  }
+
+  Future<http.Response> postUrl(Uri url) {
+    _log.fine('url: $url');
+    return http.post(url, headers: {'User-Agent': USER_AGENT});
   }
 }
 
