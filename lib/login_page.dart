@@ -80,6 +80,10 @@ class _LoginFormFieldsState extends State<_LoginFormFields> {
   bool _didJustPaste = false;
   String _beforePasteText;
 
+  bool _authDidJustFail = false;
+
+  Timer _pasteUndoTimer;
+
   String _username;
   String _apiKey;
 
@@ -92,8 +96,15 @@ class _LoginFormFieldsState extends State<_LoginFormFields> {
       decoration: const InputDecoration(
         labelText: 'Username',
       ),
-      onSaved: (u) => _username = u,
+      onSaved: (u) {
+        _authDidJustFail = false;
+        _username = u;
+      },
       validator: (String u) {
+        if (_authDidJustFail) {
+          return 'Failed to login. Please check username.';
+        }
+
         u = u.trim();
         if (u.isEmpty) {
           return 'You must provide a username.';
@@ -111,8 +122,16 @@ class _LoginFormFieldsState extends State<_LoginFormFields> {
             helperText: 'e.g. 1ca1d165e973d7f8d35b7deb7a2ae54c',
           ),
           inputFormatters: [new _LowercaseTextInputFormatter()],
-          onSaved: (a) => _apiKey = a,
+          onSaved: (a) {
+            _authDidJustFail = false;
+            _apiKey = a;
+          },
           validator: (String apiKey) {
+            if (_authDidJustFail) {
+              return 'Failed to login. Please check API key.\n'
+                  'e.g. 1ca1d165e973d7f8d35b7deb7a2ae54c';
+            }
+
             apiKey = apiKey.trim();
             if (apiKey.isEmpty) {
               return 'You must provide an API key.\n'
@@ -156,7 +175,7 @@ class _LoginFormFieldsState extends State<_LoginFormFields> {
                   _apiKeyFieldController.text = data.text;
                 });
 
-                new Timer(const Duration(seconds: 10), () {
+                _pasteUndoTimer = new Timer(const Duration(seconds: 10), () {
                   setState(() {
                     _didJustPaste = false;
                   });
@@ -178,18 +197,38 @@ class _LoginFormFieldsState extends State<_LoginFormFields> {
     );
   }
 
-  _saveAndTest(ctx) => () {
+  _saveAndTest(ctx) => () async {
         _log.fine('Pressed SAVE & TEST');
         FormState form = Form.of(ctx);
+        form.save(); // TODO: fix this so we don't need to save->validate->validate
         if (form.validate()) {
-          form.save();
           _log.fine('username: $_username ; apikey: $_apiKey');
-          showDialog(
+          bool ok = await showDialog(
             context: ctx,
             child: new _LoginProgressDialog(_username, _apiKey),
           );
+
+          if (ok) {
+            persistence.setUsername(_username);
+            persistence.setApiKey(_apiKey);
+
+            Navigator.of(ctx).pop();
+          } else {
+            _authDidJustFail = true;
+            form.validate();
+            Scaffold.of(ctx).showSnackBar(const SnackBar(
+                duration: const Duration(seconds: 10),
+                content: const Text('Failed to login. '
+                    'Check your network connection and login details')));
+          }
         }
       };
+
+  @override
+  dispose() {
+    super.dispose();
+    _pasteUndoTimer.cancel();
+  }
 }
 
 class _LoginProgressDialog extends StatefulWidget {
@@ -217,39 +256,19 @@ class _LoginProgressDialogState extends State<_LoginProgressDialog> {
 
   @override
   Widget build(BuildContext ctx) {
+    _isLoginOk.then((ok) {
+      Navigator.of(ctx).pop(ok);
+    });
+
     return new Dialog(
-      child: new Container(
-        padding: const EdgeInsets.all(20.0),
-        child: _buildFutureBuilder(),
-      ),
-    );
-  }
-
-  Widget _buildFutureBuilder() {
-    return new FutureBuilder<bool>(
-      future: _isLoginOk,
-      builder: (BuildContext ctx, AsyncSnapshot<bool> snapshot) {
-        _log.fine('snapshot.connectionState=${snapshot.connectionState}');
-        return snapshot.connectionState != ConnectionState.done
-            ? _buildLoggingIn(ctx)
-            : _buildDone(snapshot.data);
-      },
-    );
-  }
-
-  Widget _buildLoggingIn(BuildContext ctx) {
-    return new Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          const CircularProgressIndicator(),
-          new Text('Logging in as ${widget.username}'),
-        ]);
-  }
-
-  // TODO NEXT: if false, mark fields as invalid. If true, exit and open
-  // navigation drawer to show that we're logged in.
-  Widget _buildDone(bool isLoginOk) {
-    return new Text(isLoginOk.toString());
+        child: new Container(
+      padding: const EdgeInsets.all(20.0),
+      child:
+          new Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+        const CircularProgressIndicator(),
+        new Text('Logging in as ${widget.username}'),
+      ]),
+    ));
   }
 }
 
