@@ -8,6 +8,7 @@ dependencies:
   # Dart
   http: any
   logging: any
+  meta: any
   test: any
   vector_math: any
 

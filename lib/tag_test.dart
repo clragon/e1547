@@ -21,7 +21,7 @@ import 'tag.dart';
 
 void main() {
   Logger.root.level = Level.ALL;
-  Logger.root.onRecord.listen((LogRecord rec) {
+  Logger.root.onRecord.listen((rec) {
     if (rec.object == null) {
       print('${rec.level.name}: ${rec.time}: ${rec.message}');
     } else {

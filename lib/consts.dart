@@ -14,6 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-const String APP_NAME = 'e1547';
-const String APP_VERSION = '0.1.7-alpha';
-const String DEFAULT_ENDPOINT = 'e926.net';
+const String appName = 'e1547';
+const String appVersion = '0.1.7-alpha';
+const String defaultEndpoint = 'e926.net';

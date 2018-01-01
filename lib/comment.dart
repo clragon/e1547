@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
+import 'dart:async' show Future;
+
 import 'package:flutter/material.dart';
 
 import 'package:logging/logging.dart' show Logger;
@@ -63,7 +65,7 @@ class _CommentsWidgetState extends State<CommentsWidget> {
     _loadNextPage();
   }
 
-  _loadNextPage() async {
+  Future<Null> _loadNextPage() async {
     client.host = await persistence.getHost();
     _more = await _comments.loadNextPage();
     _log.info('More comments: $_more');

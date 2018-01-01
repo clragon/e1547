@@ -60,7 +60,7 @@ class _PostsPageState extends State<PostsPage> {
     }();
   }
 
-  _search() async {
+  Future<Null> _search() async {
     client.host = await persistence.getHost();
     persistence.setTags(_tags);
     _posts = client.posts(_tags);
@@ -107,7 +107,7 @@ class _PostsPageState extends State<PostsPage> {
                   child: new Text('Favorites'), value: 'favcount'),
               new PopupMenuItem(child: new Text('Views'), value: 'views'),
             ],
-        onSelected: (String filterType) async {
+        onSelected: (filterType) async {
           _log.info('filter type: $filterType');
 
           String valueString = _tags[filterType];
@@ -142,7 +142,7 @@ class _PostsPageState extends State<PostsPage> {
                   child: new Text('Favorites'), value: 'favcount'),
               new PopupMenuItem(child: new Text('Views'), value: 'views'),
             ],
-        onSelected: (String orderType) {
+        onSelected: (orderType) {
           if (orderType == 'new') {
             _tags.remove('order');
           } else {
@@ -163,7 +163,7 @@ class _PostsPageState extends State<PostsPage> {
                 child: new Text('Copy link'),
               ),
             ],
-        onSelected: (String action) {
+        onSelected: (action) {
           if (action == 'refresh') {
             _search();
           } else if (action == 'copy') {
@@ -174,7 +174,7 @@ class _PostsPageState extends State<PostsPage> {
           }
         }));
 
-    return new AppBar(title: new Text(consts.APP_NAME), actions: widgets);
+    return new AppBar(title: new Text(consts.appName), actions: widgets);
   }
 
   Widget _buildBody(BuildContext ctx) {

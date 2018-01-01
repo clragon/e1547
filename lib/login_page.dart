@@ -15,6 +15,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 import 'dart:async' show Future, Timer;
+import 'dart:ui' show VoidCallback;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show TextInputFormatter, Clipboard;
@@ -100,7 +101,7 @@ class _LoginFormFieldsState extends State<_LoginFormFields> {
         _authDidJustFail = false;
         _username = u;
       },
-      validator: (String u) {
+      validator: (u) {
         if (_authDidJustFail) {
           return 'Failed to login. Please check username.';
         }
@@ -126,7 +127,7 @@ class _LoginFormFieldsState extends State<_LoginFormFields> {
             _authDidJustFail = false;
             _apiKey = a;
           },
-          validator: (String apiKey) {
+          validator: (apiKey) {
             if (_authDidJustFail) {
               return 'Failed to login. Please check API key.\n'
                   'e.g. 1ca1d165e973d7f8d35b7deb7a2ae54c';
@@ -197,7 +198,7 @@ class _LoginFormFieldsState extends State<_LoginFormFields> {
     );
   }
 
-  _saveAndTest(ctx) => () async {
+  VoidCallback _saveAndTest(ctx) => () async {
         _log.fine('Pressed SAVE & TEST');
         FormState form = Form.of(ctx);
         form.save(); // TODO: fix this so we don't need to save->validate->validate
@@ -225,7 +226,7 @@ class _LoginFormFieldsState extends State<_LoginFormFields> {
       };
 
   @override
-  dispose() {
+  void dispose() {
     super.dispose();
     if (_pasteUndoTimer != null) {
       _pasteUndoTimer.cancel();

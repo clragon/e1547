@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
+import 'dart:async' show Future;
+
 import 'package:flutter/foundation.dart' show AsyncValueGetter;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart' show TextOverflow;
@@ -21,6 +23,7 @@ import 'package:flutter/services.dart'
     show Clipboard, ClipboardData, SystemChrome, SystemUiOverlay;
 
 import 'package:logging/logging.dart' show Logger;
+import 'package:meta/meta.dart';
 import 'package:url_launcher/url_launcher.dart' as url;
 import 'package:zoomable_image/zoomable_image.dart' show ZoomableImage;
 
@@ -108,7 +111,7 @@ class PostWidgetScaffold extends StatefulWidget {
 class _PostWidgetScaffoldState extends State<PostWidgetScaffold> {
   static final Logger _log = new Logger('PostWidgetScaffold');
 
-  _fullscreen(BuildContext ctx) async {
+  Future<Null> _fullscreen(BuildContext ctx) async {
     SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
     await Navigator.of(ctx).push(new MaterialPageRoute<Null>(
       builder: (ctx) {
@@ -317,8 +320,7 @@ class PostPreview extends StatelessWidget {
   }
 
   Widget _buildPostInfo(BuildContext ctx) {
-    Widget info = new InfoSquare(
-        post.score, post.favCount, post.hasComments, post.rating);
+    Widget info = new InfoSquare.fromPost(post);
 
     Widget artists = new Text(
       post.artist.join(',\n'),
@@ -347,9 +349,24 @@ class InfoSquare extends StatelessWidget {
   final int favCount;
   final bool hasComments;
   final String rating;
-  InfoSquare(this.score, this.favCount, this.hasComments, this.rating,
-      {Key key})
+
+  InfoSquare({
+    @required this.score,
+    @required this.favCount,
+    @required this.hasComments,
+    @required this.rating,
+    Key key,
+  })
       : super(key: key);
+
+  factory InfoSquare.fromPost(Post p) {
+    return new InfoSquare(
+      score: p.score,
+      favCount: p.favCount,
+      hasComments: p.hasComments,
+      rating: p.rating,
+    );
+  }
 
   // This builds a small icon followed by a text. Used for the info square.
   Widget _iconTextPair(IconData icon, String text) {
@@ -470,7 +487,7 @@ class _MoreDialog extends StatelessWidget {
     );
   }
 
-  _showCopyDialog(BuildContext ctx) {
+  void _showCopyDialog(BuildContext ctx) {
     Widget dialog;
 
     Widget title = new ListTile(
@@ -495,7 +512,7 @@ class _MoreDialog extends StatelessWidget {
     showDialog(context: ctx, child: dialog);
   }
 
-  _copyAndPopPop(BuildContext ctx, String text) async {
+  Future<Null> _copyAndPopPop(BuildContext ctx, String text) async {
     await Clipboard.setData(new ClipboardData(text: text));
     Navigator.of(ctx).pop();
     Navigator.of(ctx).pop();

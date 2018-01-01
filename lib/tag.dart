@@ -39,11 +39,10 @@ class Tag {
   String toString() => value == null ? name : '$name:$value';
 
   @override
-  bool operator ==(other) =>
-      this.name == other.name && this.value == other.value;
+  bool operator ==(other) => name == other.name && value == other.value;
 
   @override
-  int get hashCode => this.toString().hashCode;
+  int get hashCode => toString().hashCode;
 }
 
 class Tagset extends Object with IterableMixin<Tag> {
@@ -56,7 +55,7 @@ class Tagset extends Object with IterableMixin<Tag> {
         scheme: 'https',
         host: host,
         path: '/post',
-        queryParameters: {'tags': this.toString()},
+        queryParameters: {'tags': toString()},
       );
 
   Tagset(Set<Tag> tags)
@@ -79,6 +78,7 @@ class Tagset extends Object with IterableMixin<Tag> {
     _log.fine('tagset tags: $_tags');
   }
 
+  @override
   bool contains(Object tagName) {
     return _tags.containsKey(tagName);
   }
@@ -94,7 +94,7 @@ class Tagset extends Object with IterableMixin<Tag> {
 
   operator []=(String name, String value) => _tags[name] = new Tag(name, value);
 
-  remove(String name) {
+  void remove(String name) {
     _tags.remove(name);
   }
 

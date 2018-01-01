@@ -21,7 +21,7 @@ import 'package:logging/logging.dart' show Logger;
 
 import 'consts.dart' as consts;
 
-const String USER_AGENT = '${consts.APP_NAME}/${consts.APP_VERSION} (perlatus)';
+const String userAgent = '${consts.appName}/${consts.appVersion} (perlatus)';
 
 class HttpCustom {
   final Logger _log = new Logger('HttpCustom');
@@ -47,12 +47,12 @@ class HttpCustom {
 
   Future<http.Response> getUrl(Uri url) {
     _log.fine('url: $url');
-    return http.get(url, headers: {'User-Agent': USER_AGENT});
+    return http.get(url, headers: {'User-Agent': userAgent});
   }
 
   Future<http.Response> postUrl(Uri url) {
     _log.fine('url: $url');
-    return http.post(url, headers: {'User-Agent': USER_AGENT});
+    return http.post(url, headers: {'User-Agent': userAgent});
   }
 }
 

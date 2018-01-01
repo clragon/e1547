@@ -22,45 +22,46 @@ import 'package:shared_preferences/shared_preferences.dart'
 import 'consts.dart' as consts;
 import 'tag.dart' show Tagset;
 
-const _HOST = 'host';
-const _TAGS = 'tags';
-const _HIDE_SWF = 'hide swf';
-const _USERNAME = 'username';
-const _API_KEY = 'api_key';
+const _host = 'host';
+const _tags = 'tags';
+const _hideSwf = 'hideSwf';
+const _username = 'username';
+const _apiKey = 'apiKey';
 
 Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
 Future<String> getHost() => _prefs.then((p) {
-      return p.getString(_HOST) ?? consts.DEFAULT_ENDPOINT;
+      return p.getString(_host) ?? consts.defaultEndpoint;
     });
-setHost(String host) => _prefs.then((p) {
-      p.setString(_HOST, host);
+void setHost(String host) => _prefs.then((p) {
+      p.setString(_host, host);
     });
 
 Future<Tagset> getTags() => _prefs.then((p) {
-      return new Tagset.parse(p.getString(_TAGS) ?? '');
+      return new Tagset.parse(p.getString(_tags) ?? '');
     });
-setTags(Tagset tags) => _prefs.then((p) {
-      p.setString(_TAGS, tags.toString());
+void setTags(Tagset tags) => _prefs.then((p) {
+      p.setString(_tags, tags.toString());
     });
 
 Future<bool> getHideSwf() => _prefs.then((p) {
-      return p.getBool(_HIDE_SWF) ?? false;
+      return p.getBool(_hideSwf) ?? false;
     });
-setHideSwf(bool hideSwf) => _prefs.then((p) {
-      p.setBool(_HIDE_SWF, hideSwf);
+// ignore: avoid_positional_boolean_parameters
+void setHideSwf(bool hideSwf) => _prefs.then((p) {
+      p.setBool(_hideSwf, hideSwf);
     });
 
 Future<String> getUsername() => _prefs.then((p) {
-      return p.getString(_USERNAME);
+      return p.getString(_username);
     });
-setUsername(String username) => _prefs.then((p) {
-      p.setString(_USERNAME, username);
+void setUsername(String username) => _prefs.then((p) {
+      p.setString(_username, username);
     });
 
 Future<String> getApiKey() => _prefs.then((p) {
-      return p.getString(_API_KEY);
+      return p.getString(_apiKey);
     });
-setApiKey(String apiKey) => _prefs.then((p) {
-      p.setString(_API_KEY, apiKey);
+void setApiKey(String apiKey) => _prefs.then((p) {
+      p.setString(_apiKey, apiKey);
     });
