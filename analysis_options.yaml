@@ -1,5 +1,8 @@
-# Auto-generated options enabling all lints.
-# Add these to your `analysis-options.yaml` file and tailor to fit!
+analyzer:
+  strong-mode: true
+    implicit-casts: false
+    implicit-dynamic: false
+
 linter:
   rules:
     - always_declare_return_types

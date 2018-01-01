@@ -39,7 +39,8 @@ class Tag {
   String toString() => value == null ? name : '$name:$value';
 
   @override
-  bool operator ==(Tag other) => name == other.name && value == other.value;
+  bool operator ==(dynamic other) => // ignore: avoid_annotating_with_dynamic
+      other is Tag && name == other.name && value == other.value;
 
   @override
   int get hashCode => toString().hashCode;

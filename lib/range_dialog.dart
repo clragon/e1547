@@ -82,6 +82,9 @@ class RangeDialogState extends State<RangeDialog> {
         new RaisedButton(
           child: new Text('save'),
           onPressed: () {
+            // We could pop up an error, but using the last known good value
+            // works also.
+            // ignore: avoid_returning_null
             int textValue = int.parse(_controller.text, onError: (s) => null);
             Navigator.of(ctx).pop(textValue ?? _value);
           },

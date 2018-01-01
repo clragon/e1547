@@ -530,6 +530,9 @@ class _PostGridState extends State<PostGrid> {
         maxCrossAxisExtent: 150.0,
         childAspectRatio: 3 / 5,
       ),
+      // TODO: this triggers an analyzer warning, but is correct.
+      // File a bug report?
+      // ignore: argument_type_not_assignable
       childrenDelegate: new SliverChildBuilderDelegate(_itemBuilder),
     );
   }
