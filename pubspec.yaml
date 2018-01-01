@@ -3,18 +3,18 @@ description: A new flutter project.
 
 dependencies:
   # Mine
-  zoomable_image: any
+  zoomable_image: ^1.1.2
 
   # Dart
-  http: any
-  logging: any
-  meta: any
-  test: any
-  vector_math: any
+  http: ^0.11.3
+  logging: ^0.11.3
+  meta: ^1.1.1
+  test: ^0.12.26
+  vector_math: ^2.0.5
 
   # Flutter
-  shared_preferences: any
-  url_launcher: any
+  shared_preferences: ^0.3.0
+  url_launcher: ^2.0.0
 
   flutter:
     sdk: flutter
