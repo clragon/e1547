@@ -32,43 +32,7 @@ import 'comment.dart' show CommentsWidget;
 import 'persistence.dart' as persistence;
 
 class Post {
-  Map raw;
-
-  // Get the URL for the HTML version of the desired post.
-  Uri url(String host) =>
-      new Uri(scheme: 'https', host: host, path: '/post/show/$id');
-
-  ImageProvider get fullImage {
-    return new NetworkImage(fileUrl);
-  }
-
-  ImageProvider get previewImage {
-    return new NetworkImage(previewUrl);
-  }
-
-  ImageProvider get sampleImage {
-    return new NetworkImage(sampleUrl);
-  }
-
-  int id;
-  String author;
-  int score;
-  int favCount;
-  String fileUrl;
-  String fileExt;
-  String previewUrl;
-  int previewWidth;
-  int previewHeight;
-  String sampleUrl;
-  int sampleWidth;
-  int sampleHeight;
-  String rating;
-  bool hasComments;
-  List<String> artist;
-
-  Post.fromRaw(Map raw) {
-    this.raw = raw;
-
+  Post.fromRaw(this.raw) {
     id = raw['id'];
     author = raw['author'];
     score = raw['score'];
@@ -88,6 +52,32 @@ class Post {
 
     artist = raw['artist'];
   }
+
+  Map raw;
+
+  int id;
+  String author;
+  int score;
+  int favCount;
+  String fileUrl;
+  String fileExt;
+  String previewUrl;
+  int previewWidth;
+  int previewHeight;
+  String sampleUrl;
+  int sampleWidth;
+  int sampleHeight;
+  String rating;
+  bool hasComments;
+  List<String> artist;
+
+  // Get the URL for the HTML version of the desired post.
+  Uri url(String host) =>
+      new Uri(scheme: 'https', host: host, path: '/post/show/$id');
+
+  ImageProvider get fullImage => new NetworkImage(fileUrl);
+  ImageProvider get previewImage => new NetworkImage(previewUrl);
+  ImageProvider get sampleImage => new NetworkImage(sampleUrl);
 }
 
 class PostWidget extends StatelessWidget {

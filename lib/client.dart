@@ -31,7 +31,7 @@ final Client client = new Client();
 class Client {
   final Logger _log = new Logger('E1547Client');
 
-  HttpCustom _http = new HttpCustom();
+  final HttpCustom _http = new HttpCustom();
 
   // For example, 'e926.net'
   String host;

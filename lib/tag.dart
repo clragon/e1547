@@ -19,9 +19,6 @@ import 'dart:collection' show IterableMixin;
 import 'package:logging/logging.dart' show Logger;
 
 class Tag {
-  final String name;
-  final String value;
-
   Tag(this.name, [this.value]);
 
   factory Tag.parse(String tag) {
@@ -35,11 +32,14 @@ class Tag {
     return new Tag(name, value);
   }
 
+  final String name;
+  final String value;
+
   @override
   String toString() => value == null ? name : '$name:$value';
 
   @override
-  bool operator ==(other) => name == other.name && value == other.value;
+  bool operator ==(Tag other) => name == other.name && value == other.value;
 
   @override
   int get hashCode => toString().hashCode;
@@ -47,16 +47,6 @@ class Tag {
 
 class Tagset extends Object with IterableMixin<Tag> {
   final Logger _log = new Logger('Tagset');
-
-  final Map<String, Tag> _tags;
-
-  // Get the URL for this search/tagset.
-  Uri url(String host) => new Uri(
-        scheme: 'https',
-        host: host,
-        path: '/post',
-        queryParameters: {'tags': toString()},
-      );
 
   Tagset(Set<Tag> tags)
       : _tags = new Map.fromIterable(
@@ -78,6 +68,16 @@ class Tagset extends Object with IterableMixin<Tag> {
     _log.fine('tagset tags: $_tags');
   }
 
+  final Map<String, Tag> _tags;
+
+  // Get the URL for this search/tagset.
+  Uri url(String host) => new Uri(
+        scheme: 'https',
+        host: host,
+        path: '/post',
+        queryParameters: {'tags': toString()},
+      );
+
   @override
   bool contains(Object tagName) {
     return _tags.containsKey(tagName);
@@ -92,7 +92,9 @@ class Tagset extends Object with IterableMixin<Tag> {
     return t.value;
   }
 
-  operator []=(String name, String value) => _tags[name] = new Tag(name, value);
+  void operator []=(String name, String value) {
+    _tags[name] = new Tag(name, value);
+  }
 
   void remove(String name) {
     _tags.remove(name);

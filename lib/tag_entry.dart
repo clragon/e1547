@@ -17,8 +17,9 @@
 import 'package:flutter/material.dart';
 
 class TagEntryPage extends StatefulWidget {
-  final String tags;
   TagEntryPage(String tags) : this.tags = tags + ' ';
+
+  final String tags;
 
   @override
   TagEntryPageState createState() => new TagEntryPageState();

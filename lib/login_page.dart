@@ -75,7 +75,8 @@ class _LoginFormFields extends StatefulWidget {
 class _LoginFormFieldsState extends State<_LoginFormFields> {
   static final Logger _log = new Logger('LoginFormFields');
 
-  TextEditingController _apiKeyFieldController = new TextEditingController();
+  final TextEditingController _apiKeyFieldController =
+      new TextEditingController();
 
   bool _didJustPaste = false;
   String _beforePasteText;
@@ -123,13 +124,13 @@ class _LoginFormFieldsState extends State<_LoginFormFields> {
           'e.g. 1ca1d165e973d7f8d35b7deb7a2ae54c';
     }
 
-    apiKey = apiKey.trim();
+    apiKey = apiKey.trim(); // ignore: parameter_assignments
     if (apiKey.isEmpty) {
       return 'You must provide an API key.\n'
           'e.g. 1ca1d165e973d7f8d35b7deb7a2ae54c';
     }
 
-    if (!new RegExp(r"^[a-f0-9]{32}$").hasMatch(apiKey)) {
+    if (!new RegExp(r'^[a-f0-9]{32}$').hasMatch(apiKey)) {
       return 'API key is a 32-character sequence of {a..f} and {0..9}\n'
           'e.g. 1ca1d165e973d7f8d35b7deb7a2ae54c';
     }
@@ -260,9 +261,10 @@ class _LoginFormFieldsState extends State<_LoginFormFields> {
 }
 
 class _LoginProgressDialog extends StatefulWidget {
+  _LoginProgressDialog(this.username, this.apiKey, {Key key}) : super(key: key);
+
   final String username;
   final String apiKey;
-  _LoginProgressDialog(this.username, this.apiKey, {Key key}) : super(key: key);
 
   @override
   _LoginProgressDialogState createState() => new _LoginProgressDialogState();
@@ -301,45 +303,48 @@ class _LoginProgressDialogState extends State<_LoginProgressDialog> {
 }
 
 class _InstructionStep extends StatelessWidget {
+  _InstructionStep(this._stepNumber, this._content, {Key key})
+      : super(key: key);
+
   final int _stepNumber;
   final Widget _content;
 
-  _InstructionStep(this._stepNumber, this._content, {Key key})
-      : super(key: key);
   @override
   Widget build(BuildContext ctx) {
-    Widget leadingCircle = new Container(
-      decoration: new ShapeDecoration(
-        color: Colors.white,
-        shape: new CircleBorder(),
-      ),
-      width: 64.0,
-      height: 64.0,
-      alignment: Alignment.center,
-      child: new Text(
-        _stepNumber.toString(),
-        textAlign: TextAlign.center,
-        style: new TextStyle(color: Colors.black, fontSize: 48.0),
-      ),
-    );
+    Widget leadingCircleWidget() {
+      return new Container(
+        decoration: new ShapeDecoration(
+          color: Colors.white,
+          shape: new CircleBorder(),
+        ),
+        width: 64.0,
+        height: 64.0,
+        alignment: Alignment.center,
+        child: new Text(
+          _stepNumber.toString(),
+          textAlign: TextAlign.center,
+          style: new TextStyle(color: Colors.black, fontSize: 48.0),
+        ),
+      );
+    }
 
     return new Padding(
       padding: const EdgeInsets.symmetric(vertical: 10.0),
-      child: new Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            leadingCircle,
-            new Expanded(child: new Container()),
-            _content,
-            new Expanded(child: new Container()),
-          ]),
+      child:
+          new Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+        leadingCircleWidget(),
+        new Expanded(child: new Container()),
+        _content,
+        new Expanded(child: new Container()),
+      ]),
     );
   }
 }
 
 class _LowercaseTextInputFormatter extends TextInputFormatter {
   @override
-  TextEditingValue formatEditUpdate(prev, current) {
+  TextEditingValue formatEditUpdate(
+      TextEditingValue prev, TextEditingValue current) {
     return current.copyWith(text: current.text.toLowerCase());
   }
 }

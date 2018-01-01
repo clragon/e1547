@@ -74,7 +74,7 @@ class _PostsPageState extends State<PostsPage> {
     try {
       more = await _posts.loadNextPage();
       setState(() {});
-    } catch (e) {
+    } on Exception catch (e) {
       _log.info('Going offline: $e', e);
       setState(() {
         _offline = true;

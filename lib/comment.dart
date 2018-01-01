@@ -26,26 +26,25 @@ import 'post.dart' show Post;
 import 'client.dart' show client;
 
 class Comment {
+  Comment.fromRaw(this.raw) {
+    id = raw['id'];
+    creator = raw['creator'];
+    body = raw['body'];
+    score = raw['score'];
+  }
+
   Map raw;
 
   int id;
   String creator;
   String body;
   int score;
-
-  Comment.fromRaw(Map raw) {
-    this.raw = raw;
-
-    id = raw['id'];
-    creator = raw['creator'];
-    body = raw['body'];
-    score = raw['score'];
-  }
 }
 
 class CommentsWidget extends StatefulWidget {
-  final Post post;
   CommentsWidget(this.post, {Key key}) : super(key: key);
+
+  final Post post;
 
   @override
   State createState() => new _CommentsWidgetState();

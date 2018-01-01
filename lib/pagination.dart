@@ -23,6 +23,8 @@ typedef Future<List<E>> PageLoader<E>(int pageNumber);
 ///
 /// Index starts at 1, not 0.
 class LinearPagination<T> {
+  LinearPagination(this._loadPage);
+
   int _page = 1;
   bool _more = true;
 
@@ -30,11 +32,10 @@ class LinearPagination<T> {
   // This is just to prevent the size of the list from changing.
   // It may be desirable to modify, say, Post objects for editing
   // purposes.
-  List<T> _elements = [];
+  final List<T> _elements = [];
   List<T> get elements => new List.unmodifiable(_elements);
 
   final PageLoader<T> _loadPage;
-  LinearPagination(this._loadPage);
 
   /// Load the next page. Returns false if there are no more pages to be
   /// loaded.

@@ -35,75 +35,76 @@ class RangeDialog extends StatefulWidget {
 class RangeDialogState extends State<RangeDialog> {
   final Logger _log = new Logger('RangeDialog');
 
-  TextEditingController _controller = new TextEditingController();
+  final TextEditingController _controller = new TextEditingController();
   int _value;
 
   @override
   Widget build(BuildContext ctx) {
+    Widget numberWidget() {
+      _controller.text = _value.toString();
+      FocusScope
+          .of(ctx)
+          .requestFocus(new FocusNode()); // Clear text entry focus, if any.
+
+      Widget number = new TextField(
+        keyboardType: TextInputType.number,
+        style: new TextStyle(fontSize: 48.0),
+        textAlign: TextAlign.center,
+        decoration: const InputDecoration(hideDivider: true),
+        controller: _controller,
+        onSubmitted: (v) => Navigator.of(ctx).pop(int.parse(v)),
+      );
+
+      return new Container(
+        padding: const EdgeInsets.only(bottom: 20.0),
+        child: number,
+      );
+    }
+
+    Widget sliderWidget() {
+      return new Slider(
+          min: math.min(0.0, _value.toDouble()),
+          max: math.max(widget.max.toDouble(), _value.toDouble()),
+          divisions: 50,
+          value: _value.toDouble(),
+          onChanged: (v) {
+            _log.info('${widget.title} filter value: $v');
+            setState(() => _value = v.toInt());
+          });
+    }
+
+    Widget buttonsWidget() {
+      List<Widget> buttons = [
+        new FlatButton(
+          child: new Text('cancel'),
+          onPressed: () => Navigator.of(ctx).pop(),
+        ),
+        new RaisedButton(
+          child: new Text('save'),
+          onPressed: () {
+            int textValue = int.parse(_controller.text, onError: (s) => null);
+            Navigator.of(ctx).pop(textValue ?? _value);
+          },
+        ),
+      ];
+
+      return new Padding(
+        padding: const EdgeInsets.only(top: 20.0, right: 10.0),
+        child: new Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: buttons,
+        ),
+      );
+    }
+
     _value = _value ?? widget.value;
     return new SimpleDialog(
-        title: new Text('Posts with ${widget.title} at least'),
-        children: <Widget>[
-          _buildNumber(ctx),
-          _buildSlider(ctx),
-          _buildButtons(ctx),
-        ]);
-  }
-
-  Widget _buildNumber(BuildContext ctx) {
-    _controller.text = _value.toString();
-    FocusScope
-        .of(ctx)
-        .requestFocus(new FocusNode()); // Clear text entry focus, if any.
-
-    Widget number = new TextField(
-      keyboardType: TextInputType.number,
-      style: new TextStyle(fontSize: 48.0),
-      textAlign: TextAlign.center,
-      decoration: const InputDecoration(hideDivider: true),
-      controller: _controller,
-      onSubmitted: (v) => Navigator.of(ctx).pop(int.parse(v)),
-    );
-
-    return new Container(
-      padding: const EdgeInsets.only(bottom: 20.0),
-      child: number,
-    );
-  }
-
-  Widget _buildSlider(BuildContext ctx) {
-    return new Slider(
-        min: math.min(0.0, _value.toDouble()),
-        max: math.max(widget.max.toDouble(), _value.toDouble()),
-        divisions: 50,
-        value: _value.toDouble(),
-        onChanged: (v) {
-          _log.info('${widget.title} filter value: $v');
-          setState(() => _value = v.toInt());
-        });
-  }
-
-  Widget _buildButtons(BuildContext ctx) {
-    List<Widget> buttons = [
-      new FlatButton(
-        child: new Text('cancel'),
-        onPressed: () => Navigator.of(ctx).pop(),
-      ),
-      new RaisedButton(
-        child: new Text('save'),
-        onPressed: () {
-          int textValue = int.parse(_controller.text, onError: (s) => null);
-          Navigator.of(ctx).pop(textValue ?? _value);
-        },
-      ),
-    ];
-
-    return new Padding(
-      padding: const EdgeInsets.only(top: 20.0, right: 10.0),
-      child: new Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: buttons,
-      ),
+      title: new Text('Posts with ${widget.title} at least'),
+      children: [
+        numberWidget(),
+        sliderWidget(),
+        buttonsWidget(),
+      ],
     );
   }
 }

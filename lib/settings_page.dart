@@ -37,13 +37,13 @@ class SettingsPage extends StatefulWidget {
 }
 
 class SettingsPageState extends State<SettingsPage> {
-  Future<String> _initialHost = persistence.getHost();
+  final Future<String> _initialHost = persistence.getHost();
   String _host;
 
-  Future<bool> _initialHideSwf = persistence.getHideSwf();
+  final Future<bool> _initialHideSwf = persistence.getHideSwf();
   bool _hideSwf = false;
 
-  Future<String> _initialUsername = persistence.getUsername();
+  final Future<String> _initialUsername = persistence.getUsername();
   String _username;
 
   @override
@@ -60,56 +60,71 @@ class SettingsPageState extends State<SettingsPage> {
         }));
   }
 
+  Function _onTapSiteBackend(BuildContext ctx) {
+    return () async {
+      String newHost = await showDialog<String>(
+        context: ctx,
+        child: new _SiteBackendDialog(_host ?? await _initialHost),
+      );
+
+      if (newHost != null) {
+        persistence.setHost(newHost);
+        setState(() {
+          _host = newHost;
+        });
+      }
+    };
+  }
+
+  void _onChangedHideSwf(bool newValue) {
+    persistence.setHideSwf(newValue);
+    setState(() {
+      _hideSwf = newValue;
+    });
+  }
+
+  Function _onTapSignOut(BuildContext ctx) {
+    return () {
+      persistence.setUsername(null);
+      persistence.setApiKey(null);
+
+      Scaffold.of(ctx).showSnackBar(new SnackBar(
+            duration: const Duration(seconds: 5),
+            content: new Text('Forgot login details for $_username'),
+          ));
+    };
+  }
+
   @override
   Widget build(BuildContext ctx) {
-    Widget body = new ListView(children: [
-      new ListTile(
-          title: new Text('Site backend'),
-          subtitle: _host != null ? new Text(_host) : null,
-          onTap: () async {
-            String newHost = await showDialog<String>(
-              context: ctx,
-              child: new _SiteBackendDialog(_host ?? await _initialHost),
-            );
-
-            if (newHost != null) {
-              persistence.setHost(newHost);
-              setState(() {
-                _host = newHost;
-              });
-            }
-          }),
-      new CheckboxListTile(
-        title: new Text('Hide Flash posts'),
-        value: _hideSwf,
-        onChanged: (v) {
-          persistence.setHideSwf(v);
-          setState(() {
-            _hideSwf = v;
-          });
-        },
+    return new Container(
+      padding: new EdgeInsets.all(10.0),
+      child: new ListView(
+        children: [
+          new ListTile(
+            title: new Text('Site backend'),
+            subtitle: _host != null ? new Text(_host) : null,
+            onTap: _onTapSiteBackend(ctx),
+          ),
+          new CheckboxListTile(
+            title: new Text('Hide Flash posts'),
+            value: _hideSwf,
+            onChanged: _onChangedHideSwf,
+          ),
+          new ListTile(
+            title: new Text('Sign out'),
+            subtitle: _username != null ? new Text(_username) : null,
+            onTap: _onTapSignOut(ctx),
+          ),
+        ],
       ),
-      new ListTile(
-        title: new Text('Sign out'),
-        subtitle: _username != null ? new Text(_username) : null,
-        onTap: () {
-          persistence.setUsername(null);
-          persistence.setApiKey(null);
-
-          Scaffold.of(ctx).showSnackBar(new SnackBar(
-                duration: const Duration(seconds: 5),
-                content: new Text('Forgot login details for $_username'),
-              ));
-        },
-      ),
-    ]);
-
-    return new Container(padding: new EdgeInsets.all(10.0), child: body);
+    );
   }
 }
 
 class _SiteBackendDialog extends StatefulWidget {
   _SiteBackendDialog(this.host);
+
   final String host;
 
   @override
