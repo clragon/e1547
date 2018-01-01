@@ -129,7 +129,7 @@ class _PostWidgetScaffoldState extends State<PostWidgetScaffold> {
         child: new Column(mainAxisSize: MainAxisSize.min, children: [
           _buildPostContents(ctx),
           _buildPostMetadata(ctx),
-          const Divider(height: 8.0),
+          new Divider(height: 8.0),
           _buildButtonBar(ctx),
         ]));
   }
@@ -212,11 +212,11 @@ class _PostWidgetScaffoldState extends State<PostWidgetScaffold> {
                   context: ctx,
                   child: new SimpleDialog(children: [
                     new SimpleDialogOption(
-                      child: const Text('Add to favorites'),
+                      child: new Text('Add to favorites'),
                       onPressed: () => Navigator.of(ctx).pop('add'),
                     ),
                     new SimpleDialogOption(
-                      child: const Text('Remove from favorites'),
+                      child: new Text('Remove from favorites'),
                       onPressed: () => Navigator.of(ctx).pop('remove'),
                     ),
                   ]));

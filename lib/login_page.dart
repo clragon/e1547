@@ -35,13 +35,13 @@ class LoginPage extends StatelessWidget {
           1, _buttonLink('Login via web browser', '/user/login')),
       new _InstructionStep(
           2, _buttonLink('Enable API Access', '/user/api_key')),
-      new _InstructionStep(3, const Text('Copy and paste your API key')),
+      new _InstructionStep(3, new Text('Copy and paste your API key')),
     ];
 
     columnChildren.add(new _LoginFormFields());
 
     return new Scaffold(
-      appBar: new AppBar(title: const Text('Login')),
+      appBar: new AppBar(title: new Text('Login')),
       body: new SingleChildScrollView(
           padding: new EdgeInsets.all(10.0),
           child: new Form(child: new Column(children: columnChildren))),
@@ -164,8 +164,8 @@ class _LoginFormFieldsState extends State<_LoginFormFields> {
               onPressed: () async {
                 var data = await Clipboard.getData('text/plain');
                 if (data == null || data.text.trim().isEmpty) {
-                  Scaffold.of(ctx).showSnackBar(const SnackBar(
-                      content: const Text('Clipboard is empty')));
+                  Scaffold.of(ctx).showSnackBar(
+                      new SnackBar(content: new Text('Clipboard is empty')));
                   return;
                 }
 
@@ -186,7 +186,7 @@ class _LoginFormFieldsState extends State<_LoginFormFields> {
     columnChildren.add(new Padding(
       padding: const EdgeInsets.only(top: 20.0),
       child: new RaisedButton(
-        child: const Text('SAVE & TEST'),
+        child: new Text('SAVE & TEST'),
         onPressed: _saveAndTest(ctx),
       ),
     ));
@@ -216,9 +216,9 @@ class _LoginFormFieldsState extends State<_LoginFormFields> {
           } else {
             _authDidJustFail = true;
             form.validate();
-            Scaffold.of(ctx).showSnackBar(const SnackBar(
+            Scaffold.of(ctx).showSnackBar(new SnackBar(
                 duration: const Duration(seconds: 10),
-                content: const Text('Failed to login. '
+                content: new Text('Failed to login. '
                     'Check your network connection and login details')));
           }
         }
@@ -283,9 +283,9 @@ class _InstructionStep extends StatelessWidget {
   @override
   Widget build(BuildContext ctx) {
     Widget leadingCircle = new Container(
-      decoration: const ShapeDecoration(
+      decoration: new ShapeDecoration(
         color: Colors.white,
-        shape: const CircleBorder(),
+        shape: new CircleBorder(),
       ),
       width: 64.0,
       height: 64.0,

@@ -97,7 +97,7 @@ class _CommentsWidgetState extends State<CommentsWidget> {
 
     if (i < lastComment) {
       if (i.isOdd) {
-        return const Divider();
+        return new Divider();
       }
       Comment c = comments[i ~/ 2];
       return new Text('${c.creator}: ${c.body}');

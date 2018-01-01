@@ -185,7 +185,7 @@ class _PostsPageState extends State<PostsPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const Icon(Icons.cloud_off),
-                const Divider(),
+                new Divider(),
                 new Text(_errorMessage, textAlign: TextAlign.center),
               ]));
     }
@@ -229,15 +229,15 @@ class _PostsPageState extends State<PostsPage> {
             child: new Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-              const CircleAvatar(
-                backgroundImage: const AssetImage('icons/paw.png'),
+              new CircleAvatar(
+                backgroundImage: new AssetImage('icons/paw.png'),
                 radius: 48.0,
               ),
               snapshot.connectionState == ConnectionState.done &&
                       snapshot.data != null
                   ? new Text(snapshot.data)
                   : new RaisedButton(
-                      child: const Text('LOGIN'),
+                      child: new Text('LOGIN'),
                       onPressed: () async {
                         await Navigator.popAndPushNamed(ctx, '/login');
                         setState(() {

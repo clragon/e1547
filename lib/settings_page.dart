@@ -64,7 +64,7 @@ class SettingsPageState extends State<SettingsPage> {
   Widget build(BuildContext ctx) {
     Widget body = new ListView(children: [
       new ListTile(
-          title: const Text('Site backend'),
+          title: new Text('Site backend'),
           subtitle: _host != null ? new Text(_host) : null,
           onTap: () async {
             String newHost = await showDialog<String>(
@@ -80,7 +80,7 @@ class SettingsPageState extends State<SettingsPage> {
             }
           }),
       new CheckboxListTile(
-        title: const Text('Hide Flash posts'),
+        title: new Text('Hide Flash posts'),
         value: _hideSwf,
         onChanged: (v) {
           persistence.setHideSwf(v);
@@ -90,7 +90,7 @@ class SettingsPageState extends State<SettingsPage> {
         },
       ),
       new ListTile(
-        title: const Text('Sign out'),
+        title: new Text('Sign out'),
         subtitle: _username != null ? new Text(_username) : null,
         onTap: () {
           persistence.setUsername(null);
@@ -120,17 +120,17 @@ class _SiteBackendDialogState extends State<_SiteBackendDialog> {
   @override
   Widget build(BuildContext ctx) {
     return new SimpleDialog(
-      title: const Text('Site backend'),
+      title: new Text('Site backend'),
       children: [
         new RadioListTile<String>(
           value: 'e926.net',
-          title: const Text('e926.net'),
+          title: new Text('e926.net'),
           groupValue: widget.host,
           onChanged: Navigator.of(ctx).pop,
         ),
         new RadioListTile<String>(
           value: 'e621.net',
-          title: const Text('e621.net'),
+          title: new Text('e621.net'),
           groupValue: widget.host,
           onChanged: Navigator.of(ctx).pop,
         ),
