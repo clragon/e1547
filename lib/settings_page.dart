@@ -98,7 +98,7 @@ class SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext ctx) {
     return new Container(
-      padding: new EdgeInsets.all(10.0),
+      padding: const EdgeInsets.all(10.0),
       child: new ListView(
         children: [
           new ListTile(
@@ -123,7 +123,7 @@ class SettingsPageState extends State<SettingsPage> {
 }
 
 class _SiteBackendDialog extends StatefulWidget {
-  _SiteBackendDialog(this.host);
+  const _SiteBackendDialog(this.host);
 
   final String host;
 

@@ -82,7 +82,7 @@ class Post {
 
 class PostWidget extends StatelessWidget {
   final Post post;
-  PostWidget(this.post, {Key key}) : super(key: key);
+  const PostWidget(this.post, {Key key}) : super(key: key);
   @override
   Widget build(BuildContext ctx) {
     return new Scaffold(body: new PostWidgetScaffold(post));
@@ -92,7 +92,7 @@ class PostWidget extends StatelessWidget {
 // Main widget for presenting and interacting with individual posts.
 class PostWidgetScaffold extends StatefulWidget {
   final Post post;
-  PostWidgetScaffold(this.post, {Key key}) : super(key: key);
+  const PostWidgetScaffold(this.post, {Key key}) : super(key: key);
 
   @override
   State createState() => new _PostWidgetScaffoldState();
@@ -269,7 +269,7 @@ class PostPreview extends StatelessWidget {
   static final Logger _log = new Logger('PostPreview');
   final Post post;
   final VoidCallback onPressed;
-  PostPreview(this.post, {Key key, this.onPressed}) : super(key: key);
+  const PostPreview(this.post, {Key key, this.onPressed}) : super(key: key);
 
   @override
   Widget build(BuildContext ctx) => new GestureDetector(
@@ -340,7 +340,7 @@ class InfoSquare extends StatelessWidget {
   final bool hasComments;
   final String rating;
 
-  InfoSquare({
+  const InfoSquare({
     @required this.score,
     @required this.favCount,
     @required this.hasComments,
@@ -364,7 +364,7 @@ class InfoSquare extends StatelessWidget {
       new Padding(
           padding: const EdgeInsets.only(right: 3.0),
           child: IconTheme.merge(
-            data: new IconThemeData(size: 12.0),
+            data: const IconThemeData(size: 12.0),
             child: new Icon(icon),
           )),
       new Text(text, style: new TextStyle(fontSize: 12.0)),
@@ -432,7 +432,7 @@ class InfoSquare extends StatelessWidget {
 
 class _MoreDialog extends StatelessWidget {
   final Post post;
-  _MoreDialog(this.post);
+  const _MoreDialog(this.post);
 
   @override
   Widget build(BuildContext ctx) {
@@ -459,7 +459,7 @@ class _MoreDialog extends StatelessWidget {
                 children: <Widget>[
                   new TextField(
                       maxLines: 15,
-                      decoration: new InputDecoration(hideDivider: true),
+                      decoration: const InputDecoration(hideDivider: true),
                       style: new TextStyle(fontFamily: 'Courier'),
                       controller:
                           new TextEditingController(text: info.toString()))
@@ -512,7 +512,7 @@ class _MoreDialog extends StatelessWidget {
 class PostGrid extends StatefulWidget {
   final List<Post> posts;
   final AsyncValueGetter<bool> onLoadMore;
-  PostGrid(this.posts, {Key key, this.onLoadMore}) : super(key: key);
+  const PostGrid(this.posts, {Key key, this.onLoadMore}) : super(key: key);
 
   @override
   State createState() => new _PostGridState();
@@ -573,7 +573,8 @@ class _PostGridState extends State<PostGrid> {
 class PostSwipe extends StatefulWidget {
   final List<Post> posts;
   final int startingIndex;
-  PostSwipe(this.posts, {Key key, this.startingIndex = 0}) : super(key: key);
+  const PostSwipe(this.posts, {Key key, this.startingIndex = 0})
+      : super(key: key);
 
   @override
   State createState() => new _PostSwipeState();

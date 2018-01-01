@@ -43,7 +43,7 @@ class LoginPage extends StatelessWidget {
     return new Scaffold(
       appBar: new AppBar(title: new Text('Login')),
       body: new SingleChildScrollView(
-          padding: new EdgeInsets.all(10.0),
+          padding: const EdgeInsets.all(10.0),
           child: new Form(child: new Column(children: columnChildren))),
     );
   }
@@ -261,7 +261,8 @@ class _LoginFormFieldsState extends State<_LoginFormFields> {
 }
 
 class _LoginProgressDialog extends StatefulWidget {
-  _LoginProgressDialog(this.username, this.apiKey, {Key key}) : super(key: key);
+  const _LoginProgressDialog(this.username, this.apiKey, {Key key})
+      : super(key: key);
 
   final String username;
   final String apiKey;
@@ -303,7 +304,7 @@ class _LoginProgressDialogState extends State<_LoginProgressDialog> {
 }
 
 class _InstructionStep extends StatelessWidget {
-  _InstructionStep(this._stepNumber, this._content, {Key key})
+  const _InstructionStep(this._stepNumber, this._content, {Key key})
       : super(key: key);
 
   final int _stepNumber;

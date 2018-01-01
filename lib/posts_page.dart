@@ -23,6 +23,7 @@ import 'package:flutter/widgets.dart';
 
 import 'package:logging/logging.dart' show Logger;
 
+import 'client.dart' show client;
 import 'consts.dart' as consts;
 import 'pagination.dart' show LinearPagination;
 import 'persistence.dart' as persistence;
@@ -30,7 +31,6 @@ import 'post.dart';
 import 'range_dialog.dart' show RangeDialog;
 import 'tag.dart' show Tagset;
 import 'tag_entry.dart' show TagEntryPage;
-import 'client.dart' show client;
 
 class PostsPage extends StatefulWidget {
   @override
@@ -281,7 +281,7 @@ class _PostsPageState extends State<PostsPage> {
             });
           },
         ),
-        new AboutListTile(icon: const Icon(Icons.help)),
+        const AboutListTile(icon: const Icon(Icons.help)),
       ]));
     }
 

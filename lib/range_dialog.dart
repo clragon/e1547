@@ -22,7 +22,7 @@ import 'package:flutter/widgets.dart';
 import 'package:logging/logging.dart' show Logger;
 
 class RangeDialog extends StatefulWidget {
-  RangeDialog({this.title, this.value, this.max});
+  const RangeDialog({this.title, this.value, this.max});
 
   final String title;
   final int value;

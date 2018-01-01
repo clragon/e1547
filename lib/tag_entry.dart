@@ -17,7 +17,7 @@
 import 'package:flutter/material.dart';
 
 class TagEntryPage extends StatefulWidget {
-  TagEntryPage(String tags) : this.tags = tags + ' ';
+  const TagEntryPage(String tags) : this.tags = tags + ' ';
 
   final String tags;
 
@@ -59,11 +59,11 @@ class TagEntryPageState extends State<TagEntryPage> {
     ];
 
     return new Container(
-        padding: new EdgeInsets.all(10.0),
+        padding: const EdgeInsets.all(10.0),
         child: new Column(children: <Widget>[
           new Padding(
             child: tagEntry,
-            padding: new EdgeInsets.only(bottom: 10.0),
+            padding: const EdgeInsets.only(bottom: 10.0),
           ),
           new Row(mainAxisAlignment: MainAxisAlignment.end, children: buttons)
         ]));

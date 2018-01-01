@@ -33,13 +33,13 @@ void main() {
     test('Parse empty tag', () {
       expect(() {
         new Tag.parse('');
-      }, throwsA(new isInstanceOf<AssertionError>()));
+      }, throwsA(const isInstanceOf<AssertionError>()));
     });
 
     test('Parse whitespace tag', () {
       expect(() {
         new Tag.parse('    \t  \n ');
-      }, throwsA(new isInstanceOf<AssertionError>()));
+      }, throwsA(const isInstanceOf<AssertionError>()));
     });
 
     test('Parse regular tag', () {

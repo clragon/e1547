@@ -30,10 +30,10 @@ linter:
     - cancel_subscriptions
     - cascade_invocations
     - close_sinks
-    #    - comment_references
+    - comment_references
     - constant_identifier_names
-    #    - control_flow_in_finally
-    #    - directives_ordering
+    - control_flow_in_finally
+    - directives_ordering
     - empty_catches
     - empty_constructor_bodies
     - empty_statements
@@ -50,6 +50,9 @@ linter:
     - no_duplicate_case_values
     - non_constant_identifier_names
       #    - omit_local_variable_types
+      #    Sometimes local variable types help with clarity. e.g., a
+      #    Future<bool> means we should know not to treat it like a regular
+      #    bool. If it was just var, it'd get confusing.
     - one_member_abstracts
     - only_throw_errors
     - overridden_fields
@@ -58,26 +61,34 @@ linter:
     - package_prefixed_library_names
     - parameter_assignments
     - prefer_adjacent_string_concatenation
-    #    - prefer_asserts_in_initializer_lists
-    #    - prefer_bool_in_asserts
-    #    - prefer_collection_literals
-    #    - prefer_conditional_assignment
-    #    - prefer_const_constructors
-    #    - prefer_const_constructors_in_immutables
-    #    - prefer_constructors_over_static_methods
+    - prefer_asserts_in_initializer_lists
+    - prefer_bool_in_asserts
+    - prefer_collection_literals
+    - prefer_conditional_assignment
+    - prefer_const_constructors
+    - prefer_const_constructors_in_immutables
+    - prefer_constructors_over_static_methods
     - prefer_contains
       #    - prefer_expression_function_bodies
+      #    This triggers on all function bodies that are just return. However,
+      #    sometimes they have to be split up when they get too big, and making
+      #    them "=>" functions will make it more complicated.
     - prefer_final_fields
       #    - prefer_final_locals
+      #    Way too many locals to deal with. This is unlikely to be a large
+      #    issue anyway since local scope for variables is narrow.
     - prefer_foreach
     - prefer_function_declarations_over_variables
     - prefer_initializing_formals
       #    - prefer_interpolation_to_compose_strings
+      #    While in general, this is good, there are cases where it's clearer
+      #    to use "+".
     - prefer_is_empty
     - prefer_is_not_empty
     - prefer_single_quotes
     - prefer_typing_uninitialized_variables
       #    - public_member_api_docs
+      #    TODO: enable this and have some fun
     - recursive_getters
     - slash_for_doc_comments
     - sort_constructors_first
@@ -88,6 +99,9 @@ linter:
     - type_annotate_public_apis
     - type_init_formals
       #    - unawaited_futures
+      #    Not doing this because I like using "await" sometimes for making
+      #    sure something happens after something else. That means ignoring the
+      #    return value.
     - unnecessary_brace_in_string_interps
     - unnecessary_getters_setters
     - unnecessary_lambdas

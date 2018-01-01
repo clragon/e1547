@@ -20,10 +20,10 @@ import 'package:flutter/material.dart';
 
 import 'package:logging/logging.dart' show Logger;
 
+import 'client.dart' show client;
 import 'pagination.dart' show LinearPagination;
 import 'persistence.dart' as persistence;
 import 'post.dart' show Post;
-import 'client.dart' show client;
 
 class Comment {
   Comment.fromRaw(this.raw) {
@@ -42,7 +42,7 @@ class Comment {
 }
 
 class CommentsWidget extends StatefulWidget {
-  CommentsWidget(this.post, {Key key}) : super(key: key);
+  const CommentsWidget(this.post, {Key key}) : super(key: key);
 
   final Post post;
 
