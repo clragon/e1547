@@ -28,7 +28,7 @@ linter:
     - await_only_futures
     - camel_case_types
     #    - cancel_subscriptions
-    #    - cascade_invocations
+    - cascade_invocations
     #    - close_sinks
     #    - comment_references
     - constant_identifier_names

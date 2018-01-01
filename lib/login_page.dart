@@ -37,9 +37,8 @@ class LoginPage extends StatelessWidget {
       new _InstructionStep(
           2, _buttonLink('Enable API Access', '/user/api_key')),
       new _InstructionStep(3, new Text('Copy and paste your API key')),
+      new _LoginFormFields(),
     ];
-
-    columnChildren.add(new _LoginFormFields());
 
     return new Scaffold(
       appBar: new AppBar(title: new Text('Login')),
@@ -89,119 +88,59 @@ class _LoginFormFieldsState extends State<_LoginFormFields> {
   String _apiKey;
 
   @override
-  Widget build(BuildContext ctx) {
-    List<Widget> columnChildren = [];
+  void dispose() {
+    super.dispose();
+    if (_pasteUndoTimer != null) {
+      _pasteUndoTimer.cancel();
+    }
+  }
 
-    columnChildren.add(new TextFormField(
-      autocorrect: false,
-      decoration: const InputDecoration(
-        labelText: 'Username',
-      ),
-      onSaved: (u) {
-        _authDidJustFail = false;
-        _username = u;
-      },
-      validator: (u) {
-        if (_authDidJustFail) {
-          return 'Failed to login. Please check username.';
-        }
+  void _saveUsername(String username) {
+    _authDidJustFail = false;
+    _username = username;
+  }
 
-        u = u.trim();
-        if (u.isEmpty) {
-          return 'You must provide a username.';
-        }
-      },
-    ));
+  void _saveApiKey(String apiKey) {
+    _authDidJustFail = false;
+    _apiKey = apiKey;
+  }
 
-    columnChildren.add(new Row(children: [
-      new Expanded(
-        child: new TextFormField(
-          autocorrect: false,
-          controller: _apiKeyFieldController,
-          decoration: const InputDecoration(
-            labelText: 'API Key',
-            helperText: 'e.g. 1ca1d165e973d7f8d35b7deb7a2ae54c',
-          ),
-          inputFormatters: [new _LowercaseTextInputFormatter()],
-          onSaved: (a) {
-            _authDidJustFail = false;
-            _apiKey = a;
-          },
-          validator: (apiKey) {
-            if (_authDidJustFail) {
-              return 'Failed to login. Please check API key.\n'
-                  'e.g. 1ca1d165e973d7f8d35b7deb7a2ae54c';
-            }
+  String _validateUsername(String username) {
+    if (_authDidJustFail) {
+      return 'Failed to login. Please check username.';
+    }
 
-            apiKey = apiKey.trim();
-            if (apiKey.isEmpty) {
-              return 'You must provide an API key.\n'
-                  'e.g. 1ca1d165e973d7f8d35b7deb7a2ae54c';
-            }
+    if (username.trim().isEmpty) {
+      return 'You must provide a username.';
+    }
 
-            if (!new RegExp(r"^[a-f0-9]{32}$").hasMatch(apiKey)) {
-              return 'API key is a 32-character sequence of {a..f} and {0..9}\n'
-                  'e.g. 1ca1d165e973d7f8d35b7deb7a2ae54c';
-            }
+    return null;
+  }
 
-            return null;
-          },
-        ),
-      ),
-      _didJustPaste
-          ? new IconButton(
-              icon: new Icon(Icons.undo),
-              tooltip: 'Undo previous paste',
-              onPressed: () {
-                setState(() {
-                  _didJustPaste = false;
-                  _apiKeyFieldController.text = _beforePasteText;
-                });
-              },
-            )
-          : new IconButton(
-              icon: new Icon(Icons.content_paste),
-              tooltip: 'Paste',
-              onPressed: () async {
-                var data = await Clipboard.getData('text/plain');
-                if (data == null || data.text.trim().isEmpty) {
-                  Scaffold.of(ctx).showSnackBar(
-                      new SnackBar(content: new Text('Clipboard is empty')));
-                  return;
-                }
+  String _validateApiKey(String apiKey) {
+    if (_authDidJustFail) {
+      return 'Failed to login. Please check API key.\n'
+          'e.g. 1ca1d165e973d7f8d35b7deb7a2ae54c';
+    }
 
-                setState(() {
-                  _didJustPaste = true;
-                  _beforePasteText = _apiKeyFieldController.text;
-                  _apiKeyFieldController.text = data.text;
-                });
+    apiKey = apiKey.trim();
+    if (apiKey.isEmpty) {
+      return 'You must provide an API key.\n'
+          'e.g. 1ca1d165e973d7f8d35b7deb7a2ae54c';
+    }
 
-                _pasteUndoTimer = new Timer(const Duration(seconds: 10), () {
-                  setState(() {
-                    _didJustPaste = false;
-                  });
-                });
-              }),
-    ]));
+    if (!new RegExp(r"^[a-f0-9]{32}$").hasMatch(apiKey)) {
+      return 'API key is a 32-character sequence of {a..f} and {0..9}\n'
+          'e.g. 1ca1d165e973d7f8d35b7deb7a2ae54c';
+    }
 
-    columnChildren.add(new Padding(
-      padding: const EdgeInsets.only(top: 20.0),
-      child: new RaisedButton(
-        child: new Text('SAVE & TEST'),
-        onPressed: _saveAndTest(ctx),
-      ),
-    ));
-
-    return new Column(
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: columnChildren,
-    );
+    return null;
   }
 
   VoidCallback _saveAndTest(ctx) => () async {
         _log.fine('Pressed SAVE & TEST');
-        FormState form = Form.of(ctx);
-        form.save(); // TODO: fix this so we don't need to save->validate->validate
+        FormState form = Form.of(ctx)
+          ..save(); // TODO: fix this so we don't need to save->validate->validate
         if (form.validate()) {
           _log.fine('username: $_username ; apikey: $_apiKey');
           bool ok = await showDialog(
@@ -226,11 +165,97 @@ class _LoginFormFieldsState extends State<_LoginFormFields> {
       };
 
   @override
-  void dispose() {
-    super.dispose();
-    if (_pasteUndoTimer != null) {
-      _pasteUndoTimer.cancel();
+  Widget build(BuildContext ctx) {
+    Widget usernameWidget() {
+      return new TextFormField(
+        autocorrect: false,
+        decoration: const InputDecoration(
+          labelText: 'Username',
+        ),
+        onSaved: _saveUsername,
+        validator: _validateUsername,
+      );
     }
+
+    Widget apiKeyWidget() {
+      Widget textEntryWidget() {
+        return new TextFormField(
+          autocorrect: false,
+          controller: _apiKeyFieldController,
+          decoration: const InputDecoration(
+            labelText: 'API Key',
+            helperText: 'e.g. 1ca1d165e973d7f8d35b7deb7a2ae54c',
+          ),
+          inputFormatters: [new _LowercaseTextInputFormatter()],
+          onSaved: _saveApiKey,
+          validator: _validateApiKey,
+        );
+      }
+
+      Widget specialActionWidget() {
+        if (_didJustPaste) {
+          return new IconButton(
+            icon: new Icon(Icons.undo),
+            tooltip: 'Undo previous paste',
+            onPressed: () {
+              setState(() {
+                _didJustPaste = false;
+                _apiKeyFieldController.text = _beforePasteText;
+              });
+            },
+          );
+        } else {
+          return new IconButton(
+            icon: new Icon(Icons.content_paste),
+            tooltip: 'Paste',
+            onPressed: () async {
+              var data = await Clipboard.getData('text/plain');
+              if (data == null || data.text.trim().isEmpty) {
+                Scaffold.of(ctx).showSnackBar(
+                    new SnackBar(content: new Text('Clipboard is empty')));
+                return;
+              }
+
+              setState(() {
+                _didJustPaste = true;
+                _beforePasteText = _apiKeyFieldController.text;
+                _apiKeyFieldController.text = data.text;
+              });
+
+              _pasteUndoTimer = new Timer(const Duration(seconds: 10), () {
+                setState(() {
+                  _didJustPaste = false;
+                });
+              });
+            },
+          );
+        }
+      }
+
+      return new Row(children: [
+        new Expanded(child: textEntryWidget()),
+        specialActionWidget(),
+      ]);
+    }
+
+    Widget saveAndTestWidget() {
+      return new Padding(
+        padding: const EdgeInsets.only(top: 20.0),
+        child: new RaisedButton(
+          child: new Text('SAVE & TEST'),
+          onPressed: _saveAndTest(ctx),
+        ),
+      );
+    }
+
+    return new Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        usernameWidget(),
+        apiKeyWidget(),
+        saveAndTestWidget(),
+      ],
+    );
   }
 }
 

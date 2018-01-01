@@ -95,8 +95,7 @@ void main() {
     });
 
     test('Remove tag', () {
-      Tagset tset = new Tagset.parse('kikurage cute_fangs');
-      tset.remove('kikurage');
+      Tagset tset = new Tagset.parse('kikurage cute_fangs')..remove('kikurage');
       expect(tset, orderedEquals(new Tagset.parse('cute_fangs')));
     });
 
