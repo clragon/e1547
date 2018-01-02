@@ -22,7 +22,6 @@ import 'package:logging/logging.dart' show Logger;
 
 import 'client.dart' show client;
 import 'pagination.dart' show LinearPagination;
-import 'persistence.dart' as persistence;
 import 'post.dart' show Post;
 
 class Comment {
@@ -65,7 +64,6 @@ class _CommentsWidgetState extends State<CommentsWidget> {
   }
 
   Future<Null> _loadNextPage() async {
-    client.host = await persistence.getHost();
     _more = await _comments.loadNextPage();
     _log.info('More comments: $_more');
     setState(() {});

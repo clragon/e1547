@@ -29,7 +29,7 @@ import 'package:zoomable_image/zoomable_image.dart' show ZoomableImage;
 
 import 'client.dart' show client;
 import 'comment.dart' show CommentsWidget;
-import 'persistence.dart' as persistence;
+import 'persistence.dart' show db;
 
 class Post {
   Post.fromRaw(this.raw) {
@@ -203,16 +203,23 @@ class _PostWidgetScaffoldState extends State<PostWidgetScaffold> {
               _log.fine('pressed fav');
               String cmd = await showDialog<String>(
                   context: ctx,
-                  child: new SimpleDialog(children: [
-                    new SimpleDialogOption(
-                      child: new Text('Add to favorites'),
-                      onPressed: () => Navigator.of(ctx).pop('add'),
-                    ),
-                    new SimpleDialogOption(
-                      child: new Text('Remove from favorites'),
-                      onPressed: () => Navigator.of(ctx).pop('remove'),
-                    ),
-                  ]));
+                  child: new SimpleDialog(
+                    contentPadding: const EdgeInsets.all(10.0),
+                    children: [
+                      new SimpleDialogOption(
+                        child: new Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 10.0),
+                            child: new Text('Add to favorites')),
+                        onPressed: () => Navigator.of(ctx).pop('add'),
+                      ),
+                      new SimpleDialogOption(
+                        child: new Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 10.0),
+                            child: new Text('Remove from favorites')),
+                        onPressed: () => Navigator.of(ctx).pop('remove'),
+                      ),
+                    ],
+                  ));
 
               if (cmd == null) {
                 return;
@@ -251,8 +258,7 @@ class _PostWidgetScaffoldState extends State<PostWidgetScaffold> {
             icon: const Icon(Icons.open_in_browser),
             tooltip: 'View post in browser',
             onPressed: () async {
-              String host = await persistence.getHost();
-              url.launch(widget.post.url(host).toString());
+              url.launch(widget.post.url(await db.host.value).toString());
             }),
         new IconButton(
             icon: const Icon(Icons.more_horiz),
@@ -487,8 +493,7 @@ class _MoreDialog extends StatelessWidget {
     Widget copyLink = new ListTile(
         title: new Text('Copy link'),
         onTap: () async {
-          String host = await persistence.getHost();
-          String link = post.url(host).toString();
+          String link = post.url(await db.host.value).toString();
           _copyAndPopPop(ctx, link);
         });
 

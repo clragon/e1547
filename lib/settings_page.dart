@@ -19,7 +19,7 @@ import 'dart:async' show Future;
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
-import 'persistence.dart' as persistence;
+import 'persistence.dart' show db;
 
 class SettingsPageScaffold extends StatelessWidget {
   @override
@@ -37,38 +37,19 @@ class SettingsPage extends StatefulWidget {
 }
 
 class SettingsPageState extends State<SettingsPage> {
-  final Future<String> _initialHost = persistence.getHost();
   String _host;
-
-  final Future<bool> _initialHideSwf = persistence.getHideSwf();
-  bool _hideSwf = false;
-
-  final Future<String> _initialUsername = persistence.getUsername();
+  bool _hideSwf;
   String _username;
-
-  @override
-  void initState() {
-    super.initState();
-    _initialHost.then((h) => setState(() {
-          _host = h;
-        }));
-    _initialHideSwf.then((v) => setState(() {
-          _hideSwf = v;
-        }));
-    _initialUsername.then((v) => setState(() {
-          _username = v;
-        }));
-  }
 
   Function _onTapSiteBackend(BuildContext ctx) {
     return () async {
       String newHost = await showDialog<String>(
         context: ctx,
-        child: new _SiteBackendDialog(_host ?? await _initialHost),
+        child: new _SiteBackendDialog(_host),
       );
 
       if (newHost != null) {
-        persistence.setHost(newHost);
+        db.host.value = new Future.value(newHost);
         setState(() {
           _host = newHost;
         });
@@ -76,22 +57,35 @@ class SettingsPageState extends State<SettingsPage> {
     };
   }
 
-  void _onChangedHideSwf(bool newValue) {
-    persistence.setHideSwf(newValue);
+  @override
+  void initState() {
+    super.initState();
+    db.host.value.then((a) async => _host = a);
+    db.hideSwf.value.then((a) async => _hideSwf = a);
+    db.username.value.then((a) async => _username = a);
+  }
+
+  void _onChangedHideSwf(bool newHideSwf) {
+    db.hideSwf.value = new Future.value(newHideSwf);
     setState(() {
-      _hideSwf = newValue;
+      _hideSwf = newHideSwf;
     });
   }
 
   Function _onTapSignOut(BuildContext ctx) {
-    return () {
-      persistence.setUsername(null);
-      persistence.setApiKey(null);
+    return () async {
+      String username = await db.username.value;
+      db.username.value = new Future.value(null);
+      db.apiKey.value = new Future.value(null);
 
       Scaffold.of(ctx).showSnackBar(new SnackBar(
             duration: const Duration(seconds: 5),
-            content: new Text('Forgot login details for $_username'),
+            content: new Text('Forgot login details for $username'),
           ));
+
+      setState(() {
+        _username = null;
+      });
     };
   }
 
@@ -108,7 +102,7 @@ class SettingsPageState extends State<SettingsPage> {
           ),
           new CheckboxListTile(
             title: new Text('Hide Flash posts'),
-            value: _hideSwf,
+            value: _hideSwf ?? false,
             onChanged: _onChangedHideSwf,
           ),
           new ListTile(

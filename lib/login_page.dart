@@ -24,11 +24,9 @@ import 'package:logging/logging.dart' show Logger;
 import 'package:url_launcher/url_launcher.dart' as url;
 
 import 'client.dart' show client;
-import 'persistence.dart' as persistence;
+import 'persistence.dart' show db;
 
 class LoginPage extends StatelessWidget {
-  final Future<String> _host = persistence.getHost();
-
   @override
   Widget build(BuildContext ctx) {
     List<Widget> columnChildren = [
@@ -50,7 +48,7 @@ class LoginPage extends StatelessWidget {
 
   Function _launch(String path) {
     return () {
-      _host.then((h) {
+      db.host.value.then((h) {
         url.launch('https://$h$path');
       });
     };
@@ -98,12 +96,12 @@ class _LoginFormFieldsState extends State<_LoginFormFields> {
 
   void _saveUsername(String username) {
     _authDidJustFail = false;
-    _username = username;
+    _username = username.trim();
   }
 
   void _saveApiKey(String apiKey) {
     _authDidJustFail = false;
-    _apiKey = apiKey;
+    _apiKey = apiKey.trim();
   }
 
   String _validateUsername(String username) {
@@ -150,8 +148,8 @@ class _LoginFormFieldsState extends State<_LoginFormFields> {
           );
 
           if (ok) {
-            persistence.setUsername(_username);
-            persistence.setApiKey(_apiKey);
+            db.username.value = new Future.value(_username);
+            db.apiKey.value = new Future.value(_apiKey);
 
             Navigator.of(ctx).pop();
           } else {

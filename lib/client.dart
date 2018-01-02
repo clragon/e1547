@@ -22,7 +22,7 @@ import 'package:logging/logging.dart' show Logger;
 import 'comment.dart' show Comment;
 import 'http.dart';
 import 'pagination.dart';
-import 'persistence.dart' as persistence;
+import 'persistence.dart' show db;
 import 'post.dart' show Post;
 import 'tag.dart';
 
@@ -33,13 +33,15 @@ class Client {
 
   final HttpCustom _http = new HttpCustom();
 
-  // For example, 'e926.net'
-  String host;
-  String username;
-  String apiKey;
-
   Future<bool> addAsFavorite(int post) async {
-    return await _http.post(host, '/favorite/create.json', query: {
+    String username = await db.username.value;
+    String apiKey = await db.apiKey.value;
+    if (username == null || apiKey == null) {
+      return false;
+    }
+
+    return await _http
+        .post(await db.host.value, '/favorite/create.json', query: {
       'login': username,
       'password_hash': apiKey,
       'id': post,
@@ -49,7 +51,14 @@ class Client {
   }
 
   Future<bool> removeAsFavorite(int post) async {
-    return await _http.post(host, '/favorite/destroy.json', query: {
+    String username = await db.username.value;
+    String apiKey = await db.apiKey.value;
+    if (username == null || apiKey == null) {
+      return false;
+    }
+
+    return await _http
+        .post(await db.host.value, '/favorite/destroy.json', query: {
       'login': username,
       'password_hash': apiKey,
       'id': post,
@@ -60,7 +69,7 @@ class Client {
 
   Future<bool> isValidAuthPair(String username, String apiKey) async {
     _log.info('client.isValidAuthPair(username="$username", apiKey="$apiKey")');
-    return await _http.get(host, '/dmail/inbox.json', query: {
+    return await _http.get(await db.host.value, '/dmail/inbox.json', query: {
       'login': username,
       'password_hash': apiKey,
     }).then((response) {
@@ -79,10 +88,9 @@ class Client {
   LinearPagination<Post> posts(Tagset tags) {
     _log.info('Client.posts(tags="$tags")');
 
-    Future<bool> hideSwf = persistence.getHideSwf();
-
     return new LinearPagination<Post>((page) async {
-      String body = await _http.get(host, '/post/index.json', query: {
+      String body =
+          await _http.get(await db.host.value, '/post/index.json', query: {
         'tags': tags,
         'page': page,
         'limit': 75,
@@ -91,7 +99,7 @@ class Client {
       List<Post> posts = [];
       for (var rp in JSON.decode(body)) {
         Post p = new Post.fromRaw(rp);
-        if (await hideSwf && p.fileExt == 'swf') {
+        if (await db.hideSwf.value && p.fileExt == 'swf') {
           _log.fine('Hiding swf post #${p.id}');
           continue;
         }
@@ -105,7 +113,8 @@ class Client {
     _log.info('Client.comments(postId="$postId")');
 
     return new LinearPagination<Comment>((page) async {
-      String body = await _http.get(host, '/comment/index.json', query: {
+      String body =
+          await _http.get(await db.host.value, '/comment/index.json', query: {
         'post_id': postId,
         'page': page,
       }).then((response) => response.body);

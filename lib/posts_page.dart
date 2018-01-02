@@ -26,7 +26,7 @@ import 'package:logging/logging.dart' show Logger;
 import 'client.dart' show client;
 import 'consts.dart' as consts;
 import 'pagination.dart' show LinearPagination;
-import 'persistence.dart' as persistence;
+import 'persistence.dart' show db;
 import 'post.dart';
 import 'range_dialog.dart' show RangeDialog;
 import 'tag.dart' show Tagset;
@@ -41,29 +41,37 @@ class _PostsPageState extends State<PostsPage> {
   final Logger _log = new Logger('PostsPage');
 
   LinearPagination<Post> _posts;
-  Future<String> _username =
-      persistence.getUsername(); // TODO these shouldn't be here
-  Future<String> _apiKey = persistence.getApiKey();
-
-  Tagset _tags; // Tags used for searching for posts.
 
   bool _offline = false; // If true, the last request has failed.
   String _errorMessage;
 
+  String _username;
+  void _onChangeUsername() {
+    db.username.value.then((a) {
+      setState(() {
+        _username = a;
+      });
+    });
+  }
+
   @override
   void initState() {
     super.initState();
-    () async {
-      _tags = await persistence.getTags();
-      _log.info('Loaded tags: $_tags');
-      _search();
-    }();
+    _search();
+
+    db.username.value.then((a) => _username = a);
+    db.username.addListener(_onChangeUsername);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+
+    db.username.removeListener(_onChangeUsername);
   }
 
   Future<Null> _search() async {
-    client.host = await persistence.getHost();
-    persistence.setTags(_tags);
-    _posts = client.posts(_tags);
+    _posts = client.posts(await db.tags.value);
     _loadNextPage();
   }
 
@@ -107,7 +115,9 @@ class _PostsPageState extends State<PostsPage> {
       }[selectedFilter];
       assert(filterType != null);
 
-      String valueString = _tags[filterType];
+      Tagset tags = await db.tags.value;
+
+      String valueString = tags[filterType];
       int value = valueString == null ? 0 : int.parse(valueString.substring(2));
 
       int min = await showDialog<int>(
@@ -125,16 +135,18 @@ class _PostsPageState extends State<PostsPage> {
       }
 
       if (min == 0) {
-        _tags.remove(filterType);
+        tags.remove(filterType);
       } else {
-        _tags[filterType] = '>=$min';
+        tags[filterType] = '>=$min';
       }
+
+      db.tags.value = new Future.value(tags);
 
       _search();
     };
   }
 
-  void _onSelectedSortBy(String selectedSort) {
+  Future<Null> _onSelectedSortBy(String selectedSort) async {
     String orderType = const {
       'New': 'new',
       'Score': 'score',
@@ -143,11 +155,16 @@ class _PostsPageState extends State<PostsPage> {
     }[selectedSort];
     assert(orderType != null);
 
+    Tagset tags = await db.tags.value;
+
     if (orderType == 'new') {
-      _tags.remove('order');
+      tags.remove('order');
     } else {
-      _tags['order'] = orderType;
+      tags['order'] = orderType;
     }
+
+    db.tags.value = new Future.value(tags);
+
     _search();
   }
 
@@ -155,9 +172,11 @@ class _PostsPageState extends State<PostsPage> {
     if (selectedAction == 'Refresh') {
       _search();
     } else if (selectedAction == 'Copy link') {
-      Clipboard.setData(new ClipboardData(
-        text: _tags.url(client.host).toString(),
-      ));
+      () async {
+        Clipboard.setData(new ClipboardData(
+          text: (await db.tags.value).url(await db.host.value).toString(),
+        ));
+      }();
     } else {
       _log.warning('Unknown action type: "$selectedAction"');
     }
@@ -230,36 +249,22 @@ class _PostsPageState extends State<PostsPage> {
 
     Widget drawerWidget() {
       Widget headerWidget() {
-        return new FutureBuilder(
-          future: _username,
-          builder: (ctx, snapshot) {
-            return new DrawerHeader(
-                child: new Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                  new CircleAvatar(
-                    backgroundImage: new AssetImage('icons/paw.png'),
-                    radius: 48.0,
+        return new DrawerHeader(
+            child: new Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            new CircleAvatar(
+              backgroundImage: new AssetImage('icons/paw.png'),
+              radius: 48.0,
+            ),
+            _username != null
+                ? new Text(_username)
+                : new RaisedButton(
+                    child: new Text('LOGIN'),
+                    onPressed: () => Navigator.popAndPushNamed(ctx, '/login'),
                   ),
-                  snapshot.connectionState == ConnectionState.done &&
-                          snapshot.data != null
-                      ? new Text(snapshot.data)
-                      : new RaisedButton(
-                          child: new Text('LOGIN'),
-                          onPressed: () async {
-                            await Navigator.popAndPushNamed(ctx, '/login');
-                            setState(() {
-                              _username = persistence.getUsername();
-                              _apiKey = persistence.getApiKey();
-
-                              _username.then((u) => client.username = u);
-                              _apiKey.then((a) => client.apiKey = a);
-                            });
-                          },
-                        ),
-                ]));
-          },
-        );
+          ],
+        ));
       }
 
       return new Drawer(
@@ -268,18 +273,7 @@ class _PostsPageState extends State<PostsPage> {
         new ListTile(
           leading: const Icon(Icons.settings),
           title: new Text('Settings'),
-          onTap: () async {
-            await Navigator.popAndPushNamed(ctx, '/settings');
-            setState(() {
-              // TODO: See if we can DRY this with pop...'/login')
-              // And don't even do this data wrangling here...
-              _username = persistence.getUsername();
-              _apiKey = persistence.getApiKey();
-
-              _username.then((u) => client.username = u);
-              _apiKey.then((a) => client.apiKey = a);
-            });
-          },
+          onTap: () => Navigator.popAndPushNamed(ctx, '/settings'),
         ),
         const AboutListTile(icon: const Icon(Icons.help)),
       ]));
@@ -289,13 +283,14 @@ class _PostsPageState extends State<PostsPage> {
       return new FloatingActionButton(
           child: const Icon(Icons.search),
           onPressed: () async {
+            Tagset tags = await db.tags.value;
             String tagString = await Navigator.of(ctx).push(
                 new MaterialPageRoute<String>(
-                    builder: (ctx) => new TagEntryPage(_tags.toString())));
+                    builder: (ctx) => new TagEntryPage(tags.toString())));
 
             _log.fine('edited tags: "$tagString"');
             if (tagString != null) {
-              _tags = new Tagset.parse(tagString);
+              db.tags.value = new Future.value(new Tagset.parse(tagString));
               _search();
             }
           });

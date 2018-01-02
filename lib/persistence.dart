@@ -16,52 +16,74 @@
 
 import 'dart:async' show Future;
 
+import 'package:flutter/foundation.dart' show ValueNotifier;
+
 import 'package:shared_preferences/shared_preferences.dart'
     show SharedPreferences;
 
 import 'consts.dart' as consts;
 import 'tag.dart' show Tagset;
 
-const _host = 'host';
-const _tags = 'tags';
-const _hideSwf = 'hideSwf';
-const _username = 'username';
-const _apiKey = 'apiKey';
+typedef T SharedPreferencesReceiver<T>(SharedPreferences prefs);
 
-Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+final Persistence db = new Persistence();
 
-Future<String> getHost() => _prefs.then((p) {
-      return p.getString(_host) ?? consts.defaultEndpoint;
-    });
-void setHost(String host) => _prefs.then((p) {
-      p.setString(_host, host);
-    });
+class Persistence {
+  ValueNotifier<Future<String>> host;
+  ValueNotifier<Future<Tagset>> tags;
+  ValueNotifier<Future<bool>> hideSwf;
+  ValueNotifier<Future<String>> username;
+  ValueNotifier<Future<String>> apiKey;
 
-Future<Tagset> getTags() => _prefs.then((p) {
-      return new Tagset.parse(p.getString(_tags) ?? '');
-    });
-void setTags(Tagset tags) => _prefs.then((p) {
-      p.setString(_tags, tags.toString());
-    });
+  Persistence() {
+    host = _makeNotifier(
+      (p) => p.getString('host') ?? consts.defaultEndpoint,
+    );
+    host.addListener(_saveString('host', host));
 
-Future<bool> getHideSwf() => _prefs.then((p) {
-      return p.getBool(_hideSwf) ?? false;
-    });
-// ignore: avoid_positional_boolean_parameters
-void setHideSwf(bool hideSwf) => _prefs.then((p) {
-      p.setBool(_hideSwf, hideSwf);
-    });
+    tags = _makeNotifier(
+      (p) => new Tagset.parse(p.getString('tags') ?? ''),
+    );
+    tags.addListener(_saveString('tags', tags));
 
-Future<String> getUsername() => _prefs.then((p) {
-      return p.getString(_username);
-    });
-void setUsername(String username) => _prefs.then((p) {
-      p.setString(_username, username);
-    });
+    hideSwf = _makeNotifier(
+      (p) => p.getBool('hideSwf') ?? false,
+    );
+    hideSwf.addListener(_saveBool('hideSwf', hideSwf));
 
-Future<String> getApiKey() => _prefs.then((p) {
-      return p.getString(_apiKey);
-    });
-void setApiKey(String apiKey) => _prefs.then((p) {
-      p.setString(_apiKey, apiKey);
-    });
+    username = _makeNotifier(
+      (p) => p.getString('username'),
+    );
+    username.addListener(_saveString('username', username));
+
+    apiKey = _makeNotifier(
+      (p) => p.getString('apiKey'),
+    );
+    apiKey.addListener(_saveString('apiKey', apiKey));
+  }
+
+  Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+
+  ValueNotifier<Future<T>> _makeNotifier<T>(
+      SharedPreferencesReceiver<T> receiver) {
+    return new ValueNotifier(_prefs.then(receiver));
+  }
+
+  Function _saveString(String key, ValueNotifier<Future<Object>> notifier) {
+    return () async {
+      (await _prefs).setString(
+        key,
+        (await notifier.value).toString(),
+      );
+    };
+  }
+
+  Function _saveBool(String key, ValueNotifier<Future<bool>> notifier) {
+    return () async {
+      (await _prefs).setBool(
+        key,
+        await notifier.value,
+      );
+    };
+  }
+}
