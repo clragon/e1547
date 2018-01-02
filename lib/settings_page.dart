@@ -78,9 +78,14 @@ class SettingsPageState extends State<SettingsPage> {
       db.username.value = new Future.value(null);
       db.apiKey.value = new Future.value(null);
 
+      String msg = 'Forgot login details';
+      if (username != null) {
+        msg = msg + ' for $username';
+      }
+
       Scaffold.of(ctx).showSnackBar(new SnackBar(
             duration: const Duration(seconds: 5),
-            content: new Text('Forgot login details for $username'),
+            content: new Text(msg),
           ));
 
       setState(() {
@@ -97,7 +102,7 @@ class SettingsPageState extends State<SettingsPage> {
         children: [
           new ListTile(
             title: new Text('Site backend'),
-            subtitle: _host != null ? new Text(_host) : null,
+            subtitle: new Text(_host ?? ''),
             onTap: _onTapSiteBackend(ctx),
           ),
           new CheckboxListTile(
@@ -107,7 +112,7 @@ class SettingsPageState extends State<SettingsPage> {
           ),
           new ListTile(
             title: new Text('Sign out'),
-            subtitle: _username != null ? new Text(_username) : null,
+            subtitle: new Text(_username ?? ''),
             onTap: _onTapSignOut(ctx),
           ),
         ],
