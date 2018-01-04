@@ -200,7 +200,6 @@ class _PostWidgetScaffoldState extends State<PostWidgetScaffold> {
             icon: const Icon(Icons.favorite),
             tooltip: 'Add post to favorites',
             onPressed: () async {
-              _log.fine('pressed fav');
               String cmd = await showDialog<String>(
                   context: ctx,
                   child: new SimpleDialog(
@@ -297,7 +296,6 @@ class PostPreview extends StatelessWidget {
 
     Widget specialOverlayIcon;
     if (post.fileExt == 'gif') {
-      _log.fine('post ${post.id} was gif');
       specialOverlayIcon = new Container(
         padding: EdgeInsets.zero,
         color: Colors.black38,
@@ -569,7 +567,6 @@ class _PostGridState extends State<PostGrid> {
                   )));
     }
 
-    _log.fine('loading post $i');
     return new PostPreview(widget.posts[i], onPressed: () {
       Navigator.of(ctx).push(new MaterialPageRoute<Null>(
             builder: (ctx) => new PostSwipe(widget.posts, startingIndex: i),

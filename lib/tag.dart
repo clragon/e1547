@@ -16,8 +16,6 @@
 
 import 'dart:collection' show IterableMixin;
 
-import 'package:logging/logging.dart' show Logger;
-
 class Tag {
   Tag(this.name, [this.value]);
 
@@ -47,8 +45,6 @@ class Tag {
 }
 
 class Tagset extends Object with IterableMixin<Tag> {
-  final Logger _log = new Logger('Tagset');
-
   Tagset(Set<Tag> tags)
       : _tags = new Map.fromIterable(
           tags,
@@ -62,11 +58,8 @@ class Tagset extends Object with IterableMixin<Tag> {
         continue;
       }
       Tag t = new Tag.parse(ts);
-      _log.fine('parsed tag: "$t"');
       _tags[t.name] = t;
     }
-
-    _log.fine('tagset tags: $_tags');
   }
 
   final Map<String, Tag> _tags;

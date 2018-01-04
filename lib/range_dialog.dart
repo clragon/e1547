@@ -19,8 +19,6 @@ import 'dart:math' as math show max, min;
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
-import 'package:logging/logging.dart' show Logger;
-
 class RangeDialog extends StatefulWidget {
   const RangeDialog({this.title, this.value, this.max});
 
@@ -33,8 +31,6 @@ class RangeDialog extends StatefulWidget {
 }
 
 class RangeDialogState extends State<RangeDialog> {
-  final Logger _log = new Logger('RangeDialog');
-
   final TextEditingController _controller = new TextEditingController();
   int _value;
 
@@ -68,7 +64,6 @@ class RangeDialogState extends State<RangeDialog> {
           divisions: 50,
           value: _value.toDouble(),
           onChanged: (v) {
-            _log.info('${widget.title} filter value: $v');
             setState(() => _value = v.toInt());
           });
     }

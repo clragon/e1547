@@ -68,7 +68,6 @@ class Client {
   }
 
   Future<bool> isValidAuthPair(String username, String apiKey) async {
-    _log.info('client.isValidAuthPair(username="$username", apiKey="$apiKey")');
     return await _http.get(await db.host.value, '/dmail/inbox.json', query: {
       'login': username,
       'password_hash': apiKey,
@@ -86,8 +85,6 @@ class Client {
   }
 
   LinearPagination<Post> posts(Tagset tags) {
-    _log.info('Client.posts(tags="$tags")');
-
     return new LinearPagination<Post>((page) async {
       String body =
           await _http.get(await db.host.value, '/post/index.json', query: {
@@ -110,8 +107,6 @@ class Client {
   }
 
   LinearPagination<Comment> comments(int postId) {
-    _log.info('Client.comments(postId="$postId")');
-
     return new LinearPagination<Comment>((page) async {
       String body =
           await _http.get(await db.host.value, '/comment/index.json', query: {

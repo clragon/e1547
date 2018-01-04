@@ -106,8 +106,6 @@ class _PostsPageState extends State<PostsPage> {
 
   Function _onSelectedFilterBy(BuildContext ctx) {
     return (selectedFilter) async {
-      _log.info('selectedFilter: $selectedFilter');
-
       String filterType = const {
         'Score': 'score',
         'Favorites': 'favcount',
@@ -129,7 +127,7 @@ class _PostsPageState extends State<PostsPage> {
         ),
       );
 
-      _log.info('filter min value: $min');
+      _log.info('$selectedFilter min value: $min');
       if (min == null) {
         return;
       }
@@ -288,7 +286,7 @@ class _PostsPageState extends State<PostsPage> {
                 new MaterialPageRoute<String>(
                     builder: (ctx) => new TagEntryPage(tags.toString())));
 
-            _log.fine('edited tags: "$tagString"');
+            _log.info('new tagstring: "$tagString"');
             if (tagString != null) {
               db.tags.value = new Future.value(new Tagset.parse(tagString));
               _search();

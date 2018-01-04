@@ -46,12 +46,12 @@ class HttpCustom {
   }
 
   Future<http.Response> getUrl(Uri url) {
-    _log.fine('url: $url');
+    _log.fine('getUrl(url="$url")');
     return http.get(url, headers: {'User-Agent': userAgent});
   }
 
   Future<http.Response> postUrl(Uri url) {
-    _log.fine('url: $url');
+    _log.fine('postUrl(url="$url")');
     return http.post(url, headers: {'User-Agent': userAgent});
   }
 }

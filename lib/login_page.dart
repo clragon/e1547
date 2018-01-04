@@ -137,22 +137,25 @@ class _LoginFormFieldsState extends State<_LoginFormFields> {
   }
 
   VoidCallback _saveAndTest(ctx) => () async {
-        _log.fine('Pressed SAVE & TEST');
         FormState form = Form.of(ctx)
           ..save(); // TODO: fix this so we don't need to save->validate->validate
         if (form.validate()) {
-          _log.fine('username: $_username ; apikey: $_apiKey');
+          _log.info('trying username: $_username ; apikey: $_apiKey');
           bool ok = await showDialog(
             context: ctx,
             child: new _LoginProgressDialog(_username, _apiKey),
           );
 
           if (ok) {
+            _log.info('login ok');
+
             db.username.value = new Future.value(_username);
             db.apiKey.value = new Future.value(_apiKey);
 
             Navigator.of(ctx).pop();
           } else {
+            _log.info('login failed');
+
             _authDidJustFail = true;
             form.validate();
             Scaffold.of(ctx).showSnackBar(new SnackBar(
@@ -270,8 +273,6 @@ class _LoginProgressDialog extends StatefulWidget {
 }
 
 class _LoginProgressDialogState extends State<_LoginProgressDialog> {
-  static final Logger _log = new Logger('LoginProgressDialog');
-
   Future<bool> _isLoginOk;
 
   @override
