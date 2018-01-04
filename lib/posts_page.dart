@@ -98,7 +98,13 @@ class _PostsPageState extends State<PostsPage> {
   PersistentBottomSheetController<Tagset> _bottomSheetController;
   Future<TextEditingController> _textEditingControllerFuture =
       db.tags.value.then((tags) {
-    return new TextEditingController()..text = tags.toString() + ' ';
+    String tagstring = tags.toString() + ' ';
+    return new TextEditingController()
+      ..text = tagstring
+      ..selection = new TextSelection(
+        baseOffset: tagstring.length,
+        extentOffset: tagstring.length,
+      );
   });
 
   Function _onPressedFloatingActionButton(BuildContext ctx) {
@@ -218,7 +224,11 @@ class _PostsPageState extends State<PostsPage> {
   }
 }
 
-class TagEntry extends StatefulWidget {
+typedef Future<Tagset> TagEditor(Tagset tags);
+
+class TagEntry extends StatelessWidget {
+  static final Logger _log = new Logger('TagEntry');
+
   TagEntry({
     Key key,
     @required this.controller,
@@ -227,37 +237,20 @@ class TagEntry extends StatefulWidget {
 
   final TextEditingController controller;
 
-  @override
-  TagEntryState createState() => new TagEntryState();
-}
-
-typedef Future<Tagset> TagEditor(Tagset tags);
-
-class TagEntryState extends State<TagEntry> {
-  static final Logger _log = new Logger('TagEntry');
-
-  @override
-  void initState() {
-    super.initState();
-    _focusToEnd();
-  }
-
   void _focusToEnd() {
-    widget.controller.selection = new TextSelection(
-      baseOffset: widget.controller.text.length,
-      extentOffset: widget.controller.text.length,
+    controller.selection = new TextSelection(
+      baseOffset: controller.text.length,
+      extentOffset: controller.text.length,
     );
   }
 
   void _setTags(Tagset tags) {
-    String tagString = tags.toString() + ' ';
-
-    widget.controller.text = tagString;
+    controller.text = tags.toString() + ' ';
     _focusToEnd();
   }
 
   void _withTags(TagEditor editor) {
-    Tagset tags = new Tagset.parse(widget.controller.text);
+    Tagset tags = new Tagset.parse(controller.text);
     editor(tags).then(_setTags);
   }
 
@@ -372,7 +365,7 @@ class TagEntryState extends State<TagEntry> {
       padding: const EdgeInsets.only(left: 10.0, right: 10.0, top: 20.0),
       child: new Column(mainAxisSize: MainAxisSize.min, children: [
         new TextField(
-          controller: widget.controller,
+          controller: controller,
           autofocus: true,
           maxLines: 1,
           inputFormatters: [new LowercaseTextInputFormatter()],
