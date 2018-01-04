@@ -22,6 +22,7 @@ import 'package:flutter/services.dart' show Clipboard, ClipboardData;
 import 'package:flutter/widgets.dart';
 
 import 'package:logging/logging.dart' show Logger;
+import 'package:meta/meta.dart' show required;
 
 import 'client.dart' show client;
 import 'consts.dart' as consts;
@@ -95,11 +96,18 @@ class _PostsPageState extends State<PostsPage> {
 
   bool _isEditingTags = false;
   PersistentBottomSheetController<Tagset> _bottomSheetController;
+  Future<TextEditingController> _textEditingControllerFuture =
+      db.tags.value.then((tags) {
+    return new TextEditingController()..text = tags.toString() + ' ';
+  });
 
   Function _onPressedFloatingActionButton(BuildContext ctx) {
-    return () {
-      void onCloseBottomSheet(Tagset newTags) {
+    return () async {
+      Future<Null> onCloseBottomSheet() async {
+        Tagset newTags =
+            new Tagset.parse((await _textEditingControllerFuture).text);
         _log.info('newTags="$newTags"');
+        db.tags.value = new Future.value(newTags);
         setState(() {
           _isEditingTags = false;
         });
@@ -107,15 +115,19 @@ class _PostsPageState extends State<PostsPage> {
 
       if (_isEditingTags) {
         _bottomSheetController?.close();
+        _search();
       } else {
-        _bottomSheetController =
-            Scaffold.of(ctx).showBottomSheet<Tagset>((ctx) => new TagEntry());
+        TextEditingController textEditingController =
+            await _textEditingControllerFuture;
+        _bottomSheetController = Scaffold.of(ctx).showBottomSheet(
+              (ctx) => new TagEntry(controller: textEditingController),
+            );
 
         setState(() {
           _isEditingTags = true;
         });
 
-        _bottomSheetController.closed.then(onCloseBottomSheet);
+        _bottomSheetController.closed.then((a) => onCloseBottomSheet());
       }
     };
   }
@@ -207,6 +219,14 @@ class _PostsPageState extends State<PostsPage> {
 }
 
 class TagEntry extends StatefulWidget {
+  TagEntry({
+    Key key,
+    @required this.controller,
+  })
+      : super(key: key);
+
+  final TextEditingController controller;
+
   @override
   TagEntryState createState() => new TagEntryState();
 }
@@ -216,26 +236,18 @@ typedef Future<Tagset> TagEditor(Tagset tags);
 class TagEntryState extends State<TagEntry> {
   static final Logger _log = new Logger('TagEntry');
 
-  TextEditingController _controller = new TextEditingController();
-
   void _setTags(Tagset tags) {
     String tagString = tags.toString() + ' ';
 
-    _controller.text = tagString;
-    _controller.selection = new TextSelection(
+    widget.controller.text = tagString;
+    widget.controller.selection = new TextSelection(
       baseOffset: tagString.length,
       extentOffset: tagString.length,
     );
   }
 
-  @override
-  void initState() {
-    super.initState();
-    db.tags.value.then(_setTags);
-  }
-
   void _withTags(TagEditor editor) {
-    Tagset tags = new Tagset.parse(_controller.text);
+    Tagset tags = new Tagset.parse(widget.controller.text);
     editor(tags).then(_setTags);
   }
 
@@ -350,7 +362,7 @@ class TagEntryState extends State<TagEntry> {
       padding: const EdgeInsets.only(left: 10.0, right: 10.0, top: 20.0),
       child: new Column(mainAxisSize: MainAxisSize.min, children: [
         new TextField(
-          controller: _controller,
+          controller: widget.controller,
           autofocus: true,
           maxLines: 1,
           inputFormatters: [new LowercaseTextInputFormatter()],
