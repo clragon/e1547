@@ -33,6 +33,13 @@ import 'post.dart';
 import 'range_dialog.dart' show RangeDialog;
 import 'tag.dart' show Tagset;
 
+void _setFocusToEnd(TextEditingController controller) {
+  controller.selection = new TextSelection(
+    baseOffset: controller.text.length,
+    extentOffset: controller.text.length,
+  );
+}
+
 class PostsPage extends StatefulWidget {
   @override
   _PostsPageState createState() => new _PostsPageState();
@@ -98,35 +105,30 @@ class _PostsPageState extends State<PostsPage> {
   PersistentBottomSheetController<Tagset> _bottomSheetController;
   Future<TextEditingController> _textEditingControllerFuture =
       db.tags.value.then((tags) {
-    String tagstring = tags.toString() + ' ';
-    return new TextEditingController()
-      ..text = tagstring
-      ..selection = new TextSelection(
-        baseOffset: tagstring.length,
-        extentOffset: tagstring.length,
-      );
+    return new TextEditingController()..text = tags.toString() + ' ';
   });
 
   Function _onPressedFloatingActionButton(BuildContext ctx) {
     return () async {
-      Future<Null> onCloseBottomSheet() async {
-        Tagset newTags =
-            new Tagset.parse((await _textEditingControllerFuture).text);
-        _log.info('newTags="$newTags"');
-        db.tags.value = new Future.value(newTags);
+      void onCloseBottomSheet() {
         setState(() {
           _isEditingTags = false;
         });
       }
 
+      TextEditingController tagController = await _textEditingControllerFuture;
+      _setFocusToEnd(tagController);
+
       if (_isEditingTags) {
+        Tagset newTags = new Tagset.parse(tagController.text);
+        _log.info('newTags="$newTags"');
+        db.tags.value = new Future.value(newTags);
+
         _bottomSheetController?.close();
         _search();
       } else {
-        TextEditingController textEditingController =
-            await _textEditingControllerFuture;
         _bottomSheetController = Scaffold.of(ctx).showBottomSheet(
-              (ctx) => new TagEntry(controller: textEditingController),
+              (ctx) => new TagEntry(controller: tagController),
             );
 
         setState(() {
@@ -237,16 +239,9 @@ class TagEntry extends StatelessWidget {
 
   final TextEditingController controller;
 
-  void _focusToEnd() {
-    controller.selection = new TextSelection(
-      baseOffset: controller.text.length,
-      extentOffset: controller.text.length,
-    );
-  }
-
   void _setTags(Tagset tags) {
     controller.text = tags.toString() + ' ';
-    _focusToEnd();
+    _setFocusToEnd(controller);
   }
 
   void _withTags(TagEditor editor) {
