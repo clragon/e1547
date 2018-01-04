@@ -25,6 +25,7 @@ import 'package:logging/logging.dart' show Logger;
 
 import 'client.dart' show client;
 import 'consts.dart' as consts;
+import 'input.dart' show LowercaseTextInputFormatter;
 import 'pagination.dart' show LinearPagination;
 import 'persistence.dart' show db;
 import 'post.dart';
@@ -352,6 +353,7 @@ class TagEntryState extends State<TagEntry> {
           controller: _controller,
           autofocus: true,
           maxLines: 1,
+          inputFormatters: [new LowercaseTextInputFormatter()],
         ),
         new Padding(
           padding: const EdgeInsets.symmetric(vertical: 10.0),
