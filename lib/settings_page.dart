@@ -93,7 +93,7 @@ class SettingsPageState extends State<SettingsPage> {
           children: [
             new ListTile(
               title: new Text('Site backend'),
-              subtitle: new Text(_host ?? ''),
+              subtitle: new Text(_host ?? ' '),
               onTap: _onTapSiteBackend(ctx),
             ),
             new CheckboxListTile(
@@ -103,7 +103,7 @@ class SettingsPageState extends State<SettingsPage> {
             ),
             new ListTile(
               title: new Text('Sign out'),
-              subtitle: new Text(_username ?? ''),
+              subtitle: new Text(_username ?? ' '),
               onTap: _onTapSignOut(ctx),
             ),
           ],
