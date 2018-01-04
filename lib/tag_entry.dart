@@ -16,6 +16,8 @@
 
 import 'package:flutter/material.dart';
 
+import 'input.dart' show LowercaseTextInputFormatter;
+
 class TagEntryPage extends StatefulWidget {
   const TagEntryPage(String tags) : this.tags = tags + ' ';
 
@@ -45,6 +47,7 @@ class TagEntryPageState extends State<TagEntryPage> {
         autofocus: true,
         maxLines: 1,
         controller: _controller,
+        inputFormatters: [new LowercaseTextInputFormatter()],
         onSubmitted: (t) => Navigator.of(ctx).pop(t));
 
     List<Widget> buttons = [

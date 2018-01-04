@@ -18,12 +18,13 @@ import 'dart:async' show Future, Timer;
 import 'dart:ui' show VoidCallback;
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show TextInputFormatter, Clipboard;
+import 'package:flutter/services.dart' show Clipboard;
 
 import 'package:logging/logging.dart' show Logger;
 import 'package:url_launcher/url_launcher.dart' as url;
 
 import 'client.dart' show client;
+import 'input.dart' show LowercaseTextInputFormatter;
 import 'persistence.dart' show db;
 
 class LoginPage extends StatelessWidget {
@@ -188,7 +189,7 @@ class _LoginFormFieldsState extends State<_LoginFormFields> {
             labelText: 'API Key',
             helperText: 'e.g. 1ca1d165e973d7f8d35b7deb7a2ae54c',
           ),
-          inputFormatters: [new _LowercaseTextInputFormatter()],
+          inputFormatters: [new LowercaseTextInputFormatter()],
           onSaved: _saveApiKey,
           validator: _validateApiKey,
         );
@@ -338,13 +339,5 @@ class _InstructionStep extends StatelessWidget {
         new Expanded(child: new Container()),
       ]),
     );
-  }
-}
-
-class _LowercaseTextInputFormatter extends TextInputFormatter {
-  @override
-  TextEditingValue formatEditUpdate(
-      TextEditingValue prev, TextEditingValue current) {
-    return current.copyWith(text: current.text.toLowerCase());
   }
 }
