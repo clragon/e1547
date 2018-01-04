@@ -118,16 +118,11 @@ class SettingsPageState extends State<SettingsPage> {
   }
 }
 
-class _SiteBackendDialog extends StatefulWidget {
+class _SiteBackendDialog extends StatelessWidget {
   const _SiteBackendDialog(this.host);
 
   final String host;
 
-  @override
-  _SiteBackendDialogState createState() => new _SiteBackendDialogState();
-}
-
-class _SiteBackendDialogState extends State<_SiteBackendDialog> {
   @override
   Widget build(BuildContext ctx) {
     return new SimpleDialog(
@@ -136,13 +131,13 @@ class _SiteBackendDialogState extends State<_SiteBackendDialog> {
         new RadioListTile<String>(
           value: 'e926.net',
           title: new Text('e926.net'),
-          groupValue: widget.host,
+          groupValue: host,
           onChanged: Navigator.of(ctx).pop,
         ),
         new RadioListTile<String>(
           value: 'e621.net',
           title: new Text('e621.net'),
-          groupValue: widget.host,
+          groupValue: host,
           onChanged: Navigator.of(ctx).pop,
         ),
       ],
