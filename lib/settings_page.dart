@@ -21,16 +21,6 @@ import 'package:flutter/widgets.dart';
 
 import 'persistence.dart' show db;
 
-class SettingsPageScaffold extends StatelessWidget {
-  @override
-  Widget build(BuildContext ctx) {
-    return new Scaffold(
-      appBar: new AppBar(title: new Text('Settings')),
-      body: new SettingsPage(),
-    );
-  }
-}
-
 class SettingsPage extends StatefulWidget {
   @override
   SettingsPageState createState() => new SettingsPageState();
@@ -96,27 +86,34 @@ class SettingsPageState extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext ctx) {
-    return new Container(
-      padding: const EdgeInsets.all(10.0),
-      child: new ListView(
-        children: [
-          new ListTile(
-            title: new Text('Site backend'),
-            subtitle: new Text(_host ?? ''),
-            onTap: _onTapSiteBackend(ctx),
-          ),
-          new CheckboxListTile(
-            title: new Text('Hide Flash posts'),
-            value: _hideSwf ?? false,
-            onChanged: _onChangedHideSwf,
-          ),
-          new ListTile(
-            title: new Text('Sign out'),
-            subtitle: new Text(_username ?? ''),
-            onTap: _onTapSignOut(ctx),
-          ),
-        ],
-      ),
+    Widget bodyWidgetBuilder(BuildContext ctx) {
+      return new Container(
+        padding: const EdgeInsets.all(10.0),
+        child: new ListView(
+          children: [
+            new ListTile(
+              title: new Text('Site backend'),
+              subtitle: new Text(_host ?? ''),
+              onTap: _onTapSiteBackend(ctx),
+            ),
+            new CheckboxListTile(
+              title: new Text('Hide Flash posts'),
+              value: _hideSwf ?? false,
+              onChanged: _onChangedHideSwf,
+            ),
+            new ListTile(
+              title: new Text('Sign out'),
+              subtitle: new Text(_username ?? ''),
+              onTap: _onTapSignOut(ctx),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return new Scaffold(
+      appBar: new AppBar(title: new Text('Settings')),
+      body: new Builder(builder: bodyWidgetBuilder),
     );
   }
 }

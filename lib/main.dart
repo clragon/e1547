@@ -21,7 +21,7 @@ import 'package:logging/logging.dart' show Level, Logger;
 import 'consts.dart' as consts;
 import 'login_page.dart' show LoginPage;
 import 'posts_page.dart' show PostsPage;
-import 'settings_page.dart' show SettingsPageScaffold;
+import 'settings_page.dart' show SettingsPage;
 
 void main() {
   Logger.root.level = Level.ALL;
@@ -39,6 +39,6 @@ void main() {
       routes: <String, widgets.WidgetBuilder>{
         '/': (ctx) => new PostsPage(),
         '/login': (ctx) => new LoginPage(),
-        '/settings': (ctx) => new SettingsPageScaffold(),
+        '/settings': (ctx) => new SettingsPage(),
       }));
 }
