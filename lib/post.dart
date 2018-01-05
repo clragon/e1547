@@ -23,7 +23,6 @@ import 'package:flutter/services.dart'
     show Clipboard, ClipboardData, SystemChrome, SystemUiOverlay;
 
 import 'package:logging/logging.dart' show Logger;
-import 'package:meta/meta.dart';
 import 'package:url_launcher/url_launcher.dart' as url;
 import 'package:zoomable_image/zoomable_image.dart' show ZoomableImage;
 
@@ -292,169 +291,156 @@ class PostPreview extends StatelessWidget {
   static final Logger _log = new Logger('PostPreview');
   final Post post;
   final VoidCallback onPressed;
-  const PostPreview(this.post, {Key key, this.onPressed}) : super(key: key);
-
-  @override
-  Widget build(BuildContext ctx) => new GestureDetector(
-      onTap: onPressed,
-      child: new Card(
-          child: new Column(
-        children: <Widget>[
-          _buildImagePreview(ctx),
-          _buildPostInfo(ctx),
-        ],
-      )));
-
-  Widget _buildImagePreview(BuildContext ctx) {
-    Widget image = new Container(
-      color: Colors.grey[800],
-      constraints: const BoxConstraints.expand(),
-      child: new Image(image: post.previewImage, fit: BoxFit.contain),
-    );
-
-    Widget specialOverlayIcon;
-    if (post.fileExt == 'gif') {
-      specialOverlayIcon = new Container(
-        padding: EdgeInsets.zero,
-        color: Colors.black38,
-        child: const Icon(Icons.gif),
-      );
-    }
-
-    Widget flexibleChild = specialOverlayIcon == null
-        ? image
-        : new Stack(children: [
-            image,
-            new Positioned(top: 0.0, right: 0.0, child: specialOverlayIcon),
-          ]);
-
-    return new Flexible(child: flexibleChild);
-  }
-
-  Widget _buildPostInfo(BuildContext ctx) {
-    Widget info = new InfoSquare.fromPost(post);
-
-    Widget artists = new Text(
-      post.artist.length < 2
-          ? post.artist.join(',\n')
-          : post.artist.take(2).join(',\n') +
-              ',\n... +${post.artist.length - 1}',
-      textAlign: TextAlign.center,
-      style: new TextStyle(fontSize: 12.0),
-      maxLines: 3,
-      softWrap: false,
-      overflow: TextOverflow.ellipsis,
-    );
-
-    return new Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: new Column(children: [
-          info,
-          new Padding(
-              padding: const EdgeInsets.only(top: 10.0), child: artists),
-        ]));
-  }
-}
-
-const double _infoSquareVerticalPadding = 3.0;
-const double _infoSquareHorizontalPadding = 2.0;
-
-//    <score>    <comments>
-//    <favcount> <safety rating>
-class InfoSquare extends StatelessWidget {
-  final int score;
-  final int favCount;
-  final bool hasComments;
-  final String rating;
-
-  const InfoSquare({
-    @required this.score,
-    @required this.favCount,
-    @required this.hasComments,
-    @required this.rating,
+  const PostPreview(
+    this.post, {
     Key key,
+    this.onPressed,
   })
       : super(key: key);
 
-  factory InfoSquare.fromPost(Post p) {
-    return new InfoSquare(
-      score: p.score,
-      favCount: p.favCount,
-      hasComments: p.hasComments,
-      rating: p.rating,
-    );
-  }
-
-  // This builds a small icon followed by a text. Used for the info square.
-  Widget _iconTextPair(IconData icon, String text) {
-    return new Row(mainAxisSize: MainAxisSize.min, children: [
-      new Padding(
-          padding: const EdgeInsets.only(right: 3.0),
-          child: IconTheme.merge(
-            data: const IconThemeData(size: 12.0),
-            child: new Icon(icon),
-          )),
-      new Text(text, style: new TextStyle(fontSize: 12.0)),
-    ]);
-  }
-
   @override
   Widget build(BuildContext ctx) {
-    Widget scoreInfo = score >= 0
-        ? _iconTextPair(Icons.arrow_upward, '+' + score.toString())
-        : _iconTextPair(Icons.arrow_downward, score.toString());
+    Widget imagePreviewWidget() {
+      Widget image = new Container(
+        color: Colors.grey[800],
+        constraints: const BoxConstraints.expand(),
+        child: new Image(image: post.previewImage, fit: BoxFit.contain),
+      );
 
-    Widget commentsInfo =
-        _iconTextPair(Icons.question_answer, hasComments ? '+' : '0');
+      Widget specialOverlayIcon;
+      if (post.fileExt == 'gif') {
+        specialOverlayIcon = new Container(
+          padding: EdgeInsets.zero,
+          color: Colors.black38,
+          child: const Icon(Icons.gif),
+        );
+      }
 
-    Widget favoritesInfo = _iconTextPair(Icons.favorite, favCount.toString());
-    Widget ratingInfo = _iconTextPair(Icons.warning, rating);
+      return specialOverlayIcon == null
+          ? image
+          : new Stack(children: [
+              image,
+              new Positioned(top: 0.0, right: 0.0, child: specialOverlayIcon),
+            ]);
+    }
 
-    return new Table(
-        // IntrinsicColumnWidth is expensive but also the only one that seems to work.
-        defaultColumnWidth: const IntrinsicColumnWidth(),
-        children: <TableRow>[
-          new TableRow(children: [
-            _padTopLeft(scoreInfo),
-            _padTopRight(commentsInfo),
-          ]),
-          new TableRow(children: [
-            _padBottomLeft(favoritesInfo),
-            _padBottomRight(ratingInfo),
-          ]),
-        ]);
+    Widget postInfoWidget() {
+      Widget infoSquare() {
+        // This builds a small icon followed by some text.
+        Widget iconTextPair(IconData icon, String text) {
+          return new Row(mainAxisSize: MainAxisSize.min, children: [
+            new Padding(
+                padding: const EdgeInsets.only(right: 3.0),
+                child: IconTheme.merge(
+                  data: const IconThemeData(size: 12.0),
+                  child: new Icon(icon),
+                )),
+            new Text(text, style: new TextStyle(fontSize: 12.0)),
+          ]);
+        }
+
+        Widget padTopLeft(Widget child) {
+          return new Padding(
+            child: child,
+            padding: const EdgeInsets.only(right: 1.0, bottom: 1.5),
+          );
+        }
+
+        Widget padTopRight(Widget child) {
+          return new Padding(
+            child: child,
+            padding: const EdgeInsets.only(left: 1.0, bottom: 1.5),
+          );
+        }
+
+        Widget padBottomLeft(Widget child) {
+          return new Padding(
+            child: child,
+            padding: const EdgeInsets.only(right: 1.0, top: 1.5),
+          );
+        }
+
+        Widget padBottomRight(Widget child) {
+          return new Padding(
+            child: child,
+            padding: const EdgeInsets.only(left: 1.0, top: 1.5),
+          );
+        }
+
+        Widget scoreInfo() {
+          return post.score >= 0
+              ? iconTextPair(Icons.arrow_upward, '+' + post.score.toString())
+              : iconTextPair(Icons.arrow_downward, post.score.toString());
+        }
+
+        Widget commentsInfo() {
+          return iconTextPair(
+              Icons.question_answer, post.hasComments ? '+' : '0');
+        }
+
+        Widget favoritesInfo() {
+          return iconTextPair(Icons.favorite, post.favCount.toString());
+        }
+
+        Widget ratingInfo() {
+          return iconTextPair(Icons.warning, post.rating);
+        }
+
+        return new Table(
+          // IntrinsicColumnWidth is expensive but also the only one that
+          // seems to work.
+          defaultColumnWidth: const IntrinsicColumnWidth(),
+          children: <TableRow>[
+            new TableRow(children: [
+              padTopLeft(scoreInfo()),
+              padTopRight(commentsInfo()),
+            ]),
+            new TableRow(children: [
+              padBottomLeft(favoritesInfo()),
+              padBottomRight(ratingInfo()),
+            ]),
+          ],
+        );
+      }
+
+      Widget artists() {
+        return new Text(
+          post.artist.length < 2
+              ? post.artist.join(',\n')
+              : post.artist.take(2).join(',\n') +
+                  ',\n... +${post.artist.length - 1}',
+          textAlign: TextAlign.center,
+          style: new TextStyle(fontSize: 12.0),
+          maxLines: 3,
+          softWrap: false,
+          overflow: TextOverflow.ellipsis,
+        );
+      }
+
+      return new Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: new Column(children: [
+          infoSquare(),
+          new Padding(
+            padding: const EdgeInsets.only(top: 10.0),
+            child: artists(),
+          ),
+        ]),
+      );
+    }
+
+    return new GestureDetector(
+      child: new Card(
+        child: new Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            new Flexible(child: imagePreviewWidget()),
+            postInfoWidget(),
+          ],
+        ),
+      ),
+    );
   }
-
-  //
-  // <AWFUL>
-  //
-  Widget _padTopLeft(Widget child) => new Padding(
-        child: child,
-        padding: const EdgeInsets.only(
-            right: _infoSquareHorizontalPadding / 2.0,
-            bottom: _infoSquareVerticalPadding / 2.0),
-      );
-  Widget _padTopRight(Widget child) => new Padding(
-        child: child,
-        padding: const EdgeInsets.only(
-            left: _infoSquareHorizontalPadding / 2.0,
-            bottom: _infoSquareVerticalPadding / 2.0),
-      );
-  Widget _padBottomLeft(Widget child) => new Padding(
-        child: child,
-        padding: const EdgeInsets.only(
-            right: _infoSquareHorizontalPadding / 2.0,
-            top: _infoSquareVerticalPadding / 2.0),
-      );
-  Widget _padBottomRight(Widget child) => new Padding(
-        child: child,
-        padding: const EdgeInsets.only(
-            left: _infoSquareHorizontalPadding / 2.0,
-            top: _infoSquareVerticalPadding / 2.0),
-      );
-  //
-  // </AWFUL>
-  //
 }
 
 class _MoreDialog extends StatelessWidget {
