@@ -50,7 +50,21 @@ class Post {
 
     hasComments = raw['has_comments'];
 
-    artist = raw['artist'];
+    artist = raw['artist']
+      ..removeWhere((a) {
+        if (a == 'conditional_dnp') {
+          isConditionalDnp = true;
+          return true;
+        } else if (a == 'sound_warning') {
+          hasSoundWarning = true;
+          return true;
+        } else if (a == 'epilepsy_warning') {
+          hasEpilepsyWarning = true;
+          return true;
+        } else {
+          return false;
+        }
+      });
   }
 
   Map raw;
@@ -70,6 +84,10 @@ class Post {
   String rating;
   bool hasComments;
   List<String> artist;
+
+  bool isConditionalDnp;
+  bool hasSoundWarning;
+  bool hasEpilepsyWarning;
 
   // Get the URL for the HTML version of the desired post.
   Uri url(String host) =>
@@ -317,8 +335,13 @@ class PostPreview extends StatelessWidget {
     Widget info = new InfoSquare.fromPost(post);
 
     Widget artists = new Text(
-      post.artist.join(',\n'),
+      post.artist.length < 2
+          ? post.artist.join(',\n')
+          : post.artist.take(2).join(',\n') +
+              ',\n... +${post.artist.length - 1}',
+      textAlign: TextAlign.center,
       style: new TextStyle(fontSize: 12.0),
+      maxLines: 3,
       softWrap: false,
       overflow: TextOverflow.ellipsis,
     );
