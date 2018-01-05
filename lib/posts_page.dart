@@ -48,6 +48,15 @@ class PostsPage extends StatefulWidget {
 class _PostsPageState extends State<PostsPage> {
   final Logger _log = new Logger('PostsPage');
 
+  Future<Tagset> _tags = db.tags.value;
+
+  bool _isEditingTags = false;
+  PersistentBottomSheetController<Tagset> _bottomSheetController;
+  Future<TextEditingController> _textEditingControllerFuture = () async {
+    Tagset tags = await db.tags.value;
+    return new TextEditingController()..text = tags.toString() + ' ';
+  }();
+
   LinearPagination<Post> _posts;
 
   bool _offline = false; // If true, the last request has failed.
@@ -79,7 +88,7 @@ class _PostsPageState extends State<PostsPage> {
   }
 
   Future<Null> _search() async {
-    _posts = client.posts(await db.tags.value);
+    _posts = client.posts(await _tags);
     _loadNextPage();
   }
 
@@ -101,13 +110,6 @@ class _PostsPageState extends State<PostsPage> {
     return more;
   }
 
-  bool _isEditingTags = false;
-  PersistentBottomSheetController<Tagset> _bottomSheetController;
-  Future<TextEditingController> _textEditingControllerFuture =
-      db.tags.value.then((tags) {
-    return new TextEditingController()..text = tags.toString() + ' ';
-  });
-
   Function _onPressedFloatingActionButton(BuildContext ctx) {
     return () async {
       void onCloseBottomSheet() {
@@ -121,8 +123,9 @@ class _PostsPageState extends State<PostsPage> {
 
       if (_isEditingTags) {
         Tagset newTags = new Tagset.parse(tagController.text);
-        _log.info('newTags="$newTags"');
-        db.tags.value = new Future.value(newTags);
+        _log.info('new tags: $newTags');
+        _tags = new Future.value(newTags);
+        db.tags.value = _tags;
 
         _bottomSheetController?.close();
         _search();
