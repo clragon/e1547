@@ -22,15 +22,23 @@ import 'package:flutter/services.dart' show Clipboard, ClipboardData;
 import 'package:flutter/widgets.dart';
 
 import 'package:logging/logging.dart' show Logger;
+import 'package:meta/meta.dart' show required;
 
 import 'client.dart' show client;
 import 'consts.dart' as consts;
+import 'input.dart' show LowercaseTextInputFormatter;
 import 'pagination.dart' show LinearPagination;
 import 'persistence.dart' show db;
 import 'post.dart';
 import 'range_dialog.dart' show RangeDialog;
 import 'tag.dart' show Tagset;
-import 'tag_entry.dart' show TagEntryPage;
+
+void _setFocusToEnd(TextEditingController controller) {
+  controller.selection = new TextSelection(
+    baseOffset: controller.text.length,
+    extentOffset: controller.text.length,
+  );
+}
 
 class PostsPage extends StatefulWidget {
   @override
@@ -39,6 +47,15 @@ class PostsPage extends StatefulWidget {
 
 class _PostsPageState extends State<PostsPage> {
   final Logger _log = new Logger('PostsPage');
+
+  Future<Tagset> _tags = db.tags.value;
+
+  bool _isEditingTags = false;
+  PersistentBottomSheetController<Tagset> _bottomSheetController;
+  Future<TextEditingController> _textEditingControllerFuture = () async {
+    Tagset tags = await db.tags.value;
+    return new TextEditingController()..text = tags.toString() + ' ';
+  }();
 
   LinearPagination<Post> _posts;
 
@@ -71,7 +88,7 @@ class _PostsPageState extends State<PostsPage> {
   }
 
   Future<Null> _search() async {
-    _posts = client.posts(await db.tags.value);
+    _posts = client.posts(await _tags);
     _loadNextPage();
   }
 
@@ -93,136 +110,49 @@ class _PostsPageState extends State<PostsPage> {
     return more;
   }
 
-  Function _popupMenuButtonItemBuilder(List<String> text) {
-    return (ctx) {
-      List items = new List(text.length);
-      for (int i = 0; i < items.length; i++) {
-        String t = text[i];
-        items[i] = new PopupMenuItem(child: new Text(t), value: t);
-      }
-      return items;
-    };
-  }
-
-  Function _onSelectedFilterBy(BuildContext ctx) {
-    return (selectedFilter) async {
-      String filterType = const {
-        'Score': 'score',
-        'Favorites': 'favcount',
-        'Views': 'views',
-      }[selectedFilter];
-      assert(filterType != null);
-
-      Tagset tags = await db.tags.value;
-
-      String valueString = tags[filterType];
-      int value = valueString == null ? 0 : int.parse(valueString.substring(2));
-
-      int min = await showDialog<int>(
-        context: ctx,
-        child: new RangeDialog(
-          title: filterType,
-          value: value,
-          max: 500,
-        ),
-      );
-
-      _log.info('$selectedFilter min value: $min');
-      if (min == null) {
-        return;
+  Function _onPressedFloatingActionButton(BuildContext ctx) {
+    return () async {
+      void onCloseBottomSheet() {
+        setState(() {
+          _isEditingTags = false;
+        });
       }
 
-      if (min == 0) {
-        tags.remove(filterType);
+      TextEditingController tagController = await _textEditingControllerFuture;
+      _setFocusToEnd(tagController);
+
+      if (_isEditingTags) {
+        Tagset newTags = new Tagset.parse(tagController.text);
+        _log.info('new tags: $newTags');
+        _tags = new Future.value(newTags);
+        db.tags.value = _tags;
+
+        _bottomSheetController?.close();
+        _search();
       } else {
-        tags[filterType] = '>=$min';
+        _bottomSheetController = Scaffold.of(ctx).showBottomSheet(
+              (ctx) => new TagEntry(controller: tagController),
+            );
+
+        setState(() {
+          _isEditingTags = true;
+        });
+
+        _bottomSheetController.closed.then((a) => onCloseBottomSheet());
       }
-
-      db.tags.value = new Future.value(tags);
-
-      _search();
     };
-  }
-
-  Future<Null> _onSelectedSortBy(String selectedSort) async {
-    String orderType = const {
-      'New': 'new',
-      'Score': 'score',
-      'Favorites': 'favcount',
-      'Views': 'views',
-    }[selectedSort];
-    assert(orderType != null);
-
-    Tagset tags = await db.tags.value;
-
-    if (orderType == 'new') {
-      tags.remove('order');
-    } else {
-      tags['order'] = orderType;
-    }
-
-    db.tags.value = new Future.value(tags);
-
-    _search();
-  }
-
-  void _onSelectedMoreActions(String selectedAction) {
-    if (selectedAction == 'Refresh') {
-      _search();
-    } else if (selectedAction == 'Copy link') {
-      () async {
-        Clipboard.setData(new ClipboardData(
-          text: (await db.tags.value).url(await db.host.value).toString(),
-        ));
-      }();
-    } else {
-      _log.warning('Unknown action type: "$selectedAction"');
-    }
   }
 
   @override
   Widget build(BuildContext ctx) {
     Widget appBarWidget() {
-      Widget filterByWidget() {
-        return new PopupMenuButton<String>(
-          icon: const Icon(Icons.filter_list),
-          tooltip: 'Filter by',
-          itemBuilder: _popupMenuButtonItemBuilder(
-            ['Score', 'Favorites', 'Views'],
-          ),
-          onSelected: _onSelectedFilterBy(ctx),
-        );
-      }
-
-      Widget sortByWidget() {
-        return new PopupMenuButton<String>(
-          icon: const Icon(Icons.sort),
-          tooltip: 'Sort by',
-          itemBuilder: _popupMenuButtonItemBuilder(
-            ['New', 'Score', 'Favorites', 'Views'],
-          ),
-          onSelected: _onSelectedSortBy,
-        );
-      }
-
-      Widget moreActionsWidget() {
-        return new PopupMenuButton<String>(
-          tooltip: 'More actions',
-          itemBuilder: _popupMenuButtonItemBuilder(
-            ['Refresh', 'Copy link'],
-          ),
-          onSelected: _onSelectedMoreActions,
-        );
-      }
-
-      return new AppBar(
-        title: new Text(consts.appName),
-        actions: [
-          filterByWidget(),
-          sortByWidget(),
-          moreActionsWidget(),
-        ],
-      );
+      return new AppBar(title: new Text(consts.appName), actions: [
+        new IconButton(
+          icon: const Icon(Icons.refresh),
+          tooltip: 'Refresh',
+          onPressed: _search,
+        ),
+      ]);
     }
 
     Widget bodyWidget() {
@@ -278,20 +208,16 @@ class _PostsPageState extends State<PostsPage> {
     }
 
     Widget floatingActionButtonWidget() {
-      return new FloatingActionButton(
-          child: const Icon(Icons.search),
-          onPressed: () async {
-            Tagset tags = await db.tags.value;
-            String tagString = await Navigator.of(ctx).push(
-                new MaterialPageRoute<String>(
-                    builder: (ctx) => new TagEntryPage(tags.toString())));
+      Widget floatingActionButtonWidgetBuilder(BuildContext ctx) {
+        return new FloatingActionButton(
+          child: _isEditingTags
+              ? const Icon(Icons.check)
+              : const Icon(Icons.search),
+          onPressed: _onPressedFloatingActionButton(ctx),
+        );
+      }
 
-            _log.info('new tagstring: "$tagString"');
-            if (tagString != null) {
-              db.tags.value = new Future.value(new Tagset.parse(tagString));
-              _search();
-            }
-          });
+      return new Builder(builder: floatingActionButtonWidgetBuilder);
     }
 
     return new Scaffold(
@@ -299,6 +225,160 @@ class _PostsPageState extends State<PostsPage> {
       body: bodyWidget(),
       drawer: drawerWidget(),
       floatingActionButton: floatingActionButtonWidget(),
+    );
+  }
+}
+
+typedef Future<Tagset> TagEditor(Tagset tags);
+
+class TagEntry extends StatelessWidget {
+  static final Logger _log = new Logger('TagEntry');
+
+  TagEntry({
+    Key key,
+    @required this.controller,
+  })
+      : super(key: key);
+
+  final TextEditingController controller;
+
+  void _setTags(Tagset tags) {
+    controller.text = tags.toString() + ' ';
+    _setFocusToEnd(controller);
+  }
+
+  void _withTags(TagEditor editor) {
+    Tagset tags = new Tagset.parse(controller.text);
+    editor(tags).then(_setTags);
+  }
+
+  Function _onSelectedFilterBy(BuildContext ctx) {
+    return (selectedFilter) {
+      String filterType = const {
+        'Score': 'score',
+        'Favorites': 'favcount',
+        'Views': 'views',
+      }[selectedFilter];
+      assert(filterType != null);
+
+      _withTags((tags) async {
+        String valueString = tags[filterType];
+        int value =
+            valueString == null ? 0 : int.parse(valueString.substring(2));
+
+        int min = await showDialog<int>(
+          context: ctx,
+          child: new RangeDialog(
+            title: filterType,
+            value: value,
+            max: 500,
+          ),
+        );
+
+        _log.info('$selectedFilter min value: $min');
+        if (min == null) {
+          return null;
+        }
+
+        if (min == 0) {
+          tags.remove(filterType);
+        } else {
+          tags[filterType] = '>=$min';
+        }
+        return tags;
+      });
+    };
+  }
+
+  void _onSelectedSortBy(String selectedSort) {
+    String orderType = const {
+      'New': 'new',
+      'Score': 'score',
+      'Favorites': 'favcount',
+      'Views': 'views',
+    }[selectedSort];
+    assert(orderType != null);
+
+    _withTags((tags) {
+      if (orderType == 'new') {
+        tags.remove('order');
+      } else {
+        tags['order'] = orderType;
+      }
+
+      return new Future.value(tags);
+    });
+  }
+
+  Future<Null> _onPressedCopyLink() async {
+    Clipboard.setData(new ClipboardData(
+      text: (await db.tags.value).url(await db.host.value).toString(),
+    ));
+  }
+
+  Function _popupMenuButtonItemBuilder(List<String> text) {
+    return (ctx) {
+      List items = new List(text.length);
+      for (int i = 0; i < items.length; i++) {
+        String t = text[i];
+        items[i] = new PopupMenuItem(child: new Text(t), value: t);
+      }
+      return items;
+    };
+  }
+
+  @override
+  Widget build(BuildContext ctx) {
+    Widget filterByWidget() {
+      return new PopupMenuButton<String>(
+        icon: const Icon(Icons.filter_list),
+        tooltip: 'Filter by',
+        itemBuilder: _popupMenuButtonItemBuilder(
+          ['Score', 'Favorites', 'Views'],
+        ),
+        onSelected: _onSelectedFilterBy(ctx),
+      );
+    }
+
+    Widget sortByWidget() {
+      return new PopupMenuButton<String>(
+        icon: const Icon(Icons.sort),
+        tooltip: 'Sort by',
+        itemBuilder: _popupMenuButtonItemBuilder(
+          ['New', 'Score', 'Favorites', 'Views'],
+        ),
+        onSelected: _onSelectedSortBy,
+      );
+    }
+
+    Widget copyLinkWidget() {
+      return new IconButton(
+        icon: const Icon(Icons.content_copy),
+        tooltip: 'Copy link',
+        onPressed: _onPressedCopyLink,
+      );
+    }
+
+    return new Container(
+      padding: const EdgeInsets.only(left: 10.0, right: 10.0, top: 20.0),
+      child: new Column(mainAxisSize: MainAxisSize.min, children: [
+        new TextField(
+          controller: controller,
+          autofocus: true,
+          maxLines: 1,
+          inputFormatters: [new LowercaseTextInputFormatter()],
+        ),
+        new Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10.0),
+          child: new Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                copyLinkWidget(),
+                filterByWidget(),
+                sortByWidget(),
+              ]),
+        ),
+      ]),
     );
   }
 }
