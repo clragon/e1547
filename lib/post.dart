@@ -472,7 +472,7 @@ class _MoreDialog extends StatelessWidget {
                 children: <Widget>[
                   new TextField(
                       maxLines: 15,
-                      decoration: const InputDecoration(hideDivider: true),
+                      decoration: const InputDecoration(border: null),
                       style: new TextStyle(fontFamily: 'Courier'),
                       controller:
                           new TextEditingController(text: info.toString()))

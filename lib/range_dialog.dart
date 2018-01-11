@@ -46,7 +46,7 @@ class RangeDialogState extends State<RangeDialog> {
         keyboardType: TextInputType.number,
         style: new TextStyle(fontSize: 48.0),
         textAlign: TextAlign.center,
-        decoration: const InputDecoration(hideDivider: true),
+        decoration: const InputDecoration(border: null),
         controller: _controller,
         onSubmitted: (v) => Navigator.of(ctx).pop(int.parse(v)),
       );
