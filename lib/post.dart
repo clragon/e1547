@@ -430,6 +430,7 @@ class PostPreview extends StatelessWidget {
     }
 
     return new GestureDetector(
+      onTap: onPressed,
       child: new Card(
         child: new Column(
           mainAxisSize: MainAxisSize.min,
