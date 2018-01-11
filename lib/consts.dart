@@ -15,5 +15,5 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 const String appName = 'e1547';
-const String appVersion = '0.1.8-alpha';
+const String appVersion = '0.1.9-alpha';
 const String defaultEndpoint = 'e926.net';
