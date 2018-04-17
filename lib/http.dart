@@ -56,10 +56,10 @@ class HttpCustom {
   }
 }
 
-Map<String, String> stringify(Map<String, Object> map) {
+Map<String, String> stringify(Map<Object, Object> map) {
   Map<String, String> stringMap = {};
   map.forEach((k, v) {
-    stringMap[k] = v.toString();
+    stringMap[k.toString()] = v.toString();
   });
   return stringMap;
 }

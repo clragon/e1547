@@ -48,8 +48,8 @@ class Tagset extends Object with IterableMixin<Tag> {
   Tagset(Set<Tag> tags)
       : _tags = new Map.fromIterable(
           tags,
-          key: (t) => t.name,
-          value: (t) => t,
+          key: (t) => (t as Tag).name,
+          value: (t) => t as Tag,
         );
 
   Tagset.parse(String tagString) : _tags = {} {

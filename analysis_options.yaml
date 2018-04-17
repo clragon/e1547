@@ -1,7 +1,7 @@
 analyzer:
-  strong-mode: true
+  strong-mode:
     implicit-casts: false
-    implicit-dynamic: false
+    implicit-dynamic: true
 
 linter:
   rules:
@@ -12,7 +12,7 @@ linter:
       #    - always_specify_types
     - annotate_overrides
     - avoid_annotating_with_dynamic
-    - avoid_as
+      #    - avoid_as
     - avoid_catches_without_on_clauses
     - avoid_catching_errors
     - avoid_classes_with_only_static_members

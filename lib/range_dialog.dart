@@ -44,7 +44,7 @@ class RangeDialogState extends State<RangeDialog> {
 
       Widget number = new TextField(
         keyboardType: TextInputType.number,
-        style: new TextStyle(fontSize: 48.0),
+        style: const TextStyle(fontSize: 48.0),
         textAlign: TextAlign.center,
         decoration: const InputDecoration(border: null),
         controller: _controller,
@@ -71,16 +71,15 @@ class RangeDialogState extends State<RangeDialog> {
     Widget buttonsWidget() {
       List<Widget> buttons = [
         new FlatButton(
-          child: new Text('cancel'),
+          child: const Text('cancel'),
           onPressed: () => Navigator.of(ctx).pop(),
         ),
         new RaisedButton(
-          child: new Text('save'),
+          child: const Text('save'),
           onPressed: () {
             // We could pop up an error, but using the last known good value
             // works also.
-            // ignore: avoid_returning_null
-            int textValue = int.parse(_controller.text, onError: (s) => null);
+            int textValue = int.parse(_controller.text);
             Navigator.of(ctx).pop(textValue ?? _value);
           },
         ),

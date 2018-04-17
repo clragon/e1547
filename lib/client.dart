@@ -15,8 +15,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 import 'dart:async' show Future;
-import 'dart:convert' show JSON;
-
+import 'dart:convert' show json;
 import 'package:logging/logging.dart' show Logger;
 
 import 'comment.dart' show Comment;
@@ -94,7 +93,7 @@ class Client {
       }).then((response) => response.body);
 
       List<Post> posts = [];
-      for (var rp in JSON.decode(body)) {
+      for (Map rp in json.decode(body)) {
         Post p = new Post.fromRaw(rp);
         if (await db.hideSwf.value && p.fileExt == 'swf') {
           _log.fine('Hiding swf post #${p.id}');
@@ -115,7 +114,7 @@ class Client {
       }).then((response) => response.body);
 
       List<Comment> comments = [];
-      for (var rc in JSON.decode(body)) {
+      for (Map rc in json.decode(body)) {
         comments.add(new Comment.fromRaw(rc));
       }
 

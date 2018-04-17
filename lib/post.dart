@@ -32,38 +32,39 @@ import 'persistence.dart' show db;
 
 class Post {
   Post.fromRaw(this.raw) {
-    id = raw['id'];
-    author = raw['author'];
-    score = raw['score'];
-    favCount = raw['fav_count'];
-    fileUrl = raw['file_url'];
-    fileExt = raw['file_ext'];
-    previewUrl = raw['preview_url'];
-    previewWidth = raw['preview_width'];
-    previewHeight = raw['preview_height'];
-    sampleUrl = raw['sample_url'];
-    sampleWidth = raw['sample_width'];
-    sampleHeight = raw['sample_height'];
+    id = raw['id'] as int;
+    author = raw['author'] as String;
+    score = raw['score'] as int;
+    favCount = raw['fav_count'] as int;
+    fileUrl = raw['file_url'] as String;
+    fileExt = raw['file_ext'] as String;
+    previewUrl = raw['preview_url'] as String;
+    previewWidth = raw['preview_width'] as int;
+    previewHeight = raw['preview_height'] as int;
+    sampleUrl = raw['sample_url'] as String;
+    sampleWidth = raw['sample_width'] as int;
+    sampleHeight = raw['sample_height'] as int;
 
-    rating = raw['rating'].toUpperCase();
+    rating = (raw['rating'] as String).toUpperCase();
 
-    hasComments = raw['has_comments'];
+    hasComments = raw['has_comments'] as bool;
 
-    artist = raw['artist']
-      ..removeWhere((a) {
+    artist = (raw['artist'] as List)
+      .map((a) => a.toString())
+      .where((a) {
         if (a == 'conditional_dnp') {
           isConditionalDnp = true;
-          return true;
+          return false;
         } else if (a == 'sound_warning') {
           hasSoundWarning = true;
-          return true;
+          return false;
         } else if (a == 'epilepsy_warning') {
           hasEpilepsyWarning = true;
-          return true;
-        } else {
           return false;
+        } else {
+          return true;
         }
-      });
+      }).toList();
   }
 
   Map raw;
@@ -139,7 +140,7 @@ class _PostWidgetScaffoldState extends State<PostWidgetScaffold> {
         child: new Column(mainAxisSize: MainAxisSize.min, children: [
           _buildPostContents(ctx),
           _buildPostMetadata(ctx),
-          new Divider(height: 8.0),
+          const Divider(height: 8.0),
           _buildButtonBar(ctx),
         ]));
   }
@@ -219,23 +220,28 @@ class _PostWidgetScaffoldState extends State<PostWidgetScaffold> {
             onPressed: () async {
               String cmd = await showDialog<String>(
                   context: ctx,
-                  child: new SimpleDialog(
-                    contentPadding: const EdgeInsets.all(10.0),
-                    children: [
-                      new SimpleDialogOption(
-                        child: new Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 10.0),
-                            child: new Text('Add to favorites')),
-                        onPressed: () => Navigator.of(ctx).pop('add'),
-                      ),
-                      new SimpleDialogOption(
-                        child: new Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 10.0),
-                            child: new Text('Remove from favorites')),
-                        onPressed: () => Navigator.of(ctx).pop('remove'),
-                      ),
-                    ],
-                  ));
+                  builder: (ctx) {
+                    return new SimpleDialog(
+                      contentPadding: const EdgeInsets.all(10.0),
+                      children: [
+                        new SimpleDialogOption(
+                          child: const Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 10.0),
+                              child: const Text('Add to favorites')),
+                          onPressed: () => Navigator.of(ctx).pop('add'),
+                        ),
+                        new SimpleDialogOption(
+                          child: const Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 10.0),
+                              child: const Text('Remove from favorites')),
+                          onPressed: () => Navigator.of(ctx).pop('remove'),
+                        ),
+                      ],
+                    );
+                  }
+              );
 
               if (cmd == null) {
                 return;
@@ -279,8 +285,11 @@ class _PostWidgetScaffoldState extends State<PostWidgetScaffold> {
         new IconButton(
             icon: const Icon(Icons.more_horiz),
             tooltip: 'More actions',
-            onPressed: () =>
-                showDialog(context: ctx, child: new _MoreDialog(widget.post))),
+            onPressed: () {
+              showDialog(context: ctx, builder: (ctx) {
+                return new _MoreDialog(widget.post);
+              });
+            }),
       ],
     ));
   }
@@ -335,7 +344,7 @@ class PostPreview extends StatelessWidget {
                   data: const IconThemeData(size: 12.0),
                   child: new Icon(icon),
                 )),
-            new Text(text, style: new TextStyle(fontSize: 12.0)),
+            new Text(text, style: const TextStyle(fontSize: 12.0)),
           ]);
         }
 
@@ -410,7 +419,7 @@ class PostPreview extends StatelessWidget {
               : post.artist.take(2).join(',\n') +
                   ',\n... +${post.artist.length - 1}',
           textAlign: TextAlign.center,
-          style: new TextStyle(fontSize: 12.0),
+          style: const TextStyle(fontSize: 12.0),
           maxLines: 3,
           softWrap: false,
           overflow: TextOverflow.ellipsis,
@@ -459,25 +468,25 @@ class _MoreDialog extends StatelessWidget {
   Widget _buildPostInfo(BuildContext ctx) {
     return new ListTile(
       leading: const Icon(Icons.info_outline),
-      title: new Text('Info'),
+      title: const Text('Info'),
       onTap: () {
         StringBuffer info = new StringBuffer();
         post.raw.forEach((k, v) {
           info.write('$k: $v\n\n');
         });
 
-        showDialog(
-            context: ctx,
-            child: new SimpleDialog(
-                title: new Text('post #${post.id} info'),
-                children: <Widget>[
-                  new TextField(
-                      maxLines: 15,
-                      decoration: const InputDecoration(border: null),
-                      style: new TextStyle(fontFamily: 'Courier'),
-                      controller:
-                          new TextEditingController(text: info.toString()))
-                ]));
+        showDialog(context: ctx, builder: (ctx) {
+          return new SimpleDialog(
+              title: new Text('post #${post.id} info'),
+              children: <Widget>[
+                new TextField(
+                    maxLines: 15,
+                    decoration: const InputDecoration(border: null),
+                    style: const TextStyle(fontFamily: 'Courier'),
+                    controller:
+                    new TextEditingController(text: info.toString()))
+              ]);
+        });
       },
     );
   }
@@ -485,34 +494,31 @@ class _MoreDialog extends StatelessWidget {
   Widget _buildCopy(BuildContext ctx) {
     return new ListTile(
       leading: const Icon(Icons.content_copy),
-      title: new Text('Copy...'),
+      title: const Text('Copy...'),
       trailing: const Icon(Icons.arrow_right),
       onTap: () => _showCopyDialog(ctx),
     );
   }
 
   void _showCopyDialog(BuildContext ctx) {
-    Widget dialog;
-
     Widget title = new ListTile(
         leading: const Icon(Icons.content_copy),
         title: new Text('Copy from post #${post.id}'));
 
     Widget copyLink = new ListTile(
-        title: new Text('Copy link'),
+        title: const Text('Copy link'),
         onTap: () async {
           String link = post.url(await db.host.value).toString();
           _copyAndPopPop(ctx, link);
         });
 
     Widget copyDirectLink = new ListTile(
-        title: new Text('Copy direct link'),
+        title: const Text('Copy direct link'),
         onTap: () => _copyAndPopPop(ctx, post.fileUrl));
 
-    dialog =
-        new SimpleDialog(title: title, children: [copyLink, copyDirectLink]);
-
-    showDialog(context: ctx, child: dialog);
+    showDialog(context: ctx, builder: (ctx) {
+      return new SimpleDialog(title: title, children: [copyLink, copyDirectLink]);
+    });
   }
 
   Future<Null> _copyAndPopPop(BuildContext ctx, String text) async {
@@ -538,15 +544,15 @@ class _PostGridState extends State<PostGrid> {
 
   @override
   Widget build(BuildContext ctx) {
-    return new GridView.custom(
-      gridDelegate: new SliverGridDelegateWithMaxCrossAxisExtent(
+    return new GridView.builder(
+      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
         maxCrossAxisExtent: 150.0,
         childAspectRatio: 3 / 5,
       ),
       // TODO: this triggers an analyzer warning, but is correct.
       // File a bug report?
       // ignore: argument_type_not_assignable
-      childrenDelegate: new SliverChildBuilderDelegate(_itemBuilder),
+      itemBuilder: _itemBuilder,
     );
   }
 
@@ -557,7 +563,7 @@ class _PostGridState extends State<PostGrid> {
       return new Center(
           child: _more
               ? new RaisedButton(
-                  child: new Text('load more'),
+                  child: const Text('load more'),
                   onPressed: () async {
                     // TODO: Keeping track of the "more" boolean here leads to an additional tap
                     // needed to show the "No more posts" text. Ideally, it would function like
@@ -569,9 +575,9 @@ class _PostGridState extends State<PostGrid> {
                     });
                   },
                 )
-              : new Text('No more posts',
+              : const Text('No more posts',
                   textAlign: TextAlign.center,
-                  style: new TextStyle(
+                  style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 18.0,
                   )));

@@ -24,10 +24,10 @@ import 'post.dart' show Post;
 
 class Comment {
   Comment.fromRaw(this.raw) {
-    id = raw['id'];
-    creator = raw['creator'];
-    body = raw['body'];
-    score = raw['score'];
+    id = raw['id'] as int;
+    creator = raw['creator'] as String;
+    body = raw['body'] as String;
+    score = raw['score'] as int;
   }
 
   Map raw;
@@ -90,7 +90,7 @@ class _CommentsWidgetState extends State<CommentsWidget> {
 
     if (i < lastComment) {
       if (i.isOdd) {
-        return new Divider();
+        return const Divider();
       }
       Comment c = comments[i ~/ 2];
       return new Text('${c.creator}: ${c.body}');
@@ -101,12 +101,12 @@ class _CommentsWidgetState extends State<CommentsWidget> {
         padding: const EdgeInsets.symmetric(vertical: 30.0),
         child: _more
             ? new RaisedButton(
-                child: new Text('load more'),
+                child: const Text('load more'),
                 onPressed: _loadNextPage,
               )
-            : new Text('No more comments',
+            : const Text('No more comments',
                 textAlign: TextAlign.center,
-                style: new TextStyle(
+                style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 18.0,
                 )),

@@ -52,10 +52,10 @@ class _PostsPageState extends State<PostsPage> {
 
   bool _isEditingTags = false;
   PersistentBottomSheetController<Tagset> _bottomSheetController;
-  Future<TextEditingController> _textEditingControllerFuture = () async {
-    Tagset tags = await db.tags.value;
+
+  final Future<TextEditingController> _textEditingControllerFuture = db.tags.value.then((tags) {
     return new TextEditingController()..text = tags.toString() + ' ';
-  }();
+  });
 
   LinearPagination<Post> _posts;
 
@@ -110,7 +110,7 @@ class _PostsPageState extends State<PostsPage> {
     return more;
   }
 
-  Function _onPressedFloatingActionButton(BuildContext ctx) {
+  Function() _onPressedFloatingActionButton(BuildContext ctx) {
     return () async {
       void onCloseBottomSheet() {
         setState(() {
@@ -145,8 +145,8 @@ class _PostsPageState extends State<PostsPage> {
 
   @override
   Widget build(BuildContext ctx) {
-    Widget appBarWidget() {
-      return new AppBar(title: new Text(consts.appName), actions: [
+    AppBar appBarWidget() {
+      return new AppBar(title: const Text(consts.appName), actions: [
         new IconButton(
           icon: const Icon(Icons.refresh),
           tooltip: 'Refresh',
@@ -163,13 +163,13 @@ class _PostsPageState extends State<PostsPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Icon(Icons.cloud_off),
-                  new Divider(),
+                  const Divider(),
                   new Text(_errorMessage, textAlign: TextAlign.center),
                 ]));
       }
 
       if (_posts == null) {
-        return new Center(child: const Icon(Icons.refresh));
+        return const Center(child: const Icon(Icons.refresh));
       }
 
       return new PostGrid(_posts.elements, onLoadMore: _loadNextPage);
@@ -181,14 +181,14 @@ class _PostsPageState extends State<PostsPage> {
             child: new Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            new CircleAvatar(
-              backgroundImage: new AssetImage('icons/paw.png'),
+            const CircleAvatar(
+              backgroundImage: const AssetImage('icons/paw.png'),
               radius: 48.0,
             ),
             _username != null
                 ? new Text(_username)
                 : new RaisedButton(
-                    child: new Text('LOGIN'),
+                    child: const Text('LOGIN'),
                     onPressed: () => Navigator.popAndPushNamed(ctx, '/login'),
                   ),
           ],
@@ -200,7 +200,7 @@ class _PostsPageState extends State<PostsPage> {
         headerWidget(),
         new ListTile(
           leading: const Icon(Icons.settings),
-          title: new Text('Settings'),
+          title: const Text('Settings'),
           onTap: () => Navigator.popAndPushNamed(ctx, '/settings'),
         ),
         const AboutListTile(icon: const Icon(Icons.help)),
@@ -234,9 +234,9 @@ typedef Future<Tagset> TagEditor(Tagset tags);
 class TagEntry extends StatelessWidget {
   static final Logger _log = new Logger('TagEntry');
 
-  TagEntry({
-    Key key,
+  const TagEntry({
     @required this.controller,
+    Key key,
   })
       : super(key: key);
 
@@ -252,7 +252,7 @@ class TagEntry extends StatelessWidget {
     editor(tags).then(_setTags);
   }
 
-  Function _onSelectedFilterBy(BuildContext ctx) {
+  Function(String) _onSelectedFilterBy(BuildContext ctx) {
     return (selectedFilter) {
       String filterType = const {
         'Score': 'score',
@@ -266,14 +266,13 @@ class TagEntry extends StatelessWidget {
         int value =
             valueString == null ? 0 : int.parse(valueString.substring(2));
 
-        int min = await showDialog<int>(
-          context: ctx,
-          child: new RangeDialog(
+        int min = await showDialog<int>(context: ctx, builder: (ctx) {
+          return new RangeDialog(
             title: filterType,
             value: value,
             max: 500,
-          ),
-        );
+          );
+        });
 
         _log.info('$selectedFilter min value: $min');
         if (min == null) {
@@ -316,9 +315,9 @@ class TagEntry extends StatelessWidget {
     ));
   }
 
-  Function _popupMenuButtonItemBuilder(List<String> text) {
+  List<PopupMenuEntry<String>> Function(BuildContext) _popupMenuButtonItemBuilder(List<String> text) {
     return (ctx) {
-      List items = new List(text.length);
+      List<PopupMenuEntry<String>> items = new List(text.length);
       for (int i = 0; i < items.length; i++) {
         String t = text[i];
         items[i] = new PopupMenuItem(child: new Text(t), value: t);

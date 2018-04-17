@@ -31,12 +31,11 @@ class SettingsPageState extends State<SettingsPage> {
   bool _hideSwf;
   String _username;
 
-  Function _onTapSiteBackend(BuildContext ctx) {
+  Function() _onTapSiteBackend(BuildContext ctx) {
     return () async {
-      String newHost = await showDialog<String>(
-        context: ctx,
-        child: new _SiteBackendDialog(_host),
-      );
+      String newHost = await showDialog<String>(context: ctx, builder: (ctx) {
+        return new _SiteBackendDialog(_host);
+      });
 
       if (newHost != null) {
         db.host.value = new Future.value(newHost);
@@ -62,7 +61,7 @@ class SettingsPageState extends State<SettingsPage> {
     });
   }
 
-  Function _onTapSignOut(BuildContext ctx) {
+  Function() _onTapSignOut(BuildContext ctx) {
     return () async {
       String username = await db.username.value;
       db.username.value = new Future.value(null);
@@ -92,17 +91,17 @@ class SettingsPageState extends State<SettingsPage> {
         child: new ListView(
           children: [
             new ListTile(
-              title: new Text('Site backend'),
+              title: const Text('Site backend'),
               subtitle: new Text(_host ?? ' '),
               onTap: _onTapSiteBackend(ctx),
             ),
             new CheckboxListTile(
-              title: new Text('Hide Flash posts'),
+              title: const Text('Hide Flash posts'),
               value: _hideSwf ?? false,
               onChanged: _onChangedHideSwf,
             ),
             new ListTile(
-              title: new Text('Sign out'),
+              title: const Text('Sign out'),
               subtitle: new Text(_username ?? ' '),
               onTap: _onTapSignOut(ctx),
             ),
@@ -112,7 +111,7 @@ class SettingsPageState extends State<SettingsPage> {
     }
 
     return new Scaffold(
-      appBar: new AppBar(title: new Text('Settings')),
+      appBar: new AppBar(title: const Text('Settings')),
       body: new Builder(builder: bodyWidgetBuilder),
     );
   }
@@ -126,17 +125,17 @@ class _SiteBackendDialog extends StatelessWidget {
   @override
   Widget build(BuildContext ctx) {
     return new SimpleDialog(
-      title: new Text('Site backend'),
+      title: const Text('Site backend'),
       children: [
         new RadioListTile<String>(
           value: 'e926.net',
-          title: new Text('e926.net'),
+          title: const Text('e926.net'),
           groupValue: host,
           onChanged: Navigator.of(ctx).pop,
         ),
         new RadioListTile<String>(
           value: 'e621.net',
-          title: new Text('e621.net'),
+          title: const Text('e621.net'),
           groupValue: host,
           onChanged: Navigator.of(ctx).pop,
         ),

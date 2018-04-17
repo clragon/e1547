@@ -15,7 +15,6 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 import 'dart:async' show Future, Timer;
-import 'dart:ui' show VoidCallback;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show Clipboard;
@@ -35,19 +34,19 @@ class LoginPage extends StatelessWidget {
           1, _buttonLink('Login via web browser', '/user/login')),
       new _InstructionStep(
           2, _buttonLink('Enable API Access', '/user/api_key')),
-      new _InstructionStep(3, new Text('Copy and paste your API key')),
+      const _InstructionStep(3, const Text('Copy and paste your API key')),
       new _LoginFormFields(),
     ];
 
     return new Scaffold(
-      appBar: new AppBar(title: new Text('Login')),
+      appBar: new AppBar(title: const Text('Login')),
       body: new SingleChildScrollView(
           padding: const EdgeInsets.all(10.0),
           child: new Form(child: new Column(children: columnChildren))),
     );
   }
 
-  Function _launch(String path) {
+  Function() _launch(String path) {
     return () {
       db.host.value.then((h) {
         url.launch('https://$h$path');
@@ -60,7 +59,7 @@ class LoginPage extends StatelessWidget {
       onPressed: _launch(path),
       child: new Text(
         text,
-        style: new TextStyle(decoration: TextDecoration.underline),
+        style: const TextStyle(decoration: TextDecoration.underline),
       ),
     );
   }
@@ -137,35 +136,37 @@ class _LoginFormFieldsState extends State<_LoginFormFields> {
     return null;
   }
 
-  VoidCallback _saveAndTest(ctx) => () async {
-        FormState form = Form.of(ctx)
-          ..save(); // TODO: fix this so we don't need to save->validate->validate
-        if (form.validate()) {
-          _log.info('trying username: $_username ; apikey: $_apiKey');
-          bool ok = await showDialog(
-            context: ctx,
-            child: new _LoginProgressDialog(_username, _apiKey),
-          );
+  Function() _saveAndTest(BuildContext ctx) {
+    return () async {
+      FormState form = Form.of(ctx)
+        ..save(); // TODO: fix this so we don't need to save->validate->validate
+      if (form.validate()) {
+        _log.info('trying username: $_username ; apikey: $_apiKey');
+        bool ok = await showDialog(
+          context: ctx,
+          builder: (ctx) => new _LoginProgressDialog(_username, _apiKey),
+        );
 
-          if (ok) {
-            _log.info('login ok');
+        if (ok) {
+          _log.info('login ok');
 
-            db.username.value = new Future.value(_username);
-            db.apiKey.value = new Future.value(_apiKey);
+          db.username.value = new Future.value(_username);
+          db.apiKey.value = new Future.value(_apiKey);
 
-            Navigator.of(ctx).pop();
-          } else {
-            _log.info('login failed');
+          Navigator.of(ctx).pop();
+        } else {
+          _log.info('login failed');
 
-            _authDidJustFail = true;
-            form.validate();
-            Scaffold.of(ctx).showSnackBar(new SnackBar(
-                duration: const Duration(seconds: 10),
-                content: new Text('Failed to login. '
-                    'Check your network connection and login details')));
-          }
+          _authDidJustFail = true;
+          form.validate();
+          Scaffold.of(ctx).showSnackBar(const SnackBar(
+              duration: const Duration(seconds: 10),
+              content: const Text('Failed to login. '
+                  'Check your network connection and login details')));
         }
-      };
+      }
+    };
+  }
 
   @override
   Widget build(BuildContext ctx) {
@@ -198,7 +199,7 @@ class _LoginFormFieldsState extends State<_LoginFormFields> {
       Widget specialActionWidget() {
         if (_didJustPaste) {
           return new IconButton(
-            icon: new Icon(Icons.undo),
+            icon: const Icon(Icons.undo),
             tooltip: 'Undo previous paste',
             onPressed: () {
               setState(() {
@@ -209,13 +210,13 @@ class _LoginFormFieldsState extends State<_LoginFormFields> {
           );
         } else {
           return new IconButton(
-            icon: new Icon(Icons.content_paste),
+            icon: const Icon(Icons.content_paste),
             tooltip: 'Paste',
             onPressed: () async {
               var data = await Clipboard.getData('text/plain');
               if (data == null || data.text.trim().isEmpty) {
                 Scaffold.of(ctx).showSnackBar(
-                    new SnackBar(content: new Text('Clipboard is empty')));
+                    const SnackBar(content: const Text('Clipboard is empty')));
                 return;
               }
 
@@ -245,7 +246,7 @@ class _LoginFormFieldsState extends State<_LoginFormFields> {
       return new Padding(
         padding: const EdgeInsets.only(top: 20.0),
         child: new RaisedButton(
-          child: new Text('SAVE & TEST'),
+          child: const Text('SAVE & TEST'),
           onPressed: _saveAndTest(ctx),
         ),
       );
@@ -314,9 +315,9 @@ class _InstructionStep extends StatelessWidget {
   Widget build(BuildContext ctx) {
     Widget leadingCircleWidget() {
       return new Container(
-        decoration: new ShapeDecoration(
+        decoration: const ShapeDecoration(
           color: Colors.white,
-          shape: new CircleBorder(),
+          shape: const CircleBorder(),
         ),
         width: 64.0,
         height: 64.0,
@@ -324,7 +325,7 @@ class _InstructionStep extends StatelessWidget {
         child: new Text(
           _stepNumber.toString(),
           textAlign: TextAlign.center,
-          style: new TextStyle(color: Colors.black, fontSize: 48.0),
+          style: const TextStyle(color: Colors.black, fontSize: 48.0),
         ),
       );
     }

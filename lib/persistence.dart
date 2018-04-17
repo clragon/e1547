@@ -62,14 +62,14 @@ class Persistence {
     apiKey.addListener(_saveString('apiKey', apiKey));
   }
 
-  Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
   ValueNotifier<Future<T>> _makeNotifier<T>(
       SharedPreferencesReceiver<T> receiver) {
     return new ValueNotifier(_prefs.then(receiver));
   }
 
-  Function _saveString(String key, ValueNotifier<Future<Object>> notifier) {
+  Function() _saveString(String key, ValueNotifier<Future<Object>> notifier) {
     return () async {
       (await _prefs).setString(
         key,
@@ -78,7 +78,7 @@ class Persistence {
     };
   }
 
-  Function _saveBool(String key, ValueNotifier<Future<bool>> notifier) {
+  void Function() _saveBool(String key, ValueNotifier<Future<bool>> notifier) {
     return () async {
       (await _prefs).setBool(
         key,
