@@ -49,9 +49,9 @@ class SettingsPageState extends State<SettingsPage> {
   @override
   void initState() {
     super.initState();
-    db.host.value.then((a) async => _host = a);
-    db.hideSwf.value.then((a) async => _hideSwf = a);
-    db.username.value.then((a) async => _username = a);
+    db.host.value.then((a) async => setState(() => _host = a));
+    db.hideSwf.value.then((a) async => setState(() => _hideSwf = a));
+    db.username.value.then((a) async => setState(() => _username = a));
   }
 
   void _onChangedHideSwf(bool newHideSwf) {
