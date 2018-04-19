@@ -31,6 +31,14 @@ class SettingsPageState extends State<SettingsPage> {
   bool _hideSwf;
   String _username;
 
+  @override
+  void initState() {
+    super.initState();
+    db.host.value.then((a) async => setState(() => _host = a));
+    db.hideSwf.value.then((a) async => setState(() => _hideSwf = a));
+    db.username.value.then((a) async => setState(() => _username = a));
+  }
+
   Function() _onTapSiteBackend(BuildContext ctx) {
     return () async {
       String newHost = await showDialog<String>(context: ctx, builder: (ctx) {
@@ -44,14 +52,6 @@ class SettingsPageState extends State<SettingsPage> {
         });
       }
     };
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    db.host.value.then((a) async => setState(() => _host = a));
-    db.hideSwf.value.then((a) async => setState(() => _hideSwf = a));
-    db.username.value.then((a) async => setState(() => _username = a));
   }
 
   void _onChangedHideSwf(bool newHideSwf) {
