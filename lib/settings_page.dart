@@ -23,10 +23,10 @@ import 'persistence.dart' show db;
 
 class SettingsPage extends StatefulWidget {
   @override
-  SettingsPageState createState() => new SettingsPageState();
+  State createState() => new _SettingsPageState();
 }
 
-class SettingsPageState extends State<SettingsPage> {
+class _SettingsPageState extends State<SettingsPage> {
   String _host;
   bool _hideSwf;
   String _username;
