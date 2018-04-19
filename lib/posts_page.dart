@@ -56,12 +56,6 @@ class _PostsPageState extends State<PostsPage> {
     return new TextEditingController()..text = tags.toString() + ' ';
   });
 
-  int _page = 1;
-  final List<Post> _posts = [];
-
-  bool _offline = false; // If true, the last request has failed.
-  String _errorMessage;
-
   String _username;
   void _onChangeUsername() {
     db.username.value.then((a) {
@@ -74,8 +68,6 @@ class _PostsPageState extends State<PostsPage> {
   @override
   void initState() {
     super.initState();
-    _search();
-
     db.username.addListener(_onChangeUsername);
     _onChangeUsername();
   }
@@ -86,29 +78,8 @@ class _PostsPageState extends State<PostsPage> {
     db.username.removeListener(_onChangeUsername);
   }
 
-  Future<Null> _search() async {
-    _page = 1;
-    _posts.clear();
-    _loadNextPage();
-  }
-
-  Future<bool> _loadNextPage() async {
-    _offline = false; // Let's be optimistic. Doesn't update UI until setState()
-
-    try {
-      List<Post> newPosts = await client.posts(await _tags, _page++);
-      setState(() {
-        _posts.addAll(newPosts);
-      });
-    } on Exception catch (e) {
-      _log.info('Going offline: $e', e);
-      setState(() {
-        _offline = true;
-        _errorMessage = e.toString();
-      });
-    }
-
-    return true;
+  Future<List<Post>> _postsFor(int page) async {
+    return await client.posts(await _tags, page + 1);
   }
 
   Function() _onPressedFloatingActionButton(BuildContext ctx) {
@@ -129,7 +100,7 @@ class _PostsPageState extends State<PostsPage> {
         db.tags.value = _tags;
 
         _bottomSheetController?.close();
-        _search();
+        // _search();
       } else {
         _bottomSheetController = Scaffold.of(ctx).showBottomSheet(
               (ctx) => new TagEntry(controller: tagController),
@@ -147,33 +118,34 @@ class _PostsPageState extends State<PostsPage> {
   @override
   Widget build(BuildContext ctx) {
     AppBar appBarWidget() {
-      return new AppBar(title: const Text(consts.appName), actions: [
-        new IconButton(
-          icon: const Icon(Icons.refresh),
-          tooltip: 'Refresh',
-          onPressed: _search,
-        ),
-      ]);
+      return new AppBar(
+          title: const Text(consts.appName),
+          actions: [
+            new IconButton(
+              icon: const Icon(Icons.refresh),
+              tooltip: 'Refresh',
+              // onPressed: _search,
+            ),
+          ],
+      );
     }
 
     Widget bodyWidget() {
-      if (_offline) {
-        return new Container(
-            padding: const EdgeInsets.all(50.0),
-            child: new Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.cloud_off),
-                  const Divider(),
-                  new Text(_errorMessage, textAlign: TextAlign.center),
-                ]));
-      }
+      return new PageView.builder(itemBuilder: (ctx, i) {
+        return new FutureBuilder<List<Post>>(
+          future: _postsFor(i),
+          builder: (ctx, snapshot) {
+            if (snapshot.connectionState == ConnectionState.done) {
+              if (snapshot.hasError) {
+                return new Text('Error: ${snapshot.error}');
+              }
+              return new PostGrid(snapshot.data);
+            }
 
-      if (_posts == null) {
-        return const Center(child: const Icon(Icons.refresh));
-      }
-
-      return new PostGrid(_posts);
+            return const Text("waiting");
+          },
+        );
+      });
     }
 
     Widget drawerWidget() {
