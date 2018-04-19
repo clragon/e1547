@@ -22,6 +22,7 @@ import 'package:flutter/rendering.dart' show TextOverflow;
 import 'package:flutter/services.dart'
     show Clipboard, ClipboardData, SystemChrome, SystemUiOverlay;
 
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:logging/logging.dart' show Logger;
 import 'package:url_launcher/url_launcher.dart' as url;
 import 'package:zoomable_image/zoomable_image.dart' show ZoomableImage;
@@ -49,22 +50,19 @@ class Post {
 
     hasComments = raw['has_comments'] as bool;
 
-    artist = (raw['artist'] as List)
-      .map((a) => a.toString())
-      .where((a) {
-        if (a == 'conditional_dnp') {
-          isConditionalDnp = true;
-          return false;
-        } else if (a == 'sound_warning') {
-          hasSoundWarning = true;
-          return false;
-        } else if (a == 'epilepsy_warning') {
-          hasEpilepsyWarning = true;
-          return false;
-        } else {
-          return true;
-        }
-      }).toList();
+    artist = [];
+    for (var a in raw['artist']) {
+      String aStr = a.toString();
+      if (a == 'conditional_dnp') {
+        isConditionalDnp = true;
+      } else if (a == 'sound_warning') {
+        hasSoundWarning = true;
+      } else if (a == 'epilepsy_warning') {
+        hasEpilepsyWarning = true;
+      } else {
+        artist.add(aStr);
+      }
+    }
   }
 
   Map raw;
@@ -544,15 +542,13 @@ class _PostGridState extends State<PostGrid> {
 
   @override
   Widget build(BuildContext ctx) {
-    return new GridView.builder(
-      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-        maxCrossAxisExtent: 150.0,
-        childAspectRatio: 3 / 5,
-      ),
-      // TODO: this triggers an analyzer warning, but is correct.
-      // File a bug report?
-      // ignore: argument_type_not_assignable
-      itemBuilder: _itemBuilder,
+    return new StaggeredGridView.extentBuilder(
+        itemCount: 100000, // TODO: remove this once https://github.com/flutter/flutter/issues/16688 is fixed
+        maxCrossAxisExtent: 200.0,
+        itemBuilder: _itemBuilder,
+        staggeredTileBuilder: (i) {
+          return const StaggeredTile.extent(1, 250.0);
+        },
     );
   }
 
