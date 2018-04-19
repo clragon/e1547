@@ -526,24 +526,14 @@ class _MoreDialog extends StatelessWidget {
   }
 }
 
-class PostGrid extends StatefulWidget {
+class PostGrid extends StatelessWidget {
   final List<Post> posts;
-  final AsyncValueGetter<bool> onLoadMore;
-  const PostGrid(this.posts, {Key key, this.onLoadMore}) : super(key: key);
-
-  @override
-  State createState() => new _PostGridState();
-}
-
-class _PostGridState extends State<PostGrid> {
-  final Logger _log = new Logger('PostGrid');
-
-  bool _more = true;
+  const PostGrid(this.posts, {Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext ctx) {
     return new StaggeredGridView.extentBuilder(
-        itemCount: 100000, // TODO: remove this once https://github.com/flutter/flutter/issues/16688 is fixed
+        itemCount: posts.length,
         maxCrossAxisExtent: 200.0,
         itemBuilder: _itemBuilder,
         staggeredTileBuilder: (i) {
@@ -553,59 +543,31 @@ class _PostGridState extends State<PostGrid> {
   }
 
   Widget _itemBuilder(BuildContext ctx, int i) {
-    if (i > widget.posts.length) {
+    if (i >= posts.length) {
       return null;
-    } else if (i == widget.posts.length) {
-      return new Center(
-          child: _more
-              ? new RaisedButton(
-                  child: const Text('load more'),
-                  onPressed: () async {
-                    // TODO: Keeping track of the "more" boolean here leads to an additional tap
-                    // needed to show the "No more posts" text. Ideally, it would function like
-                    // Comments, but since we're supporting multiple views into the posts (Grid and
-                    // Swipe, maybe more in the future), we can't inline into PostsPage as easily.
-                    bool more = await widget.onLoadMore();
-                    setState(() {
-                      _more = more;
-                    });
-                  },
-                )
-              : const Text('No more posts',
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18.0,
-                  )));
     }
 
-    return new PostPreview(widget.posts[i], onPressed: () {
+    return new PostPreview(posts[i], onPressed: () {
       Navigator.of(ctx).push(new MaterialPageRoute<Null>(
-            builder: (ctx) => new PostSwipe(widget.posts, startingIndex: i),
-          ));
+        builder: (ctx) => new PostSwipe(posts, startingIndex: i),
+      ));
     });
   }
 }
 
-class PostSwipe extends StatefulWidget {
+class PostSwipe extends StatelessWidget {
   final List<Post> posts;
   final int startingIndex;
+
   const PostSwipe(this.posts, {Key key, this.startingIndex = 0})
       : super(key: key);
 
   @override
-  State createState() => new _PostSwipeState();
-}
-
-class _PostSwipeState extends State<PostSwipe> {
-  @override
   Widget build(BuildContext ctx) {
     return new PageView.builder(
-        controller: new PageController(initialPage: widget.startingIndex),
+        controller: new PageController(initialPage: startingIndex),
         itemBuilder: (ctx, i) {
-          return i < widget.posts.length
-              ? new PostWidget(widget.posts[i])
-              : null;
+          return i >= posts.length ? null : new PostWidget(posts[i]);
         });
   }
 }

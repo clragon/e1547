@@ -173,7 +173,7 @@ class _PostsPageState extends State<PostsPage> {
         return const Center(child: const Icon(Icons.refresh));
       }
 
-      return new PostGrid(_posts, onLoadMore: _loadNextPage);
+      return new PostGrid(_posts);
     }
 
     Widget drawerWidget() {
