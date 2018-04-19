@@ -19,7 +19,6 @@ import 'dart:async' show Future;
 import 'package:flutter/material.dart';
 
 import 'client.dart' show client;
-import 'pagination.dart' show LinearPagination;
 import 'post.dart' show Post;
 
 class Comment {
@@ -48,19 +47,25 @@ class CommentsWidget extends StatefulWidget {
 }
 
 class _CommentsWidgetState extends State<CommentsWidget> {
-  LinearPagination<Comment> _comments;
+  int _page = 1;
+  final List<Comment> _comments = [];
   bool _more = true;
 
   @override
   void initState() {
     super.initState();
-    _comments = client.comments(widget.post.id);
     _loadNextPage();
   }
 
   Future<Null> _loadNextPage() async {
-    _more = await _comments.loadNextPage();
-    setState(() {});
+    if (_more) {
+      List<Comment> newComments = await client.comments(
+          widget.post.id, _page++);
+      setState(() {
+        _comments.addAll(newComments);
+      });
+      _more = newComments.isEmpty;
+    }
   }
 
   @override
@@ -84,15 +89,13 @@ class _CommentsWidgetState extends State<CommentsWidget> {
   //   2n:   comment n-1
   //   2n+1: <no more comments message>
   Widget _itemBuilder(BuildContext ctx, int i) {
-    List<Comment> comments = _comments.elements;
-
-    int lastComment = comments.length * 2 - 1;
+    int lastComment = _comments.length * 2 - 1;
 
     if (i < lastComment) {
       if (i.isOdd) {
         return const Divider();
       }
-      Comment c = comments[i ~/ 2];
+      Comment c = _comments[i ~/ 2];
       return new Text('${c.creator}: ${c.body}');
     }
 

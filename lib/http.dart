@@ -27,21 +27,21 @@ class HttpCustom {
   final Logger _log = new Logger('HttpCustom');
 
   // TODO PLZ STOP COPY PASTING
-  Future<http.Response> post(String host, String path, {Map query}) {
+  Future<http.Response> post(String host, String path, {Map<String, Object> query}) {
     return postUrl(new Uri(
       scheme: 'https',
       host: host,
       path: path,
-      queryParameters: stringify(query),
+      queryParameters: _stringify(query),
     ));
   }
 
-  Future<http.Response> get(String host, String path, {Map query}) {
+  Future<http.Response> get(String host, String path, {Map<String, Object> query}) {
     return getUrl(new Uri(
       scheme: 'https',
       host: host,
       path: path,
-      queryParameters: stringify(query),
+      queryParameters: _stringify(query),
     ));
   }
 
@@ -56,10 +56,12 @@ class HttpCustom {
   }
 }
 
-Map<String, String> stringify(Map<Object, Object> map) {
+Map<String, String> _stringify(Map<String, Object> map) {
   Map<String, String> stringMap = {};
   map.forEach((k, v) {
-    stringMap[k.toString()] = v.toString();
+    if (v != null) {
+      stringMap[k] = v.toString();
+    }
   });
   return stringMap;
 }

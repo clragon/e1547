@@ -20,7 +20,6 @@ import 'package:logging/logging.dart' show Logger;
 
 import 'comment.dart' show Comment;
 import 'http.dart';
-import 'pagination.dart';
 import 'persistence.dart' show db;
 import 'post.dart' show Post;
 import 'tag.dart';
@@ -32,34 +31,37 @@ class Client {
 
   final HttpCustom _http = new HttpCustom();
 
+  Future<String> _host     = db.host.value;
+  Future<String> _username = db.username.value;
+  Future<String> _apiKey   = db.apiKey.value;
+
+  Client() {
+    db.host.addListener(    () => _host     = db.host.value);
+    db.username.addListener(() => _username = db.username.value);
+    db.apiKey.addListener(  () => _apiKey   = db.apiKey.value);
+  }
+
   Future<bool> addAsFavorite(int post) async {
-    String username = await db.username.value;
-    String apiKey = await db.apiKey.value;
-    if (username == null || apiKey == null) {
+    if (await _username == null || await _apiKey == null) {
       return false;
     }
 
-    return await _http
-        .post(await db.host.value, '/favorite/create.json', query: {
-      'login': username,
-      'password_hash': apiKey,
+    return await _http.post(await _host, '/favorite/create.json', query: {
+      'login': await _username,
+      'password_hash': await _apiKey,
       'id': post,
-    }).then((response) {
-      return response.statusCode == 200;
-    });
+    }).then((response) => response.statusCode == 200);
   }
 
   Future<bool> removeAsFavorite(int post) async {
-    String username = await db.username.value;
-    String apiKey = await db.apiKey.value;
-    if (username == null || apiKey == null) {
+    if (await _username == null || await _apiKey == null) {
       return false;
     }
 
     return await _http
         .post(await db.host.value, '/favorite/destroy.json', query: {
-      'login': username,
-      'password_hash': apiKey,
+      'login': await _username,
+      'password_hash': await _apiKey,
       'id': post,
     }).then((response) {
       return response.statusCode == 200;
@@ -67,15 +69,13 @@ class Client {
   }
 
   Future<bool> isValidAuthPair(String username, String apiKey) async {
-    return await _http.get(await db.host.value, '/dmail/inbox.json', query: {
+    return await _http.get(await _host, '/dmail/inbox.json', query: {
       'login': username,
       'password_hash': apiKey,
     }).then((response) {
       if (response.statusCode == 200) {
         return true;
-      }
-
-      if (response.statusCode != 403) {
+      } else if (response.statusCode != 403) {
         _log.warning('Unexpected status code: ${response.statusCode}');
       }
 
@@ -83,42 +83,37 @@ class Client {
     });
   }
 
-  LinearPagination<Post> posts(Tagset tags) {
-    return new LinearPagination<Post>((page) async {
-      String body =
-          await _http.get(await db.host.value, '/post/index.json', query: {
-        'tags': tags,
-        'page': page,
-        'limit': 75,
-      }).then((response) => response.body);
+  Future<List<Post>> posts(Tagset tags, int page) async {
+    String body = await _http.get(await _host, '/post/index.json', query: {
+      'tags': tags,
+      'page': page,
+      'limit': 75,
+    }).then((response) => response.body);
 
-      List<Post> posts = [];
-      for (Map rp in json.decode(body)) {
-        Post p = new Post.fromRaw(rp);
-        if (await db.hideSwf.value && p.fileExt == 'swf') {
-          _log.fine('Hiding swf post #${p.id}');
-          continue;
-        }
-        posts.add(p);
+    List<Post> posts = [];
+    for (Map rp in json.decode(body)) {
+      Post p = new Post.fromRaw(rp);
+      if (await db.hideSwf.value && p.fileExt == 'swf') {
+        _log.fine('Hiding swf post #${p.id}');
+        continue;
       }
-      return posts;
-    });
+      posts.add(p);
+    }
+
+    return posts;
   }
 
-  LinearPagination<Comment> comments(int postId) {
-    return new LinearPagination<Comment>((page) async {
-      String body =
-          await _http.get(await db.host.value, '/comment/index.json', query: {
-        'post_id': postId,
-        'page': page,
-      }).then((response) => response.body);
+  Future<List<Comment>> comments(int postId, int page) async {
+    String body = await _http.get(await _host, '/comment/index.json', query: {
+      'post_id': postId,
+      'page': page,
+    }).then((response) => response.body);
 
-      List<Comment> comments = [];
-      for (Map rc in json.decode(body)) {
-        comments.add(new Comment.fromRaw(rc));
-      }
+    List<Comment> comments = [];
+    for (Map rc in json.decode(body)) {
+      comments.add(new Comment.fromRaw(rc));
+    }
 
-      return comments;
-    });
+    return comments;
   }
 }

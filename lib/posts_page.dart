@@ -27,7 +27,6 @@ import 'package:meta/meta.dart' show required;
 import 'client.dart' show client;
 import 'consts.dart' as consts;
 import 'input.dart' show LowercaseTextInputFormatter;
-import 'pagination.dart' show LinearPagination;
 import 'persistence.dart' show db;
 import 'post.dart';
 import 'range_dialog.dart' show RangeDialog;
@@ -42,7 +41,7 @@ void _setFocusToEnd(TextEditingController controller) {
 
 class PostsPage extends StatefulWidget {
   @override
-  _PostsPageState createState() => new _PostsPageState();
+  State createState() => new _PostsPageState();
 }
 
 class _PostsPageState extends State<PostsPage> {
@@ -57,7 +56,8 @@ class _PostsPageState extends State<PostsPage> {
     return new TextEditingController()..text = tags.toString() + ' ';
   });
 
-  LinearPagination<Post> _posts;
+  int _page = 1;
+  final List<Post> _posts = [];
 
   bool _offline = false; // If true, the last request has failed.
   String _errorMessage;
@@ -76,29 +76,30 @@ class _PostsPageState extends State<PostsPage> {
     super.initState();
     _search();
 
-    db.username.value.then((a) => _username = a);
     db.username.addListener(_onChangeUsername);
+    _onChangeUsername();
   }
 
   @override
   void dispose() {
     super.dispose();
-
     db.username.removeListener(_onChangeUsername);
   }
 
   Future<Null> _search() async {
-    _posts = client.posts(await _tags);
+    _page = 1;
+    _posts.clear();
     _loadNextPage();
   }
 
   Future<bool> _loadNextPage() async {
     _offline = false; // Let's be optimistic. Doesn't update UI until setState()
-    bool more;
 
     try {
-      more = await _posts.loadNextPage();
-      setState(() {});
+      List<Post> newPosts = await client.posts(await _tags, _page++);
+      setState(() {
+        _posts.addAll(newPosts);
+      });
     } on Exception catch (e) {
       _log.info('Going offline: $e', e);
       setState(() {
@@ -107,7 +108,7 @@ class _PostsPageState extends State<PostsPage> {
       });
     }
 
-    return more;
+    return true;
   }
 
   Function() _onPressedFloatingActionButton(BuildContext ctx) {
@@ -172,7 +173,7 @@ class _PostsPageState extends State<PostsPage> {
         return const Center(child: const Icon(Icons.refresh));
       }
 
-      return new PostGrid(_posts.elements, onLoadMore: _loadNextPage);
+      return new PostGrid(_posts, onLoadMore: _loadNextPage);
     }
 
     Widget drawerWidget() {
