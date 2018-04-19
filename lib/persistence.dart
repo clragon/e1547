@@ -24,7 +24,7 @@ import 'package:shared_preferences/shared_preferences.dart'
 import 'consts.dart' as consts;
 import 'tag.dart' show Tagset;
 
-typedef T SharedPreferencesReceiver<T>(SharedPreferences prefs);
+typedef T _SharedPreferencesReceiver<T>(SharedPreferences prefs);
 
 final Persistence db = new Persistence();
 
@@ -36,54 +36,39 @@ class Persistence {
   ValueNotifier<Future<String>> apiKey;
 
   Persistence() {
-    host = _makeNotifier(
-      (p) => p.getString('host') ?? consts.defaultEndpoint,
-    );
+    host = _makeNotifier((p) => p.getString('host') ?? consts.defaultEndpoint);
     host.addListener(_saveString('host', host));
 
-    tags = _makeNotifier(
-      (p) => new Tagset.parse(p.getString('tags') ?? ''),
-    );
+    tags = _makeNotifier((p) => new Tagset.parse(p.getString('tags') ?? ''));
     tags.addListener(_saveString('tags', tags));
 
-    hideSwf = _makeNotifier(
-      (p) => p.getBool('hideSwf') ?? false,
-    );
+    hideSwf = _makeNotifier((p) => p.getBool('hideSwf') ?? false);
     hideSwf.addListener(_saveBool('hideSwf', hideSwf));
 
-    username = _makeNotifier(
-      (p) => p.getString('username'),
-    );
+    username = _makeNotifier((p) => p.getString('username'));
     username.addListener(_saveString('username', username));
 
-    apiKey = _makeNotifier(
-      (p) => p.getString('apiKey'),
-    );
+    apiKey = _makeNotifier((p) => p.getString('apiKey'));
     apiKey.addListener(_saveString('apiKey', apiKey));
   }
 
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
   ValueNotifier<Future<T>> _makeNotifier<T>(
-      SharedPreferencesReceiver<T> receiver) {
+      _SharedPreferencesReceiver<T> receiver) {
     return new ValueNotifier(_prefs.then(receiver));
   }
 
-  Function() _saveString(String key, ValueNotifier<Future<Object>> notifier) {
+  Function() _saveString(String key, ValueNotifier<Future<dynamic>> notifier) {
     return () async {
-      (await _prefs).setString(
-        key,
-        (await notifier.value).toString(),
-      );
+      var val = await notifier.value;
+      (await _prefs).setString(key, val != null ? val.toString() : null);
     };
   }
 
   void Function() _saveBool(String key, ValueNotifier<Future<bool>> notifier) {
     return () async {
-      (await _prefs).setBool(
-        key,
-        await notifier.value,
-      );
+      (await _prefs).setBool(key, await notifier.value);
     };
   }
 }
