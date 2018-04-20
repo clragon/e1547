@@ -1,23 +1,23 @@
 name: e1547
-description: A new flutter project.
+description: A mobile app for browsing e926.net and friends.
 
 dependencies:
   # Mine
-  zoomable_image: ^1.1.2
+  zoomable_image: 1.1.2
 
   # Third party
-  flutter_staggered_grid_view: ^0.1.2
+  flutter_staggered_grid_view: 0.1.2
 
   # Dart
-  http: ^0.11.3
-  logging: ^0.11.3
-  meta: ^1.1.1
-  test: ^0.12.26
-  vector_math: ^2.0.5
+  http: 0.11.3+16
+  logging: 0.11.3+1
+  meta: 1.1.2
+  test: 0.12.33
+  vector_math: 2.0.5
 
   # Flutter
-  shared_preferences: ^0.4.1
-  url_launcher: ^2.0.0
+  shared_preferences: 0.4.1
+  url_launcher: 3.0.0
 
   flutter:
     sdk: flutter
