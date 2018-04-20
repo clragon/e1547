@@ -16,7 +16,6 @@
 
 import 'dart:async' show Future;
 
-import 'package:flutter/foundation.dart' show AsyncValueGetter;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart' show TextOverflow;
 import 'package:flutter/services.dart'

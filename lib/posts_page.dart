@@ -168,7 +168,7 @@ class _PostsPageState extends State<PostsPage> {
               return new Container();
             }
 
-            return const Text("waiting");
+            return const Text('waiting');
           },
         );
       }
