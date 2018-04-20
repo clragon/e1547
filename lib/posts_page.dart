@@ -49,6 +49,8 @@ class _PostsPageState extends State<PostsPage> {
 
   Future<Tagset> _tags = db.tags.value;
 
+  Map<int, Future<List<Post>>> _pages = {};
+
   bool _isEditingTags = false;
   PersistentBottomSheetController<Tagset> _bottomSheetController;
 
@@ -79,7 +81,6 @@ class _PostsPageState extends State<PostsPage> {
   }
 
   Future<List<Post>> _postsFor(int page) async {
-    return await client.posts(await _tags, page + 1);
   }
 
   Function() _onPressedFloatingActionButton(BuildContext ctx) {
@@ -115,6 +116,14 @@ class _PostsPageState extends State<PostsPage> {
     };
   }
 
+  void _loadPage(int page) {
+    if (!_pages.containsKey(page)) {
+      _pages[page] = () async {
+        return await client.posts(await _tags, page + 1);
+      }();
+    }
+  }
+
   @override
   Widget build(BuildContext ctx) {
     AppBar appBarWidget() {
@@ -131,9 +140,12 @@ class _PostsPageState extends State<PostsPage> {
     }
 
     Widget bodyWidget() {
-      return new PageView.builder(itemBuilder: (ctx, i) {
+      return new PageView.builder(itemBuilder: (ctx, page) {
+        _loadPage(page);
+        _loadPage(page+1);
+
         return new FutureBuilder<List<Post>>(
-          future: _postsFor(i),
+          future: _pages[page],
           builder: (ctx, snapshot) {
             if (snapshot.connectionState == ConnectionState.done) {
               if (snapshot.hasError) {
