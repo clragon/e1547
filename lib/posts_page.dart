@@ -49,7 +49,9 @@ class _PostsPageState extends State<PostsPage> {
 
   Future<Tagset> _tags = db.tags.value;
 
-  Map<int, Future<List<Post>>> _pages = {};
+  final Map<int, Future<List<Post>>> _pages = {};
+
+  final PageController _pageController = new PageController();
 
   bool _isEditingTags = false;
   PersistentBottomSheetController<Tagset> _bottomSheetController;
@@ -80,9 +82,6 @@ class _PostsPageState extends State<PostsPage> {
     db.username.removeListener(_onChangeUsername);
   }
 
-  Future<List<Post>> _postsFor(int page) async {
-  }
-
   Function() _onPressedFloatingActionButton(BuildContext ctx) {
     return () async {
       void onCloseBottomSheet() {
@@ -101,7 +100,7 @@ class _PostsPageState extends State<PostsPage> {
         db.tags.value = _tags;
 
         _bottomSheetController?.close();
-        // _search();
+        setState(_pages.clear);
       } else {
         _bottomSheetController = Scaffold.of(ctx).showBottomSheet(
               (ctx) => new TagEntry(controller: tagController),
@@ -124,6 +123,14 @@ class _PostsPageState extends State<PostsPage> {
     }
   }
 
+  Future<Null> _onNoMorePosts(BuildContext ctx) async {
+    Scaffold.of(ctx).showSnackBar(const SnackBar(
+        content: const Text('No more posts')
+    ));
+
+    _pageController.jumpToPage(_pageController.page.floor());
+  }
+
   @override
   Widget build(BuildContext ctx) {
     AppBar appBarWidget() {
@@ -133,14 +140,17 @@ class _PostsPageState extends State<PostsPage> {
             new IconButton(
               icon: const Icon(Icons.refresh),
               tooltip: 'Refresh',
-              // onPressed: _search,
+              onPressed: () {
+                _pageController.jumpToPage(0);
+                setState(_pages.clear);
+              },
             ),
           ],
       );
     }
 
     Widget bodyWidget() {
-      return new PageView.builder(itemBuilder: (ctx, page) {
+      Widget pageBuilder(BuildContext ctx, int page) {
         _loadPage(page);
         _loadPage(page+1);
 
@@ -151,13 +161,22 @@ class _PostsPageState extends State<PostsPage> {
               if (snapshot.hasError) {
                 return new Text('Error: ${snapshot.error}');
               }
-              return new PostGrid(snapshot.data);
+              if (snapshot.data.isNotEmpty) {
+                return new PostGrid(snapshot.data);
+              }
+              _onNoMorePosts(ctx);
+              return new Container();
             }
 
             return const Text("waiting");
           },
         );
-      });
+      }
+
+      return new PageView.builder(
+          controller: _pageController,
+          itemBuilder: pageBuilder,
+      );
     }
 
     Widget drawerWidget() {
