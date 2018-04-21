@@ -81,28 +81,24 @@ class _PostsPageView extends StatefulWidget {
 }
 
 class _PostsPageViewState extends State<_PostsPageView> {
+  final Logger _log = new Logger('_PostsPageViewState');
+
   final List<List<Post>> _pages = [];
 
   void _loadNextPage() async {
-    int p = _pages.length;
-    List<Post> nextPage = [];
-    _pages.add(nextPage);
-
-    nextPage.addAll(await client.posts(await db.tags.value, p + 1));
-    setState(() {});
+    List<Post> nextPage = await client.posts(await db.tags.value, _pages.length + 1);
+    setState(() {
+      _pages.add(nextPage);
+    });
   }
 
-  @override
-  void initState() {
-    super.initState();
-    _loadNextPage();
-  }
-
-  // Item count is the total number of loaded posts, plus the page divider
-  // between each page and the blank item at the very end.
+  // Item count is:
+  // 1. Total number of loaded posts
+  // 2. Header before each page, including a blank header after after the last
+  //    page.
   int _itemCount() {
     int i = 0;
-    i += _pages.length;
+    i += _pages.length + 1;
     for (List<Post> p in _pages) {
       i += p.length;
     }
@@ -118,29 +114,91 @@ class _PostsPageViewState extends State<_PostsPageView> {
       });
     }
 
-    int i = 0;
+    Widget pageHeader(String text) {
+      return new Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          new Text(text),
+          const Divider(),
+        ],
+      );
+    }
+
+    _log.finer('building item $item');
+
+    // Special case for first page header.
+    if (item == 0) {
+      _log.finer('item was first page header');
+      if (_pages.isEmpty) {
+        _loadNextPage();
+        return pageHeader('Loading page 1');
+      } else {
+        return pageHeader('Page 1');
+      }
+    }
+
+    int i = 1;
+
+    for (int p = 0; p < _pages.length; p++) {
+      List<Post> page = _pages[p];
+      if (page.isEmpty) {
+        return new Container();
+      }
+      i += page.length;
+
+      if (item < i) {
+        _log.finer('item was post on page ${p + 1}');
+        return postPreview(page, item - (i - page.length));
+      }
+
+      // Header for next page
+      if (item == i) {
+        int nextPage = p + 1;
+        _log.finer('item was header for page ${nextPage + 1}');
+        if (nextPage >= _pages.length) {
+          _loadNextPage();
+          return pageHeader('Loading page ${nextPage + 1}');
+        } else if (_pages[nextPage].isEmpty) {
+          return pageHeader('No more posts');
+        } else {
+          return pageHeader('Page ${nextPage + 1}');
+        }
+      }
+      i += 1;
+    }
+
+    _log.finer("couldn't identify item $item");
+    return null;
+  }
+
+  StaggeredTile _staggeredTileBuilder(int item) {
+    if (item == 0) {
+      return const StaggeredTile.extent(2, 50.0);
+    }
+
+    int i = 1;
     for (int p = 0; p < _pages.length; p++) {
       List<Post> page = _pages[p];
       i += page.length;
+
       if (item < i) {
-        return postPreview(page, item - (i - page.length));
-      } else if (item == i) {
-        return new Text('page ${p + 1}');
+        return const StaggeredTile.extent(1, 250.0);
       }
+
+      if (item == i) {
+        return const StaggeredTile.extent(2, 50.0);
+      }
+      i += 1;
     }
 
     return null;
   }
 
-  StaggeredTile _staggeredTileBuilder(int i) {
-    return const StaggeredTile.extent(1, 250.0);
-  }
-
   @override
   Widget build(BuildContext ctx) {
     return new StaggeredGridView.extentBuilder(
-      itemCount: _itemCount(),
       maxCrossAxisExtent: 200.0,
+      itemCount: _itemCount(),
       itemBuilder: _itemBuilder,
       staggeredTileBuilder: _staggeredTileBuilder,
     );
