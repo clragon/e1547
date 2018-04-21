@@ -21,7 +21,6 @@ import 'package:flutter/rendering.dart' show TextOverflow;
 import 'package:flutter/services.dart'
     show Clipboard, ClipboardData, SystemChrome, SystemUiOverlay;
 
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:logging/logging.dart' show Logger;
 import 'package:url_launcher/url_launcher.dart' as url;
 import 'package:zoomable_image/zoomable_image.dart' show ZoomableImage;
@@ -522,35 +521,6 @@ class _MoreDialog extends StatelessWidget {
     await Clipboard.setData(new ClipboardData(text: text));
     Navigator.of(ctx).pop();
     Navigator.of(ctx).pop();
-  }
-}
-
-class PostGrid extends StatelessWidget {
-  final List<Post> posts;
-  const PostGrid(this.posts, {Key key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext ctx) {
-    return new StaggeredGridView.extentBuilder(
-        itemCount: posts.length,
-        maxCrossAxisExtent: 200.0,
-        itemBuilder: _itemBuilder,
-        staggeredTileBuilder: (i) {
-          return const StaggeredTile.extent(1, 250.0);
-        },
-    );
-  }
-
-  Widget _itemBuilder(BuildContext ctx, int i) {
-    if (i >= posts.length) {
-      return null;
-    }
-
-    return new PostPreview(posts[i], onPressed: () {
-      Navigator.of(ctx).push(new MaterialPageRoute<Null>(
-        builder: (ctx) => new PostSwipe(posts, startingIndex: i),
-      ));
-    });
   }
 }
 

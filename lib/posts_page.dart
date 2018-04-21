@@ -21,6 +21,7 @@ import 'package:flutter/painting.dart' show EdgeInsets;
 import 'package:flutter/services.dart' show Clipboard, ClipboardData;
 import 'package:flutter/widgets.dart';
 
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart' show StaggeredGridView, StaggeredTile;
 import 'package:logging/logging.dart' show Logger;
 import 'package:meta/meta.dart' show required;
 
@@ -39,49 +40,124 @@ void _setFocusToEnd(TextEditingController controller) {
   );
 }
 
-class PostsPage extends StatefulWidget {
+class PostsPage extends StatelessWidget {
   @override
-  State createState() => new _PostsPageState();
+  Widget build(BuildContext ctx) {
+    AppBar appBarWidget() {
+      return new AppBar(
+        title: const Text(consts.appName),
+        actions: [
+          new IconButton(
+            icon: const Icon(Icons.refresh),
+            tooltip: 'Refresh',
+            onPressed: () {
+                // _pageController.jumpToPage(0);
+                // setState(_pages.clear);
+            },
+          ),
+        ],
+      );
+    }
+
+    Widget floatingActionButtonWidget() {
+      return new FloatingActionButton(
+        child: const Icon(Icons.search),
+        onPressed: (){},
+      );
+    }
+
+    return new Scaffold(
+      appBar: appBarWidget(),
+      body: new _PostsPageView(),
+      drawer: new _PostsPageDrawer(),
+      floatingActionButton: floatingActionButtonWidget(),
+    );
+  }
 }
 
-class _PostsPageState extends State<PostsPage> {
-  final Logger _log = new Logger('PostsPage');
+class _PostsPageView extends StatefulWidget {
+  @override
+  State createState() => new _PostsPageViewState();
+}
 
-  Future<Tagset> _tags = db.tags.value;
+class _PostsPageViewState extends State<_PostsPageView> {
+  final List<List<Post>> _pages = [];
 
-  final Map<int, Future<List<Post>>> _pages = {};
+  void _loadNextPage() async {
+    int p = _pages.length;
+    List<Post> nextPage = [];
+    _pages.add(nextPage);
 
-  final PageController _pageController = new PageController();
-
-  bool _isEditingTags = false;
-  PersistentBottomSheetController<Tagset> _bottomSheetController;
-
-  final Future<TextEditingController> _textEditingControllerFuture = db.tags.value.then((tags) {
-    return new TextEditingController()..text = tags.toString() + ' ';
-  });
-
-  String _username;
-  void _onChangeUsername() {
-    db.username.value.then((a) {
-      setState(() {
-        _username = a;
-      });
-    });
+    nextPage.addAll(await client.posts(await db.tags.value, p + 1));
+    setState(() {});
   }
 
   @override
   void initState() {
     super.initState();
-    db.username.addListener(_onChangeUsername);
-    _onChangeUsername();
+    _loadNextPage();
+  }
+
+  // Item count is the total number of loaded posts, plus the page divider
+  // between each page and the blank item at the very end.
+  int _itemCount() {
+    int i = 0;
+    i += _pages.length;
+    for (List<Post> p in _pages) {
+      i += p.length;
+    }
+    return i;
+  }
+
+  Widget _itemBuilder(BuildContext ctx, int item) {
+    Widget postPreview(List<Post> page, int post) {
+      return new PostPreview(page[post], onPressed: () {
+        Navigator.of(ctx).push(new MaterialPageRoute<Null>(
+          builder: (ctx) => new PostSwipe(page, startingIndex: post),
+        ));
+      });
+    }
+
+    int i = 0;
+    for (int p = 0; p < _pages.length; p++) {
+      List<Post> page = _pages[p];
+      i += page.length;
+      if (item < i) {
+        return postPreview(page, item - (i - page.length));
+      } else if (item == i) {
+        return new Text('page ${p + 1}');
+      }
+    }
+
+    return null;
+  }
+
+  StaggeredTile _staggeredTileBuilder(int i) {
+    return const StaggeredTile.extent(1, 250.0);
   }
 
   @override
-  void dispose() {
-    super.dispose();
-    db.username.removeListener(_onChangeUsername);
+  Widget build(BuildContext ctx) {
+    return new StaggeredGridView.extentBuilder(
+      itemCount: _itemCount(),
+      maxCrossAxisExtent: 200.0,
+      itemBuilder: _itemBuilder,
+      staggeredTileBuilder: _staggeredTileBuilder,
+    );
   }
+}
 
+
+  // final PageController _pageController = new PageController();
+
+  // bool _isEditingTags = false;
+  // PersistentBottomSheetController<Tagset> _bottomSheetController;
+
+  // final Future<TextEditingController> _textEditingControllerFuture = db.tags.value.then((tags) {
+  //   return new TextEditingController()..text = tags.toString() + ' ';
+  // });
+
+/*
   Function() _onPressedFloatingActionButton(BuildContext ctx) {
     return () async {
       void onCloseBottomSheet() {
@@ -114,122 +190,55 @@ class _PostsPageState extends State<PostsPage> {
       }
     };
   }
+  */
 
-  void _loadPage(int page) {
-    if (!_pages.containsKey(page)) {
-      _pages[page] = () async {
-        return await client.posts(await _tags, page + 1);
-      }();
-    }
-  }
-
-  Future<Null> _onNoMorePosts(BuildContext ctx) async {
-    Scaffold.of(ctx).showSnackBar(const SnackBar(
-        content: const Text('No more posts')
-    ));
-
-    _pageController.jumpToPage(_pageController.page.floor());
-  }
+class _PostsPageDrawer extends StatelessWidget {
+  final Logger _log = new Logger('_PostsPageDrawer');
 
   @override
   Widget build(BuildContext ctx) {
-    AppBar appBarWidget() {
-      return new AppBar(
-          title: const Text(consts.appName),
-          actions: [
-            new IconButton(
-              icon: const Icon(Icons.refresh),
-              tooltip: 'Refresh',
-              onPressed: () {
-                _pageController.jumpToPage(0);
-                setState(_pages.clear);
-              },
-            ),
-          ],
-      );
-    }
-
-    Widget bodyWidget() {
-      Widget pageBuilder(BuildContext ctx, int page) {
-        _loadPage(page);
-        _loadPage(page+1);
-
-        return new FutureBuilder<List<Post>>(
-          future: _pages[page],
-          builder: (ctx, snapshot) {
-            if (snapshot.connectionState == ConnectionState.done) {
-              if (snapshot.hasError) {
-                return new Text('Error: ${snapshot.error}');
-              }
-              if (snapshot.data.isNotEmpty) {
-                return new PostGrid(snapshot.data);
-              }
-              _onNoMorePosts(ctx);
-              return new Container();
+    Widget headerWidget() {
+      Widget userInfoWidget() {
+        return new FutureBuilder<String>(
+          future: db.username.value,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.done && !snapshot.hasError && snapshot.hasData) {
+              return new Text(snapshot.data);
             }
 
-            return const Text('waiting');
+            if (snapshot.hasError) {
+              _log.fine('error getting username from db: ${snapshot.error}');
+            }
+
+            return new RaisedButton(
+              child: const Text('LOGIN'),
+              onPressed: () => Navigator.popAndPushNamed(ctx, '/login'),
+            );
           },
         );
       }
 
-      return new PageView.builder(
-          controller: _pageController,
-          itemBuilder: pageBuilder,
-      );
+      return new DrawerHeader(child: new Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              const CircleAvatar(
+                backgroundImage: const AssetImage('icons/paw.png'),
+                radius: 48.0,
+              ),
+              userInfoWidget(),
+            ],
+      ));
     }
 
-    Widget drawerWidget() {
-      Widget headerWidget() {
-        return new DrawerHeader(
-            child: new Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            const CircleAvatar(
-              backgroundImage: const AssetImage('icons/paw.png'),
-              radius: 48.0,
-            ),
-            _username != null
-                ? new Text(_username)
-                : new RaisedButton(
-                    child: const Text('LOGIN'),
-                    onPressed: () => Navigator.popAndPushNamed(ctx, '/login'),
-                  ),
-          ],
-        ));
-      }
-
-      return new Drawer(
-          child: new ListView(children: [
-        headerWidget(),
-        new ListTile(
-          leading: const Icon(Icons.settings),
-          title: const Text('Settings'),
-          onTap: () => Navigator.popAndPushNamed(ctx, '/settings'),
-        ),
-        const AboutListTile(icon: const Icon(Icons.help)),
-      ]));
-    }
-
-    Widget floatingActionButtonWidget() {
-      Widget floatingActionButtonWidgetBuilder(BuildContext ctx) {
-        return new FloatingActionButton(
-          child: _isEditingTags
-              ? const Icon(Icons.check)
-              : const Icon(Icons.search),
-          onPressed: _onPressedFloatingActionButton(ctx),
-        );
-      }
-
-      return new Builder(builder: floatingActionButtonWidgetBuilder);
-    }
-
-    return new Scaffold(
-      appBar: appBarWidget(),
-      body: bodyWidget(),
-      drawer: drawerWidget(),
-      floatingActionButton: floatingActionButtonWidget(),
-    );
+    return new Drawer(child: new ListView(children: [
+          headerWidget(),
+          new ListTile(
+            leading: const Icon(Icons.settings),
+            title: const Text('Settings'),
+            onTap: () => Navigator.popAndPushNamed(ctx, '/settings'),
+          ),
+          const AboutListTile(icon: const Icon(Icons.help)),
+    ]));
   }
 }
 
