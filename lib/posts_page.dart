@@ -91,10 +91,13 @@ class _PostsPageState extends State<PostsPage> {
   final List<List<Post>> _pages = [];
 
   void _loadNextPage() async {
-    List<Post> nextPage = await client.posts(await db.tags.value, _pages.length);
-    setState(() {
-      _pages.add(nextPage);
-    });
+    int p = _pages.length;
+
+    List<Post> nextPage = [];
+    _pages.add(nextPage);
+
+    nextPage.addAll(await client.posts(await db.tags.value, p));
+    setState(() {});
   }
 
   void _clearPages() {
@@ -166,6 +169,8 @@ class _PostsPageState extends State<PostsPage> {
       if (_pages.isEmpty) {
         _loadNextPage();
         return pageHeader('Loading page 1');
+      } else if (_pages[0].isEmpty) {
+        return pageHeader('No posts');
       } else {
         return pageHeader('Page 1');
       }
