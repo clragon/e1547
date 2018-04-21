@@ -30,6 +30,7 @@ class _SettingsPageState extends State<SettingsPage> {
   String _host;
   bool _hideSwf;
   String _username;
+  int _numColumns;
 
   @override
   void initState() {
@@ -37,6 +38,7 @@ class _SettingsPageState extends State<SettingsPage> {
     db.host.value.then((a) async => setState(() => _host = a));
     db.hideSwf.value.then((a) async => setState(() => _hideSwf = a));
     db.username.value.then((a) async => setState(() => _username = a));
+    db.numColumns.value.then((a) async => setState(() => _numColumns = a));
   }
 
   Function() _onTapSiteBackend(BuildContext ctx) {
@@ -59,6 +61,21 @@ class _SettingsPageState extends State<SettingsPage> {
     setState(() {
       _hideSwf = newHideSwf;
     });
+  }
+
+  Function() _onTapNumColumns(BuildContext ctx) {
+    return () async {
+      int newNumColumns = await showDialog<int>(context: ctx, builder: (ctx) {
+        return new _NumColumnsDialog(_numColumns);
+      });
+
+      if (newNumColumns != null) {
+        db.numColumns.value = new Future.value(newNumColumns);
+        setState(() {
+          _numColumns = newNumColumns;
+        });
+      }
+    };
   }
 
   Function() _onTapSignOut(BuildContext ctx) {
@@ -101,6 +118,12 @@ class _SettingsPageState extends State<SettingsPage> {
               onChanged: _onChangedHideSwf,
             ),
             new ListTile(
+              title: const Text('Number of columns'),
+              subtitle: new Text(_numColumns == null ? ''
+                : _numColumns.toString()),
+              onTap: _onTapNumColumns(ctx),
+            ),
+            new ListTile(
               title: const Text('Sign out'),
               subtitle: new Text(_username ?? ' '),
               onTap: _onTapSignOut(ctx),
@@ -140,6 +163,30 @@ class _SiteBackendDialog extends StatelessWidget {
           onChanged: Navigator.of(ctx).pop,
         ),
       ],
+    );
+  }
+}
+
+class _NumColumnsDialog extends StatelessWidget {
+  const _NumColumnsDialog(this.numColumns);
+
+  final int numColumns;
+
+  Function(String) _onSubmit(BuildContext ctx) {
+    return (s) {
+      int newNumColumns = int.parse(s);
+      Navigator.of(ctx).pop(newNumColumns);
+    };
+  }
+
+  @override
+  Widget build(BuildContext ctx) {
+    return new SimpleDialog(
+      title: const Text('Number of columns'),
+      children: [new TextField(
+        controller: new TextEditingController(text: numColumns.toString()),
+        onSubmitted: _onSubmit(ctx),
+      )],
     );
   }
 }

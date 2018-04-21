@@ -83,6 +83,8 @@ class _PostsPageView extends StatefulWidget {
 class _PostsPageViewState extends State<_PostsPageView> {
   final Logger _log = new Logger('_PostsPageViewState');
 
+  int _numColumns;
+
   final List<List<Post>> _pages = [];
 
   void _loadNextPage() async {
@@ -173,7 +175,7 @@ class _PostsPageViewState extends State<_PostsPageView> {
 
   StaggeredTile _staggeredTileBuilder(int item) {
     if (item == 0) {
-      return const StaggeredTile.extent(2, 50.0);
+      return new StaggeredTile.extent(_numColumns, 50.0);
     }
 
     int i = 1;
@@ -186,7 +188,7 @@ class _PostsPageViewState extends State<_PostsPageView> {
       }
 
       if (item == i) {
-        return const StaggeredTile.extent(2, 50.0);
+        return new StaggeredTile.extent(_numColumns, 50.0);
       }
       i += 1;
     }
@@ -196,11 +198,25 @@ class _PostsPageViewState extends State<_PostsPageView> {
 
   @override
   Widget build(BuildContext ctx) {
-    return new StaggeredGridView.extentBuilder(
-      maxCrossAxisExtent: 200.0,
-      itemCount: _itemCount(),
-      itemBuilder: _itemBuilder,
-      staggeredTileBuilder: _staggeredTileBuilder,
+    return new FutureBuilder<int>(
+      future: db.numColumns.value,
+      builder: (ctx, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done && !snapshot.hasError && snapshot.hasData) {
+          _numColumns = snapshot.data;
+          return new StaggeredGridView.countBuilder(
+            crossAxisCount: _numColumns,
+            itemCount: _itemCount(),
+            itemBuilder: _itemBuilder,
+            staggeredTileBuilder: _staggeredTileBuilder,
+          );
+        }
+
+        if (snapshot.hasError) {
+          _log.fine('error retrieving num columns: ${snapshot.error}');
+        }
+
+        return new Container();
+      },
     );
   }
 }

@@ -34,6 +34,7 @@ class Persistence {
   ValueNotifier<Future<bool>> hideSwf;
   ValueNotifier<Future<String>> username;
   ValueNotifier<Future<String>> apiKey;
+  ValueNotifier<Future<int>> numColumns;
 
   Persistence() {
     host = _makeNotifier((p) => p.getString('host') ?? consts.defaultEndpoint);
@@ -50,6 +51,9 @@ class Persistence {
 
     apiKey = _makeNotifier((p) => p.getString('apiKey'));
     apiKey.addListener(_saveString('apiKey', apiKey));
+
+    numColumns = _makeNotifier((p) => p.getInt('numColumns') ?? 3);
+    numColumns.addListener(_saveInt('numColumns', numColumns));
   }
 
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
@@ -66,9 +70,15 @@ class Persistence {
     };
   }
 
-  void Function() _saveBool(String key, ValueNotifier<Future<bool>> notifier) {
+  Function() _saveBool(String key, ValueNotifier<Future<bool>> notifier) {
     return () async {
       (await _prefs).setBool(key, await notifier.value);
+    };
+  }
+
+  Function() _saveInt(String key, ValueNotifier<Future<int>> notifier) {
+    return () async {
+      (await _prefs).setInt(key, await notifier.value);
     };
   }
 }
