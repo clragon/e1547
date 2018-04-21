@@ -40,58 +40,65 @@ void _setFocusToEnd(TextEditingController controller) {
   );
 }
 
-class PostsPage extends StatelessWidget {
+class PostsPage extends StatefulWidget {
   @override
-  Widget build(BuildContext ctx) {
-    AppBar appBarWidget() {
-      return new AppBar(
-        title: const Text(consts.appName),
-        actions: [
-          new IconButton(
-            icon: const Icon(Icons.refresh),
-            tooltip: 'Refresh',
-            onPressed: () {
-                // _pageController.jumpToPage(0);
-                // setState(_pages.clear);
-            },
-          ),
-        ],
-      );
-    }
+  State createState() => new _PostsPageState();
+}
 
-    Widget floatingActionButtonWidget() {
-      return new FloatingActionButton(
-        child: const Icon(Icons.search),
-        onPressed: (){},
-      );
-    }
+class _PostsPageState extends State<PostsPage> {
+  final Logger _log = new Logger('_PostsPageState');
 
-    return new Scaffold(
-      appBar: appBarWidget(),
-      body: new _PostsPageView(),
-      drawer: new _PostsPageDrawer(),
-      floatingActionButton: floatingActionButtonWidget(),
-    );
+  bool _isEditingTags = false;
+  PersistentBottomSheetController<Tagset> _bottomSheetController;
+
+  final Future<TextEditingController> _textEditingControllerFuture = db.tags.value.then((tags) {
+    return new TextEditingController()..text = tags.toString() + ' ';
+  });
+
+  Function() _onPressedFloatingActionButton(BuildContext ctx) {
+    return () async {
+      void onCloseBottomSheet() {
+        setState(() {
+          _isEditingTags = false;
+        });
+      }
+
+      TextEditingController tagController = await _textEditingControllerFuture;
+      _setFocusToEnd(tagController);
+
+      if (_isEditingTags) {
+        Tagset newTags = new Tagset.parse(tagController.text);
+        _log.info('new tags: $newTags');
+        db.tags.value = new Future.value(newTags);
+
+        _bottomSheetController?.close();
+        _clearPages();
+
+      } else {
+        _bottomSheetController = Scaffold.of(ctx).showBottomSheet(
+              (ctx) => new TagEntry(controller: tagController),
+        );
+
+        setState(() {
+          _isEditingTags = true;
+        });
+
+        _bottomSheetController.closed.then((a) => onCloseBottomSheet());
+      }
+    };
   }
-}
-
-class _PostsPageView extends StatefulWidget {
-  @override
-  State createState() => new _PostsPageViewState();
-}
-
-class _PostsPageViewState extends State<_PostsPageView> {
-  final Logger _log = new Logger('_PostsPageViewState');
-
-  int _numColumns;
 
   final List<List<Post>> _pages = [];
 
   void _loadNextPage() async {
-    List<Post> nextPage = await client.posts(await db.tags.value, _pages.length + 1);
+    List<Post> nextPage = await client.posts(await db.tags.value, _pages.length);
     setState(() {
       _pages.add(nextPage);
     });
+  }
+
+  void _clearPages() {
+    setState(_pages.clear);
   }
 
   // Item count is:
@@ -173,98 +180,87 @@ class _PostsPageViewState extends State<_PostsPageView> {
     return null;
   }
 
-  StaggeredTile _staggeredTileBuilder(int item) {
-    if (item == 0) {
-      return new StaggeredTile.extent(_numColumns, 50.0);
-    }
-
-    int i = 1;
-    for (int p = 0; p < _pages.length; p++) {
-      List<Post> page = _pages[p];
-      i += page.length;
-
-      if (item < i) {
-        return const StaggeredTile.extent(1, 250.0);
+  StaggeredTile Function(int) _staggeredTileBuilder(int numColumns) {
+    return (item) {
+      if (item == 0) {
+        return new StaggeredTile.extent(numColumns, 50.0);
       }
 
-      if (item == i) {
-        return new StaggeredTile.extent(_numColumns, 50.0);
-      }
-      i += 1;
-    }
+      int i = 1;
+      for (int p = 0; p < _pages.length; p++) {
+        List<Post> page = _pages[p];
+        i += page.length;
 
-    return null;
+        if (item < i) {
+          return const StaggeredTile.extent(1, 250.0);
+        }
+
+        if (item == i) {
+          return new StaggeredTile.extent(numColumns, 50.0);
+        }
+        i += 1;
+      }
+
+      return null;
+    };
   }
 
   @override
   Widget build(BuildContext ctx) {
-    return new FutureBuilder<int>(
-      future: db.numColumns.value,
-      builder: (ctx, snapshot) {
-        if (snapshot.connectionState == ConnectionState.done && !snapshot.hasError && snapshot.hasData) {
-          _numColumns = snapshot.data;
-          return new StaggeredGridView.countBuilder(
-            crossAxisCount: _numColumns,
-            itemCount: _itemCount(),
-            itemBuilder: _itemBuilder,
-            staggeredTileBuilder: _staggeredTileBuilder,
-          );
-        }
+    AppBar appBarWidget() {
+      return new AppBar(
+        title: const Text(consts.appName),
+        actions: [
+          new IconButton(
+            icon: const Icon(Icons.refresh),
+            tooltip: 'Refresh',
+            onPressed: _clearPages,
+          ),
+        ],
+      );
+    }
 
-        if (snapshot.hasError) {
-          _log.fine('error retrieving num columns: ${snapshot.error}');
-        }
+    Widget bodyWidget() {
+      return new FutureBuilder<int>(
+        future: db.numColumns.value,
+        builder: (ctx, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done && !snapshot.hasError && snapshot.hasData) {
+            return new StaggeredGridView.countBuilder(
+              crossAxisCount: snapshot.data,
+              itemCount: _itemCount(),
+              itemBuilder: _itemBuilder,
+              staggeredTileBuilder: _staggeredTileBuilder(snapshot.data),
+            );
+          }
 
-        return new Container();
-      },
+          if (snapshot.hasError) {
+            _log.fine('error retrieving num columns: ${snapshot.error}');
+          }
+
+          return new Container();
+        },
+      );
+    }
+
+    Widget floatingActionButtonWidget() {
+      return new Builder(builder: (ctx) { // Needed for Scaffold.of(ctx) to work
+        return new FloatingActionButton(
+          child: _isEditingTags ? const Icon(Icons.check) : const Icon(
+              Icons.search),
+          onPressed: _onPressedFloatingActionButton(ctx),
+        );
+      });
+    }
+
+    return new Scaffold(
+      appBar: appBarWidget(),
+      body: bodyWidget(),
+      drawer: new _PostsPageDrawer(),
+      floatingActionButton: floatingActionButtonWidget(),
     );
   }
 }
 
-
-  // final PageController _pageController = new PageController();
-
-  // bool _isEditingTags = false;
-  // PersistentBottomSheetController<Tagset> _bottomSheetController;
-
-  // final Future<TextEditingController> _textEditingControllerFuture = db.tags.value.then((tags) {
-  //   return new TextEditingController()..text = tags.toString() + ' ';
-  // });
-
-/*
-  Function() _onPressedFloatingActionButton(BuildContext ctx) {
-    return () async {
-      void onCloseBottomSheet() {
-        setState(() {
-          _isEditingTags = false;
-        });
-      }
-
-      TextEditingController tagController = await _textEditingControllerFuture;
-      _setFocusToEnd(tagController);
-
-      if (_isEditingTags) {
-        Tagset newTags = new Tagset.parse(tagController.text);
-        _log.info('new tags: $newTags');
-        _tags = new Future.value(newTags);
-        db.tags.value = _tags;
-
-        _bottomSheetController?.close();
-        setState(_pages.clear);
-      } else {
-        _bottomSheetController = Scaffold.of(ctx).showBottomSheet(
-              (ctx) => new TagEntry(controller: tagController),
-            );
-
-        setState(() {
-          _isEditingTags = true;
-        });
-
-        _bottomSheetController.closed.then((a) => onCloseBottomSheet());
-      }
-    };
-  }
-  */
 
 class _PostsPageDrawer extends StatelessWidget {
   final Logger _log = new Logger('_PostsPageDrawer');

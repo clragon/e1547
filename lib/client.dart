@@ -86,7 +86,7 @@ class Client {
   Future<List<Post>> posts(Tagset tags, int page) async {
     String body = await _http.get(await _host, '/post/index.json', query: {
       'tags': tags,
-      'page': page,
+      'page': page + 1,
       'limit': 75,
     }).then((response) => response.body);
 
