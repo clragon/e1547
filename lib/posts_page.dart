@@ -101,6 +101,27 @@ class _PostsPageState extends State<PostsPage> {
     setState(_pages.clear);
   }
 
+  Function() _onPressedChangeColumns(BuildContext ctx) {
+    return () async {
+      int numColumns = await db.numColumns.value ?? 3;
+      int newNumColumns = await showDialog<int>(context: ctx, builder: (ctx) {
+        return new RangeDialog(
+          title: 'Number of columns',
+          value: numColumns,
+          max: 10,
+          min: 1,
+        );
+      });
+
+      if (newNumColumns != null && newNumColumns > 0) {
+        _log.fine('setting numColumns to $newNumColumns');
+        setState(() {
+          db.numColumns.value = new Future.value(newNumColumns);
+        });
+      }
+    };
+  }
+
   // Item count is:
   // 1. Total number of loaded posts
   // 2. Header before each page, including a blank header after after the last
@@ -115,10 +136,14 @@ class _PostsPageState extends State<PostsPage> {
   }
 
   Widget _itemBuilder(BuildContext ctx, int item) {
-    Widget postPreview(List<Post> page, int post) {
-      return new PostPreview(page[post], onPressed: () {
+    Widget postPreview(List<Post> page, int postOnPage, int postOnAll) {
+      return new PostPreview(page[postOnPage], onPressed: () {
         Navigator.of(ctx).push(new MaterialPageRoute<Null>(
-          builder: (ctx) => new PostSwipe(page, startingIndex: post),
+          builder: (ctx) => new PostSwipe(
+              _pages.fold<Iterable<Post>>(const Iterable.empty(),
+                      (a, b) => a.followedBy(b)).toList(),
+              startingIndex: postOnAll,
+          ),
         ));
       });
     }
@@ -157,7 +182,7 @@ class _PostsPageState extends State<PostsPage> {
 
       if (item < i) {
         _log.finer('item was post on page ${p + 1}');
-        return postPreview(page, item - (i - page.length));
+        return postPreview(page, item-(i-page.length), item-(p+1));
       }
 
       // Header for next page
@@ -211,6 +236,11 @@ class _PostsPageState extends State<PostsPage> {
       return new AppBar(
         title: const Text(consts.appName),
         actions: [
+          new IconButton(
+            icon: const Icon(Icons.view_column),
+            tooltip: 'Set columns',
+            onPressed: _onPressedChangeColumns(ctx),
+          ),
           new IconButton(
             icon: const Icon(Icons.refresh),
             tooltip: 'Refresh',
@@ -351,7 +381,7 @@ class TagEntry extends StatelessWidget {
 
         int min = await showDialog<int>(context: ctx, builder: (ctx) {
           return new RangeDialog(
-            title: filterType,
+            title: 'Posts with $filterType at least',
             value: value,
             max: 500,
           );

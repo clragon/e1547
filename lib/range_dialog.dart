@@ -20,11 +20,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 class RangeDialog extends StatefulWidget {
-  const RangeDialog({this.title, this.value, this.max});
+  const RangeDialog({this.title, this.value, this.max, this.min});
 
   final String title;
   final int value;
   final int max;
+  final int min;
 
   @override
   RangeDialogState createState() => new RangeDialogState();
@@ -59,7 +60,8 @@ class RangeDialogState extends State<RangeDialog> {
 
     Widget sliderWidget() {
       return new Slider(
-          min: math.min(0.0, _value.toDouble()),
+          min: math.min(widget.min != null ? widget.min.toDouble() : 0.0,
+              _value.toDouble()),
           max: math.max(widget.max.toDouble(), _value.toDouble()),
           divisions: 50,
           value: _value.toDouble(),
@@ -96,7 +98,7 @@ class RangeDialogState extends State<RangeDialog> {
 
     _value = _value ?? widget.value;
     return new SimpleDialog(
-      title: new Text('Posts with ${widget.title} at least'),
+      title: new Text(widget.title),
       children: [
         numberWidget(),
         sliderWidget(),
