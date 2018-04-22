@@ -8,7 +8,7 @@ PODS:
 DEPENDENCIES:
   - Flutter (from `/Users/demsar/data/code/clone/flutter/bin/cache/artifacts/engine/ios-release`)
   - shared_preferences (from `/Users/demsar/.pub-cache/hosted/pub.dartlang.org/shared_preferences-0.4.1/ios`)
-  - url_launcher (from `/Users/demsar/.pub-cache/hosted/pub.dartlang.org/url_launcher-2.0.2/ios`)
+  - url_launcher (from `/Users/demsar/.pub-cache/hosted/pub.dartlang.org/url_launcher-3.0.0/ios`)
 
 EXTERNAL SOURCES:
   Flutter:
@@ -16,7 +16,7 @@ EXTERNAL SOURCES:
   shared_preferences:
     :path: "/Users/demsar/.pub-cache/hosted/pub.dartlang.org/shared_preferences-0.4.1/ios"
   url_launcher:
-    :path: "/Users/demsar/.pub-cache/hosted/pub.dartlang.org/url_launcher-2.0.2/ios"
+    :path: "/Users/demsar/.pub-cache/hosted/pub.dartlang.org/url_launcher-3.0.0/ios"
 
 SPEC CHECKSUMS:
   Flutter: 9d0fac939486c9aba2809b7982dfdbb47a7b0296
