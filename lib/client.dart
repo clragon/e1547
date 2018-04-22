@@ -106,7 +106,7 @@ class Client {
   Future<List<Comment>> comments(int postId, int page) async {
     String body = await _http.get(await _host, '/comment/index.json', query: {
       'post_id': postId,
-      'page': page,
+      'page': page + 1,
     }).then((response) => response.body);
 
     List<Comment> comments = [];

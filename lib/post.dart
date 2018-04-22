@@ -30,6 +30,28 @@ import 'comment.dart' show CommentsWidget;
 import 'persistence.dart' show db;
 
 class Post {
+  Map raw;
+
+  int id;
+  String author;
+  int score;
+  int favCount;
+  String fileUrl;
+  String fileExt;
+  String previewUrl;
+  int previewWidth;
+  int previewHeight;
+  String sampleUrl;
+  int sampleWidth;
+  int sampleHeight;
+  String rating;
+  bool hasComments;
+  List<String> artist;
+
+  bool isConditionalDnp;
+  bool hasSoundWarning;
+  bool hasEpilepsyWarning;
+
   Post.fromRaw(this.raw) {
     id = raw['id'] as int;
     author = raw['author'] as String;
@@ -62,28 +84,6 @@ class Post {
       }
     }
   }
-
-  Map raw;
-
-  int id;
-  String author;
-  int score;
-  int favCount;
-  String fileUrl;
-  String fileExt;
-  String previewUrl;
-  int previewWidth;
-  int previewHeight;
-  String sampleUrl;
-  int sampleWidth;
-  int sampleHeight;
-  String rating;
-  bool hasComments;
-  List<String> artist;
-
-  bool isConditionalDnp;
-  bool hasSoundWarning;
-  bool hasEpilepsyWarning;
 
   // Get the URL for the HTML version of the desired post.
   Uri url(String host) =>

@@ -22,19 +22,19 @@ import 'client.dart' show client;
 import 'post.dart' show Post;
 
 class Comment {
-  Comment.fromRaw(this.raw) {
-    id = raw['id'] as int;
-    creator = raw['creator'] as String;
-    body = raw['body'] as String;
-    score = raw['score'] as int;
-  }
-
   Map raw;
 
   int id;
   String creator;
   String body;
   int score;
+
+  Comment.fromRaw(this.raw) {
+    id = raw['id'] as int;
+    creator = raw['creator'] as String;
+    body = raw['body'] as String;
+    score = raw['score'] as int;
+  }
 }
 
 class CommentsWidget extends StatefulWidget {
@@ -47,7 +47,7 @@ class CommentsWidget extends StatefulWidget {
 }
 
 class _CommentsWidgetState extends State<CommentsWidget> {
-  int _page = 1;
+  int _page = 0;
   final List<Comment> _comments = [];
   bool _more = true;
 
@@ -64,7 +64,7 @@ class _CommentsWidgetState extends State<CommentsWidget> {
       setState(() {
         _comments.addAll(newComments);
       });
-      _more = newComments.isEmpty;
+      _more = newComments.isNotEmpty;
     }
   }
 
