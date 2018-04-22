@@ -22,8 +22,10 @@ import 'package:flutter/services.dart' show Clipboard, ClipboardData;
 import 'package:flutter/widgets.dart';
 
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart' show StaggeredGridView, StaggeredTile;
+import 'package:font_awesome_flutter/font_awesome_flutter.dart' show FontAwesomeIcons;
 import 'package:logging/logging.dart' show Logger;
 import 'package:meta/meta.dart' show required;
+import 'package:url_launcher/url_launcher.dart' as url;
 
 import 'client.dart' show client;
 import 'consts.dart' as consts;
@@ -336,13 +338,18 @@ class _PostsPageDrawer extends StatelessWidget {
     }
 
     return new Drawer(child: new ListView(children: [
-          headerWidget(),
-          new ListTile(
-            leading: const Icon(Icons.settings),
-            title: const Text('Settings'),
-            onTap: () => Navigator.popAndPushNamed(ctx, '/settings'),
-          ),
-          const AboutListTile(icon: const Icon(Icons.help)),
+      headerWidget(),
+      new ListTile(
+        leading: const Icon(Icons.settings),
+        title: const Text('Settings'),
+        onTap: () => Navigator.popAndPushNamed(ctx, '/settings'),
+      ),
+      new ListTile(
+        leading: const Icon(FontAwesomeIcons.patreon),
+        title: const Text('Support ${consts.appName} on Patreon'),
+        onTap: () => url.launch(consts.patreonCampaign),
+      ),
+      const AboutListTile(icon: const Icon(Icons.help)),
     ]));
   }
 }
