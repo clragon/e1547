@@ -3,6 +3,8 @@
 .sconsign.dblite
 .svn/
 
+Podfile.lock
+
 .DS_Store
 *.swp
 profile
