@@ -90,13 +90,17 @@ class Post {
       new Uri(scheme: 'https', host: host, path: '/post/show/$id');
 
   ImageProvider get fullImage => new NetworkImage(fileUrl);
+
   ImageProvider get previewImage => new NetworkImage(previewUrl);
+
   ImageProvider get sampleImage => new NetworkImage(sampleUrl);
 }
 
 class PostWidget extends StatelessWidget {
   final Post post;
+
   const PostWidget(this.post, {Key key}) : super(key: key);
+
   @override
   Widget build(BuildContext ctx) {
     return new Scaffold(body: new PostWidgetScaffold(post));
@@ -108,6 +112,7 @@ class PostWidgetScaffold extends StatelessWidget {
   static final Logger _log = new Logger('PostWidgetScaffold');
 
   final Post post;
+
   const PostWidgetScaffold(this.post, {Key key}) : super(key: key);
 
   Function() _onTapImage(BuildContext ctx, Post post) {
@@ -125,8 +130,8 @@ class PostWidgetScaffold extends StatelessWidget {
       } else {
         SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
         await Navigator.of(ctx).push(new MaterialPageRoute<Null>(
-          builder: fullScreenWidgetBuilder,
-        ));
+              builder: fullScreenWidgetBuilder,
+            ));
         SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
       }
     };
@@ -138,8 +143,8 @@ class PostWidgetScaffold extends StatelessWidget {
         return new SimpleDialogOption(
           onPressed: () => Navigator.of(ctx).pop('add'),
           child: const Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10.0),
-              child: const Text('Add to favorites'),
+            padding: const EdgeInsets.symmetric(vertical: 10.0),
+            child: const Text('Add to favorites'),
           ),
         );
       }
@@ -159,10 +164,11 @@ class PostWidgetScaffold extends StatelessWidget {
         children: [addFav(), removeFav()],
       );
     }
+
     return () async {
       String cmd = await showDialog<String>(
-          context: ctx,
-          builder: addRemoveFavDialogBuilder,
+        context: ctx,
+        builder: addRemoveFavDialogBuilder,
       );
 
       if (cmd == null) {
@@ -174,21 +180,19 @@ class PostWidgetScaffold extends StatelessWidget {
         message = await client.addAsFavorite(post.id)
             ? 'Added post ${post.id} to favorites'
             : 'Failed to add post ${post.id} to favorites';
-
       } else if (cmd == 'remove') {
         message = await client.removeAsFavorite(post.id)
             ? 'Removed post ${post.id} from favorites'
             : 'Failed to remove post ${post.id} from favorites';
-
       } else {
         message = 'Unknown error';
         _log.warning('Unknown command for favorites: "$cmd"');
       }
 
       Scaffold.of(ctx).showSnackBar(new SnackBar(
-        duration: const Duration(seconds: 5),
-        content: new Text(message),
-      ));
+            duration: const Duration(seconds: 5),
+            content: new Text(message),
+          ));
     };
   }
 
@@ -220,7 +224,8 @@ class PostWidgetScaffold extends StatelessWidget {
         ]);
       }
 
-      return new Flexible(child: new GestureDetector(
+      return new Flexible(
+          child: new GestureDetector(
         onTap: _onTapImage(ctx, post),
         child: new Container(
           color: Colors.black,
@@ -240,14 +245,14 @@ class PostWidgetScaffold extends StatelessWidget {
           children: [
             new Text(post.artist.join(',\n')),
             new Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  new Text('#${post.id}', style: secondaryTextStyle),
-                  new Row(children: [
-                    new Icon(Icons.person, size: 14.0, color: secondary),
-                    new Text(' ${post.author}', style: secondaryTextStyle),
-                  ]),
-                ],
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                new Text('#${post.id}', style: secondaryTextStyle),
+                new Row(children: [
+                  new Icon(Icons.person, size: 14.0, color: secondary),
+                  new Text(' ${post.author}', style: secondaryTextStyle),
+                ]),
+              ],
             ),
           ],
         );
@@ -272,9 +277,11 @@ class PostWidgetScaffold extends StatelessWidget {
         return new IconButton(
           icon: const Icon(Icons.chat),
           tooltip: 'Go to comments',
-          onPressed: () => Navigator.of(ctx).push(new MaterialPageRoute<Null>(builder: (ctx) {
-            return new CommentsWidget(post);
-          })),
+          onPressed: () => Navigator
+                  .of(ctx)
+                  .push(new MaterialPageRoute<Null>(builder: (ctx) {
+                return new CommentsWidget(post);
+              })),
         );
       }
 
@@ -292,13 +299,16 @@ class PostWidgetScaffold extends StatelessWidget {
         return new IconButton(
           icon: const Icon(Icons.more_horiz),
           tooltip: 'More actions',
-          onPressed: () => showDialog(context: ctx, builder: (ctx) {
-            return new _MoreDialog(post);
-          }),
+          onPressed: () => showDialog(
+              context: ctx,
+              builder: (ctx) {
+                return new _MoreDialog(post);
+              }),
         );
       }
 
-      return new ButtonTheme.bar(child: new ButtonBar(
+      return new ButtonTheme.bar(
+          child: new ButtonBar(
         alignment: MainAxisAlignment.spaceAround,
         children: <Widget>[
           favButton(),
@@ -310,13 +320,13 @@ class PostWidgetScaffold extends StatelessWidget {
     }
 
     return new Padding(
-        padding: new EdgeInsets.only(top: MediaQuery.of(ctx).padding.top),
-        child: new Column(mainAxisSize: MainAxisSize.min, children: [
-          postContentsWidget(),
-          postMetadataWidget(),
-          const Divider(height: 8.0),
-          buttonBarWidget(),
-        ]),
+      padding: new EdgeInsets.only(top: MediaQuery.of(ctx).padding.top),
+      child: new Column(mainAxisSize: MainAxisSize.min, children: [
+        postContentsWidget(),
+        postMetadataWidget(),
+        const Divider(height: 8.0),
+        buttonBarWidget(),
+      ]),
     );
   }
 }
@@ -326,12 +336,12 @@ class PostPreview extends StatelessWidget {
   static final Logger _log = new Logger('PostPreview');
   final Post post;
   final VoidCallback onPressed;
+
   const PostPreview(
     this.post, {
     Key key,
     this.onPressed,
-  })
-      : super(key: key);
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext ctx) {
@@ -481,8 +491,8 @@ class PostPreview extends StatelessWidget {
 
 class _MoreDialog extends StatelessWidget {
   final Post post;
-  const _MoreDialog(this.post);
 
+  const _MoreDialog(this.post);
 
   Future<Null> _copyAndPopPop(BuildContext ctx, String text) async {
     await Clipboard.setData(new ClipboardData(text: text));
@@ -497,18 +507,20 @@ class _MoreDialog extends StatelessWidget {
         info.write('$k: $v\n\n');
       });
 
-      showDialog(context: ctx, builder: (ctx) {
-        return new SimpleDialog(
-            title: new Text('post #${post.id} info'),
-            children: <Widget>[
-              new TextField(
-                  maxLines: 15,
-                  decoration: const InputDecoration(border: null),
-                  style: const TextStyle(fontFamily: 'Courier'),
-                  controller:
-                  new TextEditingController(text: info.toString()))
-            ]);
-      });
+      showDialog(
+          context: ctx,
+          builder: (ctx) {
+            return new SimpleDialog(
+                title: new Text('post #${post.id} info'),
+                children: <Widget>[
+                  new TextField(
+                      maxLines: 15,
+                      decoration: const InputDecoration(border: null),
+                      style: const TextStyle(fontFamily: 'Courier'),
+                      controller:
+                          new TextEditingController(text: info.toString()))
+                ]);
+          });
     };
   }
 
@@ -529,13 +541,14 @@ class _MoreDialog extends StatelessWidget {
           title: const Text('Copy direct link'),
           onTap: () => _copyAndPopPop(ctx, post.fileUrl));
 
-      showDialog(context: ctx, builder: (ctx) {
-        return new SimpleDialog(
-            title: title, children: [copyLink, copyDirectLink]);
-      });
+      showDialog(
+          context: ctx,
+          builder: (ctx) {
+            return new SimpleDialog(
+                title: title, children: [copyLink, copyDirectLink]);
+          });
     };
   }
-
 
   @override
   Widget build(BuildContext ctx) {
@@ -572,8 +585,8 @@ class PostSwipe extends StatelessWidget {
   @override
   Widget build(BuildContext ctx) {
     return new PageView.builder(
-        controller: new PageController(initialPage: startingIndex),
-        itemBuilder: _pageBuilder,
+      controller: new PageController(initialPage: startingIndex),
+      itemBuilder: _pageBuilder,
     );
   }
 }
