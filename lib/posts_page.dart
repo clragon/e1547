@@ -377,9 +377,11 @@ class TagEntry extends StatelessWidget {
     _setFocusToEnd(controller);
   }
 
-  void _withTags(TagEditor editor) {
-    Tagset tags = new Tagset.parse(controller.text);
-    editor(tags).then(_setTags);
+  void _withTags(TagEditor editor) async {
+    Tagset tags = await editor(new Tagset.parse(controller.text));
+    if (tags != null) {
+      _setTags(tags);
+    }
   }
 
   Function(String) _onSelectedFilterBy(BuildContext ctx) {
