@@ -349,7 +349,7 @@ class _PostsPageDrawer extends StatelessWidget {
         title: const Text('Support ${consts.appName} on Patreon'),
         onTap: () => url.launch(consts.patreonCampaign),
       ),
-      new AboutListTile(
+      const AboutListTile(
         icon: const Icon(Icons.help),
         applicationName: consts.appName,
         applicationVersion: consts.appVersion,
