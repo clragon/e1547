@@ -8,7 +8,7 @@ You can also post to the [e621 forum thread][forum].
 [discord]: https://discord.gg/tATpANM
 [forum]: https://e621.net/forum/show/232166
 
-![Demo gif for v0.1.0-alpha, sped up x2.5](https://github.com/perlatus/e1547/raw/master/gif/v0.1.0-alpha_x2.5.gif)
+![Demo gif for v1.0.0](https://github.com/perlatus/e1547/raw/master/gif/v1.0.0.gif)
 
 If you want to support development, please [pledge to my patreon][patreon]. As
 a patron you'll be able to help me work on the functionality that's most
