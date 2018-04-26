@@ -184,6 +184,7 @@
 					97C146ED1CF9000F007C117D = {
 						CreatedOnToolsVersion = 7.3.1;
 						DevelopmentTeam = 7ZWC42W7B3;
+						ProvisioningStyle = Manual;
 					};
 				};
 			};
@@ -440,6 +441,7 @@
 			baseConfigurationReference = 9740EEB21CF90195004384FC /* Debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = 7ZWC42W7B3;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -455,6 +457,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = io.vczf.e1547;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "ffba57f5-6507-416d-ad53-9fe9352b5434";
+				PROVISIONING_PROFILE_SPECIFIER = "Primary Dev";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -464,6 +468,8 @@
 			baseConfigurationReference = 7AFA3C8E1D35360C0083082E /* Release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = 7ZWC42W7B3;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -479,6 +485,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = io.vczf.e1547;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "54b1bdff-f242-403f-8d92-64eb067264c4";
+				PROVISIONING_PROFILE_SPECIFIER = "Primary Dist";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
