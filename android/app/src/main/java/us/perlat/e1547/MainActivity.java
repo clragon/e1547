@@ -1,4 +1,4 @@
-package io.vczf.e1547;
+package us.perlat.e1547;
 
 import android.os.Bundle;
 

@@ -28,7 +28,7 @@ android {
 
     defaultConfig {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        applicationId "io.vczf.e1547"
+        applicationId "us.perlat.e1547"
     }
 
     signingConfigs {

@@ -455,10 +455,10 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = io.vczf.e1547;
+				PRODUCT_BUNDLE_IDENTIFIER = us.perlat.e1547;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "ffba57f5-6507-416d-ad53-9fe9352b5434";
-				PROVISIONING_PROFILE_SPECIFIER = "Primary Dev";
+				PROVISIONING_PROFILE = "7d31b676-418c-4ab0-95d2-e186ed82fe81";
+				PROVISIONING_PROFILE_SPECIFIER = "perlat.us development";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -483,10 +483,10 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = io.vczf.e1547;
+				PRODUCT_BUNDLE_IDENTIFIER = us.perlat.e1547;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "54b1bdff-f242-403f-8d92-64eb067264c4";
-				PROVISIONING_PROFILE_SPECIFIER = "Primary Dist";
+				PROVISIONING_PROFILE = "0e986728-8524-4173-92cd-734dd88e120f";
+				PROVISIONING_PROFILE_SPECIFIER = "perlat.us distribution";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
