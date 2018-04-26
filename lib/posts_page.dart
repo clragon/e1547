@@ -379,9 +379,7 @@ class TagEntry extends StatelessWidget {
 
   void _withTags(TagEditor editor) async {
     Tagset tags = await editor(new Tagset.parse(controller.text));
-    if (tags != null) {
-      _setTags(tags);
-    }
+    _setTags(tags);
   }
 
   Function(String) _onSelectedFilterBy(BuildContext ctx) {
@@ -408,7 +406,7 @@ class TagEntry extends StatelessWidget {
 
         _log.info('$selectedFilter min value: $min');
         if (min == null) {
-          return null;
+          return tags;
         }
 
         if (min == 0) {
