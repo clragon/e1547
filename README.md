@@ -36,3 +36,11 @@ I can't get more.
 
 [How to install on iOS from source]: https://github.com/perlatus/e1547/wiki/How-to-install-on-iOS-from-source
 [the-generous-apple]: https://www.patreon.com/bePatron?c=1707622&rid=2550780
+
+## Attributions
+
+The e1547 logo and banner image was created using the [Font Awesome paw icon
+.svg][paw], which is licensed under [CC BY 4.0][cc].
+
+[paw]: https://fontawesome.com/icons/paw?style=solid
+[cc]: https://creativecommons.org/licenses/by/4.0/
