@@ -18,3 +18,4 @@ const String appName = 'e1547';
 const String appVersion = '0.2.0-alpha';
 const String defaultEndpoint = 'e926.net';
 const String patreonCampaign = 'https://www.patreon.com/perlatus';
+const String about = 'An app for e621 and e926 made with ♥ by perlatus';

@@ -1,1 +1,3 @@
-convert paw.svg -render -resize "${1}x${1}" paw_${1}.png
+for i in "$@"; do
+	convert -background none paw.svg -render -resize "${i}x${i}" "paw_${i}.png"
+done

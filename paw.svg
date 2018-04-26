@@ -15,7 +15,7 @@
    version="1.1"
    id="svg8"
    inkscape:version="0.92.2 5c3e80d, 2017-08-06"
-   sodipodi:docname="icon.svg">
+   sodipodi:docname="paw.svg">
   <defs
      id="defs2" />
   <sodipodi:namedview
@@ -33,9 +33,9 @@
      showgrid="false"
      units="px"
      inkscape:pagecheckerboard="true"
-     inkscape:window-width="1852"
+     inkscape:window-width="1858"
      inkscape:window-height="1035"
-     inkscape:window-x="68"
+     inkscape:window-x="62"
      inkscape:window-y="1"
      inkscape:window-maximized="1" />
   <metadata
@@ -46,7 +46,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -54,7 +54,7 @@
      inkscape:groupmode="layer"
      id="layer2"
      inkscape:label="Full fill"
-     style="display:inline">
+     style="display:none">
     <rect
        transform="translate(0,-26.06665)"
        style="fill:#0000b6;fill-opacity:1;stroke-width:0.5291667"
@@ -68,7 +68,7 @@
      inkscape:groupmode="layer"
      id="layer3"
      inkscape:label="Circle fill"
-     style="display:none">
+     style="display:inline">
     <circle
        style="fill:#0000b6;fill-opacity:1;stroke-width:0.62960178"
        id="path4589"
