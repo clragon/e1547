@@ -47,7 +47,7 @@ class RangeDialogState extends State<RangeDialog> {
         keyboardType: TextInputType.number,
         style: const TextStyle(fontSize: 48.0),
         textAlign: TextAlign.center,
-        decoration: const InputDecoration(border: null),
+        decoration: const InputDecoration(border: InputBorder.none),
         controller: _controller,
         onSubmitted: (v) => Navigator.of(ctx).pop(int.parse(v)),
       );
@@ -65,6 +65,7 @@ class RangeDialogState extends State<RangeDialog> {
           max: math.max(widget.max.toDouble(), _value.toDouble()),
           divisions: 50,
           value: _value.toDouble(),
+          activeColor: Colors.cyanAccent,
           onChanged: (v) {
             setState(() => _value = v.toInt());
           });
