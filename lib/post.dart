@@ -21,7 +21,8 @@ import 'package:flutter/rendering.dart' show TextOverflow;
 import 'package:flutter/services.dart'
     show Clipboard, ClipboardData, SystemChrome, SystemUiOverlay;
 
-import 'package:cached_network_image/cached_network_image.dart' show CachedNetworkImage, CachedNetworkImageProvider;
+import 'package:cached_network_image/cached_network_image.dart'
+    show CachedNetworkImage, CachedNetworkImageProvider;
 import 'package:logging/logging.dart' show Logger;
 import 'package:url_launcher/url_launcher.dart' as url;
 import 'package:zoomable_image/zoomable_image.dart' show ZoomableImage;
@@ -114,7 +115,17 @@ class PostWidgetScaffold extends StatelessWidget {
     Widget fullScreenWidgetBuilder(BuildContext ctx) {
       return new ZoomableImage(
         new CachedNetworkImageProvider(post.fileUrl),
-        scale: 16.0,
+        placeholder: new Stack(alignment: Alignment.center, children: [
+          new CachedNetworkImage(
+            imageUrl: post.sampleUrl,
+            placeholder: const CircularProgressIndicator(),
+            errorWidget: const Icon(Icons.error),
+          ),
+          new Container(
+            alignment: Alignment.topCenter,
+            child: const LinearProgressIndicator(),
+          ),
+        ]),
         onTap: () => Navigator.of(ctx).pop(),
       );
     }
@@ -202,7 +213,7 @@ class PostWidgetScaffold extends StatelessWidget {
                   imageUrl: post.sampleUrl,
                   placeholder: const CircularProgressIndicator(),
                   errorWidget: const Icon(Icons.error),
-          );
+                );
         }
 
         Widget fullscreenButtonWidget() {
