@@ -362,7 +362,6 @@ class PostPreview extends StatelessWidget {
         child: new Center(
           child: new CachedNetworkImage(
             imageUrl: post.previewUrl,
-            placeholder: const CircularProgressIndicator(),
             errorWidget: const Icon(Icons.error),
             fit: BoxFit.contain,
           ),
