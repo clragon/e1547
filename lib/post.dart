@@ -15,6 +15,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 import 'dart:async' show Future;
+import 'dart:io' show File, Platform;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart' show TextOverflow;
@@ -23,6 +24,8 @@ import 'package:flutter/services.dart'
 
 import 'package:cached_network_image/cached_network_image.dart'
     show CachedNetworkImage, CachedNetworkImageProvider;
+import 'package:flutter_cache_manager/flutter_cache_manager.dart'
+    show CacheManager;
 import 'package:logging/logging.dart' show Logger;
 import 'package:url_launcher/url_launcher.dart' as url;
 import 'package:zoomable_image/zoomable_image.dart' show ZoomableImage;
@@ -566,11 +569,50 @@ class _MoreDialog extends StatelessWidget {
     };
   }
 
+  Function() _download(BuildContext ctx) {
+    return () {
+      String filename = '${post.artist.join(",")} ~ ${post.id}.${post.fileExt}';
+      String filepath = Platform.environment['EXTERNAL_STORAGE'] +
+          '/Download/' + filename;
+
+      if (new File(filepath).existsSync()) {
+        showDialog(context: ctx, builder: (ctx) {
+          return new AlertDialog(
+            content: new Text('$filename already downloaded'),
+          );
+        });
+        return;
+      }
+
+      Future<File> finalFileFuture = () async {
+        CacheManager cm = await CacheManager.getInstance();
+        File cachedFile = await cm.getFile(post.fileUrl);
+        return cachedFile.copySync(filepath);
+      }();
+
+      showDialog(context: ctx, builder: (ctx) {
+        return new AlertDialog(
+          content: new FutureBuilder(
+            future: finalFileFuture,
+            builder: (ctx, snapshot) {
+              if (snapshot.hasError) {
+                return new Text(snapshot.error.toString());
+              }
+
+              return snapshot.connectionState != ConnectionState.done
+                  ? const CircularProgressIndicator()
+                  : new Text('saved to $filepath');
+            },
+          ),
+        );
+      });
+    };
+  }
+
   @override
   Widget build(BuildContext ctx) {
-    return new SimpleDialog(
-      title: new Text('post #${post.id}'),
-      children: [
+    List<Widget> optionsWidgets() {
+      List<Widget> options = [
         new ListTile(
           leading: const Icon(Icons.info_outline),
           title: const Text('Info'),
@@ -582,7 +624,22 @@ class _MoreDialog extends StatelessWidget {
           trailing: const Icon(Icons.arrow_right),
           onTap: _showCopyDialog(ctx),
         ),
-      ],
+      ];
+
+      if (Platform.isAndroid) {
+        options.add(new ListTile(
+          leading: const Icon(Icons.file_download),
+          title: const Text('Download'),
+          onTap: _download(ctx),
+        ));
+      }
+
+      return options;
+    }
+
+    return new SimpleDialog(
+      title: new Text('post #${post.id}'),
+      children: optionsWidgets(),
     );
   }
 }
