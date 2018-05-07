@@ -21,8 +21,10 @@ import 'package:flutter/painting.dart' show EdgeInsets;
 import 'package:flutter/services.dart' show Clipboard, ClipboardData;
 import 'package:flutter/widgets.dart';
 
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart' show StaggeredGridView, StaggeredTile;
-import 'package:font_awesome_flutter/font_awesome_flutter.dart' show FontAwesomeIcons;
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart'
+    show StaggeredGridView, StaggeredTile;
+import 'package:font_awesome_flutter/font_awesome_flutter.dart'
+    show FontAwesomeIcons;
 import 'package:logging/logging.dart' show Logger;
 import 'package:meta/meta.dart' show required;
 import 'package:url_launcher/url_launcher.dart' as url;
@@ -53,7 +55,8 @@ class _PostsPageState extends State<PostsPage> {
   bool _isEditingTags = false;
   PersistentBottomSheetController<Tagset> _bottomSheetController;
 
-  final Future<TextEditingController> _textEditingControllerFuture = db.tags.value.then((tags) {
+  final Future<TextEditingController> _textEditingControllerFuture =
+      db.tags.value.then((tags) {
     return new TextEditingController()..text = tags.toString() + ' ';
   });
 
@@ -75,11 +78,10 @@ class _PostsPageState extends State<PostsPage> {
 
         _bottomSheetController?.close();
         _clearPages();
-
       } else {
         _bottomSheetController = Scaffold.of(ctx).showBottomSheet(
               (ctx) => new TagEntry(controller: tagController),
-        );
+            );
 
         setState(() {
           _isEditingTags = true;
@@ -109,14 +111,16 @@ class _PostsPageState extends State<PostsPage> {
   Function() _onPressedChangeColumns(BuildContext ctx) {
     return () async {
       int numColumns = await db.numColumns.value ?? 3;
-      int newNumColumns = await showDialog<int>(context: ctx, builder: (ctx) {
-        return new RangeDialog(
-          title: 'Number of columns',
-          value: numColumns,
-          max: 10,
-          min: 1,
-        );
-      });
+      int newNumColumns = await showDialog<int>(
+          context: ctx,
+          builder: (ctx) {
+            return new RangeDialog(
+              title: 'Number of columns',
+              value: numColumns,
+              max: 10,
+              min: 1,
+            );
+          });
 
       if (newNumColumns != null && newNumColumns > 0) {
         _log.fine('setting numColumns to $newNumColumns');
@@ -144,12 +148,14 @@ class _PostsPageState extends State<PostsPage> {
     Widget postPreview(List<Post> page, int postOnPage, int postOnAll) {
       return new PostPreview(page[postOnPage], onPressed: () {
         Navigator.of(ctx).push(new MaterialPageRoute<Null>(
-          builder: (ctx) => new PostSwipe(
-              _pages.fold<Iterable<Post>>(const Iterable.empty(),
-                      (a, b) => a.followedBy(b)).toList(),
-              startingIndex: postOnAll,
-          ),
-        ));
+              builder: (ctx) => new PostSwipe(
+                    _pages
+                        .fold<Iterable<Post>>(
+                            const Iterable.empty(), (a, b) => a.followedBy(b))
+                        .toList(),
+                    startingIndex: postOnAll,
+                  ),
+            ));
       });
     }
 
@@ -189,7 +195,7 @@ class _PostsPageState extends State<PostsPage> {
 
       if (item < i) {
         _log.finer('item was post on page ${p + 1}');
-        return postPreview(page, item-(i-page.length), item-(p+1));
+        return postPreview(page, item - (i - page.length), item - (p + 1));
       }
 
       // Header for next page
@@ -261,7 +267,9 @@ class _PostsPageState extends State<PostsPage> {
       return new FutureBuilder<int>(
         future: db.numColumns.value,
         builder: (ctx, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done && !snapshot.hasError && snapshot.hasData) {
+          if (snapshot.connectionState == ConnectionState.done &&
+              !snapshot.hasError &&
+              snapshot.hasData) {
             return new StaggeredGridView.countBuilder(
               crossAxisCount: snapshot.data,
               itemCount: _itemCount(),
@@ -280,10 +288,12 @@ class _PostsPageState extends State<PostsPage> {
     }
 
     Widget floatingActionButtonWidget() {
-      return new Builder(builder: (ctx) { // Needed for Scaffold.of(ctx) to work
+      return new Builder(builder: (ctx) {
+        // Needed for Scaffold.of(ctx) to work
         return new FloatingActionButton(
-          child: _isEditingTags ? const Icon(Icons.check) : const Icon(
-              Icons.search),
+          child: _isEditingTags
+              ? const Icon(Icons.check)
+              : const Icon(Icons.search),
           onPressed: _onPressedFloatingActionButton(ctx),
         );
       });
@@ -298,7 +308,6 @@ class _PostsPageState extends State<PostsPage> {
   }
 }
 
-
 class _PostsPageDrawer extends StatelessWidget {
   final Logger _log = new Logger('_PostsPageDrawer');
 
@@ -309,7 +318,9 @@ class _PostsPageDrawer extends StatelessWidget {
         return new FutureBuilder<String>(
           future: db.username.value,
           builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.done && !snapshot.hasError && snapshot.hasData) {
+            if (snapshot.connectionState == ConnectionState.done &&
+                !snapshot.hasError &&
+                snapshot.hasData) {
               return new Text(snapshot.data);
             }
 
@@ -325,37 +336,68 @@ class _PostsPageDrawer extends StatelessWidget {
         );
       }
 
-      return new DrawerHeader(child: new Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              const CircleAvatar(
-                backgroundImage: const AssetImage('icons/paw.png'),
-                radius: 48.0,
-              ),
-              userInfoWidget(),
-            ],
+      return new DrawerHeader(
+          child: new Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          const CircleAvatar(
+            backgroundImage: const AssetImage('icons/paw.png'),
+            radius: 48.0,
+          ),
+          userInfoWidget(),
+        ],
       ));
     }
 
-    return new Drawer(child: new ListView(children: [
-      headerWidget(),
-      new ListTile(
-        leading: const Icon(Icons.settings),
-        title: const Text('Settings'),
-        onTap: () => Navigator.popAndPushNamed(ctx, '/settings'),
-      ),
-      new ListTile(
-        leading: const Icon(FontAwesomeIcons.patreon),
-        title: const Text('Support ${consts.appName} on Patreon'),
-        onTap: () => url.launch(consts.patreonCampaign),
-      ),
-      const AboutListTile(
-        icon: const Icon(Icons.help),
-        applicationName: consts.appName,
-        applicationVersion: consts.appVersion,
-        applicationLegalese: consts.about,
-      ),
-    ]));
+    Widget supportersWidget() {
+      Widget supporterWidget(String alias) {
+        return new Padding(
+          padding: const EdgeInsets.only(top: 20.0),
+          child: new Text(
+            alias,
+            style: const TextStyle(fontSize: 18.0),
+          ),
+        );
+      }
+
+      return new Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: new Column(
+          children: [
+            const Text(
+              'Development proudly supported by the contributions of these '
+                  'generous patrons:',
+              textAlign: TextAlign.start,
+            ),
+            supporterWidget('IsaacTheBrave'),
+          ],
+        ),
+      );
+    }
+
+    return new Drawer(
+      child: new ListView(children: [
+        headerWidget(),
+        new ListTile(
+          leading: const Icon(Icons.settings),
+          title: const Text('Settings'),
+          onTap: () => Navigator.popAndPushNamed(ctx, '/settings'),
+        ),
+        const AboutListTile(
+          icon: const Icon(Icons.help),
+          applicationName: consts.appName,
+          applicationVersion: consts.appVersion,
+          applicationLegalese: consts.about,
+        ),
+        new ListTile(
+          leading: const Icon(FontAwesomeIcons.patreon),
+          title: const Text('Support ${consts.appName} on Patreon'),
+          onTap: () => url.launch(consts.patreonCampaign),
+        ),
+        const Divider(),
+        supportersWidget(),
+      ]),
+    );
   }
 }
 
@@ -367,8 +409,7 @@ class TagEntry extends StatelessWidget {
   const TagEntry({
     @required this.controller,
     Key key,
-  })
-      : super(key: key);
+  }) : super(key: key);
 
   final TextEditingController controller;
 
@@ -398,13 +439,15 @@ class TagEntry extends StatelessWidget {
         int value =
             valueString == null ? 0 : int.parse(valueString.substring(2));
 
-        int min = await showDialog<int>(context: ctx, builder: (ctx) {
-          return new RangeDialog(
-            title: 'Posts with $filterType at least',
-            value: value,
-            max: 500,
-          );
-        });
+        int min = await showDialog<int>(
+            context: ctx,
+            builder: (ctx) {
+              return new RangeDialog(
+                title: 'Posts with $filterType at least',
+                value: value,
+                max: 500,
+              );
+            });
 
         _log.info('$selectedFilter min value: $min');
         if (min == null) {
@@ -447,7 +490,8 @@ class TagEntry extends StatelessWidget {
     ));
   }
 
-  List<PopupMenuEntry<String>> Function(BuildContext) _popupMenuButtonItemBuilder(List<String> text) {
+  List<PopupMenuEntry<String>> Function(BuildContext)
+      _popupMenuButtonItemBuilder(List<String> text) {
     return (ctx) {
       List<PopupMenuEntry<String>> items = new List(text.length);
       for (int i = 0; i < items.length; i++) {
