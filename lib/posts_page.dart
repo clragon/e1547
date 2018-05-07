@@ -376,27 +376,28 @@ class _PostsPageDrawer extends StatelessWidget {
     }
 
     return new Drawer(
-        child: new ListView(children: [
-      headerWidget(),
-      new ListTile(
-        leading: const Icon(Icons.settings),
-        title: const Text('Settings'),
-        onTap: () => Navigator.popAndPushNamed(ctx, '/settings'),
-      ),
-      const AboutListTile(
-        icon: const Icon(Icons.help),
-        applicationName: consts.appName,
-        applicationVersion: consts.appVersion,
-        applicationLegalese: consts.about,
-      ),
-      new ListTile(
-        leading: const Icon(FontAwesomeIcons.patreon),
-        title: const Text('Support ${consts.appName} on Patreon'),
-        onTap: () => url.launch(consts.patreonCampaign),
-      ),
-      const Divider(),
-      supportersWidget(),
-    ]));
+      child: new ListView(children: [
+        headerWidget(),
+        new ListTile(
+          leading: const Icon(Icons.settings),
+          title: const Text('Settings'),
+          onTap: () => Navigator.popAndPushNamed(ctx, '/settings'),
+        ),
+        const AboutListTile(
+          icon: const Icon(Icons.help),
+          applicationName: consts.appName,
+          applicationVersion: consts.appVersion,
+          applicationLegalese: consts.about,
+        ),
+        new ListTile(
+          leading: const Icon(FontAwesomeIcons.patreon),
+          title: const Text('Support ${consts.appName} on Patreon'),
+          onTap: () => url.launch(consts.patreonCampaign),
+        ),
+        const Divider(),
+        supportersWidget(),
+      ]),
+    );
   }
 }
 
