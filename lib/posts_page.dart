@@ -349,6 +349,32 @@ class _PostsPageDrawer extends StatelessWidget {
       ));
     }
 
+    Widget supportersWidget() {
+      Widget supporterWidget(String alias) {
+        return new Padding(
+          padding: const EdgeInsets.only(top: 20.0),
+          child: new Text(
+            alias,
+            style: const TextStyle(fontSize: 18.0),
+          ),
+        );
+      }
+
+      return new Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: new Column(
+          children: [
+            const Text(
+              'Development proudly supported by the contributions of these '
+                  'generous patrons:',
+              textAlign: TextAlign.start,
+            ),
+            supporterWidget('IsaacTheBrave'),
+          ],
+        ),
+      );
+    }
+
     return new Drawer(
         child: new ListView(children: [
       headerWidget(),
@@ -357,17 +383,19 @@ class _PostsPageDrawer extends StatelessWidget {
         title: const Text('Settings'),
         onTap: () => Navigator.popAndPushNamed(ctx, '/settings'),
       ),
-      new ListTile(
-        leading: const Icon(FontAwesomeIcons.patreon),
-        title: const Text('Support ${consts.appName} on Patreon'),
-        onTap: () => url.launch(consts.patreonCampaign),
-      ),
       const AboutListTile(
         icon: const Icon(Icons.help),
         applicationName: consts.appName,
         applicationVersion: consts.appVersion,
         applicationLegalese: consts.about,
       ),
+      new ListTile(
+        leading: const Icon(FontAwesomeIcons.patreon),
+        title: const Text('Support ${consts.appName} on Patreon'),
+        onTap: () => url.launch(consts.patreonCampaign),
+      ),
+      const Divider(),
+      supportersWidget(),
     ]));
   }
 }
