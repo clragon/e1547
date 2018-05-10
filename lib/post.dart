@@ -27,6 +27,8 @@ import 'package:cached_network_image/cached_network_image.dart'
 import 'package:flutter_cache_manager/flutter_cache_manager.dart'
     show CacheManager;
 import 'package:logging/logging.dart' show Logger;
+import 'package:simple_permissions/simple_permissions.dart'
+    show SimplePermissions, Permission;
 import 'package:url_launcher/url_launcher.dart' as url;
 import 'package:zoomable_image/zoomable_image.dart' show ZoomableImage;
 
@@ -571,14 +573,46 @@ class _MoreDialog extends StatelessWidget {
 
   Function() _download(BuildContext ctx) {
     return () async {
+      bool hasWritePerm = await SimplePermissions
+          .checkPermission(Permission.WriteExternalStorage);
+
+      if (!hasWritePerm) {
+        hasWritePerm = await SimplePermissions
+            .requestPermission(Permission.WriteExternalStorage);
+      }
+
+      if (!hasWritePerm) {
+        showDialog(
+            context: ctx,
+            builder: (ctx) {
+              return new AlertDialog(
+                content: const Text('Sorry, but you need to grant write '
+                    'permission in order to download files.'),
+                actions: [
+                  new RaisedButton(
+                    child: const Text('TRY AGAIN'),
+                    onPressed: () async {
+                      await SimplePermissions
+                          .requestPermission(Permission.WriteExternalStorage);
+                      _download(ctx)(); // recursively re-execute
+                    },
+                  ),
+                ],
+              );
+            });
+        return;
+      }
+
       String filename = '${post.artist.join(",")} ~ ${post.id}.${post.fileExt}';
       String filepath =
           Platform.environment['EXTERNAL_STORAGE'] + '/Download/' + filename;
 
       if (new File(filepath).existsSync()) {
-        showDialog(context: ctx, builder: (ctx) {
-          return new _DownloadDialog(filename, filepath);
-        });
+        showDialog(
+            context: ctx,
+            builder: (ctx) {
+              return new _DownloadDialog(filename, filepath);
+            });
         return;
       }
 
@@ -586,9 +620,11 @@ class _MoreDialog extends StatelessWidget {
       File cachedFile = await cm.getFileIfCached(post.fileUrl);
       if (cachedFile != null) {
         cachedFile.copySync(filepath);
-        showDialog(context: ctx, builder: (ctx) {
-          return new _DownloadDialog(filename, filepath);
-        });
+        showDialog(
+            context: ctx,
+            builder: (ctx) {
+              return new _DownloadDialog(filename, filepath);
+            });
         return;
       }
     };
