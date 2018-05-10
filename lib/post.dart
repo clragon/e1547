@@ -678,11 +678,6 @@ class _DownloadDialog extends StatelessWidget {
       title: const Text('Downloaded'),
       content: new Text(filename),
       actions: [
-        new FlatButton.icon(
-          icon: const Icon(Icons.share),
-          label: const Text('SHARE'),
-          onPressed: () {},
-        ),
         new RaisedButton(
           child: const Text('OPEN'),
           onPressed: () {},
