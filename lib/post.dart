@@ -21,6 +21,8 @@ import 'package:flutter/rendering.dart' show TextOverflow;
 import 'package:flutter/services.dart'
     show Clipboard, ClipboardData, SystemChrome, SystemUiOverlay;
 
+import 'package:cached_network_image/cached_network_image.dart'
+    show CachedNetworkImage, CachedNetworkImageProvider;
 import 'package:logging/logging.dart' show Logger;
 import 'package:url_launcher/url_launcher.dart' as url;
 import 'package:zoomable_image/zoomable_image.dart' show ZoomableImage;
@@ -88,12 +90,6 @@ class Post {
   // Get the URL for the HTML version of the desired post.
   Uri url(String host) =>
       new Uri(scheme: 'https', host: host, path: '/post/show/$id');
-
-  ImageProvider get fullImage => new NetworkImage(fileUrl);
-
-  ImageProvider get previewImage => new NetworkImage(previewUrl);
-
-  ImageProvider get sampleImage => new NetworkImage(sampleUrl);
 }
 
 class PostWidget extends StatelessWidget {
@@ -118,8 +114,18 @@ class PostWidgetScaffold extends StatelessWidget {
   Function() _onTapImage(BuildContext ctx, Post post) {
     Widget fullScreenWidgetBuilder(BuildContext ctx) {
       return new ZoomableImage(
-        post.fullImage,
-        scale: 16.0,
+        new CachedNetworkImageProvider(post.fileUrl),
+        placeholder: new Stack(alignment: Alignment.center, children: [
+          new CachedNetworkImage(
+            imageUrl: post.sampleUrl,
+            placeholder: const CircularProgressIndicator(),
+            errorWidget: const Icon(Icons.error),
+          ),
+          new Container(
+            alignment: Alignment.topCenter,
+            child: const LinearProgressIndicator(),
+          ),
+        ]),
         onTap: () => Navigator.of(ctx).pop(),
       );
     }
@@ -203,7 +209,11 @@ class PostWidgetScaffold extends StatelessWidget {
         Widget imageWidget() {
           return post.fileExt == 'swf' || post.fileExt == 'webm'
               ? new Container()
-              : new Image(image: post.sampleImage);
+              : new CachedNetworkImage(
+                  imageUrl: post.sampleUrl,
+                  placeholder: const CircularProgressIndicator(),
+                  errorWidget: const Icon(Icons.error),
+                );
         }
 
         Widget fullscreenButtonWidget() {
@@ -349,7 +359,13 @@ class PostPreview extends StatelessWidget {
       Widget image = new Container(
         color: Colors.grey[800],
         constraints: const BoxConstraints.expand(),
-        child: new Image(image: post.previewImage, fit: BoxFit.contain),
+        child: new Center(
+          child: new CachedNetworkImage(
+            imageUrl: post.previewUrl,
+            errorWidget: const Icon(Icons.error),
+            fit: BoxFit.contain,
+          ),
+        ),
       );
 
       Widget specialOverlayIcon;

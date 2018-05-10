@@ -36,6 +36,12 @@ class RangeDialogState extends State<RangeDialog> {
   int _value;
 
   @override
+  void initState() {
+    super.initState();
+    _value = widget.value;
+  }
+
+  @override
   Widget build(BuildContext ctx) {
     Widget numberWidget() {
       _controller.text = _value.toString();
@@ -97,7 +103,6 @@ class RangeDialogState extends State<RangeDialog> {
       );
     }
 
-    _value = _value ?? widget.value;
     return new SimpleDialog(
       title: new Text(widget.title),
       children: [

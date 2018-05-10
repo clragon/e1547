@@ -15,7 +15,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 const String appName = 'e1547';
-const String appVersion = '1.0.0';
+const String appVersion = '1.0.1-dev';
 const String defaultEndpoint = 'e926.net';
 const String patreonCampaign = 'https://www.patreon.com/perlatus';
 const String about = 'An app for e621 and e926 made with ♥ by perlatus';
