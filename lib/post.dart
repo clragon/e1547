@@ -570,42 +570,30 @@ class _MoreDialog extends StatelessWidget {
   }
 
   Function() _download(BuildContext ctx) {
-    return () {
+    return () async {
       String filename = '${post.artist.join(",")} ~ ${post.id}.${post.fileExt}';
       String filepath = Platform.environment['EXTERNAL_STORAGE'] +
           '/Download/' + filename;
 
       if (new File(filepath).existsSync()) {
+        Scaffold.of(ctx).showSnackBar(new SnackBar(
+          content: new Text('$filename already downloaded'),
+          duration: const Duration(seconds: 5),
+        ));
+        return;
+      }
+
+      CacheManager cm = await CacheManager.getInstance();
+      File cachedFile = await cm.getFileIfCached(post.fileUrl);
+      if (cachedFile != null) {
+        cachedFile.copySync(filepath);
         showDialog(context: ctx, builder: (ctx) {
           return new AlertDialog(
-            content: new Text('$filename already downloaded'),
+              content: new Text('Saved file to $filepath')
           );
         });
         return;
       }
-
-      Future<File> finalFileFuture = () async {
-        CacheManager cm = await CacheManager.getInstance();
-        File cachedFile = await cm.getFile(post.fileUrl);
-        return cachedFile.copySync(filepath);
-      }();
-
-      showDialog(context: ctx, builder: (ctx) {
-        return new AlertDialog(
-          content: new FutureBuilder(
-            future: finalFileFuture,
-            builder: (ctx, snapshot) {
-              if (snapshot.hasError) {
-                return new Text(snapshot.error.toString());
-              }
-
-              return snapshot.connectionState != ConnectionState.done
-                  ? const CircularProgressIndicator()
-                  : new Text('saved to $filepath');
-            },
-          ),
-        );
-      });
     };
   }
 
