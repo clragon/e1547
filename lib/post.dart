@@ -572,14 +572,13 @@ class _MoreDialog extends StatelessWidget {
   Function() _download(BuildContext ctx) {
     return () async {
       String filename = '${post.artist.join(",")} ~ ${post.id}.${post.fileExt}';
-      String filepath = Platform.environment['EXTERNAL_STORAGE'] +
-          '/Download/' + filename;
+      String filepath =
+          Platform.environment['EXTERNAL_STORAGE'] + '/Download/' + filename;
 
       if (new File(filepath).existsSync()) {
-        Scaffold.of(ctx).showSnackBar(new SnackBar(
-          content: new Text('$filename already downloaded'),
-          duration: const Duration(seconds: 5),
-        ));
+        showDialog(context: ctx, builder: (ctx) {
+          return new _DownloadDialog(filename, filepath);
+        });
         return;
       }
 
@@ -588,9 +587,7 @@ class _MoreDialog extends StatelessWidget {
       if (cachedFile != null) {
         cachedFile.copySync(filepath);
         showDialog(context: ctx, builder: (ctx) {
-          return new AlertDialog(
-              content: new Text('Saved file to $filepath')
-          );
+          return new _DownloadDialog(filename, filepath);
         });
         return;
       }
@@ -628,6 +625,33 @@ class _MoreDialog extends StatelessWidget {
     return new SimpleDialog(
       title: new Text('post #${post.id}'),
       children: optionsWidgets(),
+    );
+  }
+}
+
+class _DownloadDialog extends StatelessWidget {
+  final String filename;
+  final String filepath;
+
+  const _DownloadDialog(this.filename, this.filepath, {Key key})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext ctx) {
+    return new AlertDialog(
+      title: const Text('Downloaded'),
+      content: new Text(filename),
+      actions: [
+        new FlatButton.icon(
+          icon: const Icon(Icons.share),
+          label: const Text('SHARE'),
+          onPressed: () {},
+        ),
+        new RaisedButton(
+          child: const Text('OPEN'),
+          onPressed: () {},
+        ),
+      ],
     );
   }
 }
