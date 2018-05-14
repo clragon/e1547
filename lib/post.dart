@@ -27,6 +27,7 @@ import 'package:cached_network_image/cached_network_image.dart'
 import 'package:flutter_cache_manager/flutter_cache_manager.dart'
     show CacheManager;
 import 'package:logging/logging.dart' show Logger;
+import 'package:share/share.dart' show Share;
 import 'package:simple_permissions/simple_permissions.dart'
     show SimplePermissions, Permission;
 import 'package:url_launcher/url_launcher.dart' as url;
@@ -679,8 +680,10 @@ class _DownloadDialog extends StatelessWidget {
       content: new Text(filename),
       actions: [
         new RaisedButton(
-          child: const Text('OPEN'),
-          onPressed: () {},
+          child: const Text('SHARE'),
+          onPressed: () {
+            Share.shareFile(new Uri.file(filepath), 'image/*');
+          },
         ),
       ],
     );
