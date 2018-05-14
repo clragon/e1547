@@ -593,8 +593,7 @@ class _MoreDialog extends StatelessWidget {
                   new RaisedButton(
                     child: const Text('TRY AGAIN'),
                     onPressed: () async {
-                      await SimplePermissions
-                          .requestPermission(Permission.WriteExternalStorage);
+                      Navigator.of(ctx).pop();
                       _download(ctx)(); // recursively re-execute
                     },
                   ),
@@ -604,7 +603,8 @@ class _MoreDialog extends StatelessWidget {
         return;
       }
 
-      String filename = '${post.artist.join(",")} ~ ${post.id}.${post.fileExt}';
+      String filename =
+          post.artist.join(', ') + ' ~ ${post.id}.' + post.fileExt;
       String filepath =
           Platform.environment['EXTERNAL_STORAGE'] + '/Download/' + filename;
 
@@ -626,17 +626,38 @@ class _MoreDialog extends StatelessWidget {
             builder: (ctx, snapshot) {
               if (snapshot.hasError) {
                 return new AlertDialog(
-                    title: const Text('Error'),
-                    content: new Text(snapshot.error.toString()),
+                  title: const Text('Error'),
+                  content: new Text(snapshot.error.toString()),
                 );
               }
 
-              if (snapshot.connectionState == ConnectionState.done &&
-                  snapshot.hasData) {
-                return new _DownloadDialog(filename, filepath);
-              } else {
-                return const CircularProgressIndicator();
-              }
+              bool done = snapshot.connectionState == ConnectionState.done &&
+                  snapshot.hasData;
+
+              return new AlertDialog(
+                title: const Text('Download'),
+                content: new Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    new Padding(
+                      padding: const EdgeInsets.only(bottom: 20.0),
+                      child: done
+                          ? const Icon(Icons.done)
+                          : const CircularProgressIndicator(),
+                    ),
+                    new Text(filename, softWrap: true),
+                  ],
+                ),
+                actions: [
+                  new RaisedButton(
+                    child: const Text('SHARE'),
+                    onPressed: () {
+                      Share.shareFile(new Uri.file(filepath), 'image/*');
+                    },
+                  ),
+                ],
+              );
             },
           );
         },
@@ -675,30 +696,6 @@ class _MoreDialog extends StatelessWidget {
     return new SimpleDialog(
       title: new Text('post #${post.id}'),
       children: optionsWidgets(),
-    );
-  }
-}
-
-class _DownloadDialog extends StatelessWidget {
-  final String filename;
-  final String filepath;
-
-  const _DownloadDialog(this.filename, this.filepath, {Key key})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext ctx) {
-    return new AlertDialog(
-      title: const Text('Downloaded'),
-      content: new Text(filename),
-      actions: [
-        new RaisedButton(
-          child: const Text('SHARE'),
-          onPressed: () {
-            Share.shareFile(new Uri.file(filepath), 'image/*');
-          },
-        ),
-      ],
     );
   }
 }
