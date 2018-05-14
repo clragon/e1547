@@ -19,11 +19,13 @@ dependencies:
   # Dart
   http: 0.11.3+16
   logging: 0.11.3+1
-  meta: 1.1.2
-  test: 0.12.34
+  meta: 1.1.5
+  test: 0.12.37
   vector_math: 2.0.6
 
   # Flutter
+  share:
+    path: ../fork/flutter_plugins/packages/share
   shared_preferences: 0.4.1
   url_launcher: 3.0.0
 
