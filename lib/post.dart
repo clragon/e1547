@@ -608,26 +608,39 @@ class _MoreDialog extends StatelessWidget {
       String filepath =
           Platform.environment['EXTERNAL_STORAGE'] + '/Download/' + filename;
 
-      if (new File(filepath).existsSync()) {
-        showDialog(
-            context: ctx,
-            builder: (ctx) {
-              return new _DownloadDialog(filename, filepath);
-            });
-        return;
+      Future<File> download() async {
+        File file = new File(filepath);
+        if (file.existsSync()) {
+          return file;
+        }
+
+        CacheManager cm = await CacheManager.getInstance();
+        return (await cm.getFile(post.fileUrl)).copySync(filepath);
       }
 
-      CacheManager cm = await CacheManager.getInstance();
-      File cachedFile = await cm.getFileIfCached(post.fileUrl);
-      if (cachedFile != null) {
-        cachedFile.copySync(filepath);
-        showDialog(
-            context: ctx,
-            builder: (ctx) {
-              return new _DownloadDialog(filename, filepath);
-            });
-        return;
-      }
+      showDialog(
+        context: ctx,
+        builder: (ctx) {
+          return new FutureBuilder(
+            future: download(),
+            builder: (ctx, snapshot) {
+              if (snapshot.hasError) {
+                return new AlertDialog(
+                    title: const Text('Error'),
+                    content: new Text(snapshot.error.toString()),
+                );
+              }
+
+              if (snapshot.connectionState == ConnectionState.done &&
+                  snapshot.hasData) {
+                return new _DownloadDialog(filename, filepath);
+              } else {
+                return const CircularProgressIndicator();
+              }
+            },
+          );
+        },
+      );
     };
   }
 
