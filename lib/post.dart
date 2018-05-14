@@ -15,6 +15,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 import 'dart:async' show Future;
+import 'dart:io' show File, Platform;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart' show TextOverflow;
@@ -23,7 +24,12 @@ import 'package:flutter/services.dart'
 
 import 'package:cached_network_image/cached_network_image.dart'
     show CachedNetworkImage, CachedNetworkImageProvider;
+import 'package:flutter_cache_manager/flutter_cache_manager.dart'
+    show CacheManager;
 import 'package:logging/logging.dart' show Logger;
+import 'package:share/share.dart' show Share;
+import 'package:simple_permissions/simple_permissions.dart'
+    show SimplePermissions, Permission;
 import 'package:url_launcher/url_launcher.dart' as url;
 import 'package:zoomable_image/zoomable_image.dart' show ZoomableImage;
 
@@ -566,11 +572,103 @@ class _MoreDialog extends StatelessWidget {
     };
   }
 
+  Function() _download(BuildContext ctx) {
+    return () async {
+      bool hasWritePerm = await SimplePermissions
+          .checkPermission(Permission.WriteExternalStorage);
+
+      if (!hasWritePerm) {
+        hasWritePerm = await SimplePermissions
+            .requestPermission(Permission.WriteExternalStorage);
+      }
+
+      if (!hasWritePerm) {
+        showDialog(
+            context: ctx,
+            builder: (ctx) {
+              return new AlertDialog(
+                content: const Text('Sorry, but you need to grant write '
+                    'permission in order to download files.'),
+                actions: [
+                  new RaisedButton(
+                    child: const Text('TRY AGAIN'),
+                    onPressed: () async {
+                      Navigator.of(ctx).pop();
+                      _download(ctx)(); // recursively re-execute
+                    },
+                  ),
+                ],
+              );
+            });
+        return;
+      }
+
+      String filename =
+          post.artist.join(', ') + ' ~ ${post.id}.' + post.fileExt;
+      String filepath =
+          Platform.environment['EXTERNAL_STORAGE'] + '/Download/' + filename;
+
+      Future<File> download() async {
+        File file = new File(filepath);
+        if (file.existsSync()) {
+          return file;
+        }
+
+        CacheManager cm = await CacheManager.getInstance();
+        return (await cm.getFile(post.fileUrl)).copySync(filepath);
+      }
+
+      showDialog(
+        context: ctx,
+        builder: (ctx) {
+          return new FutureBuilder(
+            future: download(),
+            builder: (ctx, snapshot) {
+              if (snapshot.hasError) {
+                return new AlertDialog(
+                  title: const Text('Error'),
+                  content: new Text(snapshot.error.toString()),
+                );
+              }
+
+              bool done = snapshot.connectionState == ConnectionState.done &&
+                  snapshot.hasData;
+
+              return new AlertDialog(
+                title: const Text('Download'),
+                content: new Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    new Padding(
+                      padding: const EdgeInsets.only(bottom: 20.0),
+                      child: done
+                          ? const Icon(Icons.done)
+                          : const CircularProgressIndicator(),
+                    ),
+                    new Text(filename, softWrap: true),
+                  ],
+                ),
+                actions: [
+                  new RaisedButton(
+                    child: const Text('SHARE'),
+                    onPressed: () {
+                      Share.shareFile(new Uri.file(filepath), 'image/*');
+                    },
+                  ),
+                ],
+              );
+            },
+          );
+        },
+      );
+    };
+  }
+
   @override
   Widget build(BuildContext ctx) {
-    return new SimpleDialog(
-      title: new Text('post #${post.id}'),
-      children: [
+    List<Widget> optionsWidgets() {
+      List<Widget> options = [
         new ListTile(
           leading: const Icon(Icons.info_outline),
           title: const Text('Info'),
@@ -582,7 +680,22 @@ class _MoreDialog extends StatelessWidget {
           trailing: const Icon(Icons.arrow_right),
           onTap: _showCopyDialog(ctx),
         ),
-      ],
+      ];
+
+      if (Platform.isAndroid) {
+        options.add(new ListTile(
+          leading: const Icon(Icons.file_download),
+          title: const Text('Download'),
+          onTap: _download(ctx),
+        ));
+      }
+
+      return options;
+    }
+
+    return new SimpleDialog(
+      title: new Text('post #${post.id}'),
+      children: optionsWidgets(),
     );
   }
 }
