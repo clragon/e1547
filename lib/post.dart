@@ -653,7 +653,7 @@ class _MoreDialog extends StatelessWidget {
                   new RaisedButton(
                     child: const Text('SHARE'),
                     onPressed: () {
-                      Share.shareFile(new Uri.file(filepath), 'image/*');
+                      Share.shareFile(filepath, 'image/*');
                     },
                   ),
                 ],
