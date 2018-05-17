@@ -4,7 +4,7 @@ description: A mobile app for browsing e926.net and friends.
 dependencies:
   # Mine
   zoomable_image:
-    git: git://github.com/perlatus/flutter_zoomable_image.git
+    path: vendor/zoomable_image
 
   # Third party
   cached_network_image: 0.4.1
@@ -22,7 +22,7 @@ dependencies:
 
   # Flutter
   share:
-    path: ../fork/flutter_plugins/packages/share
+    path: vendor/flutter_plugins/packages/share
   shared_preferences: 0.4.1
   url_launcher: 3.0.0
 

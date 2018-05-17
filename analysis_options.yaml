@@ -1,4 +1,7 @@
 analyzer:
+  exclude:
+    - vendor
+
   strong-mode:
     implicit-casts: false
     implicit-dynamic: true

@@ -1,3 +1,9 @@
 [submodule "vendor/flutter"]
 	path = vendor/flutter
 	url = https://github.com/flutter/flutter.git
+[submodule "vendor/flutter_plugins"]
+	path = vendor/flutter_plugins
+	url = https://github.com/perlatus/flutter_plugins.git
+[submodule "vendor/zoomable_image"]
+	path = vendor/zoomable_image
+	url = https://github.com/perlatus/flutter_zoomable_image.git
