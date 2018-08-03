@@ -7,3 +7,9 @@
 [submodule "vendor/zoomable_image"]
 	path = vendor/zoomable_image
 	url = https://github.com/perlatus/flutter_zoomable_image.git
+[submodule "vendor/flutter_cache_manager"]
+	path = vendor/flutter_cache_manager
+	url = https://github.com/renefloor/flutter_cache_manager.git
+[submodule "vendor/flutter_cached_network_image"]
+	path = vendor/flutter_cached_network_image
+	url = https://github.com/renefloor/flutter_cached_network_image.git
