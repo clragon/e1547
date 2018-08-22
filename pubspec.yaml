@@ -18,11 +18,11 @@ dependencies:
     path: vendor/flutter_cache_manager
 
   # Dart
-  http: 0.11.3+17
-  logging: 0.11.3+2
+  http: 0.11.3+16
+  logging: 0.11.3+1
   meta: 1.1.5
-  test: 0.12.41
-  vector_math: 2.0.8
+  test: 0.12.37
+  vector_math: 2.0.6
 
   # Flutter
   share:
