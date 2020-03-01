@@ -8,28 +8,38 @@ if (localPropertiesFile.exists()) {
 
 def flutterRoot = localProperties.getProperty('flutter.sdk')
 if (flutterRoot == null) {
-    throw new GradleException("Flutter SDK not found. Define location with flutter.sdk in the local.properties file.")
+    // throw new GradleException("Flutter SDK not found. Define location with flutter.sdk in the local.properties file.")
 }
+
+
+/*
 
 def keystorePropertiesFile = rootProject.file('key.properties')
 def keystoreProperties = new Properties()
 keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 
+*/
+
 apply plugin: 'com.android.application'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
-    compileSdkVersion 27
+
+    compileSdkVersion 29
     buildToolsVersion '27.0.3'
+
+    defaultConfig {
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        applicationId "us.perlat.e1547"
+        versionCode 3
+        versionName "2.0.0"
+    }
 
     lintOptions {
         disable 'InvalidPackage'
     }
 
-    defaultConfig {
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        applicationId "us.perlat.e1547"
-    }
+    /*
 
     signingConfigs {
         release {
@@ -40,9 +50,11 @@ android {
         }
     }
 
+    */
+
     buildTypes {
         release {
-            signingConfig signingConfigs.release
+            // signingConfig signingConfigs.release
         }
 
         profile {
@@ -57,6 +69,6 @@ flutter {
 
 dependencies {
     testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.1'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 }

@@ -27,7 +27,8 @@ class HttpCustom {
   final Logger _log = new Logger('HttpCustom');
 
   // TODO PLZ STOP COPY PASTING
-  Future<http.Response> post(String host, String path, {Map<String, Object> query}) {
+  Future<http.Response> post(String host, String path,
+      {Map<String, Object> query}) {
     return postUrl(new Uri(
       scheme: 'https',
       host: host,
@@ -36,7 +37,8 @@ class HttpCustom {
     ));
   }
 
-  Future<http.Response> get(String host, String path, {Map<String, Object> query}) {
+  Future<http.Response> get(String host, String path,
+      {Map<String, Object> query}) {
     return getUrl(new Uri(
       scheme: 'https',
       host: host,

@@ -16,7 +16,6 @@
 
 import 'package:flutter/material.dart' show MaterialApp, ThemeData;
 import 'package:flutter/widgets.dart' as widgets;
-import 'package:logging/logging.dart' show Level, Logger;
 
 import 'consts.dart' as consts;
 import 'login_page.dart' show LoginPage;
@@ -24,15 +23,6 @@ import 'posts_page.dart' show PostsPage;
 import 'settings_page.dart' show SettingsPage;
 
 void main() {
-  Logger.root.level = Level.ALL;
-  Logger.root.onRecord.listen((rec) {
-    if (rec.object == null) {
-      print('${rec.level.name}: ${rec.time}: ${rec.message}');
-    } else {
-      print('${rec.level.name}: ${rec.time}: ${rec.message}: ${rec.object}');
-    }
-  });
-
   widgets.runApp(new MaterialApp(
       title: consts.appName,
       theme: new ThemeData.dark(),

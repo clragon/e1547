@@ -16,6 +16,7 @@
 
 import 'dart:async' show Future;
 import 'dart:convert' show json;
+import 'dart:convert';
 import 'package:logging/logging.dart' show Logger;
 
 import 'comment.dart' show Comment;
@@ -31,18 +32,43 @@ class Client {
 
   final HttpCustom _http = new HttpCustom();
 
-  Future<String> _host     = db.host.value;
+  Future<String> _host = db.host.value;
   Future<String> _username = db.username.value;
-  Future<String> _apiKey   = db.apiKey.value;
+  Future<String> _apiKey = db.apiKey.value;
+  List<int> favourites;
 
   Client() {
-    db.host.addListener(    () => _host     = db.host.value);
+    db.host.addListener(() => _host = db.host.value);
     db.username.addListener(() => _username = db.username.value);
-    db.apiKey.addListener(  () => _apiKey   = db.apiKey.value);
+    db.apiKey.addListener(() => _apiKey = db.apiKey.value);
+  }
+
+  Future<bool> isUserFavourite(int post) async {
+    if (!await isLoggedIn()) {
+      return false;
+    }
+
+    return await _http.post(await _host, '/favorite/list_users.json', query: {
+      'id': post,
+    }).then((response) async => response.body.toString().contains(await _username));
+  }
+
+  Future<List<int>> getFavourites() async {
+    String body = await _http.get(await _host, '/post/index.json', query: {
+      'tags': 'fav:' + await _username,
+    }).then((response) => response.body);
+
+    List<int> ids = [];
+    for (Map rp in json.decode(body)) {
+      Post p = new Post.fromRaw(rp);
+      ids.add(p.id);
+    }
+
+    return ids;
   }
 
   Future<bool> addAsFavorite(int post) async {
-    if (await _username == null || await _apiKey == null) {
+    if (!await isLoggedIn()) {
       return false;
     }
 
@@ -54,7 +80,7 @@ class Client {
   }
 
   Future<bool> removeAsFavorite(int post) async {
-    if (await _username == null || await _apiKey == null) {
+    if (!await isLoggedIn()) {
       return false;
     }
 
@@ -66,6 +92,10 @@ class Client {
     }).then((response) {
       return response.statusCode == 200;
     });
+  }
+
+  Future<bool> isLoggedIn() async {
+    return !(await _username == null || await _apiKey == null);
   }
 
   Future<bool> isValidAuthPair(String username, String apiKey) async {
@@ -84,6 +114,8 @@ class Client {
   }
 
   Future<List<Post>> posts(Tagset tags, int page) async {
+    favourites ??= await getFavourites();
+
     String body = await _http.get(await _host, '/post/index.json', query: {
       'tags': tags,
       'page': page + 1,
@@ -93,6 +125,9 @@ class Client {
     List<Post> posts = [];
     for (Map rp in json.decode(body)) {
       Post p = new Post.fromRaw(rp);
+      if (favourites.contains(p.id)) {
+        p.isFavourite = true;
+      }
       if (await db.hideSwf.value && p.fileExt == 'swf') {
         _log.fine('Hiding swf post #${p.id}');
         continue;

@@ -23,11 +23,8 @@ import 'package:flutter/widgets.dart';
 
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart'
     show StaggeredGridView, StaggeredTile;
-import 'package:font_awesome_flutter/font_awesome_flutter.dart'
-    show FontAwesomeIcons;
 import 'package:logging/logging.dart' show Logger;
 import 'package:meta/meta.dart' show required;
-import 'package:url_launcher/url_launcher.dart' as url;
 
 import 'client.dart' show client;
 import 'consts.dart' as consts;
@@ -80,8 +77,8 @@ class _PostsPageState extends State<PostsPage> {
         _clearPages();
       } else {
         _bottomSheetController = Scaffold.of(ctx).showBottomSheet(
-              (ctx) => new TagEntry(controller: tagController),
-            );
+          (ctx) => new TagEntry(controller: tagController),
+        );
 
         setState(() {
           _isEditingTags = true;
@@ -148,14 +145,14 @@ class _PostsPageState extends State<PostsPage> {
     Widget postPreview(List<Post> page, int postOnPage, int postOnAll) {
       return new PostPreview(page[postOnPage], onPressed: () {
         Navigator.of(ctx).push(new MaterialPageRoute<Null>(
-              builder: (ctx) => new PostSwipe(
-                    _pages
-                        .fold<Iterable<Post>>(
-                            const Iterable.empty(), (a, b) => a.followedBy(b))
-                        .toList(),
-                    startingIndex: postOnAll,
-                  ),
-            ));
+          builder: (ctx) => new PostSwipe(
+            _pages
+                .fold<Iterable<Post>>(
+                    const Iterable.empty(), (a, b) => a.followedBy(b))
+                .toList(),
+            startingIndex: postOnAll,
+          ),
+        ));
       });
     }
 

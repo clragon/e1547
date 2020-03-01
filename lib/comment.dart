@@ -59,8 +59,8 @@ class _CommentsWidgetState extends State<CommentsWidget> {
 
   Future<Null> _loadNextPage() async {
     if (_more) {
-      List<Comment> newComments = await client.comments(
-          widget.post.id, _page++);
+      List<Comment> newComments =
+          await client.comments(widget.post.id, _page++);
       setState(() {
         _comments.addAll(newComments);
       });

@@ -16,22 +16,22 @@
 
 import 'dart:async' show Future;
 import 'dart:io' show File, Platform;
+import 'dart:typed_data';
 
+import 'package:cached_network_image/cached_network_image.dart'
+    show CachedNetworkImage, CachedNetworkImageProvider;
+import 'package:esys_flutter_share/esys_flutter_share.dart' show Share;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart' show TextOverflow;
 import 'package:flutter/services.dart'
     show Clipboard, ClipboardData, SystemChrome, SystemUiOverlay;
-
-import 'package:cached_network_image/cached_network_image.dart'
-    show CachedNetworkImage, CachedNetworkImageProvider;
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_cache_manager/flutter_cache_manager.dart'
-    show CacheManager;
-import 'package:logging/logging.dart' show Logger;
-import 'package:share/share.dart' show Share;
-import 'package:simple_permissions/simple_permissions.dart'
-    show SimplePermissions, Permission;
+    show DefaultCacheManager;
+import 'package:like_button/like_button.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:photo_view/photo_view.dart';
 import 'package:url_launcher/url_launcher.dart' as url;
-import 'package:zoomable_image/zoomable_image.dart' show ZoomableImage;
 
 import 'client.dart' show client;
 import 'comment.dart' show CommentsWidget;
@@ -59,6 +59,8 @@ class Post {
   bool isConditionalDnp;
   bool hasSoundWarning;
   bool hasEpilepsyWarning;
+
+  bool isFavourite = false;
 
   Post.fromRaw(this.raw) {
     id = raw['id'] as int;
@@ -91,6 +93,7 @@ class Post {
         artist.add(aStr);
       }
     }
+
   }
 
   // Get the URL for the HTML version of the desired post.
@@ -98,258 +101,7 @@ class Post {
       new Uri(scheme: 'https', host: host, path: '/post/show/$id');
 }
 
-class PostWidget extends StatelessWidget {
-  final Post post;
-
-  const PostWidget(this.post, {Key key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext ctx) {
-    return new Scaffold(body: new PostWidgetScaffold(post));
-  }
-}
-
-// Main widget for presenting and interacting with individual posts.
-class PostWidgetScaffold extends StatelessWidget {
-  static final Logger _log = new Logger('PostWidgetScaffold');
-
-  final Post post;
-
-  const PostWidgetScaffold(this.post, {Key key}) : super(key: key);
-
-  Function() _onTapImage(BuildContext ctx, Post post) {
-    Widget fullScreenWidgetBuilder(BuildContext ctx) {
-      return new ZoomableImage(
-        new CachedNetworkImageProvider(post.fileUrl),
-        placeholder: new Stack(alignment: Alignment.center, children: [
-          new CachedNetworkImage(
-            imageUrl: post.sampleUrl,
-            placeholder: const CircularProgressIndicator(),
-            errorWidget: const Icon(Icons.error),
-          ),
-          new Container(
-            alignment: Alignment.topCenter,
-            child: const LinearProgressIndicator(),
-          ),
-        ]),
-        onTap: () => Navigator.of(ctx).pop(),
-      );
-    }
-
-    return () async {
-      if (post.fileExt == 'webm' || post.fileExt == 'swf') {
-        url.launch(post.fileUrl);
-      } else {
-        SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
-        await Navigator.of(ctx).push(new MaterialPageRoute<Null>(
-              builder: fullScreenWidgetBuilder,
-            ));
-        SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
-      }
-    };
-  }
-
-  Function() _onPressFavButton(BuildContext ctx) {
-    Widget addRemoveFavDialogBuilder(BuildContext ctx) {
-      Widget addFav() {
-        return new SimpleDialogOption(
-          onPressed: () => Navigator.of(ctx).pop('add'),
-          child: const Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10.0),
-            child: const Text('Add to favorites'),
-          ),
-        );
-      }
-
-      Widget removeFav() {
-        return new SimpleDialogOption(
-          onPressed: () => Navigator.of(ctx).pop('remove'),
-          child: const Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10.0),
-            child: const Text('Remove from favorites'),
-          ),
-        );
-      }
-
-      return new SimpleDialog(
-        contentPadding: const EdgeInsets.all(10.0),
-        children: [addFav(), removeFav()],
-      );
-    }
-
-    return () async {
-      String cmd = await showDialog<String>(
-        context: ctx,
-        builder: addRemoveFavDialogBuilder,
-      );
-
-      if (cmd == null) {
-        return;
-      }
-
-      String message;
-      if (cmd == 'add') {
-        message = await client.addAsFavorite(post.id)
-            ? 'Added post ${post.id} to favorites'
-            : 'Failed to add post ${post.id} to favorites';
-      } else if (cmd == 'remove') {
-        message = await client.removeAsFavorite(post.id)
-            ? 'Removed post ${post.id} from favorites'
-            : 'Failed to remove post ${post.id} from favorites';
-      } else {
-        message = 'Unknown error';
-        _log.warning('Unknown command for favorites: "$cmd"');
-      }
-
-      Scaffold.of(ctx).showSnackBar(new SnackBar(
-            duration: const Duration(seconds: 5),
-            content: new Text(message),
-          ));
-    };
-  }
-
-  @override
-  Widget build(BuildContext ctx) {
-    Widget postContentsWidget() {
-      Widget overlayedImageWidget() {
-        Widget imageWidget() {
-          return post.fileExt == 'swf' || post.fileExt == 'webm'
-              ? new Container()
-              : new CachedNetworkImage(
-                  imageUrl: post.sampleUrl,
-                  placeholder: const CircularProgressIndicator(),
-                  errorWidget: const Icon(Icons.error),
-                );
-        }
-
-        Widget fullscreenButtonWidget() {
-          return new Container(
-            padding: const EdgeInsets.all(12.0),
-            color: Colors.black38,
-            child: const Icon(Icons.fullscreen),
-          );
-        }
-
-        return new Stack(children: [
-          new Center(child: imageWidget()),
-          new Positioned(
-            right: 0.0,
-            bottom: 0.0,
-            child: fullscreenButtonWidget(),
-          ),
-        ]);
-      }
-
-      return new Flexible(
-          child: new GestureDetector(
-        onTap: _onTapImage(ctx, post),
-        child: new Container(
-          color: Colors.black,
-          constraints: const BoxConstraints.expand(),
-          child: overlayedImageWidget(),
-        ),
-      ));
-    }
-
-    Widget postMetadataWidget() {
-      Widget metadataRow() {
-        Color secondary = Colors.white.withOpacity(0.6);
-        TextStyle secondaryTextStyle = new TextStyle(color: secondary);
-
-        return new Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            new Text(post.artist.join(',\n')),
-            new Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                new Text('#${post.id}', style: secondaryTextStyle),
-                new Row(children: [
-                  new Icon(Icons.person, size: 14.0, color: secondary),
-                  new Text(' ${post.author}', style: secondaryTextStyle),
-                ]),
-              ],
-            ),
-          ],
-        );
-      }
-
-      return new Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-        child: metadataRow(),
-      );
-    }
-
-    Widget buttonBarWidget() {
-      Widget favButton() {
-        return new IconButton(
-          icon: const Icon(Icons.favorite),
-          tooltip: 'Add post to favorites',
-          onPressed: _onPressFavButton(ctx),
-        );
-      }
-
-      Widget commentsButton() {
-        return new IconButton(
-          icon: const Icon(Icons.chat),
-          tooltip: 'Go to comments',
-          onPressed: () => Navigator
-                  .of(ctx)
-                  .push(new MaterialPageRoute<Null>(builder: (ctx) {
-                return new CommentsWidget(post);
-              })),
-        );
-      }
-
-      Widget openInBrowserButton() {
-        return new IconButton(
-          icon: const Icon(Icons.open_in_browser),
-          tooltip: 'View post in browser',
-          onPressed: () async {
-            url.launch(post.url(await db.host.value).toString());
-          },
-        );
-      }
-
-      Widget overflowButton() {
-        return new IconButton(
-          icon: const Icon(Icons.more_horiz),
-          tooltip: 'More actions',
-          onPressed: () => showDialog(
-              context: ctx,
-              builder: (ctx) {
-                return new _MoreDialog(post);
-              }),
-        );
-      }
-
-      return new ButtonTheme.bar(
-          child: new ButtonBar(
-        alignment: MainAxisAlignment.spaceAround,
-        children: <Widget>[
-          favButton(),
-          commentsButton(),
-          openInBrowserButton(),
-          overflowButton(),
-        ],
-      ));
-    }
-
-    return new Padding(
-      padding: new EdgeInsets.only(top: MediaQuery.of(ctx).padding.top),
-      child: new Column(mainAxisSize: MainAxisSize.min, children: [
-        postContentsWidget(),
-        postMetadataWidget(),
-        const Divider(height: 8.0),
-        buttonBarWidget(),
-      ]),
-    );
-  }
-}
-
-// Preview of a post that appears in lists of posts. Mostly just the image.
 class PostPreview extends StatelessWidget {
-  static final Logger _log = new Logger('PostPreview');
   final Post post;
   final VoidCallback onPressed;
 
@@ -368,7 +120,7 @@ class PostPreview extends StatelessWidget {
         child: new Center(
           child: new CachedNetworkImage(
             imageUrl: post.previewUrl,
-            errorWidget: const Icon(Icons.error),
+            errorWidget: (context, url, error) => const Icon(Icons.error),
             fit: BoxFit.contain,
           ),
         ),
@@ -511,10 +263,297 @@ class PostPreview extends StatelessWidget {
   }
 }
 
+// Main widget for presenting and interacting with individual posts.
+class PostSwipe extends StatelessWidget {
+  final List<Post> posts;
+  final int startingIndex;
+
+  const PostSwipe(this.posts, {Key key, this.startingIndex = 0})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext ctx) {
+    return new PageView.builder(
+      controller: new PageController(initialPage: startingIndex),
+      itemBuilder: _pageBuilder,
+    );
+  }
+
+  Widget _pageBuilder(BuildContext ctx, int index) {
+    return index < posts.length ? new PostWidget(posts[index]) : null;
+  }
+}
+
+// Preview of a post that appears in lists of posts. Mostly just the image.
+class PostWidget extends StatelessWidget {
+  final Post post;
+
+  const PostWidget(this.post, {Key key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext ctx) {
+    return new Scaffold(body: new PostWidgetScaffold(post));
+  }
+}
+
+class PostWidgetScaffold extends StatelessWidget {
+
+  final Post post;
+
+  const PostWidgetScaffold(this.post, {Key key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext ctx) {
+    Widget postContentsWidget() {
+      Widget overlayedImageWidget() {
+        Widget imageWidget() {
+          return post.fileExt == 'swf' || post.fileExt == 'webm'
+              ? new Container()
+              : new CachedNetworkImage(
+                  imageUrl: post.sampleUrl,
+                  placeholder: (context, url) =>
+                      const CircularProgressIndicator(),
+                  errorWidget: (context, url, error) => const Icon(Icons.error),
+                );
+        }
+
+        Widget fullscreenButtonWidget() {
+          return new Container(
+            padding: const EdgeInsets.all(12.0),
+            color: Colors.black38,
+            child: const Icon(Icons.fullscreen),
+          );
+        }
+
+        return new Stack(children: [
+          new Center(child: imageWidget()),
+          new Positioned(
+            right: 0.0,
+            bottom: 0.0,
+            child: fullscreenButtonWidget(),
+          ),
+        ]);
+      }
+
+      return new Flexible(
+          child: new GestureDetector(
+        onTap: _onTapImage(ctx, post),
+        child: new Container(
+          color: Colors.black,
+          constraints: const BoxConstraints.expand(),
+          child: overlayedImageWidget(),
+        ),
+      ));
+    }
+
+    Widget postMetadataWidget() {
+      Widget metadataRow() {
+        Color secondary = Colors.white.withOpacity(0.6);
+        TextStyle secondaryTextStyle = new TextStyle(color: secondary);
+
+        return new Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            new Text(post.artist.join(',\n')),
+            new Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                new Text('#${post.id}', style: secondaryTextStyle),
+                new Row(children: [
+                  new Icon(Icons.person, size: 14.0, color: secondary),
+                  new Text(' ${post.author}', style: secondaryTextStyle),
+                ]),
+              ],
+            ),
+          ],
+        );
+      }
+
+      return new Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+        child: metadataRow(),
+      );
+    }
+
+    Future<void> tryRemoveFav(BuildContext ctx, Post post) async {
+      if (await client.removeAsFavorite(post.id).timeout(const Duration(seconds: 3), onTimeout:() { return false; })) {
+        client.favourites.remove(post.id);
+        post.isFavourite = false;
+      } else {
+        Scaffold.of(ctx).showSnackBar(new SnackBar(
+          duration: const Duration(seconds: 1),
+          content: new Text('Failed to remove post ${post.id} from favorites'),
+        ));
+      }
+    }
+
+    Future<void> tryAddFav(BuildContext ctx, Post post) async {
+      if (await client.addAsFavorite(post.id).timeout(const Duration(seconds: 3), onTimeout:() { return false; })) {
+        client.favourites.add(post.id);
+        post.isFavourite = true;
+      } else {
+        Scaffold.of(ctx).showSnackBar(new SnackBar(
+          duration: const Duration(seconds: 1),
+          content: new Text('Failed to add post ${post.id} to favorites'),
+        ));
+      }
+    }
+
+
+    Widget buttonBarWidget() {
+      Widget favButton() {
+        return LikeButton(
+          isLiked: post.isFavourite,
+          likeBuilder: (bool isLiked) {
+            return Icon(
+              Icons.favorite,
+              color:
+                  isLiked ? Colors.pinkAccent : Colors.white.withOpacity(0.6),
+            );
+          },
+          onTap: (isLiked) async {
+            if (isLiked) {
+              tryRemoveFav(ctx, post);
+              return false;
+            } else {
+              tryAddFav(ctx, post);
+              return true;
+            }
+          },
+        );
+      }
+
+      Widget commentsButton() {
+        return new IconButton(
+          icon: const Icon(Icons.chat),
+          tooltip: 'Go to comments',
+          onPressed: () => Navigator.of(ctx)
+              .push(new MaterialPageRoute<Null>(builder: (ctx) {
+            return new CommentsWidget(post);
+          })),
+        );
+      }
+
+      Widget openInBrowserButton() {
+        return new IconButton(
+          icon: const Icon(Icons.open_in_browser),
+          tooltip: 'View post in browser',
+          onPressed: () async {
+            url.launch(post.url(await db.host.value).toString());
+          },
+        );
+      }
+
+      Widget overflowButton() {
+        return new IconButton(
+          icon: const Icon(Icons.more_horiz),
+          tooltip: 'More actions',
+          onPressed: () => showDialog(
+              context: ctx,
+              builder: (ctx) {
+                return new _MoreDialog(post);
+              }),
+        );
+      }
+
+      return new ButtonBarTheme(
+        child: new ButtonBar(
+          alignment: MainAxisAlignment.spaceAround,
+          children: <Widget>[
+            favButton(),
+            commentsButton(),
+            openInBrowserButton(),
+            overflowButton(),
+          ],
+        ),
+        data: const ButtonBarThemeData(),
+      );
+    }
+
+    return new Padding(
+      padding: new EdgeInsets.only(top: MediaQuery.of(ctx).padding.top),
+      child: new Column(mainAxisSize: MainAxisSize.min, children: [
+        postContentsWidget(),
+        postMetadataWidget(),
+        const Divider(height: 8.0),
+        buttonBarWidget(),
+      ]),
+    );
+  }
+
+  Function() _onTapImage(BuildContext ctx, Post post) {
+    Widget fullScreenWidgetBuilder(BuildContext ctx) {
+      return PhotoView(
+        imageProvider: new CachedNetworkImageProvider(post.fileUrl),
+        loadingBuilder: (buildContext, imageChunkEvent) =>
+            new Stack(alignment: Alignment.center, children: [
+          new CachedNetworkImage(
+            imageUrl: post.sampleUrl,
+            placeholder: (context, url) => const CircularProgressIndicator(),
+            errorWidget: (context, url, error) => const Icon(Icons.error),
+          ),
+          new Container(
+            alignment: Alignment.topCenter,
+            child: const LinearProgressIndicator(),
+          ),
+        ]),
+        onTapDown: (buildContext, tapDownDetails, photoViewControllerValue) =>
+            Navigator.of(ctx).pop(),
+      );
+    }
+
+    return () async {
+      if (post.fileExt == 'webm' || post.fileExt == 'swf') {
+        url.launch(post.fileUrl);
+      } else {
+        SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
+        await Navigator.of(ctx).push(new MaterialPageRoute<Null>(
+          builder: fullScreenWidgetBuilder,
+        ));
+        SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
+      }
+    };
+  }
+}
+
 class _MoreDialog extends StatelessWidget {
   final Post post;
 
   const _MoreDialog(this.post);
+
+  @override
+  Widget build(BuildContext ctx) {
+    List<Widget> optionsWidgets() {
+      List<Widget> options = [
+        new ListTile(
+          leading: const Icon(Icons.info_outline),
+          title: const Text('Info'),
+          onTap: _showPostInfoDialog(ctx),
+        ),
+        new ListTile(
+          leading: const Icon(Icons.content_copy),
+          title: const Text('Copy...'),
+          trailing: const Icon(Icons.arrow_right),
+          onTap: _showCopyDialog(ctx),
+        ),
+      ];
+
+      if (Platform.isAndroid) {
+        options.add(new ListTile(
+          leading: const Icon(Icons.file_download),
+          title: const Text('Download'),
+          onTap: _download(ctx),
+        ));
+      }
+
+      return options;
+    }
+
+    return new SimpleDialog(
+      title: new Text('post #${post.id}'),
+      children: optionsWidgets(),
+    );
+  }
 
   Future<Null> _copyAndPopPop(BuildContext ctx, String text) async {
     await Clipboard.setData(new ClipboardData(text: text));
@@ -522,64 +561,16 @@ class _MoreDialog extends StatelessWidget {
     Navigator.of(ctx).pop();
   }
 
-  Function() _showPostInfoDialog(BuildContext ctx) {
-    return () {
-      StringBuffer info = new StringBuffer();
-      post.raw.forEach((k, v) {
-        info.write('$k: $v\n\n');
-      });
-
-      showDialog(
-          context: ctx,
-          builder: (ctx) {
-            return new SimpleDialog(
-                title: new Text('post #${post.id} info'),
-                children: <Widget>[
-                  new TextField(
-                      maxLines: 15,
-                      decoration: const InputDecoration(border: null),
-                      style: const TextStyle(fontFamily: 'Courier'),
-                      controller:
-                          new TextEditingController(text: info.toString()))
-                ]);
-          });
-    };
-  }
-
-  Function() _showCopyDialog(BuildContext ctx) {
-    return () {
-      Widget title = new ListTile(
-          leading: const Icon(Icons.content_copy),
-          title: new Text('Copy from post #${post.id}'));
-
-      Widget copyLink = new ListTile(
-          title: const Text('Copy link'),
-          onTap: () async {
-            String link = post.url(await db.host.value).toString();
-            _copyAndPopPop(ctx, link);
-          });
-
-      Widget copyDirectLink = new ListTile(
-          title: const Text('Copy direct link'),
-          onTap: () => _copyAndPopPop(ctx, post.fileUrl));
-
-      showDialog(
-          context: ctx,
-          builder: (ctx) {
-            return new SimpleDialog(
-                title: title, children: [copyLink, copyDirectLink]);
-          });
-    };
-  }
-
   Function() _download(BuildContext ctx) {
     return () async {
-      bool hasWritePerm = await SimplePermissions
-          .checkPermission(Permission.WriteExternalStorage);
+      Map<PermissionGroup, PermissionStatus> permissions =
+          await PermissionHandler()
+              .requestPermissions([PermissionGroup.storage]);
 
-      if (!hasWritePerm) {
-        hasWritePerm = await SimplePermissions
-            .requestPermission(Permission.WriteExternalStorage);
+      bool hasWritePerm = false;
+
+      if (permissions[PermissionGroup.storage] == PermissionStatus.granted) {
+        hasWritePerm = true;
       }
 
       if (!hasWritePerm) {
@@ -614,8 +605,8 @@ class _MoreDialog extends StatelessWidget {
           return file;
         }
 
-        CacheManager cm = await CacheManager.getInstance();
-        return (await cm.getFile(post.fileUrl)).copySync(filepath);
+        DefaultCacheManager cm = DefaultCacheManager();
+        return (await cm.getSingleFile(post.fileUrl)).copySync(filepath);
       }
 
       showDialog(
@@ -652,8 +643,10 @@ class _MoreDialog extends StatelessWidget {
                 actions: [
                   new RaisedButton(
                     child: const Text('SHARE'),
-                    onPressed: () {
-                      Share.shareFile(filepath, 'image/*');
+                    onPressed: () async {
+                      ByteData bytes = await rootBundle.load(filepath);
+                      Share.file(filename, filename, bytes.buffer.asUint8List(),
+                          'image/*');
                     },
                   ),
                 ],
@@ -665,57 +658,53 @@ class _MoreDialog extends StatelessWidget {
     };
   }
 
-  @override
-  Widget build(BuildContext ctx) {
-    List<Widget> optionsWidgets() {
-      List<Widget> options = [
-        new ListTile(
-          leading: const Icon(Icons.info_outline),
-          title: const Text('Info'),
-          onTap: _showPostInfoDialog(ctx),
-        ),
-        new ListTile(
+  Function() _showCopyDialog(BuildContext ctx) {
+    return () {
+      Widget title = new ListTile(
           leading: const Icon(Icons.content_copy),
-          title: const Text('Copy...'),
-          trailing: const Icon(Icons.arrow_right),
-          onTap: _showCopyDialog(ctx),
-        ),
-      ];
+          title: new Text('Copy from post #${post.id}'));
 
-      if (Platform.isAndroid) {
-        options.add(new ListTile(
-          leading: const Icon(Icons.file_download),
-          title: const Text('Download'),
-          onTap: _download(ctx),
-        ));
-      }
+      Widget copyLink = new ListTile(
+          title: const Text('Copy link'),
+          onTap: () async {
+            String link = post.url(await db.host.value).toString();
+            _copyAndPopPop(ctx, link);
+          });
 
-      return options;
-    }
+      Widget copyDirectLink = new ListTile(
+          title: const Text('Copy direct link'),
+          onTap: () => _copyAndPopPop(ctx, post.fileUrl));
 
-    return new SimpleDialog(
-      title: new Text('post #${post.id}'),
-      children: optionsWidgets(),
-    );
-  }
-}
-
-class PostSwipe extends StatelessWidget {
-  final List<Post> posts;
-  final int startingIndex;
-
-  const PostSwipe(this.posts, {Key key, this.startingIndex = 0})
-      : super(key: key);
-
-  Widget _pageBuilder(BuildContext ctx, int index) {
-    return index < posts.length ? new PostWidget(posts[index]) : null;
+      showDialog(
+          context: ctx,
+          builder: (ctx) {
+            return new SimpleDialog(
+                title: title, children: [copyLink, copyDirectLink]);
+          });
+    };
   }
 
-  @override
-  Widget build(BuildContext ctx) {
-    return new PageView.builder(
-      controller: new PageController(initialPage: startingIndex),
-      itemBuilder: _pageBuilder,
-    );
+  Function() _showPostInfoDialog(BuildContext ctx) {
+    return () {
+      StringBuffer info = new StringBuffer();
+      post.raw.forEach((k, v) {
+        info.write('$k: $v\n\n');
+      });
+
+      showDialog(
+          context: ctx,
+          builder: (ctx) {
+            return new SimpleDialog(
+                title: new Text('post #${post.id} info'),
+                children: <Widget>[
+                  new TextField(
+                      maxLines: 15,
+                      decoration: const InputDecoration(border: null),
+                      style: const TextStyle(fontFamily: 'Courier'),
+                      controller:
+                          new TextEditingController(text: info.toString()))
+                ]);
+          });
+    };
   }
 }

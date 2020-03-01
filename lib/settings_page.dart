@@ -41,9 +41,11 @@ class _SettingsPageState extends State<SettingsPage> {
 
   Function() _onTapSiteBackend(BuildContext ctx) {
     return () async {
-      String newHost = await showDialog<String>(context: ctx, builder: (ctx) {
-        return new _SiteBackendDialog(_host);
-      });
+      String newHost = await showDialog<String>(
+          context: ctx,
+          builder: (ctx) {
+            return new _SiteBackendDialog(_host);
+          });
 
       if (newHost != null) {
         db.host.value = new Future.value(newHost);
@@ -73,9 +75,9 @@ class _SettingsPageState extends State<SettingsPage> {
       }
 
       Scaffold.of(ctx).showSnackBar(new SnackBar(
-            duration: const Duration(seconds: 5),
-            content: new Text(msg),
-          ));
+        duration: const Duration(seconds: 5),
+        content: new Text(msg),
+      ));
 
       setState(() {
         _username = null;
