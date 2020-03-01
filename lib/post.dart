@@ -376,7 +376,7 @@ class PostWidgetScaffold extends StatelessWidget {
     }
 
     Future<void> tryRemoveFav(BuildContext ctx, Post post) async {
-      if (await client.removeAsFavorite(post.id).timeout(const Duration(seconds: 3), onTimeout:() { return false; })) {
+      if (await client.removeAsFavorite(post.id)) {
         client.favourites.remove(post.id);
         post.isFavourite = false;
       } else {
@@ -388,7 +388,7 @@ class PostWidgetScaffold extends StatelessWidget {
     }
 
     Future<void> tryAddFav(BuildContext ctx, Post post) async {
-      if (await client.addAsFavorite(post.id).timeout(const Duration(seconds: 3), onTimeout:() { return false; })) {
+      if (await client.addAsFavorite(post.id)) {
         client.favourites.add(post.id);
         post.isFavourite = true;
       } else {

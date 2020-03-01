@@ -16,7 +16,6 @@
 
 import 'dart:async' show Future;
 import 'dart:convert' show json;
-import 'dart:convert';
 import 'package:logging/logging.dart' show Logger;
 
 import 'comment.dart' show Comment;
@@ -114,7 +113,10 @@ class Client {
   }
 
   Future<List<Post>> posts(Tagset tags, int page) async {
-    favourites ??= await getFavourites();
+    bool loggedIn = await isLoggedIn();
+    if (loggedIn) {
+      favourites ??= await getFavourites();
+    }
 
     String body = await _http.get(await _host, '/post/index.json', query: {
       'tags': tags,
@@ -125,8 +127,10 @@ class Client {
     List<Post> posts = [];
     for (Map rp in json.decode(body)) {
       Post p = new Post.fromRaw(rp);
-      if (favourites.contains(p.id)) {
-        p.isFavourite = true;
+      if (loggedIn) {
+        if (favourites.contains(p.id)) {
+          p.isFavourite = true;
+        }
       }
       if (await db.hideSwf.value && p.fileExt == 'swf') {
         _log.fine('Hiding swf post #${p.id}');
