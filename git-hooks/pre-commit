@@ -1,7 +1,0 @@
-#!/bin/sh
-find . -type f -name '*.dart' -print0 | xargs -0 flutter format \
-	&& git add -u \
-	&& flutter analyze \
-	&& dartanalyzer --options analysis_options.yaml lib/ \
-	&& flutter test lib
-

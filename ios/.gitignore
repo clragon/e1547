@@ -1,80 +1,32 @@
-.idea/
-.vagrant/
+*.mode1v3
+*.mode2v3
+*.moved-aside
+*.pbxuser
+*.perspectivev3
+**/*sync/
 .sconsign.dblite
-.svn/
-
-Podfile.lock
-
-.DS_Store
-*.swp
-profile
-
-DerivedData/
-build/
-GeneratedPluginRegistrant.h
-GeneratedPluginRegistrant.m
-
-*.pbxuser
-*.mode1v3
-*.mode2v3
-*.perspectivev3
-
-!default.pbxuser
-!default.mode1v3
-!default.mode2v3
-!default.perspectivev3
-
-xcuserdata
-
-*.moved-aside
-
-*.pyc
-*sync/
-Icon?
 .tags*
+**/.vagrant/
+**/DerivedData/
+Icon?
+**/Pods/
+**/.symlinks/
+profile
+xcuserdata
+**/.generated/
+Flutter/App.framework
+Flutter/Flutter.framework
+Flutter/Flutter.podspec
+Flutter/Generated.xcconfig
+Flutter/app.flx
+Flutter/app.zip
+Flutter/flutter_assets/
+Flutter/flutter_export_environment.sh
+ServiceDefinitions.json
+Runner/GeneratedPluginRegistrant.*
 
-/Flutter/app.flx
-/Flutter/app.zip
-/Flutter/App.framework
-/Flutter/Flutter.framework
-/Flutter/Generated.xcconfig
-/ServiceDefinitions.json
-
-Pods/
-
-# Created by https://www.gitignore.io/api/xcode
-
-### Xcode ###
-# Xcode
-#
-# gitignore contributors: remember to update Global/Xcode.gitignore, Objective-C.gitignore & Swift.gitignore
-
-## Build generated
-build/
-DerivedData/
-
-## Various settings
-*.pbxuser
-!default.pbxuser
-*.mode1v3
+# Exceptions to above rules.
 !default.mode1v3
-*.mode2v3
 !default.mode2v3
-*.perspectivev3
+!default.pbxuser
 !default.perspectivev3
-xcuserdata/
-
-## Other
-*.moved-aside
-*.xccheckout
-*.xcscmblueprint
-
-### Xcode Patch ###
-*.xcodeproj/*
-!*.xcodeproj/project.pbxproj
-!*.xcodeproj/xcshareddata/
-!*.xcworkspace/contents.xcworkspacedata
-/*.gcno
-
-
-# End of https://www.gitignore.io/api/xcode

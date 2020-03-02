@@ -1,25 +1,10 @@
-// e1547: A mobile app for browsing e926.net and friends.
-// Copyright (C) 2017 perlatus <perlatus@e1547.email.vczf.io>
-//
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program. If not, see <http://www.gnu.org/licenses/>.
+// TODO: rework spacing.
 
 import 'dart:async' show Future, Timer;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show Clipboard;
 
-import 'package:logging/logging.dart' show Logger;
 import 'package:url_launcher/url_launcher.dart' as url;
 
 import 'client.dart' show client;
@@ -71,7 +56,6 @@ class _LoginFormFields extends StatefulWidget {
 }
 
 class _LoginFormFieldsState extends State<_LoginFormFields> {
-  static final Logger _log = new Logger('LoginFormFields');
 
   final TextEditingController _apiKeyFieldController =
       new TextEditingController();
@@ -141,21 +125,18 @@ class _LoginFormFieldsState extends State<_LoginFormFields> {
       FormState form = Form.of(ctx)
         ..save(); // TODO: fix this so we don't need to save->validate->validate
       if (form.validate()) {
-        _log.info('trying username: $_username ; apikey: $_apiKey');
         bool ok = await showDialog(
           context: ctx,
           builder: (ctx) => new _LoginProgressDialog(_username, _apiKey),
         );
 
         if (ok) {
-          _log.info('login ok');
 
           db.username.value = new Future.value(_username);
           db.apiKey.value = new Future.value(_apiKey);
 
           Navigator.of(ctx).pop();
         } else {
-          _log.info('login failed');
 
           _authDidJustFail = true;
           form.validate();

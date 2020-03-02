@@ -1,33 +1,23 @@
-// e1547: A mobile app for browsing e926.net and friends.
-// Copyright (C) 2017 perlatus <perlatus@e1547.email.vczf.io>
-//
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program. If not, see <http://www.gnu.org/licenses/>.
-
 import 'dart:async' show Future;
 import 'dart:io' show File, Platform;
 import 'dart:typed_data';
 
 import 'package:cached_network_image/cached_network_image.dart'
     show CachedNetworkImage, CachedNetworkImageProvider;
+
+// TODO: does share work? do we need share? replace or remove.
+// TODO: check if better package available.
 import 'package:esys_flutter_share/esys_flutter_share.dart' show Share;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart' show TextOverflow;
 import 'package:flutter/services.dart'
     show Clipboard, ClipboardData, SystemChrome, SystemUiOverlay;
 import 'package:flutter/services.dart' show rootBundle;
+
 import 'package:flutter_cache_manager/flutter_cache_manager.dart'
     show DefaultCacheManager;
+
 import 'package:like_button/like_button.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:photo_view/photo_view.dart';
@@ -93,7 +83,6 @@ class Post {
         artist.add(aStr);
       }
     }
-
   }
 
   // Get the URL for the HTML version of the desired post.
@@ -297,7 +286,6 @@ class PostWidget extends StatelessWidget {
 }
 
 class PostWidgetScaffold extends StatelessWidget {
-
   final Post post;
 
   const PostWidgetScaffold(this.post, {Key key}) : super(key: key);
@@ -399,8 +387,8 @@ class PostWidgetScaffold extends StatelessWidget {
       }
     }
 
-
     Widget buttonBarWidget() {
+      // TODO: find a good solution for not logged in users.
       Widget favButton() {
         return LikeButton(
           isLiked: post.isFavourite,

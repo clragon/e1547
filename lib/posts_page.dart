@@ -1,19 +1,3 @@
-// e1547: A mobile app for browsing e926.net and friends.
-// Copyright (C) 2017 perlatus <perlatus@e1547.email.vczf.io>
-//
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program. If not, see <http://www.gnu.org/licenses/>.
-
 import 'dart:async' show Future;
 
 import 'package:flutter/material.dart';
@@ -23,11 +7,10 @@ import 'package:flutter/widgets.dart';
 
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart'
     show StaggeredGridView, StaggeredTile;
-import 'package:logging/logging.dart' show Logger;
 import 'package:meta/meta.dart' show required;
 
 import 'client.dart' show client;
-import 'consts.dart' as consts;
+import 'appinfo.dart' as appInfo;
 import 'input.dart' show LowercaseTextInputFormatter;
 import 'persistence.dart' show db;
 import 'post.dart';
@@ -47,7 +30,6 @@ class PostsPage extends StatefulWidget {
 }
 
 class _PostsPageState extends State<PostsPage> {
-  final Logger _log = new Logger('_PostsPageState');
 
   bool _isEditingTags = false;
   PersistentBottomSheetController<Tagset> _bottomSheetController;
@@ -70,7 +52,6 @@ class _PostsPageState extends State<PostsPage> {
 
       if (_isEditingTags) {
         Tagset newTags = new Tagset.parse(tagController.text);
-        _log.info('new tags: $newTags');
         db.tags.value = new Future.value(newTags);
 
         _bottomSheetController?.close();
@@ -120,7 +101,6 @@ class _PostsPageState extends State<PostsPage> {
           });
 
       if (newNumColumns != null && newNumColumns > 0) {
-        _log.fine('setting numColumns to $newNumColumns');
         setState(() {
           db.numColumns.value = new Future.value(newNumColumns);
         });
@@ -166,11 +146,9 @@ class _PostsPageState extends State<PostsPage> {
       );
     }
 
-    _log.finer('building item $item');
 
     // Special case for first page header.
     if (item == 0) {
-      _log.finer('item was first page header');
       if (_pages.isEmpty) {
         _loadNextPage();
         return pageHeader('Loading page 1');
@@ -191,14 +169,12 @@ class _PostsPageState extends State<PostsPage> {
       i += page.length;
 
       if (item < i) {
-        _log.finer('item was post on page ${p + 1}');
         return postPreview(page, item - (i - page.length), item - (p + 1));
       }
 
       // Header for next page
       if (item == i) {
         int nextPage = p + 1;
-        _log.finer('item was header for page ${nextPage + 1}');
         if (nextPage >= _pages.length) {
           _loadNextPage();
           return pageHeader('Loading page ${nextPage + 1}');
@@ -211,7 +187,6 @@ class _PostsPageState extends State<PostsPage> {
       i += 1;
     }
 
-    _log.finer("couldn't identify item $item");
     return null;
   }
 
@@ -244,7 +219,7 @@ class _PostsPageState extends State<PostsPage> {
   Widget build(BuildContext ctx) {
     AppBar appBarWidget() {
       return new AppBar(
-        title: const Text(consts.appName),
+        title: const Text(appInfo.appName),
         actions: [
           new IconButton(
             icon: const Icon(Icons.view_column),
@@ -276,7 +251,6 @@ class _PostsPageState extends State<PostsPage> {
           }
 
           if (snapshot.hasError) {
-            _log.fine('error retrieving num columns: ${snapshot.error}');
           }
 
           return new Container();
@@ -306,7 +280,6 @@ class _PostsPageState extends State<PostsPage> {
 }
 
 class _PostsPageDrawer extends StatelessWidget {
-  final Logger _log = new Logger('_PostsPageDrawer');
 
   @override
   Widget build(BuildContext ctx) {
@@ -322,7 +295,6 @@ class _PostsPageDrawer extends StatelessWidget {
             }
 
             if (snapshot.hasError) {
-              _log.fine('error getting username from db: ${snapshot.error}');
             }
 
             return new RaisedButton(
@@ -338,7 +310,7 @@ class _PostsPageDrawer extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           const CircleAvatar(
-            backgroundImage: const AssetImage('icons/paw.png'),
+            backgroundImage: const AssetImage('assets/icon/paw.png'),
             radius: 48.0,
           ),
           userInfoWidget(),
@@ -356,9 +328,9 @@ class _PostsPageDrawer extends StatelessWidget {
         ),
         const AboutListTile(
           icon: const Icon(Icons.help),
-          applicationName: consts.appName,
-          applicationVersion: consts.appVersion,
-          applicationLegalese: consts.about,
+          applicationName: appInfo.appName,
+          applicationVersion: appInfo.appVersion,
+          applicationLegalese: appInfo.about,
         ),
       ]),
     );
@@ -368,7 +340,6 @@ class _PostsPageDrawer extends StatelessWidget {
 typedef Future<Tagset> TagEditor(Tagset tags);
 
 class TagEntry extends StatelessWidget {
-  static final Logger _log = new Logger('TagEntry');
 
   const TagEntry({
     @required this.controller,
@@ -411,7 +382,6 @@ class TagEntry extends StatelessWidget {
               );
             });
 
-        _log.info('$selectedFilter min value: $min');
         if (min == null) {
           return tags;
         }
