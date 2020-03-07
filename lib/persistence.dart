@@ -17,7 +17,7 @@ final Persistence db = new Persistence();
 class Persistence {
   ValueNotifier<Future<String>> host;
   ValueNotifier<Future<Tagset>> tags;
-  ValueNotifier<Future<bool>> hideSwf;
+  ValueNotifier<Future<Tagset>> homeTags;
   ValueNotifier<Future<String>> username;
   ValueNotifier<Future<String>> apiKey;
   ValueNotifier<Future<int>> numColumns;
@@ -28,6 +28,9 @@ class Persistence {
 
     tags = _makeNotifier((p) => new Tagset.parse(p.getString('tags') ?? ''));
     tags.addListener(_saveString('tags', tags));
+
+    homeTags = _makeNotifier((p) => new Tagset.parse(p.getString('homeTags') ?? ''));
+    homeTags.addListener(_saveString('homeTags', homeTags));
 
     username = _makeNotifier((p) => p.getString('username'));
     username.addListener(_saveString('username', username));

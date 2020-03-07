@@ -12,7 +12,6 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsPageState extends State<SettingsPage> {
   String _host;
-  bool _hideSwf;
   String _username;
 
   @override

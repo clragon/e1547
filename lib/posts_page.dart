@@ -24,13 +24,21 @@ void _setFocusToEnd(TextEditingController controller) {
   );
 }
 
+_PostsPageState _postsPage;
+bool _fabVisible = true;
+
+enum DrawerSelection { home, hot, favorites, }
+DrawerSelection _drawerSelection = DrawerSelection.home;
+
 class PostsPage extends StatefulWidget {
   @override
-  State createState() => new _PostsPageState();
+  State createState() {
+    _postsPage = new _PostsPageState();
+    return _postsPage;
+  }
 }
 
 class _PostsPageState extends State<PostsPage> {
-
   bool _isEditingTags = false;
   PersistentBottomSheetController<Tagset> _bottomSheetController;
 
@@ -53,6 +61,7 @@ class _PostsPageState extends State<PostsPage> {
       if (_isEditingTags) {
         Tagset newTags = new Tagset.parse(tagController.text);
         db.tags.value = new Future.value(newTags);
+        db.homeTags.value = new Future.value(newTags);
 
         _bottomSheetController?.close();
         _clearPages();
@@ -84,28 +93,6 @@ class _PostsPageState extends State<PostsPage> {
 
   void _clearPages() {
     setState(_pages.clear);
-  }
-
-  Function() _onPressedChangeColumns(BuildContext ctx) {
-    return () async {
-      int numColumns = await db.numColumns.value ?? 3;
-      int newNumColumns = await showDialog<int>(
-          context: ctx,
-          builder: (ctx) {
-            return new RangeDialog(
-              title: 'Number of columns',
-              value: numColumns,
-              max: 10,
-              min: 1,
-            );
-          });
-
-      if (newNumColumns != null && newNumColumns > 0) {
-        setState(() {
-          db.numColumns.value = new Future.value(newNumColumns);
-        });
-      }
-    };
   }
 
   // Item count is:
@@ -145,7 +132,6 @@ class _PostsPageState extends State<PostsPage> {
         ],
       );
     }
-
 
     // Special case for first page header.
     if (item == 0) {
@@ -222,11 +208,6 @@ class _PostsPageState extends State<PostsPage> {
         title: const Text(appInfo.appName),
         actions: [
           new IconButton(
-            icon: const Icon(Icons.view_column),
-            tooltip: 'Set columns',
-            onPressed: _onPressedChangeColumns(ctx),
-          ),
-          new IconButton(
             icon: const Icon(Icons.refresh),
             tooltip: 'Refresh',
             onPressed: _clearPages,
@@ -250,8 +231,7 @@ class _PostsPageState extends State<PostsPage> {
             );
           }
 
-          if (snapshot.hasError) {
-          }
+          if (snapshot.hasError) {}
 
           return new Container();
         },
@@ -261,12 +241,15 @@ class _PostsPageState extends State<PostsPage> {
     Widget floatingActionButtonWidget() {
       return new Builder(builder: (ctx) {
         // Needed for Scaffold.of(ctx) to work
-        return new FloatingActionButton(
-          child: _isEditingTags
-              ? const Icon(Icons.check)
-              : const Icon(Icons.search),
-          onPressed: _onPressedFloatingActionButton(ctx),
-        );
+        return new Visibility(
+          visible: _fabVisible,
+          child: new FloatingActionButton(
+            child: _isEditingTags
+                ? const Icon(Icons.check)
+                : const Icon(Icons.search),
+            onPressed: _onPressedFloatingActionButton(ctx),
+          ),
+        ).build(ctx);
       });
     }
 
@@ -280,7 +263,6 @@ class _PostsPageState extends State<PostsPage> {
 }
 
 class _PostsPageDrawer extends StatelessWidget {
-
   @override
   Widget build(BuildContext ctx) {
     Widget headerWidget() {
@@ -294,8 +276,7 @@ class _PostsPageDrawer extends StatelessWidget {
               return new Text(snapshot.data);
             }
 
-            if (snapshot.hasError) {
-            }
+            if (snapshot.hasError) {}
 
             return new RaisedButton(
               child: const Text('LOGIN'),
@@ -318,9 +299,80 @@ class _PostsPageDrawer extends StatelessWidget {
       ));
     }
 
+    Function() _onPressedChangeColumns(BuildContext ctx) {
+      return () async {
+        int numColumns = await db.numColumns.value ?? 3;
+        int newNumColumns = await showDialog<int>(
+            context: ctx,
+            builder: (ctx) {
+              return new RangeDialog(
+                title: 'Number of columns',
+                value: numColumns,
+                max: 10,
+                min: 1,
+              );
+            });
+
+        if (newNumColumns != null && newNumColumns > 0) {
+          _postsPage.setState(() {
+            db.numColumns.value = new Future.value(newNumColumns);
+          });
+          Navigator.pop(ctx);
+        }
+      };
+    }
+
     return new Drawer(
       child: new ListView(children: [
         headerWidget(),
+        new ListTile(
+          selected: _drawerSelection == DrawerSelection.home,
+          leading: const Icon(Icons.home),
+          title: const Text('Home'),
+          onTap: () {
+            _drawerSelection = DrawerSelection.home;
+            _postsPage.setState(() {
+              db.tags.value = db.homeTags.value;
+              _postsPage._clearPages();
+              _fabVisible = true;
+              Navigator.pop(ctx);
+            });
+          },
+        ),
+        new ListTile(
+            selected: _drawerSelection == DrawerSelection.hot,
+            leading: const Icon(Icons.show_chart),
+            title: const Text('Favorites'),
+            onTap: () {
+              _drawerSelection = DrawerSelection.hot;
+              _postsPage.setState(() {
+                db.tags.value = new Future.value(new Tagset.parse("order:rank"));
+                _postsPage._clearPages();
+                _fabVisible = false;
+                Navigator.pop(ctx);
+              });
+            }),
+        new ListTile(
+          selected: _drawerSelection == DrawerSelection.favorites,
+            leading: const Icon(Icons.favorite),
+            title: const Text('Favorites'),
+            onTap: () {
+              _drawerSelection = DrawerSelection.favorites;
+              _postsPage.setState(() async {
+                db.tags.value = new Future.value(new Tagset.parse("fav:" + await db.username.value));
+                print(db.tags.value);
+                _postsPage._clearPages();
+                _fabVisible = false;
+                Navigator.pop(ctx);
+              });
+            }),
+        Divider(),
+        new ListTile(
+          leading: const Icon(Icons.view_column),
+          title: const Text('Columns'),
+          onTap: _onPressedChangeColumns(ctx),
+        ),
+        Divider(),
         new ListTile(
           leading: const Icon(Icons.settings),
           title: const Text('Settings'),
@@ -340,7 +392,6 @@ class _PostsPageDrawer extends StatelessWidget {
 typedef Future<Tagset> TagEditor(Tagset tags);
 
 class TagEntry extends StatelessWidget {
-
   const TagEntry({
     @required this.controller,
     Key key,
