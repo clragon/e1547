@@ -334,7 +334,7 @@ class _PostsPageDrawer extends StatelessWidget {
             _postsPage.setState(() {
               db.tags.value = db.homeTags.value;
               _postsPage._clearPages();
-              _fabVisible = true;
+              // _fabVisible = true;
               Navigator.pop(ctx);
             });
           },
@@ -348,7 +348,7 @@ class _PostsPageDrawer extends StatelessWidget {
               _postsPage.setState(() {
                 db.tags.value = new Future.value(new Tagset.parse("order:rank"));
                 _postsPage._clearPages();
-                _fabVisible = false;
+                // _fabVisible = false;
                 Navigator.pop(ctx);
               });
             }),
@@ -362,7 +362,7 @@ class _PostsPageDrawer extends StatelessWidget {
                 db.tags.value = new Future.value(new Tagset.parse("fav:" + await db.username.value));
                 print(db.tags.value);
                 _postsPage._clearPages();
-                _fabVisible = false;
+                // _fabVisible = false;
                 Navigator.pop(ctx);
               });
             }),
