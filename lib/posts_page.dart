@@ -402,6 +402,7 @@ class TagEntry extends StatelessWidget {
       'Score': 'score',
       'Favorites': 'favcount',
       'Views': 'views',
+      'Hot': 'rank'
     }[selectedSort];
     assert(orderType != null);
 
@@ -452,7 +453,7 @@ class TagEntry extends StatelessWidget {
         icon: const Icon(Icons.sort),
         tooltip: 'Sort by',
         itemBuilder: _popupMenuButtonItemBuilder(
-          ['New', 'Score', 'Favorites', 'Views'],
+          ['New', 'Score', 'Favorites', 'Views', 'Hot'],
         ),
         onSelected: _onSelectedSortBy,
       );

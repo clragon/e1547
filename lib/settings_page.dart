@@ -19,7 +19,6 @@ class _SettingsPageState extends State<SettingsPage> {
   void initState() {
     super.initState();
     db.host.value.then((a) async => setState(() => _host = a));
-    db.hideSwf.value.then((a) async => setState(() => _hideSwf = a));
     db.username.value.then((a) async => setState(() => _username = a));
   }
 
@@ -38,13 +37,6 @@ class _SettingsPageState extends State<SettingsPage> {
         });
       }
     };
-  }
-
-  void _onChangedHideSwf(bool newHideSwf) {
-    db.hideSwf.value = new Future.value(newHideSwf);
-    setState(() {
-      _hideSwf = newHideSwf;
-    });
   }
 
   Function() _onTapSignOut(BuildContext ctx) {
@@ -80,11 +72,6 @@ class _SettingsPageState extends State<SettingsPage> {
               title: const Text('Site backend'),
               subtitle: new Text(_host ?? ' '),
               onTap: _onTapSiteBackend(ctx),
-            ),
-            new CheckboxListTile(
-              title: const Text('Hide Flash posts'),
-              value: _hideSwf ?? false,
-              onChanged: _onChangedHideSwf,
             ),
             new ListTile(
               title: const Text('Sign out'),

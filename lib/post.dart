@@ -31,23 +31,25 @@ class Post {
   Map raw;
 
   int id;
-  String author;
   int score;
   int favCount;
-  String fileUrl;
-  String fileExt;
-  String previewUrl;
-  int previewWidth;
-  int previewHeight;
-  String sampleUrl;
-  int sampleWidth;
-  int sampleHeight;
-  String rating;
-  bool hasComments;
-  List<String> artist;
-  bool isFavourite;
+  String uploader;
 
+  Map file;
+  Map preview;
+  Map sample;
+
+  String rating;
+  List<String> artist;
+  bool hasComments;
+
+  bool isFavourite;
   bool isLoggedIn;
+
+  bool isConditionalDnp;
+  bool hasSoundWarning;
+  bool hasEpilepsyWarning;
+
 
   Post.fromRaw(this.raw) {
     id = raw['id'] as int;
@@ -57,22 +59,25 @@ class Post {
     rating = (raw['rating'] as String).toUpperCase();
     hasComments = (raw['comment_count'] as int == 0);
 
-    artist = raw['tags']['artist'].cast<String>();
+    artist = [];
+    for (String s in raw['tags']['artist'].cast<String>()) {
+      if (s == 'conditional_dnp') {
+        isConditionalDnp = true;
+      } else if (s == 'sound_warning') {
+        hasSoundWarning = true;
+      } else if (s == 'epilepsy_warning') {
+        hasEpilepsyWarning = true;
+      } else {
+        artist.add(s);
+      }
+    }
+
     score = raw['score']['total'] as int;
+    uploader = (raw['uploader_id'] as int).toString();
 
-    Map file = raw['file'] as Map;
-    fileUrl = file['url'] as String;
-    fileExt = file['ext'] as String;
-
-    Map preview = raw['preview'] as Map;
-    previewUrl = preview['url'] as String;
-    previewWidth = preview['width'] as int;
-    previewHeight = preview['height'] as int;
-
-    Map sample = raw['sample'] as Map;
-    sampleUrl = sample['url'] as String;
-    sampleWidth = sample['width'] as int;
-    sampleHeight = sample['height'] as int;
+    file = raw['file'] as Map;
+    preview = raw['preview'] as Map;
+    sample = raw['sample'] as Map;
   }
 
   // Get the URL for the HTML version of the desired post.
@@ -98,7 +103,7 @@ class PostPreview extends StatelessWidget {
         constraints: const BoxConstraints.expand(),
         child: new Center(
           child: new CachedNetworkImage(
-            imageUrl: post.previewUrl,
+            imageUrl: post.preview['url'],
             errorWidget: (context, url, error) => const Icon(Icons.error),
             fit: BoxFit.contain,
           ),
@@ -106,7 +111,7 @@ class PostPreview extends StatelessWidget {
       );
 
       Widget specialOverlayIcon;
-      if (post.fileExt == 'gif') {
+      if (post.file['ext'] == 'gif') {
         specialOverlayIcon = new Container(
           padding: EdgeInsets.zero,
           color: Colors.black38,
@@ -285,10 +290,10 @@ class PostWidgetScaffold extends StatelessWidget {
     Widget postContentsWidget() {
       Widget overlayedImageWidget() {
         Widget imageWidget() {
-          return post.fileExt == 'swf' || post.fileExt == 'webm'
+          return post.file['ext'] == 'swf' || post.file['ext'] == 'webm'
               ? new Container()
               : new CachedNetworkImage(
-                  imageUrl: post.sampleUrl,
+                  imageUrl: post.sample['url'],
                   placeholder: (context, url) =>
                       const CircularProgressIndicator(),
                   errorWidget: (context, url, error) => const Icon(Icons.error),
@@ -339,7 +344,7 @@ class PostWidgetScaffold extends StatelessWidget {
                 new Text('#${post.id}', style: secondaryTextStyle),
                 new Row(children: [
                   new Icon(Icons.person, size: 14.0, color: secondary),
-                  new Text(' ${post.author}', style: secondaryTextStyle),
+                  new Text(' ${post.uploader}', style: secondaryTextStyle),
                 ]),
               ],
             ),
@@ -466,11 +471,11 @@ class PostWidgetScaffold extends StatelessWidget {
   Function() _onTapImage(BuildContext ctx, Post post) {
     Widget fullScreenWidgetBuilder(BuildContext ctx) {
       return PhotoView(
-        imageProvider: new CachedNetworkImageProvider(post.fileUrl),
+        imageProvider: new CachedNetworkImageProvider(post.file['url']),
         loadingBuilder: (buildContext, imageChunkEvent) =>
             new Stack(alignment: Alignment.center, children: [
           new CachedNetworkImage(
-            imageUrl: post.sampleUrl,
+            imageUrl: post.sample['url'],
             placeholder: (context, url) => const CircularProgressIndicator(),
             errorWidget: (context, url, error) => const Icon(Icons.error),
           ),
@@ -486,8 +491,8 @@ class PostWidgetScaffold extends StatelessWidget {
     }
 
     return () async {
-      if (post.fileExt == 'webm' || post.fileExt == 'swf') {
-        url.launch(post.fileUrl);
+      if (post.file['ext'] == 'webm' || post.file['ext'] == 'swf') {
+        url.launch(post.file['url']);
       } else {
         SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
         await Navigator.of(ctx).push(new MaterialPageRoute<Null>(
@@ -546,6 +551,7 @@ class _MoreDialog extends StatelessWidget {
 
   Function() _download(BuildContext ctx) {
     return () async {
+      // TODO: this doesn't work.
       Map<PermissionGroup, PermissionStatus> permissions =
           await PermissionHandler()
               .requestPermissions([PermissionGroup.storage]);
@@ -577,7 +583,7 @@ class _MoreDialog extends StatelessWidget {
       }
 
       String filename =
-          post.artist.join(', ') + ' ~ ${post.id}.' + post.fileExt;
+          post.artist.join(', ') + ' ~ ${post.id}.' + post.file['ext'];
       String filepath =
           Platform.environment['EXTERNAL_STORAGE'] + '/Download/' + filename;
 
@@ -588,7 +594,7 @@ class _MoreDialog extends StatelessWidget {
         }
 
         DefaultCacheManager cm = DefaultCacheManager();
-        return (await cm.getSingleFile(post.fileUrl)).copySync(filepath);
+        return (await cm.getSingleFile(post.file['url'])).copySync(filepath);
       }
 
       showDialog(
@@ -655,7 +661,7 @@ class _MoreDialog extends StatelessWidget {
 
       Widget copyDirectLink = new ListTile(
           title: const Text('Copy direct link'),
-          onTap: () => _copyAndPopPop(ctx, post.fileUrl));
+          onTap: () => _copyAndPopPop(ctx, post.file['url']));
 
       showDialog(
           context: ctx,

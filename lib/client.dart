@@ -79,7 +79,7 @@ class Client {
     List<Post> posts = [];
     for (Map rp in json.decode(body)['posts']) {
       Post p = new Post.fromRaw(rp);
-      if (p.fileUrl == null || p.fileExt == 'swf') { continue; }
+      if (p.file['url'] == null || p.file['ext'] == 'swf') { continue; }
       p.isLoggedIn = await this.isLoggedIn();
       posts.add(p);
     }
