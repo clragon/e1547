@@ -16,9 +16,9 @@ class LoginPage extends StatelessWidget {
   Widget build(BuildContext ctx) {
     List<Widget> columnChildren = [
       new _InstructionStep(
-          1, _buttonLink('Login via web browser', '/user/login')),
+          1, _buttonLink('Login via web browser', '/session/new')),
       new _InstructionStep(
-          2, _buttonLink('Enable API Access', '/user/api_key')),
+          2, _buttonLink('Enable API Access', '/users/home')),
       const _InstructionStep(3, const Text('Copy and paste your API key')),
       new _LoginFormFields(),
     ];

@@ -11,12 +11,11 @@ final Client client = new Client();
 
 class Client {
 
-  final HttpCustom _http = new HttpCustom();
+  final HttpHelper _http = new HttpHelper();
 
   Future<String> _host = db.host.value;
   Future<String> _username = db.username.value;
   Future<String> _apiKey = db.apiKey.value;
-  List<int> favourites;
 
   Client() {
     db.host.addListener(() => _host = db.host.value);
@@ -24,40 +23,16 @@ class Client {
     db.apiKey.addListener(() => _apiKey = db.apiKey.value);
   }
 
-  Future<bool> isUserFavourite(int post) async {
-    if (!await isLoggedIn()) {
-      return false;
-    }
-
-    return await _http.post(await _host, '/favorite/list_users.json', query: {
-      'id': post,
-    }).then((response) async => response.body.toString().contains(await _username));
-  }
-
-  Future<List<int>> getFavourites() async {
-    String body = await _http.get(await _host, '/post/index.json', query: {
-      'tags': 'fav:' + await _username,
-    }).then((response) => response.body);
-
-    List<int> ids = [];
-    for (Map rp in json.decode(body)) {
-      Post p = new Post.fromRaw(rp);
-      ids.add(p.id);
-    }
-
-    return ids;
-  }
-
   Future<bool> addAsFavorite(int post) async {
     if (!await isLoggedIn()) {
       return false;
     }
 
-    return await _http.post(await _host, '/favorite/create.json', query: {
+    return await _http.post(await _host, '/favorites.json', query: {
       'login': await _username,
-      'password_hash': await _apiKey,
-      'id': post,
-    }).then((response) => response.statusCode == 200);
+      'api_key': await _apiKey,
+      'post_id': post,
+    }).then((response) => response.statusCode == 201);
   }
 
   Future<bool> removeAsFavorite(int post) async {
@@ -65,13 +40,11 @@ class Client {
       return false;
     }
 
-    return await _http
-        .post(await db.host.value, '/favorite/destroy.json', query: {
+    return await _http.delete(await _host, '/favorites/' + post.toString() + 'json', query: {
       'login': await _username,
-      'password_hash': await _apiKey,
-      'id': post,
+      'api_key': await _apiKey,
     }).then((response) {
-      return response.statusCode == 200;
+      return response.statusCode == 302;
     });
   }
 
@@ -80,9 +53,9 @@ class Client {
   }
 
   Future<bool> isValidAuthPair(String username, String apiKey) async {
-    return await _http.get(await _host, '/dmail/inbox.json', query: {
+    return await _http.get(await _host, '/favorites.json', query: {
       'login': username,
-      'password_hash': apiKey,
+      'api_key': apiKey,
     }).then((response) {
       if (response.statusCode == 200) {
         return true;
@@ -94,28 +67,20 @@ class Client {
   }
 
   Future<List<Post>> posts(Tagset tags, int page) async {
-    bool loggedIn = await isLoggedIn();
-    if (loggedIn) {
-      favourites ??= await getFavourites();
-    }
 
-    String body = await _http.get(await _host, '/post/index.json', query: {
+    String body = await _http.get(await _host, '/posts.json', query: {
       'tags': tags,
       'page': page + 1,
       'limit': 75,
+      'login': await _username,
+      'api_key': await _apiKey,
     }).then((response) => response.body);
 
     List<Post> posts = [];
-    for (Map rp in json.decode(body)) {
+    for (Map rp in json.decode(body)['posts']) {
       Post p = new Post.fromRaw(rp);
-      if (loggedIn) {
-        if (favourites.contains(p.id)) {
-          p.isFavourite = true;
-        }
-      }
-      if (await db.hideSwf.value && p.fileExt == 'swf') {
-        continue;
-      }
+      if (p.fileUrl == null || p.fileExt == 'swf') { continue; }
+      p.isLoggedIn = await this.isLoggedIn();
       posts.add(p);
     }
 
@@ -123,9 +88,12 @@ class Client {
   }
 
   Future<List<Comment>> comments(int postId, int page) async {
-    String body = await _http.get(await _host, '/comment/index.json', query: {
+    // THIS DOES NOT WORK YET; API BROKEN.
+    String body = await _http.get(await _host, '/comments.json', query: {
       'post_id': postId,
       'page': page + 1,
+      'login': await _username,
+      'api_key': await _apiKey,
     }).then((response) => response.body);
 
     List<Comment> comments = [];

@@ -45,44 +45,34 @@ class Post {
   String rating;
   bool hasComments;
   List<String> artist;
+  bool isFavourite;
 
-  bool isConditionalDnp;
-  bool hasSoundWarning;
-  bool hasEpilepsyWarning;
-
-  bool isFavourite = false;
+  bool isLoggedIn;
 
   Post.fromRaw(this.raw) {
     id = raw['id'] as int;
-    author = raw['author'] as String;
-    score = raw['score'] as int;
     favCount = raw['fav_count'] as int;
-    fileUrl = raw['file_url'] as String;
-    fileExt = raw['file_ext'] as String;
-    previewUrl = raw['preview_url'] as String;
-    previewWidth = raw['preview_width'] as int;
-    previewHeight = raw['preview_height'] as int;
-    sampleUrl = raw['sample_url'] as String;
-    sampleWidth = raw['sample_width'] as int;
-    sampleHeight = raw['sample_height'] as int;
+    isFavourite = raw['is_favorited'] as bool;
 
     rating = (raw['rating'] as String).toUpperCase();
+    hasComments = (raw['comment_count'] as int == 0);
 
-    hasComments = raw['has_comments'] as bool;
+    artist = raw['tags']['artist'].cast<String>();
+    score = raw['score']['total'] as int;
 
-    artist = [];
-    for (var a in raw['artist']) {
-      String aStr = a.toString();
-      if (a == 'conditional_dnp') {
-        isConditionalDnp = true;
-      } else if (a == 'sound_warning') {
-        hasSoundWarning = true;
-      } else if (a == 'epilepsy_warning') {
-        hasEpilepsyWarning = true;
-      } else {
-        artist.add(aStr);
-      }
-    }
+    Map file = raw['file'] as Map;
+    fileUrl = file['url'] as String;
+    fileExt = file['ext'] as String;
+
+    Map preview = raw['preview'] as Map;
+    previewUrl = preview['url'] as String;
+    previewWidth = preview['width'] as int;
+    previewHeight = preview['height'] as int;
+
+    Map sample = raw['sample'] as Map;
+    sampleUrl = sample['url'] as String;
+    sampleWidth = sample['width'] as int;
+    sampleHeight = sample['height'] as int;
   }
 
   // Get the URL for the HTML version of the desired post.
@@ -365,7 +355,6 @@ class PostWidgetScaffold extends StatelessWidget {
 
     Future<void> tryRemoveFav(BuildContext ctx, Post post) async {
       if (await client.removeAsFavorite(post.id)) {
-        client.favourites.remove(post.id);
         post.isFavourite = false;
       } else {
         Scaffold.of(ctx).showSnackBar(new SnackBar(
@@ -377,7 +366,6 @@ class PostWidgetScaffold extends StatelessWidget {
 
     Future<void> tryAddFav(BuildContext ctx, Post post) async {
       if (await client.addAsFavorite(post.id)) {
-        client.favourites.add(post.id);
         post.isFavourite = true;
       } else {
         Scaffold.of(ctx).showSnackBar(new SnackBar(
@@ -388,7 +376,6 @@ class PostWidgetScaffold extends StatelessWidget {
     }
 
     Widget buttonBarWidget() {
-      // TODO: find a good solution for not logged in users.
       Widget favButton() {
         return LikeButton(
           isLiked: post.isFavourite,
@@ -447,12 +434,19 @@ class PostWidgetScaffold extends StatelessWidget {
       return new ButtonBarTheme(
         child: new ButtonBar(
           alignment: MainAxisAlignment.spaceAround,
-          children: <Widget>[
-            favButton(),
-            commentsButton(),
-            openInBrowserButton(),
-            overflowButton(),
-          ],
+          children: () {
+            List<Widget> buttons = new List<Widget>();
+            if (post.isLoggedIn) {
+              buttons.add(favButton());
+              // API for comments is broken.
+              // commentsButton(),
+            }
+            buttons.addAll([
+              openInBrowserButton(),
+              overflowButton(),
+            ]);
+            return buttons;
+          }(),
         ),
         data: const ButtonBarThemeData(),
       );
@@ -485,8 +479,9 @@ class PostWidgetScaffold extends StatelessWidget {
             child: const LinearProgressIndicator(),
           ),
         ]),
-        onTapDown: (buildContext, tapDownDetails, photoViewControllerValue) =>
-            Navigator.of(ctx).pop(),
+        minScale: PhotoViewComputedScale.contained,
+        maxScale: PhotoViewComputedScale.contained * 6,
+        onTapUp: (buildContext, tapDownDetails, photoViewControllerValue) => Navigator.of(ctx).pop(),
       );
     }
 
@@ -566,8 +561,7 @@ class _MoreDialog extends StatelessWidget {
             context: ctx,
             builder: (ctx) {
               return new AlertDialog(
-                content: const Text('Sorry, but you need to grant write '
-                    'permission in order to download files.'),
+                content: const Text('You need to grant write permission in order to download files.'),
                 actions: [
                   new RaisedButton(
                     child: const Text('TRY AGAIN'),

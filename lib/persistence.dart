@@ -29,9 +29,6 @@ class Persistence {
     tags = _makeNotifier((p) => new Tagset.parse(p.getString('tags') ?? ''));
     tags.addListener(_saveString('tags', tags));
 
-    hideSwf = _makeNotifier((p) => p.getBool('hideSwf') ?? false);
-    hideSwf.addListener(_saveBool('hideSwf', hideSwf));
-
     username = _makeNotifier((p) => p.getString('username'));
     username.addListener(_saveString('username', username));
 
