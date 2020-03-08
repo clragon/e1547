@@ -2,7 +2,7 @@ import 'dart:async' show Future;
 import 'appinfo.dart' as appInfo;
 import 'package:http/http.dart' as http;
 
-const String userAgent = '${appInfo.appName}/${appInfo.appVersion} (binaryfloof)';
+const String userAgent = '${appInfo.appName}/${appInfo.appVersion} (${appInfo.developer})';
 
 class HttpHelper {
 

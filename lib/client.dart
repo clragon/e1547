@@ -71,7 +71,7 @@ class Client {
     String body = await _http.get(await _host, '/posts.json', query: {
       'tags': tags,
       'page': page + 1,
-      'limit': 75,
+      'limit': 200,
       'login': await _username,
       'api_key': await _apiKey,
     }).then((response) => response.body);

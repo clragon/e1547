@@ -17,10 +17,15 @@ import 'post.dart';
 import 'range_dialog.dart' show RangeDialog;
 import 'tag.dart' show Tagset;
 
+// TODO: this works but its kinda messy. clean up.
 _PostsPageState postsPage;
 Text appbarTitle = Text(appInfo.appName.toString());
-
-enum DrawerSelection { home, hot, favorites, }
+bool isLoggedIn = false;
+enum DrawerSelection {
+  home,
+  hot,
+  favorites,
+}
 DrawerSelection _drawerSelection = DrawerSelection.home;
 
 class PostsPage extends StatefulWidget {
@@ -35,7 +40,7 @@ class _PostsPageState extends State<PostsPage> {
   bool _isEditingTags = false;
   PersistentBottomSheetController<Tagset> _bottomSheetController;
 
-  final Future<TextEditingController> _textEditingControllerFuture =
+  Future<TextEditingController> _textEditingControllerFuture =
       db.tags.value.then((tags) {
     return new TextEditingController()..text = tags.toString() + ' ';
   });
@@ -48,16 +53,22 @@ class _PostsPageState extends State<PostsPage> {
         });
       }
 
+      if (!_isEditingTags) {
+        _textEditingControllerFuture = db.tags.value.then((tags) {
+          return new TextEditingController()..text = tags.toString() + ' ';
+        });
+      }
       TextEditingController tagController = await _textEditingControllerFuture;
       _setFocusToEnd(tagController);
 
       if (_isEditingTags) {
-        Tagset newTags = new Tagset.parse(tagController.text);
-        db.tags.value = new Future.value(newTags);
-        db.homeTags.value = new Future.value(newTags);
+        db.tags.value = new Future.value(new Tagset.parse(tagController.text));
+        if (_drawerSelection == DrawerSelection.home) {
+          db.homeTags.value = db.tags.value;
+        }
 
         _bottomSheetController?.close();
-        _clearPages();
+        clearPages();
       } else {
         _bottomSheetController = Scaffold.of(ctx).showBottomSheet(
           (ctx) => new TagEntry(controller: tagController),
@@ -84,7 +95,7 @@ class _PostsPageState extends State<PostsPage> {
     setState(() {});
   }
 
-  void _clearPages() {
+  void clearPages() {
     setState(_pages.clear);
   }
 
@@ -169,10 +180,10 @@ class _PostsPageState extends State<PostsPage> {
     return null;
   }
 
-  StaggeredTile Function(int) _staggeredTileBuilder(int numColumns) {
+  StaggeredTile Function(int) _staggeredTileBuilder() {
     return (item) {
       if (item == 0) {
-        return new StaggeredTile.extent(numColumns, 50.0);
+        return new StaggeredTile.extent(2, 50.0);
       }
 
       int i = 1;
@@ -185,7 +196,7 @@ class _PostsPageState extends State<PostsPage> {
         }
 
         if (item == i) {
-          return new StaggeredTile.extent(numColumns, 50.0);
+          return new StaggeredTile.extent(2, 50.0);
         }
         i += 1;
       }
@@ -203,31 +214,18 @@ class _PostsPageState extends State<PostsPage> {
           new IconButton(
             icon: const Icon(Icons.refresh),
             tooltip: 'Refresh',
-            onPressed: _clearPages,
+            onPressed: clearPages,
           ),
         ],
       );
     }
 
     Widget bodyWidget() {
-      return new FutureBuilder<int>(
-        future: db.numColumns.value,
-        builder: (ctx, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done &&
-              !snapshot.hasError &&
-              snapshot.hasData) {
-            return new StaggeredGridView.countBuilder(
-              crossAxisCount: snapshot.data,
-              itemCount: _itemCount(),
-              itemBuilder: _itemBuilder,
-              staggeredTileBuilder: _staggeredTileBuilder(snapshot.data),
-            );
-          }
-
-          if (snapshot.hasError) {}
-
-          return new Container();
-        },
+      return new StaggeredGridView.countBuilder(
+        crossAxisCount: 2,
+        itemCount: _itemCount(),
+        itemBuilder: _itemBuilder,
+        staggeredTileBuilder: _staggeredTileBuilder(),
       );
     }
 
@@ -273,11 +271,9 @@ class _PostsPageDrawer extends StatelessWidget {
             if (snapshot.connectionState == ConnectionState.done &&
                 !snapshot.hasError &&
                 snapshot.hasData) {
+              isLoggedIn = true;
               return new Text(snapshot.data);
             }
-
-            if (snapshot.hasError) {}
-
             return new RaisedButton(
               child: const Text('LOGIN'),
               onPressed: () => Navigator.popAndPushNamed(ctx, '/login'),
@@ -299,28 +295,6 @@ class _PostsPageDrawer extends StatelessWidget {
       ));
     }
 
-    Function() _onPressedChangeColumns(BuildContext ctx) {
-      return () async {
-        int numColumns = await db.numColumns.value ?? 3;
-        int newNumColumns = await showDialog<int>(
-            context: ctx,
-            builder: (ctx) {
-              return new RangeDialog(
-                title: 'Number of columns',
-                value: numColumns,
-                max: 10,
-                min: 1,
-              );
-            });
-
-        if (newNumColumns != null && newNumColumns > 0) {
-          postsPage.setState(() {
-            db.numColumns.value = new Future.value(newNumColumns);
-          });
-          Navigator.pop(ctx);
-        }
-      };
-    }
 
     return new Drawer(
       child: new ListView(children: [
@@ -331,11 +305,14 @@ class _PostsPageDrawer extends StatelessWidget {
           title: const Text('Home'),
           onTap: () {
             _drawerSelection = DrawerSelection.home;
-            postsPage.setState(() async {
+            postsPage.setState(() {
               db.tags.value = db.homeTags.value;
-              postsPage._clearPages();
-              appbarTitle = Text(appInfo.appName.toString()); // Text((await db.host.value).split('.')[0]);
-              // _fabVisible = true;
+              if (postsPage._isEditingTags) {
+                postsPage._bottomSheetController?.close();
+              }
+              postsPage.clearPages();
+              appbarTitle = Text(appInfo.appName
+                  .toString()); // Text((await db.host.value).split('.')[0]);
               Navigator.pop(ctx);
             });
           },
@@ -347,34 +324,42 @@ class _PostsPageDrawer extends StatelessWidget {
             onTap: () {
               _drawerSelection = DrawerSelection.hot;
               postsPage.setState(() {
-                db.tags.value = new Future.value(new Tagset.parse("order:rank"));
-                postsPage._clearPages();
+                db.tags.value =
+                    new Future.value(new Tagset.parse("order:rank"));
+                if (postsPage._isEditingTags) {
+                  postsPage._bottomSheetController?.close();
+                }
+                postsPage.clearPages();
                 appbarTitle = Text('Hot');
-                // _fabVisible = false;
                 Navigator.pop(ctx);
               });
             }),
         new ListTile(
-          selected: _drawerSelection == DrawerSelection.favorites,
+            selected: _drawerSelection == DrawerSelection.favorites,
             leading: const Icon(Icons.favorite),
             title: const Text('Favorites'),
-            onTap: () {
+            onTap: () async {
               _drawerSelection = DrawerSelection.favorites;
-              postsPage.setState(() async {
-                db.tags.value = new Future.value(new Tagset.parse("fav:" + await db.username.value));
-                print(db.tags.value);
-                postsPage._clearPages();
+              String username = await db.username.value;
+              postsPage.setState(() {
+                if (username != null) {
+                  db.tags.value =
+                      new Future.value(new Tagset.parse('fav:' + username));
+                } else {
+                  db.tags.value = new Future.value(new Tagset.parse(''));
+                  Scaffold.of(ctx).showSnackBar(new SnackBar(
+                    duration: const Duration(seconds: 1),
+                    content: new Text('You are not logged in.'),
+                  ));
+                }
+                if (postsPage._isEditingTags) {
+                  postsPage._bottomSheetController?.close();
+                }
+                postsPage.clearPages();
                 appbarTitle = Text('Favorites');
-                // _fabVisible = false;
                 Navigator.pop(ctx);
               });
             }),
-        Divider(),
-        new ListTile(
-          leading: const Icon(Icons.view_column),
-          title: const Text('Columns'),
-          onTap: _onPressedChangeColumns(ctx),
-        ),
         Divider(),
         new ListTile(
           leading: const Icon(Icons.settings),

@@ -17,8 +17,7 @@ class LoginPage extends StatelessWidget {
     List<Widget> columnChildren = [
       new _InstructionStep(
           1, _buttonLink('Login via web browser', '/session/new')),
-      new _InstructionStep(
-          2, _buttonLink('Enable API Access', '/users/home')),
+      new _InstructionStep(2, _buttonLink('Enable API Access', '/users/home')),
       const _InstructionStep(3, const Text('Copy and paste your API key')),
       new _LoginFormFields(),
     ];
@@ -56,7 +55,6 @@ class _LoginFormFields extends StatefulWidget {
 }
 
 class _LoginFormFieldsState extends State<_LoginFormFields> {
-
   final TextEditingController _apiKeyFieldController =
       new TextEditingController();
 
@@ -131,13 +129,11 @@ class _LoginFormFieldsState extends State<_LoginFormFields> {
         );
 
         if (ok) {
-
           db.username.value = new Future.value(_username);
           db.apiKey.value = new Future.value(_apiKey);
 
           Navigator.of(ctx).pop();
         } else {
-
           _authDidJustFail = true;
           form.validate();
           Scaffold.of(ctx).showSnackBar(const SnackBar(

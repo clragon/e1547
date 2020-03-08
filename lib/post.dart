@@ -4,20 +4,14 @@ import 'dart:typed_data';
 
 import 'package:cached_network_image/cached_network_image.dart'
     show CachedNetworkImage, CachedNetworkImageProvider;
-
-// TODO: does share work? do we need share? replace or remove.
-// TODO: check if better package available.
 import 'package:esys_flutter_share/esys_flutter_share.dart' show Share;
-
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart' show TextOverflow;
 import 'package:flutter/services.dart'
     show Clipboard, ClipboardData, SystemChrome, SystemUiOverlay;
 import 'package:flutter/services.dart' show rootBundle;
-
 import 'package:flutter_cache_manager/flutter_cache_manager.dart'
     show DefaultCacheManager;
-
 import 'package:like_button/like_button.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:photo_view/photo_view.dart';
@@ -49,7 +43,6 @@ class Post {
   bool isConditionalDnp;
   bool hasSoundWarning;
   bool hasEpilepsyWarning;
-
 
   Post.fromRaw(this.raw) {
     id = raw['id'] as int;
@@ -94,39 +87,17 @@ class PostPreview extends StatelessWidget {
     Key key,
     this.onPressed,
   }) : super(key: key);
-
   @override
   Widget build(BuildContext ctx) {
     Widget imagePreviewWidget() {
-      Widget image = new Container(
-        color: Colors.grey[800],
-        constraints: const BoxConstraints.expand(),
-        child: new Center(
-          child: new CachedNetworkImage(
-            imageUrl: post.preview['url'],
-            errorWidget: (context, url, error) => const Icon(Icons.error),
-            fit: BoxFit.contain,
-          ),
-        ),
+      return new CachedNetworkImage(
+        imageUrl: post.sample['url'],
+        errorWidget: (context, url, error) => const Icon(Icons.error),
+        fit: BoxFit.cover,
       );
-
-      Widget specialOverlayIcon;
-      if (post.file['ext'] == 'gif') {
-        specialOverlayIcon = new Container(
-          padding: EdgeInsets.zero,
-          color: Colors.black38,
-          child: const Icon(Icons.gif),
-        );
-      }
-
-      return specialOverlayIcon == null
-          ? image
-          : new Stack(children: [
-              image,
-              new Positioned(top: 0.0, right: 0.0, child: specialOverlayIcon),
-            ]);
     }
 
+    /*
     Widget postInfoWidget() {
       Widget infoSquare() {
         // This builds a small icon followed by some text.
@@ -231,19 +202,42 @@ class PostPreview extends StatelessWidget {
         ]),
       );
     }
+    */
 
     return new GestureDetector(
-      onTap: onPressed,
-      child: new Card(
-        child: new Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            new Flexible(child: imagePreviewWidget()),
-            postInfoWidget(),
-          ],
-        ),
-      ),
-    );
+        onTap: onPressed,
+        child: () {
+          Widget image = new Card(
+            child: new Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                new Expanded(
+                    child: Container(
+                  alignment:
+                      (post.file['ext'] == 'gif') ? Alignment.center : null,
+                  child: imagePreviewWidget(),
+                )),
+                // postInfoWidget(),
+              ],
+            ),
+          );
+
+          Widget specialOverlayIcon;
+          if (post.file['ext'] == 'gif') {
+            specialOverlayIcon = new Container(
+              padding: EdgeInsets.zero,
+              color: Colors.black38,
+              child: const Icon(Icons.gif),
+            );
+          }
+
+          return specialOverlayIcon == null
+              ? image
+              : new Stack(children: [
+                  image,
+                  new Positioned(top: 4, right: 4, child: specialOverlayIcon),
+                ]);
+        }());
   }
 }
 
@@ -288,10 +282,11 @@ class PostWidgetScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext ctx) {
     Widget postContentsWidget() {
-      Widget overlayedImageWidget() {
+      Widget overlayImageWidget() {
         Widget imageWidget() {
           return post.file['ext'] == 'swf' || post.file['ext'] == 'webm'
-              ? new Container()
+              ? new Container(
+                  child: Center(child: const Text('Webm support under development. \nTap to open in browser.', textAlign: TextAlign.center,)))
               : new CachedNetworkImage(
                   imageUrl: post.sample['url'],
                   placeholder: (context, url) =>
@@ -324,7 +319,7 @@ class PostWidgetScaffold extends StatelessWidget {
         child: new Container(
           color: Colors.black,
           constraints: const BoxConstraints.expand(),
-          child: overlayedImageWidget(),
+          child: overlayImageWidget(),
         ),
       ));
     }
@@ -387,8 +382,7 @@ class PostWidgetScaffold extends StatelessWidget {
           likeBuilder: (bool isLiked) {
             return Icon(
               Icons.favorite,
-              color:
-                  isLiked ? Colors.pinkAccent : Colors.white.withOpacity(0.6),
+              color: isLiked ? Colors.pinkAccent : Colors.white,
             );
           },
           onTap: (isLiked) async {
@@ -486,7 +480,8 @@ class PostWidgetScaffold extends StatelessWidget {
         ]),
         minScale: PhotoViewComputedScale.contained,
         maxScale: PhotoViewComputedScale.contained * 6,
-        onTapUp: (buildContext, tapDownDetails, photoViewControllerValue) => Navigator.of(ctx).pop(),
+        onTapUp: (buildContext, tapDownDetails, photoViewControllerValue) =>
+            Navigator.of(ctx).pop(),
       );
     }
 
@@ -567,7 +562,8 @@ class _MoreDialog extends StatelessWidget {
             context: ctx,
             builder: (ctx) {
               return new AlertDialog(
-                content: const Text('You need to grant write permission in order to download files.'),
+                content: const Text(
+                    'You need to grant write permission in order to download files.'),
                 actions: [
                   new RaisedButton(
                     child: const Text('TRY AGAIN'),

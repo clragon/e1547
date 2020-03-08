@@ -20,7 +20,6 @@ class Persistence {
   ValueNotifier<Future<Tagset>> homeTags;
   ValueNotifier<Future<String>> username;
   ValueNotifier<Future<String>> apiKey;
-  ValueNotifier<Future<int>> numColumns;
 
   Persistence() {
     host = _makeNotifier((p) => p.getString('host') ?? appInfo.defaultEndpoint);
@@ -37,9 +36,6 @@ class Persistence {
 
     apiKey = _makeNotifier((p) => p.getString('apiKey'));
     apiKey.addListener(_saveString('apiKey', apiKey));
-
-    numColumns = _makeNotifier((p) => p.getInt('numColumns') ?? 3);
-    numColumns.addListener(_saveInt('numColumns', numColumns));
   }
 
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
