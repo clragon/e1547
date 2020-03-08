@@ -127,6 +127,7 @@ class _PostsPageState extends State<PostsPage> {
       });
     }
 
+    // TODO: remove those page headers. they're ugly.
     Widget pageHeader(String text) {
       return new Column(
         mainAxisAlignment: MainAxisAlignment.end,

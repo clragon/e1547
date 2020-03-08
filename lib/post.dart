@@ -6,7 +6,6 @@ import 'package:cached_network_image/cached_network_image.dart'
     show CachedNetworkImage, CachedNetworkImageProvider;
 import 'package:esys_flutter_share/esys_flutter_share.dart' show Share;
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart' show TextOverflow;
 import 'package:flutter/services.dart'
     show Clipboard, ClipboardData, SystemChrome, SystemUiOverlay;
 import 'package:flutter/services.dart' show rootBundle;
@@ -547,17 +546,9 @@ class _MoreDialog extends StatelessWidget {
   Function() _download(BuildContext ctx) {
     return () async {
       // TODO: this doesn't work.
-      Map<PermissionGroup, PermissionStatus> permissions =
-          await PermissionHandler()
-              .requestPermissions([PermissionGroup.storage]);
+      Map<PermissionGroup, PermissionStatus> permissions = await PermissionHandler().requestPermissions([PermissionGroup.storage]);
 
-      bool hasWritePerm = false;
-
-      if (permissions[PermissionGroup.storage] == PermissionStatus.granted) {
-        hasWritePerm = true;
-      }
-
-      if (!hasWritePerm) {
+      if (permissions[PermissionGroup.storage] != PermissionStatus.granted) {
         showDialog(
             context: ctx,
             builder: (ctx) {
