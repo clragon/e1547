@@ -382,7 +382,7 @@ class PostWidgetScaffold extends StatelessWidget {
           likeBuilder: (bool isLiked) {
             return Icon(
               Icons.favorite,
-              color: isLiked ? Colors.pinkAccent : Colors.white,
+              color: isLiked ? Colors.pinkAccent : Theme.of(ctx).iconTheme.color,
             );
           },
           onTap: (isLiked) async {

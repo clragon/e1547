@@ -21,6 +21,7 @@ dependencies:
 
   flutter_launcher_icons: ^0.7.4
   flutter_native_splash: ^0.1.9
+  flutter_statusbarcolor: ^0.2.3
 
   flutter:
     sdk: flutter

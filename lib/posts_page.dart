@@ -282,6 +282,9 @@ class _PostsPageDrawer extends StatelessWidget {
         );
       }
 
+      // this could use the avatar post of the user.
+      // however, its not reachable by the API.
+      // maybe send an email to the site owners.
       return new DrawerHeader(
           child: new Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
