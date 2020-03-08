@@ -17,15 +17,8 @@ import 'post.dart';
 import 'range_dialog.dart' show RangeDialog;
 import 'tag.dart' show Tagset;
 
-void _setFocusToEnd(TextEditingController controller) {
-  controller.selection = new TextSelection(
-    baseOffset: controller.text.length,
-    extentOffset: controller.text.length,
-  );
-}
-
-_PostsPageState _postsPage;
-bool _fabVisible = true;
+_PostsPageState postsPage;
+Text appbarTitle = Text(appInfo.appName.toString());
 
 enum DrawerSelection { home, hot, favorites, }
 DrawerSelection _drawerSelection = DrawerSelection.home;
@@ -33,8 +26,8 @@ DrawerSelection _drawerSelection = DrawerSelection.home;
 class PostsPage extends StatefulWidget {
   @override
   State createState() {
-    _postsPage = new _PostsPageState();
-    return _postsPage;
+    postsPage = new _PostsPageState();
+    return postsPage;
   }
 }
 
@@ -205,7 +198,7 @@ class _PostsPageState extends State<PostsPage> {
   Widget build(BuildContext ctx) {
     AppBar appBarWidget() {
       return new AppBar(
-        title: const Text(appInfo.appName),
+        title: appbarTitle,
         actions: [
           new IconButton(
             icon: const Icon(Icons.refresh),
@@ -242,7 +235,7 @@ class _PostsPageState extends State<PostsPage> {
       return new Builder(builder: (ctx) {
         // Needed for Scaffold.of(ctx) to work
         return new Visibility(
-          visible: _fabVisible,
+          visible: true,
           child: new FloatingActionButton(
             child: _isEditingTags
                 ? const Icon(Icons.check)
@@ -260,6 +253,13 @@ class _PostsPageState extends State<PostsPage> {
       floatingActionButton: floatingActionButtonWidget(),
     );
   }
+}
+
+void _setFocusToEnd(TextEditingController controller) {
+  controller.selection = new TextSelection(
+    baseOffset: controller.text.length,
+    extentOffset: controller.text.length,
+  );
 }
 
 class _PostsPageDrawer extends StatelessWidget {
@@ -314,7 +314,7 @@ class _PostsPageDrawer extends StatelessWidget {
             });
 
         if (newNumColumns != null && newNumColumns > 0) {
-          _postsPage.setState(() {
+          postsPage.setState(() {
             db.numColumns.value = new Future.value(newNumColumns);
           });
           Navigator.pop(ctx);
@@ -331,9 +331,10 @@ class _PostsPageDrawer extends StatelessWidget {
           title: const Text('Home'),
           onTap: () {
             _drawerSelection = DrawerSelection.home;
-            _postsPage.setState(() {
+            postsPage.setState(() async {
               db.tags.value = db.homeTags.value;
-              _postsPage._clearPages();
+              postsPage._clearPages();
+              appbarTitle = Text(appInfo.appName.toString()); // Text((await db.host.value).split('.')[0]);
               // _fabVisible = true;
               Navigator.pop(ctx);
             });
@@ -342,12 +343,13 @@ class _PostsPageDrawer extends StatelessWidget {
         new ListTile(
             selected: _drawerSelection == DrawerSelection.hot,
             leading: const Icon(Icons.show_chart),
-            title: const Text('Favorites'),
+            title: const Text('Hot'),
             onTap: () {
               _drawerSelection = DrawerSelection.hot;
-              _postsPage.setState(() {
+              postsPage.setState(() {
                 db.tags.value = new Future.value(new Tagset.parse("order:rank"));
-                _postsPage._clearPages();
+                postsPage._clearPages();
+                appbarTitle = Text('Hot');
                 // _fabVisible = false;
                 Navigator.pop(ctx);
               });
@@ -358,10 +360,11 @@ class _PostsPageDrawer extends StatelessWidget {
             title: const Text('Favorites'),
             onTap: () {
               _drawerSelection = DrawerSelection.favorites;
-              _postsPage.setState(() async {
+              postsPage.setState(() async {
                 db.tags.value = new Future.value(new Tagset.parse("fav:" + await db.username.value));
                 print(db.tags.value);
-                _postsPage._clearPages();
+                postsPage._clearPages();
+                appbarTitle = Text('Favorites');
                 // _fabVisible = false;
                 Navigator.pop(ctx);
               });

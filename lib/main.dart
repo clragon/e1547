@@ -6,8 +6,6 @@ import 'appinfo.dart' as appInfo;
 import 'package:flutter/material.dart';
 
 // TODO: support playing mp4
-// TODO: move all settings to drawer
-// TODO: always hide flash
 // TODO: own about screen?
 
 void main() => runApp(MyApp());
