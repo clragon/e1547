@@ -71,20 +71,52 @@ class Client {
     String body = await _http.get(await _host, '/posts.json', query: {
       'tags': tags,
       'page': page + 1,
-      'limit': 200,
       'login': await _username,
       'api_key': await _apiKey,
     }).then((response) => response.body);
 
     List<Post> posts = [];
     for (Map rp in json.decode(body)['posts']) {
-      Post p = new Post.fromRaw(rp);
+      Post p = await _parsePost(rp);
       if (p.file['url'] == null || p.file['ext'] == 'swf') { continue; }
-      p.isLoggedIn = await this.isLoggedIn();
       posts.add(p);
     }
 
     return posts;
+  }
+
+  Future<List<Post>> pool(int poolID, int page) async {
+
+    String body = await _http.get(await _host, '/pools/' + poolID.toString() + '.json', query: {
+      'page': page + 1,
+      'login': await _username,
+      'api_key': await _apiKey,
+    }).then((response) => response.body);
+
+    List<Post> posts = [];
+    for (int rp in json.decode(body)['post_ids']) {
+      Post p = await post(rp);
+      if (p.file['url'] == null || p.file['ext'] == 'swf') { continue; }
+      posts.add(p);
+    }
+
+    return posts;
+
+  }
+
+  Future<Post> post(int postID) async {
+    String body = await _http.get(await _host, '/posts/' + postID.toString() + '.json', query: {
+      'login': await _username,
+      'api_key': await _apiKey,
+    }).then((response) => response.body);
+
+    return _parsePost(json.decode(body)['post']);
+  }
+
+  Future<Post> _parsePost(Map json) async {
+    Post p = new Post.fromRaw(json);
+    p.isLoggedIn = await this.isLoggedIn();
+    return p;
   }
 
   Future<List<Comment>> comments(int postId, int page) async {

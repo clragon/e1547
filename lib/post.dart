@@ -72,9 +72,9 @@ class Post {
     sample = raw['sample'] as Map;
   }
 
-  // Get the URL for the HTML version of the desired post.
+  // build post URL
   Uri url(String host) =>
-      new Uri(scheme: 'https', host: host, path: '/post/show/$id');
+      new Uri(scheme: 'https', host: host, path: '/posts/$id');
 }
 
 class PostPreview extends StatelessWidget {
@@ -240,7 +240,8 @@ class PostPreview extends StatelessWidget {
   }
 }
 
-// Main widget for presenting and interacting with individual posts.
+// this thing allows swiping through posts
+// TODO: make this load new posts when there aren't any left.
 class PostSwipe extends StatelessWidget {
   final List<Post> posts;
   final int startingIndex;

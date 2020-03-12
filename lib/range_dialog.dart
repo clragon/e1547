@@ -6,12 +6,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 class RangeDialog extends StatefulWidget {
-  const RangeDialog({this.title, this.value, this.max, this.min});
+  const RangeDialog({this.title, this.value, this.max, this.min, this.division});
 
   final String title;
   final int value;
   final int max;
   final int min;
+  final int division;
 
   @override
   RangeDialogState createState() => new RangeDialogState();
@@ -54,9 +55,9 @@ class RangeDialogState extends State<RangeDialog> {
           min: math.min(widget.min != null ? widget.min.toDouble() : 0.0,
               _value.toDouble()),
           max: math.max(widget.max.toDouble(), _value.toDouble()),
-          divisions: 50,
+          divisions: widget.division,
           value: _value.toDouble(),
-          activeColor: Colors.cyanAccent,
+          activeColor: Theme.of(ctx).accentColor,
           onChanged: (v) {
             setState(() => _value = v.toInt());
           });

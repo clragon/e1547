@@ -20,7 +20,8 @@ import 'tag.dart' show Tagset;
 // TODO: this works but its kinda messy. clean up.
 _PostsPageState postsPage;
 Text appbarTitle = Text(appInfo.appName.toString());
-bool isLoggedIn = false;
+bool loadTopVisible = false;
+bool loadBottomVisible = false;
 enum DrawerSelection {
   home,
   hot,
@@ -99,58 +100,43 @@ class _PostsPageState extends State<PostsPage> {
     setState(_pages.clear);
   }
 
-  // Item count is:
-  // 1. Total number of loaded posts
-  // 2. Header before each page, including a blank header after after the last
-  //    page.
   int _itemCount() {
-    int i = 0;
-    i += _pages.length + 1;
+    int i = 1;
     for (List<Post> p in _pages) {
       i += p.length;
     }
     return i;
   }
 
+
+  // TODO: needs loading screen.
   Widget _itemBuilder(BuildContext ctx, int item) {
     Widget postPreview(List<Post> page, int postOnPage, int postOnAll) {
-      return new PostPreview(page[postOnPage], onPressed: () {
-        Navigator.of(ctx).push(new MaterialPageRoute<Null>(
-          builder: (ctx) => new PostSwipe(
-            _pages
-                .fold<Iterable<Post>>(
-                    const Iterable.empty(), (a, b) => a.followedBy(b))
-                .toList(),
-            startingIndex: postOnAll,
-          ),
-        ));
-      });
-    }
-
-    // TODO: remove those page headers. they're ugly.
-    Widget pageHeader(String text) {
-      return new Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          new Text(text),
-          const Divider(),
-        ],
-      );
+      return Container(
+          // this defines the height of the cards.
+          height: 250,
+          child: new PostPreview(page[postOnPage], onPressed: () {
+            Navigator.of(ctx).push(new MaterialPageRoute<Null>(
+              builder: (ctx) => new PostSwipe(
+                _pages
+                    .fold<Iterable<Post>>(
+                        const Iterable.empty(), (a, b) => a.followedBy(b))
+                    .toList(),
+                startingIndex: postOnAll,
+              ),
+            ));
+          }));
     }
 
     // Special case for first page header.
     if (item == 0) {
       if (_pages.isEmpty) {
         _loadNextPage();
-        return pageHeader('Loading page 1');
-      } else if (_pages[0].isEmpty) {
-        return pageHeader('No posts');
-      } else {
-        return pageHeader('Page 1');
+        loadTopVisible = false;
       }
     }
 
-    int i = 1;
+    int i = 0;
 
     for (int p = 0; p < _pages.length; p++) {
       List<Post> page = _pages[p];
@@ -160,22 +146,15 @@ class _PostsPageState extends State<PostsPage> {
       i += page.length;
 
       if (item < i) {
-        return postPreview(page, item - (i - page.length), item - (p + 1));
+        return postPreview(page, item - (i - page.length), item);
       }
 
-      // Header for next page
-      if (item == i) {
+      if (item >= i - 6) {
         int nextPage = p + 1;
         if (nextPage >= _pages.length) {
           _loadNextPage();
-          return pageHeader('Loading page ${nextPage + 1}');
-        } else if (_pages[nextPage].isEmpty) {
-          return pageHeader('No more posts');
-        } else {
-          return pageHeader('Page ${nextPage + 1}');
         }
       }
-      i += 1;
     }
 
     return null;
@@ -183,10 +162,6 @@ class _PostsPageState extends State<PostsPage> {
 
   StaggeredTile Function(int) _staggeredTileBuilder() {
     return (item) {
-      if (item == 0) {
-        return new StaggeredTile.extent(2, 50.0);
-      }
-
       int i = 1;
       for (int p = 0; p < _pages.length; p++) {
         List<Post> page = _pages[p];
@@ -196,9 +171,6 @@ class _PostsPageState extends State<PostsPage> {
           return const StaggeredTile.extent(1, 250.0);
         }
 
-        if (item == i) {
-          return new StaggeredTile.extent(2, 50.0);
-        }
         i += 1;
       }
 
@@ -222,12 +194,65 @@ class _PostsPageState extends State<PostsPage> {
     }
 
     Widget bodyWidget() {
-      return new StaggeredGridView.countBuilder(
-        crossAxisCount: 2,
-        itemCount: _itemCount(),
-        itemBuilder: _itemBuilder,
-        staggeredTileBuilder: _staggeredTileBuilder(),
-      );
+      return new Column(children: [
+        new Wrap(
+          children: [
+            new Visibility(
+              maintainSize: false,
+              visible: loadTopVisible,
+              child: new Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    new Container(
+                      height: 8,
+                      width: 8,
+                      child: new CircularProgressIndicator(
+                        strokeWidth: 3,
+                      ),
+                    ),
+                    new Padding(
+                      padding: EdgeInsets.fromLTRB(12, 4, 0, 4),
+                      child: new Text('loading posts'),
+                    ),
+                    // const Divider(),
+                  ]),
+            ),
+          ],
+        ),
+        new Expanded(
+          child: new StaggeredGridView.countBuilder(
+            crossAxisCount: 2,
+            itemCount: _itemCount(),
+            itemBuilder: _itemBuilder,
+            staggeredTileBuilder: _staggeredTileBuilder(),
+            physics: new BouncingScrollPhysics(),
+          ),
+        ),
+        new Wrap(
+          children: [
+            new Visibility(
+              maintainSize: false,
+              visible: loadBottomVisible,
+              child: new Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // const Divider(),
+                    new Container(
+                      height: 8,
+                      width: 8,
+                      child: new CircularProgressIndicator(
+                        strokeWidth: 3,
+                      ),
+                    ),
+                    new Padding(
+                      padding: EdgeInsets.fromLTRB(12, 4, 0, 4),
+                      child: new Text('loading posts'),
+                    ),
+                  ]),
+            ),
+          ],
+        ),
+      ]);
     }
 
     Widget floatingActionButtonWidget() {
@@ -272,8 +297,10 @@ class _PostsPageDrawer extends StatelessWidget {
             if (snapshot.connectionState == ConnectionState.done &&
                 !snapshot.hasError &&
                 snapshot.hasData) {
-              isLoggedIn = true;
-              return new Text(snapshot.data);
+              return new Text(
+                snapshot.data,
+                style: new TextStyle(fontSize: 16.0),
+              );
             }
             return new RaisedButton(
               child: const Text('LOGIN'),
@@ -286,19 +313,23 @@ class _PostsPageDrawer extends StatelessWidget {
       // this could use the avatar post of the user.
       // however, its not reachable by the API.
       // maybe send an email to the site owners.
-      return new DrawerHeader(
-          child: new Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          const CircleAvatar(
-            backgroundImage: const AssetImage('assets/icon/paw.png'),
-            radius: 48.0,
-          ),
-          userInfoWidget(),
-        ],
-      ));
+      return new Container(
+          height: 140,
+          child: new DrawerHeader(
+              child: new Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              const CircleAvatar(
+                backgroundImage: const AssetImage('assets/icon/paw.png'),
+                radius: 36.0,
+              ),
+              Padding(
+                padding: EdgeInsets.all(16),
+                child: userInfoWidget(),
+              ),
+            ],
+          )));
     }
-
 
     return new Drawer(
       child: new ListView(children: [
@@ -370,7 +401,9 @@ class _PostsPageDrawer extends StatelessWidget {
           title: const Text('Settings'),
           onTap: () => Navigator.popAndPushNamed(ctx, '/settings'),
         ),
+        // TODO: get rid of this garbage and make own about screen.
         const AboutListTile(
+          child: const Text('About'),
           icon: const Icon(Icons.help),
           applicationName: appInfo.appName,
           applicationVersion: appInfo.appVersion,
@@ -421,7 +454,8 @@ class TagEntry extends StatelessWidget {
               return new RangeDialog(
                 title: 'Posts with $filterType at least',
                 value: value,
-                max: 500,
+                division: 20,
+                max: 200,
               );
             });
 
