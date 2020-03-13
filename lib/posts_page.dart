@@ -20,8 +20,6 @@ import 'tag.dart' show Tagset;
 // TODO: this works but its kinda messy. clean up.
 _PostsPageState postsPage;
 Text appbarTitle = Text(appInfo.appName.toString());
-bool loadTopVisible = false;
-bool loadBottomVisible = false;
 bool loadingPosts = true;
 enum DrawerSelection {
   home,
@@ -112,7 +110,54 @@ class _PostsPageState extends State<PostsPage> {
     return i;
   }
 
+  Widget _itemBuilder(BuildContext ctx, int item) {
+    Widget postPreview(List<Post> page, int postOnPage, int postOnAll) {
+      return Container(
+        height: 250,
+        child: new PostPreview(page[postOnPage], onPressed: () {
+          Navigator.of(ctx).push(new MaterialPageRoute<Null>(
+            builder: (ctx) => new PostSwipe(
+              _pages
+                  .fold<Iterable<Post>>(
+                      const Iterable.empty(), (a, b) => a.followedBy(b))
+                  .toList(),
+              startingIndex: postOnAll,
+            ),
+          ));
+        }),
+      );
+    }
 
+    // Special case for first page
+    if (item == 0) {
+      if (_pages.isEmpty) {
+        _loadNextPage();
+        loadingPosts = false;
+      }
+    }
+
+    int posts = 0;
+
+    for (int p = 0; p < _pages.length; p++) {
+      List<Post> page = _pages[p];
+      if (page.isEmpty) {
+        return new Container();
+      }
+      posts += page.length;
+
+      if (item >= posts - 6) {
+        if (p + 1 >= _pages.length) {
+          _loadNextPage();
+        }
+      }
+
+      if (item < posts) {
+        return postPreview(page, item - (posts - page.length), item);
+      }
+    }
+
+    return null;
+  }
 
   StaggeredTile Function(int) _staggeredTileBuilder() {
     return (item) {
@@ -153,55 +198,6 @@ class _PostsPageState extends State<PostsPage> {
       );
     }
 
-    Widget _itemBuilder(BuildContext ctx, int item) {
-      Widget postPreview(List<Post> page, int postOnPage, int postOnAll) {
-        return Container(
-          height: 250,
-          child: new PostPreview(page[postOnPage], onPressed: () {
-            Navigator.of(ctx).push(new MaterialPageRoute<Null>(
-              builder: (ctx) => new PostSwipe(
-                _pages
-                    .fold<Iterable<Post>>(
-                    const Iterable.empty(), (a, b) => a.followedBy(b))
-                    .toList(),
-                startingIndex: postOnAll,
-              ),
-            ));
-          }),
-        );
-      }
-
-      // Special case for first page
-      if (item == 0) {
-        if (_pages.isEmpty) {
-          _loadNextPage();
-          loadingPosts = false;
-        }
-      }
-
-      int posts = 0;
-
-      for (int p = 0; p < _pages.length; p++) {
-        List<Post> page = _pages[p];
-        if (page.isEmpty) {
-          return new Container();
-        }
-        posts += page.length;
-
-        if (item >= posts - 6) {
-          if (p + 1 >= _pages.length) {
-            _loadNextPage();
-          }
-        }
-
-        if (item < posts) {
-          return postPreview(page, item - (posts - page.length), item);
-        }
-      }
-
-      return null;
-    }
-
     Widget bodyWidget() {
       return new Stack(children: [
         new Visibility(
@@ -223,6 +219,7 @@ class _PostsPageState extends State<PostsPage> {
             ),
           ),
         ),
+        // TODO: initial load not working.
         new StaggeredGridView.countBuilder(
           crossAxisCount: 2,
           itemCount: _itemCount(),
