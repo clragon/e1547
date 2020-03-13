@@ -112,55 +112,7 @@ class _PostsPageState extends State<PostsPage> {
     return i;
   }
 
-  // TODO: initial loading broken.
-  Widget _itemBuilder(BuildContext ctx, int item) {
-    Widget postPreview(List<Post> page, int postOnPage, int postOnAll) {
-      return Container(
-        height: 250,
-        child: new PostPreview(page[postOnPage], onPressed: () {
-          Navigator.of(ctx).push(new MaterialPageRoute<Null>(
-            builder: (ctx) => new PostSwipe(
-              _pages
-                  .fold<Iterable<Post>>(
-                      const Iterable.empty(), (a, b) => a.followedBy(b))
-                  .toList(),
-              startingIndex: postOnAll,
-            ),
-          ));
-        }),
-      );
-    }
 
-    // Special case for first page header.
-    if (item == 0) {
-      if (_pages.isEmpty) {
-        _loadNextPage();
-        loadingPosts = false;
-      }
-    }
-
-    int posts = 0;
-
-    for (int p = 0; p < _pages.length; p++) {
-      List<Post> page = _pages[p];
-      if (page.isEmpty) {
-        return new Container();
-      }
-      posts += page.length;
-
-      if (item >= posts - 6) {
-        if (p + 1 >= _pages.length) {
-          _loadNextPage();
-        }
-      }
-
-      if (item < posts) {
-        return postPreview(page, item - (posts - page.length), item);
-      }
-    }
-
-    return null;
-  }
 
   StaggeredTile Function(int) _staggeredTileBuilder() {
     return (item) {
@@ -201,15 +153,73 @@ class _PostsPageState extends State<PostsPage> {
       );
     }
 
+    Widget _itemBuilder(BuildContext ctx, int item) {
+      Widget postPreview(List<Post> page, int postOnPage, int postOnAll) {
+        return Container(
+          height: 250,
+          child: new PostPreview(page[postOnPage], onPressed: () {
+            Navigator.of(ctx).push(new MaterialPageRoute<Null>(
+              builder: (ctx) => new PostSwipe(
+                _pages
+                    .fold<Iterable<Post>>(
+                    const Iterable.empty(), (a, b) => a.followedBy(b))
+                    .toList(),
+                startingIndex: postOnAll,
+              ),
+            ));
+          }),
+        );
+      }
+
+      // Special case for first page
+      if (item == 0) {
+        if (_pages.isEmpty) {
+          _loadNextPage();
+          loadingPosts = false;
+        }
+      }
+
+      int posts = 0;
+
+      for (int p = 0; p < _pages.length; p++) {
+        List<Post> page = _pages[p];
+        if (page.isEmpty) {
+          return new Container();
+        }
+        posts += page.length;
+
+        if (item >= posts - 6) {
+          if (p + 1 >= _pages.length) {
+            _loadNextPage();
+          }
+        }
+
+        if (item < posts) {
+          return postPreview(page, item - (posts - page.length), item);
+        }
+      }
+
+      return null;
+    }
+
     Widget bodyWidget() {
       return new Stack(children: [
         new Visibility(
           visible: loadingPosts,
           child: new Center(
-            child: Container(
-              height: 28,
-              width: 28,
-              child: new CircularProgressIndicator(),
+            child: new Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                new Container(
+                  height: 28,
+                  width: 28,
+                  child: new CircularProgressIndicator(),
+                ),
+                new Padding(
+                  padding: EdgeInsets.all(20),
+                  child: new Text('Loading posts'),
+                ),
+              ],
             ),
           ),
         ),
