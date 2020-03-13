@@ -22,6 +22,7 @@ _PostsPageState postsPage;
 Text appbarTitle = Text(appInfo.appName.toString());
 bool loadTopVisible = false;
 bool loadBottomVisible = false;
+bool loadingPosts = true;
 enum DrawerSelection {
   home,
   hot,
@@ -97,7 +98,10 @@ class _PostsPageState extends State<PostsPage> {
   }
 
   void clearPages() {
-    setState(_pages.clear);
+    setState(() {
+      _pages.clear();
+      loadingPosts = true;
+    });
   }
 
   int _itemCount() {
@@ -108,52 +112,50 @@ class _PostsPageState extends State<PostsPage> {
     return i;
   }
 
-
-  // TODO: needs loading screen.
+  // TODO: initial loading broken.
   Widget _itemBuilder(BuildContext ctx, int item) {
     Widget postPreview(List<Post> page, int postOnPage, int postOnAll) {
       return Container(
-          // this defines the height of the cards.
-          height: 250,
-          child: new PostPreview(page[postOnPage], onPressed: () {
-            Navigator.of(ctx).push(new MaterialPageRoute<Null>(
-              builder: (ctx) => new PostSwipe(
-                _pages
-                    .fold<Iterable<Post>>(
-                        const Iterable.empty(), (a, b) => a.followedBy(b))
-                    .toList(),
-                startingIndex: postOnAll,
-              ),
-            ));
-          }));
+        height: 250,
+        child: new PostPreview(page[postOnPage], onPressed: () {
+          Navigator.of(ctx).push(new MaterialPageRoute<Null>(
+            builder: (ctx) => new PostSwipe(
+              _pages
+                  .fold<Iterable<Post>>(
+                      const Iterable.empty(), (a, b) => a.followedBy(b))
+                  .toList(),
+              startingIndex: postOnAll,
+            ),
+          ));
+        }),
+      );
     }
 
     // Special case for first page header.
     if (item == 0) {
       if (_pages.isEmpty) {
         _loadNextPage();
-        loadTopVisible = false;
+        loadingPosts = false;
       }
     }
 
-    int i = 0;
+    int posts = 0;
 
     for (int p = 0; p < _pages.length; p++) {
       List<Post> page = _pages[p];
       if (page.isEmpty) {
         return new Container();
       }
-      i += page.length;
+      posts += page.length;
 
-      if (item < i) {
-        return postPreview(page, item - (i - page.length), item);
-      }
-
-      if (item >= i - 6) {
-        int nextPage = p + 1;
-        if (nextPage >= _pages.length) {
+      if (item >= posts - 6) {
+        if (p + 1 >= _pages.length) {
           _loadNextPage();
         }
+      }
+
+      if (item < posts) {
+        return postPreview(page, item - (posts - page.length), item);
       }
     }
 
@@ -166,6 +168,12 @@ class _PostsPageState extends State<PostsPage> {
       for (int p = 0; p < _pages.length; p++) {
         List<Post> page = _pages[p];
         i += page.length;
+
+        // this ensures that there isn't a large
+        // empty space on odd post numbers on a page.
+        if (item == i - 1 - p) {
+          return new StaggeredTile.fit(1);
+        }
 
         if (item < i) {
           return const StaggeredTile.extent(1, 250.0);
@@ -194,63 +202,23 @@ class _PostsPageState extends State<PostsPage> {
     }
 
     Widget bodyWidget() {
-      return new Column(children: [
-        new Wrap(
-          children: [
-            new Visibility(
-              maintainSize: false,
-              visible: loadTopVisible,
-              child: new Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    new Container(
-                      height: 8,
-                      width: 8,
-                      child: new CircularProgressIndicator(
-                        strokeWidth: 3,
-                      ),
-                    ),
-                    new Padding(
-                      padding: EdgeInsets.fromLTRB(12, 4, 0, 4),
-                      child: new Text('loading posts'),
-                    ),
-                    // const Divider(),
-                  ]),
+      return new Stack(children: [
+        new Visibility(
+          visible: loadingPosts,
+          child: new Center(
+            child: Container(
+              height: 28,
+              width: 28,
+              child: new CircularProgressIndicator(),
             ),
-          ],
-        ),
-        new Expanded(
-          child: new StaggeredGridView.countBuilder(
-            crossAxisCount: 2,
-            itemCount: _itemCount(),
-            itemBuilder: _itemBuilder,
-            staggeredTileBuilder: _staggeredTileBuilder(),
-            physics: new BouncingScrollPhysics(),
           ),
         ),
-        new Wrap(
-          children: [
-            new Visibility(
-              maintainSize: false,
-              visible: loadBottomVisible,
-              child: new Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // const Divider(),
-                    new Container(
-                      height: 8,
-                      width: 8,
-                      child: new CircularProgressIndicator(
-                        strokeWidth: 3,
-                      ),
-                    ),
-                    new Padding(
-                      padding: EdgeInsets.fromLTRB(12, 4, 0, 4),
-                      child: new Text('loading posts'),
-                    ),
-                  ]),
-            ),
-          ],
+        new StaggeredGridView.countBuilder(
+          crossAxisCount: 2,
+          itemCount: _itemCount(),
+          itemBuilder: _itemBuilder,
+          staggeredTileBuilder: _staggeredTileBuilder(),
+          physics: new BouncingScrollPhysics(),
         ),
       ]);
     }
