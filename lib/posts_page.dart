@@ -103,7 +103,11 @@ class _PostsPageState extends State<PostsPage> {
   }
 
   int _itemCount() {
-    int i = 1;
+    int i = 0;
+    if (_pages.isEmpty) {
+      _loadNextPage();
+      loadingPosts = false;
+    }
     for (List<Post> p in _pages) {
       i += p.length;
     }
@@ -126,14 +130,6 @@ class _PostsPageState extends State<PostsPage> {
           ));
         }),
       );
-    }
-
-    // Special case for first page
-    if (item == 0) {
-      if (_pages.isEmpty) {
-        _loadNextPage();
-        loadingPosts = false;
-      }
     }
 
     int posts = 0;
@@ -161,7 +157,7 @@ class _PostsPageState extends State<PostsPage> {
 
   StaggeredTile Function(int) _staggeredTileBuilder() {
     return (item) {
-      int i = 1;
+      int i = 0;
       for (int p = 0; p < _pages.length; p++) {
         List<Post> page = _pages[p];
         i += page.length;
