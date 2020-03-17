@@ -86,6 +86,7 @@ class PostPreview extends StatelessWidget {
     Key key,
     this.onPressed,
   }) : super(key: key);
+
   @override
   Widget build(BuildContext ctx) {
     Widget imagePreviewWidget() {
@@ -95,113 +96,6 @@ class PostPreview extends StatelessWidget {
         fit: BoxFit.cover,
       );
     }
-
-    /*
-    Widget postInfoWidget() {
-      Widget infoSquare() {
-        // This builds a small icon followed by some text.
-        Widget iconTextPair(IconData icon, String text) {
-          return new Row(mainAxisSize: MainAxisSize.min, children: [
-            new Padding(
-                padding: const EdgeInsets.only(right: 3.0),
-                child: IconTheme.merge(
-                  data: const IconThemeData(size: 12.0),
-                  child: new Icon(icon),
-                )),
-            new Text(text, style: const TextStyle(fontSize: 12.0)),
-          ]);
-        }
-
-        Widget padTopLeft(Widget child) {
-          return new Padding(
-            child: child,
-            padding: const EdgeInsets.only(right: 1.0, bottom: 1.5),
-          );
-        }
-
-        Widget padTopRight(Widget child) {
-          return new Padding(
-            child: child,
-            padding: const EdgeInsets.only(left: 1.0, bottom: 1.5),
-          );
-        }
-
-        Widget padBottomLeft(Widget child) {
-          return new Padding(
-            child: child,
-            padding: const EdgeInsets.only(right: 1.0, top: 1.5),
-          );
-        }
-
-        Widget padBottomRight(Widget child) {
-          return new Padding(
-            child: child,
-            padding: const EdgeInsets.only(left: 1.0, top: 1.5),
-          );
-        }
-
-        Widget scoreInfo() {
-          return post.score >= 0
-              ? iconTextPair(Icons.arrow_upward, '+' + post.score.toString())
-              : iconTextPair(Icons.arrow_downward, post.score.toString());
-        }
-
-        Widget commentsInfo() {
-          return iconTextPair(
-              Icons.question_answer, post.hasComments ? '+' : '0');
-        }
-
-        Widget favoritesInfo() {
-          return iconTextPair(Icons.favorite, post.favCount.toString());
-        }
-
-        Widget ratingInfo() {
-          return iconTextPair(Icons.warning, post.rating);
-        }
-
-        return new Table(
-          // IntrinsicColumnWidth is expensive but also the only one that
-          // seems to work.
-          defaultColumnWidth: const IntrinsicColumnWidth(),
-          children: <TableRow>[
-            new TableRow(children: [
-              padTopLeft(scoreInfo()),
-              padTopRight(commentsInfo()),
-            ]),
-            new TableRow(children: [
-              padBottomLeft(favoritesInfo()),
-              padBottomRight(ratingInfo()),
-            ]),
-          ],
-        );
-      }
-
-      Widget artists() {
-        return new Text(
-          post.artist.length < 2
-              ? post.artist.join(',\n')
-              : post.artist.take(2).join(',\n') +
-                  ',\n... +${post.artist.length - 1}',
-          textAlign: TextAlign.center,
-          style: const TextStyle(fontSize: 12.0),
-          maxLines: 3,
-          softWrap: false,
-          overflow: TextOverflow.ellipsis,
-        );
-      }
-
-      return new Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: new Column(children: [
-          infoSquare(),
-          new Padding(
-            padding: const EdgeInsets.only(top: 10.0),
-            child: artists(),
-          ),
-        ]),
-      );
-    }
-    */
 
     return new GestureDetector(
         onTap: onPressed,
@@ -221,21 +115,27 @@ class PostPreview extends StatelessWidget {
             ),
           );
 
+          // TODO: maybe remove this?
           Widget specialOverlayIcon;
           if (post.file['ext'] == 'gif') {
-            specialOverlayIcon = new Container(
-              padding: EdgeInsets.zero,
-              color: Colors.black38,
-              child: const Icon(Icons.gif),
-            );
+            specialOverlayIcon = new Positioned(
+                top: 4,
+                right: 4,
+                child: new Container(
+                  padding: EdgeInsets.zero,
+                  color: Colors.black38,
+                  child: const Icon(Icons.gif),
+                ));
           }
 
-          return specialOverlayIcon == null
-              ? image
-              : new Stack(children: [
-                  image,
-                  new Positioned(top: 4, right: 4, child: specialOverlayIcon),
-                ]);
+          return new Stack(
+            children: <Widget>[
+              image,
+              () {
+                return specialOverlayIcon ?? new Container();
+              }(),
+            ],
+          );
         }());
   }
 }
@@ -286,7 +186,11 @@ class PostWidgetScaffold extends StatelessWidget {
         Widget imageWidget() {
           return post.file['ext'] == 'swf' || post.file['ext'] == 'webm'
               ? new Container(
-                  child: Center(child: const Text('Webm support under development. \nTap to open in browser.', textAlign: TextAlign.center,)))
+                  child: Center(
+                      child: const Text(
+                  'Webm support under development. \nTap to open in browser.',
+                  textAlign: TextAlign.center,
+                )))
               : new CachedNetworkImage(
                   imageUrl: post.sample['url'],
                   placeholder: (context, url) =>
@@ -382,7 +286,8 @@ class PostWidgetScaffold extends StatelessWidget {
           likeBuilder: (bool isLiked) {
             return Icon(
               Icons.favorite,
-              color: isLiked ? Colors.pinkAccent : Theme.of(ctx).iconTheme.color,
+              color:
+                  isLiked ? Colors.pinkAccent : Theme.of(ctx).iconTheme.color,
             );
           },
           onTap: (isLiked) async {
@@ -547,7 +452,9 @@ class _MoreDialog extends StatelessWidget {
   Function() _download(BuildContext ctx) {
     return () async {
       // TODO: this doesn't work.
-      Map<PermissionGroup, PermissionStatus> permissions = await PermissionHandler().requestPermissions([PermissionGroup.storage]);
+      Map<PermissionGroup, PermissionStatus> permissions =
+          await PermissionHandler()
+              .requestPermissions([PermissionGroup.storage]);
 
       if (permissions[PermissionGroup.storage] != PermissionStatus.granted) {
         showDialog(

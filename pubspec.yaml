@@ -13,6 +13,7 @@ dependencies:
 
   like_button: ^0.2.0
   photo_view: ^0.9.2
+  video_player: ^0.10.8+1
   cached_network_image: ^2.0.0
   flutter_staggered_grid_view: ^0.3.0
 

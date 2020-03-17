@@ -9,30 +9,27 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart'
     show StaggeredGridView, StaggeredTile;
 import 'package:meta/meta.dart' show required;
 
-import 'client.dart' show client;
 import 'appinfo.dart' as appInfo;
+import 'client.dart' show client;
 import 'input.dart' show LowercaseTextInputFormatter;
 import 'persistence.dart' show db;
 import 'post.dart';
 import 'range_dialog.dart' show RangeDialog;
 import 'tag.dart' show Tagset;
 
-// TODO: this works but its kinda messy. clean up.
-_PostsPageState postsPage;
-Text appbarTitle = Text(appInfo.appName.toString());
-bool loadingPosts = true;
-enum DrawerSelection {
-  home,
-  hot,
-  favorites,
-}
-DrawerSelection _drawerSelection = DrawerSelection.home;
-
 class PostsPage extends StatefulWidget {
+  final bool isHome;
+  final String appbarTitle;
+  final Widget drawer;
+  final bool canSearch;
+  // ignore: avoid_init_to_null
+  const PostsPage({this.isHome = false, this.appbarTitle = appInfo.appName, this.drawer = null, this.canSearch = true});
+
+  static _PostsPageState of(BuildContext context) => context.findAncestorStateOfType();
+
   @override
-  State createState() {
-    postsPage = new _PostsPageState();
-    return postsPage;
+  State<StatefulWidget> createState() {
+    return new _PostsPageState();
   }
 }
 
@@ -63,7 +60,7 @@ class _PostsPageState extends State<PostsPage> {
 
       if (_isEditingTags) {
         db.tags.value = new Future.value(new Tagset.parse(tagController.text));
-        if (_drawerSelection == DrawerSelection.home) {
+        if (widget.isHome) {
           db.homeTags.value = db.tags.value;
         }
 
@@ -84,6 +81,7 @@ class _PostsPageState extends State<PostsPage> {
   }
 
   final List<List<Post>> _pages = [];
+  bool loadingPosts = true;
 
   void _loadNextPage() async {
     int p = _pages.length;
@@ -180,10 +178,19 @@ class _PostsPageState extends State<PostsPage> {
   }
 
   @override
+  void didUpdateWidget(Widget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    setState(() {
+      _pages.clear();
+      loadingPosts = true;
+    });
+  }
+
+  @override
   Widget build(BuildContext ctx) {
     AppBar appBarWidget() {
       return new AppBar(
-        title: appbarTitle,
+        title: new Text(widget.appbarTitle),
         actions: [
           new IconButton(
             icon: const Icon(Icons.refresh),
@@ -215,7 +222,6 @@ class _PostsPageState extends State<PostsPage> {
             ),
           ),
         ),
-        // TODO: initial load not working.
         new StaggeredGridView.countBuilder(
           crossAxisCount: 2,
           itemCount: _itemCount(),
@@ -228,9 +234,8 @@ class _PostsPageState extends State<PostsPage> {
 
     Widget floatingActionButtonWidget() {
       return new Builder(builder: (ctx) {
-        // Needed for Scaffold.of(ctx) to work
         return new Visibility(
-          visible: true,
+          visible: widget.canSearch,
           child: new FloatingActionButton(
             child: _isEditingTags
                 ? const Icon(Icons.check)
@@ -244,7 +249,7 @@ class _PostsPageState extends State<PostsPage> {
     return new Scaffold(
       appBar: appBarWidget(),
       body: bodyWidget(),
-      drawer: new _PostsPageDrawer(),
+      drawer: widget.drawer,
       floatingActionButton: floatingActionButtonWidget(),
     );
   }
@@ -255,134 +260,6 @@ void _setFocusToEnd(TextEditingController controller) {
     baseOffset: controller.text.length,
     extentOffset: controller.text.length,
   );
-}
-
-class _PostsPageDrawer extends StatelessWidget {
-  @override
-  Widget build(BuildContext ctx) {
-    Widget headerWidget() {
-      Widget userInfoWidget() {
-        return new FutureBuilder<String>(
-          future: db.username.value,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.done &&
-                !snapshot.hasError &&
-                snapshot.hasData) {
-              return new Text(
-                snapshot.data,
-                style: new TextStyle(fontSize: 16.0),
-              );
-            }
-            return new RaisedButton(
-              child: const Text('LOGIN'),
-              onPressed: () => Navigator.popAndPushNamed(ctx, '/login'),
-            );
-          },
-        );
-      }
-
-      // this could use the avatar post of the user.
-      // however, its not reachable by the API.
-      // maybe send an email to the site owners.
-      return new Container(
-          height: 140,
-          child: new DrawerHeader(
-              child: new Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              const CircleAvatar(
-                backgroundImage: const AssetImage('assets/icon/paw.png'),
-                radius: 36.0,
-              ),
-              Padding(
-                padding: EdgeInsets.all(16),
-                child: userInfoWidget(),
-              ),
-            ],
-          )));
-    }
-
-    return new Drawer(
-      child: new ListView(children: [
-        headerWidget(),
-        new ListTile(
-          selected: _drawerSelection == DrawerSelection.home,
-          leading: const Icon(Icons.home),
-          title: const Text('Home'),
-          onTap: () {
-            _drawerSelection = DrawerSelection.home;
-            postsPage.setState(() {
-              db.tags.value = db.homeTags.value;
-              if (postsPage._isEditingTags) {
-                postsPage._bottomSheetController?.close();
-              }
-              postsPage.clearPages();
-              appbarTitle = Text(appInfo.appName
-                  .toString()); // Text((await db.host.value).split('.')[0]);
-              Navigator.pop(ctx);
-            });
-          },
-        ),
-        new ListTile(
-            selected: _drawerSelection == DrawerSelection.hot,
-            leading: const Icon(Icons.show_chart),
-            title: const Text('Hot'),
-            onTap: () {
-              _drawerSelection = DrawerSelection.hot;
-              postsPage.setState(() {
-                db.tags.value =
-                    new Future.value(new Tagset.parse("order:rank"));
-                if (postsPage._isEditingTags) {
-                  postsPage._bottomSheetController?.close();
-                }
-                postsPage.clearPages();
-                appbarTitle = Text('Hot');
-                Navigator.pop(ctx);
-              });
-            }),
-        new ListTile(
-            selected: _drawerSelection == DrawerSelection.favorites,
-            leading: const Icon(Icons.favorite),
-            title: const Text('Favorites'),
-            onTap: () async {
-              _drawerSelection = DrawerSelection.favorites;
-              String username = await db.username.value;
-              postsPage.setState(() {
-                if (username != null) {
-                  db.tags.value =
-                      new Future.value(new Tagset.parse('fav:' + username));
-                } else {
-                  db.tags.value = new Future.value(new Tagset.parse(''));
-                  Scaffold.of(ctx).showSnackBar(new SnackBar(
-                    duration: const Duration(seconds: 1),
-                    content: new Text('You are not logged in.'),
-                  ));
-                }
-                if (postsPage._isEditingTags) {
-                  postsPage._bottomSheetController?.close();
-                }
-                postsPage.clearPages();
-                appbarTitle = Text('Favorites');
-                Navigator.pop(ctx);
-              });
-            }),
-        Divider(),
-        new ListTile(
-          leading: const Icon(Icons.settings),
-          title: const Text('Settings'),
-          onTap: () => Navigator.popAndPushNamed(ctx, '/settings'),
-        ),
-        // TODO: get rid of this garbage and make own about screen.
-        const AboutListTile(
-          child: const Text('About'),
-          icon: const Icon(Icons.help),
-          applicationName: appInfo.appName,
-          applicationVersion: appInfo.appVersion,
-          applicationLegalese: appInfo.about,
-        ),
-      ]),
-    );
-  }
 }
 
 typedef Future<Tagset> TagEditor(Tagset tags);
