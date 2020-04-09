@@ -17,15 +17,67 @@ import 'post.dart';
 import 'range_dialog.dart' show RangeDialog;
 import 'tag.dart' show Tagset;
 
-class PostsPage extends StatefulWidget {
-  final bool isHome;
-  final String appbarTitle;
-  final Widget drawer;
-  final bool canSearch;
-  // ignore: avoid_init_to_null
-  const PostsPage({this.isHome = false, this.appbarTitle = appInfo.appName, this.drawer = null, this.canSearch = true});
+class HomePage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return new PostsPage(
+        title: 'Home',
+        tags: db.homeTags.value,
+        tagChange: (tags) => {db.homeTags.value = new Future.value(tags)});
+  }
+}
 
-  static _PostsPageState of(BuildContext context) => context.findAncestorStateOfType();
+class HotPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return new PostsPage(
+        title: 'Hot', tags: Future.value(new Tagset.parse("order:rank")));
+  }
+}
+
+class FavPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return new PostsPage(
+        title: 'Favorites',
+        tags: db.username.value.then((username) {
+          return new Tagset.parse('fav:' + username);
+        }));
+  }
+}
+
+class SearchPage extends StatelessWidget {
+  final String title;
+  final Tagset tags;
+
+  SearchPage(this.title, this.tags);
+
+  @override
+  Widget build(BuildContext context) {
+    return new PostsPage(
+      title: title,
+      tags: Future.value(tags),
+      isHome: false,
+    );
+  }
+}
+
+class PostsPage extends StatefulWidget {
+  final String title;
+  final bool canSearch;
+  final bool isHome;
+  final Future<Tagset> tags;
+  final Function(Tagset) tagChange;
+
+  const PostsPage(
+      {this.title,
+      this.tags,
+      this.isHome = true,
+      this.canSearch = true,
+      this.tagChange});
+
+  static _PostsPageState of(BuildContext context) =>
+      context.findAncestorStateOfType();
 
   @override
   State<StatefulWidget> createState() {
@@ -35,12 +87,9 @@ class PostsPage extends StatefulWidget {
 
 class _PostsPageState extends State<PostsPage> {
   bool _isEditingTags = false;
+  Tagset tags;
+  TextEditingController tagController;
   PersistentBottomSheetController<Tagset> _bottomSheetController;
-
-  Future<TextEditingController> _textEditingControllerFuture =
-      db.tags.value.then((tags) {
-    return new TextEditingController()..text = tags.toString() + ' ';
-  });
 
   Function() _onPressedFloatingActionButton(BuildContext ctx) {
     return () async {
@@ -51,17 +100,15 @@ class _PostsPageState extends State<PostsPage> {
       }
 
       if (!_isEditingTags) {
-        _textEditingControllerFuture = db.tags.value.then((tags) {
-          return new TextEditingController()..text = tags.toString() + ' ';
-        });
+        tagController = new TextEditingController()
+          ..text = tags.toString() + ' ';
       }
-      TextEditingController tagController = await _textEditingControllerFuture;
       _setFocusToEnd(tagController);
 
       if (_isEditingTags) {
-        db.tags.value = new Future.value(new Tagset.parse(tagController.text));
-        if (widget.isHome) {
-          db.homeTags.value = db.tags.value;
+        tags = await new Future.value(new Tagset.parse(tagController.text));
+        if (widget.tagChange != null) {
+          widget.tagChange(tags);
         }
 
         _bottomSheetController?.close();
@@ -89,8 +136,15 @@ class _PostsPageState extends State<PostsPage> {
     List<Post> nextPage = [];
     _pages.add(nextPage);
 
-    nextPage.addAll(await client.posts(await db.tags.value, p));
-    setState(() {});
+    if (tags == null) {
+      tags = await widget.tags;
+      tagController = new TextEditingController()..text = tags.toString() + ' ';
+    }
+
+    nextPage.addAll(await client.posts(tags, p));
+    if (this.mounted) {
+      setState(() {});
+    }
   }
 
   void clearPages() {
@@ -190,7 +244,13 @@ class _PostsPageState extends State<PostsPage> {
   Widget build(BuildContext ctx) {
     AppBar appBarWidget() {
       return new AppBar(
-        title: new Text(widget.appbarTitle),
+        title: new Text(widget.title),
+        leading: widget.isHome
+            ? null
+            : IconButton(
+                icon: Icon(Icons.arrow_back),
+                onPressed: () => Navigator.pop(context),
+              ),
         actions: [
           new IconButton(
             icon: const Icon(Icons.refresh),
@@ -249,7 +309,7 @@ class _PostsPageState extends State<PostsPage> {
     return new Scaffold(
       appBar: appBarWidget(),
       body: bodyWidget(),
-      drawer: widget.drawer,
+      drawer: const _NavigationDrawer(),
       floatingActionButton: floatingActionButtonWidget(),
     );
   }
@@ -410,6 +470,110 @@ class TagEntry extends StatelessWidget {
                 filterByWidget(),
                 sortByWidget(),
               ]),
+        ),
+      ]),
+    );
+  }
+}
+
+enum _DrawerSelection {
+  home,
+  hot,
+  favorites,
+}
+
+_DrawerSelection _drawerSelection = _DrawerSelection.home;
+
+class _NavigationDrawer extends StatelessWidget {
+  const _NavigationDrawer();
+
+  @override
+  Widget build(BuildContext ctx) {
+    Widget headerWidget() {
+      Widget userInfoWidget() {
+        return new FutureBuilder<String>(
+          future: db.username.value,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.done &&
+                !snapshot.hasError &&
+                snapshot.hasData) {
+              return new Text(
+                snapshot.data,
+                style: new TextStyle(fontSize: 16.0),
+              );
+            }
+            return new RaisedButton(
+              child: const Text('LOGIN'),
+              onPressed: () => Navigator.popAndPushNamed(ctx, '/login'),
+            );
+          },
+        );
+      }
+
+      // this could use the avatar post of the user.
+      // however, its not reachable by the API.
+      // maybe send an email to the site owners.
+      // update: sent an email.
+      // they'll note it down for after API update.
+      return new Container(
+          height: 140,
+          child: new DrawerHeader(
+              child: new Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              const CircleAvatar(
+                backgroundImage: const AssetImage('assets/icon/paw.png'),
+                radius: 36.0,
+              ),
+              Padding(
+                padding: EdgeInsets.all(16),
+                child: userInfoWidget(),
+              ),
+            ],
+          )));
+    }
+
+    return new Drawer(
+      child: new ListView(children: [
+        headerWidget(),
+        new ListTile(
+          selected: _drawerSelection == _DrawerSelection.home,
+          leading: const Icon(Icons.home),
+          title: const Text('Home'),
+          onTap: () {
+            _drawerSelection = _DrawerSelection.home;
+            Navigator.of(ctx).pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
+          },
+        ),
+        new ListTile(
+            selected: _drawerSelection == _DrawerSelection.hot,
+            leading: const Icon(Icons.show_chart),
+            title: const Text('Hot'),
+            onTap: () {
+              _drawerSelection = _DrawerSelection.hot;
+              Navigator.of(ctx).pushNamedAndRemoveUntil('/hot', (Route<dynamic> route) => false);
+            }),
+        new ListTile(
+            selected: _drawerSelection == _DrawerSelection.favorites,
+            leading: const Icon(Icons.favorite),
+            title: const Text('Favorites'),
+            onTap: () async {
+              _drawerSelection = _DrawerSelection.favorites;
+              Navigator.of(ctx).pushNamedAndRemoveUntil('/fav', (Route<dynamic> route) => false);
+            }),
+        Divider(),
+        new ListTile(
+          leading: const Icon(Icons.settings),
+          title: const Text('Settings'),
+          onTap: () => Navigator.popAndPushNamed(ctx, '/settings'),
+        ),
+        // TODO: get rid of this garbage and make own about screen.
+        const AboutListTile(
+          child: const Text('About'),
+          icon: const Icon(Icons.help),
+          applicationName: appInfo.appName,
+          applicationVersion: appInfo.appVersion,
+          applicationLegalese: appInfo.about,
         ),
       ]),
     );

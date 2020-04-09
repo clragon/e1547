@@ -85,6 +85,10 @@ class Client {
     return posts;
   }
 
+  // requesting a pool only yields IDs not posts. that means
+  // this is gonna flood the server with requests for each post.
+  // which is way too many requests.
+  // TODO: wait for API update or Email answer
   Future<List<Post>> pool(int poolID, int page) async {
 
     String body = await _http.get(await _host, '/pools/' + poolID.toString() + '.json', query: {

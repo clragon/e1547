@@ -4,6 +4,8 @@ import 'dart:typed_data';
 
 import 'package:cached_network_image/cached_network_image.dart'
     show CachedNetworkImage, CachedNetworkImageProvider;
+import 'package:e1547/posts_page.dart';
+import 'package:e1547/tag.dart';
 import 'package:esys_flutter_share/esys_flutter_share.dart' show Share;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'
@@ -199,22 +201,7 @@ class PostWidgetScaffold extends StatelessWidget {
                 );
         }
 
-        Widget fullscreenButtonWidget() {
-          return new Container(
-            padding: const EdgeInsets.all(12.0),
-            color: Colors.black38,
-            child: const Icon(Icons.fullscreen),
-          );
-        }
-
-        return new Stack(children: [
-          new Center(child: imageWidget()),
-          new Positioned(
-            right: 0.0,
-            bottom: 0.0,
-            child: fullscreenButtonWidget(),
-          ),
-        ]);
+        return new Center(child: imageWidget());
       }
 
       return new Flexible(
@@ -230,20 +217,25 @@ class PostWidgetScaffold extends StatelessWidget {
 
     Widget postMetadataWidget() {
       Widget metadataRow() {
-        Color secondary = Colors.white.withOpacity(0.6);
-        TextStyle secondaryTextStyle = new TextStyle(color: secondary);
-
+        String artist = post.artist.join(',\n');
         return new Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            new Text(post.artist.join(',\n')),
+            new GestureDetector(
+              onTap: () {
+                Navigator.of(ctx).push(new MaterialPageRoute<Null>(builder: (ctx) {
+                  return new SearchPage('Search', Tagset.parse(artist)); }
+                ));
+              },
+              child: new Text(artist),
+            ),
             new Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                new Text('#${post.id}', style: secondaryTextStyle),
+                new Text('#${post.id}'),
                 new Row(children: [
-                  new Icon(Icons.person, size: 14.0, color: secondary),
-                  new Text(' ${post.uploader}', style: secondaryTextStyle),
+                  new Icon(Icons.person, size: 14.0),
+                  new Text(' ${post.uploader}'),
                 ]),
               ],
             ),
