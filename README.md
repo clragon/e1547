@@ -3,9 +3,9 @@
 A mobile app for e621+e926.
 
 If you have questions/comments/suggestions, you can open a github Issue.  
-You can also post to the [e621 forum thread][forum].
+You can also post to the [e926 forum thread][forum].
 
-[forum]: https://e621.net/forum_topics/25854
+[forum]: https://e926.net/forum_topics/25854
 
 ![Demo gif for v1.0.0](https://github.com/perlatus/e1547/raw/master/gif/v1.0.0.gif)
 
