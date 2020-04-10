@@ -18,7 +18,11 @@ class LoginPage extends StatelessWidget {
       new _InstructionStep(
           1, _buttonLink('Login via web browser', '/session/new')),
       new _InstructionStep(2, _buttonLink('Enable API Access', '/users/home')),
-      const _InstructionStep(3, const Text('Copy and paste your API key')),
+      const _InstructionStep(
+          3,
+          const Padding(
+              padding: EdgeInsets.all(16),
+              child: const Text('Copy and paste your API key'))),
       new _LoginFormFields(),
     ];
 
@@ -221,21 +225,24 @@ class _LoginFormFieldsState extends State<_LoginFormFields> {
 
     Widget saveAndTestWidget() {
       return new Padding(
-        padding: const EdgeInsets.only(top: 20.0),
+        padding: const EdgeInsets.only(top: 26.0),
         child: new RaisedButton(
-          child: const Text('SAVE & TEST'),
+          child: const Text('LOGIN'),
           onPressed: _saveAndTest(context),
         ),
       );
     }
 
-    return new Column(
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        usernameWidget(),
-        apiKeyWidget(),
-        saveAndTestWidget(),
-      ],
+    return new Padding(
+      padding: EdgeInsets.all(16),
+      child: new Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          usernameWidget(),
+          apiKeyWidget(),
+          saveAndTestWidget(),
+        ],
+      ),
     );
   }
 }
@@ -272,10 +279,16 @@ class _LoginProgressDialogState extends State<_LoginProgressDialog> {
     return new Dialog(
         child: new Container(
       padding: const EdgeInsets.all(20.0),
-      child:
-          new Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-        const CircularProgressIndicator(),
-        new Text('Logging in as ${widget.username}'),
+      child: new Row(children: [
+        new Container(
+          height: 28,
+          width: 28,
+          child: const CircularProgressIndicator(),
+        ),
+        new Padding(
+          padding: EdgeInsets.only(left: 16),
+          child: new Text('Logging in as ${widget.username}'),
+        )
       ]),
     ));
   }
@@ -290,31 +303,27 @@ class _InstructionStep extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget leadingCircleWidget() {
+    Widget stepNumber() {
       return new Container(
-        decoration: const ShapeDecoration(
-          color: Colors.white,
-          shape: const CircleBorder(),
-        ),
-        width: 64.0,
-        height: 64.0,
+        width: 36.0,
+        height: 36.0,
         alignment: Alignment.center,
         child: new Text(
           _stepNumber.toString(),
           textAlign: TextAlign.center,
-          style: const TextStyle(color: Colors.black, fontSize: 48.0),
+          style: const TextStyle(fontSize: 26.0),
         ),
       );
     }
 
     return new Padding(
       padding: const EdgeInsets.symmetric(vertical: 10.0),
-      child:
-          new Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-        leadingCircleWidget(),
-        new Expanded(child: new Container()),
-        _content,
-        new Expanded(child: new Container()),
+      child: new Row(children: [
+        stepNumber(),
+        new Padding(
+          padding: EdgeInsets.only(left: 16),
+          child: _content,
+        ),
       ]),
     );
   }

@@ -1,8 +1,10 @@
+import 'package:e1547/about_page.dart';
 import 'package:e1547/persistence.dart';
 import 'package:e1547/pools_page.dart';
 import 'package:e1547/settings_page.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
+import 'client.dart';
 import 'login_page.dart';
 import 'posts_page.dart';
 import 'appinfo.dart' as appInfo;
@@ -24,11 +26,6 @@ class Main extends StatelessWidget {
     FlutterStatusbarcolor.setStatusBarWhiteForeground(
         theme.brightness == Brightness.dark);
 
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-    ]);
-
     return MaterialApp(
       title: appInfo.appName,
       theme: theme,
@@ -39,6 +36,7 @@ class Main extends StatelessWidget {
         '/pools': (context) => new PoolsPage(),
         '/login': (context) => new LoginPage(),
         '/settings': (context) => new SettingsPage(),
+        '/about': (context) => new AboutPage(),
       },
     );
   }
@@ -66,20 +64,42 @@ class NavigationDrawer extends StatelessWidget {
             if (snapshot.connectionState == ConnectionState.done &&
                 !snapshot.hasError &&
                 snapshot.hasData) {
-              return new Row(
-                children: <Widget>[
-                  new Expanded(
-                      child: new Text(
-                    snapshot.data,
-                    style: new TextStyle(fontSize: 16.0),
-                    overflow: TextOverflow.ellipsis,
-                  )),
-                ],
-              );
+              if (snapshot.data != null) {
+                return new Row(
+                  children: <Widget>[
+                    new Expanded(
+                        child: new Text(
+                          snapshot.data,
+                          style: new TextStyle(fontSize: 16.0),
+                          overflow: TextOverflow.ellipsis,
+                        )),
+                    new IconButton(
+                        icon: new Icon(Icons.exit_to_app),
+                        onPressed: () {
+                            db.username.value = new Future.value(null);
+                            db.apiKey.value = new Future.value(null);
+
+                            String msg = 'Forgot login details';
+
+                            Scaffold.of(context).showSnackBar(new SnackBar(
+                              duration: const Duration(seconds: 5),
+                              content: new Text(msg),
+                            ));
+                            _drawerSelection = _DrawerSelection.home;
+                            Navigator.of(context)
+                                .pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
+                          }
+                    )
+                  ],
+                );
+              }
             }
-            return new RaisedButton(
-              child: const Text('LOGIN'),
-              onPressed: () => Navigator.popAndPushNamed(context, '/login'),
+            return new Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: new RaisedButton(
+                  child: const Text('LOGIN'),
+                  onPressed: () => Navigator.popAndPushNamed(context, '/login'),
+                ),
             );
           },
         );
@@ -101,7 +121,7 @@ class NavigationDrawer extends StatelessWidget {
                 radius: 36.0,
               ),
               new Expanded(child: Padding(
-                padding: EdgeInsets.all(16),
+                padding: EdgeInsets.all(20),
                 child: userInfoWidget(),
               ),
               ),
@@ -135,10 +155,14 @@ class NavigationDrawer extends StatelessWidget {
             selected: _drawerSelection == _DrawerSelection.favorites,
             leading: const Icon(Icons.favorite),
             title: const Text('Favorites'),
-            onTap: () {
-              _drawerSelection = _DrawerSelection.favorites;
-              Navigator.of(context).pushNamedAndRemoveUntil(
-                  '/fav', (Route<dynamic> route) => false);
+            onTap: () async {
+              if (await client.isLoggedIn()) {
+                _drawerSelection = _DrawerSelection.favorites;
+                Navigator.of(context).pushNamedAndRemoveUntil(
+                    '/fav', (Route<dynamic> route) => false);
+              } else {
+                Navigator.popAndPushNamed(context, '/login');
+              }
             }),
         Divider(),
         new ListTile(
@@ -157,13 +181,10 @@ class NavigationDrawer extends StatelessWidget {
           title: const Text('Settings'),
           onTap: () => Navigator.popAndPushNamed(context, '/settings'),
         ),
-        // TODO: get rid of this garbage and make own about screen.
-        const AboutListTile(
-          child: const Text('About'),
-          icon: const Icon(Icons.help),
-          applicationName: appInfo.appName,
-          applicationVersion: appInfo.appVersion,
-          applicationLegalese: appInfo.about,
+        new ListTile(
+          leading: const Icon(Icons.info),
+          title: const Text('About'),
+          onTap: () => Navigator.popAndPushNamed(context, '/about'),
         ),
       ]),
     );

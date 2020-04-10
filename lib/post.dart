@@ -117,16 +117,15 @@ class PostPreview extends StatelessWidget {
             ),
           );
 
-          // TODO: maybe remove this?
           Widget specialOverlayIcon;
-          if (post.file['ext'] == 'gif') {
+          if (post.file['ext'] == 'gif' || post.file['ext'] == 'webm') {
             specialOverlayIcon = new Positioned(
                 top: 4,
                 right: 4,
                 child: new Container(
                   padding: EdgeInsets.zero,
                   color: Colors.black38,
-                  child: const Icon(Icons.gif),
+                  child: const Icon(Icons.play_arrow),
                 ));
           }
 

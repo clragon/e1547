@@ -3,6 +3,7 @@ import 'dart:async' show Future;
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
+import 'client.dart';
 import 'persistence.dart' show db;
 
 class SettingsPage extends StatefulWidget {
@@ -13,17 +14,18 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
   String _host;
   String _username;
-  bool _showUnsafe;
+  bool _showUnsafe = false;
+  bool _showWebm = false;
 
   @override
   void initState() {
     super.initState();
-    _showUnsafe = false;
     db.host.value.then((a) async => setState(() {
       _host = a;
       _showUnsafe = _host == 'e621.net' ? true : false;
     }));
     db.username.value.then((a) async => setState(() => _username = a));
+    db.showWebm.value.then((a) async => setState(() => _showWebm = a ?? true));
   }
 
   Function() _onTapSignOut(BuildContext context) {
@@ -72,11 +74,34 @@ class _SettingsPageState extends State<SettingsPage> {
                 });
               },
             ),
-
-            new ListTile(
-              title: const Text('Sign out'),
-              subtitle: new Text(_username ?? ' '),
-              onTap: _onTapSignOut(context),
+            new SwitchListTile(
+              title: const Text('Show webm'),
+                subtitle: new Text(_showWebm ? 'Webm are shown' : 'Webm are hidden'),
+                value: _showWebm,
+                onChanged: (show) {
+                  setState(() {
+                    _showWebm = show;
+                    db.showWebm.value = Future.value(show);
+                  });
+                }
+            ),
+            FutureBuilder(
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  if (snapshot.data) {
+                    return new ListTile(
+                      title: const Text('Sign out'),
+                      subtitle: new Text(_username ?? ' '),
+                      onTap: _onTapSignOut(context),
+                    );
+                  } else {
+                    return new Container();
+                  }
+                } else {
+                  return new Container();
+                }
+              },
+              future: client.isLoggedIn(),
             ),
           ],
         ),

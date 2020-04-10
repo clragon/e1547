@@ -1,5 +1,3 @@
-// TODO: this seems awfully outdated. Remove or rewrite?
-
 import 'dart:async' show Future;
 
 import 'package:flutter/foundation.dart' show ValueNotifier;
@@ -16,17 +14,14 @@ final Persistence db = new Persistence();
 
 class Persistence {
   ValueNotifier<Future<String>> host;
-  ValueNotifier<Future<Tagset>> tags;
   ValueNotifier<Future<Tagset>> homeTags;
   ValueNotifier<Future<String>> username;
   ValueNotifier<Future<String>> apiKey;
+  ValueNotifier<Future<bool>> showWebm;
 
   Persistence() {
     host = _makeNotifier((p) => p.getString('host') ?? appInfo.defaultEndpoint);
     host.addListener(_saveString('host', host));
-
-    tags = _makeNotifier((p) => new Tagset.parse(p.getString('tags') ?? ''));
-    tags.addListener(_saveString('tags', tags));
 
     homeTags = _makeNotifier((p) => new Tagset.parse(p.getString('homeTags') ?? ''));
     homeTags.addListener(_saveString('homeTags', homeTags));
@@ -36,6 +31,9 @@ class Persistence {
 
     apiKey = _makeNotifier((p) => p.getString('apiKey'));
     apiKey.addListener(_saveString('apiKey', apiKey));
+
+    showWebm = _makeNotifier((p) => p.getBool('showWebm'));
+    showWebm.addListener(_saveBool('showWebm', showWebm));
   }
 
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();

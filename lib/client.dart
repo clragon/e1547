@@ -80,10 +80,12 @@ class Client {
 
     List<Post> posts = [];
     bool loggedIn = await this.isLoggedIn();
+    bool showWebm = await db.showWebm.value;
     for (Map rp in json.decode(body)['posts']) {
       Post p = new Post.fromRaw(rp);
       p.isLoggedIn = loggedIn;
       if (p.file['url'] == null || p.file['ext'] == 'swf') { continue; }
+      if (!showWebm && p.file['ext'] == 'webm') { continue; }
       posts.add(p);
     }
 

@@ -63,14 +63,17 @@ class SearchPage extends StatelessWidget {
 }
 
 class PoolPage extends StatelessWidget {
-
   final Pool pool;
 
   PoolPage(this.pool);
 
   @override
   Widget build(BuildContext context) {
-    return new PostsPage(title: pool.name.replaceAll('_', ' '), pool: pool, canSearch: false, isHome: false);
+    return new PostsPage(
+        title: pool.name.replaceAll('_', ' '),
+        pool: pool,
+        canSearch: false,
+        isHome: false);
   }
 }
 
@@ -152,7 +155,8 @@ class _PostsPageState extends State<PostsPage> {
 
     if (_tags == null) {
       _tags = await widget.tags ?? new Tagset.parse('');
-      _tagController = new TextEditingController()..text = _tags.toString() + ' ';
+      _tagController = new TextEditingController()
+        ..text = _tags.toString() + ' ';
     }
 
     if (widget.pool == null) {
@@ -160,7 +164,6 @@ class _PostsPageState extends State<PostsPage> {
     } else {
       nextPage.addAll(await client.pool(widget.pool, p));
     }
-
 
     if (this.mounted) {
       setState(() {});
@@ -303,12 +306,16 @@ class _PostsPageState extends State<PostsPage> {
             ),
           ),
         ),
-        new StaggeredGridView.countBuilder(
-          crossAxisCount: 2,
-          itemCount: _itemCount(),
-          itemBuilder: _itemBuilder,
-          staggeredTileBuilder: _staggeredTileBuilder(),
-          physics: new BouncingScrollPhysics(),
+        new OrientationBuilder(
+          builder: (context, orientation) {
+            return new StaggeredGridView.countBuilder(
+              crossAxisCount: orientation == Orientation.portrait ? 2 : 3,
+              itemCount: _itemCount(),
+              itemBuilder: _itemBuilder,
+              staggeredTileBuilder: _staggeredTileBuilder(),
+              physics: new BouncingScrollPhysics(),
+            );
+          },
         ),
       ]);
     }
@@ -425,7 +432,7 @@ class TagEntry extends StatelessWidget {
 
   Future<Null> _onPressedCopyLink() async {
     Clipboard.setData(new ClipboardData(
-      text: (await db.tags.value).url(await db.host.value).toString(),
+      text: Tagset.parse(controller.text).url(await db.host.value).toString(),
     ));
   }
 
