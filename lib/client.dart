@@ -113,6 +113,7 @@ class Client {
     for (int index = 0; index < pool.postIDs.length && index < ((page + 1) * 100); index++) {
         filter = filter + pool.postIDs[index].toString() + ',';
     }
+    filter = filter + ' ' + 'order:id';
     return await posts(new Tagset.parse(filter), page, limit: 100);
   }
 
