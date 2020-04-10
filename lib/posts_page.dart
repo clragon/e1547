@@ -1,5 +1,6 @@
 import 'dart:async' show Future;
 
+import 'package:e1547/pool.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart' show EdgeInsets;
 import 'package:flutter/services.dart' show Clipboard, ClipboardData;
@@ -9,13 +10,13 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart'
     show StaggeredGridView, StaggeredTile;
 import 'package:meta/meta.dart' show required;
 
-import 'appinfo.dart' as appInfo;
 import 'client.dart' show client;
 import 'input.dart' show LowercaseTextInputFormatter;
 import 'persistence.dart' show db;
 import 'post.dart';
 import 'range_dialog.dart' show RangeDialog;
 import 'tag.dart' show Tagset;
+import 'main.dart' show NavigationDrawer;
 
 class HomePage extends StatelessWidget {
   @override
@@ -47,33 +48,46 @@ class FavPage extends StatelessWidget {
 }
 
 class SearchPage extends StatelessWidget {
-  final String title;
   final Tagset tags;
 
-  SearchPage(this.title, this.tags);
+  SearchPage(this.tags);
 
   @override
   Widget build(BuildContext context) {
     return new PostsPage(
-      title: title,
+      title: 'Search',
       tags: Future.value(tags),
       isHome: false,
     );
   }
 }
 
+class PoolPage extends StatelessWidget {
+
+  final Pool pool;
+
+  PoolPage(this.pool);
+
+  @override
+  Widget build(BuildContext context) {
+    return new PostsPage(title: pool.name.replaceAll('_', ' '), pool: pool, canSearch: false, isHome: false);
+  }
+}
+
 class PostsPage extends StatefulWidget {
   final String title;
-  final bool canSearch;
   final bool isHome;
   final Future<Tagset> tags;
   final Function(Tagset) tagChange;
+  final Pool pool;
+  final bool canSearch;
 
   const PostsPage(
       {this.title,
       this.tags,
       this.isHome = true,
       this.canSearch = true,
+      this.pool,
       this.tagChange});
 
   static _PostsPageState of(BuildContext context) =>
@@ -86,40 +100,40 @@ class PostsPage extends StatefulWidget {
 }
 
 class _PostsPageState extends State<PostsPage> {
-  bool _isEditingTags = false;
-  Tagset tags;
-  TextEditingController tagController;
+  Tagset _tags;
+  bool _isSearching = false;
+  TextEditingController _tagController;
   PersistentBottomSheetController<Tagset> _bottomSheetController;
 
-  Function() _onPressedFloatingActionButton(BuildContext ctx) {
+  Function() _onPressedFloatingActionButton(BuildContext context) {
     return () async {
       void onCloseBottomSheet() {
         setState(() {
-          _isEditingTags = false;
+          _isSearching = false;
         });
       }
 
-      if (!_isEditingTags) {
-        tagController = new TextEditingController()
-          ..text = tags.toString() + ' ';
+      if (!_isSearching) {
+        _tagController = new TextEditingController()
+          ..text = _tags.toString() + ' ';
       }
-      _setFocusToEnd(tagController);
+      _setFocusToEnd(_tagController);
 
-      if (_isEditingTags) {
-        tags = await new Future.value(new Tagset.parse(tagController.text));
+      if (_isSearching) {
+        _tags = await new Future.value(new Tagset.parse(_tagController.text));
         if (widget.tagChange != null) {
-          widget.tagChange(tags);
+          widget.tagChange(_tags);
         }
 
         _bottomSheetController?.close();
-        clearPages();
+        _clearPages();
       } else {
-        _bottomSheetController = Scaffold.of(ctx).showBottomSheet(
-          (ctx) => new TagEntry(controller: tagController),
+        _bottomSheetController = Scaffold.of(context).showBottomSheet(
+          (context) => new TagEntry(controller: _tagController),
         );
 
         setState(() {
-          _isEditingTags = true;
+          _isSearching = true;
         });
 
         _bottomSheetController.closed.then((a) => onCloseBottomSheet());
@@ -128,7 +142,7 @@ class _PostsPageState extends State<PostsPage> {
   }
 
   final List<List<Post>> _pages = [];
-  bool loadingPosts = true;
+  bool _loading = true;
 
   void _loadNextPage() async {
     int p = _pages.length;
@@ -136,21 +150,27 @@ class _PostsPageState extends State<PostsPage> {
     List<Post> nextPage = [];
     _pages.add(nextPage);
 
-    if (tags == null) {
-      tags = await widget.tags;
-      tagController = new TextEditingController()..text = tags.toString() + ' ';
+    if (_tags == null) {
+      _tags = await widget.tags ?? new Tagset.parse('');
+      _tagController = new TextEditingController()..text = _tags.toString() + ' ';
     }
 
-    nextPage.addAll(await client.posts(tags, p));
+    if (widget.pool == null) {
+      nextPage.addAll(await client.posts(_tags, p));
+    } else {
+      nextPage.addAll(await client.pool(widget.pool, p));
+    }
+
+
     if (this.mounted) {
       setState(() {});
     }
   }
 
-  void clearPages() {
+  void _clearPages() {
     setState(() {
       _pages.clear();
-      loadingPosts = true;
+      _loading = true;
     });
   }
 
@@ -158,7 +178,7 @@ class _PostsPageState extends State<PostsPage> {
     int i = 0;
     if (_pages.isEmpty) {
       _loadNextPage();
-      loadingPosts = false;
+      _loading = false;
     }
     for (List<Post> p in _pages) {
       i += p.length;
@@ -166,18 +186,18 @@ class _PostsPageState extends State<PostsPage> {
     return i;
   }
 
-  Widget _itemBuilder(BuildContext ctx, int item) {
-    Widget postPreview(List<Post> page, int postOnPage, int postOnAll) {
+  Widget _itemBuilder(BuildContext context, int item) {
+    Widget preview(List<Post> page, int pageIndex, int listIndex) {
       return Container(
         height: 250,
-        child: new PostPreview(page[postOnPage], onPressed: () {
-          Navigator.of(ctx).push(new MaterialPageRoute<Null>(
-            builder: (ctx) => new PostSwipe(
+        child: new PostPreview(page[pageIndex], onPressed: () {
+          Navigator.of(context).push(new MaterialPageRoute<Null>(
+            builder: (context) => new PostSwipe(
               _pages
                   .fold<Iterable<Post>>(
                       const Iterable.empty(), (a, b) => a.followedBy(b))
                   .toList(),
-              startingIndex: postOnAll,
+              startingIndex: listIndex,
             ),
           ));
         }),
@@ -200,7 +220,7 @@ class _PostsPageState extends State<PostsPage> {
       }
 
       if (item < posts) {
-        return postPreview(page, item - (posts - page.length), item);
+        return preview(page, item - (posts - page.length), item);
       }
     }
 
@@ -215,11 +235,12 @@ class _PostsPageState extends State<PostsPage> {
         i += page.length;
 
         // this ensures that there isn't a large
-        // empty space on odd post numbers on a page.
+        // empty space on an even number of posts on a page.
         if (item == i - 1 - p) {
           return new StaggeredTile.fit(1);
         }
 
+        // do not make all of them fit, since that causes lags.
         if (item < i) {
           return const StaggeredTile.extent(1, 250.0);
         }
@@ -236,12 +257,12 @@ class _PostsPageState extends State<PostsPage> {
     super.didUpdateWidget(oldWidget);
     setState(() {
       _pages.clear();
-      loadingPosts = true;
+      _loading = true;
     });
   }
 
   @override
-  Widget build(BuildContext ctx) {
+  Widget build(BuildContext context) {
     AppBar appBarWidget() {
       return new AppBar(
         title: new Text(widget.title),
@@ -255,7 +276,7 @@ class _PostsPageState extends State<PostsPage> {
           new IconButton(
             icon: const Icon(Icons.refresh),
             tooltip: 'Refresh',
-            onPressed: clearPages,
+            onPressed: _clearPages,
           ),
         ],
       );
@@ -264,7 +285,7 @@ class _PostsPageState extends State<PostsPage> {
     Widget bodyWidget() {
       return new Stack(children: [
         new Visibility(
-          visible: loadingPosts,
+          visible: _loading,
           child: new Center(
             child: new Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -293,23 +314,23 @@ class _PostsPageState extends State<PostsPage> {
     }
 
     Widget floatingActionButtonWidget() {
-      return new Builder(builder: (ctx) {
+      return new Builder(builder: (context) {
         return new Visibility(
           visible: widget.canSearch,
           child: new FloatingActionButton(
-            child: _isEditingTags
+            child: _isSearching
                 ? const Icon(Icons.check)
                 : const Icon(Icons.search),
-            onPressed: _onPressedFloatingActionButton(ctx),
+            onPressed: _onPressedFloatingActionButton(context),
           ),
-        ).build(ctx);
+        ).build(context);
       });
     }
 
     return new Scaffold(
       appBar: appBarWidget(),
       body: bodyWidget(),
-      drawer: const _NavigationDrawer(),
+      drawer: const NavigationDrawer(),
       floatingActionButton: floatingActionButtonWidget(),
     );
   }
@@ -342,7 +363,7 @@ class TagEntry extends StatelessWidget {
     _setTags(tags);
   }
 
-  Function(String) _onSelectedFilterBy(BuildContext ctx) {
+  Function(String) _onSelectedFilterBy(BuildContext context) {
     return (selectedFilter) {
       String filterType = const {
         'Score': 'score',
@@ -357,8 +378,8 @@ class TagEntry extends StatelessWidget {
             valueString == null ? 0 : int.parse(valueString.substring(2));
 
         int min = await showDialog<int>(
-            context: ctx,
-            builder: (ctx) {
+            context: context,
+            builder: (context) {
               return new RangeDialog(
                 title: 'Posts with $filterType at least',
                 value: value,
@@ -410,7 +431,7 @@ class TagEntry extends StatelessWidget {
 
   List<PopupMenuEntry<String>> Function(BuildContext)
       _popupMenuButtonItemBuilder(List<String> text) {
-    return (ctx) {
+    return (context) {
       List<PopupMenuEntry<String>> items = new List(text.length);
       for (int i = 0; i < items.length; i++) {
         String t = text[i];
@@ -421,7 +442,7 @@ class TagEntry extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext ctx) {
+  Widget build(BuildContext context) {
     Widget filterByWidget() {
       return new PopupMenuButton<String>(
         icon: const Icon(Icons.filter_list),
@@ -429,7 +450,7 @@ class TagEntry extends StatelessWidget {
         itemBuilder: _popupMenuButtonItemBuilder(
           ['Score', 'Favorites', 'Views'],
         ),
-        onSelected: _onSelectedFilterBy(ctx),
+        onSelected: _onSelectedFilterBy(context),
       );
     }
 
@@ -460,6 +481,9 @@ class TagEntry extends StatelessWidget {
           autofocus: true,
           maxLines: 1,
           inputFormatters: [new LowercaseTextInputFormatter()],
+          decoration: const InputDecoration(
+            labelText: 'Tags',
+          ),
         ),
         new Padding(
           padding: const EdgeInsets.symmetric(vertical: 10.0),
@@ -470,110 +494,6 @@ class TagEntry extends StatelessWidget {
                 filterByWidget(),
                 sortByWidget(),
               ]),
-        ),
-      ]),
-    );
-  }
-}
-
-enum _DrawerSelection {
-  home,
-  hot,
-  favorites,
-}
-
-_DrawerSelection _drawerSelection = _DrawerSelection.home;
-
-class _NavigationDrawer extends StatelessWidget {
-  const _NavigationDrawer();
-
-  @override
-  Widget build(BuildContext ctx) {
-    Widget headerWidget() {
-      Widget userInfoWidget() {
-        return new FutureBuilder<String>(
-          future: db.username.value,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.done &&
-                !snapshot.hasError &&
-                snapshot.hasData) {
-              return new Text(
-                snapshot.data,
-                style: new TextStyle(fontSize: 16.0),
-              );
-            }
-            return new RaisedButton(
-              child: const Text('LOGIN'),
-              onPressed: () => Navigator.popAndPushNamed(ctx, '/login'),
-            );
-          },
-        );
-      }
-
-      // this could use the avatar post of the user.
-      // however, its not reachable by the API.
-      // maybe send an email to the site owners.
-      // update: sent an email.
-      // they'll note it down for after API update.
-      return new Container(
-          height: 140,
-          child: new DrawerHeader(
-              child: new Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              const CircleAvatar(
-                backgroundImage: const AssetImage('assets/icon/paw.png'),
-                radius: 36.0,
-              ),
-              Padding(
-                padding: EdgeInsets.all(16),
-                child: userInfoWidget(),
-              ),
-            ],
-          )));
-    }
-
-    return new Drawer(
-      child: new ListView(children: [
-        headerWidget(),
-        new ListTile(
-          selected: _drawerSelection == _DrawerSelection.home,
-          leading: const Icon(Icons.home),
-          title: const Text('Home'),
-          onTap: () {
-            _drawerSelection = _DrawerSelection.home;
-            Navigator.of(ctx).pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
-          },
-        ),
-        new ListTile(
-            selected: _drawerSelection == _DrawerSelection.hot,
-            leading: const Icon(Icons.show_chart),
-            title: const Text('Hot'),
-            onTap: () {
-              _drawerSelection = _DrawerSelection.hot;
-              Navigator.of(ctx).pushNamedAndRemoveUntil('/hot', (Route<dynamic> route) => false);
-            }),
-        new ListTile(
-            selected: _drawerSelection == _DrawerSelection.favorites,
-            leading: const Icon(Icons.favorite),
-            title: const Text('Favorites'),
-            onTap: () async {
-              _drawerSelection = _DrawerSelection.favorites;
-              Navigator.of(ctx).pushNamedAndRemoveUntil('/fav', (Route<dynamic> route) => false);
-            }),
-        Divider(),
-        new ListTile(
-          leading: const Icon(Icons.settings),
-          title: const Text('Settings'),
-          onTap: () => Navigator.popAndPushNamed(ctx, '/settings'),
-        ),
-        // TODO: get rid of this garbage and make own about screen.
-        const AboutListTile(
-          child: const Text('About'),
-          icon: const Icon(Icons.help),
-          applicationName: appInfo.appName,
-          applicationVersion: appInfo.appVersion,
-          applicationLegalese: appInfo.about,
         ),
       ]),
     );

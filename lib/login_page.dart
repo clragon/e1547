@@ -13,7 +13,7 @@ import 'persistence.dart' show db;
 
 class LoginPage extends StatelessWidget {
   @override
-  Widget build(BuildContext ctx) {
+  Widget build(BuildContext context) {
     List<Widget> columnChildren = [
       new _InstructionStep(
           1, _buttonLink('Login via web browser', '/session/new')),
@@ -118,25 +118,25 @@ class _LoginFormFieldsState extends State<_LoginFormFields> {
     return null;
   }
 
-  Function() _saveAndTest(BuildContext ctx) {
+  Function() _saveAndTest(BuildContext context) {
     return () async {
-      FormState form = Form.of(ctx)
+      FormState form = Form.of(context)
         ..save(); // TODO: fix this so we don't need to save->validate->validate
       if (form.validate()) {
         bool ok = await showDialog(
-          context: ctx,
-          builder: (ctx) => new _LoginProgressDialog(_username, _apiKey),
+          context: context,
+          builder: (context) => new _LoginProgressDialog(_username, _apiKey),
         );
 
         if (ok) {
           db.username.value = new Future.value(_username);
           db.apiKey.value = new Future.value(_apiKey);
 
-          Navigator.of(ctx).pop();
+          Navigator.of(context).pop();
         } else {
           _authDidJustFail = true;
           form.validate();
-          Scaffold.of(ctx).showSnackBar(const SnackBar(
+          Scaffold.of(context).showSnackBar(const SnackBar(
               duration: const Duration(seconds: 10),
               content: const Text('Failed to login. '
                   'Check your network connection and login details')));
@@ -146,7 +146,7 @@ class _LoginFormFieldsState extends State<_LoginFormFields> {
   }
 
   @override
-  Widget build(BuildContext ctx) {
+  Widget build(BuildContext context) {
     Widget usernameWidget() {
       return new TextFormField(
         autocorrect: false,
@@ -192,7 +192,7 @@ class _LoginFormFieldsState extends State<_LoginFormFields> {
             onPressed: () async {
               var data = await Clipboard.getData('text/plain');
               if (data == null || data.text.trim().isEmpty) {
-                Scaffold.of(ctx).showSnackBar(
+                Scaffold.of(context).showSnackBar(
                     const SnackBar(content: const Text('Clipboard is empty')));
                 return;
               }
@@ -224,7 +224,7 @@ class _LoginFormFieldsState extends State<_LoginFormFields> {
         padding: const EdgeInsets.only(top: 20.0),
         child: new RaisedButton(
           child: const Text('SAVE & TEST'),
-          onPressed: _saveAndTest(ctx),
+          onPressed: _saveAndTest(context),
         ),
       );
     }
@@ -264,9 +264,9 @@ class _LoginProgressDialogState extends State<_LoginProgressDialog> {
   }
 
   @override
-  Widget build(BuildContext ctx) {
+  Widget build(BuildContext context) {
     _isLoginOk.then((ok) {
-      Navigator.of(ctx).pop(ok);
+      Navigator.of(context).pop(ok);
     });
 
     return new Dialog(
@@ -289,7 +289,7 @@ class _InstructionStep extends StatelessWidget {
   final Widget _content;
 
   @override
-  Widget build(BuildContext ctx) {
+  Widget build(BuildContext context) {
     Widget leadingCircleWidget() {
       return new Container(
         decoration: const ShapeDecoration(

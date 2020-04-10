@@ -13,32 +13,20 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
   String _host;
   String _username;
+  bool _showUnsafe;
 
   @override
   void initState() {
     super.initState();
-    db.host.value.then((a) async => setState(() => _host = a));
+    _showUnsafe = false;
+    db.host.value.then((a) async => setState(() {
+      _host = a;
+      _showUnsafe = _host == 'e621.net' ? true : false;
+    }));
     db.username.value.then((a) async => setState(() => _username = a));
   }
 
-  Function() _onTapSiteBackend(BuildContext ctx) {
-    return () async {
-      String newHost = await showDialog<String>(
-          context: ctx,
-          builder: (ctx) {
-            return new _SiteBackendDialog(_host);
-          });
-
-      if (newHost != null) {
-        db.host.value = new Future.value(newHost);
-        setState(() {
-          _host = newHost;
-        });
-      }
-    };
-  }
-
-  Function() _onTapSignOut(BuildContext ctx) {
+  Function() _onTapSignOut(BuildContext context) {
     return () async {
       String username = await db.username.value;
       db.username.value = new Future.value(null);
@@ -49,7 +37,7 @@ class _SettingsPageState extends State<SettingsPage> {
         msg = msg + ' for $username';
       }
 
-      Scaffold.of(ctx).showSnackBar(new SnackBar(
+      Scaffold.of(context).showSnackBar(new SnackBar(
         duration: const Duration(seconds: 5),
         content: new Text(msg),
       ));
@@ -61,21 +49,34 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   @override
-  Widget build(BuildContext ctx) {
-    Widget bodyWidgetBuilder(BuildContext ctx) {
+  Widget build(BuildContext context) {
+    Widget bodyWidgetBuilder(BuildContext context) {
       return new Container(
         padding: const EdgeInsets.all(10.0),
         child: new ListView(
           children: [
-            new ListTile(
-              title: const Text('Site backend'),
+            new SwitchListTile(
+              title: const Text('Show NSFW posts'),
               subtitle: new Text(_host ?? ' '),
-              onTap: _onTapSiteBackend(ctx),
+              value: _showUnsafe,
+              onChanged: (show) {
+                setState(() {
+                  _showUnsafe = show;
+                  if (show) {
+                    _host = 'e621.net';
+                    db.host.value = Future.value(_host);
+                  } else {
+                    _host = 'e926.net';
+                    db.host.value = Future.value(_host);
+                  }
+                });
+              },
             ),
+
             new ListTile(
               title: const Text('Sign out'),
               subtitle: new Text(_username ?? ' '),
-              onTap: _onTapSignOut(ctx),
+              onTap: _onTapSignOut(context),
             ),
           ],
         ),
@@ -89,29 +90,3 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 }
 
-class _SiteBackendDialog extends StatelessWidget {
-  const _SiteBackendDialog(this.host);
-
-  final String host;
-
-  @override
-  Widget build(BuildContext ctx) {
-    return new SimpleDialog(
-      title: const Text('Site backend'),
-      children: [
-        new RadioListTile<String>(
-          value: 'e926.net',
-          title: const Text('e926.net'),
-          groupValue: host,
-          onChanged: Navigator.of(ctx).pop,
-        ),
-        new RadioListTile<String>(
-          value: 'e621.net',
-          title: const Text('e621.net'),
-          groupValue: host,
-          onChanged: Navigator.of(ctx).pop,
-        ),
-      ],
-    );
-  }
-}

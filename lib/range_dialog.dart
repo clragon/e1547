@@ -29,10 +29,10 @@ class RangeDialogState extends State<RangeDialog> {
   }
 
   @override
-  Widget build(BuildContext ctx) {
+  Widget build(BuildContext context) {
     Widget numberWidget() {
       _controller.text = _value.toString();
-      FocusScope.of(ctx)
+      FocusScope.of(context)
           .requestFocus(new FocusNode()); // Clear text entry focus, if any.
 
       Widget number = new TextField(
@@ -41,7 +41,7 @@ class RangeDialogState extends State<RangeDialog> {
         textAlign: TextAlign.center,
         decoration: const InputDecoration(border: InputBorder.none),
         controller: _controller,
-        onSubmitted: (v) => Navigator.of(ctx).pop(int.parse(v)),
+        onSubmitted: (v) => Navigator.of(context).pop(int.parse(v)),
       );
 
       return new Container(
@@ -57,7 +57,7 @@ class RangeDialogState extends State<RangeDialog> {
           max: math.max(widget.max.toDouble(), _value.toDouble()),
           divisions: widget.division,
           value: _value.toDouble(),
-          activeColor: Theme.of(ctx).accentColor,
+          activeColor: Theme.of(context).accentColor,
           onChanged: (v) {
             setState(() => _value = v.toInt());
           });
@@ -67,7 +67,7 @@ class RangeDialogState extends State<RangeDialog> {
       List<Widget> buttons = [
         new FlatButton(
           child: const Text('cancel'),
-          onPressed: () => Navigator.of(ctx).pop(),
+          onPressed: () => Navigator.of(context).pop(),
         ),
         new RaisedButton(
           child: const Text('save'),
@@ -75,7 +75,7 @@ class RangeDialogState extends State<RangeDialog> {
             // We could pop up an error, but using the last known good value
             // works also.
             int textValue = int.parse(_controller.text);
-            Navigator.of(ctx).pop(textValue ?? _value);
+            Navigator.of(context).pop(textValue ?? _value);
           },
         ),
       ];

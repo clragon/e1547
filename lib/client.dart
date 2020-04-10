@@ -1,6 +1,8 @@
 import 'dart:async' show Future;
 import 'dart:convert' show json;
 
+import 'package:e1547/pool.dart';
+
 import 'comment.dart' show Comment;
 import 'http.dart';
 import 'persistence.dart' show db;
@@ -66,18 +68,21 @@ class Client {
     });
   }
 
-  Future<List<Post>> posts(Tagset tags, int page) async {
+  Future<List<Post>> posts(Tagset tags, int page, {int limit = 200}) async {
 
     String body = await _http.get(await _host, '/posts.json', query: {
       'tags': tags,
       'page': page + 1,
       'login': await _username,
       'api_key': await _apiKey,
+      'limit': limit,
     }).then((response) => response.body);
 
     List<Post> posts = [];
+    bool loggedIn = await this.isLoggedIn();
     for (Map rp in json.decode(body)['posts']) {
-      Post p = await _parsePost(rp);
+      Post p = new Post.fromRaw(rp);
+      p.isLoggedIn = loggedIn;
       if (p.file['url'] == null || p.file['ext'] == 'swf') { continue; }
       posts.add(p);
     }
@@ -85,43 +90,32 @@ class Client {
     return posts;
   }
 
-  // requesting a pool only yields IDs not posts. that means
-  // this is gonna flood the server with requests for each post.
-  // which is way too many requests.
-  // TODO: wait for API update or Email answer
-  Future<List<Post>> pool(int poolID, int page) async {
-
-    String body = await _http.get(await _host, '/pools/' + poolID.toString() + '.json', query: {
+  Future<List<Pool>> pools(String title, int page) async {
+    String body = await _http.get(await _host, '/pools.json', query: {
+      'search[name_matches]': title,
       'page': page + 1,
       'login': await _username,
       'api_key': await _apiKey,
     }).then((response) => response.body);
 
-    List<Post> posts = [];
-    for (int rp in json.decode(body)['post_ids']) {
-      Post p = await post(rp);
-      if (p.file['url'] == null || p.file['ext'] == 'swf') { continue; }
-      posts.add(p);
+    List<Pool> pools = [];
+    for (Map rp in json.decode(body)) {
+      Pool p = new Pool.fromRaw(rp);
+      pools.add(p);
     }
 
-    return posts;
-
+    return pools;
   }
 
-  Future<Post> post(int postID) async {
-    String body = await _http.get(await _host, '/posts/' + postID.toString() + '.json', query: {
-      'login': await _username,
-      'api_key': await _apiKey,
-    }).then((response) => response.body);
 
-    return _parsePost(json.decode(body)['post']);
+  Future<List<Post>> pool(Pool pool, int page) async {
+    String filter = "id:";
+    for (int index = 0; index < pool.postIDs.length && index < ((page + 1) * 100); index++) {
+        filter = filter + pool.postIDs[index].toString() + ',';
+    }
+    return await posts(new Tagset.parse(filter), page, limit: 100);
   }
 
-  Future<Post> _parsePost(Map json) async {
-    Post p = new Post.fromRaw(json);
-    p.isLoggedIn = await this.isLoggedIn();
-    return p;
-  }
 
   Future<List<Comment>> comments(int postId, int page) async {
     // THIS DOES NOT WORK YET; API BROKEN.

@@ -90,7 +90,7 @@ class PostPreview extends StatelessWidget {
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext ctx) {
+  Widget build(BuildContext context) {
     Widget imagePreviewWidget() {
       return new CachedNetworkImage(
         imageUrl: post.sample['url'],
@@ -152,14 +152,14 @@ class PostSwipe extends StatelessWidget {
       : super(key: key);
 
   @override
-  Widget build(BuildContext ctx) {
+  Widget build(BuildContext context) {
     return new PageView.builder(
       controller: new PageController(initialPage: startingIndex),
       itemBuilder: _pageBuilder,
     );
   }
 
-  Widget _pageBuilder(BuildContext ctx, int index) {
+  Widget _pageBuilder(BuildContext context, int index) {
     return index < posts.length ? new PostWidget(posts[index]) : null;
   }
 }
@@ -171,7 +171,7 @@ class PostWidget extends StatelessWidget {
   const PostWidget(this.post, {Key key}) : super(key: key);
 
   @override
-  Widget build(BuildContext ctx) {
+  Widget build(BuildContext context) {
     return new Scaffold(body: new PostWidgetScaffold(post));
   }
 }
@@ -182,7 +182,7 @@ class PostWidgetScaffold extends StatelessWidget {
   const PostWidgetScaffold(this.post, {Key key}) : super(key: key);
 
   @override
-  Widget build(BuildContext ctx) {
+  Widget build(BuildContext context) {
     Widget postContentsWidget() {
       Widget overlayImageWidget() {
         Widget imageWidget() {
@@ -206,7 +206,7 @@ class PostWidgetScaffold extends StatelessWidget {
 
       return new Flexible(
           child: new GestureDetector(
-        onTap: _onTapImage(ctx, post),
+        onTap: _onTapImage(context, post),
         child: new Container(
           color: Colors.black,
           constraints: const BoxConstraints.expand(),
@@ -223,9 +223,10 @@ class PostWidgetScaffold extends StatelessWidget {
           children: [
             new GestureDetector(
               onTap: () {
-                Navigator.of(ctx).push(new MaterialPageRoute<Null>(builder: (ctx) {
-                  return new SearchPage('Search', Tagset.parse(artist)); }
-                ));
+                Navigator.of(context)
+                    .push(new MaterialPageRoute<Null>(builder: (context) {
+                  return new SearchPage(Tagset.parse(artist));
+                }));
               },
               child: new Text(artist),
             ),
@@ -249,22 +250,22 @@ class PostWidgetScaffold extends StatelessWidget {
       );
     }
 
-    Future<void> tryRemoveFav(BuildContext ctx, Post post) async {
+    Future<void> tryRemoveFav(BuildContext context, Post post) async {
       if (await client.removeAsFavorite(post.id)) {
         post.isFavourite = false;
       } else {
-        Scaffold.of(ctx).showSnackBar(new SnackBar(
+        Scaffold.of(context).showSnackBar(new SnackBar(
           duration: const Duration(seconds: 1),
           content: new Text('Failed to remove post ${post.id} from favorites'),
         ));
       }
     }
 
-    Future<void> tryAddFav(BuildContext ctx, Post post) async {
+    Future<void> tryAddFav(BuildContext context, Post post) async {
       if (await client.addAsFavorite(post.id)) {
         post.isFavourite = true;
       } else {
-        Scaffold.of(ctx).showSnackBar(new SnackBar(
+        Scaffold.of(context).showSnackBar(new SnackBar(
           duration: const Duration(seconds: 1),
           content: new Text('Failed to add post ${post.id} to favorites'),
         ));
@@ -279,15 +280,15 @@ class PostWidgetScaffold extends StatelessWidget {
             return Icon(
               Icons.favorite,
               color:
-                  isLiked ? Colors.pinkAccent : Theme.of(ctx).iconTheme.color,
+                  isLiked ? Colors.pinkAccent : Theme.of(context).iconTheme.color,
             );
           },
           onTap: (isLiked) async {
             if (isLiked) {
-              tryRemoveFav(ctx, post);
+              tryRemoveFav(context, post);
               return false;
             } else {
-              tryAddFav(ctx, post);
+              tryAddFav(context, post);
               return true;
             }
           },
@@ -298,8 +299,8 @@ class PostWidgetScaffold extends StatelessWidget {
         return new IconButton(
           icon: const Icon(Icons.chat),
           tooltip: 'Go to comments',
-          onPressed: () => Navigator.of(ctx)
-              .push(new MaterialPageRoute<Null>(builder: (ctx) {
+          onPressed: () => Navigator.of(context)
+              .push(new MaterialPageRoute<Null>(builder: (context) {
             return new CommentsWidget(post);
           })),
         );
@@ -320,8 +321,8 @@ class PostWidgetScaffold extends StatelessWidget {
           icon: const Icon(Icons.more_horiz),
           tooltip: 'More actions',
           onPressed: () => showDialog(
-              context: ctx,
-              builder: (ctx) {
+              context: context,
+              builder: (context) {
                 return new _MoreDialog(post);
               }),
         );
@@ -348,8 +349,38 @@ class PostWidgetScaffold extends StatelessWidget {
       );
     }
 
+    /*
+
+    new Stack(
+          children: <Widget>[
+            postContentsWidget(),
+            new Positioned(
+              top: 0,
+                child: new AppBar(
+                  backgroundColor: Colors.transparent,
+                  leading: IconButton(
+                    icon: Icon(Icons.arrow_back),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                  actions: <Widget>[
+                    new IconButton(
+                      icon: const Icon(Icons.more_vert),
+                      tooltip: 'More actions',
+                      onPressed: () => showDialog(
+                          context: context,
+                          builder: (context) {
+                        return new _MoreDialog(post);
+                      }),
+                ),
+              ],
+            )),
+          ],
+        ),
+
+    */
+
     return new Padding(
-      padding: new EdgeInsets.only(top: MediaQuery.of(ctx).padding.top),
+      padding: new EdgeInsets.only(top: MediaQuery.of(context).padding.top),
       child: new Column(mainAxisSize: MainAxisSize.min, children: [
         postContentsWidget(),
         postMetadataWidget(),
@@ -359,8 +390,8 @@ class PostWidgetScaffold extends StatelessWidget {
     );
   }
 
-  Function() _onTapImage(BuildContext ctx, Post post) {
-    Widget fullScreenWidgetBuilder(BuildContext ctx) {
+  Function() _onTapImage(BuildContext context, Post post) {
+    Widget fullScreenWidgetBuilder(BuildContext context) {
       return PhotoView(
         imageProvider: new CachedNetworkImageProvider(post.file['url']),
         loadingBuilder: (buildContext, imageChunkEvent) =>
@@ -378,7 +409,7 @@ class PostWidgetScaffold extends StatelessWidget {
         minScale: PhotoViewComputedScale.contained,
         maxScale: PhotoViewComputedScale.contained * 6,
         onTapUp: (buildContext, tapDownDetails, photoViewControllerValue) =>
-            Navigator.of(ctx).pop(),
+            Navigator.of(context).pop(),
       );
     }
 
@@ -387,7 +418,7 @@ class PostWidgetScaffold extends StatelessWidget {
         url.launch(post.file['url']);
       } else {
         SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
-        await Navigator.of(ctx).push(new MaterialPageRoute<Null>(
+        await Navigator.of(context).push(new MaterialPageRoute<Null>(
           builder: fullScreenWidgetBuilder,
         ));
         SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
@@ -402,19 +433,19 @@ class _MoreDialog extends StatelessWidget {
   const _MoreDialog(this.post);
 
   @override
-  Widget build(BuildContext ctx) {
+  Widget build(BuildContext context) {
     List<Widget> optionsWidgets() {
       List<Widget> options = [
         new ListTile(
           leading: const Icon(Icons.info_outline),
           title: const Text('Info'),
-          onTap: _showPostInfoDialog(ctx),
+          onTap: _showPostInfoDialog(context),
         ),
         new ListTile(
           leading: const Icon(Icons.content_copy),
           title: const Text('Copy...'),
           trailing: const Icon(Icons.arrow_right),
-          onTap: _showCopyDialog(ctx),
+          onTap: _showCopyDialog(context),
         ),
       ];
 
@@ -422,7 +453,7 @@ class _MoreDialog extends StatelessWidget {
         options.add(new ListTile(
           leading: const Icon(Icons.file_download),
           title: const Text('Download'),
-          onTap: _download(ctx),
+          onTap: _download(context),
         ));
       }
 
@@ -435,13 +466,13 @@ class _MoreDialog extends StatelessWidget {
     );
   }
 
-  Future<Null> _copyAndPopPop(BuildContext ctx, String text) async {
+  Future<Null> _copyAndPopPop(BuildContext context, String text) async {
     await Clipboard.setData(new ClipboardData(text: text));
-    Navigator.of(ctx).pop();
-    Navigator.of(ctx).pop();
+    Navigator.of(context).pop();
+    Navigator.of(context).pop();
   }
 
-  Function() _download(BuildContext ctx) {
+  Function() _download(BuildContext context) {
     return () async {
       // TODO: this doesn't work.
       Map<PermissionGroup, PermissionStatus> permissions =
@@ -450,8 +481,8 @@ class _MoreDialog extends StatelessWidget {
 
       if (permissions[PermissionGroup.storage] != PermissionStatus.granted) {
         showDialog(
-            context: ctx,
-            builder: (ctx) {
+            context: context,
+            builder: (context) {
               return new AlertDialog(
                 content: const Text(
                     'You need to grant write permission in order to download files.'),
@@ -459,8 +490,8 @@ class _MoreDialog extends StatelessWidget {
                   new RaisedButton(
                     child: const Text('TRY AGAIN'),
                     onPressed: () async {
-                      Navigator.of(ctx).pop();
-                      _download(ctx)(); // recursively re-execute
+                      Navigator.of(context).pop();
+                      _download(context)(); // recursively re-execute
                     },
                   ),
                 ],
@@ -485,11 +516,11 @@ class _MoreDialog extends StatelessWidget {
       }
 
       showDialog(
-        context: ctx,
-        builder: (ctx) {
+        context: context,
+        builder: (context) {
           return new FutureBuilder(
             future: download(),
-            builder: (ctx, snapshot) {
+            builder: (context, snapshot) {
               if (snapshot.hasError) {
                 return new AlertDialog(
                   title: const Text('Error'),
@@ -533,7 +564,7 @@ class _MoreDialog extends StatelessWidget {
     };
   }
 
-  Function() _showCopyDialog(BuildContext ctx) {
+  Function() _showCopyDialog(BuildContext context) {
     return () {
       Widget title = new ListTile(
           leading: const Icon(Icons.content_copy),
@@ -543,23 +574,23 @@ class _MoreDialog extends StatelessWidget {
           title: const Text('Copy link'),
           onTap: () async {
             String link = post.url(await db.host.value).toString();
-            _copyAndPopPop(ctx, link);
+            _copyAndPopPop(context, link);
           });
 
       Widget copyDirectLink = new ListTile(
           title: const Text('Copy direct link'),
-          onTap: () => _copyAndPopPop(ctx, post.file['url']));
+          onTap: () => _copyAndPopPop(context, post.file['url']));
 
       showDialog(
-          context: ctx,
-          builder: (ctx) {
+          context: context,
+          builder: (context) {
             return new SimpleDialog(
                 title: title, children: [copyLink, copyDirectLink]);
           });
     };
   }
 
-  Function() _showPostInfoDialog(BuildContext ctx) {
+  Function() _showPostInfoDialog(BuildContext context) {
     return () {
       StringBuffer info = new StringBuffer();
       post.raw.forEach((k, v) {
@@ -567,8 +598,8 @@ class _MoreDialog extends StatelessWidget {
       });
 
       showDialog(
-          context: ctx,
-          builder: (ctx) {
+          context: context,
+          builder: (context) {
             return new SimpleDialog(
                 title: new Text('post #${post.id} info'),
                 children: <Widget>[
