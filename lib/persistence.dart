@@ -32,7 +32,7 @@ class Persistence {
     apiKey = _makeNotifier((p) => p.getString('apiKey'));
     apiKey.addListener(_saveString('apiKey', apiKey));
 
-    showWebm = _makeNotifier((p) => p.getBool('showWebm'));
+    showWebm = _makeNotifier((p) => p.getBool('showWebm') ?? true);
     showWebm.addListener(_saveBool('showWebm', showWebm));
   }
 

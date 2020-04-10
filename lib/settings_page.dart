@@ -25,7 +25,7 @@ class _SettingsPageState extends State<SettingsPage> {
       _showUnsafe = _host == 'e621.net' ? true : false;
     }));
     db.username.value.then((a) async => setState(() => _username = a));
-    db.showWebm.value.then((a) async => setState(() => _showWebm = a ?? true));
+    db.showWebm.value.then((a) async => setState(() => _showWebm = a));
   }
 
   Function() _onTapSignOut(BuildContext context) {
