@@ -114,8 +114,8 @@ class _LoginFormFieldsState extends State<_LoginFormFields> {
           'e.g. 1ca1d165e973d7f8d35b7deb7a2ae54c';
     }
 
-    if (!new RegExp(r'^[a-f0-9]{32}$').hasMatch(apiKey)) {
-      return 'API key is a 32-character sequence of {a..f} and {0..9}\n'
+    if (!new RegExp(r'^[A-z0-9]{24,32}$').hasMatch(apiKey)) {
+      return 'API key is a 24 or 32-character sequence of {A..z} and {0..9}\n'
           'e.g. 1ca1d165e973d7f8d35b7deb7a2ae54c';
     }
 
