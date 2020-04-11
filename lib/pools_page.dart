@@ -43,8 +43,8 @@ class _PoolsPageState extends State<PoolsPage> {
       } else {
         _bottomSheetController =
             Scaffold.of(context).showBottomSheet((context) => new Container(
-                  padding:
-                      const EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10),
+                  padding: const EdgeInsets.only(
+                      left: 10.0, right: 10.0, bottom: 10),
                   child: new Column(mainAxisSize: MainAxisSize.min, children: [
                     new TextField(
                       controller: _tagController,
@@ -103,10 +103,10 @@ class _PoolsPageState extends State<PoolsPage> {
   Widget _itemBuilder(BuildContext context, int item) {
     Widget preview(List<Pool> page, int pageIndex, int listIndex) {
       return new PoolPreview(page[pageIndex], onPressed: () {
-            Navigator.of(context).push(new MaterialPageRoute<Null>(
-              builder: (context) => new PoolPage(page[pageIndex]),
-            ));
-          });
+        Navigator.of(context).push(new MaterialPageRoute<Null>(
+          builder: (context) => new PoolPage(page[pageIndex]),
+        ));
+      });
     }
 
     int pools = 0;
@@ -190,6 +190,24 @@ class _PoolsPageState extends State<PoolsPage> {
           itemBuilder: _itemBuilder,
           staggeredTileBuilder: _staggeredTileBuilder(),
           physics: new BouncingScrollPhysics(),
+        ),
+        new Visibility(
+          visible: (!_loading && _pages.length == 1 && _pages[0].length == 0),
+          child: new Center(
+            child: new Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                new Icon(
+                  Icons.error_outline,
+                  size: 32,
+                ),
+                new Padding(
+                  padding: EdgeInsets.all(20),
+                  child: new Text('No pools'),
+                ),
+              ],
+            ),
+          ),
         ),
       ]);
     }

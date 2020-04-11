@@ -1,5 +1,3 @@
-// TODO: rework spacing.
-
 import 'dart:async' show Future, Timer;
 
 import 'package:flutter/material.dart';
@@ -27,7 +25,8 @@ class LoginPage extends StatelessWidget {
     ];
 
     return new Scaffold(
-      appBar: new AppBar(title: const Text('Login')),
+      appBar: new AppBar(
+          title: const Text('Login')),
       body: new SingleChildScrollView(
           padding: const EdgeInsets.all(10.0),
           child: new Form(child: new Column(children: columnChildren))),
@@ -133,10 +132,8 @@ class _LoginFormFieldsState extends State<_LoginFormFields> {
         );
 
         if (ok) {
-          db.username.value = new Future.value(_username);
-          db.apiKey.value = new Future.value(_apiKey);
-
-          Navigator.of(context).pop();
+          Navigator.of(context).pushNamedAndRemoveUntil(
+              '/', (Route<dynamic> route) => false);
         } else {
           _authDidJustFail = true;
           form.validate();
@@ -264,7 +261,7 @@ class _LoginProgressDialogState extends State<_LoginProgressDialog> {
   @override
   void initState() {
     super.initState();
-    _isLoginOk = client.isValidAuthPair(
+    _isLoginOk = client.saveLogin(
       widget.username,
       widget.apiKey,
     );

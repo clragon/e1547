@@ -165,7 +165,6 @@ class _PostsPageState extends State<PostsPage> {
     }
 
     _pages.add(nextPage);
-
     if (this.mounted) {
       setState(() {});
     }
@@ -319,12 +318,15 @@ class _PostsPageState extends State<PostsPage> {
           },
         ),
         new Visibility(
-          visible: (!_loading && _pages[0].length == 0),
+          visible: (!_loading && _pages.length == 1 && _pages[0].length == 0),
           child: new Center(
             child: new Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                new Icon(Icons.error),
+                new Icon(
+                  Icons.error_outline,
+                  size: 32,
+                ),
                 new Padding(
                   padding: EdgeInsets.all(20),
                   child: new Text('No posts'),
@@ -406,8 +408,8 @@ class TagEntry extends StatelessWidget {
               return new RangeDialog(
                 title: 'Posts with $filterType at least',
                 value: value,
-                division: 20,
-                max: 200,
+                division: 10,
+                max: 100,
               );
             });
 

@@ -12,7 +12,6 @@ import 'tag.dart';
 final Client client = new Client();
 
 class Client {
-
   final HttpHelper _http = new HttpHelper();
 
   Future<String> _host = db.host.value;
@@ -26,7 +25,7 @@ class Client {
   }
 
   Future<bool> addAsFavorite(int post) async {
-    if (!await isLoggedIn()) {
+    if (!await hasLogin()) {
       return false;
     }
 
@@ -38,11 +37,12 @@ class Client {
   }
 
   Future<bool> removeAsFavorite(int post) async {
-    if (!await isLoggedIn()) {
+    if (!await hasLogin()) {
       return false;
     }
 
-    return await _http.delete(await _host, '/favorites/' + post.toString() + 'json', query: {
+    return await _http
+        .delete(await _host, '/favorites/' + post.toString() + 'json', query: {
       'login': await _username,
       'api_key': await _apiKey,
     }).then((response) {
@@ -50,68 +50,108 @@ class Client {
     });
   }
 
-  Future<bool> isLoggedIn() async {
-    return !(await _username == null || await _apiKey == null);
-  }
-
-  Future<bool> isValidAuthPair(String username, String apiKey) async {
+  Future<bool> tryLogin(String username, String apiKey) async {
     return await _http.get(await _host, '/favorites.json', query: {
       'login': username,
       'api_key': apiKey,
     }).then((response) {
       if (response.statusCode == 200) {
         return true;
-      } else if (response.statusCode != 403) {
+      } else {
+        return false;
       }
-
-      return false;
     });
   }
 
-  Future<List<Post>> posts(Tagset tags, int page, {int limit = 200}) async {
-
-    String body = await _http.get(await _host, '/posts.json', query: {
-      'tags': tags,
-      'page': page + 1,
-      'login': await _username,
-      'api_key': await _apiKey,
-      'limit': limit,
-    }).then((response) => response.body);
-
-    List<Post> posts = [];
-    bool loggedIn = await this.isLoggedIn();
-    bool showWebm = await db.showWebm.value;
-    for (Map rp in json.decode(body)['posts']) {
-      Post p = new Post.fromRaw(rp);
-      p.isLoggedIn = loggedIn;
-      if (p.file['url'] == null || p.file['ext'] == 'swf') { continue; }
-      if (!showWebm && p.file['ext'] == 'webm') { continue; }
-      posts.add(p);
+  Future<bool> saveLogin(String username, String apiKey) async {
+    if (await tryLogin(username, apiKey)) {
+      db.username.value = Future.value(username);
+      db.apiKey.value = Future.value(apiKey);
+      return true;
+    } else {
+      return false;
     }
+  }
 
-    return posts;
+  Future<bool> verifyLogin() async {
+    String username = await _username;
+    String apiKey = await _apiKey;
+    if (username != null && apiKey != null) {
+      if (await tryLogin(username, apiKey)) {
+        return true;
+      } else {
+        logout();
+        return false;
+      }
+    } else {
+      return false;
+    }
+  }
+
+  Future<void> logout() async {
+    db.username.value = new Future.value(null);
+    db.apiKey.value = new Future.value(null);
+  }
+
+  Future<bool> hasLogin() async {
+    return !(await _username == null || await _apiKey == null);
+  }
+
+  Future<List<Post>> posts(Tagset tags, int page, {int limit = 200}) async {
+    try {
+      String body = await _http.get(await _host, '/posts.json', query: {
+        'tags': tags,
+        'page': page + 1,
+        'login': await _username,
+        'api_key': await _apiKey,
+        'limit': limit,
+      }).then((response) => response.body);
+
+      List<Post> posts = [];
+      bool loggedIn = await this.hasLogin();
+      bool showWebm = await db.showWebm.value;
+      for (Map rp in json.decode(body)['posts']) {
+        Post p = new Post.fromRaw(rp);
+        p.isLoggedIn = loggedIn;
+        if (p.file['url'] == null || p.file['ext'] == 'swf') {
+          continue;
+        }
+        if (!showWebm && p.file['ext'] == 'webm') {
+          continue;
+        }
+        posts.add(p);
+      }
+
+      return posts;
+    } catch (SocketException) {
+      return [];
+    }
   }
 
   Future<List<Pool>> pools(String title, int page) async {
-    String body = await _http.get(await _host, '/pools.json', query: {
-      'search[name_matches]': title,
-      'page': page + 1,
-      'login': await _username,
-      'api_key': await _apiKey,
-    }).then((response) => response.body);
+    try {
+      String body = await _http.get(await _host, '/pools.json', query: {
+        'search[name_matches]': title,
+        'page': page + 1,
+        'login': await _username,
+        'api_key': await _apiKey,
+      }).then((response) => response.body);
 
-    List<Pool> pools = [];
-    for (Map rp in json.decode(body)) {
-      Pool p = new Pool.fromRaw(rp);
-      pools.add(p);
+      List<Pool> pools = [];
+      for (Map rp in json.decode(body)) {
+        Pool p = new Pool.fromRaw(rp);
+        pools.add(p);
+      }
+
+      return pools;
+    } catch (SocketException) {
+      return [];
     }
-
-    return pools;
   }
 
   Future<Pool> poolById(int poolID) async {
-
-    String body = await _http.get(await _host, '/pools/' + poolID.toString() + '.json', query: {
+    String body = await _http
+        .get(await _host, '/pools/' + poolID.toString() + '.json', query: {
       'login': await _username,
       'api_key': await _apiKey,
     }).then((response) => response.body);
@@ -119,16 +159,16 @@ class Client {
     return Pool.fromRaw(json.decode(body));
   }
 
-
   Future<List<Post>> pool(Pool pool, int page) async {
     String filter = "id:";
-    for (int index = 0; index < pool.postIDs.length && index < ((page + 1) * 100); index++) {
-        filter = filter + pool.postIDs[index].toString() + ',';
+    for (int index = 0;
+        index < pool.postIDs.length && index < ((page + 1) * 100);
+        index++) {
+      filter = filter + pool.postIDs[index].toString() + ',';
     }
     filter = filter + ' ' + 'order:id';
     return await posts(new Tagset.parse(filter), page, limit: 100);
   }
-
 
   Future<List<Comment>> comments(int postId, int page) async {
     // THIS DOES NOT WORK YET; API BROKEN.

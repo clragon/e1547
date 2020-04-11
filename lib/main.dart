@@ -38,10 +38,22 @@ class Main extends StatelessWidget {
       title: appInfo.appName,
       theme: theme,
       routes: <String, WidgetBuilder>{
-        '/': (context) => new HomePage(),
-        '/hot': (context) => new HotPage(),
-        '/fav': (context) => new FavPage(),
-        '/pools': (context) => new PoolsPage(),
+        '/': (context) => () {
+          _drawerSelection = _DrawerSelection.home;
+          return new HomePage();
+        }(),
+        '/hot': (context) => () {
+          _drawerSelection = _DrawerSelection.hot;
+          return new HotPage();
+        }(),
+        '/fav': (context) => () {
+          _drawerSelection = _DrawerSelection.favorites;
+          return new FavPage();
+        }(),
+        '/pools': (context) => () {
+          _drawerSelection = _DrawerSelection.pools;
+          return new PoolsPage();
+        }(),
         '/login': (context) => new LoginPage(),
         '/settings': (context) => new SettingsPage(),
         '/about': (context) => new AboutPage(),
@@ -84,16 +96,11 @@ class NavigationDrawer extends StatelessWidget {
                     new IconButton(
                         icon: new Icon(Icons.exit_to_app),
                         onPressed: () {
-                            db.username.value = new Future.value(null);
-                            db.apiKey.value = new Future.value(null);
-
-                            String msg = 'Forgot login details';
-
+                            client.logout();
                             Scaffold.of(context).showSnackBar(new SnackBar(
                               duration: const Duration(seconds: 5),
-                              content: new Text(msg),
+                              content: new Text('Forgot login details'),
                             ));
-                            _drawerSelection = _DrawerSelection.home;
                             Navigator.of(context)
                                 .pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
                           }
@@ -145,7 +152,6 @@ class NavigationDrawer extends StatelessWidget {
           leading: const Icon(Icons.home),
           title: const Text('Home'),
           onTap: () {
-            _drawerSelection = _DrawerSelection.home;
             Navigator.of(context)
                 .pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
           },
@@ -155,7 +161,6 @@ class NavigationDrawer extends StatelessWidget {
             leading: const Icon(Icons.show_chart),
             title: const Text('Hot'),
             onTap: () {
-              _drawerSelection = _DrawerSelection.hot;
               Navigator.of(context).pushNamedAndRemoveUntil(
                   '/hot', (Route<dynamic> route) => false);
             }),
@@ -164,8 +169,7 @@ class NavigationDrawer extends StatelessWidget {
             leading: const Icon(Icons.favorite),
             title: const Text('Favorites'),
             onTap: () async {
-              if (await client.isLoggedIn()) {
-                _drawerSelection = _DrawerSelection.favorites;
+              if (await client.hasLogin()) {
                 Navigator.of(context).pushNamedAndRemoveUntil(
                     '/fav', (Route<dynamic> route) => false);
               } else {
@@ -178,7 +182,6 @@ class NavigationDrawer extends StatelessWidget {
           leading: const Icon(Icons.group),
           title: const Text('Pools'),
           onTap: () {
-            _drawerSelection = _DrawerSelection.pools;
             Navigator.of(context).pushNamedAndRemoveUntil(
                 '/pools', (Route<dynamic> route) => false);
           },

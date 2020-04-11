@@ -8,7 +8,7 @@ import 'persistence.dart' show db;
 
 class SettingsPage extends StatefulWidget {
   @override
-  State createState() => new _SettingsPageState();
+  State createState() => _SettingsPageState();
 }
 
 class _SettingsPageState extends State<SettingsPage> {
@@ -16,23 +16,26 @@ class _SettingsPageState extends State<SettingsPage> {
   String _username;
   bool _showUnsafe = false;
   bool _showWebm = false;
+  bool _refresh = false;
 
   @override
   void initState() {
     super.initState();
     db.host.value.then((a) async => setState(() {
-      _host = a;
-      _showUnsafe = _host == 'e621.net' ? true : false;
-    }));
+          _host = a;
+          _showUnsafe = _host == 'e621.net' ? true : false;
+        }));
     db.username.value.then((a) async => setState(() => _username = a));
     db.showWebm.value.then((a) async => setState(() => _showWebm = a));
   }
 
   Function() _onTapSignOut(BuildContext context) {
     return () async {
+      _refresh = true;
+
       String username = await db.username.value;
-      db.username.value = new Future.value(null);
-      db.apiKey.value = new Future.value(null);
+      db.username.value = Future.value(null);
+      db.apiKey.value = Future.value(null);
 
       String msg = 'Forgot login details';
       if (username != null) {
@@ -40,8 +43,8 @@ class _SettingsPageState extends State<SettingsPage> {
       }
 
       Scaffold.of(context).showSnackBar(new SnackBar(
-        duration: const Duration(seconds: 5),
-        content: new Text(msg),
+        duration: Duration(seconds: 5),
+        content: Text(msg),
       ));
 
       setState(() {
@@ -57,11 +60,24 @@ class _SettingsPageState extends State<SettingsPage> {
         padding: const EdgeInsets.all(10.0),
         child: new ListView(
           children: [
-            new SwitchListTile(
-              title: const Text('Show NSFW posts'),
-              subtitle: new Text(_host ?? ' '),
+            Padding(
+              padding:
+              EdgeInsets.only(left: 72, bottom: 8, top: 8, right: 16),
+              child: Text(
+                'Post options',
+                style: TextStyle(
+                  color: Theme.of(context).accentColor,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+            SwitchListTile(
+              title: Text('Show NSFW posts'),
+              subtitle: Text(_host ?? ' '),
+              secondary: Icon(Icons.warning),
               value: _showUnsafe,
               onChanged: (show) {
+                _refresh = true;
                 setState(() {
                   _showUnsafe = show;
                   if (show) {
@@ -74,44 +90,75 @@ class _SettingsPageState extends State<SettingsPage> {
                 });
               },
             ),
-            new SwitchListTile(
-              title: const Text('Show webm'),
-                subtitle: new Text(_showWebm ? 'Webm are shown' : 'Webm are hidden'),
+            SwitchListTile(
+                title: Text('Show webm'),
+                subtitle:
+                    Text(_showWebm ? 'Webm are shown' : 'Webm are hidden'),
+                secondary: Icon(Icons.play_circle_outline),
                 value: _showWebm,
                 onChanged: (show) {
+                  _refresh = true;
                   setState(() {
                     _showWebm = show;
                     db.showWebm.value = Future.value(show);
                   });
-                }
-            ),
+                }),
+            _username == null
+                ? Container()
+                : Divider(),
+            _username == null
+                ? Container()
+                : Padding(
+                    padding:
+                        EdgeInsets.only(left: 72, bottom: 8, top: 8, right: 16),
+                    child: Text(
+                      'Login options',
+                      style: TextStyle(
+                        color: Theme.of(context).accentColor,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
             FutureBuilder(
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   if (snapshot.data) {
-                    return new ListTile(
-                      title: const Text('Sign out'),
-                      subtitle: new Text(_username ?? ' '),
+                    return ListTile(
+                      title: Text('Sign out'),
+                      subtitle: Text(_username ?? ' '),
+                      leading: Icon(Icons.exit_to_app),
                       onTap: _onTapSignOut(context),
                     );
                   } else {
-                    return new Container();
+                    return Container();
                   }
                 } else {
-                  return new Container();
+                  return Container();
                 }
               },
-              future: client.isLoggedIn(),
+              future: client.hasLogin(),
             ),
           ],
         ),
       );
     }
 
-    return new Scaffold(
-      appBar: new AppBar(title: const Text('Settings')),
-      body: new Builder(builder: bodyWidgetBuilder),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Settings'),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            if (_refresh) {
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                  '/', (Route<dynamic> route) => false);
+            } else {
+              Navigator.pop(context);
+            }
+          },
+        ),
+      ),
+      body: Builder(builder: bodyWidgetBuilder),
     );
   }
 }
-

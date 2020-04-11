@@ -92,14 +92,49 @@ class PoolPreview extends StatelessWidget {
                     parse: <MatchText>[
                       new MatchText(
                         type: ParsedType.CUSTOM,
-                        pattern: r'h[1-6].',
+                        pattern: r'h[1-6]\..*',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
                         renderText: ({String str, String pattern}) {
-                          String display = '';
+                          String display = str;
+                          display = display.replaceAll(RegExp(r'h[1-6]\.'), '');
                           Map<String, String> map = Map<String, String>();
                           map['display'] = display;
-                          map['value'] = display;
+                          map['value'] = str;
                           return map;
                         },
+                      ),
+                      new MatchText(
+                        type: ParsedType.CUSTOM,
+                        pattern: r'\[b\].*\[/b\]',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                        ),
+                        renderText: ({String str, String pattern}) {
+                          String display = str;
+                          display = display.replaceAll('[b]', '');
+                          display = display.replaceAll('[/b]', '');
+                          Map<String, String> map = Map<String, String>();
+                          map['display'] = display;
+                          map['value'] = str;
+                          return map;
+                        }
+                      ),
+                      new MatchText(
+                          type: ParsedType.CUSTOM,
+                          pattern: r'(^|\n)\*+',
+                          renderText: ({String str, String pattern}) {
+                            String display = str;
+                            print(display.allMatches('*').length);
+                            display = '\n' + '  ' * ('*'.allMatches(display).length - 1) + '•';
+                            // display = display.replaceAll('*', '') + ;
+                            // display = '\t' * display.allMatches('*').length + '* ';
+                            Map<String, String> map = Map<String, String>();
+                            map['display'] = display;
+                            map['value'] = str;
+                            return map;
+                          }
                       ),
                       new MatchText(
                         type: ParsedType.CUSTOM,
@@ -154,6 +189,9 @@ class PoolPreview extends StatelessWidget {
                           } else {
                             display = str.replaceAll('https://', '');
                             value = str;
+                          }
+                          if (display[display.length -1] == '/') {
+                            display = display.substring(0, display.length -1);
                           }
                           Map<String, String> map = Map<String, String>();
                           map['display'] = display;
