@@ -109,6 +109,16 @@ class Client {
     return pools;
   }
 
+  Future<Pool> poolById(int poolID) async {
+
+    String body = await _http.get(await _host, '/pools/' + poolID.toString() + '.json', query: {
+      'login': await _username,
+      'api_key': await _apiKey,
+    }).then((response) => response.body);
+
+    return Pool.fromRaw(json.decode(body));
+  }
+
 
   Future<List<Post>> pool(Pool pool, int page) async {
     String filter = "id:";

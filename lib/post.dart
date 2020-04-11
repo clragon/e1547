@@ -13,6 +13,7 @@ import 'package:flutter/services.dart'
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_cache_manager/flutter_cache_manager.dart'
     show DefaultCacheManager;
+import 'package:flutter_parsed_text/flutter_parsed_text.dart';
 import 'package:like_button/like_button.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:photo_view/photo_view.dart';
@@ -99,44 +100,45 @@ class PostPreview extends StatelessWidget {
       );
     }
 
+    Widget imageContainer() {
+      return new Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          new Expanded(
+              child: Container(
+            alignment: (post.file['ext'] == 'gif') ? Alignment.center : null,
+            child: imagePreviewWidget(),
+          )),
+          // postInfoWidget(),
+        ],
+      );
+    }
+
+    Widget playOverlay() {
+      if (post.file['ext'] == 'gif' || post.file['ext'] == 'webm') {
+        return new Positioned(
+            top: 0,
+            right: 0,
+            child: new Container(
+              padding: EdgeInsets.zero,
+              color: Colors.black38,
+              child: const Icon(Icons.play_arrow),
+            ));
+      } else {
+        return new Container();
+      }
+    }
+
     return new GestureDetector(
         onTap: onPressed,
         child: () {
-          Widget image = new Card(
-            child: new Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                new Expanded(
-                    child: Container(
-                  alignment:
-                      (post.file['ext'] == 'gif') ? Alignment.center : null,
-                  child: imagePreviewWidget(),
-                )),
-                // postInfoWidget(),
-              ],
-            ),
-          );
-
-          Widget specialOverlayIcon;
-          if (post.file['ext'] == 'gif' || post.file['ext'] == 'webm') {
-            specialOverlayIcon = new Positioned(
-                top: 4,
-                right: 4,
-                child: new Container(
-                  padding: EdgeInsets.zero,
-                  color: Colors.black38,
-                  child: const Icon(Icons.play_arrow),
-                ));
-          }
-
-          return new Stack(
+          return new Card(
+              child: new Stack(
             children: <Widget>[
-              image,
-              () {
-                return specialOverlayIcon ?? new Container();
-              }(),
+              imageContainer(),
+              playOverlay(),
             ],
-          );
+          ));
         }());
   }
 }
@@ -220,14 +222,20 @@ class PostWidgetScaffold extends StatelessWidget {
         return new Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            new GestureDetector(
-              onTap: () {
-                Navigator.of(context)
-                    .push(new MaterialPageRoute<Null>(builder: (context) {
-                  return new SearchPage(Tagset.parse(artist));
-                }));
-              },
-              child: new Text(artist),
+            new ParsedText(
+              text: artist,
+              parse: <MatchText>[
+                new MatchText(
+                  type: ParsedType.CUSTOM,
+                  pattern: r'([^, ]+)',
+                  onTap: (url) {
+                    Navigator.of(context)
+                        .push(new MaterialPageRoute<Null>(builder: (context) {
+                      return new SearchPage(Tagset.parse(url));
+                    }));
+                  }
+                ),
+              ],
             ),
             new Column(
               crossAxisAlignment: CrossAxisAlignment.end,
@@ -278,8 +286,9 @@ class PostWidgetScaffold extends StatelessWidget {
           likeBuilder: (bool isLiked) {
             return Icon(
               Icons.favorite,
-              color:
-                  isLiked ? Colors.pinkAccent : Theme.of(context).iconTheme.color,
+              color: isLiked
+                  ? Colors.pinkAccent
+                  : Theme.of(context).iconTheme.color,
             );
           },
           onTap: (isLiked) async {

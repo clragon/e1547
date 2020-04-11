@@ -74,9 +74,8 @@ class _PoolsPageState extends State<PoolsPage> {
     int p = _pages.length;
 
     List<Pool> nextPage = [];
-    _pages.add(nextPage);
-
     nextPage.addAll(await client.pools(query, p));
+    _pages.add(nextPage);
     if (this.mounted) {
       setState(() {});
     }
@@ -103,14 +102,11 @@ class _PoolsPageState extends State<PoolsPage> {
 
   Widget _itemBuilder(BuildContext context, int item) {
     Widget preview(List<Pool> page, int pageIndex, int listIndex) {
-      return Container(
-        height: 250,
-        child: new PoolPreview(page[pageIndex], onPressed: () {
-          Navigator.of(context).push(new MaterialPageRoute<Null>(
-            builder: (context) => new PoolPage(page[pageIndex]),
-          ));
-        }),
-      );
+      return new PoolPreview(page[pageIndex], onPressed: () {
+            Navigator.of(context).push(new MaterialPageRoute<Null>(
+              builder: (context) => new PoolPage(page[pageIndex]),
+            ));
+          });
     }
 
     int pools = 0;
@@ -121,7 +117,6 @@ class _PoolsPageState extends State<PoolsPage> {
         return new Container();
       }
       pools += page.length;
-
       if (item >= pools - 6) {
         if (p + 1 >= _pages.length) {
           _loadNextPage();
@@ -142,15 +137,10 @@ class _PoolsPageState extends State<PoolsPage> {
       for (int p = 0; p < _pages.length; p++) {
         List<Pool> page = _pages[p];
         i += page.length;
-
-        if (item == i - 1 - p) {
-          return const StaggeredTile.extent(1, 50.0);
+        if (item <= i) {
+          // this might make everything uncomfortably laggy.
+          return const StaggeredTile.fit(1);
         }
-
-        if (item < i) {
-          return const StaggeredTile.extent(1, 50.0);
-        }
-
         i += 1;
       }
 

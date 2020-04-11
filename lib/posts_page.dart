@@ -151,7 +151,6 @@ class _PostsPageState extends State<PostsPage> {
     int p = _pages.length;
 
     List<Post> nextPage = [];
-    _pages.add(nextPage);
 
     if (_tags == null) {
       _tags = await widget.tags ?? new Tagset.parse('');
@@ -164,6 +163,8 @@ class _PostsPageState extends State<PostsPage> {
     } else {
       nextPage.addAll(await client.pool(widget.pool, p));
     }
+
+    _pages.add(nextPage);
 
     if (this.mounted) {
       setState(() {});
@@ -316,6 +317,21 @@ class _PostsPageState extends State<PostsPage> {
               physics: new BouncingScrollPhysics(),
             );
           },
+        ),
+        new Visibility(
+          visible: (!_loading && _pages[0].length == 0),
+          child: new Center(
+            child: new Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                new Icon(Icons.error),
+                new Padding(
+                  padding: EdgeInsets.all(20),
+                  child: new Text('No posts'),
+                ),
+              ],
+            ),
+          ),
         ),
       ]);
     }

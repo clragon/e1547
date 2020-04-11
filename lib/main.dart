@@ -16,10 +16,18 @@ class Main extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     ThemeData theme = ThemeData(
+      primaryColor: Colors.grey[900],
+      primaryColorLight: Colors.grey[900],
+      primaryColorDark: Colors.grey[900],
+      indicatorColor: Colors.grey[900],
+      canvasColor: Colors.grey[900],
+      cardColor: Colors.grey[850],
+      dialogBackgroundColor: Colors.grey[850],
+      primaryColorBrightness: Brightness.dark,
       brightness: Brightness.dark,
     );
 
-    // FlutterStatusbarcolor.setStatusBarColor();
+    FlutterStatusbarcolor.setStatusBarColor(theme.canvasColor);
     FlutterStatusbarcolor.setNavigationBarColor(theme.canvasColor);
     FlutterStatusbarcolor.setNavigationBarWhiteForeground(
         theme.brightness == Brightness.dark);
