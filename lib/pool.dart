@@ -35,6 +35,128 @@ class PoolPreview extends StatelessWidget {
     this.onPressed,
   }) : super(key: key);
 
+  static Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
+    return new ParsedText(
+      text: msg,
+      style: new TextStyle(
+        color: darkText ? Colors.grey[600] : Colors.grey[300],
+      ),
+      parse: <MatchText>[
+        new MatchText(
+          type: ParsedType.CUSTOM,
+          pattern: r'h[1-6]\..*',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+          ),
+          renderText: ({String str, String pattern}) {
+            String display = str;
+            display = display.replaceAll(RegExp(r'h[1-6]\.'), '');
+            Map<String, String> map = Map<String, String>();
+            map['display'] = display;
+            map['value'] = str;
+            return map;
+          },
+        ),
+        new MatchText(
+            type: ParsedType.CUSTOM,
+            pattern: r'\[b\].*\[/b\]',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
+            renderText: ({String str, String pattern}) {
+              String display = str;
+              display = display.replaceAll('[b]', '');
+              display = display.replaceAll('[/b]', '');
+              Map<String, String> map = Map<String, String>();
+              map['display'] = display;
+              map['value'] = str;
+              return map;
+            }
+        ),
+        new MatchText(
+            type: ParsedType.CUSTOM,
+            pattern: r'(^|\n)\*+',
+            renderText: ({String str, String pattern}) {
+              String display = str;
+              display = '\n' + '  ' * ('*'.allMatches(display).length - 1) + '•';
+              // display = display.replaceAll('*', '') + ;
+              // display = '\t' * display.allMatches('*').length + '* ';
+              Map<String, String> map = Map<String, String>();
+              map['display'] = display;
+              map['value'] = str;
+              return map;
+            }
+        ),
+        new MatchText(
+          type: ParsedType.CUSTOM,
+          pattern: r'(\[\[[\S]*\]\])|({{[\S]*}})',
+          style: new TextStyle(
+            color: Colors.blue[400],
+          ),
+          renderText: ({String str, String pattern}) {
+            String display = str;
+            display = display.replaceAll('{{', '');
+            display = display.replaceAll('}}', '');
+            display = display.replaceAll('[[', '');
+            display = display.replaceAll(']]', '');
+            Map<String, String> map = Map<String, String>();
+            map['display'] = display;
+            map['value'] = display;
+            return map;
+          },
+          onTap: (url) {
+            Navigator.of(context)
+                .push(new MaterialPageRoute<Null>(builder: (context) {
+              return new SearchPage(new Tagset.parse(url));
+            }));
+          },
+        ),
+        new MatchText(
+            type: ParsedType.CUSTOM,
+            pattern: r'(pool {1,2}#[0-9]{3,6})',
+            style: new TextStyle(
+              color: Colors.blue[400],
+            ),
+            onTap: (url) async {
+              Pool p = await client.poolById(int.parse(url.split('#')[1]));
+              Navigator.of(context)
+                  .push(new MaterialPageRoute<Null>(builder: (context) {
+                return new PoolPage(p);
+              }));
+            }
+        ),
+        new MatchText(
+          type: ParsedType.CUSTOM,
+          pattern: r'(".+":)*https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)',
+          style: new TextStyle(
+            color: Colors.blue[400],
+          ),
+          renderText: ({String str, String pattern}) {
+            String display;
+            String value;
+            if (str.contains('"')) {
+              display = str.split('"')[1];
+              value = str.split('":')[1];
+            } else {
+              display = str.replaceAll('https://', '');
+              value = str;
+            }
+            if (display[display.length -1] == '/') {
+              display = display.substring(0, display.length -1);
+            }
+            Map<String, String> map = Map<String, String>();
+            map['display'] = display;
+            map['value'] = value;
+            return map;
+          },
+          onTap: (url) {
+            urlLauncher.launch(url);
+          },
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     Widget title() {
@@ -84,126 +206,7 @@ class PoolPreview extends StatelessWidget {
                     top: 0,
                     bottom: 8,
                   ),
-                  child: new ParsedText(
-                    text: pool.description,
-                    style: new TextStyle(
-                      color: Colors.grey[600],
-                    ),
-                    parse: <MatchText>[
-                      new MatchText(
-                        type: ParsedType.CUSTOM,
-                        pattern: r'h[1-6]\..*',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
-                        renderText: ({String str, String pattern}) {
-                          String display = str;
-                          display = display.replaceAll(RegExp(r'h[1-6]\.'), '');
-                          Map<String, String> map = Map<String, String>();
-                          map['display'] = display;
-                          map['value'] = str;
-                          return map;
-                        },
-                      ),
-                      new MatchText(
-                        type: ParsedType.CUSTOM,
-                        pattern: r'\[b\].*\[/b\]',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                        ),
-                        renderText: ({String str, String pattern}) {
-                          String display = str;
-                          display = display.replaceAll('[b]', '');
-                          display = display.replaceAll('[/b]', '');
-                          Map<String, String> map = Map<String, String>();
-                          map['display'] = display;
-                          map['value'] = str;
-                          return map;
-                        }
-                      ),
-                      new MatchText(
-                          type: ParsedType.CUSTOM,
-                          pattern: r'(^|\n)\*+',
-                          renderText: ({String str, String pattern}) {
-                            String display = str;
-                            print(display.allMatches('*').length);
-                            display = '\n' + '  ' * ('*'.allMatches(display).length - 1) + '•';
-                            // display = display.replaceAll('*', '') + ;
-                            // display = '\t' * display.allMatches('*').length + '* ';
-                            Map<String, String> map = Map<String, String>();
-                            map['display'] = display;
-                            map['value'] = str;
-                            return map;
-                          }
-                      ),
-                      new MatchText(
-                        type: ParsedType.CUSTOM,
-                        pattern: r'(\[\[[\S]*\]\])|({{[\S]*}})',
-                        style: new TextStyle(
-                          color: Colors.blue[400],
-                        ),
-                        renderText: ({String str, String pattern}) {
-                          String display = str;
-                          display = display.replaceAll('{{', '');
-                          display = display.replaceAll('}}', '');
-                          display = display.replaceAll('[[', '');
-                          display = display.replaceAll(']]', '');
-                          Map<String, String> map = Map<String, String>();
-                          map['display'] = display;
-                          map['value'] = display;
-                          return map;
-                        },
-                        onTap: (url) {
-                          Navigator.of(context)
-                              .push(new MaterialPageRoute<Null>(builder: (context) {
-                            return new SearchPage(new Tagset.parse(url));
-                          }));
-                        },
-                      ),
-                      new MatchText(
-                        type: ParsedType.CUSTOM,
-                        pattern: r'(pool {1,2}#[0-9]{3,6})',
-                        style: new TextStyle(
-                          color: Colors.blue[400],
-                        ),
-                        onTap: (url) async {
-                          Pool p = await client.poolById(int.parse(url.split('#')[1]));
-                          Navigator.of(context)
-                              .push(new MaterialPageRoute<Null>(builder: (context) {
-                            return new PoolPage(p);
-                          }));
-                        }
-                      ),
-                      new MatchText(
-                        type: ParsedType.CUSTOM,
-                        pattern: r'(".+":)*https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)',
-                        style: new TextStyle(
-                          color: Colors.blue[400],
-                        ),
-                        renderText: ({String str, String pattern}) {
-                          String display;
-                          String value;
-                          if (str.contains('"')) {
-                            display = str.split('"')[1];
-                            value = str.split('":')[1];
-                          } else {
-                            display = str.replaceAll('https://', '');
-                            value = str;
-                          }
-                          if (display[display.length -1] == '/') {
-                            display = display.substring(0, display.length -1);
-                          }
-                          Map<String, String> map = Map<String, String>();
-                          map['display'] = display;
-                          map['value'] = value;
-                          return map;
-                        },
-                        onTap: (url) {
-                          urlLauncher.launch(url);
-                        },
-                      ),
-                    ],
-                  ),
+                  child: dTextField(context, pool.description, darkText: true),
                 );
               } else {
                 return new Container();

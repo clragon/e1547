@@ -1,15 +1,15 @@
 name: e1547
 description: A mobile app for e621+e926.
 
-version: 1.1.5+9
+version: 1.2.0+10
 
 environment:
   sdk: ">=2.2.2 <3.0.0"
 
 dependencies:
 
+  icon_shadow: ^1.0.1
   flutter_parsed_text: ^1.2.4
-  esys_flutter_share: ^1.0.2
   url_launcher: ^5.4.2
 
   like_button: ^0.2.0

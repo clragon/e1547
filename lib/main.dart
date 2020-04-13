@@ -9,6 +9,7 @@ import 'login_page.dart';
 import 'posts_page.dart';
 import 'appinfo.dart' as appInfo;
 import 'package:flutter/material.dart';
+import 'package:e1547/appinfo.dart';
 
 void main() => runApp(Main());
 
@@ -39,21 +40,21 @@ class Main extends StatelessWidget {
       theme: theme,
       routes: <String, WidgetBuilder>{
         '/': (context) => () {
-          _drawerSelection = _DrawerSelection.home;
-          return new HomePage();
-        }(),
+              _drawerSelection = _DrawerSelection.home;
+              return new HomePage();
+            }(),
         '/hot': (context) => () {
-          _drawerSelection = _DrawerSelection.hot;
-          return new HotPage();
-        }(),
+              _drawerSelection = _DrawerSelection.hot;
+              return new HotPage();
+            }(),
         '/fav': (context) => () {
-          _drawerSelection = _DrawerSelection.favorites;
-          return new FavPage();
-        }(),
+              _drawerSelection = _DrawerSelection.favorites;
+              return new FavPage();
+            }(),
         '/pools': (context) => () {
-          _drawerSelection = _DrawerSelection.pools;
-          return new PoolsPage();
-        }(),
+              _drawerSelection = _DrawerSelection.pools;
+              return new PoolsPage();
+            }(),
         '/login': (context) => new LoginPage(),
         '/settings': (context) => new SettingsPage(),
         '/about': (context) => new AboutPage(),
@@ -89,32 +90,31 @@ class NavigationDrawer extends StatelessWidget {
                   children: <Widget>[
                     new Expanded(
                         child: new Text(
-                          snapshot.data,
-                          style: new TextStyle(fontSize: 16.0),
-                          overflow: TextOverflow.ellipsis,
-                        )),
+                      snapshot.data,
+                      style: new TextStyle(fontSize: 16.0),
+                      overflow: TextOverflow.ellipsis,
+                    )),
                     new IconButton(
                         icon: new Icon(Icons.exit_to_app),
                         onPressed: () {
-                            client.logout();
-                            Scaffold.of(context).showSnackBar(new SnackBar(
-                              duration: const Duration(seconds: 5),
-                              content: new Text('Forgot login details'),
-                            ));
-                            Navigator.of(context)
-                                .pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
-                          }
-                    )
+                          client.logout();
+                          Scaffold.of(context).showSnackBar(new SnackBar(
+                            duration: const Duration(seconds: 5),
+                            content: new Text('Forgot login details'),
+                          ));
+                          Navigator.of(context).pushNamedAndRemoveUntil(
+                              '/', (Route<dynamic> route) => false);
+                        })
                   ],
                 );
               }
             }
             return new Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20),
-                child: new RaisedButton(
-                  child: const Text('LOGIN'),
-                  onPressed: () => Navigator.popAndPushNamed(context, '/login'),
-                ),
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: new RaisedButton(
+                child: const Text('LOGIN'),
+                onPressed: () => Navigator.popAndPushNamed(context, '/login'),
+              ),
             );
           },
         );
@@ -135,10 +135,11 @@ class NavigationDrawer extends StatelessWidget {
                 backgroundImage: const AssetImage('assets/icon/paw.png'),
                 radius: 36.0,
               ),
-              new Expanded(child: Padding(
-                padding: EdgeInsets.all(20),
-                child: userInfoWidget(),
-              ),
+              new Expanded(
+                child: Padding(
+                  padding: EdgeInsets.all(20),
+                  child: userInfoWidget(),
+                ),
               ),
             ],
           )));
@@ -193,7 +194,37 @@ class NavigationDrawer extends StatelessWidget {
           onTap: () => Navigator.popAndPushNamed(context, '/settings'),
         ),
         new ListTile(
-          leading: const Icon(Icons.info),
+          leading: FutureBuilder(
+            builder: (context, snapshot) {
+              if (snapshot.hasData && snapshot.data['version'] != null) {
+                if (int.parse(appVersion.replaceAll('.', '')) <
+                    int.parse(snapshot.data['version'].replaceAll('.', ''))) {
+                  return Stack(
+                    children: <Widget>[
+                      Icon(Icons.update),
+                      Positioned(
+                        bottom: 0,
+                        left: 0,
+                        child: Container(
+                          height: 10,
+                          width: 10,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.red,
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                } else {
+                  return Icon(Icons.info);
+                }
+              } else {
+                return Icon(Icons.info);
+              }
+            },
+            future: getLatestVersion(),
+          ),
           title: const Text('About'),
           onTap: () => Navigator.popAndPushNamed(context, '/about'),
         ),

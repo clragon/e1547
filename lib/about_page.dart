@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart' as url;
 
 import 'http.dart';
+import 'package:flutter/foundation.dart';
 
 class AboutPage extends StatelessWidget {
   @override
@@ -21,18 +22,18 @@ class AboutPage extends StatelessWidget {
         actions: <Widget>[
           new FutureBuilder(
             builder: (context, snapshot) {
-              if (snapshot.hasData) {
+              if (snapshot.hasData && snapshot.data['version'] != null) {
                 return Stack(
                   children: <Widget>[
                     IconButton(
                       icon: Icon(Icons.update),
                       onPressed: () {
-                        String msg;
+                        Widget msg;
                         FlatButton b1;
                         FlatButton b2;
                         if (int.parse(appVersion.replaceAll('.', '')) >=
-                            int.parse(snapshot.data.replaceAll('.', ''))) {
-                          msg = "You have the newest version ($appVersion)";
+                            int.parse(snapshot.data['version'].replaceAll('.', ''))) {
+                          msg = Text("You have the newest version ($appVersion)");
                           b1 = FlatButton(
                             child: Text("GITHUB"),
                             onPressed: () {
@@ -46,8 +47,30 @@ class AboutPage extends StatelessWidget {
                             },
                           );
                         } else {
-                          msg =
-                              'A newer version is available (${snapshot.data})';
+                          msg = Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Text(
+                                  'A newer version is available: ',
+                                  style: TextStyle(
+                                    color: Colors.grey[500],
+                                  ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(top: 8, bottom: 8),
+                                  child: Text(
+                                    snapshot.data['title'] + ' (${snapshot.data['version']}) ',
+                                    style: TextStyle(
+                                      fontSize: 22,
+                                    ),
+                                  ),
+                                ),
+                                Flexible(
+                                  child: Text(snapshot.data['description'].replaceAll('-', '•')),
+                                )
+                              ],
+                            );
                           b1 = FlatButton(
                             child: Text("CANCEL"),
                             onPressed: () {
@@ -67,7 +90,7 @@ class AboutPage extends StatelessWidget {
                           context: context,
                           builder: (context) => AlertDialog(
                             title: Text(appName),
-                            content: Text(msg),
+                            content: msg,
                             actions: [
                               b1,
                               b2,
@@ -78,10 +101,10 @@ class AboutPage extends StatelessWidget {
                     ),
                     () {
                       if (int.parse(appVersion.replaceAll('.', '')) <
-                          int.parse(snapshot.data.replaceAll('.', ''))) {
+                          int.parse(snapshot.data['version'].replaceAll('.', ''))) {
                         return Positioned(
-                          top: 12,
-                          right: 12,
+                          bottom: 20,
+                          left: 12,
                           child: Container(
                             height: 10,
                             width: 10,
@@ -154,10 +177,24 @@ class AboutPage extends StatelessWidget {
   }
 }
 
-Future<String> getLatestVersion() {
-  return new HttpHelper().get(
-      'api.github.com', '/repos/$github/releases/latest',
-      query: {}).then((response) {
-    return json.decode(response.body)['tag_name'];
-  });
+Map githubData;
+
+Future<Map> getLatestVersion() async {
+  if (kReleaseMode) {
+    if (githubData == null) {
+      await new HttpHelper().get(
+          'api.github.com', '/repos/$github/releases/latest',
+          query: {}).then((response) {
+        Map raw = json.decode(response.body);
+        githubData = {
+          'version': raw['tag_name'],
+          'title': raw['name'],
+          'description': raw['body'],
+        };
+      });
+    }
+    return Future.value(githubData);
+  } else {
+    return {};
+  }
 }

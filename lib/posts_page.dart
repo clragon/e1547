@@ -151,6 +151,7 @@ class _PostsPageState extends State<PostsPage> {
     int p = _pages.length;
 
     List<Post> nextPage = [];
+    _pages.add(nextPage);
 
     if (_tags == null) {
       _tags = await widget.tags ?? new Tagset.parse('');
@@ -164,16 +165,17 @@ class _PostsPageState extends State<PostsPage> {
       nextPage.addAll(await client.pool(widget.pool, p));
     }
 
-    _pages.add(nextPage);
     if (this.mounted) {
-      setState(() {});
+      setState(() {
+        _loading = false;
+      });
     }
   }
 
   void _clearPages() {
     setState(() {
-      _pages.clear();
       _loading = true;
+      _pages.clear();
     });
   }
 
@@ -181,7 +183,6 @@ class _PostsPageState extends State<PostsPage> {
     int i = 0;
     if (_pages.isEmpty) {
       _loadNextPage();
-      _loading = false;
     }
     for (List<Post> p in _pages) {
       i += p.length;
@@ -276,6 +277,27 @@ class _PostsPageState extends State<PostsPage> {
                 onPressed: () => Navigator.pop(context),
               ),
         actions: [
+          widget.pool == null ?
+          new Container() :
+          IconButton(
+            icon: Icon(Icons.info_outline),
+            tooltip: 'Info',
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: Text(widget.pool.name),
+                  content: PoolPreview.dTextField(context, widget.pool.description),
+                  actions: [
+                    FlatButton(
+                      child: Text('OK'),
+                      onPressed: () => Navigator.of(context).pop(),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
           new IconButton(
             icon: const Icon(Icons.refresh),
             tooltip: 'Refresh',
@@ -343,6 +365,7 @@ class _PostsPageState extends State<PostsPage> {
         return new Visibility(
           visible: widget.canSearch,
           child: new FloatingActionButton(
+            heroTag: 'searchButton',
             child: _isSearching
                 ? const Icon(Icons.check)
                 : const Icon(Icons.search),
@@ -433,7 +456,7 @@ class TagEntry extends StatelessWidget {
       'Score': 'score',
       'Favorites': 'favcount',
       'Views': 'views',
-      'Hot': 'rank'
+      'Rank': 'rank'
     }[selectedSort];
     assert(orderType != null);
 
@@ -484,7 +507,7 @@ class TagEntry extends StatelessWidget {
         icon: const Icon(Icons.sort),
         tooltip: 'Sort by',
         itemBuilder: _popupMenuButtonItemBuilder(
-          ['New', 'Score', 'Favorites', 'Views', 'Hot'],
+          ['New', 'Score', 'Favorites', 'Views', 'Rank'],
         ),
         onSelected: _onSelectedSortBy,
       );

@@ -74,17 +74,20 @@ class _PoolsPageState extends State<PoolsPage> {
     int p = _pages.length;
 
     List<Pool> nextPage = [];
-    nextPage.addAll(await client.pools(query, p));
     _pages.add(nextPage);
+
+    nextPage.addAll(await client.pools(query, p));
     if (this.mounted) {
-      setState(() {});
+      setState(() {
+        _loading = false;
+      });
     }
   }
 
   void _clearPages() {
     setState(() {
-      _pages.clear();
       _loading = true;
+      _pages.clear();
     });
   }
 
@@ -92,7 +95,6 @@ class _PoolsPageState extends State<PoolsPage> {
     int i = 0;
     if (_pages.isEmpty) {
       _loadNextPage();
-      _loading = false;
     }
     for (List<Pool> p in _pages) {
       i += p.length;
@@ -139,6 +141,8 @@ class _PoolsPageState extends State<PoolsPage> {
         i += page.length;
         if (item <= i) {
           // this might make everything uncomfortably laggy.
+          // it kinda does but I cant find a solution
+          // checking for a description of the pool seems impossible.
           return const StaggeredTile.fit(1);
         }
         i += 1;
@@ -165,7 +169,7 @@ class _PoolsPageState extends State<PoolsPage> {
 
     Widget bodyWidget() {
       return new Stack(children: [
-        new Visibility(
+        Visibility(
           visible: _loading,
           child: new Center(
             child: new Column(
@@ -184,14 +188,14 @@ class _PoolsPageState extends State<PoolsPage> {
             ),
           ),
         ),
-        new StaggeredGridView.countBuilder(
+        StaggeredGridView.countBuilder(
           crossAxisCount: 1,
           itemCount: _itemCount(),
           itemBuilder: _itemBuilder,
           staggeredTileBuilder: _staggeredTileBuilder(),
           physics: new BouncingScrollPhysics(),
         ),
-        new Visibility(
+        Visibility(
           visible: (!_loading && _pages.length == 1 && _pages[0].length == 0),
           child: new Center(
             child: new Column(

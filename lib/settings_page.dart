@@ -64,7 +64,7 @@ class _SettingsPageState extends State<SettingsPage> {
               padding:
               EdgeInsets.only(left: 72, bottom: 8, top: 8, right: 16),
               child: Text(
-                'Post options',
+                'Posts',
                 style: TextStyle(
                   color: Theme.of(context).accentColor,
                   fontSize: 16,
@@ -103,16 +103,12 @@ class _SettingsPageState extends State<SettingsPage> {
                     db.showWebm.value = Future.value(show);
                   });
                 }),
-            _username == null
-                ? Container()
-                : Divider(),
-            _username == null
-                ? Container()
-                : Padding(
+            Divider(),
+            Padding(
                     padding:
                         EdgeInsets.only(left: 72, bottom: 8, top: 8, right: 16),
                     child: Text(
-                      'Login options',
+                      'Account',
                       style: TextStyle(
                         color: Theme.of(context).accentColor,
                         fontSize: 16,
@@ -123,14 +119,18 @@ class _SettingsPageState extends State<SettingsPage> {
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   if (snapshot.data) {
-                    return ListTile(
-                      title: Text('Sign out'),
-                      subtitle: Text(_username ?? ' '),
-                      leading: Icon(Icons.exit_to_app),
-                      onTap: _onTapSignOut(context),
-                    );
+                      return ListTile(
+                        title: Text('Sign out'),
+                        subtitle: Text(_username ?? ' '),
+                        leading: Icon(Icons.exit_to_app),
+                        onTap: _onTapSignOut(context),
+                      );
                   } else {
-                    return Container();
+                    return ListTile(
+                      title: Text('Sign in'),
+                      leading: Icon(Icons.person_add),
+                      onTap: () => Navigator.pushNamed(context, '/login'),
+                    );
                   }
                 } else {
                   return Container();
