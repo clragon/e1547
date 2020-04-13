@@ -2,7 +2,6 @@ import 'package:e1547/main.dart';
 import 'package:e1547/pool.dart';
 import 'package:e1547/posts_page.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 import 'client.dart';
 import 'input.dart';
@@ -133,25 +132,6 @@ class _PoolsPageState extends State<PoolsPage> {
     return null;
   }
 
-  StaggeredTile Function(int) _staggeredTileBuilder() {
-    return (item) {
-      int i = 0;
-      for (int p = 0; p < _pages.length; p++) {
-        List<Pool> page = _pages[p];
-        i += page.length;
-        if (item <= i) {
-          // this might make everything uncomfortably laggy.
-          // it kinda does but I cant find a solution
-          // checking for a description of the pool seems impossible.
-          return const StaggeredTile.fit(1);
-        }
-        i += 1;
-      }
-
-      return null;
-    };
-  }
-
   @override
   Widget build(BuildContext context) {
     AppBar appBar() {
@@ -188,11 +168,9 @@ class _PoolsPageState extends State<PoolsPage> {
             ),
           ),
         ),
-        StaggeredGridView.countBuilder(
-          crossAxisCount: 1,
+        ListView.builder(
           itemCount: _itemCount(),
           itemBuilder: _itemBuilder,
-          staggeredTileBuilder: _staggeredTileBuilder(),
           physics: new BouncingScrollPhysics(),
         ),
         Visibility(

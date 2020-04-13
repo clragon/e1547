@@ -1,5 +1,3 @@
-// TODO: do we really need this?
-
 import 'dart:math' as math show max, min;
 
 import 'package:flutter/material.dart';

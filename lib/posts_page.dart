@@ -5,18 +5,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart' show EdgeInsets;
 import 'package:flutter/services.dart' show Clipboard, ClipboardData;
 import 'package:flutter/widgets.dart';
-
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart'
     show StaggeredGridView, StaggeredTile;
 import 'package:meta/meta.dart' show required;
 
 import 'client.dart' show client;
 import 'input.dart' show LowercaseTextInputFormatter;
+import 'main.dart' show NavigationDrawer;
 import 'persistence.dart' show db;
 import 'post.dart';
 import 'range_dialog.dart' show RangeDialog;
 import 'tag.dart' show Tagset;
-import 'main.dart' show NavigationDrawer;
 
 class HomePage extends StatelessWidget {
   @override
@@ -277,8 +276,7 @@ class _PostsPageState extends State<PostsPage> {
                 onPressed: () => Navigator.pop(context),
               ),
         actions: [
-          widget.pool == null ?
-          new Container() :
+          widget.pool != null && widget.pool.description != '' ?
           IconButton(
             icon: Icon(Icons.info_outline),
             tooltip: 'Info',
@@ -297,7 +295,7 @@ class _PostsPageState extends State<PostsPage> {
                 ),
               );
             },
-          ),
+          ) : new Container(),
           new IconButton(
             icon: const Icon(Icons.refresh),
             tooltip: 'Refresh',

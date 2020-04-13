@@ -1,5 +1,3 @@
-// TODO: this seems important, check and update.
-
 import 'dart:collection' show IterableMixin;
 
 class Tag {

@@ -170,6 +170,22 @@ class Client {
     return await posts(new Tagset.parse(filter), page, limit: 100);
   }
 
+  Future<Post> post(int postID) async {
+    try {
+      String body = await _http
+          .get(await _host, '/posts/' + postID.toString() + '.json', query: {
+        'login': await _username,
+        'api_key': await _apiKey,
+      }).then((response) => response.body);
+
+      Post p = new Post.fromRaw(json.decode(body)['post']);
+      p.isLoggedIn = await hasLogin();
+      return p;
+    } catch (SocketException) {
+      return null;
+    }
+  }
+
   Future<List<Comment>> comments(int postId, int page) async {
     // THIS DOES NOT WORK YET; API BROKEN.
     String body = await _http.get(await _host, '/comments.json', query: {

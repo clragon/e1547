@@ -1,6 +1,3 @@
-// TODO: why do we need this?
-
-
 import 'package:flutter/services.dart'
     show TextInputFormatter, TextEditingValue;
 

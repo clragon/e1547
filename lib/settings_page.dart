@@ -61,8 +61,7 @@ class _SettingsPageState extends State<SettingsPage> {
         child: new ListView(
           children: [
             Padding(
-              padding:
-              EdgeInsets.only(left: 72, bottom: 8, top: 8, right: 16),
+              padding: EdgeInsets.only(left: 72, bottom: 8, top: 8, right: 16),
               child: Text(
                 'Posts',
                 style: TextStyle(
@@ -105,26 +104,25 @@ class _SettingsPageState extends State<SettingsPage> {
                 }),
             Divider(),
             Padding(
-                    padding:
-                        EdgeInsets.only(left: 72, bottom: 8, top: 8, right: 16),
-                    child: Text(
-                      'Account',
-                      style: TextStyle(
-                        color: Theme.of(context).accentColor,
-                        fontSize: 16,
-                      ),
-                    ),
-                  ),
+              padding: EdgeInsets.only(left: 72, bottom: 8, top: 8, right: 16),
+              child: Text(
+                'Account',
+                style: TextStyle(
+                  color: Theme.of(context).accentColor,
+                  fontSize: 16,
+                ),
+              ),
+            ),
             FutureBuilder(
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   if (snapshot.data) {
-                      return ListTile(
-                        title: Text('Sign out'),
-                        subtitle: Text(_username ?? ' '),
-                        leading: Icon(Icons.exit_to_app),
-                        onTap: _onTapSignOut(context),
-                      );
+                    return ListTile(
+                      title: Text('Sign out'),
+                      subtitle: Text(_username ?? ' '),
+                      leading: Icon(Icons.exit_to_app),
+                      onTap: _onTapSignOut(context),
+                    );
                   } else {
                     return ListTile(
                       title: Text('Sign in'),
@@ -143,22 +141,32 @@ class _SettingsPageState extends State<SettingsPage> {
       );
     }
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Settings'),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            if (_refresh) {
-              Navigator.of(context).pushNamedAndRemoveUntil(
-                  '/', (Route<dynamic> route) => false);
-            } else {
-              Navigator.pop(context);
-            }
-          },
+    return WillPopScope(
+      onWillPop: () async {
+        if (_refresh) {
+          Navigator.of(context)
+              .pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
+          return false;
+        } else {
+          return true;
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('Settings'),
+          leading: IconButton(
+              icon: Icon(Icons.arrow_back),
+              onPressed: () {
+                if (_refresh) {
+                  Navigator.of(context).pushNamedAndRemoveUntil(
+                      '/', (Route<dynamic> route) => false);
+                } else {
+                  Navigator.pop(context);
+                }
+              }),
         ),
+        body: Builder(builder: bodyWidgetBuilder),
       ),
-      body: Builder(builder: bodyWidgetBuilder),
     );
   }
 }

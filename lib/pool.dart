@@ -1,3 +1,4 @@
+import 'package:e1547/post.dart';
 import 'package:e1547/posts_page.dart';
 import 'package:e1547/tag.dart';
 import 'package:flutter/cupertino.dart';
@@ -79,8 +80,6 @@ class PoolPreview extends StatelessWidget {
             renderText: ({String str, String pattern}) {
               String display = str;
               display = '\n' + '  ' * ('*'.allMatches(display).length - 1) + '•';
-              // display = display.replaceAll('*', '') + ;
-              // display = '\t' * display.allMatches('*').length + '* ';
               Map<String, String> map = Map<String, String>();
               map['display'] = display;
               map['value'] = str;
@@ -113,7 +112,28 @@ class PoolPreview extends StatelessWidget {
         ),
         new MatchText(
             type: ParsedType.CUSTOM,
-            pattern: r'(pool {1,2}#[0-9]{3,6})',
+            pattern: r'(post #[0-9]{2,7})',
+            style: new TextStyle(
+              color: Colors.blue[400],
+            ),
+            onTap: (url) async {
+              Post p = await client.post(int.parse(url.split('#')[1]));
+              if (!p.isDeleted) {
+                Navigator.of(context)
+                    .push(new MaterialPageRoute<Null>(builder: (context) {
+                  return new PostWidget(p);
+                }));
+              } else {
+                Scaffold.of(context).showSnackBar(new SnackBar(
+                  duration: const Duration(seconds: 1),
+                  content: new Text('Post has been deleted'),
+                ));
+              }
+            }
+        ),
+        new MatchText(
+            type: ParsedType.CUSTOM,
+            pattern: r'(pool #[0-9]{1,5})',
             style: new TextStyle(
               color: Colors.blue[400],
             ),

@@ -27,6 +27,9 @@ class Post {
   int id;
   int score;
   int favorites;
+
+  int parent;
+
   String uploader;
 
   Map file;
@@ -39,11 +42,13 @@ class Post {
   String description;
 
   List<int> pools;
+  List<int> children;
   List<String> artist;
   List<String> sources;
 
   Map tags;
 
+  bool isDeleted;
   bool isFavourite;
   bool isLoggedIn;
 
@@ -54,7 +59,13 @@ class Post {
   Post.fromRaw(this.raw) {
     id = raw['id'] as int;
     favorites = raw['fav_count'] as int;
+
     isFavourite = raw['is_favorited'] as bool;
+    isDeleted = raw['flags']['deleted'] as bool;
+
+    parent = raw["relationships"]['parent_id'] as int ?? -1;
+    children = [];
+    children.addAll(raw["relationships"]['children'].cast<int>());
 
     creation = raw['created_at'];
 
@@ -180,7 +191,7 @@ class PostSwipe extends StatelessWidget {
   }
 }
 
-// Preview of a post that appears in lists of posts. Mostly just the image.
+// Preview of a post that appears in lists of posts. Just the image.
 class PostWidget extends StatelessWidget {
   final Post post;
 
@@ -188,7 +199,7 @@ class PostWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(body: new PostWidgetScaffold(post));
+    return new PostWidgetScaffold(post);
   }
 }
 
@@ -200,8 +211,8 @@ class PostWidgetScaffold extends StatelessWidget {
   Function() _download(BuildContext context) {
     return () async {
       Map<PermissionGroup, PermissionStatus> permissions =
-      await PermissionHandler()
-          .requestPermissions([PermissionGroup.storage]);
+          await PermissionHandler()
+              .requestPermissions([PermissionGroup.storage]);
 
       if (permissions[PermissionGroup.storage] != PermissionStatus.granted) {
         showDialog(
@@ -394,7 +405,6 @@ class PostWidgetScaffold extends StatelessWidget {
                         url.launch(post.url(await db.host.value).toString());
                         break;
                     }
-                    ;
                   },
                 ),
               ],
@@ -602,6 +612,96 @@ class PostWidgetScaffold extends StatelessWidget {
         }
       }
 
+      Widget parentDisplay() {
+        return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: () {
+              List<Widget> items = [];
+              if (post.parent != -1) {
+                items.addAll([
+                  Padding(
+                    padding: EdgeInsets.only(
+                      right: 4,
+                      left: 4,
+                      top: 2,
+                      bottom: 2,
+                    ),
+                    child: Text(
+                      'Parent',
+                      style: TextStyle(
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                  ListTile(
+                    leading: Icon(Icons.supervisor_account),
+                    title: Text(post.parent.toString()),
+                    trailing: Icon(Icons.arrow_right),
+                    onTap: () async {
+                      Post p = await client.post(post.parent);
+                      if (!p.isDeleted) {
+                        Navigator.of(context).push(
+                            new MaterialPageRoute<Null>(builder: (context) {
+                          return new PostWidget(p);
+                        }));
+                      } else {
+                        Scaffold.of(context).showSnackBar(new SnackBar(
+                          duration: const Duration(seconds: 1),
+                          content: new Text('Post has been deleted'),
+                        ));
+                      }
+                    },
+                  ),
+                  Divider(),
+                ]);
+              }
+              if (post.children.length != 0) {
+                items.add(
+                  Padding(
+                    padding: EdgeInsets.only(
+                      right: 4,
+                      left: 4,
+                      top: 2,
+                      bottom: 2,
+                    ),
+                    child: Text(
+                      'Children',
+                      style: TextStyle(
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                );
+                for (int child in post.children) {
+                  items.add(ListTile(
+                    leading: Icon(Icons.supervised_user_circle),
+                    title: Text(child.toString()),
+                    trailing: Icon(Icons.arrow_right),
+                    onTap: () async {
+                      Post p = await client.post(child);
+                      if (!p.isDeleted) {
+                        Navigator.of(context).push(
+                            new MaterialPageRoute<Null>(builder: (context) {
+                          return new PostWidget(p);
+                        }));
+                      } else {
+                        Scaffold.of(context).showSnackBar(new SnackBar(
+                          duration: const Duration(seconds: 1),
+                          content: new Text('Post has been deleted'),
+                        ));
+                      }
+                    },
+                  ));
+                }
+                items.add(Divider());
+              }
+              if (items.length == 0) {
+                items.add(Container());
+              }
+              return items;
+            }());
+      }
+
       Widget tagDisplay() {
         return Column(
           mainAxisSize: MainAxisSize.min,
@@ -772,6 +872,7 @@ class PostWidgetScaffold extends StatelessWidget {
             artistDisplay(),
             descriptionDisplay(),
             likeDisplay(),
+            parentDisplay(),
             poolDisplay(),
             tagDisplay(),
             fileInfoDisplay(),
@@ -805,7 +906,7 @@ class PostWidgetScaffold extends StatelessWidget {
 
     Widget floatingActionButton() {
       return new FloatingActionButton(
-        heroTag: 'postButton',
+        heroTag: null,
         backgroundColor: Theme.of(context).cardColor,
         child: Padding(
             padding: EdgeInsets.only(left: 2),
@@ -846,7 +947,7 @@ class PostWidgetScaffold extends StatelessWidget {
         ],
         physics: BouncingScrollPhysics(),
       ),
-      floatingActionButton: floatingActionButton(),
+      floatingActionButton: post.isLoggedIn ? floatingActionButton() : null,
     );
   }
 
