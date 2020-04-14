@@ -8,6 +8,8 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart'
     show StaggeredGridView, StaggeredTile;
 import 'package:meta/meta.dart' show required;
+import 'package:intl/intl.dart';
+import 'package:share/share.dart';
 
 import 'client.dart' show client;
 import 'input.dart' show LowercaseTextInputFormatter;
@@ -276,26 +278,88 @@ class _PostsPageState extends State<PostsPage> {
                 onPressed: () => Navigator.pop(context),
               ),
         actions: [
-          widget.pool != null && widget.pool.description != '' ?
-          IconButton(
-            icon: Icon(Icons.info_outline),
-            tooltip: 'Info',
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
-                  title: Text(widget.pool.name),
-                  content: PoolPreview.dTextField(context, widget.pool.description),
-                  actions: [
-                    FlatButton(
-                      child: Text('OK'),
-                      onPressed: () => Navigator.of(context).pop(),
-                    ),
-                  ],
-                ),
-              );
-            },
-          ) : new Container(),
+          widget.pool != null
+              ? IconButton(
+                  icon: Icon(Icons.info_outline),
+                  tooltip: 'Info',
+                  onPressed: () {
+                    DateFormat dateFormat = DateFormat('dd.MM.yy hh:mm');
+                    Color textColor = Colors.grey[600];
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: Text('${widget.pool.name.replaceAll('_', ' ')} (#${widget.pool.id})'),
+                        content: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            widget.pool.description != ''
+                                ? PoolPreview.dTextField(
+                                    context, widget.pool.description)
+                                : Text(
+                                    'no description',
+                                    style:
+                                        TextStyle(
+                                            fontStyle: FontStyle.italic),
+                                  ),
+                            Padding(
+                              padding: EdgeInsets.only(top: 16, bottom: 8),
+                              child: Divider(),
+                            ),
+                            // Text('Pool info', style: TextStyle(color: textColor, fontWeight: FontWeight.bold)),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                Text('posts', style: TextStyle(color: textColor),),
+                                Text(widget.pool.postIDs.length.toString(), style: TextStyle(color: textColor),),
+                              ],
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                Text('status', style: TextStyle(color: textColor),),
+                                widget.pool.active
+                                    ? Text('active', style: TextStyle(color: textColor),)
+                                    : Text('inactive', style: TextStyle(color: textColor),),
+                              ],
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                Text('created', style: TextStyle(color: textColor),),
+                                Text(dateFormat.format(
+                                    DateTime.parse(widget.pool.creation)
+                                        .toLocal()), style: TextStyle(color: textColor),),
+                              ],
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                Text('updated', style: TextStyle(color: textColor),),
+                                Text(dateFormat.format(
+                                    DateTime.parse(widget.pool.updated)
+                                        .toLocal()), style: TextStyle(color: textColor),),
+                              ],
+                            ),
+                          ],
+                        ),
+                        actions: [
+                          FlatButton(
+                            child: Text('SHARE'),
+                            onPressed: () async => Share.share(widget.pool
+                                .url(await db.host.value)
+                                .toString()),
+                          ),
+                          FlatButton(
+                            child: Text('OK'),
+                            onPressed: () => Navigator.of(context).pop(),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                )
+              : new Container(),
           new IconButton(
             icon: const Icon(Icons.refresh),
             tooltip: 'Refresh',

@@ -16,6 +16,9 @@ class Pool {
   String description;
   List<int> postIDs = [];
   String creator;
+  String creation;
+  String updated;
+  bool active;
 
   Pool.fromRaw(this.raw) {
     id = raw['id'];
@@ -23,7 +26,13 @@ class Pool {
     description = raw['description'];
     postIDs.addAll(raw['post_ids'].cast<int>());
     creator = raw['creator_name'];
+    active = raw['is_active'] as bool;
+    creation = raw['created_at'];
+    updated = raw['updated_at'];
   }
+
+  Uri url(String host) =>
+      new Uri(scheme: 'https', host: host, path: '/pools/$id');
 }
 
 class PoolPreview extends StatelessWidget {
@@ -36,7 +45,8 @@ class PoolPreview extends StatelessWidget {
     this.onPressed,
   }) : super(key: key);
 
-  static Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
+  static Widget dTextField(BuildContext context, String msg,
+      {bool darkText = false}) {
     return new ParsedText(
       text: msg,
       style: new TextStyle(
@@ -72,20 +82,49 @@ class PoolPreview extends StatelessWidget {
               map['display'] = display;
               map['value'] = str;
               return map;
-            }
-        ),
+            }),
+        new MatchText(
+            type: ParsedType.CUSTOM,
+            pattern: r'\[i\].*\[/i\]',
+            style: TextStyle(
+              fontStyle: FontStyle.italic,
+            ),
+            renderText: ({String str, String pattern}) {
+              String display = str;
+              display = display.replaceAll('[i]', '');
+              display = display.replaceAll('[/i]', '');
+              Map<String, String> map = Map<String, String>();
+              map['display'] = display;
+              map['value'] = str;
+              return map;
+            }),
+        new MatchText(
+            type: ParsedType.CUSTOM,
+            pattern: r'\[s\].*\[/s\]',
+            style: TextStyle(
+              fontStyle: FontStyle.italic,
+            ),
+            renderText: ({String str, String pattern}) {
+              String display = str;
+              display = display.replaceAll('[i]', '');
+              display = display.replaceAll('[/i]', '');
+              Map<String, String> map = Map<String, String>();
+              map['display'] = display;
+              map['value'] = str;
+              return map;
+            }),
         new MatchText(
             type: ParsedType.CUSTOM,
             pattern: r'(^|\n)\*+',
             renderText: ({String str, String pattern}) {
               String display = str;
-              display = '\n' + '  ' * ('*'.allMatches(display).length - 1) + '•';
+              display =
+                  '\n' + '  ' * ('*'.allMatches(display).length - 1) + '•';
               Map<String, String> map = Map<String, String>();
               map['display'] = display;
               map['value'] = str;
               return map;
-            }
-        ),
+            }),
         new MatchText(
           type: ParsedType.CUSTOM,
           pattern: r'(\[\[[\S]*\]\])|({{[\S]*}})',
@@ -118,19 +157,11 @@ class PoolPreview extends StatelessWidget {
             ),
             onTap: (url) async {
               Post p = await client.post(int.parse(url.split('#')[1]));
-              if (!p.isDeleted) {
-                Navigator.of(context)
-                    .push(new MaterialPageRoute<Null>(builder: (context) {
-                  return new PostWidget(p);
-                }));
-              } else {
-                Scaffold.of(context).showSnackBar(new SnackBar(
-                  duration: const Duration(seconds: 1),
-                  content: new Text('Post has been deleted'),
-                ));
-              }
-            }
-        ),
+              Navigator.of(context)
+                  .push(new MaterialPageRoute<Null>(builder: (context) {
+                return new PostWidget(p);
+              }));
+            }),
         new MatchText(
             type: ParsedType.CUSTOM,
             pattern: r'(pool #[0-9]{1,5})',
@@ -143,11 +174,11 @@ class PoolPreview extends StatelessWidget {
                   .push(new MaterialPageRoute<Null>(builder: (context) {
                 return new PoolPage(p);
               }));
-            }
-        ),
+            }),
         new MatchText(
           type: ParsedType.CUSTOM,
-          pattern: r'(".+":)*https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)',
+          pattern:
+              r'(".+":)*https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*[^\s]+)',
           style: new TextStyle(
             color: Colors.blue[400],
           ),
@@ -161,8 +192,8 @@ class PoolPreview extends StatelessWidget {
               display = str.replaceAll('https://', '');
               value = str;
             }
-            if (display[display.length -1] == '/') {
-              display = display.substring(0, display.length -1);
+            if (display[display.length - 1] == '/') {
+              display = display.substring(0, display.length - 1);
             }
             Map<String, String> map = Map<String, String>();
             map['display'] = display;

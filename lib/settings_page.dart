@@ -1,5 +1,6 @@
 import 'dart:async' show Future;
 
+import 'package:e1547/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -144,8 +145,7 @@ class _SettingsPageState extends State<SettingsPage> {
     return WillPopScope(
       onWillPop: () async {
         if (_refresh) {
-          Navigator.of(context)
-              .pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
+          refreshPage(context);
           return false;
         } else {
           return true;
@@ -158,8 +158,7 @@ class _SettingsPageState extends State<SettingsPage> {
               icon: Icon(Icons.arrow_back),
               onPressed: () {
                 if (_refresh) {
-                  Navigator.of(context).pushNamedAndRemoveUntil(
-                      '/', (Route<dynamic> route) => false);
+                  refreshPage(context);
                 } else {
                   Navigator.pop(context);
                 }

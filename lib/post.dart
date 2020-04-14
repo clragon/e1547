@@ -1,4 +1,5 @@
 import 'dart:async' show Future;
+import 'dart:collection';
 import 'dart:io' show File, Platform;
 import 'dart:math';
 
@@ -20,6 +21,7 @@ import 'package:url_launcher/url_launcher.dart' as url;
 import 'client.dart' show client;
 import 'persistence.dart' show db;
 import 'package:icon_shadow/icon_shadow.dart';
+import 'package:share/share.dart';
 
 class Post {
   Map raw;
@@ -74,7 +76,10 @@ class Post {
     hasComments = (raw['comment_count'] as int == 0);
 
     pools = [];
-    pools.addAll(raw['pools'].cast<int>());
+    // somehow, there are sometimes duplicates in there
+    // not my fault, the json just is like that
+    // we remove them with this convenient LinkedHashSet
+    pools.addAll(LinkedHashSet<int>.from(raw['pools'].cast<int>()).toList());
 
     sources = [];
     sources.addAll(raw['sources'].cast<String>());
@@ -208,8 +213,7 @@ class PostWidgetScaffold extends StatelessWidget {
 
   const PostWidgetScaffold(this.post, {Key key}) : super(key: key);
 
-  Function() _download(BuildContext context) {
-    return () async {
+  void _download(BuildContext context) async {
       Map<PermissionGroup, PermissionStatus> permissions =
           await PermissionHandler()
               .requestPermissions([PermissionGroup.storage]);
@@ -226,7 +230,7 @@ class PostWidgetScaffold extends StatelessWidget {
                     child: const Text('TRY AGAIN'),
                     onPressed: () {
                       Navigator.of(context).pop();
-                      _download(context)(); // recursively re-execute
+                      _download(context); // recursively re-execute
                     },
                   ),
                 ],
@@ -260,6 +264,12 @@ class PostWidgetScaffold extends StatelessWidget {
                 return new AlertDialog(
                   title: const Text('Error'),
                   content: new Text(snapshot.error.toString()),
+                  actions: [
+                    new RaisedButton(
+                      child: const Text('OK'),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                  ],
                 );
               }
 
@@ -292,7 +302,6 @@ class PostWidgetScaffold extends StatelessWidget {
           );
         },
       );
-    };
   }
 
   static String formatBytes(int bytes, int decimals) {
@@ -307,33 +316,64 @@ class PostWidgetScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Widget postContentsWidget() {
+      Widget placeholder(Widget child) {
+        return Container(
+          height: 400,
+          child: Center(
+            child: child,
+          ),
+        );
+      }
+
       Widget overlayImageWidget() {
         Widget imageWidget() {
-          return post.file['ext'] == 'swf' || post.file['ext'] == 'webm'
-              ? new Container(
-                  height: 400,
-                  child: Center(
-                      child: const Text(
-                    'Webm support under development. \nTap to open in browser.',
-                    textAlign: TextAlign.center,
-                  )))
-              : new CachedNetworkImage(
-                  imageUrl: post.sample['url'],
-                  placeholder: (context, url) => Container(
-                      height: 400,
-                      child: Center(
-                        child: Container(
-                          height: 26,
-                          width: 26,
-                          child: const CircularProgressIndicator(),
-                        ),
-                      )),
-                  errorWidget: (context, url, error) =>
-                      const Icon(Icons.error_outline),
-                );
+          return () {
+            if (post.isDeleted) {
+              return placeholder(const Text(
+                'Post was deleted',
+                textAlign: TextAlign.center,
+              ));
+            }
+            if (post.file['url'] == null) {
+              return placeholder(Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Padding(
+                    padding: EdgeInsets.all(8),
+                    child: const Text(
+                      'Image unavailable in safe mode',
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  InkWell(
+                    child: Card(
+                        child: Padding(
+                            padding: EdgeInsets.all(8),
+                            child: Text('Settings'))),
+                    onTap: () => Navigator.pushNamed(context, '/settings'),
+                  )
+                ],
+              ));
+            }
+            if (post.file['ext'] == 'swf' || post.file['ext'] == 'webm') {
+              return placeholder(const Text(
+                'Webm support under development. \nTap to open in browser.',
+                textAlign: TextAlign.center,
+              ));
+            }
+            return CachedNetworkImage(
+              imageUrl: post.sample['url'],
+              placeholder: (context, url) => placeholder(Container(
+                height: 26,
+                width: 26,
+                child: const CircularProgressIndicator(),
+              )),
+              errorWidget: (context, url, error) =>
+                  const Icon(Icons.error_outline),
+            );
+          }();
         }
-
-        // return new Center(child: imageWidget());
 
         return Stack(
           children: <Widget>[
@@ -362,7 +402,6 @@ class PostWidgetScaffold extends StatelessWidget {
                   ),
                   itemBuilder: (BuildContext context) =>
                       <PopupMenuEntry<String>>[
-                    /*
                     PopupMenuItem(
                       value: 'share',
                       child: Padding(
@@ -380,14 +419,13 @@ class PostWidgetScaffold extends StatelessWidget {
                         ),
                       ),
                     ),
-                    */
                     PopupMenuItem(
                       //
                       value: 'browser',
                       child: Padding(
                         padding: EdgeInsets.all(4),
                         child: Text(
-                          'Browser',
+                          'Browse',
                           maxLines: 1,
                         ),
                       ),
@@ -396,7 +434,7 @@ class PostWidgetScaffold extends StatelessWidget {
                   onSelected: (value) async {
                     switch (value) {
                       case 'share':
-                        // not implemented
+                        Share.share(post.url(await db.host.value).toString());
                         break;
                       case 'download':
                         _download(context);
@@ -639,17 +677,10 @@ class PostWidgetScaffold extends StatelessWidget {
                     trailing: Icon(Icons.arrow_right),
                     onTap: () async {
                       Post p = await client.post(post.parent);
-                      if (!p.isDeleted) {
-                        Navigator.of(context).push(
-                            new MaterialPageRoute<Null>(builder: (context) {
-                          return new PostWidget(p);
-                        }));
-                      } else {
-                        Scaffold.of(context).showSnackBar(new SnackBar(
-                          duration: const Duration(seconds: 1),
-                          content: new Text('Post has been deleted'),
-                        ));
-                      }
+                      Navigator.of(context)
+                          .push(new MaterialPageRoute<Null>(builder: (context) {
+                        return new PostWidget(p);
+                      }));
                     },
                   ),
                   Divider(),

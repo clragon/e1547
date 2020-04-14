@@ -72,6 +72,19 @@ enum _DrawerSelection {
 
 _DrawerSelection _drawerSelection = _DrawerSelection.home;
 
+
+void refreshPage(BuildContext context) {
+  Map<_DrawerSelection, String> routes = {
+    _DrawerSelection.home: '/',
+    _DrawerSelection.hot: '/hot',
+    _DrawerSelection.favorites: '/fav',
+    _DrawerSelection.pools: '/pools',
+  };
+
+  Navigator.of(context).pushNamedAndRemoveUntil(
+      routes[_drawerSelection], (Route<dynamic> route) => false);
+}
+
 class NavigationDrawer extends StatelessWidget {
   const NavigationDrawer();
 

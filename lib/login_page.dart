@@ -7,6 +7,7 @@ import 'package:url_launcher/url_launcher.dart' as url;
 
 import 'client.dart' show client;
 import 'input.dart' show LowercaseTextInputFormatter;
+import 'main.dart';
 import 'persistence.dart' show db;
 
 class LoginPage extends StatelessWidget {
@@ -132,8 +133,7 @@ class _LoginFormFieldsState extends State<_LoginFormFields> {
         );
 
         if (ok) {
-          Navigator.of(context).pushNamedAndRemoveUntil(
-              '/', (Route<dynamic> route) => false);
+          refreshPage(context);
         } else {
           _authDidJustFail = true;
           form.validate();
