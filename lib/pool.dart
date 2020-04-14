@@ -106,8 +106,8 @@ class PoolPreview extends StatelessWidget {
             ),
             renderText: ({String str, String pattern}) {
               String display = str;
-              display = display.replaceAll('[i]', '');
-              display = display.replaceAll('[/i]', '');
+              display = display.replaceAll('[s]', '');
+              display = display.replaceAll('[/s]', '');
               Map<String, String> map = Map<String, String>();
               map['display'] = display;
               map['value'] = str;
