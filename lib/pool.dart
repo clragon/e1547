@@ -61,7 +61,7 @@ class PoolPreview extends StatelessWidget {
           ),
           renderText: ({String str, String pattern}) {
             String display = str;
-            display = display.replaceAll(RegExp(r'h[1-6]\.'), '');
+            display = display.replaceAll(RegExp(r'h[1-6]\. ?'), '');
             Map<String, String> map = Map<String, String>();
             map['display'] = display;
             map['value'] = str;
@@ -127,7 +127,7 @@ class PoolPreview extends StatelessWidget {
             }),
         new MatchText(
           type: ParsedType.CUSTOM,
-          pattern: r'(\[\[[\S]*\]\])|({{[\S]*}})',
+          pattern: r'(\[\[.*?\]\])|({{.*?}})',
           style: new TextStyle(
             color: Colors.blue[400],
           ),
@@ -137,9 +137,14 @@ class PoolPreview extends StatelessWidget {
             display = display.replaceAll('}}', '');
             display = display.replaceAll('[[', '');
             display = display.replaceAll(']]', '');
+            String value = display;
+            if(display.contains('|')) {
+              value = display.split('|')[0];
+              display = display.split('|')[1];
+            }
             Map<String, String> map = Map<String, String>();
             map['display'] = display;
-            map['value'] = display;
+            map['value'] = value;
             return map;
           },
           onTap: (url) {
@@ -175,6 +180,19 @@ class PoolPreview extends StatelessWidget {
                 return new PoolPage(p);
               }));
             }),
+        new MatchText(
+            type: ParsedType.CUSTOM,
+            pattern: r'(thumb #[0-9]{2,8})',
+            style: new TextStyle(
+              color: Colors.blue[400],
+            ),
+          renderText: ({String str, String pattern}) {
+            Map<String, String> map = Map<String, String>();
+            map['display'] = '';
+            map['value'] = '';
+            return map;
+          },
+        ),
         new MatchText(
           type: ParsedType.CUSTOM,
           pattern:

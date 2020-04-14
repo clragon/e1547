@@ -214,83 +214,55 @@ class PostWidgetScaffold extends StatelessWidget {
   const PostWidgetScaffold(this.post, {Key key}) : super(key: key);
 
   void _download(BuildContext context) async {
-      Map<PermissionGroup, PermissionStatus> permissions =
-          await PermissionHandler()
-              .requestPermissions([PermissionGroup.storage]);
+    Map<PermissionGroup, PermissionStatus> permissions =
+        await PermissionHandler().requestPermissions([PermissionGroup.storage]);
 
-      if (permissions[PermissionGroup.storage] != PermissionStatus.granted) {
-        showDialog(
-            context: context,
-            builder: (context) {
-              return new AlertDialog(
-                content: const Text(
-                    'You need to grant write permission in order to download files.'),
-                actions: [
-                  new RaisedButton(
-                    child: const Text('TRY AGAIN'),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                      _download(context); // recursively re-execute
-                    },
-                  ),
-                ],
-              );
-            });
-        return;
-      }
-
-      String filename =
-          '${post.artist.join(', ')} - ${post.id}.${post.file['ext']}';
-      String filepath =
-          '${Platform.environment['EXTERNAL_STORAGE']}/Download/$filename';
-
-      Future<File> download() async {
-        File file = new File(filepath);
-        if (file.existsSync()) {
-          return file;
-        }
-
-        DefaultCacheManager cm = DefaultCacheManager();
-        return (await cm.getSingleFile(post.file['url'])).copySync(filepath);
-      }
-
+    if (permissions[PermissionGroup.storage] != PermissionStatus.granted) {
       showDialog(
-        context: context,
-        builder: (context) {
-          return new FutureBuilder(
-            future: download(),
-            builder: (context, snapshot) {
-              if (snapshot.hasError) {
-                return new AlertDialog(
-                  title: const Text('Error'),
-                  content: new Text(snapshot.error.toString()),
-                  actions: [
-                    new RaisedButton(
-                      child: const Text('OK'),
-                      onPressed: () => Navigator.pop(context),
-                    ),
-                  ],
-                );
-              }
-
-              bool done = snapshot.connectionState == ConnectionState.done &&
-                  snapshot.hasData;
-
-              return new AlertDialog(
-                title: const Text('Download'),
-                content: new Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    new Padding(
-                      padding: const EdgeInsets.only(bottom: 20.0),
-                      child: done
-                          ? const Icon(Icons.done)
-                          : const CircularProgressIndicator(),
-                    ),
-                    new Text(filename, softWrap: true),
-                  ],
+          context: context,
+          builder: (context) {
+            return new AlertDialog(
+              content: const Text(
+                  'You need to grant write permission in order to download files.'),
+              actions: [
+                new RaisedButton(
+                  child: const Text('TRY AGAIN'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    _download(context); // recursively re-execute
+                  },
                 ),
+              ],
+            );
+          });
+      return;
+    }
+
+    String filename =
+        '${post.artist.join(', ')} - ${post.id}.${post.file['ext']}';
+    String filepath =
+        '${Platform.environment['EXTERNAL_STORAGE']}/Download/$filename';
+
+    Future<File> download() async {
+      File file = new File(filepath);
+      if (file.existsSync()) {
+        return file;
+      }
+
+      DefaultCacheManager cm = DefaultCacheManager();
+      return (await cm.getSingleFile(post.file['url'])).copySync(filepath);
+    }
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return new FutureBuilder(
+          future: download(),
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              return new AlertDialog(
+                title: const Text('Error'),
+                content: new Text(snapshot.error.toString()),
                 actions: [
                   new RaisedButton(
                     child: const Text('OK'),
@@ -298,10 +270,37 @@ class PostWidgetScaffold extends StatelessWidget {
                   ),
                 ],
               );
-            },
-          );
-        },
-      );
+            }
+
+            bool done = snapshot.connectionState == ConnectionState.done &&
+                snapshot.hasData;
+
+            return new AlertDialog(
+              title: const Text('Download'),
+              content: new Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  new Padding(
+                    padding: const EdgeInsets.only(bottom: 20.0),
+                    child: done
+                        ? const Icon(Icons.done)
+                        : const CircularProgressIndicator(),
+                  ),
+                  new Text(filename, softWrap: true),
+                ],
+              ),
+              actions: [
+                new RaisedButton(
+                  child: const Text('OK'),
+                  onPressed: () => Navigator.pop(context),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
   }
 
   static String formatBytes(int bytes, int decimals) {
@@ -357,9 +356,25 @@ class PostWidgetScaffold extends StatelessWidget {
               ));
             }
             if (post.file['ext'] == 'swf' || post.file['ext'] == 'webm') {
-              return placeholder(const Text(
-                'Webm support under development. \nTap to open in browser.',
-                textAlign: TextAlign.center,
+              return placeholder(Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Padding(
+                    padding: EdgeInsets.all(8),
+                    child: const Text(
+                      'Webm support under development',
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  InkWell(
+                    child: Card(
+                        child: Padding(
+                            padding: EdgeInsets.all(8), child: Text('Browse'))),
+                    onTap: () async =>
+                        url.launch(post.url(await db.host.value).toString()),
+                  )
+                ],
               ));
             }
             return CachedNetworkImage(
@@ -409,16 +424,18 @@ class PostWidgetScaffold extends StatelessWidget {
                         child: Text('Share'),
                       ),
                     ),
-                    PopupMenuItem(
-                      value: 'download',
-                      child: Padding(
-                        padding: EdgeInsets.all(4),
-                        child: Text(
-                          'Download',
-                          maxLines: 1,
-                        ),
-                      ),
-                    ),
+                    post.file['url'] != null
+                        ? PopupMenuItem(
+                            value: 'download',
+                            child: Padding(
+                              padding: EdgeInsets.all(4),
+                              child: Text(
+                                'Download',
+                                maxLines: 1,
+                              ),
+                            ),
+                          )
+                        : null,
                     PopupMenuItem(
                       //
                       value: 'browser',
@@ -453,7 +470,9 @@ class PostWidgetScaffold extends StatelessWidget {
       }
 
       return new GestureDetector(
-        onTap: _onTapImage(context, post),
+        onTap: post.file['url'] != null && post.file['ext'] != 'webm'
+            ? _onTapImage(context, post)
+            : null,
         child: overlayImageWidget(),
       );
     }
@@ -782,6 +801,61 @@ class PostWidgetScaffold extends StatelessWidget {
                                             return new SearchPage(
                                                 Tagset.parse(tag));
                                           })),
+                                      onLongPress: () {
+                                        showDialog(
+                                          context: context,
+                                          builder: (context) => AlertDialog(
+                                            title: Text(tag),
+                                            content: new ConstrainedBox(
+                                                child: FutureBuilder(
+                                                  builder: (context, snapshot) {
+                                                    if (snapshot.hasData) {
+                                                      return SingleChildScrollView(
+                                                        scrollDirection:
+                                                            Axis.vertical,
+                                                        child: PoolPreview
+                                                            .dTextField(
+                                                                context,
+                                                                snapshot.data[
+                                                                    'body']),
+                                                        physics:
+                                                            BouncingScrollPhysics(),
+                                                      );
+                                                    } else {
+                                                      return Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .center,
+                                                        children: <Widget>[
+                                                          Padding(
+                                                              padding:
+                                                                  EdgeInsets
+                                                                      .all(16),
+                                                              child: Container(
+                                                                height: 26,
+                                                                width: 26,
+                                                                child:
+                                                                    CircularProgressIndicator(),
+                                                              ))
+                                                        ],
+                                                      );
+                                                    }
+                                                  },
+                                                  future: client.wiki(tag),
+                                                ),
+                                                constraints: new BoxConstraints(
+                                                  maxHeight: 400.0,
+                                                )),
+                                            actions: [
+                                              FlatButton(
+                                                child: Text('OK'),
+                                                onPressed: () =>
+                                                    Navigator.of(context).pop(),
+                                              ),
+                                            ],
+                                          ),
+                                        );
+                                      },
                                       child: Card(
                                           child: Padding(
                                         padding: EdgeInsets.all(4),

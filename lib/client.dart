@@ -186,6 +186,16 @@ class Client {
     }
   }
 
+  Future<Map> wiki(String search) async {
+    String body = await _http.get(await _host, 'wiki_pages.json', query: {
+      'search[title]': search,
+      'login': await _username,
+      'api_key': await _apiKey,
+    }).then((response) => response.body);
+
+    return json.decode(body)[0];
+  }
+
   Future<List<Comment>> comments(int postId, int page) async {
     // THIS DOES NOT WORK YET; API BROKEN.
     String body = await _http.get(await _host, '/comments.json', query: {
