@@ -42,11 +42,28 @@ class Client {
     }
 
     return await _http
-        .delete(await _host, '/favorites/' + post.toString() + 'json', query: {
+        .delete(await _host, '/favorites/' + post.toString() + '.json', query: {
       'login': await _username,
       'api_key': await _apiKey,
     }).then((response) {
-      return response.statusCode == 302;
+      return response.statusCode == 204;
+    });
+  }
+
+  Future<bool> votePost(int post, bool upvote, bool replace) async {
+    if (!await hasLogin()) {
+      return false;
+    }
+
+    return await _http.post(
+        await _host, '/posts/' + post.toString() + '/votes.json',
+        query: {
+          'score': upvote ? 1 : -1,
+          'no_unvote': replace,
+          'login': await _username,
+          'api_key': await _apiKey,
+        }).then((response) {
+      return response.statusCode == 200;
     });
   }
 
@@ -98,7 +115,6 @@ class Client {
   }
 
   Future<List<Post>> posts(Tagset tags, int page, {int limit = 200}) async {
-    try {
       String body = await _http.get(await _host, '/posts.json', query: {
         'tags': tags,
         'page': page + 1,
@@ -123,9 +139,6 @@ class Client {
       }
 
       return posts;
-    } catch (SocketException) {
-      return [];
-    }
   }
 
   Future<List<Pool>> pools(String title, int page) async {
@@ -161,13 +174,13 @@ class Client {
 
   Future<List<Post>> pool(Pool pool, int page) async {
     String filter = "id:";
-    for (int index = 0;
-        index < pool.postIDs.length && index < ((page + 1) * 100);
-        index++) {
-      filter = filter + pool.postIDs[index].toString() + ',';
+    int limit = 99;
+    int lower = (page * limit);
+    for (int index = 0; (index + lower) < pool.postIDs.length && index <= (lower + limit); index++) {
+      filter = filter + pool.postIDs[index + lower].toString() + ',';
     }
     filter = filter + ' ' + 'order:id';
-    return await posts(new Tagset.parse(filter), page, limit: 100);
+    return posts(new Tagset.parse(filter), 0, limit: limit);
   }
 
   Future<Post> post(int postID) async {

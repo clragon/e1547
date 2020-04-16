@@ -23,6 +23,12 @@ import 'persistence.dart' show db;
 import 'package:icon_shadow/icon_shadow.dart';
 import 'package:share/share.dart';
 
+enum _VoteStatus {
+  upvoted,
+  unknown,
+  downvoted,
+}
+
 class Post {
   Map raw;
 
@@ -57,6 +63,8 @@ class Post {
   bool isConditionalDnp;
   bool hasSoundWarning;
   bool hasEpilepsyWarning;
+
+  _VoteStatus voteStatus = _VoteStatus.unknown;
 
   Post.fromRaw(this.raw) {
     id = raw['id'] as int;
@@ -204,7 +212,7 @@ class PostWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new PostWidgetScaffold(post);
+    return Scaffold(body: new PostWidgetScaffold(post));
   }
 }
 
@@ -310,6 +318,38 @@ class PostWidgetScaffold extends StatelessWidget {
     return ((bytes / pow(1024, i)).toStringAsFixed(decimals)) +
         ' ' +
         suffixes[i];
+  }
+
+  Future<void> tryRemoveFav(BuildContext context, Post post) async {
+    if (await client.removeAsFavorite(post.id)) {
+      post.isFavourite = false;
+    } else {
+      Scaffold.of(context).showSnackBar(new SnackBar(
+        duration: const Duration(seconds: 1),
+        content: new Text('Failed to remove post ${post.id} from favorites'),
+      ));
+    }
+  }
+
+  Future<void> tryAddFav(BuildContext context, Post post) async {
+    if (await client.addAsFavorite(post.id)) {
+      post.isFavourite = true;
+    } else {
+      Scaffold.of(context).showSnackBar(new SnackBar(
+        duration: const Duration(seconds: 1),
+        content: new Text('Failed to add post ${post.id} to favorites'),
+      ));
+    }
+  }
+
+  Future<void> tryVote(
+      BuildContext context, Post post, bool upvote, bool replace) async {
+    if (!await client.votePost(post.id, upvote, replace)) {
+      Scaffold.of(context).showSnackBar(new SnackBar(
+        duration: const Duration(seconds: 1),
+        content: new Text('Failed to vote on ${post.id}'),
+      ));
+    }
   }
 
   @override
@@ -564,7 +604,7 @@ class PostWidgetScaffold extends StatelessWidget {
                 Row(
                   children: <Widget>[
                     LikeButton(
-                      isLiked: false,
+                      isLiked: post.voteStatus == _VoteStatus.upvoted,
                       likeBuilder: (bool isLiked) {
                         return Icon(
                           Icons.arrow_upward,
@@ -574,8 +614,17 @@ class PostWidgetScaffold extends StatelessWidget {
                         );
                       },
                       onTap: (isLiked) async {
-                        if (isLiked) {
+                        if (post.isLoggedIn) {
                           return false;
+                          if (isLiked) {
+                            post.voteStatus = _VoteStatus.unknown;
+                            tryVote(context, post, true, false);
+                            return false;
+                          } else {
+                            post.voteStatus = _VoteStatus.upvoted;
+                            tryVote(context, post, true, true);
+                            return true;
+                          }
                         } else {
                           return false;
                         }
@@ -586,7 +635,7 @@ class PostWidgetScaffold extends StatelessWidget {
                       child: Text(post.score.toString()),
                     ),
                     LikeButton(
-                      isLiked: false,
+                      isLiked: post.voteStatus == _VoteStatus.downvoted,
                       circleColor: CircleColor(
                           start: Colors.blue, end: Colors.cyanAccent),
                       bubblesColor: BubblesColor(
@@ -601,8 +650,17 @@ class PostWidgetScaffold extends StatelessWidget {
                         );
                       },
                       onTap: (isLiked) async {
-                        if (isLiked) {
+                        if (post.isLoggedIn) {
                           return false;
+                          if (isLiked) {
+                            post.voteStatus = _VoteStatus.unknown;
+                            tryVote(context, post, false, false);
+                            return false;
+                          } else {
+                            post.voteStatus = _VoteStatus.downvoted;
+                            tryVote(context, post, false, true);
+                            return true;
+                          }
                         } else {
                           return false;
                         }
@@ -729,17 +787,10 @@ class PostWidgetScaffold extends StatelessWidget {
                     trailing: Icon(Icons.arrow_right),
                     onTap: () async {
                       Post p = await client.post(child);
-                      if (!p.isDeleted) {
-                        Navigator.of(context).push(
-                            new MaterialPageRoute<Null>(builder: (context) {
-                          return new PostWidget(p);
-                        }));
-                      } else {
-                        Scaffold.of(context).showSnackBar(new SnackBar(
-                          duration: const Duration(seconds: 1),
-                          content: new Text('Post has been deleted'),
-                        ));
-                      }
+                      Navigator.of(context)
+                          .push(new MaterialPageRoute<Null>(builder: (context) {
+                        return new PostWidget(p);
+                      }));
                     },
                   ));
                 }
@@ -809,18 +860,30 @@ class PostWidgetScaffold extends StatelessWidget {
                                             content: new ConstrainedBox(
                                                 child: FutureBuilder(
                                                   builder: (context, snapshot) {
-                                                    if (snapshot.hasData) {
-                                                      return SingleChildScrollView(
-                                                        scrollDirection:
-                                                            Axis.vertical,
-                                                        child: PoolPreview
-                                                            .dTextField(
-                                                                context,
-                                                                snapshot.data[
-                                                                    'body']),
-                                                        physics:
-                                                            BouncingScrollPhysics(),
-                                                      );
+                                                    if (snapshot
+                                                            .connectionState ==
+                                                        ConnectionState.done) {
+                                                      if (snapshot.hasData) {
+                                                        return SingleChildScrollView(
+                                                          scrollDirection:
+                                                              Axis.vertical,
+                                                          child: PoolPreview
+                                                              .dTextField(
+                                                                  context,
+                                                                  snapshot.data[
+                                                                      'body']),
+                                                          physics:
+                                                              BouncingScrollPhysics(),
+                                                        );
+                                                      } else {
+                                                        return Text(
+                                                          'no wiki entry',
+                                                          style: TextStyle(
+                                                              fontStyle:
+                                                                  FontStyle
+                                                                      .italic),
+                                                        );
+                                                      }
                                                     } else {
                                                       return Row(
                                                         mainAxisAlignment:
@@ -987,28 +1050,6 @@ class PostWidgetScaffold extends StatelessWidget {
       );
     }
 
-    Future<void> tryRemoveFav(BuildContext context, Post post) async {
-      if (await client.removeAsFavorite(post.id)) {
-        post.isFavourite = false;
-      } else {
-        Scaffold.of(context).showSnackBar(new SnackBar(
-          duration: const Duration(seconds: 1),
-          content: new Text('Failed to remove post ${post.id} from favorites'),
-        ));
-      }
-    }
-
-    Future<void> tryAddFav(BuildContext context, Post post) async {
-      if (await client.addAsFavorite(post.id)) {
-        post.isFavourite = true;
-      } else {
-        Scaffold.of(context).showSnackBar(new SnackBar(
-          duration: const Duration(seconds: 1),
-          content: new Text('Failed to add post ${post.id} to favorites'),
-        ));
-      }
-    }
-
     Widget floatingActionButton() {
       return new FloatingActionButton(
         heroTag: null,
@@ -1047,8 +1088,6 @@ class PostWidgetScaffold extends StatelessWidget {
         children: <Widget>[
           postContentsWidget(),
           postMetadataWidget(),
-          // const Divider(height: 8.0),
-          // buttonBarWidget(),
         ],
         physics: BouncingScrollPhysics(),
       ),

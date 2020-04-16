@@ -222,6 +222,27 @@ class PoolPreview extends StatelessWidget {
             urlLauncher.launch(url);
           },
         ),
+        new MatchText(
+          type: ParsedType.CUSTOM,
+          pattern:
+          r'(".+":)([-a-zA-Z0-9()@:%_\+.~#?&//=]*[^\s]+)',
+          style: new TextStyle(
+            color: Colors.blue[400],
+          ),
+          renderText: ({String str, String pattern}) {
+            String display;
+            String value;
+              display = str.split('"')[1];
+              value = str.split('":')[1];
+            if (display[display.length - 1] == '/') {
+              display = display.substring(0, display.length - 1);
+            }
+            Map<String, String> map = Map<String, String>();
+            map['display'] = display;
+            map['value'] = value;
+            return map;
+          },
+        ),
       ],
     );
   }
