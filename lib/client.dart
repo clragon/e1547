@@ -55,14 +55,13 @@ class Client {
       return false;
     }
 
-    return await _http.post(
-        await _host, '/posts/' + post.toString() + '/votes.json',
-        query: {
-          'score': upvote ? 1 : -1,
-          'no_unvote': replace,
-          'login': await _username,
-          'api_key': await _apiKey,
-        }).then((response) {
+    return await _http
+        .post(await _host, '/posts/' + post.toString() + '/votes.json', query: {
+      'score': upvote ? 1 : -1,
+      'no_unvote': replace,
+      'login': await _username,
+      'api_key': await _apiKey,
+    }).then((response) {
       return response.statusCode == 200;
     });
   }
@@ -115,6 +114,7 @@ class Client {
   }
 
   Future<List<Post>> posts(Tagset tags, int page, {int limit = 200}) async {
+    try {
       String body = await _http.get(await _host, '/posts.json', query: {
         'tags': tags,
         'page': page + 1,
@@ -139,6 +139,9 @@ class Client {
       }
 
       return posts;
+    } catch (SocketException) {
+      return [];
+    }
   }
 
   Future<List<Pool>> pools(String title, int page) async {
@@ -176,7 +179,9 @@ class Client {
     String filter = "id:";
     int limit = 99;
     int lower = (page * limit);
-    for (int index = 0; (index + lower) < pool.postIDs.length && index <= (lower + limit); index++) {
+    for (int index = 0;
+        (index + lower) < pool.postIDs.length && index <= (lower + limit);
+        index++) {
       filter = filter + pool.postIDs[index + lower].toString() + ',';
     }
     filter = filter + ' ' + 'order:id';
