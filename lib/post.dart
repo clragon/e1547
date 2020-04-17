@@ -370,12 +370,12 @@ class _PostWidgetState extends State<PostWidget> {
               post.score -= 1;
               post.voteStatus = _VoteStatus.unknown;
             } else {
-              post.score += 1;
+              post.score += 2;
               post.voteStatus = _VoteStatus.upvoted;
             }
           } else {
             if (post.voteStatus == _VoteStatus.upvoted) {
-              post.score -= 1;
+              post.score -= 2;
               post.voteStatus = _VoteStatus.downvoted;
             } else {
               post.score += 1;
@@ -404,7 +404,7 @@ class _PostWidgetState extends State<PostWidget> {
           return () {
             if (widget.post.isDeleted) {
               return placeholder(const Text(
-                'widget.Post was deleted',
+                'Post was deleted',
                 textAlign: TextAlign.center,
               ));
             }
@@ -649,7 +649,7 @@ class _PostWidgetState extends State<PostWidget> {
                         );
                       },
                       onTap: (isLiked) async {
-                        if (widget.post.isLoggedIn) {
+                        if (widget.post.isLoggedIn && !widget.post.isDeleted) {
                           if (isLiked) {
                             tryVote(context, widget.post, true, false);
                             return false;
@@ -682,7 +682,7 @@ class _PostWidgetState extends State<PostWidget> {
                         );
                       },
                       onTap: (isLiked) async {
-                        if (widget.post.isLoggedIn) {
+                        if (widget.post.isLoggedIn && !widget.post.isDeleted) {
                           if (isLiked) {
                             tryVote(context, widget.post, false, false);
 
@@ -985,7 +985,7 @@ class _PostWidgetState extends State<PostWidget> {
                       onPressed: () {
                         Navigator.of(context)
                             .push(new MaterialPageRoute<Null>(builder: (context) {
-                          return new CommentsPage(widget.post);
+                          return new CommentsWidget(widget.post);
                         }));
                       },
                     ),

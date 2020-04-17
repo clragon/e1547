@@ -9,6 +9,7 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart'
     show StaggeredGridView, StaggeredTile;
 import 'package:meta/meta.dart' show required;
 import 'package:intl/intl.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:share/share.dart';
 
 import 'client.dart' show client;
@@ -173,10 +174,14 @@ class _PostsPageState extends State<PostsPage> {
     }
   }
 
+  RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
+
   void _clearPages() {
     setState(() {
       _loading = true;
       _pages.clear();
+      _refreshController.refreshCompleted();
     });
   }
 
@@ -288,7 +293,8 @@ class _PostsPageState extends State<PostsPage> {
                     showDialog(
                       context: context,
                       builder: (context) => AlertDialog(
-                        title: Text('${widget.pool.name.replaceAll('_', ' ')} (#${widget.pool.id})'),
+                        title: Text(
+                            '${widget.pool.name.replaceAll('_', ' ')} (#${widget.pool.id})'),
                         content: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisSize: MainAxisSize.min,
@@ -299,8 +305,7 @@ class _PostsPageState extends State<PostsPage> {
                                 : Text(
                                     'no description',
                                     style:
-                                        TextStyle(
-                                            fontStyle: FontStyle.italic),
+                                        TextStyle(fontStyle: FontStyle.italic),
                                   ),
                             Padding(
                               padding: EdgeInsets.only(top: 16, bottom: 8),
@@ -310,35 +315,62 @@ class _PostsPageState extends State<PostsPage> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: <Widget>[
-                                Text('posts', style: TextStyle(color: textColor),),
-                                Text(widget.pool.postIDs.length.toString(), style: TextStyle(color: textColor),),
+                                Text(
+                                  'posts',
+                                  style: TextStyle(color: textColor),
+                                ),
+                                Text(
+                                  widget.pool.postIDs.length.toString(),
+                                  style: TextStyle(color: textColor),
+                                ),
                               ],
                             ),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: <Widget>[
-                                Text('status', style: TextStyle(color: textColor),),
+                                Text(
+                                  'status',
+                                  style: TextStyle(color: textColor),
+                                ),
                                 widget.pool.active
-                                    ? Text('active', style: TextStyle(color: textColor),)
-                                    : Text('inactive', style: TextStyle(color: textColor),),
+                                    ? Text(
+                                        'active',
+                                        style: TextStyle(color: textColor),
+                                      )
+                                    : Text(
+                                        'inactive',
+                                        style: TextStyle(color: textColor),
+                                      ),
                               ],
                             ),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: <Widget>[
-                                Text('created', style: TextStyle(color: textColor),),
-                                Text(dateFormat.format(
-                                    DateTime.parse(widget.pool.creation)
-                                        .toLocal()), style: TextStyle(color: textColor),),
+                                Text(
+                                  'created',
+                                  style: TextStyle(color: textColor),
+                                ),
+                                Text(
+                                  dateFormat.format(
+                                      DateTime.parse(widget.pool.creation)
+                                          .toLocal()),
+                                  style: TextStyle(color: textColor),
+                                ),
                               ],
                             ),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: <Widget>[
-                                Text('updated', style: TextStyle(color: textColor),),
-                                Text(dateFormat.format(
-                                    DateTime.parse(widget.pool.updated)
-                                        .toLocal()), style: TextStyle(color: textColor),),
+                                Text(
+                                  'updated',
+                                  style: TextStyle(color: textColor),
+                                ),
+                                Text(
+                                  dateFormat.format(
+                                      DateTime.parse(widget.pool.updated)
+                                          .toLocal()),
+                                  style: TextStyle(color: textColor),
+                                ),
                               ],
                             ),
                           ],
@@ -360,11 +392,6 @@ class _PostsPageState extends State<PostsPage> {
                   },
                 )
               : new Container(),
-          new IconButton(
-            icon: const Icon(Icons.refresh),
-            tooltip: 'Refresh',
-            onPressed: _clearPages,
-          ),
         ],
       );
     }
@@ -392,13 +419,18 @@ class _PostsPageState extends State<PostsPage> {
         ),
         new OrientationBuilder(
           builder: (context, orientation) {
-            return new StaggeredGridView.countBuilder(
-              crossAxisCount: orientation == Orientation.portrait ? 2 : 3,
-              itemCount: _itemCount(),
-              itemBuilder: _itemBuilder,
-              staggeredTileBuilder: _staggeredTileBuilder(),
-              physics: new BouncingScrollPhysics(),
-            );
+            return SmartRefresher(
+                controller: _refreshController,
+                physics: BouncingScrollPhysics(),
+                header: ClassicHeader(),
+                onRefresh: _clearPages,
+                child: new StaggeredGridView.countBuilder(
+                  crossAxisCount: orientation == Orientation.portrait ? 2 : 3,
+                  itemCount: _itemCount(),
+                  itemBuilder: _itemBuilder,
+                  staggeredTileBuilder: _staggeredTileBuilder(),
+                  physics: BouncingScrollPhysics(),
+                ));
           },
         ),
         new Visibility(
