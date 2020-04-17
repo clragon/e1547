@@ -1,7 +1,6 @@
 import 'package:e1547/post.dart';
 import 'package:e1547/posts_page.dart';
 import 'package:e1547/tag.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_parsed_text/flutter_parsed_text.dart';
 import 'package:url_launcher/url_launcher.dart' as urlLauncher;
@@ -47,7 +46,68 @@ class PoolPreview extends StatelessWidget {
 
   static Widget dTextField(BuildContext context, String msg,
       {bool darkText = false}) {
-    return new ParsedText(
+    RegExp quoteMatch = RegExp(
+      r'\[quote\]((.)*?)\[/quote\]',
+      dotAll: true,
+    );
+
+    List<Widget> resolve(List<Widget> parts) {
+      List<Widget> newParts = [];
+      for (Widget part in parts) {
+        if (part is Text) {
+          if (quoteMatch.hasMatch(part.data)) {
+            for (Match match in quoteMatch.allMatches(part.data)) {
+              int last = 0;
+              if (match.start != 0) {
+                newParts.addAll(resolve([Text(part.data.substring(0, match.start))]));
+                last = match.start;
+              }
+              String child = part.data.substring(last, match.end);
+              child = child.replaceAllMapped(RegExp(r'[\s\n]*\[\/*quote\][\s\n]*'), (match) { return ''; });
+
+              newParts.add(
+                Card(
+                    color: Colors.grey[900],
+                    child: Padding(
+                      padding: EdgeInsets.all(8),
+                      child: Row(
+                        children: [
+                          Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: resolve([Text(child)]),
+                          ),
+                        ),
+                        ]
+                      ),
+                    ),
+                ),
+              );
+              if (match.end != part.data.length) {
+                newParts.addAll(resolve([Text('\n' + part.data.substring(match.end, part.data.length).replaceAllMapped(RegExp(r'[\s\n]{2}'), (match) { return ''; }))]));
+              }
+            }
+          } else {
+            newParts.add(_parsedTextField(context, part.data, darkText: darkText),);
+          }
+        } else {
+          newParts.add(part);
+        }
+      }
+      return newParts;
+    }
+
+    List<Widget> parts = resolve([Text(msg)]);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: parts,
+    );
+  }
+
+  static Widget _parsedTextField(BuildContext context, String msg,
+      {bool darkText = false}) {
+    return ParsedText(
       text: msg,
       style: new TextStyle(
         color: darkText ? Colors.grey[600] : Colors.grey[300],
@@ -138,7 +198,7 @@ class PoolPreview extends StatelessWidget {
             display = display.replaceAll('[[', '');
             display = display.replaceAll(']]', '');
             String value = display;
-            if(display.contains('|')) {
+            if (display.contains('|')) {
               value = display.split('|')[0];
               display = display.split('|')[1];
             }
@@ -181,11 +241,11 @@ class PoolPreview extends StatelessWidget {
               }));
             }),
         new MatchText(
-            type: ParsedType.CUSTOM,
-            pattern: r'(thumb #[0-9]{2,8})',
-            style: new TextStyle(
-              color: Colors.blue[400],
-            ),
+          type: ParsedType.CUSTOM,
+          pattern: r'(thumb #[0-9]{2,8})',
+          style: new TextStyle(
+            color: Colors.blue[400],
+          ),
           renderText: ({String str, String pattern}) {
             Map<String, String> map = Map<String, String>();
             map['display'] = '';
@@ -224,16 +284,15 @@ class PoolPreview extends StatelessWidget {
         ),
         new MatchText(
           type: ParsedType.CUSTOM,
-          pattern:
-          r'(".+":)([-a-zA-Z0-9()@:%_\+.~#?&//=]*[^\s]+)',
+          pattern: r'(".+":)([-a-zA-Z0-9()@:%_\+.~#?&//=]*[^\s]+)',
           style: new TextStyle(
             color: Colors.blue[400],
           ),
           renderText: ({String str, String pattern}) {
             String display;
             String value;
-              display = str.split('"')[1];
-              value = str.split('":')[1];
+            display = str.split('"')[1];
+            value = str.split('":')[1];
             if (display[display.length - 1] == '/') {
               display = display.substring(0, display.length - 1);
             }

@@ -5,6 +5,7 @@ import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart'
     show CachedNetworkImage, CachedNetworkImageProvider;
+import 'package:e1547/comment.dart';
 import 'package:e1547/pool.dart';
 import 'package:e1547/posts_page.dart';
 import 'package:e1547/tag.dart';
@@ -46,7 +47,7 @@ class Post {
 
   String rating;
   String creation;
-  bool hasComments;
+  int comments;
   String description;
 
   List<int> pools;
@@ -57,7 +58,7 @@ class Post {
   Map tags;
 
   bool isDeleted;
-  bool isFavourite;
+  bool isFavorite;
   bool isLoggedIn;
 
   bool isConditionalDnp;
@@ -70,7 +71,7 @@ class Post {
     id = raw['id'] as int;
     favorites = raw['fav_count'] as int;
 
-    isFavourite = raw['is_favorited'] as bool;
+    isFavorite = raw['is_favorited'] as bool;
     isDeleted = raw['flags']['deleted'] as bool;
 
     parent = raw["relationships"]['parent_id'] as int ?? -1;
@@ -81,7 +82,7 @@ class Post {
 
     description = raw['description'] as String;
     rating = (raw['rating'] as String).toUpperCase();
-    hasComments = (raw['comment_count'] as int == 0);
+    comments = (raw['comment_count'] as int);
 
     pools = [];
     // somehow, there are sometimes duplicates in there
@@ -205,21 +206,19 @@ class PostSwipe extends StatelessWidget {
 }
 
 // Preview of a post that appears in lists of posts. Just the image.
-class PostWidget extends StatelessWidget {
+class PostWidget extends StatefulWidget {
   final Post post;
 
-  const PostWidget(this.post, {Key key}) : super(key: key);
+  PostWidget(this.post);
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(body: new PostWidgetScaffold(post));
+  State<StatefulWidget> createState() {
+    return new _PostWidgetState();
   }
 }
 
-class PostWidgetScaffold extends StatelessWidget {
-  final Post post;
 
-  const PostWidgetScaffold(this.post, {Key key}) : super(key: key);
+class _PostWidgetState extends State<PostWidget> {
 
   void _download(BuildContext context) async {
     Map<PermissionGroup, PermissionStatus> permissions =
@@ -247,7 +246,7 @@ class PostWidgetScaffold extends StatelessWidget {
     }
 
     String filename =
-        '${post.artist.join(', ')} - ${post.id}.${post.file['ext']}';
+        '${widget.post.artist.join(', ')} - ${widget.post.id}.${widget.post.file['ext']}';
     String filepath =
         '${Platform.environment['EXTERNAL_STORAGE']}/Download/$filename';
 
@@ -258,7 +257,7 @@ class PostWidgetScaffold extends StatelessWidget {
       }
 
       DefaultCacheManager cm = DefaultCacheManager();
-      return (await cm.getSingleFile(post.file['url'])).copySync(filepath);
+      return (await cm.getSingleFile(widget.post.file['url'])).copySync(filepath);
     }
 
     showDialog(
@@ -322,22 +321,28 @@ class PostWidgetScaffold extends StatelessWidget {
 
   Future<void> tryRemoveFav(BuildContext context, Post post) async {
     if (await client.removeAsFavorite(post.id)) {
-      post.isFavourite = false;
+      setState(() {
+        post.isFavorite = false;
+        post.favorites -= 1;
+      });
     } else {
       Scaffold.of(context).showSnackBar(new SnackBar(
         duration: const Duration(seconds: 1),
-        content: new Text('Failed to remove post ${post.id} from favorites'),
+        content: new Text('Failed to remove widget.post ${post.id} from favorites'),
       ));
     }
   }
 
   Future<void> tryAddFav(BuildContext context, Post post) async {
     if (await client.addAsFavorite(post.id)) {
-      post.isFavourite = true;
+      setState(() {
+        post.isFavorite = true;
+        post.favorites += 1;
+      });
     } else {
       Scaffold.of(context).showSnackBar(new SnackBar(
         duration: const Duration(seconds: 1),
-        content: new Text('Failed to add post ${post.id} to favorites'),
+        content: new Text('Failed to add widget.post ${post.id} to favorites'),
       ));
     }
   }
@@ -349,6 +354,36 @@ class PostWidgetScaffold extends StatelessWidget {
         duration: const Duration(seconds: 1),
         content: new Text('Failed to vote on ${post.id}'),
       ));
+    } else {
+      setState(() {
+        if (post.voteStatus == _VoteStatus.unknown) {
+          if (upvote) {
+            post.score += 1;
+            post.voteStatus = _VoteStatus.upvoted;
+          } else {
+            post.score -= 1;
+            post.voteStatus = _VoteStatus.downvoted;
+          }
+        } else {
+          if (upvote) {
+            if (post.voteStatus == _VoteStatus.upvoted) {
+              post.score -= 1;
+              post.voteStatus = _VoteStatus.unknown;
+            } else {
+              post.score += 1;
+              post.voteStatus = _VoteStatus.upvoted;
+            }
+          } else {
+            if (post.voteStatus == _VoteStatus.upvoted) {
+              post.score -= 1;
+              post.voteStatus = _VoteStatus.downvoted;
+            } else {
+              post.score += 1;
+              post.voteStatus = _VoteStatus.unknown;
+            }
+          }
+        }
+      });
     }
   }
 
@@ -367,13 +402,13 @@ class PostWidgetScaffold extends StatelessWidget {
       Widget overlayImageWidget() {
         Widget imageWidget() {
           return () {
-            if (post.isDeleted) {
+            if (widget.post.isDeleted) {
               return placeholder(const Text(
-                'Post was deleted',
+                'widget.Post was deleted',
                 textAlign: TextAlign.center,
               ));
             }
-            if (post.file['url'] == null) {
+            if (widget.post.file['url'] == null) {
               return placeholder(Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -395,7 +430,7 @@ class PostWidgetScaffold extends StatelessWidget {
                 ],
               ));
             }
-            if (post.file['ext'] == 'swf' || post.file['ext'] == 'webm') {
+            if (widget.post.file['ext'] == 'swf' || widget.post.file['ext'] == 'webm') {
               return placeholder(Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -412,13 +447,13 @@ class PostWidgetScaffold extends StatelessWidget {
                         child: Padding(
                             padding: EdgeInsets.all(8), child: Text('Browse'))),
                     onTap: () async =>
-                        url.launch(post.url(await db.host.value).toString()),
+                        url.launch(widget.post.url(await db.host.value).toString()),
                   )
                 ],
               ));
             }
             return CachedNetworkImage(
-              imageUrl: post.sample['url'],
+              imageUrl: widget.post.sample['url'],
               placeholder: (context, url) => placeholder(Container(
                 height: 26,
                 width: 26,
@@ -464,7 +499,7 @@ class PostWidgetScaffold extends StatelessWidget {
                         child: Text('Share'),
                       ),
                     ),
-                    post.file['url'] != null
+                    widget.post.file['url'] != null
                         ? PopupMenuItem(
                             value: 'download',
                             child: Padding(
@@ -491,13 +526,13 @@ class PostWidgetScaffold extends StatelessWidget {
                   onSelected: (value) async {
                     switch (value) {
                       case 'share':
-                        Share.share(post.url(await db.host.value).toString());
+                        Share.share(widget.post.url(await db.host.value).toString());
                         break;
                       case 'download':
                         _download(context);
                         break;
                       case 'browser':
-                        url.launch(post.url(await db.host.value).toString());
+                        url.launch(widget.post.url(await db.host.value).toString());
                         break;
                     }
                   },
@@ -510,8 +545,8 @@ class PostWidgetScaffold extends StatelessWidget {
       }
 
       return new GestureDetector(
-        onTap: post.file['url'] != null && post.file['ext'] != 'webm'
-            ? _onTapImage(context, post)
+        onTap: widget.post.file['url'] != null && widget.post.file['ext'] != 'webm'
+            ? _onTapImage(context, widget.post)
             : null,
         child: overlayImageWidget(),
       );
@@ -532,7 +567,7 @@ class PostWidgetScaffold extends StatelessWidget {
                       child: new Icon(Icons.account_circle),
                     ),
                     new ParsedText(
-                      text: post.artist.join(',\n'),
+                      text: widget.post.artist.join(',\n'),
                       style: TextStyle(
                         fontSize: 16,
                       ),
@@ -554,10 +589,10 @@ class PostWidgetScaffold extends StatelessWidget {
                 new Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    new Text('#${post.id}'),
+                    new Text('#${widget.post.id}'),
                     new Row(children: [
                       new Icon(Icons.person, size: 14.0),
-                      new Text(' ${post.uploader}'),
+                      new Text(' ${widget.post.uploader}'),
                     ]),
                   ],
                 ),
@@ -569,7 +604,7 @@ class PostWidgetScaffold extends StatelessWidget {
       }
 
       Widget descriptionDisplay() {
-        if (post.description != '') {
+        if (widget.post.description != '') {
           return Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
@@ -581,7 +616,7 @@ class PostWidgetScaffold extends StatelessWidget {
                       child: Padding(
                         padding: EdgeInsets.all(16),
                         child:
-                            PoolPreview.dTextField(context, post.description),
+                            PoolPreview.dTextField(context, widget.post.description),
                       ),
                     ),
                   )
@@ -604,7 +639,7 @@ class PostWidgetScaffold extends StatelessWidget {
                 Row(
                   children: <Widget>[
                     LikeButton(
-                      isLiked: post.voteStatus == _VoteStatus.upvoted,
+                      isLiked: widget.post.voteStatus == _VoteStatus.upvoted,
                       likeBuilder: (bool isLiked) {
                         return Icon(
                           Icons.arrow_upward,
@@ -614,15 +649,12 @@ class PostWidgetScaffold extends StatelessWidget {
                         );
                       },
                       onTap: (isLiked) async {
-                        if (post.isLoggedIn) {
-                          return false;
+                        if (widget.post.isLoggedIn) {
                           if (isLiked) {
-                            post.voteStatus = _VoteStatus.unknown;
-                            tryVote(context, post, true, false);
+                            tryVote(context, widget.post, true, false);
                             return false;
                           } else {
-                            post.voteStatus = _VoteStatus.upvoted;
-                            tryVote(context, post, true, true);
+                            tryVote(context, widget.post, true, true);
                             return true;
                           }
                         } else {
@@ -632,10 +664,10 @@ class PostWidgetScaffold extends StatelessWidget {
                     ),
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 8),
-                      child: Text(post.score.toString()),
+                      child: Text(widget.post.score.toString()),
                     ),
                     LikeButton(
-                      isLiked: post.voteStatus == _VoteStatus.downvoted,
+                      isLiked: widget.post.voteStatus == _VoteStatus.downvoted,
                       circleColor: CircleColor(
                           start: Colors.blue, end: Colors.cyanAccent),
                       bubblesColor: BubblesColor(
@@ -650,15 +682,13 @@ class PostWidgetScaffold extends StatelessWidget {
                         );
                       },
                       onTap: (isLiked) async {
-                        if (post.isLoggedIn) {
-                          return false;
+                        if (widget.post.isLoggedIn) {
                           if (isLiked) {
-                            post.voteStatus = _VoteStatus.unknown;
-                            tryVote(context, post, false, false);
+                            tryVote(context, widget.post, false, false);
+
                             return false;
                           } else {
-                            post.voteStatus = _VoteStatus.downvoted;
-                            tryVote(context, post, false, true);
+                            tryVote(context, widget.post, false, true);
                             return true;
                           }
                         } else {
@@ -670,7 +700,7 @@ class PostWidgetScaffold extends StatelessWidget {
                 ),
                 Row(
                   children: <Widget>[
-                    Text(post.favorites.toString()),
+                    Text(widget.post.favorites.toString()),
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 8),
                       child: Icon(Icons.favorite),
@@ -685,7 +715,7 @@ class PostWidgetScaffold extends StatelessWidget {
       }
 
       Widget poolDisplay() {
-        if (post.pools.length != 0) {
+        if (widget.post.pools.length != 0) {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: () {
@@ -704,7 +734,7 @@ class PostWidgetScaffold extends StatelessWidget {
                   ),
                 ),
               ));
-              for (int pool in post.pools) {
+              for (int pool in widget.post.pools) {
                 items.add(ListTile(
                   leading: Icon(Icons.group),
                   title: Text(pool.toString()),
@@ -732,7 +762,7 @@ class PostWidgetScaffold extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: () {
               List<Widget> items = [];
-              if (post.parent != -1) {
+              if (widget.post.parent != -1) {
                 items.addAll([
                   Padding(
                     padding: EdgeInsets.only(
@@ -750,10 +780,10 @@ class PostWidgetScaffold extends StatelessWidget {
                   ),
                   ListTile(
                     leading: Icon(Icons.supervisor_account),
-                    title: Text(post.parent.toString()),
+                    title: Text(widget.post.parent.toString()),
                     trailing: Icon(Icons.arrow_right),
                     onTap: () async {
-                      Post p = await client.post(post.parent);
+                      Post p = await client.post(widget.post.parent);
                       Navigator.of(context)
                           .push(new MaterialPageRoute<Null>(builder: (context) {
                         return new PostWidget(p);
@@ -763,7 +793,7 @@ class PostWidgetScaffold extends StatelessWidget {
                   Divider(),
                 ]);
               }
-              if (post.children.length != 0) {
+              if (widget.post.children.length != 0) {
                 items.add(
                   Padding(
                     padding: EdgeInsets.only(
@@ -780,7 +810,7 @@ class PostWidgetScaffold extends StatelessWidget {
                     ),
                   ),
                 );
-                for (int child in post.children) {
+                for (int child in widget.post.children) {
                   items.add(ListTile(
                     leading: Icon(Icons.supervised_user_circle),
                     title: Text(child.toString()),
@@ -818,7 +848,7 @@ class PostWidgetScaffold extends StatelessWidget {
               'meta'
             ];
             for (String tagSet in tagSets) {
-              if (post.tags[tagSet].length != 0) {
+              if (widget.post.tags[tagSet].length != 0) {
                 columns.add(Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
@@ -843,7 +873,7 @@ class PostWidgetScaffold extends StatelessWidget {
                             direction: Axis.horizontal,
                             children: () {
                               List<Widget> tags = [];
-                              for (String tag in post.tags[tagSet]) {
+                              for (String tag in widget.post.tags[tagSet]) {
                                 tags.add(
                                   InkWell(
                                       onTap: () => Navigator.of(context).push(
@@ -871,7 +901,8 @@ class PostWidgetScaffold extends StatelessWidget {
                                                               .dTextField(
                                                                   context,
                                                                   snapshot.data[
-                                                                      'body']),
+                                                                          0]
+                                                                      ['body']),
                                                           physics:
                                                               BouncingScrollPhysics(),
                                                         );
@@ -904,7 +935,7 @@ class PostWidgetScaffold extends StatelessWidget {
                                                       );
                                                     }
                                                   },
-                                                  future: client.wiki(tag),
+                                                  future: client.wiki(tag, 0),
                                                 ),
                                                 constraints: new BoxConstraints(
                                                   maxHeight: 400.0,
@@ -942,6 +973,33 @@ class PostWidgetScaffold extends StatelessWidget {
         );
       }
 
+      Widget commentDisplay() {
+        if (widget.post.comments > 0) {
+          return Column(
+            children: <Widget>[
+              Row(
+                children: <Widget>[
+                  Expanded(
+                    child: OutlineButton(
+                      child: Text('COMMENTS (${widget.post.comments})'),
+                      onPressed: () {
+                        Navigator.of(context)
+                            .push(new MaterialPageRoute<Null>(builder: (context) {
+                          return new CommentsPage(widget.post);
+                        }));
+                      },
+                    ),
+                  )
+                ],
+              ),
+              Divider(),
+            ],
+          );
+        } else {
+          return Container();
+        }
+      }
+
       Widget fileInfoDisplay() {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -970,8 +1028,8 @@ class PostWidgetScaffold extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Text(DateTime.parse(post.creation).toLocal().toString()),
-                  Text('${post.file['width']} x ${post.file['height']}')
+                  Text(DateTime.parse(widget.post.creation).toLocal().toString()),
+                  Text('${widget.post.file['width']} x ${widget.post.file['height']}')
                 ],
               ),
             ),
@@ -985,8 +1043,8 @@ class PostWidgetScaffold extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Text(formatBytes(post.file['size'], 1)),
-                  Text(post.file['ext']),
+                  Text(formatBytes(widget.post.file['size'], 1)),
+                  Text(widget.post.file['ext']),
                 ],
               ),
             ),
@@ -1022,7 +1080,7 @@ class PostWidgetScaffold extends StatelessWidget {
               ),
               child: PoolPreview.dTextField(context, () {
                 String msg = '';
-                for (String source in post.sources) {
+                for (String source in widget.post.sources) {
                   msg = msg + source + '\n';
                 }
                 return msg;
@@ -1040,6 +1098,7 @@ class PostWidgetScaffold extends StatelessWidget {
             artistDisplay(),
             descriptionDisplay(),
             likeDisplay(),
+            commentDisplay(),
             parentDisplay(),
             poolDisplay(),
             tagDisplay(),
@@ -1050,14 +1109,14 @@ class PostWidgetScaffold extends StatelessWidget {
       );
     }
 
-    Widget floatingActionButton() {
+    Widget floatingActionButton(BuildContext context) {
       return new FloatingActionButton(
         heroTag: null,
         backgroundColor: Theme.of(context).cardColor,
         child: Padding(
             padding: EdgeInsets.only(left: 2),
             child: LikeButton(
-              isLiked: post.isFavourite,
+              isLiked: widget.post.isFavorite,
               circleColor: CircleColor(start: Colors.pink, end: Colors.red),
               bubblesColor: BubblesColor(
                   dotPrimaryColor: Colors.pink, dotSecondaryColor: Colors.red),
@@ -1071,10 +1130,10 @@ class PostWidgetScaffold extends StatelessWidget {
               },
               onTap: (isLiked) async {
                 if (isLiked) {
-                  tryRemoveFav(context, post);
+                  tryRemoveFav(context, widget.post);
                   return false;
                 } else {
-                  tryAddFav(context, post);
+                  tryAddFav(context, widget.post);
                   return true;
                 }
               },
@@ -1091,7 +1150,11 @@ class PostWidgetScaffold extends StatelessWidget {
         ],
         physics: BouncingScrollPhysics(),
       ),
-      floatingActionButton: post.isLoggedIn ? floatingActionButton() : null,
+      floatingActionButton: widget.post.isLoggedIn ? Builder(
+        builder: (context) {
+          return floatingActionButton(context);
+        },
+      ) : null,
     );
   }
 
@@ -1120,8 +1183,8 @@ class PostWidgetScaffold extends StatelessWidget {
     }
 
     return () async {
-      if (post.file['ext'] == 'webm' || post.file['ext'] == 'swf') {
-        url.launch(post.file['url']);
+      if (widget.post.file['ext'] == 'webm' || widget.post.file['ext'] == 'swf') {
+        url.launch(widget.post.file['url']);
       } else {
         SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
         await Navigator.of(context).push(new MaterialPageRoute<Null>(

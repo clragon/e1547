@@ -153,7 +153,6 @@ class _PostsPageState extends State<PostsPage> {
 
     List<Post> nextPage = [];
     _pages.add(nextPage);
-    print('requesting page $p');
 
     if (_tags == null) {
       _tags = await widget.tags ?? new Tagset.parse('');
@@ -166,8 +165,6 @@ class _PostsPageState extends State<PostsPage> {
     } else {
       nextPage.addAll(await client.pool(widget.pool, p));
     }
-
-    print(nextPage);
 
     if (this.mounted) {
       setState(() {

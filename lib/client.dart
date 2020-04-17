@@ -204,20 +204,23 @@ class Client {
     }
   }
 
-  Future<Map> wiki(String search) async {
+  Future<List> wiki(String search, int page) async {
     String body = await _http.get(await _host, 'wiki_pages.json', query: {
       'search[title]': search,
+      'page': page + 1,
       'login': await _username,
       'api_key': await _apiKey,
     }).then((response) => response.body);
 
-    return json.decode(body)[0];
+    return json.decode(body);
   }
 
+  // /tags?search[name_matches]=*drag*&search[order]=count&limit=5
+
   Future<List<Comment>> comments(int postId, int page) async {
-    // THIS DOES NOT WORK YET; API BROKEN.
     String body = await _http.get(await _host, '/comments.json', query: {
-      'post_id': postId,
+      'group_by': 'comment',
+      'search[post_tags_match]': 'id:$postId',
       'page': page + 1,
       'login': await _username,
       'api_key': await _apiKey,

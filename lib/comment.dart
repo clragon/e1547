@@ -1,8 +1,6 @@
-// TODO: comments don't work.
-
-
 import 'dart:async' show Future;
 
+import 'package:e1547/pool.dart';
 import 'package:flutter/material.dart';
 
 import 'client.dart' show client;
@@ -18,9 +16,23 @@ class Comment {
 
   Comment.fromRaw(this.raw) {
     id = raw['id'] as int;
-    creator = raw['creator'] as String;
+    creator = raw['creator_name'] as String;
     body = raw['body'] as String;
     score = raw['score'] as int;
+  }
+}
+
+class CommentsPage extends StatelessWidget {
+  final Post post;
+
+  CommentsPage(this.post);
+
+  @override
+  Widget build(BuildContext context) {
+    return new Scaffold(
+      appBar: new AppBar(title: new Text('#${post.id} comments')),
+      body: CommentsWidget(post),
+    );
   }
 }
 
@@ -34,15 +46,9 @@ class CommentsWidget extends StatefulWidget {
 }
 
 class _CommentsWidgetState extends State<CommentsWidget> {
-  int _page = 0;
   final List<Comment> _comments = [];
+  int _page = 0;
   bool _more = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadNextPage();
-  }
 
   Future<Null> _loadNextPage() async {
     if (_more) {
@@ -56,51 +62,86 @@ class _CommentsWidgetState extends State<CommentsWidget> {
   }
 
   @override
-  Widget build(BuildContext ctx) {
-    return new Scaffold(
-      appBar: new AppBar(title: new Text('#${widget.post.id} comments')),
-      body: new ListView.builder(
-        itemBuilder: _itemBuilder,
-        padding: const EdgeInsets.all(10.0),
-      ),
+  void initState() {
+    super.initState();
+    _loadNextPage();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return new ListView.builder(
+      itemBuilder: _itemBuilder,
+      padding: const EdgeInsets.all(10.0),
+      physics: BouncingScrollPhysics(),
     );
   }
 
-  // Comments are separated by dividers.
-  //   0:    comment 0
-  //   1:    divider
-  //   2:    comment 1
-  //   3:    divider
-  //   4:    comment 2
-  //   ...
-  //   2n:   comment n-1
-  //   2n+1: <no more comments message>
-  Widget _itemBuilder(BuildContext ctx, int i) {
-    int lastComment = _comments.length * 2 - 1;
-
-    if (i < lastComment) {
-      if (i.isOdd) {
-        return const Divider();
-      }
-      Comment c = _comments[i ~/ 2];
-      return new Text('${c.creator}: ${c.body}');
+  Widget _itemBuilder(BuildContext context, int index) {
+    Widget commentWidget(Comment comment) {
+      return Padding(
+        padding: EdgeInsets.only(right: 8, left: 8),
+        child: Column(
+          children: <Widget>[
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Padding(
+                  padding: EdgeInsets.only(right: 8, top: 4),
+                  child: Icon(Icons.person),
+                ),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Padding(
+                        padding: EdgeInsets.only(top: 4, bottom: 4),
+                        child: Text(
+                          comment.creator,
+                          style: TextStyle(
+                            color: Colors.grey[500],
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(bottom: 8),
+                        child: PoolPreview.dTextField(context, comment.body),
+                      )
+                    ],
+                  ),
+                )
+              ],
+            ),
+            Divider(),
+          ],
+        ),
+      );
     }
 
-    if (i == lastComment) {
-      return new Padding(
-        padding: const EdgeInsets.symmetric(vertical: 30.0),
-        child: _more
-            ? new RaisedButton(
-                child: const Text('load more'),
-                onPressed: _loadNextPage,
-              )
-            : const Text('No more comments',
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18.0,
-                )),
-      );
+    if (index < _comments.length) {
+      return commentWidget(_comments[index]);
+    }
+
+    if (index == _comments.length) {
+      if (index == _comments.length) {
+        return FutureBuilder(
+          builder: (context, snapshot) {
+            if (snapshot.connectionState != ConnectionState.done) {
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Padding(
+                    padding: EdgeInsets.all(16),
+                    child: CircularProgressIndicator(),
+                  ),
+                ],
+              );
+            } else {
+              return Container();
+            }
+          },
+          future: _loadNextPage(),
+        );
+      }
     }
 
     return null;
