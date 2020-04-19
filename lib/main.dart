@@ -1,4 +1,5 @@
 import 'package:e1547/about_page.dart';
+import 'package:e1547/blacklist_page.dart';
 import 'package:e1547/persistence.dart';
 import 'package:e1547/pools_page.dart';
 import 'package:e1547/settings_page.dart';
@@ -57,6 +58,7 @@ class Main extends StatelessWidget {
             }(),
         '/login': (context) => new LoginPage(),
         '/settings': (context) => new SettingsPage(),
+        '/blacklist': (context) => new BlacklistPage(),
         '/about': (context) => new AboutPage(),
       },
     );
@@ -124,7 +126,7 @@ class NavigationDrawer extends StatelessWidget {
             }
             return new Padding(
               padding: EdgeInsets.symmetric(horizontal: 20),
-              child: new RaisedButton(
+              child: new OutlineButton(
                 child: const Text('LOGIN'),
                 onPressed: () => Navigator.popAndPushNamed(context, '/login'),
               ),

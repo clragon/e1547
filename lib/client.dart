@@ -17,6 +17,7 @@ class Client {
   Future<String> _host = db.host.value;
   Future<String> _username = db.username.value;
   Future<String> _apiKey = db.apiKey.value;
+  Future<List<String>> _blacklist = db.blacklist.value;
 
   Client() {
     db.host.addListener(() => _host = db.host.value);
@@ -113,6 +114,94 @@ class Client {
     return !(await _username == null || await _apiKey == null);
   }
 
+  Future<bool> isBlacklisted(Post post) async {
+    List<String> blacklist = await _blacklist;
+    if (0 < blacklist.length) {
+      String tags;
+      post.tags.forEach((k, v) {
+        v.forEach((s) {
+          tags = '$tags$s ';
+        });
+      });
+
+
+
+      for (String line in blacklist) {
+        List<String> black = [];
+        List<String> white = [];
+        line.split(' ').forEach((s) {
+          if (s != '') {
+            if (s[0] == '-') {
+              white.add(s.substring(1));
+            } else {
+              black.add(s);
+            }
+          }
+        });
+
+        bool bMatch = true;
+        bool wMatch = true;
+
+        bool checkTags(String tags, String tag) {
+          if (tag.contains(':')) {
+            String identifier = tag.split(':')[0];
+            String value = tag.split(':')[1];
+            switch (identifier) {
+              case 'rating':
+                if (post.rating == value.toUpperCase()) {
+                  return true;
+                }
+                break;
+              case 'id':
+                if (post.id == int.parse(value)) {
+                  return true;
+                }
+                break;
+              case 'user':
+                break;
+            }
+          }
+
+          if (tags.contains(tag)) {
+            return true;
+          } else {
+            return false;
+          }
+        }
+
+        black.forEach((tag) {
+          if (!checkTags(tags, tag)) {
+            bMatch = false;
+          }
+        });
+        white.forEach((tag) {
+          if (!checkTags(tags, tag)) {
+            wMatch = false;
+          }
+        });
+
+        if (black.length != 0 && white.length != 0) {
+          if (bMatch) {
+            if (!wMatch) {
+              return true;
+            }
+          }
+        } else {
+          if (black.length != 0) {
+            if (bMatch) {
+              return true;
+            }
+          } else {
+            if (!wMatch) {
+              return true;
+            }
+          }
+        }
+      }
+    }
+    return false;
+  }
+
   Future<List<Post>> posts(Tagset tags, int page, {int limit = 200}) async {
     try {
       String body = await _http.get(await _host, '/posts.json', query: {
@@ -126,18 +215,25 @@ class Client {
       List<Post> posts = [];
       bool loggedIn = await this.hasLogin();
       bool showWebm = await db.showWebm.value;
-      for (Map rp in json.decode(body)['posts']) {
-        Post p = new Post.fromRaw(rp);
-        p.isLoggedIn = loggedIn;
-        if (p.file['url'] == null || p.file['ext'] == 'swf') {
+      bool hasPosts = false;
+      for (Map rawPost in json.decode(body)['posts']) {
+        hasPosts = true;
+        Post post = new Post.fromRaw(rawPost);
+        post.isLoggedIn = loggedIn;
+        if (post.file['url'] == null || post.file['ext'] == 'swf') {
           continue;
         }
-        if (!showWebm && p.file['ext'] == 'webm') {
+        if (!showWebm && post.file['ext'] == 'webm') {
           continue;
         }
-        posts.add(p);
+        if (await isBlacklisted(post)) {
+          continue;
+        }
+        posts.add(post);
       }
-
+      if (hasPosts && posts.length == 0) {
+        return client.posts(tags, page + 1, limit: limit);
+      }
       return posts;
     } catch (SocketException) {
       return [];
@@ -154,9 +250,9 @@ class Client {
       }).then((response) => response.body);
 
       List<Pool> pools = [];
-      for (Map rp in json.decode(body)) {
-        Pool p = new Pool.fromRaw(rp);
-        pools.add(p);
+      for (Map rawPool in json.decode(body)) {
+        Pool pool = new Pool.fromRaw(rawPool);
+        pools.add(pool);
       }
 
       return pools;
@@ -196,9 +292,9 @@ class Client {
         'api_key': await _apiKey,
       }).then((response) => response.body);
 
-      Post p = new Post.fromRaw(json.decode(body)['post']);
-      p.isLoggedIn = await hasLogin();
-      return p;
+      Post post = new Post.fromRaw(json.decode(body)['post']);
+      post.isLoggedIn = await hasLogin();
+      return post;
     } catch (SocketException) {
       return null;
     }
@@ -215,7 +311,22 @@ class Client {
     return json.decode(body);
   }
 
-  // /tags?search[name_matches]=*drag*&search[order]=count&limit=5
+  Future<List<String>> tags(String search, int page) async {
+    String body = await _http.get(await _host, '/tags.json', query: {
+      'search[name_matches]': search + '*',
+      'search[order]': 'count',
+      'page': page + 1,
+      'limit': 3,
+      'login': await _username,
+      'api_key': await _apiKey,
+    }).then((response) => response.body);
+
+    List<String> tags = [];
+    for (Map rawTag in json.decode(body)) {
+      tags.add(rawTag['name']);
+    }
+    return tags;
+  }
 
   Future<List<Comment>> comments(int postId, int page) async {
     String body = await _http.get(await _host, '/comments.json', query: {
@@ -227,8 +338,11 @@ class Client {
     }).then((response) => response.body);
 
     List<Comment> comments = [];
-    for (Map rc in json.decode(body)) {
-      comments.add(new Comment.fromRaw(rc));
+    var commentList = json.decode(body);
+    if (commentList is List) {
+      for (Map rawComment in commentList) {
+        comments.add(new Comment.fromRaw(rawComment));
+      }
     }
 
     return comments;

@@ -18,6 +18,7 @@ class Persistence {
   ValueNotifier<Future<String>> username;
   ValueNotifier<Future<String>> apiKey;
   ValueNotifier<Future<bool>> showWebm;
+  ValueNotifier<Future<List<String>>> blacklist;
 
   Persistence() {
     host = _makeNotifier((p) => p.getString('host') ?? appInfo.defaultEndpoint);
@@ -34,6 +35,9 @@ class Persistence {
 
     showWebm = _makeNotifier((p) => p.getBool('showWebm') ?? true);
     showWebm.addListener(_saveBool('showWebm', showWebm));
+
+    blacklist = _makeNotifier((p) => p.getStringList('blacklist') ?? []);
+    blacklist.addListener(_saveList('blacklist', blacklist));
   }
 
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
@@ -50,6 +54,12 @@ class Persistence {
     };
   }
 
+  Function() _saveList(String key, ValueNotifier<Future<List<String>>> notifier) {
+    return () async {
+      (await _prefs).setStringList(key, await notifier.value);
+    };
+  }
+
   Function() _saveBool(String key, ValueNotifier<Future<bool>> notifier) {
     return () async {
       (await _prefs).setBool(key, await notifier.value);
@@ -61,4 +71,6 @@ class Persistence {
       (await _prefs).setInt(key, await notifier.value);
     };
   }
+
+
 }

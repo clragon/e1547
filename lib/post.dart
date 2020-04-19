@@ -217,9 +217,7 @@ class PostWidget extends StatefulWidget {
   }
 }
 
-
 class _PostWidgetState extends State<PostWidget> {
-
   void _download(BuildContext context) async {
     Map<PermissionGroup, PermissionStatus> permissions =
         await PermissionHandler().requestPermissions([PermissionGroup.storage]);
@@ -256,8 +254,9 @@ class _PostWidgetState extends State<PostWidget> {
         return file;
       }
 
-      DefaultCacheManager cm = DefaultCacheManager();
-      return (await cm.getSingleFile(widget.post.file['url'])).copySync(filepath);
+      DefaultCacheManager cacheManager = DefaultCacheManager();
+      return (await cacheManager.getSingleFile(widget.post.file['url']))
+          .copySync(filepath);
     }
 
     showDialog(
@@ -328,7 +327,8 @@ class _PostWidgetState extends State<PostWidget> {
     } else {
       Scaffold.of(context).showSnackBar(new SnackBar(
         duration: const Duration(seconds: 1),
-        content: new Text('Failed to remove widget.post ${post.id} from favorites'),
+        content:
+            new Text('Failed to remove widget.post ${post.id} from favorites'),
       ));
     }
   }
@@ -430,7 +430,8 @@ class _PostWidgetState extends State<PostWidget> {
                 ],
               ));
             }
-            if (widget.post.file['ext'] == 'swf' || widget.post.file['ext'] == 'webm') {
+            if (widget.post.file['ext'] == 'swf' ||
+                widget.post.file['ext'] == 'webm') {
               return placeholder(Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -446,8 +447,8 @@ class _PostWidgetState extends State<PostWidget> {
                     child: Card(
                         child: Padding(
                             padding: EdgeInsets.all(8), child: Text('Browse'))),
-                    onTap: () async =>
-                        url.launch(widget.post.url(await db.host.value).toString()),
+                    onTap: () async => url.launch(
+                        widget.post.url(await db.host.value).toString()),
                   )
                 ],
               ));
@@ -526,13 +527,15 @@ class _PostWidgetState extends State<PostWidget> {
                   onSelected: (value) async {
                     switch (value) {
                       case 'share':
-                        Share.share(widget.post.url(await db.host.value).toString());
+                        Share.share(
+                            widget.post.url(await db.host.value).toString());
                         break;
                       case 'download':
                         _download(context);
                         break;
                       case 'browser':
-                        url.launch(widget.post.url(await db.host.value).toString());
+                        url.launch(
+                            widget.post.url(await db.host.value).toString());
                         break;
                     }
                   },
@@ -545,9 +548,10 @@ class _PostWidgetState extends State<PostWidget> {
       }
 
       return new GestureDetector(
-        onTap: widget.post.file['url'] != null && widget.post.file['ext'] != 'webm'
-            ? _onTapImage(context, widget.post)
-            : null,
+        onTap:
+            widget.post.file['url'] != null && widget.post.file['ext'] != 'webm'
+                ? _onTapImage(context, widget.post)
+                : null,
         child: overlayImageWidget(),
       );
     }
@@ -566,24 +570,29 @@ class _PostWidgetState extends State<PostWidget> {
                       padding: EdgeInsets.only(right: 12),
                       child: new Icon(Icons.account_circle),
                     ),
-                    new ParsedText(
-                      text: widget.post.artist.join(',\n'),
-                      style: TextStyle(
-                        fontSize: 16,
-                      ),
-                      parse: <MatchText>[
-                        new MatchText(
-                            type: ParsedType.CUSTOM,
-                            pattern: r'([^, ]+)',
-                            onTap: (url) {
-                              Navigator.of(context).push(
-                                  new MaterialPageRoute<Null>(
-                                      builder: (context) {
-                                return new SearchPage(Tagset.parse(url));
-                              }));
-                            }),
-                      ],
-                    ),
+                    widget.post.artist.length != 0
+                        ? new ParsedText(
+                            text: widget.post.artist.join(',\n'),
+                            style: TextStyle(
+                              fontSize: 16,
+                            ),
+                            parse: <MatchText>[
+                              new MatchText(
+                                  type: ParsedType.CUSTOM,
+                                  pattern: r'([^, ]+)',
+                                  onTap: (url) {
+                                    Navigator.of(context).push(
+                                        new MaterialPageRoute<Null>(
+                                            builder: (context) {
+                                      return new SearchPage(Tagset.parse(url));
+                                    }));
+                                  }),
+                            ],
+                          )
+                        : Text('no artist',
+                            style: TextStyle(
+                                color: Colors.grey,
+                                fontStyle: FontStyle.italic)),
                   ],
                 ),
                 new Column(
@@ -615,8 +624,8 @@ class _PostWidgetState extends State<PostWidget> {
                     child: Card(
                       child: Padding(
                         padding: EdgeInsets.all(16),
-                        child:
-                            PoolPreview.dTextField(context, widget.post.description),
+                        child: PoolPreview.dTextField(
+                            context, widget.post.description),
                       ),
                     ),
                   )
@@ -885,69 +894,8 @@ class _PostWidgetState extends State<PostWidget> {
                                       onLongPress: () {
                                         showDialog(
                                           context: context,
-                                          builder: (context) => AlertDialog(
-                                            title: Text(tag),
-                                            content: new ConstrainedBox(
-                                                child: FutureBuilder(
-                                                  builder: (context, snapshot) {
-                                                    if (snapshot
-                                                            .connectionState ==
-                                                        ConnectionState.done) {
-                                                      if (snapshot.hasData) {
-                                                        return SingleChildScrollView(
-                                                          scrollDirection:
-                                                              Axis.vertical,
-                                                          child: PoolPreview
-                                                              .dTextField(
-                                                                  context,
-                                                                  snapshot.data[
-                                                                          0]
-                                                                      ['body']),
-                                                          physics:
-                                                              BouncingScrollPhysics(),
-                                                        );
-                                                      } else {
-                                                        return Text(
-                                                          'no wiki entry',
-                                                          style: TextStyle(
-                                                              fontStyle:
-                                                                  FontStyle
-                                                                      .italic),
-                                                        );
-                                                      }
-                                                    } else {
-                                                      return Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .center,
-                                                        children: <Widget>[
-                                                          Padding(
-                                                              padding:
-                                                                  EdgeInsets
-                                                                      .all(16),
-                                                              child: Container(
-                                                                height: 26,
-                                                                width: 26,
-                                                                child:
-                                                                    CircularProgressIndicator(),
-                                                              ))
-                                                        ],
-                                                      );
-                                                    }
-                                                  },
-                                                  future: client.wiki(tag, 0),
-                                                ),
-                                                constraints: new BoxConstraints(
-                                                  maxHeight: 400.0,
-                                                )),
-                                            actions: [
-                                              FlatButton(
-                                                child: Text('OK'),
-                                                onPressed: () =>
-                                                    Navigator.of(context).pop(),
-                                              ),
-                                            ],
-                                          ),
+                                          builder: (context) =>
+                                              wikiDialog(context, tag),
                                         );
                                       },
                                       child: Card(
@@ -983,8 +931,8 @@ class _PostWidgetState extends State<PostWidget> {
                     child: OutlineButton(
                       child: Text('COMMENTS (${widget.post.comments})'),
                       onPressed: () {
-                        Navigator.of(context)
-                            .push(new MaterialPageRoute<Null>(builder: (context) {
+                        Navigator.of(context).push(
+                            new MaterialPageRoute<Null>(builder: (context) {
                           return new CommentsWidget(widget.post);
                         }));
                       },
@@ -1028,8 +976,11 @@ class _PostWidgetState extends State<PostWidget> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Text(DateTime.parse(widget.post.creation).toLocal().toString()),
-                  Text('${widget.post.file['width']} x ${widget.post.file['height']}')
+                  Text(DateTime.parse(widget.post.creation)
+                      .toLocal()
+                      .toString()),
+                  Text(
+                      '${widget.post.file['width']} x ${widget.post.file['height']}')
                 ],
               ),
             ),
@@ -1150,11 +1101,13 @@ class _PostWidgetState extends State<PostWidget> {
         ],
         physics: BouncingScrollPhysics(),
       ),
-      floatingActionButton: widget.post.isLoggedIn ? Builder(
-        builder: (context) {
-          return floatingActionButton(context);
-        },
-      ) : null,
+      floatingActionButton: widget.post.isLoggedIn
+          ? Builder(
+              builder: (context) {
+                return floatingActionButton(context);
+              },
+            )
+          : null,
     );
   }
 
@@ -1183,7 +1136,8 @@ class _PostWidgetState extends State<PostWidget> {
     }
 
     return () async {
-      if (widget.post.file['ext'] == 'webm' || widget.post.file['ext'] == 'swf') {
+      if (widget.post.file['ext'] == 'webm' ||
+          widget.post.file['ext'] == 'swf') {
         url.launch(widget.post.file['url']);
       } else {
         SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
@@ -1194,4 +1148,53 @@ class _PostWidgetState extends State<PostWidget> {
       }
     };
   }
+}
+
+Widget wikiDialog(BuildContext context, String tag) {
+  return AlertDialog(
+    title: Text(tag),
+    content: new ConstrainedBox(
+        child: FutureBuilder(
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.done) {
+              if (snapshot.hasData) {
+                return SingleChildScrollView(
+                  scrollDirection: Axis.vertical,
+                  child:
+                      PoolPreview.dTextField(context, snapshot.data[0]['body']),
+                  physics: BouncingScrollPhysics(),
+                );
+              } else {
+                return Text(
+                  'no wiki entry',
+                  style: TextStyle(fontStyle: FontStyle.italic),
+                );
+              }
+            } else {
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Padding(
+                      padding: EdgeInsets.all(16),
+                      child: Container(
+                        height: 26,
+                        width: 26,
+                        child: CircularProgressIndicator(),
+                      ))
+                ],
+              );
+            }
+          },
+          future: client.wiki(tag, 0),
+        ),
+        constraints: new BoxConstraints(
+          maxHeight: 400.0,
+        )),
+    actions: [
+      FlatButton(
+        child: Text('OK'),
+        onPressed: () => Navigator.of(context).pop(),
+      ),
+    ],
+  );
 }

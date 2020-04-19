@@ -2,6 +2,7 @@ import 'package:e1547/main.dart';
 import 'package:e1547/pool.dart';
 import 'package:e1547/posts_page.dart';
 import 'package:flutter/material.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import 'client.dart';
 import 'input.dart';
@@ -32,7 +33,7 @@ class _PoolsPageState extends State<PoolsPage> {
       if (!_isSearching) {
         _tagController = new TextEditingController()..text = query + ' ';
       }
-      _setFocusToEnd(_tagController);
+      setFocusToEnd(_tagController);
 
       if (_isSearching) {
         query = _tagController.text;
@@ -83,10 +84,14 @@ class _PoolsPageState extends State<PoolsPage> {
     }
   }
 
+  RefreshController _refreshController =
+  RefreshController(initialRefresh: false);
+
   void _clearPages() {
     setState(() {
       _loading = true;
       _pages.clear();
+      _refreshController.refreshCompleted();
     });
   }
 
@@ -118,7 +123,7 @@ class _PoolsPageState extends State<PoolsPage> {
         return new Container();
       }
       pools += page.length;
-      if (item >= pools - 6) {
+      if (item == pools - 1) {
         if (p + 1 >= _pages.length) {
           _loadNextPage();
         }
@@ -137,13 +142,6 @@ class _PoolsPageState extends State<PoolsPage> {
     AppBar appBar() {
       return new AppBar(
         title: Text('Pools'),
-        actions: [
-          new IconButton(
-            icon: const Icon(Icons.refresh),
-            tooltip: 'Refresh',
-            onPressed: _clearPages,
-          ),
-        ],
       );
     }
 
@@ -168,10 +166,18 @@ class _PoolsPageState extends State<PoolsPage> {
             ),
           ),
         ),
-        ListView.builder(
-          itemCount: _itemCount(),
-          itemBuilder: _itemBuilder,
-          physics: new BouncingScrollPhysics(),
+        SmartRefresher(
+          controller: _refreshController,
+          header: ClassicHeader(
+            completeText: 'refreshing...',
+          ),
+          onRefresh: _clearPages,
+          physics: BouncingScrollPhysics(),
+          child: ListView.builder(
+            itemCount: _itemCount(),
+            itemBuilder: _itemBuilder,
+            physics: new BouncingScrollPhysics(),
+          ),
         ),
         Visibility(
           visible: (!_loading && _pages.length == 1 && _pages[0].length == 0),
@@ -211,11 +217,4 @@ class _PoolsPageState extends State<PoolsPage> {
       floatingActionButton: floatingActionButtonWidget(),
     );
   }
-}
-
-void _setFocusToEnd(TextEditingController controller) {
-  controller.selection = new TextSelection(
-    baseOffset: controller.text.length,
-    extentOffset: controller.text.length,
-  );
 }

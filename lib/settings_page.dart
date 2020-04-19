@@ -103,6 +103,11 @@ class _SettingsPageState extends State<SettingsPage> {
                     db.showWebm.value = Future.value(show);
                   });
                 }),
+            ListTile(
+              title: Text('Blacklist'),
+              leading: Icon(Icons.block),
+              onTap: () => Navigator.pushNamed(context, '/blacklist'),
+            ),
             Divider(),
             Padding(
               padding: EdgeInsets.only(left: 72, bottom: 8, top: 8, right: 16),

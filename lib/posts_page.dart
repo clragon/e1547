@@ -13,7 +13,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:share/share.dart';
 
 import 'client.dart' show client;
-import 'input.dart' show LowercaseTextInputFormatter;
+import 'input.dart' show LowercaseTextInputFormatter, setFocusToEnd;
 import 'main.dart' show NavigationDrawer;
 import 'persistence.dart' show db;
 import 'post.dart';
@@ -122,7 +122,7 @@ class _PostsPageState extends State<PostsPage> {
         _tagController = new TextEditingController()
           ..text = _tags.toString() + ' ';
       }
-      _setFocusToEnd(_tagController);
+      setFocusToEnd(_tagController);
 
       if (_isSearching) {
         _tags = await new Future.value(new Tagset.parse(_tagController.text));
@@ -166,7 +166,6 @@ class _PostsPageState extends State<PostsPage> {
     } else {
       nextPage.addAll(await client.pool(widget.pool, p));
     }
-
     if (this.mounted) {
       setState(() {
         _loading = false;
@@ -174,10 +173,14 @@ class _PostsPageState extends State<PostsPage> {
     }
   }
 
+  RefreshController _refreshController =
+  RefreshController(initialRefresh: false);
+
   void _clearPages() {
     setState(() {
       _loading = true;
       _pages.clear();
+      _refreshController.refreshCompleted();
     });
   }
 
@@ -219,7 +222,7 @@ class _PostsPageState extends State<PostsPage> {
       }
       posts += page.length;
 
-      if (item >= posts - 6) {
+      if (item == posts - 1) {
         if (p + 1 >= _pages.length) {
           _loadNextPage();
         }
@@ -300,8 +303,7 @@ class _PostsPageState extends State<PostsPage> {
                                 : Text(
                                     'no description',
                                     style:
-                                        TextStyle(
-                                            fontStyle: FontStyle.italic),
+                                        TextStyle(fontStyle: FontStyle.italic),
                                   ),
                             Padding(
                               padding: EdgeInsets.only(top: 16, bottom: 8),
@@ -361,11 +363,6 @@ class _PostsPageState extends State<PostsPage> {
                   },
                 )
               : new Container(),
-          new IconButton(
-            icon: const Icon(Icons.refresh),
-            tooltip: 'Refresh',
-            onPressed: _clearPages,
-          ),
         ],
       );
     }
@@ -392,16 +389,23 @@ class _PostsPageState extends State<PostsPage> {
           ),
         ),
         new OrientationBuilder(
-            builder: (context, orientation) {
-              return new StaggeredGridView.countBuilder(
-                crossAxisCount: orientation == Orientation.portrait ? 2 : 3,
-                itemCount: _itemCount(),
-                itemBuilder: _itemBuilder,
-                staggeredTileBuilder: _staggeredTileBuilder(),
-                physics: new BouncingScrollPhysics(),
-              );
-            },
-          ),
+          builder: (context, orientation) {
+            return SmartRefresher(
+                controller: _refreshController,
+                header: ClassicHeader(
+                  completeText: 'refreshing...',
+                ),
+                onRefresh: _clearPages,
+                physics: BouncingScrollPhysics(),
+                child: new StaggeredGridView.countBuilder(
+                  crossAxisCount: orientation == Orientation.portrait ? 2 : 3,
+                  itemCount: _itemCount(),
+                  itemBuilder: _itemBuilder,
+                  staggeredTileBuilder: _staggeredTileBuilder(),
+                  physics: BouncingScrollPhysics(),
+                ));
+          },
+        ),
         new Visibility(
           visible: (!_loading && _pages.length == 1 && _pages[0].length == 0),
           child: new Center(
@@ -447,13 +451,6 @@ class _PostsPageState extends State<PostsPage> {
   }
 }
 
-void _setFocusToEnd(TextEditingController controller) {
-  controller.selection = new TextSelection(
-    baseOffset: controller.text.length,
-    extentOffset: controller.text.length,
-  );
-}
-
 typedef Future<Tagset> TagEditor(Tagset tags);
 
 class TagEntry extends StatelessWidget {
@@ -466,7 +463,7 @@ class TagEntry extends StatelessWidget {
 
   void _setTags(Tagset tags) {
     controller.text = tags.toString() + ' ';
-    _setFocusToEnd(controller);
+    setFocusToEnd(controller);
   }
 
   void _withTags(TagEditor editor) async {

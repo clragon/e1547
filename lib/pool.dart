@@ -47,7 +47,7 @@ class PoolPreview extends StatelessWidget {
   static Widget dTextField(BuildContext context, String msg,
       {bool darkText = false}) {
     RegExp quoteMatch = RegExp(
-      r'\[quote\]((.)*?)\[/quote\]',
+      r'[\s\n]*\[quote\]((.)*?)\[/quote\]',
       dotAll: true,
     );
 
@@ -84,7 +84,7 @@ class PoolPreview extends StatelessWidget {
                 ),
               );
               if (match.end != part.data.length) {
-                newParts.addAll(resolve([Text('\n' + part.data.substring(match.end, part.data.length).replaceAllMapped(RegExp(r'[\s\n]{2}'), (match) { return ''; }))]));
+                newParts.addAll(resolve([Text('\n' + part.data.substring(match.end, part.data.length).replaceAllMapped(RegExp(r'^[\s\n]*'), (match) { return ''; }))]));
               }
             }
           } else {
