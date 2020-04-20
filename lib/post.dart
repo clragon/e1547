@@ -20,6 +20,7 @@ import 'package:photo_view/photo_view.dart';
 import 'package:url_launcher/url_launcher.dart' as url;
 
 import 'client.dart' show client;
+import 'interface.dart';
 import 'persistence.dart' show db;
 import 'package:icon_shadow/icon_shadow.dart';
 import 'package:share/share.dart';
@@ -60,6 +61,7 @@ class Post {
   bool isDeleted;
   bool isFavorite;
   bool isLoggedIn;
+  bool isBlacklisted;
 
   bool isConditionalDnp;
   bool hasSoundWarning;
@@ -73,6 +75,7 @@ class Post {
 
     isFavorite = raw['is_favorited'] as bool;
     isDeleted = raw['flags']['deleted'] as bool;
+    isBlacklisted = false;
 
     parent = raw["relationships"]['parent_id'] as int ?? -1;
     children = [];
@@ -408,6 +411,12 @@ class _PostWidgetState extends State<PostWidget> {
                 textAlign: TextAlign.center,
               ));
             }
+            if (widget.post.isBlacklisted) {
+              return placeholder(Text(
+                'Post is blacklisted',
+                textAlign: TextAlign.center,
+              ));
+            }
             if (widget.post.file['url'] == null) {
               return placeholder(Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -624,7 +633,7 @@ class _PostWidgetState extends State<PostWidget> {
                     child: Card(
                       child: Padding(
                         padding: EdgeInsets.all(16),
-                        child: PoolPreview.dTextField(
+                        child: badTextField(
                             context, widget.post.description),
                       ),
                     ),
@@ -854,7 +863,8 @@ class _PostWidgetState extends State<PostWidget> {
               'copyright',
               'invalid',
               'lore',
-              'meta'
+              'meta',
+              'artist',
             ];
             for (String tagSet in tagSets) {
               if (widget.post.tags[tagSet].length != 0) {
@@ -895,7 +905,7 @@ class _PostWidgetState extends State<PostWidget> {
                                         showDialog(
                                           context: context,
                                           builder: (context) =>
-                                              wikiDialog(context, tag),
+                                              WikiDialog(tag),
                                         );
                                       },
                                       child: Card(
@@ -1029,7 +1039,7 @@ class _PostWidgetState extends State<PostWidget> {
                 top: 2,
                 bottom: 2,
               ),
-              child: PoolPreview.dTextField(context, () {
+              child: badTextField(context, () {
                 String msg = '';
                 for (String source in widget.post.sources) {
                   msg = msg + source + '\n';
@@ -1148,53 +1158,4 @@ class _PostWidgetState extends State<PostWidget> {
       }
     };
   }
-}
-
-Widget wikiDialog(BuildContext context, String tag) {
-  return AlertDialog(
-    title: Text(tag),
-    content: new ConstrainedBox(
-        child: FutureBuilder(
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.done) {
-              if (snapshot.hasData) {
-                return SingleChildScrollView(
-                  scrollDirection: Axis.vertical,
-                  child:
-                      PoolPreview.dTextField(context, snapshot.data[0]['body']),
-                  physics: BouncingScrollPhysics(),
-                );
-              } else {
-                return Text(
-                  'no wiki entry',
-                  style: TextStyle(fontStyle: FontStyle.italic),
-                );
-              }
-            } else {
-              return Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Padding(
-                      padding: EdgeInsets.all(16),
-                      child: Container(
-                        height: 26,
-                        width: 26,
-                        child: CircularProgressIndicator(),
-                      ))
-                ],
-              );
-            }
-          },
-          future: client.wiki(tag, 0),
-        ),
-        constraints: new BoxConstraints(
-          maxHeight: 400.0,
-        )),
-    actions: [
-      FlatButton(
-        child: Text('OK'),
-        onPressed: () => Navigator.of(context).pop(),
-      ),
-    ],
-  );
 }

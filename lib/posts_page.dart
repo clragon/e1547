@@ -7,13 +7,16 @@ import 'package:flutter/services.dart' show Clipboard, ClipboardData;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart'
     show StaggeredGridView, StaggeredTile;
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:meta/meta.dart' show required;
 import 'package:intl/intl.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:share/share.dart';
 
+import 'blacklist_page.dart';
 import 'client.dart' show client;
 import 'input.dart' show LowercaseTextInputFormatter, setFocusToEnd;
+import 'interface.dart';
 import 'main.dart' show NavigationDrawer;
 import 'persistence.dart' show db;
 import 'post.dart';
@@ -298,7 +301,7 @@ class _PostsPageState extends State<PostsPage> {
                           mainAxisSize: MainAxisSize.min,
                           children: <Widget>[
                             widget.pool.description != ''
-                                ? PoolPreview.dTextField(
+                                ? badTextField(
                                     context, widget.pool.description)
                                 : Text(
                                     'no description',
@@ -584,14 +587,47 @@ class TagEntry extends StatelessWidget {
     return new Container(
       padding: const EdgeInsets.only(left: 10.0, right: 10.0, top: 20.0),
       child: new Column(mainAxisSize: MainAxisSize.min, children: [
-        new TextField(
-          controller: controller,
-          autofocus: true,
-          maxLines: 1,
-          inputFormatters: [new LowercaseTextInputFormatter()],
-          decoration: const InputDecoration(
-            labelText: 'Tags',
+        TypeAheadField(
+          direction: AxisDirection.up,
+          hideOnLoading: true,
+          hideOnEmpty: true,
+          hideOnError: true,
+          textFieldConfiguration: TextFieldConfiguration(
+            controller: controller,
+            autofocus: true,
+            maxLines: 1,
+            inputFormatters: [new LowercaseTextInputFormatter()],
+            decoration: InputDecoration(
+                labelText: 'Tags',
+                border: UnderlineInputBorder()),
           ),
+          onSuggestionSelected: (suggestion) {
+            List<String> tags =
+            controller.text.toString().split(' ');
+            if (suggestion
+                .contains(noDash(tags[tags.length - 1]))) {
+              tags[tags.length - 1] =
+              tags[tags.length - 1][0] == '-'
+                  ? '-' + suggestion
+                  : suggestion;
+            } else {
+              tags.add(suggestion);
+            }
+            String query = '';
+            for (String tag in tags) {
+              query = query + tag + ' ';
+            }
+            controller.text = query;
+          },
+          itemBuilder: (BuildContext context, itemData) {
+            return new ListTile(
+              title: Text(itemData),
+            );
+          },
+          suggestionsCallback: (String pattern) {
+            List<String> tags = pattern.split(' ');
+            return client.tags(noDash(tags[tags.length - 1]), 0);
+          },
         ),
         new Padding(
           padding: const EdgeInsets.symmetric(vertical: 10.0),

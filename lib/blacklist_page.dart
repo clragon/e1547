@@ -1,11 +1,10 @@
-import 'package:e1547/post.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'client.dart';
 import 'input.dart';
+import 'interface.dart';
 import 'persistence.dart' show db;
-import 'package:url_launcher/url_launcher.dart' as url;
 
 class BlacklistPage extends StatefulWidget {
   @override
@@ -46,6 +45,7 @@ class _BlacklistPageState extends State<BlacklistPage> {
           _tagController = TextEditingController()..text = '';
         }
       }
+      setFocusToEnd(_tagController);
 
       if (_isSearching) {
         if (_editing != -1) {
@@ -63,6 +63,9 @@ class _BlacklistPageState extends State<BlacklistPage> {
                   child: new Column(mainAxisSize: MainAxisSize.min, children: [
                     TypeAheadField(
                       direction: AxisDirection.up,
+                      hideOnLoading: true,
+                      hideOnEmpty: true,
+                      hideOnError: true,
                       textFieldConfiguration: TextFieldConfiguration(
                         controller: _tagController,
                         autofocus: true,
@@ -70,7 +73,7 @@ class _BlacklistPageState extends State<BlacklistPage> {
                         inputFormatters: [new LowercaseTextInputFormatter()],
                         decoration: InputDecoration(
                             labelText: 'Add to blacklist',
-                            border: OutlineInputBorder()),
+                            border: UnderlineInputBorder()),
                       ),
                       onSuggestionSelected: (suggestion) {
                         List<String> tags =
@@ -167,7 +170,7 @@ class _BlacklistPageState extends State<BlacklistPage> {
                                     showDialog(
                                       context: context,
                                       builder: (context) =>
-                                          wikiDialog(context, noDash(tag)),
+                                          WikiDialog(noDash(tag)),
                                     );
                                   },
                                   child: Card(
@@ -267,8 +270,13 @@ class _BlacklistPageState extends State<BlacklistPage> {
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.help_outline),
-            onPressed: () async =>
-                url.launch('https:www.' + (await db.host.value) + '/help/blacklist'),
+            onPressed: () async {
+              showDialog(
+                context: context,
+                builder: (context) =>
+                    WikiDialog('e621:blacklist'),
+              );
+            }
           ),
         ],
       ),

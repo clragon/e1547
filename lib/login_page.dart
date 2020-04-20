@@ -1,12 +1,8 @@
 import 'dart:async' show Future, Timer;
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show Clipboard;
-
 import 'package:url_launcher/url_launcher.dart' as url;
-
 import 'client.dart' show client;
-import 'input.dart' show LowercaseTextInputFormatter;
 import 'main.dart';
 import 'persistence.dart' show db;
 
@@ -168,7 +164,6 @@ class _LoginFormFieldsState extends State<_LoginFormFields> {
             labelText: 'API Key',
             helperText: 'e.g. 1ca1d165e973d7f8d35b7deb7a2ae54c',
           ),
-          inputFormatters: [new LowercaseTextInputFormatter()],
           onSaved: _saveApiKey,
           validator: _validateApiKey,
         );

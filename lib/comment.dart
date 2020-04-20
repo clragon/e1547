@@ -1,10 +1,9 @@
 import 'dart:async' show Future;
-
-import 'package:e1547/pool.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import 'client.dart' show client;
+import 'interface.dart';
 import 'post.dart' show Post;
 
 class Comment {
@@ -217,7 +216,7 @@ class _CommentsWidgetState extends State<CommentsWidget> {
                     ),
                     Padding(
                       padding: EdgeInsets.only(bottom: 8),
-                      child: PoolPreview.dTextField(context, comment.body),
+                      child: badTextField(context, comment.body),
                     )
                   ],
                 ),

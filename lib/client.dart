@@ -294,6 +294,7 @@ class Client {
 
       Post post = new Post.fromRaw(json.decode(body)['post']);
       post.isLoggedIn = await hasLogin();
+      post.isBlacklisted = await isBlacklisted(post);
       return post;
     } catch (SocketException) {
       return null;
