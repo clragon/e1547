@@ -170,7 +170,7 @@ class _BlacklistPageState extends State<BlacklistPage> {
                                     showDialog(
                                       context: context,
                                       builder: (context) =>
-                                          WikiDialog(noDash(tag)),
+                                          wikiDialog(context, noDash(tag)),
                                     );
                                   },
                                   child: Card(
@@ -274,7 +274,7 @@ class _BlacklistPageState extends State<BlacklistPage> {
               showDialog(
                 context: context,
                 builder: (context) =>
-                    WikiDialog('e621:blacklist'),
+                    wikiDialog(context, 'e621:blacklist'),
               );
             }
           ),

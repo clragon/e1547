@@ -905,7 +905,7 @@ class _PostWidgetState extends State<PostWidget> {
                                         showDialog(
                                           context: context,
                                           builder: (context) =>
-                                              WikiDialog(tag),
+                                              wikiDialog(context, tag),
                                         );
                                       },
                                       child: Card(

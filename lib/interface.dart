@@ -1,4 +1,3 @@
-import 'package:e1547/persistence.dart';
 import 'package:e1547/pool.dart';
 import 'package:e1547/post.dart';
 import 'package:e1547/posts_page.dart';
@@ -9,111 +8,52 @@ import 'package:url_launcher/url_launcher.dart' as urlLauncher;
 
 import 'client.dart';
 
-class WikiDialog extends StatefulWidget {
-
-  final String tag;
-  final bool actions;
-
-  const WikiDialog(this.tag, {this.actions = false});
-
-  @override
-  State<StatefulWidget> createState() {
-    return _WikiDialogState();
-  }
-}
-
-
-
-class _WikiDialogState extends State<WikiDialog> {
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      content: new ConstrainedBox(
-          child: FutureBuilder(
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.done) {
-                if (snapshot.hasData) {
-                  return SingleChildScrollView(
-                    scrollDirection: Axis.vertical,
-                    child: badTextField(context, snapshot.data[0]['body']),
-                    physics: BouncingScrollPhysics(),
-                  );
-                } else {
-                  return Text(
-                    'no wiki entry',
-                    style: TextStyle(fontStyle: FontStyle.italic),
-                  );
-                }
+Widget wikiDialog(BuildContext context, String tag) {
+  return AlertDialog(
+    title: Text(tag),
+    content: new ConstrainedBox(
+        child: FutureBuilder(
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.done) {
+              if (snapshot.hasData) {
+                return SingleChildScrollView(
+                  scrollDirection: Axis.vertical,
+                  child: badTextField(context, snapshot.data[0]['body']),
+                  physics: BouncingScrollPhysics(),
+                );
               } else {
-                return Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Padding(
-                        padding: EdgeInsets.all(16),
-                        child: Container(
-                          height: 26,
-                          width: 26,
-                          child: CircularProgressIndicator(),
-                        ))
-                  ],
+                return Text(
+                  'no wiki entry',
+                  style: TextStyle(fontStyle: FontStyle.italic),
                 );
               }
-            },
-            future: client.wiki(widget.tag, 0),
-          ),
-          constraints: new BoxConstraints(
-            maxHeight: 400.0,
-          )),
-      title: FutureBuilder(
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
-            bool blackListed = false;
-            snapshot.data.forEach((b) {
-              if (b == widget.tag) {
-                blackListed = true;
-              }
-            });
-            return Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text(widget.tag),
-                IconButton(
-                  onPressed: () {
-                    if (blackListed) {
-                      snapshot.data.removeAt(snapshot.data.indexOf(widget.tag));
-                      db.blacklist.value = Future.value(snapshot.data);
-                      setState(() {
-                        blackListed = false;
-                      });
-                    } else {
-                      snapshot.data.add(widget.tag);
-                      db.blacklist.value = Future.value(snapshot.data);
-                      setState(() {
-                        blackListed = true;
-                      });
-                    }
-                  },
-                  icon: blackListed ? Icon(Icons.check) : Icon(Icons.block),
-                )
-              ],
-            );
-          } else {
-            return Text(widget.tag);
-          }
-        },
-        future: db.blacklist.value,
-      ),
-      actions: [
-        FlatButton(
-          child: Text('OK'),
-          onPressed: () => Navigator.of(context).pop(),
+            } else {
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Padding(
+                      padding: EdgeInsets.all(16),
+                      child: Container(
+                        height: 26,
+                        width: 26,
+                        child: CircularProgressIndicator(),
+                      ))
+                ],
+              );
+            }
+          },
+          future: client.wiki(tag, 0),
         ),
-      ],
-    );
-  }
-
-
+        constraints: new BoxConstraints(
+          maxHeight: 400.0,
+        )),
+    actions: [
+      FlatButton(
+        child: Text('OK'),
+        onPressed: () => Navigator.of(context).pop(),
+      ),
+    ],
+  );
 }
 
 Widget badTextField(BuildContext context, String msg, {bool darkText = false}) {
@@ -260,7 +200,7 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
           break;
         }
         int second = msg.substring(startMatch.start + 1).indexOf('[');
-        if (second != - 1) {
+        if (second != -1) {
           if ((startMatch.start + second) < end) {
             continue;
           }
@@ -303,6 +243,7 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
             key = tag.split('=')[0];
             active = true;
           }
+          String value = '';
           if (tag.contains('=')) {
             value = tag.split('=')[1];
           }
@@ -312,8 +253,10 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
               text: tag.substring(1, tag.length - 1),
               style: TextStyle(
                 color: Colors.blue[400],
-                fontWeight: states['bold'] ? FontWeight.bold : FontWeight.normal,
-                fontStyle: states['italic'] ? FontStyle.italic : FontStyle.normal,
+                fontWeight:
+                    states['bold'] ? FontWeight.bold : FontWeight.normal,
+                fontStyle:
+                    states['italic'] ? FontStyle.italic : FontStyle.normal,
                 decoration: TextDecoration.combine([
                   states['strike']
                       ? TextDecoration.lineThrough
@@ -340,8 +283,8 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
               states['strike'] = active;
               break;
             case 'color':
-            // ignore color tags
-            // they're insanely hard to implement.
+              // ignore color tags
+              // they're insanely hard to implement.
               break;
             case 'quote':
               if (active) {
@@ -356,8 +299,6 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
             // newParts.addAll(resolve('\[$tag\]', states));
           }
         }
-
-
 
         newParts.addAll(resolve(after, states));
         return newParts;
