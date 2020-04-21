@@ -255,8 +255,6 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
       // string after bracket
       String after = '';
 
-      // if double bracket
-      bool isFat = false;
       // index of starting bracket
       int start = -1;
       // index of ending bracket
@@ -294,7 +292,6 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
         int double = msg.indexOf('[[');
         if (double == startMatch.start) {
           start = startMatch.start;
-          isFat = true;
           if (msg.indexOf(']]') != -1) {
             end = msg.indexOf(']]') + 1;
           } else {
@@ -340,7 +337,7 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
           // check for comma in tag
           // this seems to be ONLY used in sections.
           if (key.contains(',')) {
-            if (key.split(',')[1] == 'expanded') {
+            if (key.split(',')[1].toLowerCase() == 'expanded') {
               expanded = true;
             }
             key = key.split(',')[0];
@@ -360,7 +357,7 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
           Widget blocked;
           RegExp blankLess = RegExp(r'(^[\r\n]*)|([\r\n]*$)');
 
-          switch (key) {
+          switch (key.toLowerCase()) {
             case 'spoiler':
               // maybe with a wrap.
               break;
@@ -668,7 +665,7 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
       }
     }
 
-    RegExp head = RegExp(r'h[1-6]\..*');
+    RegExp head = RegExp(r'h[1-6]\..*', caseSensitive: false);
 
     if (head.hasMatch(msg)) {
       for (Match wordMatch in head.allMatches(msg)) {
