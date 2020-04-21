@@ -88,7 +88,7 @@ class PoolPreview extends StatelessWidget {
                     top: 0,
                     bottom: 8,
                   ),
-                  child: badTextField(context, pool.description, darkText: true),
+                  child: dTextField(context, pool.description, darkText: true),
                 );
               } else {
                 return new Container();

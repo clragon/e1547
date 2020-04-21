@@ -633,7 +633,7 @@ class _PostWidgetState extends State<PostWidget> {
                     child: Card(
                       child: Padding(
                         padding: EdgeInsets.all(16),
-                        child: badTextField(
+                        child: dTextField(
                             context, widget.post.description),
                       ),
                     ),
@@ -905,7 +905,7 @@ class _PostWidgetState extends State<PostWidget> {
                                         showDialog(
                                           context: context,
                                           builder: (context) =>
-                                              wikiDialog(context, tag),
+                                              wikiDialog(context, tag, actions: true),
                                         );
                                       },
                                       child: Card(
@@ -1039,7 +1039,7 @@ class _PostWidgetState extends State<PostWidget> {
                 top: 2,
                 bottom: 2,
               ),
-              child: badTextField(context, () {
+              child: dTextField(context, () {
                 String msg = '';
                 for (String source in widget.post.sources) {
                   msg = msg + source + '\n';

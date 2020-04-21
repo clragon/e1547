@@ -157,6 +157,16 @@ class Client {
                   return true;
                 }
                 break;
+              case 'type':
+                if (post.file['ext'] == value) {
+                  return true;
+                }
+                break;
+              case 'pool':
+                if (post.pools.contains(value)) {
+                  return true;
+                }
+                break;
               case 'user':
                 break;
             }

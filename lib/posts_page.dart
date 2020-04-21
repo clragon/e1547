@@ -177,7 +177,7 @@ class _PostsPageState extends State<PostsPage> {
   }
 
   RefreshController _refreshController =
-  RefreshController(initialRefresh: false);
+      RefreshController(initialRefresh: false);
 
   void _clearPages() {
     setState(() {
@@ -295,60 +295,96 @@ class _PostsPageState extends State<PostsPage> {
                     showDialog(
                       context: context,
                       builder: (context) => AlertDialog(
-                        title: Text('${widget.pool.name.replaceAll('_', ' ')} (#${widget.pool.id})'),
-                        content: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            widget.pool.description != ''
-                                ? badTextField(
-                                    context, widget.pool.description)
-                                : Text(
+                        title: Text(
+                            '${widget.pool.name.replaceAll('_', ' ')} (#${widget.pool.id})'),
+                        content: ConstrainedBox(
+                            child: SingleChildScrollView(
+                              scrollDirection: Axis.vertical,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  widget.pool.description != ''
+                                      ? dTextField(
+                                      context, widget.pool.description)
+                                      : Text(
                                     'no description',
-                                    style:
-                                        TextStyle(fontStyle: FontStyle.italic),
+                                    style: TextStyle(
+                                        fontStyle: FontStyle.italic),
                                   ),
-                            Padding(
-                              padding: EdgeInsets.only(top: 16, bottom: 8),
-                              child: Divider(),
+                                  Padding(
+                                    padding: EdgeInsets.only(top: 16, bottom: 8),
+                                    child: Divider(),
+                                  ),
+                                  // Text('Pool info', style: TextStyle(color: textColor, fontWeight: FontWeight.bold)),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: <Widget>[
+                                      Text(
+                                        'posts',
+                                        style: TextStyle(color: textColor),
+                                      ),
+                                      Text(
+                                        widget.pool.postIDs.length.toString(),
+                                        style: TextStyle(color: textColor),
+                                      ),
+                                    ],
+                                  ),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: <Widget>[
+                                      Text(
+                                        'status',
+                                        style: TextStyle(color: textColor),
+                                      ),
+                                      widget.pool.active
+                                          ? Text(
+                                        'active',
+                                        style: TextStyle(color: textColor),
+                                      )
+                                          : Text(
+                                        'inactive',
+                                        style: TextStyle(color: textColor),
+                                      ),
+                                    ],
+                                  ),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: <Widget>[
+                                      Text(
+                                        'created',
+                                        style: TextStyle(color: textColor),
+                                      ),
+                                      Text(
+                                        dateFormat.format(
+                                            DateTime.parse(widget.pool.creation)
+                                                .toLocal()),
+                                        style: TextStyle(color: textColor),
+                                      ),
+                                    ],
+                                  ),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: <Widget>[
+                                      Text(
+                                        'updated',
+                                        style: TextStyle(color: textColor),
+                                      ),
+                                      Text(
+                                        dateFormat.format(
+                                            DateTime.parse(widget.pool.updated)
+                                                .toLocal()),
+                                        style: TextStyle(color: textColor),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              physics: BouncingScrollPhysics(),
                             ),
-                            // Text('Pool info', style: TextStyle(color: textColor, fontWeight: FontWeight.bold)),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Text('posts', style: TextStyle(color: textColor),),
-                                Text(widget.pool.postIDs.length.toString(), style: TextStyle(color: textColor),),
-                              ],
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Text('status', style: TextStyle(color: textColor),),
-                                widget.pool.active
-                                    ? Text('active', style: TextStyle(color: textColor),)
-                                    : Text('inactive', style: TextStyle(color: textColor),),
-                              ],
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Text('created', style: TextStyle(color: textColor),),
-                                Text(dateFormat.format(
-                                    DateTime.parse(widget.pool.creation)
-                                        .toLocal()), style: TextStyle(color: textColor),),
-                              ],
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Text('updated', style: TextStyle(color: textColor),),
-                                Text(dateFormat.format(
-                                    DateTime.parse(widget.pool.updated)
-                                        .toLocal()), style: TextStyle(color: textColor),),
-                              ],
-                            ),
-                          ],
-                        ),
+                            constraints: new BoxConstraints(
+                              maxHeight: 400.0,
+                            )),
                         actions: [
                           FlatButton(
                             child: Text('SHARE'),
@@ -598,16 +634,12 @@ class TagEntry extends StatelessWidget {
             maxLines: 1,
             inputFormatters: [new LowercaseTextInputFormatter()],
             decoration: InputDecoration(
-                labelText: 'Tags',
-                border: UnderlineInputBorder()),
+                labelText: 'Tags', border: UnderlineInputBorder()),
           ),
           onSuggestionSelected: (suggestion) {
-            List<String> tags =
-            controller.text.toString().split(' ');
-            if (suggestion
-                .contains(noDash(tags[tags.length - 1]))) {
-              tags[tags.length - 1] =
-              tags[tags.length - 1][0] == '-'
+            List<String> tags = controller.text.toString().split(' ');
+            if (suggestion.contains(noDash(tags[tags.length - 1]))) {
+              tags[tags.length - 1] = tags[tags.length - 1][0] == '-'
                   ? '-' + suggestion
                   : suggestion;
             } else {

@@ -216,7 +216,7 @@ class _CommentsWidgetState extends State<CommentsWidget> {
                     ),
                     Padding(
                       padding: EdgeInsets.only(bottom: 8),
-                      child: badTextField(context, comment.body),
+                      child: dTextField(context, comment.body),
                     )
                   ],
                 ),
