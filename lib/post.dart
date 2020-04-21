@@ -9,11 +9,11 @@ import 'package:e1547/comment.dart';
 import 'package:e1547/pool.dart';
 import 'package:e1547/posts_page.dart';
 import 'package:e1547/tag.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show SystemChrome, SystemUiOverlay;
 import 'package:flutter_cache_manager/flutter_cache_manager.dart'
     show DefaultCacheManager;
-import 'package:flutter_parsed_text/flutter_parsed_text.dart';
 import 'package:like_button/like_button.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:photo_view/photo_view.dart';
@@ -580,24 +580,27 @@ class _PostWidgetState extends State<PostWidget> {
                       child: new Icon(Icons.account_circle),
                     ),
                     widget.post.artist.length != 0
-                        ? new ParsedText(
-                            text: widget.post.artist.join(',\n'),
-                            style: TextStyle(
-                              fontSize: 16,
-                            ),
-                            parse: <MatchText>[
-                              new MatchText(
-                                  type: ParsedType.CUSTOM,
-                                  pattern: r'([^, ]+)',
-                                  onTap: (url) {
-                                    Navigator.of(context).push(
-                                        new MaterialPageRoute<Null>(
-                                            builder: (context) {
-                                      return new SearchPage(Tagset.parse(url));
+                        ? new RichText(
+                        text: TextSpan(
+                          children: () {
+                            List<TextSpan> spans = [];
+                            for (String artist in widget.post.artist.join(', ').split(' ')) {
+                              spans.add(TextSpan(
+                                text: artist + ' ',
+                                recognizer: new TapGestureRecognizer()
+                                ..onTap = () {
+                                    Navigator.of(context)
+                                        .push(new MaterialPageRoute<Null>(builder: (context) {
+                                      return new SearchPage(
+                                          new Tagset.parse(artist));
                                     }));
-                                  }),
-                            ],
-                          )
+                                },
+                              ));
+                            }
+                            return spans;
+                          }()
+                        ),
+                        )
                         : Text('no artist',
                             style: TextStyle(
                                 color: Colors.grey,

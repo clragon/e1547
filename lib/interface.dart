@@ -6,8 +6,6 @@ import 'package:e1547/tag.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_parsed_text/flutter_parsed_text.dart';
-import 'package:url_launcher/url_launcher.dart' as urlLauncher;
 import 'package:url_launcher/url_launcher.dart' as url;
 
 import 'client.dart';
@@ -122,76 +120,6 @@ class _BlockButtonState extends State<_BlockButton> {
       future: db.blacklist.value,
     );
   }
-}
-
-Widget badTextField(BuildContext context, String msg, {bool darkText = false}) {
-  RegExp quoteMatch = RegExp(
-    r'[\s\n]*\[(quote|code)\]((.)*?)\[/\1\]',
-    dotAll: true,
-  );
-
-  List<Widget> resolve(List<Widget> parts) {
-    List<Widget> newParts = [];
-    for (Widget part in parts) {
-      if (part is Text) {
-        if (quoteMatch.hasMatch(part.data)) {
-          Match match = quoteMatch.firstMatch(part.data);
-          int last = 0;
-          if (match.start != 0) {
-            newParts
-                .addAll(resolve([Text(part.data.substring(0, match.start))]));
-            last = match.start;
-          }
-          String child = part.data.substring(last, match.end);
-          child = child.replaceAllMapped(
-              RegExp(r'[\s\n]*\[\/*(quote|code)\][\s\n]*'), (match) {
-            return '';
-          });
-
-          newParts.add(
-            Card(
-              color: Colors.grey[900],
-              child: Padding(
-                padding: EdgeInsets.all(8),
-                child: Row(children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: resolve([Text(child)]),
-                    ),
-                  ),
-                ]),
-              ),
-            ),
-          );
-          if (match.end != part.data.length) {
-            newParts.addAll(resolve([
-              Text('\n' +
-                  part.data
-                      .substring(match.end, part.data.length)
-                      .replaceAllMapped(RegExp(r'^[\s\n]*'), (match) {
-                    return '';
-                  }))
-            ]));
-          }
-        } else {
-          newParts.add(
-            _parsedTextField(context, part.data, darkText: darkText),
-          );
-        }
-      } else {
-        newParts.add(part);
-      }
-    }
-    return newParts;
-  }
-
-  List<Widget> parts = resolve([Text(msg)]);
-
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: parts,
-  );
 }
 
 Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
@@ -461,8 +389,7 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
                   if (!sameSite) {
                     Navigator.of(context)
                         .push(new MaterialPageRoute<Null>(builder: (context) {
-                      return new SearchPage(
-                          new Tagset.parse(search));
+                      return new SearchPage(new Tagset.parse(search));
                     }));
                   }
                 },
@@ -522,9 +449,11 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
                       RegExp(r'(^[\r\n]*)|([\r\n]*$)'), (match) => '');
                   newParts.add(quoteWrap(toWidgets(getText(quoted, states))));
                   after = after.substring(split + end.length);
-                  after = '\n' +
-                      after.replaceAllMapped(
-                          RegExp(r'^[ \r\n]*'), (match) => '');
+                  after = after.replaceAllMapped(
+                      RegExp(r'^[ \r\n]*'), (match) => '');
+                  if (after != '') {
+                    after = '\n' + after;
+                  }
                 } else {
                   // display tag normally. inactive block tags are impossible.
                   newParts.addAll(resolve('\\[$tag\\]', states));
@@ -543,9 +472,11 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
                       RegExp(r'(^[\r\n]*)|([\r\n]*$)'), (match) => '');
                   newParts.add(quoteWrap(toWidgets(resolve(quoted, states))));
                   after = after.substring(split + end.length);
-                  after = '\n' +
-                      after.replaceAllMapped(
-                          RegExp(r'^[ \r\n]*'), (match) => '');
+                  after = after.replaceAllMapped(
+                      RegExp(r'^[ \r\n]*'), (match) => '');
+                  if (after != '') {
+                    after = '\n' + after;
+                  }
                 } else {
                   // display tag normally. inactive block tags are impossible.
                   newParts.addAll(resolve('\\[$tag\\]', states));
@@ -566,9 +497,11 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
                       toWidgets(resolve(quoted, states)), value,
                       expanded: expanded));
                   after = after.substring(split + end.length);
-                  after = '\n' +
-                      after.replaceAllMapped(
-                          RegExp(r'^[ \r\n]*'), (match) => '');
+                  after = after.replaceAllMapped(
+                      RegExp(r'^[ \r\n]*'), (match) => '');
+                  if (after != '') {
+                    after = '\n' + after;
+                  }
                 } else {
                   // display tag normally. inactive block tags are impossible.
                   newParts.addAll(resolve('\\[$tag\\]', states));
@@ -614,54 +547,51 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
             newParts.addAll(resolve(before, states));
           }
 
-          if (word != 'thumb') {
-            newParts.add(TextSpan(
-              text: match,
-              recognizer: new TapGestureRecognizer()
-                ..onTap = () {
-                  switch (word) {
-                    case 'post':
-                      return () async {
-                        Post p =
-                            await client.post(int.parse(match.split('#')[1]));
-                        Navigator.of(context).push(
-                            new MaterialPageRoute<Null>(builder: (context) {
-                          return new PostWidget(p);
-                        }));
-                      };
-                      break;
-                    case 'pool':
-                      return () async {
-                        Pool p = await client
-                            .poolById(int.parse(match.split('#')[1]));
-                        Navigator.of(context).push(
-                            new MaterialPageRoute<Null>(builder: (context) {
-                          return new PoolPage(p);
-                        }));
-                      };
-                      break;
-                    default:
-                      return () {};
-                      break;
-                  }
-                }(),
-              style: TextStyle(
-                color: Colors.blue[400],
-                fontWeight:
-                    states['bold'] ? FontWeight.bold : FontWeight.normal,
-                fontStyle:
-                    states['italic'] ? FontStyle.italic : FontStyle.normal,
-                decoration: TextDecoration.combine([
-                  states['strike']
-                      ? TextDecoration.lineThrough
-                      : TextDecoration.none,
-                  states['underline']
-                      ? TextDecoration.underline
-                      : TextDecoration.none,
-                ]),
-              ),
-            ));
-          }
+          newParts.add(TextSpan(
+            text: match,
+            recognizer: new TapGestureRecognizer()
+              ..onTap = () {
+                switch (word) {
+                  case 'thumb':
+                  case 'post':
+                    return () async {
+                      Post p =
+                          await client.post(int.parse(match.split('#')[1]));
+                      Navigator.of(context)
+                          .push(new MaterialPageRoute<Null>(builder: (context) {
+                        return new PostWidget(p);
+                      }));
+                    };
+                    break;
+                  case 'pool':
+                    return () async {
+                      Pool p =
+                          await client.poolById(int.parse(match.split('#')[1]));
+                      Navigator.of(context)
+                          .push(new MaterialPageRoute<Null>(builder: (context) {
+                        return new PoolPage(p);
+                      }));
+                    };
+                    break;
+                  default:
+                    return () {};
+                    break;
+                }
+              }(),
+            style: TextStyle(
+              color: Colors.blue[400],
+              fontWeight: states['bold'] ? FontWeight.bold : FontWeight.normal,
+              fontStyle: states['italic'] ? FontStyle.italic : FontStyle.normal,
+              decoration: TextDecoration.combine([
+                states['strike']
+                    ? TextDecoration.lineThrough
+                    : TextDecoration.none,
+                states['underline']
+                    ? TextDecoration.underline
+                    : TextDecoration.none,
+              ]),
+            ),
+          ));
 
           if (after != '') {
             newParts.addAll(resolve(after, states));
@@ -672,8 +602,8 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
     }
 
     RegExp linkRex = RegExp(
-        r'(".+":)*https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)');
-    RegExp inSite = RegExp(r'(".+":)([-a-zA-Z0-9()@:%_\+.~#?&//=]*)');
+        r'("[^"]+?":)?https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*?)([^\s]+)');
+    RegExp inSite = RegExp(r'("[^"]+?":)([-a-zA-Z0-9()@:%_\+.~#?&//=]*)');
 
     for (RegExp word in [linkRex, inSite]) {
       if (word.hasMatch(msg)) {
@@ -687,9 +617,11 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
           }
 
           String display = match;
+          String search = match;
           if (match[0] == '"') {
-            int end = match.substring(1).indexOf('"');
-            display = match.substring(1, end + 1);
+            int end = match.substring(1).indexOf(':');
+            display = match.substring(1, end);
+            search = match.substring(end + 2, match.length - 1);
           }
           if (display[display.length - 1] == '/') {
             display = display.substring(0, display.length - 1);
@@ -701,7 +633,7 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
               ..onTap = () {
                 if (word == linkRex) {
                   return () async {
-                    url.launch(match);
+                    url.launch(search);
                   };
                 }
                 if (word == inSite) {
@@ -834,11 +766,10 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
           text: match.replaceAllMapped(RegExp(r'(^{{*)|(}}*$)'), (b) => ''),
           recognizer: new TapGestureRecognizer()
             ..onTap = () {
-                Navigator.of(context)
-                    .push(new MaterialPageRoute<Null>(builder: (context) {
-                  return new SearchPage(
-                      new Tagset.parse(match.split('|')[0]));
-                }));
+              Navigator.of(context)
+                  .push(new MaterialPageRoute<Null>(builder: (context) {
+                return new SearchPage(new Tagset.parse(match.split('|')[0]));
+              }));
             },
           style: TextStyle(
             color: Colors.blue[400],
@@ -881,205 +812,5 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: toWidgets(parts),
-  );
-}
-
-Widget _parsedTextField(BuildContext context, String msg,
-    {bool darkText = false}) {
-  return ParsedText(
-    text: msg,
-    style: new TextStyle(
-      color: darkText ? Colors.grey[600] : Colors.grey[300],
-    ),
-    parse: <MatchText>[
-      new MatchText(
-        type: ParsedType.CUSTOM,
-        pattern: r'h[1-6]\..*',
-        style: TextStyle(
-          fontWeight: FontWeight.bold,
-        ),
-        renderText: ({String str, String pattern}) {
-          String display = str;
-          display = display.replaceAll(RegExp(r'h[1-6]\. ?'), '');
-          Map<String, String> map = Map<String, String>();
-          map['display'] = display;
-          map['value'] = str;
-          return map;
-        },
-      ),
-      new MatchText(
-          type: ParsedType.CUSTOM,
-          pattern: r'\[b\].*\[/b\]',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-          ),
-          renderText: ({String str, String pattern}) {
-            String display = str;
-            display = display.replaceAll('[b]', '');
-            display = display.replaceAll('[/b]', '');
-            Map<String, String> map = Map<String, String>();
-            map['display'] = display;
-            map['value'] = str;
-            return map;
-          }),
-      new MatchText(
-          type: ParsedType.CUSTOM,
-          pattern: r'\[i\].*\[/i\]',
-          style: TextStyle(
-            fontStyle: FontStyle.italic,
-          ),
-          renderText: ({String str, String pattern}) {
-            String display = str;
-            display = display.replaceAll('[i]', '');
-            display = display.replaceAll('[/i]', '');
-            Map<String, String> map = Map<String, String>();
-            map['display'] = display;
-            map['value'] = str;
-            return map;
-          }),
-      new MatchText(
-          type: ParsedType.CUSTOM,
-          pattern: r'\[s\].*\[/s\]',
-          style: TextStyle(
-            fontStyle: FontStyle.italic,
-          ),
-          renderText: ({String str, String pattern}) {
-            String display = str;
-            display = display.replaceAll('[s]', '');
-            display = display.replaceAll('[/s]', '');
-            Map<String, String> map = Map<String, String>();
-            map['display'] = display;
-            map['value'] = str;
-            return map;
-          }),
-      new MatchText(
-          type: ParsedType.CUSTOM,
-          pattern: r'(^|\n)\*+',
-          renderText: ({String str, String pattern}) {
-            String display = str;
-            display = '\n' + '  ' * ('*'.allMatches(display).length - 1) + '•';
-            Map<String, String> map = Map<String, String>();
-            map['display'] = display;
-            map['value'] = str;
-            return map;
-          }),
-      new MatchText(
-        type: ParsedType.CUSTOM,
-        pattern: r'(\[\[.*?\]\])|({{.*?}})',
-        style: new TextStyle(
-          color: Colors.blue[400],
-        ),
-        renderText: ({String str, String pattern}) {
-          String display = str;
-          display = display.replaceAll('{{', '');
-          display = display.replaceAll('}}', '');
-          display = display.replaceAll('[[', '');
-          display = display.replaceAll(']]', '');
-          String value = display;
-          if (display.contains('|')) {
-            value = display.split('|')[0];
-            display = display.split('|')[1];
-          }
-          Map<String, String> map = Map<String, String>();
-          map['display'] = display;
-          map['value'] = value;
-          return map;
-        },
-        onTap: (url) {
-          Navigator.of(context)
-              .push(new MaterialPageRoute<Null>(builder: (context) {
-            return new SearchPage(new Tagset.parse(url));
-          }));
-        },
-      ),
-      new MatchText(
-          type: ParsedType.CUSTOM,
-          pattern: r'(post #[0-9]{2,7})',
-          style: new TextStyle(
-            color: Colors.blue[400],
-          ),
-          onTap: (url) async {
-            Post p = await client.post(int.parse(url.split('#')[1]));
-            Navigator.of(context)
-                .push(new MaterialPageRoute<Null>(builder: (context) {
-              return new PostWidget(p);
-            }));
-          }),
-      new MatchText(
-          type: ParsedType.CUSTOM,
-          pattern: r'(pool #[0-9]{1,5})',
-          style: new TextStyle(
-            color: Colors.blue[400],
-          ),
-          onTap: (url) async {
-            Pool p = await client.poolById(int.parse(url.split('#')[1]));
-            Navigator.of(context)
-                .push(new MaterialPageRoute<Null>(builder: (context) {
-              return new PoolPage(p);
-            }));
-          }),
-      new MatchText(
-        type: ParsedType.CUSTOM,
-        pattern: r'(thumb #[0-9]{2,8})',
-        style: new TextStyle(
-          color: Colors.blue[400],
-        ),
-        renderText: ({String str, String pattern}) {
-          Map<String, String> map = Map<String, String>();
-          map['display'] = '';
-          map['value'] = '';
-          return map;
-        },
-      ),
-      new MatchText(
-        type: ParsedType.CUSTOM,
-        pattern:
-            r'(".+":)*https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*[^\s]+)',
-        style: new TextStyle(
-          color: Colors.blue[400],
-        ),
-        renderText: ({String str, String pattern}) {
-          String display;
-          String value;
-          if (str.contains('"')) {
-            display = str.split('"')[1];
-            value = str.split('":')[1];
-          } else {
-            display = str.replaceAll('https://', '');
-            value = str;
-          }
-          if (display[display.length - 1] == '/') {
-            display = display.substring(0, display.length - 1);
-          }
-          Map<String, String> map = Map<String, String>();
-          map['display'] = display;
-          map['value'] = value;
-          return map;
-        },
-        onTap: (url) {
-          urlLauncher.launch(url);
-        },
-      ),
-      new MatchText(
-        type: ParsedType.CUSTOM,
-        pattern: r'(".+":)([-a-zA-Z0-9()@:%_\+.~#?&//=]*[^\s]+)',
-        style: new TextStyle(
-          color: Colors.blue[400],
-        ),
-        renderText: ({String str, String pattern}) {
-          String display;
-          String value;
-          display = str.split('"')[1];
-          value = str.split('":')[1];
-          if (display[display.length - 1] == '/') {
-            display = display.substring(0, display.length - 1);
-          }
-          Map<String, String> map = Map<String, String>();
-          map['display'] = display;
-          map['value'] = value;
-          return map;
-        },
-      ),
-    ],
   );
 }

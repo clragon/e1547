@@ -1,7 +1,7 @@
 name: e1547
 description: A mobile app for e621+e926.
 
-version: 1.2.6+16
+version: 1.2.7+17
 
 environment:
   sdk: ">=2.2.2 <3.0.0"
@@ -12,7 +12,6 @@ dependencies:
   flutter_typeahead: ^1.8.0
   pull_to_refresh: ^1.5.8
   icon_shadow: ^1.0.1
-  flutter_parsed_text: ^1.2.4
 
   url_launcher: ^5.4.2
   share: ^0.6.3+6
