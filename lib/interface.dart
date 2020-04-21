@@ -213,7 +213,8 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
     }
 
     // get string in plain text. no parsing.
-    List<dynamic> getText(String msg, Map<String, bool> states) {
+    List<TextSpan> getText(String msg, Map<String, bool> states,
+        {Function() onTap}) {
       msg = msg.replaceAll('\\[', '[');
       msg = msg.replaceAll('\\]', ']');
 
@@ -222,8 +223,11 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
       return [
         TextSpan(
           text: msg,
+          recognizer: new TapGestureRecognizer()..onTap = onTap,
           style: TextStyle(
-            color: darkText ? Colors.grey[600] : null,
+            color: states['link']
+                ? Colors.blue[400]
+                : states['dark'] ? Colors.grey[600] : null,
             fontWeight: states['bold'] ? FontWeight.bold : FontWeight.normal,
             fontStyle: states['italic'] ? FontStyle.italic : FontStyle.normal,
             decoration: TextDecoration.combine([
@@ -316,7 +320,7 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
         tag = msg.substring(start + 1, end);
         after = msg.substring(end + 1, msg.length);
 
-        if (tag != '') {
+        if (tag.isNotEmpty) {
           // whether tag is starting or ending
           bool active;
           // the actual tag
@@ -349,174 +353,139 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
             value = tag.substring(equal + 1);
           }
 
+          // block tag check.
+          // prepare block beforehand,
+          // so spaces can be removed
+
+          Widget blocked;
+          RegExp blankLess = RegExp(r'(^[\r\n]*)|([\r\n]*$)');
+
           switch (key) {
-            case 'quote':
+            case 'spoiler':
+              // maybe with a wrap.
+              break;
             case 'code':
+              if (active) {
+                String end = '[/code]';
+                int split = after.indexOf(end);
+                if (split == -1) {
+                  blocked = quoteWrap(toWidgets(getText(
+                      after
+                          .substring(0, split)
+                          .replaceAllMapped(blankLess, (match) => ''),
+                      states)));
+                  after = after.substring(split + end.length);
+                  break;
+                }
+              }
+              break;
+            case 'quote':
+              if (active) {
+                String end = '[/quote]';
+                int split = after.indexOf(end);
+                if (split != -1) {
+                  blocked = quoteWrap(toWidgets(resolve(
+                      after
+                          .substring(0, split)
+                          .replaceAllMapped(blankLess, (match) => ''),
+                      states)));
+                  after = after.substring(split + end.length);
+                  break;
+                }
+              }
+              break;
             case 'section':
-              before =
-                  before.replaceAllMapped(RegExp(r'[\r\n]*$'), (match) => '');
+              if (active) {
+                String end = '[/section]';
+                int split = after.indexOf(end);
+                if (split != -1) {
+                  blocked = sectionWrap(
+                      toWidgets(resolve(
+                          after
+                              .substring(0, split)
+                              .replaceAllMapped(blankLess, (match) => ''),
+                          states)),
+                      value,
+                      expanded: expanded);
+                  after = after.substring(split + end.length);
+                  // newParts.addAll(resolve('\\[$tag\\]', states));
+                  break;
+                }
+              }
               break;
           }
 
-          if (before != '') {
-            newParts.addAll(resolve(before, states));
-          }
-
-          // if double bracket, return this.
-          if (isFat) {
-            key = key.substring(1, key.length - 1);
-            bool sameSite = false;
-            if (key[0] == '#') {
-              key = key.substring(1);
-              sameSite = true;
+          if (blocked != null) {
+            // remove all the spaces around blocks
+            before =
+                before.replaceAllMapped(RegExp(r'[\r\n]*$'), (match) => '');
+            after = after.replaceAllMapped(RegExp(r'^[ \r\n]*'), (match) => '');
+            if (after.isNotEmpty) {
+              after = '\n' + after;
             }
 
-            String display;
-            String search;
-
-            if (key.contains('|')) {
-              search = key.split('|')[0];
-              display = key.split('|')[1];
-            } else {
-              search = key;
-              display = key;
+            if (before.isNotEmpty) {
+              newParts.addAll(resolve(before, states));
             }
 
-            newParts.add(TextSpan(
-              text: display,
-              recognizer: new TapGestureRecognizer()
-                ..onTap = () {
-                  if (!sameSite) {
-                    Navigator.of(context)
-                        .push(new MaterialPageRoute<Null>(builder: (context) {
-                      return new SearchPage(new Tagset.parse(search));
-                    }));
-                  }
-                },
-              style: TextStyle(
-                color: Colors.blue[400],
-                fontWeight:
-                    states['bold'] ? FontWeight.bold : FontWeight.normal,
-                fontStyle:
-                    states['italic'] ? FontStyle.italic : FontStyle.normal,
-                decoration: TextDecoration.combine([
-                  states['strike']
-                      ? TextDecoration.lineThrough
-                      : TextDecoration.none,
-                  states['underline']
-                      ? TextDecoration.underline
-                      : TextDecoration.none,
-                ]),
-              ),
-            ));
+            // add block
+            newParts.add(blocked);
+
+            if (after.isNotEmpty) {
+              newParts.addAll(resolve(after, states));
+            }
           } else {
-            switch (key) {
+
+            Map<String, bool> oldStates = Map.from(states);
+            bool triggered = false;
+
+            // add textStyle
+            switch (key.toLowerCase()) {
               case 'b':
                 states['bold'] = active;
+                triggered = true;
                 break;
               case 'i':
                 states['italic'] = active;
+                triggered = true;
                 break;
               case 'u':
                 states['underline'] = active;
+                triggered = true;
                 break;
               case 's':
                 states['strike'] = active;
+                triggered = true;
                 break;
               case 'color':
                 // ignore color tags
                 // they're insanely hard to implement.
+                triggered = true;
                 break;
               case 'sup':
                 // I have no idea how to implement this.
+                triggered = true;
                 break;
               case 'sub':
                 // I have no idea how to implement this.
+                triggered = true;
                 break;
-              case 'spoiler':
-                // maybe with a wrap.
-                break;
-              case 'code':
-                if (active) {
-                  String end = '[/code]';
-                  int split = after.indexOf(end);
-                  if (split == -1) {
-                    newParts.addAll(resolve('\\[$tag\\]', states));
-                    break;
-                  }
-                  String quoted = after.substring(0, split);
-                  quoted = quoted.replaceAllMapped(
-                      RegExp(r'(^[\r\n]*)|([\r\n]*$)'), (match) => '');
-                  newParts.add(quoteWrap(toWidgets(getText(quoted, states))));
-                  after = after.substring(split + end.length);
-                  after = after.replaceAllMapped(
-                      RegExp(r'^[ \r\n]*'), (match) => '');
-                  if (after != '') {
-                    after = '\n' + after;
-                  }
-                } else {
-                  // display tag normally. inactive block tags are impossible.
-                  newParts.addAll(resolve('\\[$tag\\]', states));
-                }
-                break;
-              case 'quote':
-                if (active) {
-                  String end = '[/quote]';
-                  int split = after.indexOf(end);
-                  if (split == -1) {
-                    newParts.addAll(resolve('\\[$tag\\]', states));
-                    break;
-                  }
-                  String quoted = after.substring(0, split);
-                  quoted = quoted.replaceAllMapped(
-                      RegExp(r'(^[\r\n]*)|([\r\n]*$)'), (match) => '');
-                  newParts.add(quoteWrap(toWidgets(resolve(quoted, states))));
-                  after = after.substring(split + end.length);
-                  after = after.replaceAllMapped(
-                      RegExp(r'^[ \r\n]*'), (match) => '');
-                  if (after != '') {
-                    after = '\n' + after;
-                  }
-                } else {
-                  // display tag normally. inactive block tags are impossible.
-                  newParts.addAll(resolve('\\[$tag\\]', states));
-                }
-                break;
-              case 'section':
-                if (active) {
-                  String end = '[/section]';
-                  int split = after.indexOf(end);
-                  if (split == -1) {
-                    newParts.addAll(resolve('\\[$tag\\]', states));
-                    break;
-                  }
-                  String quoted = after.substring(0, split);
-                  quoted = quoted.replaceAllMapped(
-                      RegExp(r'(^[\r\n]*)|([\r\n]*$)'), (match) => '');
-                  newParts.add(sectionWrap(
-                      toWidgets(resolve(quoted, states)), value,
-                      expanded: expanded));
-                  after = after.substring(split + end.length);
-                  after = after.replaceAllMapped(
-                      RegExp(r'^[ \r\n]*'), (match) => '');
-                  if (after != '') {
-                    after = '\n' + after;
-                  }
-                } else {
-                  // display tag normally. inactive block tags are impossible.
-                  newParts.addAll(resolve('\\[$tag\\]', states));
-                }
-                break;
-              default:
-                newParts.addAll(resolve('\\[$tag\\]', states));
-                break;
+            }
+
+            if (triggered) {
+              if (before.isNotEmpty) {
+                newParts.addAll(resolve(before, oldStates));
+              }
+
+              if (after.isNotEmpty) {
+                newParts.addAll(resolve(after, states));
+              }
+            } else {
+             newParts.addAll(resolve('$before\\[$key\\]$after', states));
             }
           }
         }
 
-        if (after != '') {
-          newParts.addAll(resolve(after, states));
-        }
         return newParts;
       }
     }
@@ -543,57 +512,41 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
           String match = msg.substring(wordMatch.start, wordMatch.end);
           String after = msg.substring(wordMatch.end, msg.length);
 
-          if (before != '') {
+          if (before.isNotEmpty) {
             newParts.addAll(resolve(before, states));
           }
 
-          newParts.add(TextSpan(
-            text: match,
-            recognizer: new TapGestureRecognizer()
-              ..onTap = () {
-                switch (word) {
-                  case 'thumb':
-                  case 'post':
-                    return () async {
-                      Post p =
-                          await client.post(int.parse(match.split('#')[1]));
-                      Navigator.of(context)
-                          .push(new MaterialPageRoute<Null>(builder: (context) {
-                        return new PostWidget(p);
-                      }));
-                    };
-                    break;
-                  case 'pool':
-                    return () async {
-                      Pool p =
-                          await client.poolById(int.parse(match.split('#')[1]));
-                      Navigator.of(context)
-                          .push(new MaterialPageRoute<Null>(builder: (context) {
-                        return new PoolPage(p);
-                      }));
-                    };
-                    break;
-                  default:
-                    return () {};
-                    break;
-                }
-              }(),
-            style: TextStyle(
-              color: Colors.blue[400],
-              fontWeight: states['bold'] ? FontWeight.bold : FontWeight.normal,
-              fontStyle: states['italic'] ? FontStyle.italic : FontStyle.normal,
-              decoration: TextDecoration.combine([
-                states['strike']
-                    ? TextDecoration.lineThrough
-                    : TextDecoration.none,
-                states['underline']
-                    ? TextDecoration.underline
-                    : TextDecoration.none,
-              ]),
-            ),
-          ));
+          states['link'] = true;
 
-          if (after != '') {
+          Function onTap;
+
+          switch (word) {
+            case 'thumb':
+            case 'post':
+              onTap = () async {
+                Post p = await client.post(int.parse(match.split('#')[1]));
+                Navigator.of(context)
+                    .push(new MaterialPageRoute<Null>(builder: (context) {
+                  return new PostWidget(p);
+                }));
+              };
+              break;
+            case 'pool':
+              onTap = () async {
+                Pool p = await client.poolById(int.parse(match.split('#')[1]));
+                Navigator.of(context)
+                    .push(new MaterialPageRoute<Null>(builder: (context) {
+                  return new PoolPage(p);
+                }));
+              };
+              break;
+          }
+
+          newParts.addAll(getText(match, states, onTap: onTap));
+
+          states['link'] = false;
+
+          if (after.isNotEmpty) {
             newParts.addAll(resolve(after, states));
           }
           return newParts;
@@ -602,8 +555,8 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
     }
 
     RegExp linkRex = RegExp(
-        r'("[^"]+?":)?https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*?)([^\s]+)');
-    RegExp inSite = RegExp(r'("[^"]+?":)([-a-zA-Z0-9()@:%_\+.~#?&//=]*)');
+        r'("[^"]+?":)?(http(s)?)?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*?)([^\s]+)');
+    RegExp inSite = RegExp(r'("[^"]+?":)([-a-zA-Z0-9()@:%_\+.~#?&//=]*)([^\s]+)');
 
     for (RegExp word in [linkRex, inSite]) {
       if (word.hasMatch(msg)) {
@@ -612,51 +565,102 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
           String match = msg.substring(wordMatch.start, wordMatch.end);
           String after = msg.substring(wordMatch.end, msg.length);
 
-          if (before != '') {
+          if (before.isNotEmpty) {
             newParts.addAll(resolve(before, states));
+          }
+
+          // if the url ends with any ending,
+          // remove the ending from the string
+          if (['.', ',', '!', '?', ':'].any((ending) { return ending == match[match.length -1]; })) {
+            match = msg.substring(wordMatch.start, wordMatch.end -1);
+            after = msg.substring(wordMatch.end -1, msg.length);
+          }
+
+          if (match.endsWith('/')) {
+            match = match.substring(0, match.length - 1);
           }
 
           String display = match;
           String search = match;
           if (match[0] == '"') {
-            int end = match.substring(1).indexOf(':');
+            int end = match.substring(1).indexOf('"') +1;
             display = match.substring(1, end);
-            search = match.substring(end + 2, match.length - 1);
-          }
-          if (display[display.length - 1] == '/') {
-            display = display.substring(0, display.length - 1);
+            search = match.substring(end + 2);
           }
 
-          newParts.add(TextSpan(
-            text: display,
-            recognizer: new TapGestureRecognizer()
-              ..onTap = () {
-                if (word == linkRex) {
-                  return () async {
-                    url.launch(search);
-                  };
-                }
-                if (word == inSite) {
-                  return () {};
-                }
-                return () {};
-              }(),
-            style: TextStyle(
-              color: Colors.blue[400],
-              fontWeight: states['bold'] ? FontWeight.bold : FontWeight.normal,
-              fontStyle: states['italic'] ? FontStyle.italic : FontStyle.normal,
-              decoration: TextDecoration.combine([
-                states['strike']
-                    ? TextDecoration.lineThrough
-                    : TextDecoration.none,
-                states['underline']
-                    ? TextDecoration.underline
-                    : TextDecoration.none,
-              ]),
-            ),
-          ));
 
-          if (after != '') {
+          states['link'] = true;
+
+          Function onTap;
+
+          if (word == linkRex) {
+            onTap = () async {
+              url.launch(search);
+            };
+            try {
+              if (RegExp(r'(e621\.net|e926\.net)/posts/[0-9]{1,9}').hasMatch(search)) {
+                int id = int.parse(search.split('/').last.split('?').first);
+                onTap = () async {
+                  Post p = await client.post(id);
+                  Navigator.of(context)
+                      .push(new MaterialPageRoute<Null>(builder: (context) {
+                    return new PostWidget(p);
+                  }));
+                };
+              }
+              if (RegExp(r'(e621\.net|e926\.net)/pool(s|/show)/[0-9]{1,9}').hasMatch(search)) {
+                int id = int.parse(search.split('/').last);
+                onTap = () async {
+                  Pool p = await client.poolById(id);
+                  Navigator.of(context)
+                      .push(new MaterialPageRoute<Null>(builder: (context) {
+                    return new PoolPage(p);
+                  }));
+                };
+              }
+            } catch (Exception) {
+              // parsing this ain't safe
+              // and its not a temporary solution.
+              // but we're gonna give it a try because its neat if it works.
+            }
+          }
+          if (word == inSite) {
+            onTap = () async {
+              url.launch(await db.host.value + search);
+            };
+            try {
+              if (search.startsWith('/posts/')) {
+                int start = match.substring(1).indexOf('/') +1;
+                int id = int.parse(match.substring(start));
+                onTap = () async {
+                  Post p = await client.post(id);
+                  Navigator.of(context)
+                      .push(new MaterialPageRoute<Null>(builder: (context) {
+                    return new PostWidget(p);
+                  }));
+                };
+              }
+              if (search.startsWith('/pools/')) {
+                int start = match.substring(1).indexOf('/') +1;
+                int id = int.parse(match.substring(start));
+                onTap = () async {
+                  Pool p = await client.poolById(id);
+                  Navigator.of(context)
+                      .push(new MaterialPageRoute<Null>(builder: (context) {
+                    return new PoolPage(p);
+                  }));
+                };
+              }
+            } catch (Exception) {
+             // uh oh
+            }
+          }
+
+          newParts.addAll(getText(display, states, onTap: onTap));
+
+          states['link'] = false;
+
+          if (after.isNotEmpty) {
             newParts.addAll(resolve(after, states));
           }
           return newParts;
@@ -668,37 +672,20 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
 
     if (head.hasMatch(msg)) {
       for (Match wordMatch in head.allMatches(msg)) {
-        int end = msg.substring(wordMatch.start).indexOf('\n');
-        if (end == -1) {
-          end = msg.length - 1;
-        }
-
         String before = msg.substring(0, wordMatch.start);
         String match = msg.substring(wordMatch.start, wordMatch.end);
         String after = msg.substring(wordMatch.end, msg.length);
 
-        if (before != '') {
+        if (before.isNotEmpty) {
           newParts.addAll(resolve(before, states));
         }
+        states['headline'] = true;
 
-        newParts.add(TextSpan(
-          text: match.substring(3),
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            fontStyle: states['italic'] ? FontStyle.italic : FontStyle.normal,
-            decoration: TextDecoration.combine([
-              states['strike']
-                  ? TextDecoration.lineThrough
-                  : TextDecoration.none,
-              states['underline']
-                  ? TextDecoration.underline
-                  : TextDecoration.none,
-            ]),
-          ),
-        ));
+        newParts.addAll(resolve(match.substring(3), states));
 
-        if (after != '') {
+        states['headline'] = false;
+
+        if (after.isNotEmpty) {
           newParts.addAll(resolve(after, states));
         }
         return newParts;
@@ -709,36 +696,18 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
 
     if (list.hasMatch(msg)) {
       for (Match wordMatch in list.allMatches(msg)) {
-        int end = msg.substring(wordMatch.start).indexOf('\n');
-        if (end == -1) {
-          end = msg.length - 1;
-        }
-
         String before = msg.substring(0, wordMatch.start);
         String match = msg.substring(wordMatch.start, wordMatch.end);
         String after = msg.substring(wordMatch.end, msg.length);
 
-        if (before != '') {
+        if (before.isNotEmpty) {
           newParts.addAll(resolve(before, states));
         }
 
-        newParts.add(TextSpan(
-          text: '\n' + '  ' * ('*'.allMatches(match).length - 1) + '• ',
-          style: TextStyle(
-            fontWeight: states['bold'] ? FontWeight.bold : FontWeight.normal,
-            fontStyle: states['italic'] ? FontStyle.italic : FontStyle.normal,
-            decoration: TextDecoration.combine([
-              states['strike']
-                  ? TextDecoration.lineThrough
-                  : TextDecoration.none,
-              states['underline']
-                  ? TextDecoration.underline
-                  : TextDecoration.none,
-            ]),
-          ),
-        ));
+        newParts.addAll(resolve(
+            '\n' + '  ' * ('*'.allMatches(match).length - 1) + '• ', states));
 
-        if (after != '') {
+        if (after.isNotEmpty) {
           newParts.addAll(resolve(after, states));
         }
         return newParts;
@@ -749,46 +718,79 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
 
     if (tagSearch.hasMatch(msg)) {
       for (Match wordMatch in tagSearch.allMatches(msg)) {
-        int end = msg.substring(wordMatch.start).indexOf('\n');
-        if (end == -1) {
-          end = msg.length - 1;
-        }
-
         String before = msg.substring(0, wordMatch.start);
-        String match = msg.substring(wordMatch.start, wordMatch.end);
+        String match = msg.substring(wordMatch.start + 2, wordMatch.end - 2);
         String after = msg.substring(wordMatch.end, msg.length);
 
-        if (before != '') {
+        if (before.isNotEmpty) {
           newParts.addAll(resolve(before, states));
         }
 
-        newParts.add(TextSpan(
-          text: match.replaceAllMapped(RegExp(r'(^{{*)|(}}*$)'), (b) => ''),
-          recognizer: new TapGestureRecognizer()
-            ..onTap = () {
-              Navigator.of(context)
-                  .push(new MaterialPageRoute<Null>(builder: (context) {
-                return new SearchPage(new Tagset.parse(match.split('|')[0]));
-              }));
-            },
-          style: TextStyle(
-            color: Colors.blue[400],
-            fontWeight: states['bold'] ? FontWeight.bold : FontWeight.normal,
-            fontStyle: states['italic'] ? FontStyle.italic : FontStyle.normal,
-            decoration: TextDecoration.combine([
-              states['strike']
-                  ? TextDecoration.lineThrough
-                  : TextDecoration.none,
-              states['underline']
-                  ? TextDecoration.underline
-                  : TextDecoration.none,
-            ]),
-          ),
-        ));
+        states['link'] = true;
 
-        if (after != '') {
+        Function onTap = () {
+          Navigator.of(context)
+              .push(new MaterialPageRoute<Null>(builder: (context) {
+            return new SearchPage(new Tagset.parse(match.split('|')[0]));
+          }));
+        };
+
+        newParts..addAll(getText(match, states, onTap: onTap));
+
+        states['link'] = false;
+
+        if (after.isNotEmpty) {
           newParts.addAll(resolve(after, states));
         }
+        return newParts;
+      }
+    }
+
+    RegExp wikiTag = RegExp(r'[[.*?]]');
+
+    if (wikiTag.hasMatch(msg)) {
+      for (Match wordMatch in wikiTag.allMatches(msg)) {
+        String before = msg.substring(0, wordMatch.start);
+        String match = msg.substring(wordMatch.start + 2, wordMatch.end - 2);
+        String after = msg.substring(wordMatch.end, msg.length);
+
+        if (before.isNotEmpty) {
+          newParts.addAll(resolve(before, states));
+        }
+
+        states['link'] = true;
+
+        Function onTap;
+        bool sameSite;
+
+        if (match[0] == '#') {
+          match = match.substring(1);
+          sameSite = true;
+        }
+
+        String display = match;
+        String search = match;
+
+        if (match.contains('|')) {
+          search = match.split('|')[0];
+          display = match.split('|')[1];
+        }
+
+        if (!sameSite) {
+          onTap = () => Navigator.of(context)
+                  .push(new MaterialPageRoute<Null>(builder: (context) {
+                return new SearchPage(new Tagset.parse(search));
+              }));
+        }
+
+        newParts.addAll(getText(display, states, onTap: onTap));
+
+        states['link'] = false;
+
+        if (after.isNotEmpty) {
+          newParts.addAll(resolve(after, states));
+        }
+
         return newParts;
       }
     }
@@ -804,6 +806,8 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
     'strike': false,
     'underline': false,
     'headline': false,
+    'link': false,
+    'dark': darkText,
   };
 
   // call with initial string
