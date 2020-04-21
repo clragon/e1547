@@ -5,11 +5,16 @@ A mobile app to browse e621 and e926
 
 - Browsing and searching posts
 - Saves the current search tags on the home page
+- Upvote and downvote posts
+- Download posts
 - Quick access to Hot and your favorites in the drawer
+- Almost completey post info, clickable tags
+- Longpress tags to display their wiki entry and quickly blacklist them
+- Local blacklist
 - Browse and search pools
 - Pool descriptions with clickable links (e.g. to other pools)
+- DText parsing
 - Hide Webm posts (Support for playing Webm is under development)
-- Clickable artist names for a quick search
 - Check for app updates in About
  
 
