@@ -255,6 +255,8 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
       // string after bracket
       String after = '';
 
+      // if double bracket
+      bool isFat = false;
       // index of starting bracket
       int start = -1;
       // index of ending bracket
@@ -294,6 +296,7 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
           start = startMatch.start;
           if (msg.indexOf(']]') != -1) {
             end = msg.indexOf(']]') + 1;
+            isFat = true;
           } else {
             continue;
           }
@@ -350,137 +353,180 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
             value = tag.substring(equal + 1);
           }
 
-          // block tag check.
-          // prepare block beforehand,
-          // so spaces can be removed
-
-          Widget blocked;
-          RegExp blankLess = RegExp(r'(^[\r\n]*)|([\r\n]*$)');
-
-          switch (key.toLowerCase()) {
-            case 'spoiler':
-              // maybe with a wrap.
-              break;
-            case 'code':
-              if (active) {
-                String end = '[/code]';
-                int split = after.indexOf(end);
-                if (split == -1) {
-                  blocked = quoteWrap(toWidgets(getText(
-                      after
-                          .substring(0, split)
-                          .replaceAllMapped(blankLess, (match) => ''),
-                      states)));
-                  after = after.substring(split + end.length);
-                  break;
-                }
-              }
-              break;
-            case 'quote':
-              if (active) {
-                String end = '[/quote]';
-                int split = after.indexOf(end);
-                if (split != -1) {
-                  blocked = quoteWrap(toWidgets(resolve(
-                      after
-                          .substring(0, split)
-                          .replaceAllMapped(blankLess, (match) => ''),
-                      states)));
-                  after = after.substring(split + end.length);
-                  break;
-                }
-              }
-              break;
-            case 'section':
-              if (active) {
-                String end = '[/section]';
-                int split = after.indexOf(end);
-                if (split != -1) {
-                  blocked = sectionWrap(
-                      toWidgets(resolve(
-                          after
-                              .substring(0, split)
-                              .replaceAllMapped(blankLess, (match) => ''),
-                          states)),
-                      value,
-                      expanded: expanded);
-                  after = after.substring(split + end.length);
-                  // newParts.addAll(resolve('\\[$tag\\]', states));
-                  break;
-                }
-              }
-              break;
-          }
-
-          if (blocked != null) {
-            // remove all the spaces around blocks
-            before =
-                before.replaceAllMapped(RegExp(r'[\r\n]*$'), (match) => '');
-            after = after.replaceAllMapped(RegExp(r'^[ \r\n]*'), (match) => '');
-            if (after.isNotEmpty) {
-              after = '\n' + after;
-            }
-
+          if (isFat) {
             if (before.isNotEmpty) {
               newParts.addAll(resolve(before, states));
             }
 
-            // add block
-            newParts.add(blocked);
+            states['link'] = true;
+
+            Function onTap;
+            bool sameSite = false;
+
+            key = key.substring(1, key.length -1);
+
+            if (key[0] == '#') {
+              key = key.substring(1);
+              sameSite = true;
+            }
+
+            String display = key;
+            String search = key;
+
+            if (key.contains('|')) {
+              search = key.split('|')[0];
+              display = key.split('|')[1];
+            }
+
+            if (!sameSite) {
+              onTap = () => Navigator.of(context)
+                  .push(new MaterialPageRoute<Null>(builder: (context) {
+                return new SearchPage(new Tagset.parse(search));
+              }));
+            }
+
+            newParts.addAll(getText(display, states, onTap: onTap));
+
+            states['link'] = false;
 
             if (after.isNotEmpty) {
               newParts.addAll(resolve(after, states));
             }
           } else {
 
-            Map<String, bool> oldStates = Map.from(states);
-            bool triggered = false;
+            // block tag check.
+            // prepare block beforehand,
+            // so spaces can be removed
 
-            // add textStyle
+            Widget blocked;
+            RegExp blankLess = RegExp(r'(^[\r\n]*)|([\r\n]*$)');
+
             switch (key.toLowerCase()) {
-              case 'b':
-                states['bold'] = active;
-                triggered = true;
+              case 'spoiler':
+              // maybe with a wrap.
                 break;
-              case 'i':
-                states['italic'] = active;
-                triggered = true;
+              case 'code':
+                if (active) {
+                  String end = '[/code]';
+                  int split = after.indexOf(end);
+                  if (split != -1) {
+                    blocked = quoteWrap(toWidgets(getText(
+                        after
+                            .substring(0, split)
+                            .replaceAllMapped(blankLess, (match) => ''),
+                        states)));
+                    after = after.substring(split + end.length);
+                    break;
+                  }
+                }
                 break;
-              case 'u':
-                states['underline'] = active;
-                triggered = true;
+              case 'quote':
+                if (active) {
+                  String end = '[/quote]';
+                  int split = after.indexOf(end);
+                  if (split != -1) {
+                    blocked = quoteWrap(toWidgets(resolve(
+                        after
+                            .substring(0, split)
+                            .replaceAllMapped(blankLess, (match) => ''),
+                        states)));
+                    after = after.substring(split + end.length);
+                    break;
+                  }
+                }
                 break;
-              case 's':
-                states['strike'] = active;
-                triggered = true;
-                break;
-              case 'color':
-                // ignore color tags
-                // they're insanely hard to implement.
-                triggered = true;
-                break;
-              case 'sup':
-                // I have no idea how to implement this.
-                triggered = true;
-                break;
-              case 'sub':
-                // I have no idea how to implement this.
-                triggered = true;
+              case 'section':
+                if (active) {
+                  String end = '[/section]';
+                  int split = after.indexOf(end);
+                  if (split != -1) {
+                    blocked = sectionWrap(
+                        toWidgets(resolve(
+                            after
+                                .substring(0, split)
+                                .replaceAllMapped(blankLess, (match) => ''),
+                            states)),
+                        value,
+                        expanded: expanded);
+                    after = after.substring(split + end.length);
+                    // newParts.addAll(resolve('\\[$tag\\]', states));
+                    break;
+                  }
+                }
                 break;
             }
 
-            if (triggered) {
-              if (before.isNotEmpty) {
-                newParts.addAll(resolve(before, oldStates));
+            if (blocked != null) {
+              // remove all the spaces around blocks
+              before =
+                  before.replaceAllMapped(RegExp(r'[\r\n]*$'), (match) => '');
+              after = after.replaceAllMapped(RegExp(r'^[ \r\n]*'), (match) => '');
+              if (after.isNotEmpty) {
+                after = '\n' + after;
               }
+
+              if (before.isNotEmpty) {
+                newParts.addAll(resolve(before, states));
+              }
+
+              // add block
+              newParts.add(blocked);
 
               if (after.isNotEmpty) {
                 newParts.addAll(resolve(after, states));
               }
             } else {
-             newParts.addAll(resolve('$before\\[$key\\]$after', states));
+
+              Map<String, bool> oldStates = Map.from(states);
+              bool triggered = false;
+
+              // add textStyle
+              switch (key.toLowerCase()) {
+                case 'b':
+                  states['bold'] = active;
+                  triggered = true;
+                  break;
+                case 'i':
+                  states['italic'] = active;
+                  triggered = true;
+                  break;
+                case 'u':
+                  states['underline'] = active;
+                  triggered = true;
+                  break;
+                case 's':
+                  states['strike'] = active;
+                  triggered = true;
+                  break;
+                case 'color':
+                // ignore color tags
+                // they're insanely hard to implement.
+                  triggered = true;
+                  break;
+                case 'sup':
+                // I have no idea how to implement this.
+                  triggered = true;
+                  break;
+                case 'sub':
+                // I have no idea how to implement this.
+                  triggered = true;
+                  break;
+              }
+
+              if (triggered) {
+                if (before.isNotEmpty) {
+                  newParts.addAll(resolve(before, oldStates));
+                }
+
+                if (after.isNotEmpty) {
+                  newParts.addAll(resolve(after, states));
+                }
+              } else {
+                newParts.addAll(resolve('$before\\[$key\\]$after', states));
+              }
             }
           }
+
         }
 
         return newParts;
@@ -739,55 +785,6 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
         if (after.isNotEmpty) {
           newParts.addAll(resolve(after, states));
         }
-        return newParts;
-      }
-    }
-
-    RegExp wikiTag = RegExp(r'[[.*?]]');
-
-    if (wikiTag.hasMatch(msg)) {
-      for (Match wordMatch in wikiTag.allMatches(msg)) {
-        String before = msg.substring(0, wordMatch.start);
-        String match = msg.substring(wordMatch.start + 2, wordMatch.end - 2);
-        String after = msg.substring(wordMatch.end, msg.length);
-
-        if (before.isNotEmpty) {
-          newParts.addAll(resolve(before, states));
-        }
-
-        states['link'] = true;
-
-        Function onTap;
-        bool sameSite;
-
-        if (match[0] == '#') {
-          match = match.substring(1);
-          sameSite = true;
-        }
-
-        String display = match;
-        String search = match;
-
-        if (match.contains('|')) {
-          search = match.split('|')[0];
-          display = match.split('|')[1];
-        }
-
-        if (!sameSite) {
-          onTap = () => Navigator.of(context)
-                  .push(new MaterialPageRoute<Null>(builder: (context) {
-                return new SearchPage(new Tagset.parse(search));
-              }));
-        }
-
-        newParts.addAll(getText(display, states, onTap: onTap));
-
-        states['link'] = false;
-
-        if (after.isNotEmpty) {
-          newParts.addAll(resolve(after, states));
-        }
-
         return newParts;
       }
     }
