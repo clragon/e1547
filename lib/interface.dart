@@ -54,8 +54,10 @@ Widget wikiDialog(BuildContext context, String tag, {actions = false}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
-        Text(tag),
-        actions ? _BlockButton(tag) : Container(),
+        Flexible(
+          child: Text(tag, softWrap: true,),
+        ),
+        actions ? _TagActions(tag) : Container(),
       ],
     );
   }
@@ -72,52 +74,115 @@ Widget wikiDialog(BuildContext context, String tag, {actions = false}) {
   );
 }
 
-class _BlockButton extends StatefulWidget {
+class _TagActions extends StatefulWidget {
   final String tag;
 
-  const _BlockButton(this.tag);
+  const _TagActions(this.tag);
 
   @override
   State<StatefulWidget> createState() {
-    return _BlockButtonState();
+    return _TagActionsState();
   }
 }
 
-class _BlockButtonState extends State<_BlockButton> {
+class _TagActionsState extends State<_TagActions> {
   @override
   Widget build(BuildContext context) {
+    bool blacklisted = false;
+    bool following = false;
+    List<String> blacklist;
+    List<String> follows;
+
+    Future getLists() async {
+      blacklist = await db.blacklist.value;
+      blacklist.forEach((b) {
+        if (b == widget.tag) {
+          blacklisted = true;
+        }
+      });
+      follows = await db.follows.value;
+      follows.forEach((b) {
+        if (b == widget.tag) {
+          following = true;
+        }
+      });
+      return;
+    }
+
     return FutureBuilder(
       builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          bool blackListed = false;
-          snapshot.data.forEach((b) {
-            if (b == widget.tag) {
-              blackListed = true;
-            }
-          });
-          return IconButton(
-            onPressed: () {
-              if (blackListed) {
-                snapshot.data.removeAt(snapshot.data.indexOf(widget.tag));
-                db.blacklist.value = Future.value(snapshot.data);
-                setState(() {
-                  blackListed = false;
-                });
-              } else {
-                snapshot.data.add(widget.tag);
-                db.blacklist.value = Future.value(snapshot.data);
-                setState(() {
-                  blackListed = true;
-                });
-              }
-            },
-            icon: blackListed ? Icon(Icons.check) : Icon(Icons.block),
+        if (snapshot.connectionState == ConnectionState.done) {
+          return Row(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              IconButton(
+                onPressed: () {
+                  if (following) {
+                    follows.removeAt(follows.indexOf(widget.tag));
+                    db.follows.value = Future.value(follows);
+                    setState(() {
+                      following = false;
+                    });
+                  } else {
+                    follows.add(widget.tag);
+                    db.follows.value = Future.value(follows);
+                    setState(() {
+                      following = true;
+                      if (blacklisted) {
+                        blacklist.removeAt(blacklist.indexOf(widget.tag));
+                        db.blacklist.value = Future.value(blacklist);
+                        blacklisted = false;
+                      }
+                    });
+                  }
+                },
+                icon: following
+                    ? Icon(Icons.turned_in)
+                    : Icon(Icons.turned_in_not),
+                tooltip: following ? 'follow tag' : 'unfollow tag',
+              ),
+              IconButton(
+                onPressed: () {
+                  if (blacklisted) {
+                    blacklist.removeAt(blacklist.indexOf(widget.tag));
+                    db.blacklist.value = Future.value(blacklist);
+                    setState(() {
+                      blacklisted = false;
+                    });
+                  } else {
+                    blacklist.add(widget.tag);
+                    db.blacklist.value = Future.value(blacklist);
+                    setState(() {
+                      blacklisted = true;
+                      if (following) {
+                        follows.removeAt(follows.indexOf(widget.tag));
+                        db.follows.value = Future.value(follows);
+                        following = false;
+                      }
+                    });
+                  }
+                },
+                icon: blacklisted ? Icon(Icons.check) : Icon(Icons.block),
+                tooltip: blacklisted ? 'block tag' : 'unblock tag',
+              ),
+            ],
           );
         } else {
-          return Container();
+          return Row(
+            children: <Widget>[
+              IconButton(
+                icon: Icon(Icons.turned_in_not),
+                onPressed: () {},
+              ),
+              IconButton(
+                icon: Icon(Icons.block),
+                onPressed: () {},
+              ),
+            ],
+          );
         }
       },
-      future: db.blacklist.value,
+      future: getLists(),
     );
   }
 }
@@ -363,7 +428,7 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
             Function onTap;
             bool sameSite = false;
 
-            key = key.substring(1, key.length -1);
+            key = key.substring(1, key.length - 1);
 
             if (key[0] == '#') {
               key = key.substring(1);
@@ -380,9 +445,9 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
 
             if (!sameSite) {
               onTap = () => Navigator.of(context)
-                  .push(new MaterialPageRoute<Null>(builder: (context) {
-                return new SearchPage(new Tagset.parse(search));
-              }));
+                      .push(new MaterialPageRoute<Null>(builder: (context) {
+                    return new SearchPage(new Tagset.parse(search));
+                  }));
             }
 
             newParts.addAll(getText(display, states, onTap: onTap));
@@ -393,7 +458,6 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
               newParts.addAll(resolve(after, states));
             }
           } else {
-
             // block tag check.
             // prepare block beforehand,
             // so spaces can be removed
@@ -403,7 +467,7 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
 
             switch (key.toLowerCase()) {
               case 'spoiler':
-              // maybe with a wrap.
+                // maybe with a wrap.
                 break;
               case 'code':
                 if (active) {
@@ -460,7 +524,8 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
               // remove all the spaces around blocks
               before =
                   before.replaceAllMapped(RegExp(r'[\r\n]*$'), (match) => '');
-              after = after.replaceAllMapped(RegExp(r'^[ \r\n]*'), (match) => '');
+              after =
+                  after.replaceAllMapped(RegExp(r'^[ \r\n]*'), (match) => '');
               if (after.isNotEmpty) {
                 after = '\n' + after;
               }
@@ -476,7 +541,6 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
                 newParts.addAll(resolve(after, states));
               }
             } else {
-
               Map<String, bool> oldStates = Map.from(states);
               bool triggered = false;
 
@@ -499,16 +563,16 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
                   triggered = true;
                   break;
                 case 'color':
-                // ignore color tags
-                // they're insanely hard to implement.
+                  // ignore color tags
+                  // they're insanely hard to implement.
                   triggered = true;
                   break;
                 case 'sup':
-                // I have no idea how to implement this.
+                  // I have no idea how to implement this.
                   triggered = true;
                   break;
                 case 'sub':
-                // I have no idea how to implement this.
+                  // I have no idea how to implement this.
                   triggered = true;
                   break;
               }
@@ -526,7 +590,6 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
               }
             }
           }
-
         }
 
         return newParts;
@@ -599,7 +662,8 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
 
     RegExp linkRex = RegExp(
         r'("[^"]+?":)?(http(s)?)?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*?)([^\s]+)');
-    RegExp inSite = RegExp(r'("[^"]+?":)([-a-zA-Z0-9()@:%_\+.~#?&//=]*)([^\s]+)');
+    RegExp inSite =
+        RegExp(r'("[^"]+?":)([-a-zA-Z0-9()@:%_\+.~#?&//=]*)([^\s]+)');
 
     for (RegExp word in [linkRex, inSite]) {
       if (word.hasMatch(msg)) {
@@ -614,9 +678,11 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
 
           // if the url ends with any ending,
           // remove the ending from the string
-          if (['.', ',', '!', '?', ':'].any((ending) { return ending == match[match.length -1]; })) {
-            match = msg.substring(wordMatch.start, wordMatch.end -1);
-            after = msg.substring(wordMatch.end -1, msg.length);
+          if (['.', ',', '!', '?', ':'].any((ending) {
+            return ending == match[match.length - 1];
+          })) {
+            match = msg.substring(wordMatch.start, wordMatch.end - 1);
+            after = msg.substring(wordMatch.end - 1, msg.length);
           }
 
           if (match.endsWith('/')) {
@@ -626,11 +692,10 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
           String display = match;
           String search = match;
           if (match[0] == '"') {
-            int end = match.substring(1).indexOf('"') +1;
+            int end = match.substring(1).indexOf('"') + 1;
             display = match.substring(1, end);
             search = match.substring(end + 2);
           }
-
 
           states['link'] = true;
 
@@ -641,7 +706,8 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
               url.launch(search);
             };
             try {
-              if (RegExp(r'(e621\.net|e926\.net)/posts/[0-9]{1,9}').hasMatch(search)) {
+              if (RegExp(r'(e621\.net|e926\.net)/posts/[0-9]{1,9}')
+                  .hasMatch(search)) {
                 int id = int.parse(search.split('/').last.split('?').first);
                 onTap = () async {
                   Post p = await client.post(id);
@@ -651,7 +717,8 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
                   }));
                 };
               }
-              if (RegExp(r'(e621\.net|e926\.net)/pool(s|/show)/[0-9]{1,9}').hasMatch(search)) {
+              if (RegExp(r'(e621\.net|e926\.net)/pool(s|/show)/[0-9]{1,9}')
+                  .hasMatch(search)) {
                 int id = int.parse(search.split('/').last);
                 onTap = () async {
                   Pool p = await client.poolById(id);
@@ -673,7 +740,7 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
             };
             try {
               if (search.startsWith('/posts/')) {
-                int start = match.substring(1).indexOf('/') +1;
+                int start = match.substring(1).indexOf('/') + 1;
                 int id = int.parse(match.substring(start));
                 onTap = () async {
                   Post p = await client.post(id);
@@ -684,7 +751,7 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
                 };
               }
               if (search.startsWith('/pools/')) {
-                int start = match.substring(1).indexOf('/') +1;
+                int start = match.substring(1).indexOf('/') + 1;
                 int id = int.parse(match.substring(start));
                 onTap = () async {
                   Pool p = await client.poolById(id);
@@ -695,7 +762,7 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
                 };
               }
             } catch (Exception) {
-             // uh oh
+              // uh oh
             }
           }
 

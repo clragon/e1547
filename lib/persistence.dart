@@ -19,6 +19,7 @@ class Persistence {
   ValueNotifier<Future<String>> apiKey;
   ValueNotifier<Future<bool>> showWebm;
   ValueNotifier<Future<List<String>>> blacklist;
+  ValueNotifier<Future<List<String>>> follows;
 
   Persistence() {
     host = _makeNotifier((p) => p.getString('host') ?? appInfo.defaultEndpoint);
@@ -33,11 +34,14 @@ class Persistence {
     apiKey = _makeNotifier((p) => p.getString('apiKey'));
     apiKey.addListener(_saveString('apiKey', apiKey));
 
-    showWebm = _makeNotifier((p) => p.getBool('showWebm') ?? true);
+    showWebm = _makeNotifier((p) => p.getBool('showWebm') ?? false);
     showWebm.addListener(_saveBool('showWebm', showWebm));
 
     blacklist = _makeNotifier((p) => p.getStringList('blacklist') ?? []);
     blacklist.addListener(_saveList('blacklist', blacklist));
+
+    follows = _makeNotifier((p) => p.getStringList('follows') ?? []);
+    follows.addListener(_saveList('follows', follows));
   }
 
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
@@ -66,11 +70,10 @@ class Persistence {
     };
   }
 
+  // ignore: unused_element
   Function() _saveInt(String key, ValueNotifier<Future<int>> notifier) {
     return () async {
       (await _prefs).setInt(key, await notifier.value);
     };
   }
-
-
 }

@@ -169,14 +169,15 @@ class _BlacklistPageState extends State<BlacklistPage> {
                                   onTap: () {
                                     showDialog(
                                       context: context,
-                                      builder: (context) =>
-                                          wikiDialog(context, noDash(tag), actions: true),
+                                      builder: (context) => wikiDialog(
+                                          context, noDash(tag),
+                                          actions: true),
                                     );
                                   },
                                   child: Card(
                                       child: Padding(
                                     padding: EdgeInsets.all(4),
-                                    child: Text(tag),
+                                    child: Text(noDash(tag)),
                                   )));
                               if ('${tag[0]}' == '-') {
                                 whiteTags.add(card);
@@ -264,20 +265,66 @@ class _BlacklistPageState extends State<BlacklistPage> {
       );
     }
 
+    Widget editor() {
+      TextEditingController controller = TextEditingController();
+      controller.text = _blacklist.join('\n');
+      return AlertDialog(
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Text('Blacklist'),
+            IconButton(
+              icon: Icon(Icons.help_outline),
+              onPressed: () =>
+                  showDialog(context: context, child: wikiDialog(context, 'e621:blacklist')),
+            )
+          ],
+        ),
+        content: TextField(
+          controller: controller,
+          keyboardType: TextInputType.multiline,
+          maxLines: null,
+        ),
+        actions: <Widget>[
+          FlatButton(
+            child: Text('CANCEL'),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+          FlatButton(
+            child: Text('OK'),
+            onPressed: () {
+              setState(() {
+                _blacklist = controller.text.split('\n');
+                List<String> newList = [];
+                for (String b in _blacklist) {
+                  if (b.trim().isNotEmpty) {
+                    newList.add(b);
+                  }
+                }
+                _blacklist = newList;
+                db.blacklist.value = Future.value(_blacklist);
+              });
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Blacklist'),
         actions: <Widget>[
           IconButton(
-            icon: Icon(Icons.help_outline),
-            onPressed: () async {
-              showDialog(
-                context: context,
-                builder: (context) =>
-                    wikiDialog(context, 'e621:blacklist'),
-              );
-            }
-          ),
+              icon: Icon(Icons.edit),
+              onPressed: () async {
+                showDialog(
+                  context: context,
+                  builder: (context) => editor(),
+                );
+              }),
         ],
       ),
       body: body(),

@@ -77,8 +77,25 @@ class PoolPage extends StatelessWidget {
     return new PostsPage(
         title: pool.name.replaceAll('_', ' '),
         pool: pool,
+        postGetter: (tags, page) async {
+          return await client.pool(pool, page);
+        },
         canSearch: false,
         isHome: false);
+  }
+}
+
+class FollowsPage extends StatelessWidget {
+
+  @override
+  Widget build(BuildContext context) {
+    return PostsPage(
+      title: 'Following',
+      canSearch: false,
+      postGetter: (tags, page) async {
+        return await client.follows(page);
+      },
+    );
   }
 }
 
@@ -87,15 +104,17 @@ class PostsPage extends StatefulWidget {
   final bool isHome;
   final Future<Tagset> tags;
   final Function(Tagset) tagChange;
+  final Function(Tagset tags, int page) postGetter;
   final Pool pool;
   final bool canSearch;
 
   const PostsPage(
       {this.title,
       this.tags,
+      this.pool,
       this.isHome = true,
       this.canSearch = true,
-      this.pool,
+      this.postGetter,
       this.tagChange});
 
   static _PostsPageState of(BuildContext context) =>
@@ -164,11 +183,12 @@ class _PostsPageState extends State<PostsPage> {
         ..text = _tags.toString() + ' ';
     }
 
-    if (widget.pool == null) {
-      nextPage.addAll(await client.posts(_tags, p));
-    } else {
-      nextPage.addAll(await client.pool(widget.pool, p));
-    }
+      if (widget.postGetter != null) {
+        nextPage.addAll(await widget.postGetter(_tags, p));
+      } else {
+        nextPage.addAll(await client.posts(_tags, p));
+      }
+
     if (this.mounted) {
       setState(() {
         _loading = false;
@@ -273,6 +293,130 @@ class _PostsPageState extends State<PostsPage> {
     });
   }
 
+  Widget poolInfo() {
+    DateFormat dateFormat = DateFormat('dd.MM.yy hh:mm');
+    Color textColor = Colors.grey[600];
+    return AlertDialog(
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          Flexible(
+            child: Text(
+              '${widget.pool.name.replaceAll('_', ' ')} (#${widget.pool.id})', softWrap: true,),
+          ),
+          _FollowButton(widget.pool),
+        ],
+      ),
+      content: ConstrainedBox(
+          child: SingleChildScrollView(
+            scrollDirection: Axis.vertical,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                widget.pool.description != ''
+                    ? dTextField(
+                    context, widget.pool.description)
+                    : Text(
+                  'no description',
+                  style: TextStyle(
+                      fontStyle: FontStyle.italic),
+                ),
+                Padding(
+                  padding:
+                  EdgeInsets.only(top: 16, bottom: 8),
+                  child: Divider(),
+                ),
+                // Text('Pool info', style: TextStyle(color: textColor, fontWeight: FontWeight.bold)),
+                Row(
+                  mainAxisAlignment:
+                  MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text(
+                      'posts',
+                      style: TextStyle(color: textColor),
+                    ),
+                    Text(
+                      widget.pool.postIDs.length.toString(),
+                      style: TextStyle(color: textColor),
+                    ),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment:
+                  MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text(
+                      'status',
+                      style: TextStyle(color: textColor),
+                    ),
+                    widget.pool.active
+                        ? Text(
+                      'active',
+                      style:
+                      TextStyle(color: textColor),
+                    )
+                        : Text(
+                      'inactive',
+                      style:
+                      TextStyle(color: textColor),
+                    ),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment:
+                  MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text(
+                      'created',
+                      style: TextStyle(color: textColor),
+                    ),
+                    Text(
+                      dateFormat.format(
+                          DateTime.parse(widget.pool.creation)
+                              .toLocal()),
+                      style: TextStyle(color: textColor),
+                    ),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment:
+                  MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text(
+                      'updated',
+                      style: TextStyle(color: textColor),
+                    ),
+                    Text(
+                      dateFormat.format(
+                          DateTime.parse(widget.pool.updated)
+                              .toLocal()),
+                      style: TextStyle(color: textColor),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            physics: BouncingScrollPhysics(),
+          ),
+          constraints: new BoxConstraints(
+            maxHeight: 400.0,
+          )),
+      actions: [
+        FlatButton(
+          child: Text('SHARE'),
+          onPressed: () async => Share.share(widget.pool
+              .url(await db.host.value)
+              .toString()),
+        ),
+        FlatButton(
+          child: Text('OK'),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     AppBar appBarWidget() {
@@ -290,114 +434,9 @@ class _PostsPageState extends State<PostsPage> {
                   icon: Icon(Icons.info_outline),
                   tooltip: 'Info',
                   onPressed: () {
-                    DateFormat dateFormat = DateFormat('dd.MM.yy hh:mm');
-                    Color textColor = Colors.grey[600];
                     showDialog(
                       context: context,
-                      builder: (context) => AlertDialog(
-                        title: Text(
-                            '${widget.pool.name.replaceAll('_', ' ')} (#${widget.pool.id})'),
-                        content: ConstrainedBox(
-                            child: SingleChildScrollView(
-                              scrollDirection: Axis.vertical,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisSize: MainAxisSize.min,
-                                children: <Widget>[
-                                  widget.pool.description != ''
-                                      ? dTextField(
-                                      context, widget.pool.description)
-                                      : Text(
-                                    'no description',
-                                    style: TextStyle(
-                                        fontStyle: FontStyle.italic),
-                                  ),
-                                  Padding(
-                                    padding: EdgeInsets.only(top: 16, bottom: 8),
-                                    child: Divider(),
-                                  ),
-                                  // Text('Pool info', style: TextStyle(color: textColor, fontWeight: FontWeight.bold)),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: <Widget>[
-                                      Text(
-                                        'posts',
-                                        style: TextStyle(color: textColor),
-                                      ),
-                                      Text(
-                                        widget.pool.postIDs.length.toString(),
-                                        style: TextStyle(color: textColor),
-                                      ),
-                                    ],
-                                  ),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: <Widget>[
-                                      Text(
-                                        'status',
-                                        style: TextStyle(color: textColor),
-                                      ),
-                                      widget.pool.active
-                                          ? Text(
-                                        'active',
-                                        style: TextStyle(color: textColor),
-                                      )
-                                          : Text(
-                                        'inactive',
-                                        style: TextStyle(color: textColor),
-                                      ),
-                                    ],
-                                  ),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: <Widget>[
-                                      Text(
-                                        'created',
-                                        style: TextStyle(color: textColor),
-                                      ),
-                                      Text(
-                                        dateFormat.format(
-                                            DateTime.parse(widget.pool.creation)
-                                                .toLocal()),
-                                        style: TextStyle(color: textColor),
-                                      ),
-                                    ],
-                                  ),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: <Widget>[
-                                      Text(
-                                        'updated',
-                                        style: TextStyle(color: textColor),
-                                      ),
-                                      Text(
-                                        dateFormat.format(
-                                            DateTime.parse(widget.pool.updated)
-                                                .toLocal()),
-                                        style: TextStyle(color: textColor),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                              physics: BouncingScrollPhysics(),
-                            ),
-                            constraints: new BoxConstraints(
-                              maxHeight: 400.0,
-                            )),
-                        actions: [
-                          FlatButton(
-                            child: Text('SHARE'),
-                            onPressed: () async => Share.share(widget.pool
-                                .url(await db.host.value)
-                                .toString()),
-                          ),
-                          FlatButton(
-                            child: Text('OK'),
-                            onPressed: () => Navigator.of(context).pop(),
-                          ),
-                        ],
-                      ),
+                      builder: (context) => poolInfo(),
                     );
                   },
                 )
@@ -672,6 +711,76 @@ class TagEntry extends StatelessWidget {
               ]),
         ),
       ]),
+    );
+  }
+}
+
+
+
+class _FollowButton extends StatefulWidget {
+  final Pool pool;
+
+  const _FollowButton(this.pool);
+
+  @override
+  State<StatefulWidget> createState() {
+    return _FollowButtonState();
+  }
+}
+
+class _FollowButtonState extends State<_FollowButton> {
+  bool following = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          List<String> follows = snapshot.data;
+          String tag = 'pool:${widget.pool.id}';
+          follows.forEach((b) {
+            if (b == tag) {
+              following = true;
+            }
+          });
+          return Row(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              IconButton(
+                onPressed: () {
+                  if (following) {
+                    follows.removeAt(follows.indexOf(tag));
+                    db.follows.value = Future.value(follows);
+                    setState(() {
+                      following = false;
+                    });
+                  } else {
+                    follows.add(tag);
+                    db.follows.value = Future.value(follows);
+                    setState(() {
+                      following = true;
+                    });
+                  }
+                },
+                icon: following
+                    ? Icon(Icons.turned_in)
+                    : Icon(Icons.turned_in_not),
+                tooltip: following ? 'follow tag' : 'unfollow tag',
+              ),
+            ],
+          );
+        } else {
+          return Row(
+            children: <Widget>[
+              IconButton(
+                icon: Icon(Icons.turned_in_not),
+                onPressed: () {},
+              ),
+            ],
+          );
+        }
+      },
+      future: db.follows.value,
     );
   }
 }

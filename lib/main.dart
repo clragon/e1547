@@ -6,6 +6,7 @@ import 'package:e1547/settings_page.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'client.dart';
+import 'follow_page.dart';
 import 'login_page.dart';
 import 'posts_page.dart';
 import 'appinfo.dart' as appInfo;
@@ -56,9 +57,14 @@ class Main extends StatelessWidget {
               _drawerSelection = _DrawerSelection.pools;
               return new PoolsPage();
             }(),
+        '/follows': (context) => () {
+          _drawerSelection = _DrawerSelection.follows;
+            return new FollowsPage();
+          }(),
         '/login': (context) => new LoginPage(),
         '/settings': (context) => new SettingsPage(),
         '/blacklist': (context) => new BlacklistPage(),
+        '/following': (context) => new FollowingPage(),
         '/about': (context) => new AboutPage(),
       },
     );
@@ -70,6 +76,7 @@ enum _DrawerSelection {
   hot,
   favorites,
   pools,
+  follows,
 }
 
 _DrawerSelection _drawerSelection = _DrawerSelection.home;
@@ -81,6 +88,7 @@ void refreshPage(BuildContext context) {
     _DrawerSelection.hot: '/hot',
     _DrawerSelection.favorites: '/fav',
     _DrawerSelection.pools: '/pools',
+    _DrawerSelection.follows: '/follows',
   };
 
   Navigator.of(context).pushNamedAndRemoveUntil(
@@ -193,6 +201,15 @@ class NavigationDrawer extends StatelessWidget {
               }
             }),
         Divider(),
+        new ListTile(
+          selected: _drawerSelection == _DrawerSelection.follows,
+          leading: const Icon(Icons.turned_in),
+          title: const Text('Following'),
+          onTap: () {
+            Navigator.of(context).pushNamedAndRemoveUntil(
+                '/follows', (Route<dynamic> route) => false);
+          },
+        ),
         new ListTile(
           selected: _drawerSelection == _DrawerSelection.pools,
           leading: const Icon(Icons.group),

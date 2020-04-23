@@ -18,11 +18,14 @@ class Client {
   Future<String> _username = db.username.value;
   Future<String> _apiKey = db.apiKey.value;
   Future<List<String>> _blacklist = db.blacklist.value;
+  Future<List<String>> _following = db.follows.value;
 
   Client() {
     db.host.addListener(() => _host = db.host.value);
     db.username.addListener(() => _username = db.username.value);
     db.apiKey.addListener(() => _apiKey = db.apiKey.value);
+    db.blacklist.addListener(() => _blacklist = db.blacklist.value);
+    db.follows.addListener(() => _following = db.follows.value);
   }
 
   Future<bool> addAsFavorite(int post) async {
@@ -212,14 +215,13 @@ class Client {
     return false;
   }
 
-  Future<List<Post>> posts(Tagset tags, int page, {int limit = 200}) async {
+  Future<List<Post>> posts(Tagset tags, int page) async {
     try {
       String body = await _http.get(await _host, '/posts.json', query: {
         'tags': tags,
         'page': page + 1,
         'login': await _username,
         'api_key': await _apiKey,
-        'limit': limit,
       }).then((response) => response.body);
 
       List<Post> posts = [];
@@ -242,7 +244,7 @@ class Client {
         posts.add(post);
       }
       if (hasPosts && posts.length == 0) {
-        return client.posts(tags, page + 1, limit: limit);
+        return client.posts(tags, page + 1);
       }
       return posts;
     } catch (SocketException) {
@@ -282,16 +284,25 @@ class Client {
   }
 
   Future<List<Post>> pool(Pool pool, int page) async {
-    String filter = "id:";
-    int limit = 99;
-    int lower = (page * limit);
-    for (int index = 0;
-        (index + lower) < pool.postIDs.length && index <= (lower + limit);
-        index++) {
-      filter = filter + pool.postIDs[index + lower].toString() + ',';
+    return posts(new Tagset.parse('pool:${pool.id} order:id'), page);
+  }
+
+  Future<List<Post>> follows(int page) async {
+    List<List<String>> tags = [];
+    List<Post> posts = [];
+
+    int length = (await _following).length;
+    int max = 40;
+
+    for (int i = 0; i < length; i += max) {
+      int end = (length > i + max) ? i + max : length;
+      tags.add((await _following).sublist(i, end));
     }
-    filter = filter + ' ' + 'order:id';
-    return posts(new Tagset.parse(filter), 0, limit: limit);
+
+    for (List<String> tag in tags) {
+      posts.addAll(await client.posts(Tagset.parse('~' + tag.join(' ~')), page));
+    }
+    return posts;
   }
 
   Future<Post> post(int postID) async {
