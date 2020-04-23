@@ -57,7 +57,7 @@ class _FollowingPageState extends State<FollowingPage> {
         } else {
           _follows.add(_tagController.text);
         }
-        db.blacklist.value = Future.value(_follows);
+        db.follows.value = Future.value(_follows);
         _bottomSheetController?.close();
       } else {
         _bottomSheetController =
