@@ -304,7 +304,6 @@ class _PostsPageState extends State<PostsPage> {
             child: Text(
               '${widget.pool.name.replaceAll('_', ' ')} (#${widget.pool.id})', softWrap: true,),
           ),
-          _FollowButton(widget.pool),
         ],
       ),
       content: ConstrainedBox(
@@ -711,76 +710,6 @@ class TagEntry extends StatelessWidget {
               ]),
         ),
       ]),
-    );
-  }
-}
-
-
-
-class _FollowButton extends StatefulWidget {
-  final Pool pool;
-
-  const _FollowButton(this.pool);
-
-  @override
-  State<StatefulWidget> createState() {
-    return _FollowButtonState();
-  }
-}
-
-class _FollowButtonState extends State<_FollowButton> {
-  bool following = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder(
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          List<String> follows = snapshot.data;
-          String tag = 'pool:${widget.pool.id}';
-          follows.forEach((b) {
-            if (b == tag) {
-              following = true;
-            }
-          });
-          return Row(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              IconButton(
-                onPressed: () {
-                  if (following) {
-                    follows.removeAt(follows.indexOf(tag));
-                    db.follows.value = Future.value(follows);
-                    setState(() {
-                      following = false;
-                    });
-                  } else {
-                    follows.add(tag);
-                    db.follows.value = Future.value(follows);
-                    setState(() {
-                      following = true;
-                    });
-                  }
-                },
-                icon: following
-                    ? Icon(Icons.turned_in)
-                    : Icon(Icons.turned_in_not),
-                tooltip: following ? 'follow tag' : 'unfollow tag',
-              ),
-            ],
-          );
-        } else {
-          return Row(
-            children: <Widget>[
-              IconButton(
-                icon: Icon(Icons.turned_in_not),
-                onPressed: () {},
-              ),
-            ],
-          );
-        }
-      },
-      future: db.follows.value,
     );
   }
 }
