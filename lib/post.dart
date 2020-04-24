@@ -273,7 +273,7 @@ class _PostWidgetState extends State<PostWidget> {
                 title: const Text('Error'),
                 content: new Text(snapshot.error.toString()),
                 actions: [
-                  new RaisedButton(
+                  new FlatButton(
                     child: const Text('OK'),
                     onPressed: () => Navigator.pop(context),
                   ),
@@ -286,21 +286,25 @@ class _PostWidgetState extends State<PostWidget> {
 
             return new AlertDialog(
               title: const Text('Download'),
-              content: new Column(
+              content: new Row(
                 mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
+                  new Text(filename, softWrap: true),
                   new Padding(
-                    padding: const EdgeInsets.only(bottom: 20.0),
+                    padding: const EdgeInsets.all(8),
                     child: done
                         ? const Icon(Icons.done)
-                        : const CircularProgressIndicator(),
+                        : Container(
+                      height: 18,
+                      width: 18,
+                      child: CircularProgressIndicator(),
+                    ),
                   ),
-                  new Text(filename, softWrap: true),
                 ],
               ),
               actions: [
-                new RaisedButton(
+                new FlatButton(
                   child: const Text('OK'),
                   onPressed: () => Navigator.pop(context),
                 ),

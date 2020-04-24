@@ -8,6 +8,7 @@ import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'client.dart';
 import 'input.dart';
 import 'interface.dart';
+import 'main.dart';
 import 'persistence.dart' show db;
 
 class FollowingPage extends StatefulWidget {
@@ -19,6 +20,7 @@ class FollowingPage extends StatefulWidget {
 
 class _FollowingPageState extends State<FollowingPage> {
   List<String> _follows = [];
+  bool _refresh = false;
 
   @override
   void initState() {
@@ -26,37 +28,26 @@ class _FollowingPageState extends State<FollowingPage> {
     db.follows.value.then((a) async => setState(() => _follows = a));
   }
 
-  int _editing = -1;
   bool _isSearching = false;
   TextEditingController _tagController = TextEditingController();
   PersistentBottomSheetController<String> _bottomSheetController;
 
-  Function() _onPressedFloatingActionButton(BuildContext context,
-      {int edit = -1}) {
+  Function() _onPressedFloatingActionButton(BuildContext context) {
     return () async {
       void onCloseBottomSheet() {
         setState(() {
           _isSearching = false;
-          _editing = -1;
         });
       }
 
       if (!_isSearching) {
-        if (edit != -1) {
-          _editing = edit;
-          _tagController = TextEditingController()..text = _follows[_editing];
-        } else {
-          _tagController = TextEditingController()..text = '';
-        }
+        _tagController = TextEditingController()..text = '';
       }
       setFocusToEnd(_tagController);
 
       if (_isSearching) {
-        if (_editing != -1) {
-          _follows[_editing] = _tagController.text;
-        } else {
-          _follows.add(_tagController.text);
-        }
+        _follows.add(_tagController.text);
+        _refresh = true;
         db.follows.value = Future.value(_follows);
         _bottomSheetController?.close();
       } else {
@@ -173,6 +164,7 @@ class _FollowingPageState extends State<FollowingPage> {
                             setState(() {
                               _follows.removeAt(index);
                               db.follows.value = Future.value(_follows);
+                              _refresh = true;
                             });
                           },
                         ),
@@ -196,15 +188,34 @@ class _FollowingPageState extends State<FollowingPage> {
       );
     }
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Following'),
-      ),
-      body: body(),
-      floatingActionButton: Builder(
-        builder: (context) {
-          return floatingActionButton(context);
-        },
+    return WillPopScope(
+      onWillPop: () async {
+        if (_refresh) {
+          refreshPage(context);
+          return false;
+        } else {
+          return true;
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('Following'),
+          leading: IconButton(
+              icon: Icon(Icons.arrow_back),
+              onPressed: () {
+                if (_refresh) {
+                  refreshPage(context);
+                } else {
+                  Navigator.pop(context);
+                }
+              }),
+        ),
+        body: body(),
+        floatingActionButton: Builder(
+          builder: (context) {
+            return floatingActionButton(context);
+          },
+        ),
       ),
     );
   }
