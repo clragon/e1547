@@ -470,52 +470,50 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
                 // maybe with a wrap.
                 break;
               case 'code':
-                if (active) {
-                  String end = '[/code]';
-                  int split = after.indexOf(end);
-                  if (split != -1) {
-                    blocked = quoteWrap(toWidgets(getText(
-                        after
-                            .substring(0, split)
-                            .replaceAllMapped(blankLess, (match) => ''),
-                        states)));
-                    after = after.substring(split + end.length);
-                    break;
-                  }
-                }
-                break;
+              case 'section':
               case 'quote':
                 if (active) {
-                  String end = '[/quote]';
-                  int split = after.indexOf(end);
-                  if (split != -1) {
-                    blocked = quoteWrap(toWidgets(resolve(
-                        after
-                            .substring(0, split)
-                            .replaceAllMapped(blankLess, (match) => ''),
-                        states)));
-                    after = after.substring(split + end.length);
+                  String end = '/${key.toLowerCase()}';
+                  int split = -1;
+                  for (Match endMatch in end.allMatches(after)) {
+                    if (after.substring(0, endMatch.start).contains(key)) {
+                      if (!after.substring(0, endMatch.start).contains(end)) {
+                        continue;
+                      }
+                    }
+                    split = endMatch.start -1;
                     break;
                   }
-                }
-                break;
-              case 'section':
-                if (active) {
-                  String end = '[/section]';
-                  int split = after.indexOf(end);
-                  if (split != -1) {
-                    blocked = sectionWrap(
-                        toWidgets(resolve(
-                            after
-                                .substring(0, split)
-                                .replaceAllMapped(blankLess, (match) => ''),
-                            states)),
-                        value,
-                        expanded: expanded);
-                    after = after.substring(split + end.length);
-                    // newParts.addAll(resolve('\\[$tag\\]', states));
+                  if (split == -1) {
                     break;
                   }
+                  switch (key.toLowerCase()) {
+                    case 'code':
+                      blocked = quoteWrap(toWidgets(getText(
+                          after
+                              .substring(0, split)
+                              .replaceAllMapped(blankLess, (match) => ''),
+                          states)));
+                      break;
+                    case 'quote':
+                      blocked = quoteWrap(toWidgets(resolve(
+                          after
+                              .substring(0, split)
+                              .replaceAllMapped(blankLess, (match) => ''),
+                          states)));
+                      break;
+                    case 'section':
+                      blocked = sectionWrap(
+                          toWidgets(resolve(
+                              after
+                                  .substring(0, split)
+                                  .replaceAllMapped(blankLess, (match) => ''),
+                              states)),
+                          value,
+                          expanded: expanded);
+                      break;
+                  }
+                  after = after.substring(split + end.length +2);
                 }
                 break;
             }
@@ -678,7 +676,7 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
 
           // if the url ends with any ending,
           // remove the ending from the string
-          if (['.', ',', '!', '?', ':'].any((ending) {
+          if (['.', ',', '!', '?', ':', '"', '\''].any((ending) {
             return ending == match[match.length - 1];
           })) {
             match = msg.substring(wordMatch.start, wordMatch.end - 1);

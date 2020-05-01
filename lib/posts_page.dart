@@ -82,8 +82,8 @@ class PoolPage extends StatelessWidget {
           ],
         );
       },
-      postProvider: (tags, page) async {
-        return await client.pool(pool, page);
+      postProvider: (tags, page) {
+        return client.pool(pool, page);
       },
       canSearch: false,
     );
@@ -107,8 +107,8 @@ class FollowsPage extends StatelessWidget {
         );
       },
       canSearch: false,
-      postProvider: (tags, page) async {
-        return await client.follows(page);
+      postProvider: (tags, page) {
+        return client.follows(page);
       },
     );
   }
@@ -152,9 +152,9 @@ class SearchPage extends StatelessWidget {
           ],
         );
       },
-      postProvider: (tags, page) async {
+      postProvider: (tags, page) {
         _tags.value = tags;
-        return await client.posts(tags, page);
+        return client.posts(tags, page);
       },
       tags: Future.value(tags),
     );

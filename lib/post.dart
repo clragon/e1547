@@ -1,10 +1,11 @@
 import 'dart:async' show Future;
 import 'dart:collection';
-import 'dart:io' show File, Platform;
+import 'dart:io' show Directory, File, Platform;
 import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart'
     show CachedNetworkImage, CachedNetworkImageProvider;
+import 'package:e1547/appinfo.dart';
 import 'package:e1547/comment.dart';
 import 'package:e1547/pool.dart';
 import 'package:e1547/posts_page.dart';
@@ -48,6 +49,7 @@ class Post {
 
   String rating;
   String creation;
+  String updated;
   int comments;
   String description;
 
@@ -82,6 +84,7 @@ class Post {
     children.addAll(raw["relationships"]['children'].cast<int>());
 
     creation = raw['created_at'];
+    updated = raw['updated_at'];
 
     description = raw['description'] as String;
     rating = (raw['rating'] as String).toUpperCase();
@@ -246,10 +249,12 @@ class _PostWidgetState extends State<PostWidget> {
       return;
     }
 
+    String downloadFolder = '${Platform.environment['EXTERNAL_STORAGE']}/Pictures/$appName';
+    Directory(downloadFolder).createSync();
+
     String filename =
         '${widget.post.artist.join(', ')} - ${widget.post.id}.${widget.post.file['ext']}';
-    String filepath =
-        '${Platform.environment['EXTERNAL_STORAGE']}/Download/$filename';
+    String filepath = '$downloadFolder/$filename';
 
     Future<File> download() async {
       File file = new File(filepath);
@@ -335,7 +340,7 @@ class _PostWidgetState extends State<PostWidget> {
       Scaffold.of(context).showSnackBar(new SnackBar(
         duration: const Duration(seconds: 1),
         content:
-            new Text('Failed to remove widget.post ${post.id} from favorites'),
+            new Text('Failed to remove Post ${post.id} from favorites'),
       ));
     }
   }
@@ -349,7 +354,7 @@ class _PostWidgetState extends State<PostWidget> {
     } else {
       Scaffold.of(context).showSnackBar(new SnackBar(
         duration: const Duration(seconds: 1),
-        content: new Text('Failed to add widget.post ${post.id} to favorites'),
+        content: new Text('Failed to add Post ${post.id} to favorites'),
       ));
     }
   }
@@ -993,11 +998,38 @@ class _PostWidgetState extends State<PostWidget> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
+                  Text((){
+                    switch(widget.post.rating.toLowerCase()) {
+                      case 's':
+                        return 'Safe';
+                      case 'q':
+                        return 'Questionable';
+                      case 'e':
+                        return 'Explicit';
+                    }
+                    return 'Unknown';
+                  }()),
+                  Text(
+                      '${widget.post.file['width']} x ${widget.post.file['height']}'),
+                ],
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.only(
+                right: 4,
+                left: 4,
+                top: 2,
+                bottom: 2,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
                   Text(DateTime.parse(widget.post.creation)
                       .toLocal()
                       .toString()),
-                  Text(
-                      '${widget.post.file['width']} x ${widget.post.file['height']}')
+                  Text(DateTime.parse(widget.post.updated)
+                      .toLocal()
+                      .toString()),
                 ],
               ),
             ),
