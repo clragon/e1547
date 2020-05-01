@@ -249,7 +249,8 @@ class _PostWidgetState extends State<PostWidget> {
       return;
     }
 
-    String downloadFolder = '${Platform.environment['EXTERNAL_STORAGE']}/Pictures/$appName';
+    String downloadFolder =
+        '${Platform.environment['EXTERNAL_STORAGE']}/Pictures/$appName';
     Directory(downloadFolder).createSync();
 
     String filename =
@@ -301,10 +302,10 @@ class _PostWidgetState extends State<PostWidget> {
                     child: done
                         ? const Icon(Icons.done)
                         : Container(
-                      height: 18,
-                      width: 18,
-                      child: CircularProgressIndicator(),
-                    ),
+                            height: 18,
+                            width: 18,
+                            child: CircularProgressIndicator(),
+                          ),
                   ),
                 ],
               ),
@@ -339,8 +340,7 @@ class _PostWidgetState extends State<PostWidget> {
     } else {
       Scaffold.of(context).showSnackBar(new SnackBar(
         duration: const Duration(seconds: 1),
-        content:
-            new Text('Failed to remove Post ${post.id} from favorites'),
+        content: new Text('Failed to remove Post ${post.id} from favorites'),
       ));
     }
   }
@@ -590,26 +590,26 @@ class _PostWidgetState extends State<PostWidget> {
                     ),
                     widget.post.artist.length != 0
                         ? new RichText(
-                        text: TextSpan(
-                          children: () {
-                            List<TextSpan> spans = [];
-                            for (String artist in widget.post.artist.join(', ').split(' ')) {
-                              spans.add(TextSpan(
-                                text: artist + ' ',
-                                recognizer: new TapGestureRecognizer()
-                                ..onTap = () {
-                                    Navigator.of(context)
-                                        .push(new MaterialPageRoute<Null>(builder: (context) {
-                                      return new SearchPage(
-                                          new Tagset.parse(artist));
-                                    }));
-                                },
-                              ));
-                            }
-                            return spans;
-                          }()
-                        ),
-                        )
+                            text: TextSpan(children: () {
+                              List<TextSpan> spans = [];
+                              for (String artist
+                                  in widget.post.artist.join(', ').split(' ')) {
+                                spans.add(TextSpan(
+                                  text: artist + ' ',
+                                  recognizer: new TapGestureRecognizer()
+                                    ..onTap = () {
+                                      Navigator.of(context).push(
+                                          new MaterialPageRoute<Null>(
+                                              builder: (context) {
+                                        return new SearchPage(
+                                            new Tagset.parse(artist));
+                                      }));
+                                    },
+                                ));
+                              }
+                              return spans;
+                            }()),
+                          )
                         : Text('no artist',
                             style: TextStyle(
                                 color: Colors.grey,
@@ -645,8 +645,7 @@ class _PostWidgetState extends State<PostWidget> {
                     child: Card(
                       child: Padding(
                         padding: EdgeInsets.all(16),
-                        child: dTextField(
-                            context, widget.post.description),
+                        child: dTextField(context, widget.post.description),
                       ),
                     ),
                   )
@@ -916,8 +915,9 @@ class _PostWidgetState extends State<PostWidget> {
                                       onLongPress: () {
                                         showDialog(
                                           context: context,
-                                          builder: (context) =>
-                                              wikiDialog(context, tag, actions: true),
+                                          builder: (context) => wikiDialog(
+                                              context, tag,
+                                              actions: true),
                                         );
                                       },
                                       child: Card(
@@ -998,8 +998,8 @@ class _PostWidgetState extends State<PostWidget> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Text((){
-                    switch(widget.post.rating.toLowerCase()) {
+                  Text(() {
+                    switch (widget.post.rating.toLowerCase()) {
                       case 's':
                         return 'Safe';
                       case 'q':
@@ -1027,9 +1027,7 @@ class _PostWidgetState extends State<PostWidget> {
                   Text(DateTime.parse(widget.post.creation)
                       .toLocal()
                       .toString()),
-                  Text(DateTime.parse(widget.post.updated)
-                      .toLocal()
-                      .toString()),
+                  Text(formatBytes(widget.post.file['size'], 1)),
                 ],
               ),
             ),
@@ -1043,7 +1041,11 @@ class _PostWidgetState extends State<PostWidget> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Text(formatBytes(widget.post.file['size'], 1)),
+                  widget.post.updated != null
+                      ? Text(DateTime.parse(widget.post.updated)
+                      .toLocal()
+                      .toString())
+                      : Container(),
                   Text(widget.post.file['ext']),
                 ],
               ),
