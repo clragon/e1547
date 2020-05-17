@@ -473,15 +473,14 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
               case 'section':
               case 'quote':
                 if (active) {
-                  String end = '/${key.toLowerCase()}';
+                  String end = '[/${key.toLowerCase()}]';
                   int split = -1;
                   for (Match endMatch in end.allMatches(after)) {
-                    if (after.substring(0, endMatch.start).contains(key)) {
-                      if (!after.substring(0, endMatch.start).contains(end)) {
-                        continue;
-                      }
+                    String container = after.substring(0, endMatch.start);
+                    if ('[$key'.allMatches(container).length != end.allMatches(container).length) {
+                      continue;
                     }
-                    split = endMatch.start -1;
+                    split = endMatch.start;
                     break;
                   }
                   if (split == -1) {
@@ -513,7 +512,7 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
                           expanded: expanded);
                       break;
                   }
-                  after = after.substring(split + end.length +2);
+                  after = after.substring(split + end.length);
                 }
                 break;
             }
@@ -584,7 +583,7 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
                   newParts.addAll(resolve(after, states));
                 }
               } else {
-                newParts.addAll(resolve('$before\\[$key\\]$after', states));
+                newParts.addAll(resolve('$before\\[$tag\\]$after', states));
               }
             }
           }
@@ -626,6 +625,7 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
 
           switch (word) {
             case 'thumb':
+              // add actual pictures here some day.
             case 'post':
               onTap = () async {
                 Post p = await client.post(int.parse(match.split('#')[1]));
@@ -839,7 +839,9 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
         Function onTap = () {
           Navigator.of(context)
               .push(new MaterialPageRoute<Null>(builder: (context) {
-            return new SearchPage(new Tagset.parse(match.split('|')[0]));
+                // split of display text after |
+                // and replace spaces with _ to produce a valid tag
+            return new SearchPage(new Tagset.parse(match.split('|')[0].replaceAll(' ', '_')));
           }));
         };
 

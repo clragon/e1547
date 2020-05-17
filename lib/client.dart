@@ -215,7 +215,7 @@ class Client {
     return false;
   }
 
-  Future<List<Post>> posts(Tagset tags, int page) async {
+  Future<List<Post>> posts(Tagset tags, int page, {bool filter = true}) async {
     try {
       String body = await _http.get(await _host, '/posts.json', query: {
         'tags': tags,
@@ -238,7 +238,7 @@ class Client {
         if (!showWebm && post.file['ext'] == 'webm') {
           continue;
         }
-        if (await isBlacklisted(post)) {
+        if (filter && await isBlacklisted(post)) {
           continue;
         }
         posts.add(post);

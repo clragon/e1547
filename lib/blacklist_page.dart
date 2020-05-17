@@ -80,10 +80,12 @@ class _BlacklistPageState extends State<BlacklistPage> {
                             _tagController.text.toString().split(' ');
                         if (suggestion
                             .contains(noDash(tags[tags.length - 1]))) {
-                          tags[tags.length - 1] =
-                              tags[tags.length - 1][0] == '-'
-                                  ? '-' + suggestion
-                                  : suggestion;
+                          String operator = tags[tags.length - 1][0];
+                          if (operator == '-' || operator == '~') {
+                            tags[tags.length - 1] = operator + suggestion;
+                          } else {
+                            tags[tags.length - 1] = suggestion;
+                          }
                         } else {
                           tags.add(suggestion);
                         }
@@ -339,7 +341,7 @@ class _BlacklistPageState extends State<BlacklistPage> {
 
 String noDash(String s) {
   if (s != '') {
-    if (s[0] == '-') {
+    if (s[0] == '-' || s[0] == '~') {
       return s.substring(1);
     } else {
       return s;

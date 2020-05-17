@@ -46,10 +46,14 @@ class FavPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new PostsPage(
-        appBarBuilder: appBarWidget('Favorites'),
-        tags: db.username.value.then((username) {
-          return new Tagset.parse('fav:' + username);
-        }));
+      appBarBuilder: appBarWidget('Favorites'),
+      tags: db.username.value.then((username) {
+        return new Tagset.parse('fav:' + username);
+      }),
+      postProvider: (tags, page) {
+        return client.posts(tags, page, filter: false);
+      },
+    );
   }
 }
 
@@ -116,6 +120,7 @@ class FollowsPage extends StatelessWidget {
 
 class SearchPage extends StatelessWidget {
   final Tagset tags;
+
   SearchPage(this.tags);
 
   @override
@@ -175,7 +180,6 @@ AppBar Function(BuildContext context) appBarWidget(String title,
     );
   };
 }
-
 
 class _FollowButton extends StatefulWidget {
   final Pool pool;
@@ -570,24 +574,20 @@ class _PostsPageState extends State<PostsPage> {
             ),
           ),
         ),
-        new OrientationBuilder(
-          builder: (context, orientation) {
-            return SmartRefresher(
-                controller: _refreshController,
-                header: ClassicHeader(
-                  completeText: 'refreshing...',
-                ),
-                onRefresh: _clearPages,
-                physics: BouncingScrollPhysics(),
-                child: new StaggeredGridView.countBuilder(
-                  crossAxisCount: orientation == Orientation.portrait ? 2 : 3,
-                  itemCount: _itemCount(),
-                  itemBuilder: _itemBuilder,
-                  staggeredTileBuilder: _staggeredTileBuilder(),
-                  physics: BouncingScrollPhysics(),
-                ));
-          },
-        ),
+        SmartRefresher(
+            controller: _refreshController,
+            header: ClassicHeader(
+              completeText: 'refreshing...',
+            ),
+            onRefresh: _clearPages,
+            physics: BouncingScrollPhysics(),
+            child: new StaggeredGridView.countBuilder(
+              crossAxisCount: (MediaQuery.of(context).size.width / 200).round(),
+              itemCount: _itemCount(),
+              itemBuilder: _itemBuilder,
+              staggeredTileBuilder: _staggeredTileBuilder(),
+              physics: BouncingScrollPhysics(),
+            )),
         new Visibility(
           visible: (!_loading && _pages.length == 1 && _pages[0].length == 0),
           child: new Center(
@@ -782,9 +782,12 @@ class TagEntry extends StatelessWidget {
           onSuggestionSelected: (suggestion) {
             List<String> tags = controller.text.toString().split(' ');
             if (suggestion.contains(noDash(tags[tags.length - 1]))) {
-              tags[tags.length - 1] = tags[tags.length - 1][0] == '-'
-                  ? '-' + suggestion
-                  : suggestion;
+              String operator = tags[tags.length - 1][0];
+              if (operator == '-' || operator == '~') {
+                tags[tags.length - 1] = operator + suggestion;
+              } else {
+                tags[tags.length - 1] = suggestion;
+              }
             } else {
               tags.add(suggestion);
             }

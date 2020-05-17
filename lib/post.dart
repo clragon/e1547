@@ -479,7 +479,7 @@ class _PostWidgetState extends State<PostWidget> {
                 child: const CircularProgressIndicator(),
               )),
               errorWidget: (context, url, error) =>
-                  const Icon(Icons.error_outline),
+                placeholder(Icon(Icons.error_outline)),
             );
           }();
         }
@@ -623,6 +623,9 @@ class _PostWidgetState extends State<PostWidget> {
                     new Row(children: [
                       new Icon(Icons.person, size: 14.0),
                       new Text(' ${widget.post.uploader}'),
+                      // tap ID to search posts would be nice
+                      // however, this costs extra API calls,
+                      // as we would need ro resolve the ID into a name.
                     ]),
                   ],
                 ),

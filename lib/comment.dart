@@ -88,7 +88,7 @@ class _CommentsWidgetState extends State<CommentsWidget> {
                 ),
                 new Padding(
                   padding: EdgeInsets.all(20),
-                  child: new Text('Loading posts'),
+                  child: new Text('Loading comments'),
                 ),
               ],
             ),
@@ -120,7 +120,7 @@ class _CommentsWidgetState extends State<CommentsWidget> {
                 ),
                 new Padding(
                   padding: EdgeInsets.all(20),
-                  child: new Text('No posts'),
+                  child: new Text('No comments'),
                 ),
               ],
             ),
