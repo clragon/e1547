@@ -3,6 +3,7 @@ import 'package:e1547/blacklist_page.dart';
 import 'package:e1547/persistence.dart';
 import 'package:e1547/pools_page.dart';
 import 'package:e1547/settings_page.dart';
+import 'package:e1547/tag.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'client.dart';
@@ -189,6 +190,16 @@ class NavigationDrawer extends StatelessWidget {
                   '/hot', (Route<dynamic> route) => false);
             }),
         new ListTile(
+          leading: const Icon(Icons.search),
+          title: const Text("Search"),
+          onTap: () => Navigator.of(context).push(
+              new MaterialPageRoute<Null>(
+                  builder: (context) {
+                    return new SearchPage(new Tagset.parse(''));
+                  })),
+        ),
+        Divider(),
+        new ListTile(
             selected: _drawerSelection == _DrawerSelection.favorites,
             leading: const Icon(Icons.favorite),
             title: const Text('Favorites'),
@@ -200,7 +211,6 @@ class NavigationDrawer extends StatelessWidget {
                 Navigator.popAndPushNamed(context, '/login');
               }
             }),
-        Divider(),
         new ListTile(
           selected: _drawerSelection == _DrawerSelection.follows,
           leading: const Icon(Icons.turned_in),

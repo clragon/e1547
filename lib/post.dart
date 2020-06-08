@@ -3,8 +3,7 @@ import 'dart:collection';
 import 'dart:io' show Directory, File, Platform;
 import 'dart:math';
 
-import 'package:cached_network_image/cached_network_image.dart'
-    show CachedNetworkImage, CachedNetworkImageProvider;
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e1547/appinfo.dart';
 import 'package:e1547/comment.dart';
 import 'package:e1547/pool.dart';
@@ -18,6 +17,7 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart'
 import 'package:like_button/like_button.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:photo_view/photo_view.dart';
+import 'package:photo_view/photo_view_gallery.dart';
 import 'package:url_launcher/url_launcher.dart' as url;
 
 import 'client.dart' show client;
@@ -195,27 +195,32 @@ class PostSwipe extends StatelessWidget {
   final List<Post> posts;
   final int startingIndex;
 
-  const PostSwipe(this.posts, {Key key, this.startingIndex = 0})
-      : super(key: key);
+  PostSwipe(this.posts, {Key key, this.startingIndex = 0}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    PageController controller = PageController(initialPage: startingIndex);
+
+    Widget _pageBuilder(BuildContext context, int index) {
+      return index < posts.length
+          ? new PostWidget(posts[index], posts: posts, controller: controller,)
+          : null;
+    }
+
     return new PageView.builder(
-      controller: new PageController(initialPage: startingIndex),
+      controller: controller,
       itemBuilder: _pageBuilder,
     );
-  }
-
-  Widget _pageBuilder(BuildContext context, int index) {
-    return index < posts.length ? new PostWidget(posts[index]) : null;
   }
 }
 
 // Preview of a post that appears in lists of posts. Just the image.
 class PostWidget extends StatefulWidget {
   final Post post;
+  final List<Post> posts;
+  final PageController controller;
 
-  PostWidget(this.post);
+  PostWidget(this.post, {this.posts, this.controller});
 
   @override
   State<StatefulWidget> createState() {
@@ -402,86 +407,88 @@ class _PostWidgetState extends State<PostWidget> {
   @override
   Widget build(BuildContext context) {
     Widget postContentsWidget() {
-      Widget placeholder(Widget child) {
-        return Container(
-          height: 400,
-          child: Center(
-            child: child,
-          ),
-        );
-      }
-
       Widget overlayImageWidget() {
         Widget imageWidget() {
-          return () {
-            if (widget.post.isDeleted) {
-              return placeholder(const Text(
-                'Post was deleted',
-                textAlign: TextAlign.center,
+          return Container(
+              child: () {
+                if (widget.post.isDeleted) {
+                  return Center(
+                      child: const Text(
+                    'Post was deleted',
+                    textAlign: TextAlign.center,
+                  ));
+                }
+                if (widget.post.isBlacklisted) {
+                  return Center(
+                      child: Text(
+                    'Post is blacklisted',
+                    textAlign: TextAlign.center,
+                  ));
+                }
+                if (widget.post.file['url'] == null) {
+                  return Center(
+                      child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      Padding(
+                        padding: EdgeInsets.all(8),
+                        child: const Text(
+                          'Image unavailable in safe mode',
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      InkWell(
+                        child: Card(
+                            child: Padding(
+                                padding: EdgeInsets.all(8),
+                                child: Text('Settings'))),
+                        onTap: () => Navigator.pushNamed(context, '/settings'),
+                      )
+                    ],
+                  ));
+                }
+                if (widget.post.file['ext'] == 'swf' ||
+                    widget.post.file['ext'] == 'webm') {
+                  return Center(
+                      child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      Padding(
+                        padding: EdgeInsets.all(8),
+                        child: const Text(
+                          'Webm support under development',
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      InkWell(
+                        child: Card(
+                            child: Padding(
+                                padding: EdgeInsets.all(8),
+                                child: Text('Browse'))),
+                        onTap: () async => url.launch(
+                            widget.post.url(await db.host.value).toString()),
+                      )
+                    ],
+                  ));
+                }
+                return CachedNetworkImage(
+                  imageUrl: widget.post.sample['url'],
+                  placeholder: (context, url) => Center(
+                      child: Container(
+                    height: 26,
+                    width: 26,
+                    child: const CircularProgressIndicator(),
+                  )),
+                  errorWidget: (context, url, error) =>
+                      Center(child: Icon(Icons.error_outline)),
+                );
+              }(),
+              constraints: BoxConstraints(
+                minHeight: (MediaQuery.of(context).size.height /
+                    2), // maybe set this to around 50% of screen DPS
               ));
-            }
-            if (widget.post.isBlacklisted) {
-              return placeholder(Text(
-                'Post is blacklisted',
-                textAlign: TextAlign.center,
-              ));
-            }
-            if (widget.post.file['url'] == null) {
-              return placeholder(Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  Padding(
-                    padding: EdgeInsets.all(8),
-                    child: const Text(
-                      'Image unavailable in safe mode',
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  InkWell(
-                    child: Card(
-                        child: Padding(
-                            padding: EdgeInsets.all(8),
-                            child: Text('Settings'))),
-                    onTap: () => Navigator.pushNamed(context, '/settings'),
-                  )
-                ],
-              ));
-            }
-            if (widget.post.file['ext'] == 'swf' ||
-                widget.post.file['ext'] == 'webm') {
-              return placeholder(Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  Padding(
-                    padding: EdgeInsets.all(8),
-                    child: const Text(
-                      'Webm support under development',
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  InkWell(
-                    child: Card(
-                        child: Padding(
-                            padding: EdgeInsets.all(8), child: Text('Browse'))),
-                    onTap: () async => url.launch(
-                        widget.post.url(await db.host.value).toString()),
-                  )
-                ],
-              ));
-            }
-            return CachedNetworkImage(
-              imageUrl: widget.post.sample['url'],
-              placeholder: (context, url) => placeholder(Container(
-                height: 26,
-                width: 26,
-                child: const CircularProgressIndicator(),
-              )),
-              errorWidget: (context, url, error) =>
-                placeholder(Icon(Icons.error_outline)),
-            );
-          }();
         }
 
         return Stack(
@@ -568,7 +575,13 @@ class _PostWidgetState extends State<PostWidget> {
       return new GestureDetector(
         onTap:
             widget.post.file['url'] != null && widget.post.file['ext'] != 'webm'
-                ? _onTapImage(context, widget.post)
+                ? (){
+                if (widget.posts != null) {
+                  return _onTapImage(context, widget.posts, widget.posts.indexOf(widget.post));
+                } else {
+                  return _onTapImage(context, [widget.post], 0);
+                }
+            }()
                 : null,
         child: overlayImageWidget(),
       );
@@ -875,10 +888,10 @@ class _PostWidgetState extends State<PostWidget> {
               'species',
               'character',
               'copyright',
-              'invalid',
-              'lore',
               'meta',
+              'lore',
               'artist',
+              'invalid',
             ];
             for (String tagSet in tagSets) {
               if (widget.post.tags[tagSet].length != 0) {
@@ -924,10 +937,48 @@ class _PostWidgetState extends State<PostWidget> {
                                         );
                                       },
                                       child: Card(
-                                          child: Padding(
-                                        padding: EdgeInsets.all(4),
-                                        child: Text(tag),
-                                      ))),
+                                          clipBehavior:
+                                              Clip.antiAliasWithSaveLayer,
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: <Widget>[
+                                              Container(
+                                                height: 24,
+                                                width: 5,
+                                                color: () {
+                                                  switch (tagSet) {
+                                                    case 'general':
+                                                      return Colors.indigo[300];
+                                                    case 'species':
+                                                      return Colors.teal[300];
+                                                    case 'character':
+                                                      return Colors
+                                                          .lightGreen[300];
+                                                    case 'copyright':
+                                                      return Colors.yellow[300];
+                                                    case 'meta':
+                                                      return Colors
+                                                          .deepOrange[300];
+                                                    case 'lore':
+                                                      return Colors.pink[300];
+                                                    case 'artist':
+                                                      return Colors
+                                                          .deepPurple[300];
+                                                    default:
+                                                      return Colors.grey[300];
+                                                  }
+                                                }(),
+                                              ),
+                                              Padding(
+                                                padding: EdgeInsets.only(
+                                                    top: 4,
+                                                    bottom: 4,
+                                                    right: 8,
+                                                    left: 6),
+                                                child: Text(tag),
+                                              )
+                                            ],
+                                          ))),
                                 );
                               }
                               return tags;
@@ -1046,8 +1097,8 @@ class _PostWidgetState extends State<PostWidget> {
                 children: <Widget>[
                   widget.post.updated != null
                       ? Text(DateTime.parse(widget.post.updated)
-                      .toLocal()
-                      .toString())
+                          .toLocal()
+                          .toString())
                       : Container(),
                   Text(widget.post.file['ext']),
                 ],
@@ -1059,41 +1110,45 @@ class _PostWidgetState extends State<PostWidget> {
       }
 
       Widget sourceDisplay() {
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Padding(
-              padding: EdgeInsets.only(
-                right: 4,
-                left: 4,
-                top: 2,
-                bottom: 2,
-              ),
-              child: Text(
-                'Sources',
-                style: TextStyle(
-                  fontSize: 16,
+        if (widget.post.sources.length != 0) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Padding(
+                padding: EdgeInsets.only(
+                  right: 4,
+                  left: 4,
+                  top: 2,
+                  bottom: 2,
+                ),
+                child: Text(
+                  'Sources',
+                  style: TextStyle(
+                    fontSize: 16,
+                  ),
                 ),
               ),
-            ),
-            Padding(
-              padding: EdgeInsets.only(
-                right: 4,
-                left: 4,
-                top: 2,
-                bottom: 2,
+              Padding(
+                padding: EdgeInsets.only(
+                  right: 4,
+                  left: 4,
+                  top: 2,
+                  bottom: 2,
+                ),
+                child: dTextField(context, () {
+                  String msg = '';
+                  for (String source in widget.post.sources) {
+                    msg = '$msg$source\n';
+                  }
+                  return msg;
+                }()),
               ),
-              child: dTextField(context, () {
-                String msg = '';
-                for (String source in widget.post.sources) {
-                  msg = msg + source + '\n';
-                }
-                return msg;
-              }()),
-            ),
-            Divider(),
-          ],
-        );
+              Divider(),
+            ],
+          );
+        } else {
+          return Container();
+        }
       }
 
       return new Padding(
@@ -1165,27 +1220,44 @@ class _PostWidgetState extends State<PostWidget> {
     );
   }
 
-  Function() _onTapImage(BuildContext context, Post post) {
+  Function() _onTapImage(BuildContext context, List<Post> posts, int index) {
+    int current = index;
     Widget fullScreenWidgetBuilder(BuildContext context) {
-      return PhotoView(
-        imageProvider: new CachedNetworkImageProvider(post.file['url']),
+      return PhotoViewGallery.builder(
+        scrollPhysics: const BouncingScrollPhysics(),
+        builder: (BuildContext context, int index) {
+          current = index;
+          return PhotoViewGalleryPageOptions(
+            imageProvider: CachedNetworkImageProvider(posts[index].file['url']),
+            initialScale: PhotoViewComputedScale.contained * 0.8,
+            minScale: PhotoViewComputedScale.contained,
+            maxScale: PhotoViewComputedScale.contained * 6,
+            onTapUp: (buildContext, tapDownDetails, photoViewControllerValue) =>
+                Navigator.of(context).pop(),
+          );
+        },
+        itemCount: posts.length,
         loadingBuilder: (buildContext, imageChunkEvent) =>
             new Stack(alignment: Alignment.center, children: [
           new CachedNetworkImage(
-            imageUrl: post.sample['url'],
+            imageUrl: posts[current].sample['url'],
             placeholder: (context, url) => const CircularProgressIndicator(),
             errorWidget: (context, url, error) =>
                 const Icon(Icons.error_outline),
           ),
           new Container(
-            alignment: Alignment.topCenter,
+            alignment: Alignment.bottomCenter,
             child: const LinearProgressIndicator(),
           ),
         ]),
-        minScale: PhotoViewComputedScale.contained,
-        maxScale: PhotoViewComputedScale.contained * 6,
-        onTapUp: (buildContext, tapDownDetails, photoViewControllerValue) =>
-            Navigator.of(context).pop(),
+        pageController: PageController(
+          initialPage: index,
+        ),
+        onPageChanged: (index) {
+          if (widget.controller != null) {
+            widget.controller.jumpToPage(index);
+          }
+        },
       );
     }
 

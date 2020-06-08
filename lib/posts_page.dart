@@ -129,7 +129,16 @@ class SearchPage extends StatelessWidget {
     return new PostsPage(
       appBarBuilder: (context) {
         return AppBar(
-          title: Text('Search'),
+          title: ValueListenableBuilder(
+            valueListenable: _tags,
+            builder: (context, value, child) {
+              if (value.length == 1) {
+                return Text(value.toString());
+              } else {
+                return const Text('Search');
+              }
+            },
+          ),
           leading: IconButton(
             icon: Icon(Icons.arrow_back),
             onPressed: () => Navigator.pop(context),
@@ -414,7 +423,7 @@ class _PostsPageState extends State<PostsPage> {
         _clearPages();
       } else {
         _bottomSheetController = Scaffold.of(context).showBottomSheet(
-          (context) => new TagEntry(controller: _tagController),
+          (context) => new TagEntry(controller: _tagController, onEnter: () { print('done here'); }),
         );
 
         setState(() {
@@ -638,10 +647,12 @@ typedef Future<Tagset> TagEditor(Tagset tags);
 class TagEntry extends StatelessWidget {
   const TagEntry({
     @required this.controller,
+    this.onEnter,
     Key key,
   }) : super(key: key);
 
   final TextEditingController controller;
+  final Function onEnter;
 
   void _setTags(Tagset tags) {
     controller.text = tags.toString() + ' ';
@@ -804,7 +815,13 @@ class TagEntry extends StatelessWidget {
           },
           suggestionsCallback: (String pattern) {
             List<String> tags = pattern.split(' ');
-            return client.tags(noDash(tags[tags.length - 1]), 0);
+            String completion = noDash(tags[tags.length - 1]);
+            if (completion.isNotEmpty) {
+              return client.tags(completion, 0);
+            } else {
+              return [];
+            }
+
           },
         ),
         new Padding(
