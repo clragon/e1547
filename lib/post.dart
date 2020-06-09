@@ -195,7 +195,7 @@ class PostSwipe extends StatelessWidget {
   final List<Post> posts;
   final int startingIndex;
 
-  PostSwipe(this.posts, {Key key, this.startingIndex = 0}) : super(key: key);
+  PostSwipe(this.posts, {Key key, this.startingIndex = 0});
 
   @override
   Widget build(BuildContext context) {
@@ -505,7 +505,7 @@ class _PostWidgetState extends State<PostWidget> {
                   ),
                   shadowColor: Colors.black,
                 ),
-                onPressed: () => Navigator.pop(context),
+                onPressed: () => Navigator.of(context).pop(),
               ),
               actions: <Widget>[
                 PopupMenuButton<String>(
@@ -1257,6 +1257,15 @@ class _PostWidgetState extends State<PostWidget> {
           if (widget.controller != null) {
             widget.controller.jumpToPage(index);
           }
+          // this is supposed to preload the next image
+          // doesn't seem to work though.
+          /*
+          () async {
+            if (posts.length >= index +1) {
+              CachedNetworkImageProvider(posts[index +2].file['url']);
+            }
+          }();
+          */
         },
       );
     }

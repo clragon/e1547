@@ -466,9 +466,6 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
             RegExp blankLess = RegExp(r'(^[\r\n]*)|([\r\n]*$)');
 
             switch (key.toLowerCase()) {
-              case 'spoiler':
-                // maybe with a wrap.
-                break;
               case 'code':
               case 'section':
               case 'quote':
@@ -486,27 +483,24 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
                   if (split == -1) {
                     break;
                   }
+                  String between = after
+                      .substring(0, split)
+                      .replaceAllMapped(blankLess, (match) => '');
                   switch (key.toLowerCase()) {
                     case 'code':
                       blocked = quoteWrap(toWidgets(getText(
-                          after
-                              .substring(0, split)
-                              .replaceAllMapped(blankLess, (match) => ''),
+                          between,
                           states)));
                       break;
                     case 'quote':
                       blocked = quoteWrap(toWidgets(resolve(
-                          after
-                              .substring(0, split)
-                              .replaceAllMapped(blankLess, (match) => ''),
+                          between,
                           states)));
                       break;
                     case 'section':
                       blocked = sectionWrap(
                           toWidgets(resolve(
-                              after
-                                  .substring(0, split)
-                                  .replaceAllMapped(blankLess, (match) => ''),
+                              between,
                               states)),
                           value,
                           expanded: expanded);
