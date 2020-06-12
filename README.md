@@ -3,19 +3,18 @@ A mobile app to browse e621 and e926
 
 ## Features  
 
-- Browsing and searching posts
-- Saves the current search tags on the home page
-- Upvote and downvote posts
-- Download posts
-- Quick access to Hot and your favorites in the drawer
-- Almost completey post info, clickable tags
-- Longpress tags to display their wiki entry and quickly blacklist them
-- Local blacklist
+- Browse and search posts
 - Browse and search pools
-- Pool descriptions with clickable links (e.g. to other pools)
+- Download Images
+- Upvote and downvote posts
+- Access to Hot and your favourites
+- Follow tags (notifications planned)
+- Display post info, launch searches from tags
+- View tag wiki entries by long-pressing 
+- Local blacklist
 - DText parsing
-- Hide Webm posts (Support for playing Webm is under development)
-- Check for app updates in About
+- Hide Webm posts (playing webm planned)
+- Automatic update check
  
 
 ## Screenshots  
@@ -24,13 +23,15 @@ A mobile app to browse e621 and e926
 Gif from old version 1.0.0
 
 ## Download  
+  
+APK and IPA files can be found over at the [releases](https://github.com/clragon/e1547/releases/latest).  
+iOS releases are compiled by [CamperGuy](https://github.com/camperguy).
 
-You can download the latest Android apk here: [releases](https://github.com/clragon/e1547/releases/latest)
+## Compilation
 
-Unfortunately, I do not own a machine to compile iOS releases with.
-You will have to compile it from source on a Mac.
+Compiling the app for yourself should be possible for both platforms, iOS and Android.
 
-You should be able to compile the app yourself with [Android Studio](https://developer.android.com/studio)
+(There could be a guide here soon™.)
 
 ## Contact
 The app is currently under development.  
@@ -38,6 +39,6 @@ If you have questions/comments/suggestions, you can open a github Issue.
 You can also post in the [e926 forum thread](https://e926.net/forum_topics/25854).  
 
 ## Credit
-- The original code for this app was written by [Perlatus](https://github.com/perlatus).
+- This app is a continuation of a project by [Perlatus](https://github.com/perlatus).
 
 - The e1547 logo and banner uses a [Paw Icon](https://fontawesome.com/icons/paw?style=solid) licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
