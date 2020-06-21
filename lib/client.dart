@@ -119,15 +119,11 @@ class Client {
 
   Future<bool> isBlacklisted(Post post) async {
     List<String> blacklist = await _blacklist;
-    if (0 < blacklist.length) {
-      String tags;
+    if (blacklist.length > 0) {
+      List<String> tags = [];
       post.tags.forEach((k, v) {
-        v.forEach((s) {
-          tags = '$tags$s ';
-        });
+        tags.addAll(v.cast<String>());
       });
-
-
 
       for (String line in blacklist) {
         List<String> black = [];
@@ -142,10 +138,7 @@ class Client {
           }
         });
 
-        bool bMatch = true;
-        bool wMatch = true;
-
-        bool checkTags(String tags, String tag) {
+        bool checkTags(List<String> tags, String tag) {
           if (tag.contains(':')) {
             String identifier = tag.split(':')[0];
             String value = tag.split(':')[1];
@@ -182,25 +175,30 @@ class Client {
           }
         }
 
-        black.forEach((tag) {
+        bool bMatch = true;
+        bool wMatch = true;
+
+        for (String tag in black) {
           if (!checkTags(tags, tag)) {
             bMatch = false;
+            break;
           }
-        });
-        white.forEach((tag) {
+        }
+        for (String tag in white) {
           if (!checkTags(tags, tag)) {
             wMatch = false;
+            break;
           }
-        });
+        }
 
-        if (black.length != 0 && white.length != 0) {
+        if (black.length > 0 && white.length > 0) {
           if (bMatch) {
             if (!wMatch) {
               return true;
             }
           }
         } else {
-          if (black.length != 0) {
+          if (black.length > 0) {
             if (bMatch) {
               return true;
             }

@@ -31,7 +31,7 @@ class AboutPage extends StatelessWidget {
                         Widget msg;
                         FlatButton b1;
                         FlatButton b2;
-                        if (int.parse(appVersion.replaceAll('.', '')) >=
+                        if (int.tryParse(snapshot.data['version']) == null || int.parse(appVersion.replaceAll('.', '')) >=
                             int.parse(snapshot.data['version'].replaceAll('.', ''))) {
                           msg = Text("You have the newest version ($appVersion)");
                           b1 = FlatButton(

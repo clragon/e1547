@@ -151,7 +151,7 @@ class _FollowingPageState extends State<FollowingPage> {
                             } else {
                               Navigator.of(context).push(
                                   new MaterialPageRoute<Null>(builder: (context) {
-                                    return new SearchPage(
+                                    return new SearchPage(tags:
                                         Tagset.parse(_follows[index]));
                                   }));
                             }

@@ -121,11 +121,11 @@ class FollowsPage extends StatelessWidget {
 class SearchPage extends StatelessWidget {
   final Tagset tags;
 
-  SearchPage(this.tags);
+  SearchPage({this.tags});
 
   @override
   Widget build(BuildContext context) {
-    ValueNotifier _tags = ValueNotifier(tags);
+    ValueNotifier _tags = ValueNotifier(tags ?? new Tagset.parse(''));
     return new PostsPage(
       appBarBuilder: (context) {
         return AppBar(
@@ -259,7 +259,7 @@ class _FollowButtonState extends State<_FollowButton> {
 }
 
 Widget poolInfo(BuildContext context, Pool pool) {
-  DateFormat dateFormat = DateFormat('dd.MM.yy hh:mm');
+  DateFormat dateFormat = DateFormat('dd.MM.yy HH:mm');
   Color textColor = Colors.grey[600];
   return AlertDialog(
     title: Row(

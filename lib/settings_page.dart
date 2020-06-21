@@ -60,6 +60,7 @@ class _SettingsPageState extends State<SettingsPage> {
       return new Container(
         padding: const EdgeInsets.all(10.0),
         child: new ListView(
+          physics: BouncingScrollPhysics(),
           children: [
             Padding(
               padding: EdgeInsets.only(left: 72, bottom: 8, top: 8, right: 16),

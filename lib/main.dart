@@ -3,7 +3,6 @@ import 'package:e1547/blacklist_page.dart';
 import 'package:e1547/persistence.dart';
 import 'package:e1547/pools_page.dart';
 import 'package:e1547/settings_page.dart';
-import 'package:e1547/tag.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'client.dart';
@@ -50,6 +49,7 @@ class Main extends StatelessWidget {
               _drawerSelection = _DrawerSelection.hot;
               return new HotPage();
             }(),
+        '/search': (context) => new SearchPage(),
         '/fav': (context) => () {
               _drawerSelection = _DrawerSelection.favorites;
               return new FavPage();
@@ -64,9 +64,9 @@ class Main extends StatelessWidget {
           }(),
         '/login': (context) => new LoginPage(),
         '/settings': (context) => new SettingsPage(),
+        '/about': (context) => new AboutPage(),
         '/blacklist': (context) => new BlacklistPage(),
         '/following': (context) => new FollowingPage(),
-        '/about': (context) => new AboutPage(),
       },
     );
   }
@@ -192,11 +192,7 @@ class NavigationDrawer extends StatelessWidget {
         new ListTile(
           leading: const Icon(Icons.search),
           title: const Text("Search"),
-          onTap: () => Navigator.of(context).push(
-              new MaterialPageRoute<Null>(
-                  builder: (context) {
-                    return new SearchPage(new Tagset.parse(''));
-                  })),
+          onTap: () => Navigator.popAndPushNamed(context, '/search'),
         ),
         Divider(),
         new ListTile(
@@ -239,6 +235,9 @@ class NavigationDrawer extends StatelessWidget {
           leading: FutureBuilder(
             builder: (context, snapshot) {
               if (snapshot.hasData && snapshot.data['version'] != null) {
+                if (int.tryParse(snapshot.data['version']) == null) {
+                  return Icon(Icons.info);
+                }
                 if (int.parse(appVersion.replaceAll('.', '')) <
                     int.parse(snapshot.data['version'].replaceAll('.', ''))) {
                   return Stack(

@@ -14,6 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show SystemChrome, SystemUiOverlay;
 import 'package:flutter_cache_manager/flutter_cache_manager.dart'
     show DefaultCacheManager;
+import 'package:intl/intl.dart';
 import 'package:like_button/like_button.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:photo_view/photo_view.dart';
@@ -36,8 +37,8 @@ class Post {
   Map raw;
 
   int id;
-  int score;
-  int favorites;
+  ValueNotifier score;
+  ValueNotifier favorites;
 
   int parent;
 
@@ -60,8 +61,8 @@ class Post {
 
   Map tags;
 
+  ValueNotifier isFavorite;
   bool isDeleted;
-  bool isFavorite;
   bool isLoggedIn;
   bool isBlacklisted;
 
@@ -69,13 +70,13 @@ class Post {
   bool hasSoundWarning;
   bool hasEpilepsyWarning;
 
-  _VoteStatus voteStatus = _VoteStatus.unknown;
+  ValueNotifier voteStatus = ValueNotifier(_VoteStatus.unknown);
 
   Post.fromRaw(this.raw) {
     id = raw['id'] as int;
-    favorites = raw['fav_count'] as int;
+    favorites = ValueNotifier(raw['fav_count'] as int);
 
-    isFavorite = raw['is_favorited'] as bool;
+    isFavorite = ValueNotifier(raw['is_favorited'] as bool);
     isDeleted = raw['flags']['deleted'] as bool;
     isBlacklisted = false;
 
@@ -113,7 +114,7 @@ class Post {
       }
     }
 
-    score = raw['score']['total'] as int;
+    score = ValueNotifier(raw['score']['total'] as int);
     uploader = (raw['uploader_id'] as int).toString();
 
     file = raw['file'] as Map;
@@ -175,8 +176,42 @@ class PostPreview extends StatelessWidget {
       }
     }
 
+    void longPress() {
+      showDialog(
+          context: context,
+          builder: (context) {
+            return SimpleDialog(
+              title: Text('#${post.id.toString()}'),
+              children: <Widget>[
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    ListTile(
+                      title: const Text("Favorite"),
+                      leading: Icon(Icons.favorite),
+                      onTap: () {
+                        Navigator.of(context).pop();
+                        tryAddFav(context, post);
+                      },
+                    ),
+                    ListTile(
+                      title: const Text("Download"),
+                      leading: Icon(Icons.file_download),
+                      onTap: () {
+                        Navigator.of(context).pop();
+                        downloadDialog(context, post);
+                      },
+                    ),
+                  ],
+                )
+              ],
+            );
+          });
+    }
+
     return new GestureDetector(
         onTap: onPressed,
+        onLongPress: longPress,
         child: () {
           return new Card(
               child: new Stack(
@@ -203,7 +238,11 @@ class PostSwipe extends StatelessWidget {
 
     Widget _pageBuilder(BuildContext context, int index) {
       return index < posts.length
-          ? new PostWidget(posts[index], posts: posts, controller: controller,)
+          ? new PostWidget(
+              posts[index],
+              posts: posts,
+              controller: controller,
+            )
           : null;
     }
 
@@ -229,181 +268,6 @@ class PostWidget extends StatefulWidget {
 }
 
 class _PostWidgetState extends State<PostWidget> {
-  void _download(BuildContext context) async {
-    Map<PermissionGroup, PermissionStatus> permissions =
-        await PermissionHandler().requestPermissions([PermissionGroup.storage]);
-
-    if (permissions[PermissionGroup.storage] != PermissionStatus.granted) {
-      showDialog(
-          context: context,
-          builder: (context) {
-            return new AlertDialog(
-              content: const Text(
-                  'You need to grant write permission in order to download files.'),
-              actions: [
-                new RaisedButton(
-                  child: const Text('TRY AGAIN'),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    _download(context); // recursively re-execute
-                  },
-                ),
-              ],
-            );
-          });
-      return;
-    }
-
-    String downloadFolder =
-        '${Platform.environment['EXTERNAL_STORAGE']}/Pictures/$appName';
-    Directory(downloadFolder).createSync();
-
-    String filename =
-        '${widget.post.artist.join(', ')} - ${widget.post.id}.${widget.post.file['ext']}';
-    String filepath = '$downloadFolder/$filename';
-
-    Future<File> download() async {
-      File file = new File(filepath);
-      if (file.existsSync()) {
-        return file;
-      }
-
-      DefaultCacheManager cacheManager = DefaultCacheManager();
-      return (await cacheManager.getSingleFile(widget.post.file['url']))
-          .copySync(filepath);
-    }
-
-    showDialog(
-      context: context,
-      builder: (context) {
-        return new FutureBuilder(
-          future: download(),
-          builder: (context, snapshot) {
-            if (snapshot.hasError) {
-              return new AlertDialog(
-                title: const Text('Error'),
-                content: new Text(snapshot.error.toString()),
-                actions: [
-                  new FlatButton(
-                    child: const Text('OK'),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                ],
-              );
-            }
-
-            bool done = snapshot.connectionState == ConnectionState.done &&
-                snapshot.hasData;
-
-            return new AlertDialog(
-              title: const Text('Download'),
-              content: new Row(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  new Text(filename, softWrap: true),
-                  new Padding(
-                    padding: const EdgeInsets.all(8),
-                    child: done
-                        ? const Icon(Icons.done)
-                        : Container(
-                            height: 18,
-                            width: 18,
-                            child: CircularProgressIndicator(),
-                          ),
-                  ),
-                ],
-              ),
-              actions: [
-                new FlatButton(
-                  child: const Text('OK'),
-                  onPressed: () => Navigator.pop(context),
-                ),
-              ],
-            );
-          },
-        );
-      },
-    );
-  }
-
-  static String formatBytes(int bytes, int decimals) {
-    if (bytes <= 0) return "0 B";
-    const suffixes = ["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
-    var i = (log(bytes) / log(1024)).floor();
-    return ((bytes / pow(1024, i)).toStringAsFixed(decimals)) +
-        ' ' +
-        suffixes[i];
-  }
-
-  Future<void> tryRemoveFav(BuildContext context, Post post) async {
-    if (await client.removeAsFavorite(post.id)) {
-      setState(() {
-        post.isFavorite = false;
-        post.favorites -= 1;
-      });
-    } else {
-      Scaffold.of(context).showSnackBar(new SnackBar(
-        duration: const Duration(seconds: 1),
-        content: new Text('Failed to remove Post ${post.id} from favorites'),
-      ));
-    }
-  }
-
-  Future<void> tryAddFav(BuildContext context, Post post) async {
-    if (await client.addAsFavorite(post.id)) {
-      setState(() {
-        post.isFavorite = true;
-        post.favorites += 1;
-      });
-    } else {
-      Scaffold.of(context).showSnackBar(new SnackBar(
-        duration: const Duration(seconds: 1),
-        content: new Text('Failed to add Post ${post.id} to favorites'),
-      ));
-    }
-  }
-
-  Future<void> tryVote(
-      BuildContext context, Post post, bool upvote, bool replace) async {
-    if (!await client.votePost(post.id, upvote, replace)) {
-      Scaffold.of(context).showSnackBar(new SnackBar(
-        duration: const Duration(seconds: 1),
-        content: new Text('Failed to vote on ${post.id}'),
-      ));
-    } else {
-      setState(() {
-        if (post.voteStatus == _VoteStatus.unknown) {
-          if (upvote) {
-            post.score += 1;
-            post.voteStatus = _VoteStatus.upvoted;
-          } else {
-            post.score -= 1;
-            post.voteStatus = _VoteStatus.downvoted;
-          }
-        } else {
-          if (upvote) {
-            if (post.voteStatus == _VoteStatus.upvoted) {
-              post.score -= 1;
-              post.voteStatus = _VoteStatus.unknown;
-            } else {
-              post.score += 2;
-              post.voteStatus = _VoteStatus.upvoted;
-            }
-          } else {
-            if (post.voteStatus == _VoteStatus.upvoted) {
-              post.score -= 2;
-              post.voteStatus = _VoteStatus.downvoted;
-            } else {
-              post.score += 1;
-              post.voteStatus = _VoteStatus.unknown;
-            }
-          }
-        }
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     Widget postContentsWidget() {
@@ -556,7 +420,7 @@ class _PostWidgetState extends State<PostWidget> {
                             widget.post.url(await db.host.value).toString());
                         break;
                       case 'download':
-                        _download(context);
+                        downloadDialog(context, widget.post);
                         break;
                       case 'browser':
                         url.launch(
@@ -573,16 +437,17 @@ class _PostWidgetState extends State<PostWidget> {
       }
 
       return new GestureDetector(
-        onTap:
-            widget.post.file['url'] != null && widget.post.file['ext'] != 'webm'
-                ? (){
+        onTap: widget.post.file['url'] != null &&
+                widget.post.file['ext'] != 'webm'
+            ? () {
                 if (widget.posts != null) {
-                  return _onTapImage(context, widget.posts, widget.posts.indexOf(widget.post));
+                  return _onTapImage(
+                      context, widget.posts, widget.posts.indexOf(widget.post));
                 } else {
                   return _onTapImage(context, [widget.post], 0);
                 }
-            }()
-                : null,
+              }()
+            : null,
         child: overlayImageWidget(),
       );
     }
@@ -615,7 +480,7 @@ class _PostWidgetState extends State<PostWidget> {
                                           new MaterialPageRoute<Null>(
                                               builder: (context) {
                                         return new SearchPage(
-                                            new Tagset.parse(artist));
+                                            tags: new Tagset.parse(artist));
                                       }));
                                     },
                                 ));
@@ -684,7 +549,8 @@ class _PostWidgetState extends State<PostWidget> {
                 Row(
                   children: <Widget>[
                     LikeButton(
-                      isLiked: widget.post.voteStatus == _VoteStatus.upvoted,
+                      isLiked:
+                          widget.post.voteStatus.value == _VoteStatus.upvoted,
                       likeBuilder: (bool isLiked) {
                         return Icon(
                           Icons.arrow_upward,
@@ -709,10 +575,16 @@ class _PostWidgetState extends State<PostWidget> {
                     ),
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 8),
-                      child: Text(widget.post.score.toString()),
+                      child: ValueListenableBuilder(
+                        valueListenable: widget.post.score,
+                        builder: (context, value, child) {
+                          return Text(value.toString());
+                        },
+                      ),
                     ),
                     LikeButton(
-                      isLiked: widget.post.voteStatus == _VoteStatus.downvoted,
+                      isLiked:
+                          widget.post.voteStatus.value == _VoteStatus.downvoted,
                       circleColor: CircleColor(
                           start: Colors.blue, end: Colors.cyanAccent),
                       bubblesColor: BubblesColor(
@@ -745,7 +617,12 @@ class _PostWidgetState extends State<PostWidget> {
                 ),
                 Row(
                   children: <Widget>[
-                    Text(widget.post.favorites.toString()),
+                    ValueListenableBuilder(
+                      valueListenable: widget.post.favorites,
+                      builder: (context, value, child) {
+                        return Text(value.toString());
+                      },
+                    ),
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 8),
                       child: Icon(Icons.favorite),
@@ -926,7 +803,7 @@ class _PostWidgetState extends State<PostWidget> {
                                               new MaterialPageRoute<Null>(
                                                   builder: (context) {
                                             return new SearchPage(
-                                                Tagset.parse(tag));
+                                                tags: Tagset.parse(tag));
                                           })),
                                       onLongPress: () {
                                         showDialog(
@@ -1025,6 +902,7 @@ class _PostWidgetState extends State<PostWidget> {
       }
 
       Widget fileInfoDisplay() {
+        DateFormat dateFormat = DateFormat('dd.MM.yy HH:mm');
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
@@ -1078,9 +956,8 @@ class _PostWidgetState extends State<PostWidget> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Text(DateTime.parse(widget.post.creation)
-                      .toLocal()
-                      .toString()),
+                  Text(dateFormat
+                      .format(DateTime.parse(widget.post.creation).toLocal())),
                   Text(formatBytes(widget.post.file['size'], 1)),
                 ],
               ),
@@ -1096,9 +973,8 @@ class _PostWidgetState extends State<PostWidget> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   widget.post.updated != null
-                      ? Text(DateTime.parse(widget.post.updated)
-                          .toLocal()
-                          .toString())
+                      ? Text(dateFormat.format(
+                          DateTime.parse(widget.post.updated).toLocal()))
                       : Container(),
                   Text(widget.post.file['ext']),
                 ],
@@ -1175,27 +1051,33 @@ class _PostWidgetState extends State<PostWidget> {
         backgroundColor: Theme.of(context).cardColor,
         child: Padding(
             padding: EdgeInsets.only(left: 2),
-            child: LikeButton(
-              isLiked: widget.post.isFavorite,
-              circleColor: CircleColor(start: Colors.pink, end: Colors.red),
-              bubblesColor: BubblesColor(
-                  dotPrimaryColor: Colors.pink, dotSecondaryColor: Colors.red),
-              likeBuilder: (bool isLiked) {
-                return Icon(
-                  Icons.favorite,
-                  color: isLiked
-                      ? Colors.pinkAccent
-                      : Theme.of(context).iconTheme.color,
+            child: ValueListenableBuilder(
+              valueListenable: widget.post.isFavorite,
+              builder: (context, value, child) {
+                return LikeButton(
+                  isLiked: value,
+                  circleColor: CircleColor(start: Colors.pink, end: Colors.red),
+                  bubblesColor: BubblesColor(
+                      dotPrimaryColor: Colors.pink,
+                      dotSecondaryColor: Colors.red),
+                  likeBuilder: (bool isLiked) {
+                    return Icon(
+                      Icons.favorite,
+                      color: isLiked
+                          ? Colors.pinkAccent
+                          : Theme.of(context).iconTheme.color,
+                    );
+                  },
+                  onTap: (isLiked) async {
+                    if (isLiked) {
+                      tryRemoveFav(context, widget.post);
+                      return false;
+                    } else {
+                      tryAddFav(context, widget.post);
+                      return true;
+                    }
+                  },
                 );
-              },
-              onTap: (isLiked) async {
-                if (isLiked) {
-                  tryRemoveFav(context, widget.post);
-                  return false;
-                } else {
-                  tryAddFav(context, widget.post);
-                  return true;
-                }
               },
             )),
         onPressed: () {},
@@ -1282,5 +1164,173 @@ class _PostWidgetState extends State<PostWidget> {
         SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
       }
     };
+  }
+}
+
+Future<File> download(Post post) async {
+  String downloadFolder =
+      '${Platform.environment['EXTERNAL_STORAGE']}/Pictures/$appName';
+  Directory(downloadFolder).createSync();
+
+  String filename =
+      '${post.artist.join(', ')} - ${post.id}.${post.file['ext']}';
+  String filepath = '$downloadFolder/$filename';
+
+  File file = new File(filepath);
+  if (file.existsSync()) {
+    return file;
+  }
+
+  DefaultCacheManager cacheManager = DefaultCacheManager();
+  return (await cacheManager.getSingleFile(post.file['url']))
+      .copySync(filepath);
+}
+
+void downloadDialog(BuildContext context, Post post) async {
+  Map<PermissionGroup, PermissionStatus> permissions =
+      await PermissionHandler().requestPermissions([PermissionGroup.storage]);
+
+  if (permissions[PermissionGroup.storage] != PermissionStatus.granted) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return new AlertDialog(
+            content: const Text(
+                'You need to grant write permission in order to download files.'),
+            actions: [
+              new RaisedButton(
+                child: const Text('TRY AGAIN'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  downloadDialog(context, post); // recursively re-execute
+                },
+              ),
+            ],
+          );
+        });
+    return;
+  }
+
+  showDialog(
+    context: context,
+    builder: (context) {
+      return new FutureBuilder(
+        future: download(post),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return new AlertDialog(
+              title: const Text('Error'),
+              content: new Text(snapshot.error.toString()),
+              actions: [
+                new FlatButton(
+                  child: const Text('OK'),
+                  onPressed: () => Navigator.pop(context),
+                ),
+              ],
+            );
+          }
+
+          bool done = snapshot.connectionState == ConnectionState.done &&
+              snapshot.hasData;
+
+          return new AlertDialog(
+            title: const Text('Download'),
+            content: new Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                new Text('${post.artist.join(', ')} - ${post.id}',
+                    softWrap: true),
+                new Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: done
+                      ? const Icon(Icons.done)
+                      : Container(
+                          height: 18,
+                          width: 18,
+                          child: CircularProgressIndicator(),
+                        ),
+                ),
+              ],
+            ),
+            actions: [
+              new FlatButton(
+                child: const Text('OK'),
+                onPressed: () => Navigator.pop(context),
+              ),
+            ],
+          );
+        },
+      );
+    },
+  );
+}
+
+String formatBytes(int bytes, int decimals) {
+  if (bytes <= 0) return "0 B";
+  const suffixes = ["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
+  var i = (log(bytes) / log(1024)).floor();
+  return ((bytes / pow(1024, i)).toStringAsFixed(decimals)) + ' ' + suffixes[i];
+}
+
+Future<void> tryRemoveFav(BuildContext context, Post post) async {
+  if (await client.removeAsFavorite(post.id)) {
+    post.isFavorite.value = false;
+    post.favorites.value -= 1;
+  } else {
+    Scaffold.of(context).showSnackBar(new SnackBar(
+      duration: const Duration(seconds: 1),
+      content: new Text('Failed to remove Post ${post.id} from favorites'),
+    ));
+  }
+}
+
+Future<void> tryAddFav(BuildContext context, Post post) async {
+  if (await client.addAsFavorite(post.id)) {
+    post.isFavorite.value = true;
+    post.favorites.value += 1;
+  } else {
+    Scaffold.of(context).showSnackBar(new SnackBar(
+      duration: const Duration(seconds: 1),
+      content: new Text('Failed to add Post ${post.id} to favorites'),
+    ));
+  }
+}
+
+Future<void> tryVote(
+    BuildContext context, Post post, bool upvote, bool replace) async {
+  if (!await client.votePost(post.id, upvote, replace)) {
+    Scaffold.of(context).showSnackBar(new SnackBar(
+      duration: const Duration(seconds: 1),
+      content: new Text('Failed to vote on ${post.id}'),
+    ));
+  } else {
+    if (post.voteStatus.value == _VoteStatus.unknown) {
+      if (upvote) {
+        post.score.value += 1;
+        post.voteStatus.value = _VoteStatus.upvoted;
+      } else {
+        post.score.value -= 1;
+        post.voteStatus.value = _VoteStatus.downvoted;
+      }
+    } else {
+      if (upvote) {
+        if (post.voteStatus.value == _VoteStatus.upvoted) {
+          post.score.value -= 1;
+          post.voteStatus.value = _VoteStatus.unknown;
+        } else {
+          post.score.value += 2;
+          post.voteStatus.value = _VoteStatus.upvoted;
+        }
+      } else {
+        if (post.voteStatus.value == _VoteStatus.upvoted) {
+          post.score.value -= 2;
+          post.voteStatus.value = _VoteStatus.downvoted;
+        } else {
+          post.score.value += 1;
+          post.voteStatus.value = _VoteStatus.unknown;
+        }
+      }
+    }
   }
 }

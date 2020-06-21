@@ -446,7 +446,7 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
             if (!sameSite) {
               onTap = () => Navigator.of(context)
                       .push(new MaterialPageRoute<Null>(builder: (context) {
-                    return new SearchPage(new Tagset.parse(search));
+                    return new SearchPage(tags: new Tagset.parse(search));
                   }));
             }
 
@@ -835,7 +835,7 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
               .push(new MaterialPageRoute<Null>(builder: (context) {
                 // split of display text after |
                 // and replace spaces with _ to produce a valid tag
-            return new SearchPage(new Tagset.parse(match.split('|')[0].replaceAll(' ', '_')));
+            return new SearchPage(tags: new Tagset.parse(match.split('|')[0].replaceAll(' ', '_')));
           }));
         };
 
