@@ -3,11 +3,11 @@ import 'dart:convert' show json;
 
 import 'package:e1547/pool.dart';
 
-import 'comment.dart' show Comment;
-import 'http.dart';
-import 'persistence.dart' show db;
-import 'post.dart' show Post;
-import 'tag.dart';
+import 'package:e1547/comment.dart' show Comment;
+import 'package:e1547/http.dart';
+import 'package:e1547/persistence.dart' show db;
+import 'package:e1547/post.dart' show Post;
+import 'package:e1547/tag.dart';
 
 final Client client = new Client();
 

@@ -6,7 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart'
     show SharedPreferences;
 
 import 'package:e1547/appinfo.dart' as appInfo;
-import 'tag.dart' show Tagset;
+import 'package:e1547/tag.dart' show Tagset;
 
 typedef T _SharedPreferencesReceiver<T>(SharedPreferences prefs);
 

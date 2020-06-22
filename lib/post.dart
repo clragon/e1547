@@ -21,9 +21,9 @@ import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:url_launcher/url_launcher.dart' as url;
 
-import 'client.dart' show client;
-import 'interface.dart';
-import 'persistence.dart' show db;
+import 'package:e1547/client.dart' show client;
+import 'package:e1547/interface.dart';
+import 'package:e1547/persistence.dart' show db;
 import 'package:icon_shadow/icon_shadow.dart';
 import 'package:share/share.dart';
 
@@ -37,8 +37,8 @@ class Post {
   Map raw;
 
   int id;
-  ValueNotifier score;
-  ValueNotifier favorites;
+  ValueNotifier<int> score;
+  ValueNotifier<int> favorites;
 
   int parent;
 
@@ -61,7 +61,7 @@ class Post {
 
   Map tags;
 
-  ValueNotifier isFavorite;
+  ValueNotifier<bool> isFavorite;
   bool isDeleted;
   bool isLoggedIn;
   bool isBlacklisted;
@@ -70,7 +70,7 @@ class Post {
   bool hasSoundWarning;
   bool hasEpilepsyWarning;
 
-  ValueNotifier voteStatus = ValueNotifier(_VoteStatus.unknown);
+  ValueNotifier<_VoteStatus> voteStatus = ValueNotifier(_VoteStatus.unknown);
 
   Post.fromRaw(this.raw) {
     id = raw['id'] as int;
@@ -176,42 +176,8 @@ class PostPreview extends StatelessWidget {
       }
     }
 
-    void longPress() {
-      showDialog(
-          context: context,
-          builder: (context) {
-            return SimpleDialog(
-              title: Text('#${post.id.toString()}'),
-              children: <Widget>[
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    ListTile(
-                      title: const Text("Favorite"),
-                      leading: Icon(Icons.favorite),
-                      onTap: () {
-                        Navigator.of(context).pop();
-                        tryAddFav(context, post);
-                      },
-                    ),
-                    ListTile(
-                      title: const Text("Download"),
-                      leading: Icon(Icons.file_download),
-                      onTap: () {
-                        Navigator.of(context).pop();
-                        downloadDialog(context, post);
-                      },
-                    ),
-                  ],
-                )
-              ],
-            );
-          });
-    }
-
     return new GestureDetector(
         onTap: onPressed,
-        onLongPress: longPress,
         child: () {
           return new Card(
               child: new Stack(
@@ -548,29 +514,34 @@ class _PostWidgetState extends State<PostWidget> {
               children: <Widget>[
                 Row(
                   children: <Widget>[
-                    LikeButton(
-                      isLiked:
-                          widget.post.voteStatus.value == _VoteStatus.upvoted,
-                      likeBuilder: (bool isLiked) {
-                        return Icon(
-                          Icons.arrow_upward,
-                          color: isLiked
-                              ? Colors.deepOrange
-                              : Theme.of(context).iconTheme.color,
+                    ValueListenableBuilder(
+                      valueListenable: widget.post.voteStatus,
+                      builder: (context, value, child) {
+                        return LikeButton(
+                          isLiked: value == _VoteStatus.upvoted,
+                          likeBuilder: (bool isLiked) {
+                            return Icon(
+                              Icons.arrow_upward,
+                              color: isLiked
+                                  ? Colors.deepOrange
+                                  : Theme.of(context).iconTheme.color,
+                            );
+                          },
+                          onTap: (isLiked) async {
+                            if (widget.post.isLoggedIn &&
+                                !widget.post.isDeleted) {
+                              if (isLiked) {
+                                tryVote(context, widget.post, true, false);
+                                return false;
+                              } else {
+                                tryVote(context, widget.post, true, true);
+                                return true;
+                              }
+                            } else {
+                              return false;
+                            }
+                          },
                         );
-                      },
-                      onTap: (isLiked) async {
-                        if (widget.post.isLoggedIn && !widget.post.isDeleted) {
-                          if (isLiked) {
-                            tryVote(context, widget.post, true, false);
-                            return false;
-                          } else {
-                            tryVote(context, widget.post, true, true);
-                            return true;
-                          }
-                        } else {
-                          return false;
-                        }
                       },
                     ),
                     Padding(
@@ -582,37 +553,41 @@ class _PostWidgetState extends State<PostWidget> {
                         },
                       ),
                     ),
-                    LikeButton(
-                      isLiked:
-                          widget.post.voteStatus.value == _VoteStatus.downvoted,
-                      circleColor: CircleColor(
-                          start: Colors.blue, end: Colors.cyanAccent),
-                      bubblesColor: BubblesColor(
-                          dotPrimaryColor: Colors.blue,
-                          dotSecondaryColor: Colors.cyanAccent),
-                      likeBuilder: (bool isLiked) {
-                        return Icon(
-                          Icons.arrow_downward,
-                          color: isLiked
-                              ? Colors.blue
-                              : Theme.of(context).iconTheme.color,
-                        );
-                      },
-                      onTap: (isLiked) async {
-                        if (widget.post.isLoggedIn && !widget.post.isDeleted) {
-                          if (isLiked) {
-                            tryVote(context, widget.post, false, false);
+                    ValueListenableBuilder(
+                        valueListenable: widget.post.voteStatus,
+                        builder: (context, value, child) {
+                          return LikeButton(
+                            isLiked: value == _VoteStatus.downvoted,
+                            circleColor: CircleColor(
+                                start: Colors.blue, end: Colors.cyanAccent),
+                            bubblesColor: BubblesColor(
+                                dotPrimaryColor: Colors.blue,
+                                dotSecondaryColor: Colors.cyanAccent),
+                            likeBuilder: (bool isLiked) {
+                              return Icon(
+                                Icons.arrow_downward,
+                                color: isLiked
+                                    ? Colors.blue
+                                    : Theme.of(context).iconTheme.color,
+                              );
+                            },
+                            onTap: (isLiked) async {
+                              if (widget.post.isLoggedIn &&
+                                  !widget.post.isDeleted) {
+                                if (isLiked) {
+                                  tryVote(context, widget.post, false, false);
 
-                            return false;
-                          } else {
-                            tryVote(context, widget.post, false, true);
-                            return true;
-                          }
-                        } else {
-                          return false;
-                        }
-                      },
-                    ),
+                                  return false;
+                                } else {
+                                  tryVote(context, widget.post, false, true);
+                                  return true;
+                                }
+                              } else {
+                                return false;
+                              }
+                            },
+                          );
+                        }),
                   ],
                 ),
                 Row(

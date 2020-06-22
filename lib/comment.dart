@@ -2,9 +2,9 @@ import 'dart:async' show Future;
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-import 'client.dart' show client;
-import 'interface.dart';
-import 'post.dart' show Post;
+import 'package:e1547/client.dart' show client;
+import 'package:e1547/interface.dart';
+import 'package:e1547/post.dart' show Post;
 
 class Comment {
   Map raw;

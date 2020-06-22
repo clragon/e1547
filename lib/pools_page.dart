@@ -4,8 +4,8 @@ import 'package:e1547/posts_page.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-import 'client.dart';
-import 'input.dart';
+import 'package:e1547/client.dart';
+import 'package:e1547/interface.dart';
 
 class PoolsPage extends StatefulWidget {
   const PoolsPage();

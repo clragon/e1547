@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'client.dart';
-import 'input.dart';
 import 'interface.dart';
 import 'persistence.dart' show db;
 

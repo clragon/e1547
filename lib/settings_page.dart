@@ -4,8 +4,8 @@ import 'package:e1547/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
-import 'client.dart';
-import 'persistence.dart' show db;
+import 'package:e1547/client.dart';
+import 'package:e1547/persistence.dart' show db;
 
 class SettingsPage extends StatefulWidget {
   @override

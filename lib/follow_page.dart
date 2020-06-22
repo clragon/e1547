@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'client.dart';
-import 'input.dart';
 import 'interface.dart';
 import 'main.dart';
 import 'persistence.dart' show db;

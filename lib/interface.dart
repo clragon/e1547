@@ -6,9 +6,9 @@ import 'package:e1547/tag.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart' as url;
-
-import 'client.dart';
+import 'package:e1547/client.dart';
 
 Widget wikiDialog(BuildContext context, String tag, {actions = false}) {
   Widget body() {
@@ -55,7 +55,10 @@ Widget wikiDialog(BuildContext context, String tag, {actions = false}) {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
         Flexible(
-          child: Text(tag, softWrap: true,),
+          child: Text(
+            tag,
+            softWrap: true,
+          ),
         ),
         actions ? _TagActions(tag) : Container(),
       ],
@@ -474,7 +477,8 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
                   int split = -1;
                   for (Match endMatch in end.allMatches(after)) {
                     String container = after.substring(0, endMatch.start);
-                    if ('[$key'.allMatches(container).length != end.allMatches(container).length) {
+                    if ('[$key'.allMatches(container).length !=
+                        end.allMatches(container).length) {
                       continue;
                     }
                     split = endMatch.start;
@@ -488,21 +492,14 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
                       .replaceAllMapped(blankLess, (match) => '');
                   switch (key.toLowerCase()) {
                     case 'code':
-                      blocked = quoteWrap(toWidgets(getText(
-                          between,
-                          states)));
+                      blocked = quoteWrap(toWidgets(getText(between, states)));
                       break;
                     case 'quote':
-                      blocked = quoteWrap(toWidgets(resolve(
-                          between,
-                          states)));
+                      blocked = quoteWrap(toWidgets(resolve(between, states)));
                       break;
                     case 'section':
                       blocked = sectionWrap(
-                          toWidgets(resolve(
-                              between,
-                              states)),
-                          value,
+                          toWidgets(resolve(between, states)), value,
                           expanded: expanded);
                       break;
                   }
@@ -587,7 +584,7 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
       }
     }
 
-    List<String> linkWords = [
+    List<String> words = [
       'post',
       'forum',
       'comment',
@@ -601,7 +598,7 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
       'thumb',
     ];
 
-    for (String word in linkWords) {
+    for (String word in words) {
       RegExp rex = RegExp('$word #[0-9]{1,9}');
       if (rex.hasMatch(msg)) {
         for (Match wordMatch in rex.allMatches(msg)) {
@@ -619,7 +616,7 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
 
           switch (word) {
             case 'thumb':
-              // add actual pictures here some day.
+            // add actual pictures here some day.
             case 'post':
               onTap = () async {
                 Post p = await client.post(int.parse(match.split('#')[1]));
@@ -652,14 +649,179 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
       }
     }
 
-    RegExp linkRex = RegExp(
-        r'("[^"]+?":)?(http(s)?)?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*?)([^\s]+)');
-    RegExp inSite =
-        RegExp(r'("[^"]+?":)([-a-zA-Z0-9()@:%_\+.~#?&//=]*)([^\s]+)');
+    void parseLink(String match, {bool insite = false}) {
+      if (match.endsWith('/')) {
+        match = match.substring(0, match.length - 1);
+      }
 
-    for (RegExp word in [linkRex, inSite]) {
-      if (word.hasMatch(msg)) {
-        for (Match wordMatch in word.allMatches(msg)) {
+      String display = match;
+      String search = match;
+      if (match[0] == '"') {
+        int end = match.substring(1).indexOf('"') + 1;
+        display = match.substring(1, end);
+        search = match.substring(end + 2);
+      }
+
+      states['link'] = true;
+
+      Function onTap;
+
+      if (!insite) {
+        onTap = () async {
+          url.launch(search);
+        };
+        try {
+          if (RegExp(r'(e621\.net|e926\.net)/posts/[0-9]{1,9}')
+              .hasMatch(search)) {
+            int id = int.parse(search.split('/').last.split('?').first);
+            onTap = () async {
+              Post p = await client.post(id);
+              Navigator.of(context)
+                  .push(new MaterialPageRoute<Null>(builder: (context) {
+                return new PostWidget(p);
+              }));
+            };
+          }
+          if (RegExp(r'(e621\.net|e926\.net)/pool(s|/show)/[0-9]{1,9}')
+              .hasMatch(search)) {
+            int id = int.parse(search.split('/').last);
+            onTap = () async {
+              Pool p = await client.poolById(id);
+              Navigator.of(context)
+                  .push(new MaterialPageRoute<Null>(builder: (context) {
+                return new PoolPage(p);
+              }));
+            };
+          }
+        } catch (Exception) {
+          // parsing this ain't safe
+          // and its not a temporary solution.
+          // but we're gonna give it a try because its neat if it works.
+        }
+      } else {
+        onTap = () async {
+          url.launch('https://${await db.host.value}$search');
+        };
+        try {
+          if (search.startsWith('/posts/')) {
+            int id = int.parse(search.split('/').last);
+            onTap = () async {
+              Post p = await client.post(id);
+              Navigator.of(context)
+                  .push(new MaterialPageRoute<Null>(builder: (context) {
+                return new PostWidget(p);
+              }));
+            };
+          }
+          if (search.startsWith('/pools/')) {
+            int id = int.parse(search.split('/').last);
+            onTap = () async {
+              Pool p = await client.poolById(id);
+              Navigator.of(context)
+                  .push(new MaterialPageRoute<Null>(builder: (context) {
+                return new PoolPage(p);
+              }));
+            };
+          }
+        } catch (Exception) {
+          // uh oh
+        }
+      }
+
+      newParts.addAll(getText(display, states, onTap: onTap));
+
+      states['link'] = false;
+    }
+
+    void parseWord(String match, String word) {
+      states['link'] = true;
+
+      Function onTap;
+
+      switch (word) {
+        case 'thumb':
+        // add actual pictures here some day.
+        case 'post':
+          onTap = () async {
+            Post p = await client.post(int.parse(match.split('#')[1]));
+            Navigator.of(context)
+                .push(new MaterialPageRoute<Null>(builder: (context) {
+              return new PostWidget(p);
+            }));
+          };
+          break;
+        case 'pool':
+          onTap = () async {
+            Pool p = await client.poolById(int.parse(match.split('#')[1]));
+            Navigator.of(context)
+                .push(new MaterialPageRoute<Null>(builder: (context) {
+              return new PoolPage(p);
+            }));
+          };
+          break;
+      }
+
+      newParts.addAll(getText(match, states, onTap: onTap));
+
+      states['link'] = false;
+    }
+
+    Map<RegExp, Function(String match)> regexes = {
+      RegExp(r'{{.*?}}'): (match) {
+        // remove the brackets
+        match = match.substring(2);
+        match = match.substring(0, match.length - 2);
+
+        states['link'] = true;
+
+        Function onTap = () {
+          Navigator.of(context)
+              .push(new MaterialPageRoute<Null>(builder: (context) {
+            // split of display text after |
+            // and replace spaces with _ to produce a valid tag
+            return new SearchPage(
+                tags:
+                    new Tagset.parse(match.split('|')[0].replaceAll(' ', '_')));
+          }));
+        };
+
+        newParts.addAll(getText(match, states, onTap: onTap));
+
+        states['link'] = false;
+      },
+      RegExp(r'(^|\n)\*+ '): (match) {
+        newParts.addAll(resolve(
+            '\n' + '  ' * ('*'.allMatches(match).length - 1) + '• ', states));
+      },
+      RegExp(r'h[1-6]\..*', caseSensitive: false): (match) {
+        states['headline'] = true;
+
+        newParts.addAll(resolve(match.substring(3), states));
+
+        states['headline'] = false;
+      },
+      RegExp(r'("[^"]+?":)?(http(s)?)?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)([^.,!?:"\s]+)'):
+          parseLink,
+      RegExp(r'("[^"]+?":)([-a-zA-Z0-9()@:%_\+.~#?&//=]*)([^.,!?:"\s]+)'):
+          (match) {
+        parseLink(match, insite: true);
+      },
+    };
+
+    List<MapEntry<RegExp, Function(String match)>> links = [];
+
+    for (String word in words) {
+      RegExp rex = RegExp('$word #[0-9]{1,9}');
+      links.add(MapEntry(rex, (match) {
+        parseWord(match, word);
+      }));
+    }
+
+    regexes.addEntries(links);
+
+    for (MapEntry<RegExp, Function(String match)> entry in regexes.entries) {
+      if (entry.key.hasMatch(msg)) {
+        for (Match wordMatch in entry.key.allMatches(msg)) {
           String before = msg.substring(0, wordMatch.start);
           String match = msg.substring(wordMatch.start, wordMatch.end);
           String after = msg.substring(wordMatch.end, msg.length);
@@ -668,185 +830,13 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
             newParts.addAll(resolve(before, states));
           }
 
-          // if the url ends with any ending,
-          // remove the ending from the string
-          if (['.', ',', '!', '?', ':', '"', '\''].any((ending) {
-            return ending == match[match.length - 1];
-          })) {
-            match = msg.substring(wordMatch.start, wordMatch.end - 1);
-            after = msg.substring(wordMatch.end - 1, msg.length);
-          }
-
-          if (match.endsWith('/')) {
-            match = match.substring(0, match.length - 1);
-          }
-
-          String display = match;
-          String search = match;
-          if (match[0] == '"') {
-            int end = match.substring(1).indexOf('"') + 1;
-            display = match.substring(1, end);
-            search = match.substring(end + 2);
-          }
-
-          states['link'] = true;
-
-          Function onTap;
-
-          if (word == linkRex) {
-            onTap = () async {
-              url.launch(search);
-            };
-            try {
-              if (RegExp(r'(e621\.net|e926\.net)/posts/[0-9]{1,9}')
-                  .hasMatch(search)) {
-                int id = int.parse(search.split('/').last.split('?').first);
-                onTap = () async {
-                  Post p = await client.post(id);
-                  Navigator.of(context)
-                      .push(new MaterialPageRoute<Null>(builder: (context) {
-                    return new PostWidget(p);
-                  }));
-                };
-              }
-              if (RegExp(r'(e621\.net|e926\.net)/pool(s|/show)/[0-9]{1,9}')
-                  .hasMatch(search)) {
-                int id = int.parse(search.split('/').last);
-                onTap = () async {
-                  Pool p = await client.poolById(id);
-                  Navigator.of(context)
-                      .push(new MaterialPageRoute<Null>(builder: (context) {
-                    return new PoolPage(p);
-                  }));
-                };
-              }
-            } catch (Exception) {
-              // parsing this ain't safe
-              // and its not a temporary solution.
-              // but we're gonna give it a try because its neat if it works.
-            }
-          }
-          if (word == inSite) {
-            onTap = () async {
-              url.launch(await db.host.value + search);
-            };
-            try {
-              if (search.startsWith('/posts/')) {
-                int start = match.substring(1).indexOf('/') + 1;
-                int id = int.parse(match.substring(start));
-                onTap = () async {
-                  Post p = await client.post(id);
-                  Navigator.of(context)
-                      .push(new MaterialPageRoute<Null>(builder: (context) {
-                    return new PostWidget(p);
-                  }));
-                };
-              }
-              if (search.startsWith('/pools/')) {
-                int start = match.substring(1).indexOf('/') + 1;
-                int id = int.parse(match.substring(start));
-                onTap = () async {
-                  Pool p = await client.poolById(id);
-                  Navigator.of(context)
-                      .push(new MaterialPageRoute<Null>(builder: (context) {
-                    return new PoolPage(p);
-                  }));
-                };
-              }
-            } catch (Exception) {
-              // uh oh
-            }
-          }
-
-          newParts.addAll(getText(display, states, onTap: onTap));
-
-          states['link'] = false;
+          entry.value(match);
 
           if (after.isNotEmpty) {
             newParts.addAll(resolve(after, states));
           }
           return newParts;
         }
-      }
-    }
-
-    RegExp head = RegExp(r'h[1-6]\..*', caseSensitive: false);
-
-    if (head.hasMatch(msg)) {
-      for (Match wordMatch in head.allMatches(msg)) {
-        String before = msg.substring(0, wordMatch.start);
-        String match = msg.substring(wordMatch.start, wordMatch.end);
-        String after = msg.substring(wordMatch.end, msg.length);
-
-        if (before.isNotEmpty) {
-          newParts.addAll(resolve(before, states));
-        }
-        states['headline'] = true;
-
-        newParts.addAll(resolve(match.substring(3), states));
-
-        states['headline'] = false;
-
-        if (after.isNotEmpty) {
-          newParts.addAll(resolve(after, states));
-        }
-        return newParts;
-      }
-    }
-
-    RegExp list = RegExp(r'(^|\n)\*+ ');
-
-    if (list.hasMatch(msg)) {
-      for (Match wordMatch in list.allMatches(msg)) {
-        String before = msg.substring(0, wordMatch.start);
-        String match = msg.substring(wordMatch.start, wordMatch.end);
-        String after = msg.substring(wordMatch.end, msg.length);
-
-        if (before.isNotEmpty) {
-          newParts.addAll(resolve(before, states));
-        }
-
-        newParts.addAll(resolve(
-            '\n' + '  ' * ('*'.allMatches(match).length - 1) + '• ', states));
-
-        if (after.isNotEmpty) {
-          newParts.addAll(resolve(after, states));
-        }
-        return newParts;
-      }
-    }
-
-    RegExp tagSearch = RegExp(r'{{.*?}}');
-
-    if (tagSearch.hasMatch(msg)) {
-      for (Match wordMatch in tagSearch.allMatches(msg)) {
-        String before = msg.substring(0, wordMatch.start);
-        String match = msg.substring(wordMatch.start + 2, wordMatch.end - 2);
-        String after = msg.substring(wordMatch.end, msg.length);
-
-        if (before.isNotEmpty) {
-          newParts.addAll(resolve(before, states));
-        }
-
-        states['link'] = true;
-
-        Function onTap = () {
-          Navigator.of(context)
-              .push(new MaterialPageRoute<Null>(builder: (context) {
-                // split of display text after |
-                // and replace spaces with _ to produce a valid tag
-            return new SearchPage(tags: new Tagset.parse(match.split('|')[0].replaceAll(' ', '_')));
-          }));
-        };
-
-        newParts..addAll(getText(match, states, onTap: onTap));
-
-        states['link'] = false;
-
-        if (after.isNotEmpty) {
-          newParts.addAll(resolve(after, states));
-        }
-        return newParts;
       }
     }
 
@@ -871,5 +861,20 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: toWidgets(parts),
+  );
+}
+
+class LowercaseTextInputFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue prev, TextEditingValue current) {
+    return current.copyWith(text: current.text.toLowerCase());
+  }
+}
+
+void setFocusToEnd(TextEditingController controller) {
+  controller.selection = new TextSelection(
+    baseOffset: controller.text.length,
+    extentOffset: controller.text.length,
   );
 }

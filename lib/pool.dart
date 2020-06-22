@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'interface.dart';
+import 'package:e1547/interface.dart';
 
 class Pool {
   Map raw;

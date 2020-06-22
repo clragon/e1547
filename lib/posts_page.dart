@@ -13,15 +13,14 @@ import 'package:intl/intl.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:share/share.dart';
 
-import 'blacklist_page.dart';
-import 'client.dart' show client;
-import 'input.dart' show LowercaseTextInputFormatter, setFocusToEnd;
-import 'interface.dart';
-import 'main.dart' show NavigationDrawer;
-import 'persistence.dart' show db;
-import 'post.dart';
-import 'range_dialog.dart' show RangeDialog;
-import 'tag.dart' show Tagset;
+import 'package:e1547/blacklist_page.dart';
+import 'package:e1547/client.dart' show client;
+import 'package:e1547/interface.dart';
+import 'package:e1547/main.dart' show NavigationDrawer;
+import 'package:e1547/persistence.dart' show db;
+import 'package:e1547/post.dart';
+import 'package:e1547/range_dialog.dart' show RangeDialog;
+import 'package:e1547/tag.dart' show Tagset;
 
 class HomePage extends StatelessWidget {
   @override
@@ -29,7 +28,11 @@ class HomePage extends StatelessWidget {
     return new PostsPage(
         appBarBuilder: appBarWidget('Home'),
         tags: db.homeTags.value,
-        tagChange: (tags) => {db.homeTags.value = new Future.value(tags)});
+        postProvider: (tags, page) {
+          db.homeTags.value = new Future.value(tags);
+          return client.posts(tags, page);
+        },
+    );
   }
 }
 
@@ -125,7 +128,7 @@ class SearchPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    ValueNotifier _tags = ValueNotifier(tags ?? new Tagset.parse(''));
+    ValueNotifier<Tagset> _tags = ValueNotifier(tags ?? new Tagset.parse(''));
     return new PostsPage(
       appBarBuilder: (context) {
         return AppBar(
@@ -372,14 +375,12 @@ Widget poolInfo(BuildContext context, Pool pool) {
 class PostsPage extends StatefulWidget {
   final bool canSearch;
   final Future<Tagset> tags;
-  final void Function(Tagset) tagChange;
   final AppBar Function(BuildContext) appBarBuilder;
   final Future<List<Post>> Function(Tagset tags, int page) postProvider;
 
   const PostsPage({
     this.canSearch = true,
     this.tags,
-    this.tagChange,
     this.postProvider,
     this.appBarBuilder,
   });
@@ -415,9 +416,6 @@ class _PostsPageState extends State<PostsPage> {
 
       if (_isSearching) {
         _tags = await new Future.value(new Tagset.parse(_tagController.text));
-        if (widget.tagChange != null) {
-          widget.tagChange(_tags);
-        }
 
         _bottomSheetController?.close();
         _clearPages();
@@ -539,7 +537,7 @@ class _PostsPageState extends State<PostsPage> {
           return new StaggeredTile.fit(1);
         }
 
-        // do not make all of them fit, since that causes lags.
+        // do not make all of them fit, since that causes lag.
         if (item < i) {
           return const StaggeredTile.extent(1, 250.0);
         }

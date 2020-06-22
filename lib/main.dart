@@ -5,11 +5,11 @@ import 'package:e1547/pools_page.dart';
 import 'package:e1547/settings_page.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
-import 'client.dart';
-import 'follow_page.dart';
-import 'login_page.dart';
-import 'posts_page.dart';
-import 'appinfo.dart' as appInfo;
+import 'package:e1547/client.dart';
+import 'package:e1547/follow_page.dart';
+import 'package:e1547/login_page.dart';
+import 'package:e1547/posts_page.dart';
+import 'package:e1547/appinfo.dart' as appInfo;
 import 'package:flutter/material.dart';
 import 'package:e1547/appinfo.dart';
 

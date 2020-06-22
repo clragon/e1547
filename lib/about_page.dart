@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 
 import 'package:url_launcher/url_launcher.dart' as url;
 
-import 'http.dart';
+import 'package:e1547/http.dart';
 import 'package:flutter/foundation.dart';
 
 class AboutPage extends StatelessWidget {
