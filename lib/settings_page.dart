@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 import 'package:e1547/client.dart';
+import 'package:e1547/appinfo.dart';
 import 'package:e1547/persistence.dart' show db;
+import 'dart:io' show File, Platform;
 
 class SettingsPage extends StatefulWidget {
   @override
@@ -15,6 +17,7 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
   String _host;
   String _username;
+  String _theme;
   bool _showUnsafe = false;
   bool _showWebm = false;
   bool _refresh = false;
@@ -28,6 +31,7 @@ class _SettingsPageState extends State<SettingsPage> {
         }));
     db.username.value.then((a) async => setState(() => _username = a));
     db.showWebm.value.then((a) async => setState(() => _showWebm = a));
+    db.theme.value.then((a) async => setState(() => _theme = a));
   }
 
   Function() _onTapSignOut(BuildContext context) {
@@ -62,6 +66,63 @@ class _SettingsPageState extends State<SettingsPage> {
         child: new ListView(
           physics: BouncingScrollPhysics(),
           children: [
+            Padding(
+              padding: EdgeInsets.only(left: 72, bottom: 8, top: 8, right: 16),
+              child: Text(
+                'Display',
+                style: TextStyle(
+                  color: Theme.of(context).accentColor,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+            ListTile(
+              title: Text('Theme'),
+              subtitle: Text(_theme ?? ' '),
+              leading: Icon(Icons.brightness_6),
+              onTap: () {
+                showDialog(
+                    context: context,
+                    builder: (context) {
+                      return SimpleDialog(
+                        title: Text('Theme'),
+                        children: <Widget>[
+                          Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: () {
+                              List<Widget> themeList = [];
+                              for (String theme in themeMap.keys) {
+                                themeList.add(ListTile(
+                                  title: Text(theme),
+                                  trailing: () {
+                                    return Container(
+                                      height: 36,
+                                      width: 36,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: themeMap[theme].canvasColor,
+                                        border: Border.all(
+                                          color: Theme.of(context).iconTheme.color,
+                                        ),
+                                      ),
+                                    );
+                                  }(),
+                                  onTap: (){
+                                    setState(() {
+                                      db.theme.value = Future.value(theme);
+                                    });
+                                    Navigator.of(context).pop();
+                                  },
+                                ));
+                              }
+                              return themeList;
+                            }(),
+                          )
+                        ],
+                      );
+                    });
+              },
+            ),
             Padding(
               padding: EdgeInsets.only(left: 72, bottom: 8, top: 8, right: 16),
               child: Text(
@@ -104,6 +165,27 @@ class _SettingsPageState extends State<SettingsPage> {
                     db.showWebm.value = Future.value(show);
                   });
                 }),
+            () {
+              File nomedia = File('${Platform.environment['EXTERNAL_STORAGE']}/Pictures/$appName/.nomedia');
+              if (Platform.isAndroid) {
+                return SwitchListTile(
+                  title: Text('Hide in gallery'),
+                  subtitle: nomedia.existsSync() ? Text('Downloads are hidden') : Text('Downloads are shown'),
+                    secondary: Icon(Icons.image),
+                    value: nomedia.existsSync(),
+                    onChanged: (hide) {
+                      if (hide) {
+                        nomedia.writeAsString('');
+                      } else {
+                        nomedia.delete();
+                      }
+                      setState(() { });
+                    }
+                );
+              } else {
+                return Container();
+              }
+            }(),
             Divider(),
             Padding(
               padding: EdgeInsets.only(left: 72, bottom: 8, top: 8, right: 16),

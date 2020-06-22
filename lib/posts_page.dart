@@ -90,7 +90,7 @@ class PoolPage extends StatelessWidget {
         );
       },
       postProvider: (tags, page) {
-        return client.pool(pool, page);
+        return client.poolPosts(pool, page);
       },
       canSearch: false,
     );
@@ -667,7 +667,6 @@ class TagEntry extends StatelessWidget {
       String filterType = const {
         'Score': 'score',
         'Favorites': 'favcount',
-        'Views': 'views',
       }[selectedFilter];
       assert(filterType != null);
 
@@ -680,7 +679,7 @@ class TagEntry extends StatelessWidget {
             context: context,
             builder: (context) {
               return new RangeDialog(
-                title: 'Posts with $filterType at least',
+                title: 'Minimum $filterType',
                 value: value,
                 division: 10,
                 max: 100,
@@ -706,7 +705,6 @@ class TagEntry extends StatelessWidget {
       'New': 'new',
       'Score': 'score',
       'Favorites': 'favcount',
-      'Views': 'views',
       'Rank': 'rank'
     }[selectedSort];
     assert(orderType != null);
@@ -747,7 +745,7 @@ class TagEntry extends StatelessWidget {
         icon: const Icon(Icons.filter_list),
         tooltip: 'Filter by',
         itemBuilder: _popupMenuButtonItemBuilder(
-          ['Score', 'Favorites', 'Views'],
+          ['Score', 'Favorites'],
         ),
         onSelected: _onSelectedFilterBy(context),
       );
@@ -758,7 +756,7 @@ class TagEntry extends StatelessWidget {
         icon: const Icon(Icons.sort),
         tooltip: 'Sort by',
         itemBuilder: _popupMenuButtonItemBuilder(
-          ['New', 'Score', 'Favorites', 'Views', 'Rank'],
+          ['New', 'Score', 'Favorites', 'Rank'],
         ),
         onSelected: _onSelectedSortBy,
       );

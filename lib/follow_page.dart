@@ -142,7 +142,7 @@ class _FollowingPageState extends State<FollowingPage> {
                           icon: Icon(Icons.search),
                           onPressed: () async {
                             if (_follows[index].startsWith('pool:')) {
-                              Pool p = await client.poolById(int.parse(_follows[index].split(':')[1]));
+                              Pool p = await client.pool(int.parse(_follows[index].split(':')[1]));
                               Navigator.of(context)
                                   .push(new MaterialPageRoute<Null>(builder: (context) {
                                 return new PoolPage(p);

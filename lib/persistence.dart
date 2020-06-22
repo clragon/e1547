@@ -17,6 +17,7 @@ class Persistence {
   ValueNotifier<Future<Tagset>> homeTags;
   ValueNotifier<Future<String>> username;
   ValueNotifier<Future<String>> apiKey;
+  ValueNotifier<Future<String>> theme;
   ValueNotifier<Future<bool>> showWebm;
   ValueNotifier<Future<List<String>>> blacklist;
   ValueNotifier<Future<List<String>>> follows;
@@ -33,6 +34,9 @@ class Persistence {
 
     apiKey = _makeNotifier((p) => p.getString('apiKey'));
     apiKey.addListener(_saveString('apiKey', apiKey));
+
+    theme = _makeNotifier((p) => p.getString('theme') ?? 'dark');
+    theme.addListener(_saveString('theme', theme));
 
     showWebm = _makeNotifier((p) => p.getBool('showWebm') ?? false);
     showWebm.addListener(_saveBool('showWebm', showWebm));

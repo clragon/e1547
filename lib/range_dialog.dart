@@ -67,7 +67,7 @@ class RangeDialogState extends State<RangeDialog> {
           child: const Text('cancel'),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        new RaisedButton(
+        new FlatButton(
           child: const Text('save'),
           onPressed: () {
             // We could pop up an error, but using the last known good value

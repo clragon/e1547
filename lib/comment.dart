@@ -163,52 +163,72 @@ class _CommentsWidgetState extends State<CommentsWidget> {
                           child: Text(
                             comment.creator,
                             style: TextStyle(
-                              color: Colors.grey[500],
+                              color: Colors.grey[600],
                             ),
                           ),
                         ),
                         Text(
                           () {
-                            String time;
-                            Duration ago = DateTime.now().difference(
+                            Duration duration = DateTime.now().difference(
                                 DateTime.parse(comment.creation).toLocal());
-                            if (ago.inSeconds > 60) {
-                              if (ago.inMinutes > 60) {
-                                if (ago.inHours > 24) {
-                                  if (ago.inDays > 7) {
-                                    if ((ago.inDays / 7) > 4) {
-                                      if ((ago.inDays / 7 / 4) > 12) {
-                                        time =
-                                            '${(ago.inDays / 356).round().toString()} years';
-                                      } else {
-                                        time =
-                                            '${(ago.inDays / 7 / 4).round().toString()} months';
-                                      }
-                                    } else {
-                                      time =
-                                          '${(ago.inDays / 7).round().toString()} weeks';
-                                    }
-                                  } else {
-                                    time = '${ago.inDays.toString()} days';
-                                  }
+
+                            List<int> periods = [
+                              1,
+                              60,
+                              3600,
+                              86400,
+                              604800,
+                              2419200,
+                              29030400,
+                            ];
+
+                            int ago;
+                            String measurement;
+                            for (int period = 0; period <= periods.length; period++) {
+                              if (period == periods.length || duration.inSeconds < periods[period]) {
+                                if (period != 0) {
+                                  ago = (duration.inSeconds / periods[period -1]).round();
                                 } else {
-                                  time = '${ago.inHours.toString()} hours';
+                                  ago = duration.inSeconds;
                                 }
-                              } else {
-                                time = '${ago.inMinutes.toString()} minutes';
+                                bool single = (ago == 1);
+                                switch (periods[period -1] ?? 1) {
+                                  case 1:
+                                    measurement = single ? 'second' : 'seconds';
+                                    break;
+                                  case 60:
+                                    measurement = single ? 'minute' : 'minutes';
+                                    break;
+                                  case 3600:
+                                    measurement = single ? 'hour' : 'hours';
+                                    break;
+                                  case 86400:
+                                    measurement = single ? 'day' : 'days';
+                                    break;
+                                  case 604800:
+                                    measurement = single ? 'week' : 'weeks';
+                                    break;
+                                  case 2419200:
+                                    measurement = single ? 'month' : 'months';
+                                    break;
+                                  case 29030400:
+                                    measurement = single ? 'year' : 'years';
+                                    break;
+                                }
+                                break;
                               }
-                            } else {
-                              time = '${ago.inSeconds.toString()} seconds';
                             }
-                            time = ' • ' + time + ' ago';
+
+                            String time = ' • $ago $measurement ago';
                             if (DateTime.parse(comment.creation) !=
                                 DateTime.parse(comment.update)) {
-                              time = time + ' (edited)';
+                              time += ' (edited)';
                             }
                             return time;
+
                           }(),
                           style: TextStyle(
-                            color: Colors.grey[500],
+                            color: Colors.grey[600],
                             fontSize: 12,
                           ),
                         )

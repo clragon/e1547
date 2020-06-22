@@ -242,7 +242,7 @@ class Client {
         posts.add(post);
       }
       if (hasPosts && posts.length == 0) {
-        return client.posts(tags, page + 1);
+        return client.posts(tags, page + 1, filter: filter);
       }
       return posts;
     } catch (SocketException) {
@@ -271,7 +271,7 @@ class Client {
     }
   }
 
-  Future<Pool> poolById(int poolID) async {
+  Future<Pool> pool(int poolID) async {
     String body = await _http
         .get(await _host, '/pools/' + poolID.toString() + '.json', query: {
       'login': await _username,
@@ -281,7 +281,7 @@ class Client {
     return Pool.fromRaw(json.decode(body));
   }
 
-  Future<List<Post>> pool(Pool pool, int page) async {
+  Future<List<Post>> poolPosts(Pool pool, int page) async {
     return posts(new Tagset.parse('pool:${pool.id} order:id'), page);
   }
 

@@ -168,7 +168,7 @@ class PostPreview extends StatelessWidget {
             right: 0,
             child: new Container(
               padding: EdgeInsets.zero,
-              color: Colors.black38,
+              color: Theme.of(context).cardColor,
               child: const Icon(Icons.play_arrow),
             ));
       } else {
@@ -355,7 +355,7 @@ class _PostWidgetState extends State<PostWidget> {
                         child: Text('Share'),
                       ),
                     ),
-                    widget.post.file['url'] != null
+                    widget.post.file['url'] != null && (Platform.isAndroid)
                         ? PopupMenuItem(
                             value: 'download',
                             child: Padding(
@@ -440,6 +440,7 @@ class _PostWidgetState extends State<PostWidget> {
                                   in widget.post.artist.join(', ').split(' ')) {
                                 spans.add(TextSpan(
                                   text: artist + ' ',
+                                  style: Theme.of(context).textTheme.body1,
                                   recognizer: new TapGestureRecognizer()
                                     ..onTap = () {
                                       Navigator.of(context).push(
@@ -456,7 +457,7 @@ class _PostWidgetState extends State<PostWidget> {
                           )
                         : Text('no artist',
                             style: TextStyle(
-                                color: Colors.grey,
+                                color: Theme.of(context).textTheme.subtitle.color,
                                 fontStyle: FontStyle.italic)),
                   ],
                 ),
@@ -637,7 +638,7 @@ class _PostWidgetState extends State<PostWidget> {
                   title: Text(pool.toString()),
                   trailing: Icon(Icons.arrow_right),
                   onTap: () async {
-                    Pool p = await client.poolById(pool);
+                    Pool p = await client.pool(pool);
                     Navigator.of(context)
                         .push(new MaterialPageRoute<Null>(builder: (context) {
                       return new PoolPage(p);
@@ -1082,6 +1083,9 @@ class _PostWidgetState extends State<PostWidget> {
     Widget fullScreenWidgetBuilder(BuildContext context) {
       return PhotoViewGallery.builder(
         scrollPhysics: const BouncingScrollPhysics(),
+        backgroundDecoration: BoxDecoration(
+          color: Theme.of(context).canvasColor,
+        ),
         builder: (BuildContext context, int index) {
           current = index;
           return PhotoViewGalleryPageOptions(
@@ -1095,18 +1099,24 @@ class _PostWidgetState extends State<PostWidget> {
         },
         itemCount: posts.length,
         loadingBuilder: (buildContext, imageChunkEvent) =>
-            new Stack(alignment: Alignment.center, children: [
-          new CachedNetworkImage(
-            imageUrl: posts[current].sample['url'],
-            placeholder: (context, url) => const CircularProgressIndicator(),
-            errorWidget: (context, url, error) =>
-                const Icon(Icons.error_outline),
-          ),
-          new Container(
-            alignment: Alignment.bottomCenter,
-            child: const LinearProgressIndicator(),
-          ),
-        ]),
+            GestureDetector(
+              child: Container(
+                child: new Stack(alignment: Alignment.center, children: [
+                  new CachedNetworkImage(
+                    imageUrl: posts[current].sample['url'],
+                    placeholder: (context, url) => const CircularProgressIndicator(),
+                    errorWidget: (context, url, error) =>
+                    const Icon(Icons.error_outline),
+                  ),
+                  new Container(
+                    alignment: Alignment.bottomCenter,
+                    child: const LinearProgressIndicator(),
+                  ),
+                ]),
+                color: Theme.of(context).canvasColor,
+              ),
+              onTap: () => Navigator.of(context).pop(),
+            ),
         pageController: PageController(
           initialPage: index,
         ),
@@ -1114,15 +1124,6 @@ class _PostWidgetState extends State<PostWidget> {
           if (widget.controller != null) {
             widget.controller.jumpToPage(index);
           }
-          // this is supposed to preload the next image
-          // doesn't seem to work though.
-          /*
-          () async {
-            if (posts.length >= index +1) {
-              CachedNetworkImageProvider(posts[index +2].file['url']);
-            }
-          }();
-          */
         },
       );
     }
@@ -1133,10 +1134,13 @@ class _PostWidgetState extends State<PostWidget> {
         url.launch(widget.post.file['url']);
       } else {
         SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
+        setUIColors(Theme.of(context));
         await Navigator.of(context).push(new MaterialPageRoute<Null>(
           builder: fullScreenWidgetBuilder,
         ));
+        setUIColors(Theme.of(context));
         SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
+        setUIColors(Theme.of(context));
       }
     };
   }

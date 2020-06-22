@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart' as url;
 import 'package:e1547/client.dart';
+import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 
 Widget wikiDialog(BuildContext context, String tag, {actions = false}) {
   Widget body() {
@@ -229,7 +230,7 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
     // wrapper widget for quotes
     Widget quoteWrap(List<Widget> children) {
       return Card(
-        color: Colors.grey[900],
+        color: Theme.of(context).canvasColor,
         child: Padding(
           padding: EdgeInsets.all(8),
           child: Row(children: [
@@ -248,7 +249,7 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
     Widget sectionWrap(List<Widget> children, String title,
         {bool expanded = false}) {
       return Card(
-          color: Colors.grey[900],
+          color: Theme.of(context).canvasColor,
           child: ExpandableNotifier(
             initialExpanded: expanded,
             child: ExpandableTheme(
@@ -295,7 +296,7 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
           style: TextStyle(
             color: states['link']
                 ? Colors.blue[400]
-                : states['dark'] ? Colors.grey[600] : null,
+                : states['dark'] ? Colors.grey[600] : Theme.of(context).textTheme.body1.color,
             fontWeight: states['bold'] ? FontWeight.bold : FontWeight.normal,
             fontStyle: states['italic'] ? FontStyle.italic : FontStyle.normal,
             decoration: TextDecoration.combine([
@@ -628,7 +629,7 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
               break;
             case 'pool':
               onTap = () async {
-                Pool p = await client.poolById(int.parse(match.split('#')[1]));
+                Pool p = await client.pool(int.parse(match.split('#')[1]));
                 Navigator.of(context)
                     .push(new MaterialPageRoute<Null>(builder: (context) {
                   return new PoolPage(p);
@@ -686,7 +687,7 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
               .hasMatch(search)) {
             int id = int.parse(search.split('/').last);
             onTap = () async {
-              Pool p = await client.poolById(id);
+              Pool p = await client.pool(id);
               Navigator.of(context)
                   .push(new MaterialPageRoute<Null>(builder: (context) {
                 return new PoolPage(p);
@@ -716,7 +717,7 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
           if (search.startsWith('/pools/')) {
             int id = int.parse(search.split('/').last);
             onTap = () async {
-              Pool p = await client.poolById(id);
+              Pool p = await client.pool(id);
               Navigator.of(context)
                   .push(new MaterialPageRoute<Null>(builder: (context) {
                 return new PoolPage(p);
@@ -752,7 +753,7 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
           break;
         case 'pool':
           onTap = () async {
-            Pool p = await client.poolById(int.parse(match.split('#')[1]));
+            Pool p = await client.pool(int.parse(match.split('#')[1]));
             Navigator.of(context)
                 .push(new MaterialPageRoute<Null>(builder: (context) {
               return new PoolPage(p);
@@ -877,4 +878,13 @@ void setFocusToEnd(TextEditingController controller) {
     baseOffset: controller.text.length,
     extentOffset: controller.text.length,
   );
+}
+
+void setUIColors(ThemeData theme) {
+  FlutterStatusbarcolor.setStatusBarColor(theme.canvasColor);
+  FlutterStatusbarcolor.setNavigationBarColor(theme.canvasColor);
+  FlutterStatusbarcolor.setNavigationBarWhiteForeground(
+      theme.brightness == Brightness.dark);
+  FlutterStatusbarcolor.setStatusBarWhiteForeground(
+      theme.brightness == Brightness.dark);
 }

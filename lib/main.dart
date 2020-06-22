@@ -1,10 +1,10 @@
 import 'package:e1547/about_page.dart';
 import 'package:e1547/blacklist_page.dart';
+import 'package:e1547/interface.dart';
 import 'package:e1547/persistence.dart';
 import 'package:e1547/pools_page.dart';
 import 'package:e1547/settings_page.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:e1547/client.dart';
 import 'package:e1547/follow_page.dart';
 import 'package:e1547/login_page.dart';
@@ -13,64 +13,111 @@ import 'package:e1547/appinfo.dart' as appInfo;
 import 'package:flutter/material.dart';
 import 'package:e1547/appinfo.dart';
 
-void main() => runApp(Main());
+ValueNotifier<ThemeData> _theme = ValueNotifier(themeMap['dark']);
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  _theme.value = themeMap[await db.theme.value];
+  db.theme.addListener(() async => _theme.value = themeMap[await db.theme.value]);
+  runApp(Main());
+}
 
 class Main extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    ThemeData theme = ThemeData(
-      primaryColor: Colors.grey[900],
-      primaryColorLight: Colors.grey[900],
-      primaryColorDark: Colors.grey[900],
-      indicatorColor: Colors.grey[900],
-      canvasColor: Colors.grey[900],
-      cardColor: Colors.grey[850],
-      dialogBackgroundColor: Colors.grey[850],
-      primaryColorBrightness: Brightness.dark,
-      brightness: Brightness.dark,
-    );
-
-    FlutterStatusbarcolor.setStatusBarColor(theme.canvasColor);
-    FlutterStatusbarcolor.setNavigationBarColor(theme.canvasColor);
-    FlutterStatusbarcolor.setNavigationBarWhiteForeground(
-        theme.brightness == Brightness.dark);
-    FlutterStatusbarcolor.setStatusBarWhiteForeground(
-        theme.brightness == Brightness.dark);
-
-    return MaterialApp(
-      title: appInfo.appName,
-      theme: theme,
-      routes: <String, WidgetBuilder>{
-        '/': (context) => () {
+    return ValueListenableBuilder(
+      valueListenable: _theme,
+      builder: (context, value, child) {
+        setUIColors(value);
+        return MaterialApp(
+          title: appInfo.appName,
+          theme: value,
+          routes: <String, WidgetBuilder>{
+            '/': (context) => () {
               _drawerSelection = _DrawerSelection.home;
               return new HomePage();
             }(),
-        '/hot': (context) => () {
+            '/hot': (context) => () {
               _drawerSelection = _DrawerSelection.hot;
               return new HotPage();
             }(),
-        '/search': (context) => new SearchPage(),
-        '/fav': (context) => () {
+            '/search': (context) => new SearchPage(),
+            '/fav': (context) => () {
               _drawerSelection = _DrawerSelection.favorites;
               return new FavPage();
             }(),
-        '/pools': (context) => () {
+            '/pools': (context) => () {
               _drawerSelection = _DrawerSelection.pools;
               return new PoolsPage();
             }(),
-        '/follows': (context) => () {
-          _drawerSelection = _DrawerSelection.follows;
-            return new FollowsPage();
-          }(),
-        '/login': (context) => new LoginPage(),
-        '/settings': (context) => new SettingsPage(),
-        '/about': (context) => new AboutPage(),
-        '/blacklist': (context) => new BlacklistPage(),
-        '/following': (context) => new FollowingPage(),
+            '/follows': (context) => () {
+              _drawerSelection = _DrawerSelection.follows;
+              return new FollowsPage();
+            }(),
+            '/login': (context) => new LoginPage(),
+            '/settings': (context) => new SettingsPage(),
+            '/about': (context) => new AboutPage(),
+            '/blacklist': (context) => new BlacklistPage(),
+            '/following': (context) => new FollowingPage(),
+          },
+        );
       },
     );
   }
 }
+
+Map<String, ThemeData> themeMap = {
+  'light' : ThemeData(
+    canvasColor: Colors.white,
+    appBarTheme: AppBarTheme(
+      color: Colors.white,
+    ),
+    cardColor: Colors.white,
+    dialogBackgroundColor: Colors.white,
+    primaryColorBrightness: Brightness.light,
+    brightness: Brightness.light,
+  ),
+  'dark' : ThemeData(
+    primaryColorBrightness: Brightness.dark,
+    brightness: Brightness.dark,
+    primaryColor: Colors.grey[900],
+    primaryColorLight: Colors.grey[900],
+    primaryColorDark: Colors.grey[900],
+    indicatorColor: Colors.grey[900],
+    canvasColor: Colors.grey[900],
+    cardColor: Colors.grey[850],
+    dialogBackgroundColor: Colors.grey[850],
+  ),
+  'amoled' : ThemeData(
+    primaryColorBrightness: Brightness.dark,
+    brightness: Brightness.dark,
+    primaryColor: Colors.black,
+    primaryColorLight: Colors.black,
+    primaryColorDark: Colors.black,
+    indicatorColor: Colors.black,
+    canvasColor: Colors.black,
+    dialogBackgroundColor: Colors.black,
+    cardColor: Color.fromARGB(255, 20, 20, 20),
+    accentColor: Colors.deepPurple,
+  ),
+  'blue' : (){
+    Color blueBG = Color.fromARGB(255, 2, 15, 35);
+    Color blueFG = Color.fromARGB(255, 21, 47, 86);
+    return ThemeData(
+      primaryColorBrightness: Brightness.dark,
+      brightness: Brightness.dark,
+      primaryColor: blueBG,
+      primaryColorLight: blueBG,
+      primaryColorDark: blueBG,
+      indicatorColor: blueBG,
+      canvasColor: blueBG,
+      cardColor: blueFG,
+      dialogBackgroundColor: blueFG,
+      accentColor: Colors.blue[900],
+    );
+  }(),
+
+};
 
 enum _DrawerSelection {
   home,
@@ -81,7 +128,6 @@ enum _DrawerSelection {
 }
 
 _DrawerSelection _drawerSelection = _DrawerSelection.home;
-
 
 void refreshPage(BuildContext context) {
   Map<_DrawerSelection, String> routes = {
