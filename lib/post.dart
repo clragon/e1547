@@ -36,10 +36,9 @@ enum _VoteStatus {
 class Post {
   Map raw;
 
-  int id;
-  ValueNotifier<int> score;
-  ValueNotifier<int> favorites;
+  Map tags;
 
+  int id;
   int parent;
 
   String uploader;
@@ -59,9 +58,6 @@ class Post {
   List<String> artist;
   List<String> sources;
 
-  Map tags;
-
-  ValueNotifier<bool> isFavorite;
   bool isDeleted;
   bool isLoggedIn;
   bool isBlacklisted;
@@ -69,6 +65,12 @@ class Post {
   bool isConditionalDnp;
   bool hasSoundWarning;
   bool hasEpilepsyWarning;
+
+  ValueNotifier<int> score;
+  ValueNotifier<int> favorites;
+
+  ValueNotifier<bool> isFavorite;
+  ValueNotifier<bool> ignoreSafety = ValueNotifier(false);
 
   ValueNotifier<_VoteStatus> voteStatus = ValueNotifier(_VoteStatus.unknown);
 
@@ -234,91 +236,141 @@ class PostWidget extends StatefulWidget {
 }
 
 class _PostWidgetState extends State<PostWidget> {
+
+  bool isVisible() {
+    return (widget.post.isFavorite.value || widget.post.ignoreSafety.value || !widget.post.isBlacklisted);
+  }
+
   @override
   Widget build(BuildContext context) {
     Widget postContentsWidget() {
       Widget overlayImageWidget() {
         Widget imageWidget() {
-          return Container(
-              child: () {
-                if (widget.post.isDeleted) {
-                  return Center(
-                      child: const Text(
-                    'Post was deleted',
-                    textAlign: TextAlign.center,
-                  ));
-                }
-                if (widget.post.isBlacklisted) {
-                  return Center(
-                      child: Text(
-                    'Post is blacklisted',
-                    textAlign: TextAlign.center,
-                  ));
-                }
-                if (widget.post.file['url'] == null) {
-                  return Center(
-                      child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      Padding(
-                        padding: EdgeInsets.all(8),
-                        child: const Text(
-                          'Image unavailable in safe mode',
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                      InkWell(
-                        child: Card(
-                            child: Padding(
-                                padding: EdgeInsets.all(8),
-                                child: Text('Settings'))),
-                        onTap: () => Navigator.pushNamed(context, '/settings'),
-                      )
-                    ],
-                  ));
-                }
-                if (widget.post.file['ext'] == 'swf' ||
-                    widget.post.file['ext'] == 'webm') {
-                  return Center(
-                      child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      Padding(
-                        padding: EdgeInsets.all(8),
-                        child: const Text(
-                          'Webm support under development',
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                      InkWell(
-                        child: Card(
-                            child: Padding(
-                                padding: EdgeInsets.all(8),
-                                child: Text('Browse'))),
-                        onTap: () async => url.launch(
-                            widget.post.url(await db.host.value).toString()),
-                      )
-                    ],
-                  ));
-                }
-                return CachedNetworkImage(
-                  imageUrl: widget.post.sample['url'],
-                  placeholder: (context, url) => Center(
-                      child: Container(
-                    height: 26,
-                    width: 26,
-                    child: const CircularProgressIndicator(),
-                  )),
-                  errorWidget: (context, url, error) =>
-                      Center(child: Icon(Icons.error_outline)),
+          return ValueListenableBuilder(
+              valueListenable: widget.post.ignoreSafety,
+              builder: (context, value, child) {
+                return Stack(
+                  children: <Widget>[
+                    Container(
+                        child: () {
+                          if (widget.post.isDeleted) {
+                            return Center(
+                                child: const Text(
+                              'Post was deleted',
+                              textAlign: TextAlign.center,
+                            ));
+                          }
+                          if (!isVisible()) {
+                            return Center(
+                                child: Text(
+                              'Post is blacklisted',
+                              textAlign: TextAlign.center,
+                            ));
+                          }
+                          if (widget.post.file['url'] == null) {
+                            return Center(
+                                child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: <Widget>[
+                                Padding(
+                                  padding: EdgeInsets.all(8),
+                                  child: const Text(
+                                    'Image unavailable in safe mode',
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ],
+                            ));
+                          }
+                          if (widget.post.file['ext'] == 'swf' ||
+                              widget.post.file['ext'] == 'webm') {
+                            return Center(
+                                child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: <Widget>[
+                                Padding(
+                                  padding: EdgeInsets.all(8),
+                                  child: const Text(
+                                    'Webm support under development',
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                                InkWell(
+                                  child: Card(
+                                      child: Padding(
+                                          padding: EdgeInsets.all(8),
+                                          child: Text('Browse'))),
+                                  onTap: () async => url.launch(widget.post
+                                      .url(await db.host.value)
+                                      .toString()),
+                                )
+                              ],
+                            ));
+                          }
+                          return CachedNetworkImage(
+                            imageUrl: widget.post.sample['url'],
+                            placeholder: (context, url) => Center(
+                                child: Container(
+                              height: 26,
+                              width: 26,
+                              child: const CircularProgressIndicator(),
+                            )),
+                            errorWidget: (context, url, error) =>
+                                Center(child: Icon(Icons.error_outline)),
+                          );
+                        }(),
+                        constraints: BoxConstraints(
+                          minHeight: (MediaQuery.of(context).size.height /
+                              2), // maybe set this to around 50% of screen DPS
+                        )),
+                    () {
+                      if (widget.post.file['url'] == null || !isVisible() || widget.post.ignoreSafety.value) {
+                        return Positioned(
+                          child: FlatButton(
+                            color: value ? Colors.black12 : null,
+                            child: Row(
+                              children: <Widget>[
+                                Icon(
+                                  value
+                                      ? Icons.visibility_off
+                                      : Icons.visibility,
+                                  size: 16,
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(right: 5, left: 5),
+                                  child: value ? Text('hide') : Text('show'),
+                                )
+                              ],
+                            ),
+                            onPressed: () async {
+                              widget.post.ignoreSafety.value =
+                                  !widget.post.ignoreSafety.value;
+                              Post urls = await client.post(widget.post.id, unsafe: true);
+                              setState(() {
+                                if (widget.post.file['url'] == null) {
+                                  widget.post.file['url'] = urls.file['url'];
+                                  widget.post.sample['url'] = urls.sample['url'];
+                                  widget.post.preview['url'] = urls.preview['url'];
+                                } else if (!widget.post.isBlacklisted) {
+                                  widget.post.file['url'] = null;
+                                  widget.post.sample['url'] = null;
+                                  widget.post.preview['url'] = null;
+                                }
+                              });
+                            },
+                          ),
+                          bottom: 0,
+                          right: 5,
+                        );
+                      } else {
+                        return Container();
+                      }
+                    }()
+                  ],
                 );
-              }(),
-              constraints: BoxConstraints(
-                minHeight: (MediaQuery.of(context).size.height /
-                    2), // maybe set this to around 50% of screen DPS
-              ));
+              });
         }
 
         return Stack(
@@ -402,19 +454,24 @@ class _PostWidgetState extends State<PostWidget> {
         );
       }
 
-      return new GestureDetector(
-        onTap: widget.post.file['url'] != null &&
-                widget.post.file['ext'] != 'webm'
-            ? () {
-                if (widget.posts != null) {
+      return ValueListenableBuilder(
+        valueListenable: widget.post.ignoreSafety,
+        builder: (context, value, child) {
+          return new GestureDetector(
+            onTap: () {
+              if (widget.post.file['ext'] != 'webm' && widget.post.file['url'] != null && isVisible()) {
+                  List<Post> posts = widget.posts ?? [widget.post];
                   return _onTapImage(
-                      context, widget.posts, widget.posts.indexOf(widget.post));
-                } else {
-                  return _onTapImage(context, [widget.post], 0);
-                }
-              }()
-            : null,
-        child: overlayImageWidget(),
+                      context, posts, posts.indexOf(widget.post));
+              } else {
+                return () {};
+              }
+            }(),
+            child: overlayImageWidget(),
+          );
+        },
+
+
       );
     }
 
@@ -457,7 +514,8 @@ class _PostWidgetState extends State<PostWidget> {
                           )
                         : Text('no artist',
                             style: TextStyle(
-                                color: Theme.of(context).textTheme.subtitle.color,
+                                color:
+                                    Theme.of(context).textTheme.subtitle.color,
                                 fontStyle: FontStyle.italic)),
                   ],
                 ),
@@ -1098,25 +1156,25 @@ class _PostWidgetState extends State<PostWidget> {
           );
         },
         itemCount: posts.length,
-        loadingBuilder: (buildContext, imageChunkEvent) =>
-            GestureDetector(
-              child: Container(
-                child: new Stack(alignment: Alignment.center, children: [
-                  new CachedNetworkImage(
-                    imageUrl: posts[current].sample['url'],
-                    placeholder: (context, url) => const CircularProgressIndicator(),
-                    errorWidget: (context, url, error) =>
+        loadingBuilder: (buildContext, imageChunkEvent) => GestureDetector(
+          child: Container(
+            child: new Stack(alignment: Alignment.center, children: [
+              new CachedNetworkImage(
+                imageUrl: posts[current].sample['url'],
+                placeholder: (context, url) =>
+                    const CircularProgressIndicator(),
+                errorWidget: (context, url, error) =>
                     const Icon(Icons.error_outline),
-                  ),
-                  new Container(
-                    alignment: Alignment.bottomCenter,
-                    child: const LinearProgressIndicator(),
-                  ),
-                ]),
-                color: Theme.of(context).canvasColor,
               ),
-              onTap: () => Navigator.of(context).pop(),
-            ),
+              new Container(
+                alignment: Alignment.bottomCenter,
+                child: const LinearProgressIndicator(),
+              ),
+            ]),
+            color: Theme.of(context).canvasColor,
+          ),
+          onTap: () => Navigator.of(context).pop(),
+        ),
         pageController: PageController(
           initialPage: index,
         ),

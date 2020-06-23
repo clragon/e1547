@@ -303,10 +303,10 @@ class Client {
     return posts;
   }
 
-  Future<Post> post(int postID) async {
+  Future<Post> post(int postID, {bool unsafe = false}) async {
     try {
       String body = await _http
-          .get(await _host, '/posts/' + postID.toString() + '.json', query: {
+          .get((unsafe ? 'e621.net' : await _host), '/posts/' + postID.toString() + '.json', query: {
         'login': await _username,
         'api_key': await _apiKey,
       }).then((response) => response.body);
