@@ -281,12 +281,10 @@ class NavigationDrawer extends StatelessWidget {
         new ListTile(
           leading: FutureBuilder(
             builder: (context, snapshot) {
-              if (snapshot.hasData && snapshot.data['version'] != null) {
-                if (int.tryParse(snapshot.data['version']) == null) {
-                  return Icon(Icons.info);
-                }
+              if (snapshot.hasData && snapshot.data.length != 0) {
+                int latest = int.tryParse(snapshot.data[0]['version'].replaceAll('.', '') ?? 0);
                 if (int.parse(appVersion.replaceAll('.', '')) <
-                    int.parse(snapshot.data['version'].replaceAll('.', ''))) {
+                    latest) {
                   return Stack(
                     children: <Widget>[
                       Icon(Icons.update),
@@ -311,7 +309,7 @@ class NavigationDrawer extends StatelessWidget {
                 return Icon(Icons.info);
               }
             },
-            future: getLatestVersion(),
+            future: getVersions(),
           ),
           title: const Text('About'),
           onTap: () => Navigator.popAndPushNamed(context, '/about'),

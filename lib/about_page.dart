@@ -22,7 +22,8 @@ class AboutPage extends StatelessWidget {
         actions: <Widget>[
           new FutureBuilder(
             builder: (context, snapshot) {
-              if (snapshot.hasData && snapshot.data['version'] != null) {
+              if (snapshot.hasData && snapshot.data.length != 0) {
+                int latest = int.tryParse(snapshot.data[0]['version'].replaceAll('.', '') ?? 0);
                 return Stack(
                   children: <Widget>[
                     IconButton(
@@ -31,8 +32,7 @@ class AboutPage extends StatelessWidget {
                         Widget msg;
                         FlatButton b1;
                         FlatButton b2;
-                        if (int.tryParse(snapshot.data['version']) == null || int.parse(appVersion.replaceAll('.', '')) >=
-                            int.parse(snapshot.data['version'].replaceAll('.', ''))) {
+                        if (latest <= int.parse(appVersion.replaceAll('.', ''))) {
                           msg = Text("You have the newest version ($appVersion)");
                           b1 = FlatButton(
                             child: Text("GITHUB"),
@@ -50,26 +50,38 @@ class AboutPage extends StatelessWidget {
                           msg = Column(
                               mainAxisSize: MainAxisSize.min,
                               crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Text(
-                                  'A newer version is available: ',
-                                  style: TextStyle(
-                                    color: Colors.grey[500],
-                                  ),
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.only(top: 8, bottom: 8),
-                                  child: Text(
-                                    snapshot.data['title'] + ' (${snapshot.data['version']}) ',
+                              children: (){
+                                List<Widget> releases = [];
+                                releases.add(
+                                  Text(
+                                    'A newer version is available: ',
                                     style: TextStyle(
-                                      fontSize: 22,
+                                      color: Colors.grey[500],
                                     ),
-                                  ),
-                                ),
-                                Flexible(
-                                  child: Text(snapshot.data['description'].replaceAll('-', '•')),
-                                )
-                              ],
+                                  )
+                                );
+                                for (Map release in snapshot.data) {
+                                  if ((int.tryParse(release['version'].replaceAll('.', '')) ?? 0) > int.parse(appVersion.replaceAll('.', ''))) {
+                                    releases.addAll(
+                                        [
+                                          Padding(
+                                            padding: EdgeInsets.only(top: 8, bottom: 8),
+                                            child: Text(
+                                              release['title'] + ' (${release['version']}) ',
+                                              style: TextStyle(
+                                                fontSize: 22,
+                                              ),
+                                            ),
+                                          ),
+                                          Flexible(
+                                            child: Text(release['description'].replaceAll('-', '•')),
+                                          )
+                                        ]
+                                    );
+                                  }
+                                }
+                                return releases;
+                              }(),
                             );
                           b1 = FlatButton(
                             child: Text("CANCEL"),
@@ -100,8 +112,7 @@ class AboutPage extends StatelessWidget {
                       },
                     ),
                     () {
-                      if (int.parse(appVersion.replaceAll('.', '')) <
-                          int.parse(snapshot.data['version'].replaceAll('.', ''))) {
+                      if (latest > int.parse(appVersion.replaceAll('.', ''))) {
                         return Positioned(
                           bottom: 20,
                           left: 12,
@@ -128,7 +139,7 @@ class AboutPage extends StatelessWidget {
                 );
               }
             },
-            future: getLatestVersion(),
+            future: getVersions(),
           )
         ],
       );
@@ -177,24 +188,28 @@ class AboutPage extends StatelessWidget {
   }
 }
 
-Map githubData;
+List<Map> githubData = [];
 
-Future<Map> getLatestVersion() async {
+Future<List<Map>> getVersions() async {
   if (kReleaseMode) {
-    if (githubData == null) {
+    if (githubData.length == 0) {
       await new HttpHelper().get(
-          'api.github.com', '/repos/$github/releases/latest',
+          'api.github.com', '/repos/$github/releases',
           query: {}).then((response) {
-        Map raw = json.decode(response.body);
-        githubData = {
-          'version': raw['tag_name'],
-          'title': raw['name'],
-          'description': raw['body'],
-        };
+            for (Map release in json.decode(response.body)) {
+              print(release);
+              githubData.add(
+                  {
+                    'version': release['tag_name'],
+                    'title': release['name'],
+                    'description': release['body'],
+                  }
+              );
+            }
       });
     }
     return Future.value(githubData);
   } else {
-    return {};
+    return [];
   }
 }
