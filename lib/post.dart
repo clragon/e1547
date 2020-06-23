@@ -326,7 +326,7 @@ class _PostWidgetState extends State<PostWidget> {
                               2), // maybe set this to around 50% of screen DPS
                         )),
                     () {
-                      if (widget.post.file['url'] == null || !isVisible() || widget.post.ignoreSafety.value) {
+                      if ((widget.post.file['url'] == null && !widget.post.isDeleted) || !isVisible() || widget.post.ignoreSafety.value) {
                         return Positioned(
                           child: FlatButton(
                             color: value ? Colors.black12 : null,
