@@ -236,9 +236,10 @@ class PostWidget extends StatefulWidget {
 }
 
 class _PostWidgetState extends State<PostWidget> {
-
   bool isVisible() {
-    return (widget.post.isFavorite.value || widget.post.ignoreSafety.value || !widget.post.isBlacklisted);
+    return (widget.post.isFavorite.value ||
+        widget.post.ignoreSafety.value ||
+        !widget.post.isBlacklisted);
   }
 
   @override
@@ -326,7 +327,10 @@ class _PostWidgetState extends State<PostWidget> {
                               2), // maybe set this to around 50% of screen DPS
                         )),
                     () {
-                      if ((widget.post.file['url'] == null && !widget.post.isDeleted) || !isVisible() || widget.post.ignoreSafety.value) {
+                      if ((widget.post.file['url'] == null &&
+                              !widget.post.isDeleted) ||
+                          !isVisible() ||
+                          widget.post.ignoreSafety.value) {
                         return Positioned(
                           child: FlatButton(
                             color: value ? Colors.black12 : null,
@@ -347,12 +351,15 @@ class _PostWidgetState extends State<PostWidget> {
                             onPressed: () async {
                               widget.post.ignoreSafety.value =
                                   !widget.post.ignoreSafety.value;
-                              Post urls = await client.post(widget.post.id, unsafe: true);
+                              Post urls = await client.post(widget.post.id,
+                                  unsafe: true);
                               setState(() {
                                 if (widget.post.file['url'] == null) {
                                   widget.post.file['url'] = urls.file['url'];
-                                  widget.post.sample['url'] = urls.sample['url'];
-                                  widget.post.preview['url'] = urls.preview['url'];
+                                  widget.post.sample['url'] =
+                                      urls.sample['url'];
+                                  widget.post.preview['url'] =
+                                      urls.preview['url'];
                                 } else if (!widget.post.isBlacklisted) {
                                   widget.post.file['url'] = null;
                                   widget.post.sample['url'] = null;
@@ -376,79 +383,7 @@ class _PostWidgetState extends State<PostWidget> {
         return Stack(
           children: <Widget>[
             Center(child: imageWidget()),
-            new AppBar(
-              backgroundColor: Colors.transparent,
-              elevation: 0,
-              leading: IconButton(
-                icon: IconShadowWidget(
-                  Icon(
-                    Icons.arrow_back,
-                    color: Theme.of(context).iconTheme.color,
-                  ),
-                  shadowColor: Colors.black,
-                ),
-                onPressed: () => Navigator.of(context).pop(),
-              ),
-              actions: <Widget>[
-                PopupMenuButton<String>(
-                  icon: IconShadowWidget(
-                    Icon(
-                      Icons.more_vert,
-                      color: Theme.of(context).iconTheme.color,
-                    ),
-                    shadowColor: Colors.black,
-                  ),
-                  itemBuilder: (BuildContext context) =>
-                      <PopupMenuEntry<String>>[
-                    PopupMenuItem(
-                      value: 'share',
-                      child: Padding(
-                        padding: EdgeInsets.all(4),
-                        child: Text('Share'),
-                      ),
-                    ),
-                    widget.post.file['url'] != null && (Platform.isAndroid)
-                        ? PopupMenuItem(
-                            value: 'download',
-                            child: Padding(
-                              padding: EdgeInsets.all(4),
-                              child: Text(
-                                'Download',
-                                maxLines: 1,
-                              ),
-                            ),
-                          )
-                        : null,
-                    PopupMenuItem(
-                      //
-                      value: 'browser',
-                      child: Padding(
-                        padding: EdgeInsets.all(4),
-                        child: Text(
-                          'Browse',
-                          maxLines: 1,
-                        ),
-                      ),
-                    )
-                  ],
-                  onSelected: (value) async {
-                    switch (value) {
-                      case 'share':
-                        Share.share(
-                            widget.post.url(await db.host.value).toString());
-                        break;
-                      case 'download':
-                        downloadDialog(context, widget.post);
-                        break;
-                      case 'browser':
-                        url.launch(
-                            widget.post.url(await db.host.value).toString());
-                        break;
-                    }
-                  },
-                ),
-              ],
-            )
+            postAppBar(context, widget.post),
             // appbarOverlay(),
           ],
         );
@@ -459,10 +394,11 @@ class _PostWidgetState extends State<PostWidget> {
         builder: (context, value, child) {
           return new GestureDetector(
             onTap: () {
-              if (widget.post.file['ext'] != 'webm' && widget.post.file['url'] != null && isVisible()) {
-                  List<Post> posts = widget.posts ?? [widget.post];
-                  return _onTapImage(
-                      context, posts, posts.indexOf(widget.post));
+              if (widget.post.file['ext'] != 'webm' &&
+                  widget.post.file['url'] != null &&
+                  isVisible()) {
+                List<Post> posts = widget.posts ?? [widget.post];
+                return _onTapImage(context, posts, posts.indexOf(widget.post));
               } else {
                 return () {};
               }
@@ -470,8 +406,6 @@ class _PostWidgetState extends State<PostWidget> {
             child: overlayImageWidget(),
           );
         },
-
-
       );
     }
 
@@ -1191,17 +1125,87 @@ class _PostWidgetState extends State<PostWidget> {
           widget.post.file['ext'] == 'swf') {
         url.launch(widget.post.file['url']);
       } else {
-        SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
-        setUIColors(Theme.of(context));
+        SystemChrome.setEnabledSystemUIOverlays([]);
         await Navigator.of(context).push(new MaterialPageRoute<Null>(
           builder: fullScreenWidgetBuilder,
         ));
-        setUIColors(Theme.of(context));
         SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
-        setUIColors(Theme.of(context));
       }
     };
   }
+}
+
+Widget postAppBar(BuildContext context, Post post) {
+  return AppBar(
+    backgroundColor: Colors.transparent,
+    elevation: 0,
+    leading: IconButton(
+      icon: IconShadowWidget(
+        Icon(
+          Icons.arrow_back,
+          color: Theme.of(context).iconTheme.color,
+        ),
+        shadowColor: Colors.black,
+      ),
+      onPressed: () => Navigator.of(context).pop(),
+    ),
+    actions: <Widget>[
+      PopupMenuButton<String>(
+        icon: IconShadowWidget(
+          Icon(
+            Icons.more_vert,
+            color: Theme.of(context).iconTheme.color,
+          ),
+          shadowColor: Colors.black,
+        ),
+        itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+          PopupMenuItem(
+            value: 'share',
+            child: Padding(
+              padding: EdgeInsets.all(4),
+              child: Text('Share'),
+            ),
+          ),
+          post.file['url'] != null && (Platform.isAndroid)
+              ? PopupMenuItem(
+                  value: 'download',
+                  child: Padding(
+                    padding: EdgeInsets.all(4),
+                    child: Text(
+                      'Download',
+                      maxLines: 1,
+                    ),
+                  ),
+                )
+              : null,
+          PopupMenuItem(
+            //
+            value: 'browser',
+            child: Padding(
+              padding: EdgeInsets.all(4),
+              child: Text(
+                'Browse',
+                maxLines: 1,
+              ),
+            ),
+          )
+        ],
+        onSelected: (value) async {
+          switch (value) {
+            case 'share':
+              Share.share(post.url(await db.host.value).toString());
+              break;
+            case 'download':
+              downloadDialog(context, post);
+              break;
+            case 'browser':
+              url.launch(post.url(await db.host.value).toString());
+              break;
+          }
+        },
+      ),
+    ],
+  );
 }
 
 Future<File> download(Post post) async {

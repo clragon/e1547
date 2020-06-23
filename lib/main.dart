@@ -17,6 +17,7 @@ ValueNotifier<ThemeData> _theme = ValueNotifier(themeMap['dark']);
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  WidgetsBinding.instance.renderView.automaticSystemUiAdjustment = false;
   _theme.value = themeMap[await db.theme.value];
   db.theme.addListener(() async => _theme.value = themeMap[await db.theme.value]);
   runApp(Main());
