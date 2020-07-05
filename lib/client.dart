@@ -331,6 +331,15 @@ class Client {
     return json.decode(body);
   }
 
+  Future<Map> user(String name) async {
+    String body = await _http.get(await _host, '/users/$name.json', query: {
+      'login': await _username,
+      'api_key': await _apiKey,
+    }).then((response) => response.body);
+
+    return json.decode(body);
+  }
+
   Future<List<String>> tags(String search, int page) async {
     String body = await _http.get(await _host, '/tags.json', query: {
       'search[name_matches]': search + '*',

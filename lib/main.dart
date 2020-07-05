@@ -19,7 +19,8 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   WidgetsBinding.instance.renderView.automaticSystemUiAdjustment = false;
   _theme.value = themeMap[await db.theme.value];
-  db.theme.addListener(() async => _theme.value = themeMap[await db.theme.value]);
+  db.theme
+      .addListener(() async => _theme.value = themeMap[await db.theme.value]);
   runApp(Main());
 }
 
@@ -35,26 +36,26 @@ class Main extends StatelessWidget {
           theme: value,
           routes: <String, WidgetBuilder>{
             '/': (context) => () {
-              _drawerSelection = _DrawerSelection.home;
-              return new HomePage();
-            }(),
+                  _drawerSelection = _DrawerSelection.home;
+                  return new HomePage();
+                }(),
             '/hot': (context) => () {
-              _drawerSelection = _DrawerSelection.hot;
-              return new HotPage();
-            }(),
+                  _drawerSelection = _DrawerSelection.hot;
+                  return new HotPage();
+                }(),
             '/search': (context) => new SearchPage(),
             '/fav': (context) => () {
-              _drawerSelection = _DrawerSelection.favorites;
-              return new FavPage();
-            }(),
+                  _drawerSelection = _DrawerSelection.favorites;
+                  return new FavPage();
+                }(),
             '/pools': (context) => () {
-              _drawerSelection = _DrawerSelection.pools;
-              return new PoolsPage();
-            }(),
+                  _drawerSelection = _DrawerSelection.pools;
+                  return new PoolsPage();
+                }(),
             '/follows': (context) => () {
-              _drawerSelection = _DrawerSelection.follows;
-              return new FollowsPage();
-            }(),
+                  _drawerSelection = _DrawerSelection.follows;
+                  return new FollowsPage();
+                }(),
             '/login': (context) => new LoginPage(),
             '/settings': (context) => new SettingsPage(),
             '/about': (context) => new AboutPage(),
@@ -68,7 +69,7 @@ class Main extends StatelessWidget {
 }
 
 Map<String, ThemeData> themeMap = {
-  'light' : ThemeData(
+  'light': ThemeData(
     canvasColor: Colors.white,
     appBarTheme: AppBarTheme(
       color: Colors.white,
@@ -78,7 +79,7 @@ Map<String, ThemeData> themeMap = {
     primaryColorBrightness: Brightness.light,
     brightness: Brightness.light,
   ),
-  'dark' : ThemeData(
+  'dark': ThemeData(
     primaryColorBrightness: Brightness.dark,
     brightness: Brightness.dark,
     primaryColor: Colors.grey[900],
@@ -89,7 +90,7 @@ Map<String, ThemeData> themeMap = {
     cardColor: Colors.grey[850],
     dialogBackgroundColor: Colors.grey[850],
   ),
-  'amoled' : ThemeData(
+  'amoled': ThemeData(
     primaryColorBrightness: Brightness.dark,
     brightness: Brightness.dark,
     primaryColor: Colors.black,
@@ -101,7 +102,7 @@ Map<String, ThemeData> themeMap = {
     cardColor: Color.fromARGB(255, 20, 20, 20),
     accentColor: Colors.deepPurple,
   ),
-  'blue' : (){
+  'blue': () {
     Color blueBG = Color.fromARGB(255, 2, 15, 35);
     Color blueFG = Color.fromARGB(255, 21, 47, 86);
     return ThemeData(
@@ -117,7 +118,6 @@ Map<String, ThemeData> themeMap = {
       accentColor: Colors.blue[900],
     );
   }(),
-
 };
 
 enum _DrawerSelection {
@@ -191,11 +191,6 @@ class NavigationDrawer extends StatelessWidget {
         );
       }
 
-      // this could use the avatar post of the user.
-      // however, its not reachable by the API.
-      // maybe send an email to the site owners.
-      // update: sent an email.
-      // they'll note it down for after API update.
       return new Container(
           height: 140,
           child: new DrawerHeader(
@@ -282,9 +277,9 @@ class NavigationDrawer extends StatelessWidget {
           leading: FutureBuilder(
             builder: (context, snapshot) {
               if (snapshot.hasData && snapshot.data.length != 0) {
-                int latest = int.tryParse(snapshot.data[0]['version'].replaceAll('.', '') ?? 0);
-                if (int.parse(appVersion.replaceAll('.', '')) <
-                    latest) {
+                int latest = int.tryParse(
+                    snapshot.data[0]['version'].replaceAll('.', '') ?? 0);
+                if (int.parse(appVersion.replaceAll('.', '')) < latest) {
                   return Stack(
                     children: <Widget>[
                       Icon(Icons.update),

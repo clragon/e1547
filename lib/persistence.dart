@@ -19,6 +19,7 @@ class Persistence {
   ValueNotifier<Future<String>> apiKey;
   ValueNotifier<Future<String>> theme;
   ValueNotifier<Future<bool>> showWebm;
+  ValueNotifier<Future<bool>> hasConsent;
   ValueNotifier<Future<List<String>>> blacklist;
   ValueNotifier<Future<List<String>>> follows;
 
@@ -40,6 +41,9 @@ class Persistence {
 
     showWebm = _makeNotifier((p) => p.getBool('showWebm') ?? false);
     showWebm.addListener(_saveBool('showWebm', showWebm));
+
+    hasConsent = _makeNotifier((p) => p.getBool('hasConsent') ?? false);
+    hasConsent.addListener(_saveBool('hasConsent', hasConsent));
 
     blacklist = _makeNotifier((p) => p.getStringList('blacklist') ?? []);
     blacklist.addListener(_saveList('blacklist', blacklist));

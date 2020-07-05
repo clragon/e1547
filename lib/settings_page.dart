@@ -4,6 +4,7 @@ import 'package:e1547/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
+import 'package:e1547/interface.dart';
 import 'package:e1547/client.dart';
 import 'package:e1547/appinfo.dart';
 import 'package:e1547/persistence.dart' show db;
@@ -18,6 +19,7 @@ class _SettingsPageState extends State<SettingsPage> {
   String _host;
   String _username;
   String _theme;
+  bool _hasConsent = false;
   bool _showUnsafe = false;
   bool _showWebm = false;
   bool _refresh = false;
@@ -32,6 +34,7 @@ class _SettingsPageState extends State<SettingsPage> {
     db.username.value.then((a) async => setState(() => _username = a));
     db.showWebm.value.then((a) async => setState(() => _showWebm = a));
     db.theme.value.then((a) async => setState(() => _theme = a));
+    db.hasConsent.value.then((a) async => setState(() => _hasConsent = a));
   }
 
   Function() _onTapSignOut(BuildContext context) {
@@ -81,16 +84,19 @@ class _SettingsPageState extends State<SettingsPage> {
               subtitle: Text(_host ?? ' '),
               secondary: Icon(Icons.warning),
               value: _showUnsafe,
-              onChanged: (show) {
-                _refresh = true;
+              onChanged: (show) async {
+                bool consent = _showUnsafe || _hasConsent || await getConsent(context);
                 setState(() {
-                  _showUnsafe = show;
-                  if (show) {
-                    _host = 'e621.net';
-                    db.host.value = Future.value(_host);
-                  } else {
-                    _host = 'e926.net';
-                    db.host.value = Future.value(_host);
+                  if (consent) {
+                    _refresh = true;
+                    _showUnsafe = show;
+                    if (show) {
+                      _host = 'e621.net';
+                      db.host.value = Future.value(_host);
+                    } else {
+                      _host = 'e926.net';
+                      db.host.value = Future.value(_host);
+                    }
                   }
                 });
               },
@@ -109,11 +115,14 @@ class _SettingsPageState extends State<SettingsPage> {
                   });
                 }),
             () {
-              File nomedia = File('${Platform.environment['EXTERNAL_STORAGE']}/Pictures/$appName/.nomedia');
+              File nomedia = File(
+                  '${Platform.environment['EXTERNAL_STORAGE']}/Pictures/$appName/.nomedia');
               if (Platform.isAndroid) {
                 return SwitchListTile(
-                  title: Text('Hide in gallery'),
-                  subtitle: nomedia.existsSync() ? Text('Downloads are hidden') : Text('Downloads are shown'),
+                    title: Text('Hide in gallery'),
+                    subtitle: nomedia.existsSync()
+                        ? Text('Downloads are hidden')
+                        : Text('Downloads are shown'),
                     secondary: Icon(Icons.image),
                     value: nomedia.existsSync(),
                     onChanged: (hide) {
@@ -122,9 +131,8 @@ class _SettingsPageState extends State<SettingsPage> {
                       } else {
                         nomedia.delete();
                       }
-                      setState(() { });
-                    }
-                );
+                      setState(() {});
+                    });
               } else {
                 return Container();
               }
@@ -166,12 +174,13 @@ class _SettingsPageState extends State<SettingsPage> {
                                         shape: BoxShape.circle,
                                         color: themeMap[theme].canvasColor,
                                         border: Border.all(
-                                          color: Theme.of(context).iconTheme.color,
+                                          color:
+                                              Theme.of(context).iconTheme.color,
                                         ),
                                       ),
                                     );
                                   }(),
-                                  onTap: (){
+                                  onTap: () {
                                     setState(() {
                                       db.theme.value = Future.value(theme);
                                     });

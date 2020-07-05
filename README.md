@@ -1,5 +1,21 @@
-# e1547  
-A mobile app to browse e621 and e926  
+
+<p align="center">
+<table style="margin-left:auto;margin-right:auto;">
+    <tr>
+    <td valign="middle" width="20%">
+    <img src="assets/icon/paw.png" style="vertical-align:middle;"/>
+    </td>
+    <td valign="middle">
+    <h1>e1547</h1>
+    <h4>A mobile app to browse e621 and e926.</h4>
+    <a href="https://github.com/clragon/e1547/commits/master"><img src="https://badgen.net/github/commits/clragon/e1547"></a>
+    <a href="https://github.com/clragon/e1547/commits/master"><img src="https://badgen.net/github/last-commit/clragon/e1547"></a>
+    <a href="blob/master/LICENSE"><img src="https://img.shields.io/github/license/clragon/e1547"><a>
+    </td>
+    </tr>
+</table>
+</p>
+
 
 ## Features  
 
@@ -15,17 +31,25 @@ A mobile app to browse e621 and e926
 - DText parsing
 - Hide Webm posts (playing webm planned)
 - Automatic update check
+- Multiple Themes to choose from
  
 
 ## Screenshots  
   
-![](https://github.com/perlatus/e1547/raw/master/gif/v1.0.0.gif)  
-Gif from old version 1.0.0
+<p align="center">
+  <img src="https://github.com/perlatus/e1547/raw/master/gif/v1.0.0.gif" width="45%">
+  <img src="assets/screenshots/v142.gif" width="45%">
+</p>
+<table style="width:90%;margin-left:auto;margin-right:auto;">
+  <tr>
+    <td>v1.0.0</td>
+    <td>v1.4.2</td>
+  </tr>
+</table>
 
 ## Download  
   
 APK and IPA files can be found over at the [releases](https://github.com/clragon/e1547/releases/latest).  
-iOS releases are compiled by [CamperGuy](https://github.com/camperguy).
 
 ## Compilation
 
@@ -39,6 +63,8 @@ If you have questions/comments/suggestions, you can open a github Issue.
 You can also post in the [e926 forum thread](https://e926.net/forum_topics/25854).  
 
 ## Credit
+- iOS releases for this app are compiled by [CamperGuy](https://github.com/camperguy).
+
 - This app is a continuation of a project by [Perlatus](https://github.com/perlatus).
 
 - The e1547 logo and banner uses a [Paw Icon](https://fontawesome.com/icons/paw?style=solid) licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).

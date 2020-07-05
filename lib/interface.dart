@@ -888,3 +888,34 @@ void setUIColors(ThemeData theme) {
   FlutterStatusbarcolor.setStatusBarWhiteForeground(
       theme.brightness == Brightness.dark);
 }
+
+Future<bool> getConsent(BuildContext context) async {
+  bool hasConsent = false;
+
+  await showDialog(
+    context: context,
+    child: new AlertDialog(
+      title: const Text('Age verification'),
+      content: const Text(
+          'You need to be above the age of 18 to view explicit content.'),
+      actions: [
+        new FlatButton(
+          child: const Text('CANCEL'),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+        new FlatButton(
+          child: const Text('OK'),
+          onPressed: () {
+            hasConsent = true;
+            db.hasConsent.value = Future.value(true);
+            Navigator.of(context).pop();
+          },
+        ),
+      ],
+    ),
+  );
+
+  return hasConsent;
+}
