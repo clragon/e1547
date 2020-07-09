@@ -168,12 +168,9 @@ class _BlacklistPageState extends State<BlacklistPage> {
                               }
                               Widget card = InkWell(
                                   onTap: () {
-                                    showDialog(
-                                      context: context,
-                                      builder: (context) => wikiDialog(
-                                          context, noDash(tag),
-                                          actions: true),
-                                    );
+                                    wikiDialog(
+                                        context, noDash(tag),
+                                        actions: true);
                                   },
                                   child: Card(
                                       child: Padding(
@@ -276,8 +273,7 @@ class _BlacklistPageState extends State<BlacklistPage> {
             Text('Blacklist'),
             IconButton(
               icon: Icon(Icons.help_outline),
-              onPressed: () =>
-                  showDialog(context: context, child: wikiDialog(context, 'e621:blacklist')),
+              onPressed: () => wikiDialog(context, 'e621:blacklist'),
             )
           ],
         ),

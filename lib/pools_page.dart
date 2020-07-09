@@ -213,7 +213,7 @@ class _PoolsPageState extends State<PoolsPage> {
     return new Scaffold(
       appBar: appBar(),
       body: bodyWidget(),
-      drawer: const NavigationDrawer(),
+      drawer: NavigationDrawer(),
       floatingActionButton: floatingActionButtonWidget(),
     );
   }

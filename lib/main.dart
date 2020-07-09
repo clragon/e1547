@@ -144,8 +144,6 @@ void refreshPage(BuildContext context) {
 }
 
 class NavigationDrawer extends StatelessWidget {
-  const NavigationDrawer();
-
   @override
   Widget build(BuildContext context) {
     Widget headerWidget() {
@@ -191,6 +189,7 @@ class NavigationDrawer extends StatelessWidget {
         );
       }
 
+      // TODO: add user profile picture
       return new Container(
           height: 140,
           child: new DrawerHeader(

@@ -11,7 +11,7 @@ import 'package:url_launcher/url_launcher.dart' as url;
 import 'package:e1547/client.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 
-Widget wikiDialog(BuildContext context, String tag, {actions = false}) {
+void wikiDialog(BuildContext context, String tag, {actions = false}) {
   Widget body() {
     return ConstrainedBox(
         child: FutureBuilder(
@@ -57,7 +57,7 @@ Widget wikiDialog(BuildContext context, String tag, {actions = false}) {
       children: <Widget>[
         Flexible(
           child: Text(
-            tag,
+            tag.replaceAll('_', ' '),
             softWrap: true,
           ),
         ),
@@ -66,15 +66,18 @@ Widget wikiDialog(BuildContext context, String tag, {actions = false}) {
     );
   }
 
-  return AlertDialog(
-    title: title(),
-    content: body(),
-    actions: [
-      FlatButton(
-        child: Text('OK'),
-        onPressed: () => Navigator.of(context).pop(),
-      ),
-    ],
+  showDialog(
+    context: context,
+    child: AlertDialog(
+      title: title(),
+      content: body(),
+      actions: [
+        FlatButton(
+          child: Text('OK'),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+      ],
+    ),
   );
 }
 
@@ -296,7 +299,9 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
           style: TextStyle(
             color: states['link']
                 ? Colors.blue[400]
-                : states['dark'] ? Colors.grey[600] : Theme.of(context).textTheme.body1.color,
+                : states['dark']
+                    ? Colors.grey[600]
+                    : Theme.of(context).textTheme.body1.color,
             fontWeight: states['bold'] ? FontWeight.bold : FontWeight.normal,
             fontStyle: states['italic'] ? FontStyle.italic : FontStyle.normal,
             decoration: TextDecoration.combine([
@@ -891,6 +896,10 @@ void setUIColors(ThemeData theme) {
 
 Future<bool> getConsent(BuildContext context) async {
   bool hasConsent = false;
+
+  if (await db.hasConsent.value) {
+    return true;
+  }
 
   await showDialog(
     context: context,

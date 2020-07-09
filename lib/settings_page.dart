@@ -19,7 +19,6 @@ class _SettingsPageState extends State<SettingsPage> {
   String _host;
   String _username;
   String _theme;
-  bool _hasConsent = false;
   bool _showUnsafe = false;
   bool _showWebm = false;
   bool _refresh = false;
@@ -34,7 +33,6 @@ class _SettingsPageState extends State<SettingsPage> {
     db.username.value.then((a) async => setState(() => _username = a));
     db.showWebm.value.then((a) async => setState(() => _showWebm = a));
     db.theme.value.then((a) async => setState(() => _theme = a));
-    db.hasConsent.value.then((a) async => setState(() => _hasConsent = a));
   }
 
   Function() _onTapSignOut(BuildContext context) {
@@ -85,7 +83,7 @@ class _SettingsPageState extends State<SettingsPage> {
               secondary: Icon(Icons.warning),
               value: _showUnsafe,
               onChanged: (show) async {
-                bool consent = _showUnsafe || _hasConsent || await getConsent(context);
+                bool consent = _showUnsafe || await getConsent(context);
                 setState(() {
                   if (consent) {
                     _refresh = true;

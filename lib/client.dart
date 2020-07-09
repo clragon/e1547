@@ -360,7 +360,7 @@ class Client {
   Future<List<Comment>> comments(int postId, int page) async {
     String body = await _http.get(await _host, '/comments.json', query: {
       'group_by': 'comment',
-      'search[post_tags_match]': 'id:$postId',
+      'search[post_id]': '$postId',
       'page': page + 1,
       'login': await _username,
       'api_key': await _apiKey,

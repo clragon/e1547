@@ -16,7 +16,7 @@ import 'package:share/share.dart';
 import 'package:e1547/blacklist_page.dart';
 import 'package:e1547/client.dart' show client;
 import 'package:e1547/interface.dart';
-import 'package:e1547/main.dart' show NavigationDrawer;
+import 'package:e1547/main.dart';
 import 'package:e1547/persistence.dart' show db;
 import 'package:e1547/post.dart';
 import 'package:e1547/range_dialog.dart' show RangeDialog;
@@ -26,12 +26,12 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new PostsPage(
-        appBarBuilder: appBarWidget('Home'),
-        tags: db.homeTags.value,
-        postProvider: (tags, page) {
-          db.homeTags.value = new Future.value(tags);
-          return client.posts(tags, page);
-        },
+      appBarBuilder: appBarWidget('Home'),
+      tags: db.homeTags.value,
+      postProvider: (tags, page) {
+        db.homeTags.value = new Future.value(tags);
+        return client.posts(tags, page);
+      },
     );
   }
 }
@@ -136,7 +136,7 @@ class SearchPage extends StatelessWidget {
             valueListenable: _tags,
             builder: (context, value, child) {
               if (value.length == 1) {
-                return Text(value.toString());
+                return Text(value.toString().replaceAll('_', ' '));
               } else {
                 return const Text('Search');
               }
@@ -153,13 +153,8 @@ class SearchPage extends StatelessWidget {
                 if (value.length == 1) {
                   return IconButton(
                     icon: Icon(Icons.info_outline),
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        child: wikiDialog(context, value.first.toString(),
-                            actions: true),
-                      );
-                    },
+                    onPressed: () => wikiDialog(context, value.first.toString(),
+                        actions: true),
                   );
                 } else {
                   return Container();
@@ -421,7 +416,11 @@ class _PostsPageState extends State<PostsPage> {
         _clearPages();
       } else {
         _bottomSheetController = Scaffold.of(context).showBottomSheet(
-          (context) => new TagEntry(controller: _tagController, onEnter: () { print('done here'); }),
+          (context) => new TagEntry(
+              controller: _tagController,
+              onEnter: () {
+                print('done here');
+              }),
         );
 
         setState(() {
@@ -631,10 +630,10 @@ class _PostsPageState extends State<PostsPage> {
       });
     }
 
-    return new Scaffold(
+    return Scaffold(
       appBar: widget.appBarBuilder(context),
       body: bodyWidget(),
-      drawer: const NavigationDrawer(),
+      drawer: NavigationDrawer(),
       floatingActionButton: floatingActionButtonWidget(),
     );
   }
@@ -817,7 +816,6 @@ class TagEntry extends StatelessWidget {
             } else {
               return [];
             }
-
           },
         ),
         new Padding(

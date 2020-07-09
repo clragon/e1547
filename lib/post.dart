@@ -154,10 +154,8 @@ class PostPreview extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           new Expanded(
-              child: Container(
-            alignment: (post.file['ext'] == 'gif') ? Alignment.center : null,
-            child: imagePreviewWidget(),
-          )),
+              child: imagePreviewWidget(),
+          ),
           // postInfoWidget(),
         ],
       );
@@ -347,7 +345,7 @@ class _PostWidgetState extends State<PostWidget> {
                               ],
                             ),
                             onPressed: () async {
-                              bool consent = await db.hasConsent.value || await getConsent(context);
+                              bool consent = await getConsent(context);
                               if (consent) {
                                 widget.post.showUnsafe.value =
                                 !widget.post.showUnsafe.value;
@@ -428,10 +426,11 @@ class _PostWidgetState extends State<PostWidget> {
                         ? new RichText(
                             text: TextSpan(children: () {
                               List<TextSpan> spans = [];
-                              for (String artist
-                                  in widget.post.artist.join(', ').split(' ')) {
+                              int count = 0;
+                              for (String artist in widget.post.artist) {
+                                count++;
                                 spans.add(TextSpan(
-                                  text: artist + ' ',
+                                  text: count > 1 ? ', ' + artist : artist,
                                   style: Theme.of(context).textTheme.body1,
                                   recognizer: new TapGestureRecognizer()
                                     ..onTap = () {
@@ -773,14 +772,9 @@ class _PostWidgetState extends State<PostWidget> {
                                             return new SearchPage(
                                                 tags: Tagset.parse(tag));
                                           })),
-                                      onLongPress: () {
-                                        showDialog(
-                                          context: context,
-                                          builder: (context) => wikiDialog(
-                                              context, tag,
-                                              actions: true),
-                                        );
-                                      },
+                                      onLongPress: () => wikiDialog(
+                                          context, tag,
+                                          actions: true),
                                       child: Card(
                                           clipBehavior:
                                               Clip.antiAliasWithSaveLayer,
@@ -820,7 +814,7 @@ class _PostWidgetState extends State<PostWidget> {
                                                     bottom: 4,
                                                     right: 8,
                                                     left: 6),
-                                                child: Text(tag),
+                                                child: Text(tag.replaceAll('_', ' ')),
                                               )
                                             ],
                                           ))),

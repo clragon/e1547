@@ -118,14 +118,9 @@ class _FollowingPageState extends State<FollowingPage> {
                         children: () {
                           return [
                             InkWell(
-                                onTap: () {
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) => wikiDialog(
-                                        context, _follows[index],
-                                        actions: true),
-                                  );
-                                },
+                                onTap: () => wikiDialog(
+                                    context, _follows[index],
+                                    actions: true),
                                 child: Card(
                                     child: Padding(
                                   padding: EdgeInsets.all(8),
