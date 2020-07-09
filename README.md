@@ -3,7 +3,7 @@
 <table style="margin-left:auto;margin-right:auto;">
     <tr>
     <td valign="middle" width="20%">
-    <img src="assets/icon/paw.png" style="vertical-align:middle;"/>
+    <img src="assets/icon/app/paw.png" style="vertical-align:middle;"/>
     </td>
     <td valign="middle">
     <h1>e1547</h1>
@@ -40,12 +40,7 @@
   <img src="https://github.com/perlatus/e1547/raw/master/gif/v1.0.0.gif" width="45%">
   <img src="assets/screenshots/v142.gif" width="45%">
 </p>
-<table style="width:90%;margin-left:auto;margin-right:auto;">
-  <tr>
-    <td>v1.0.0</td>
-    <td>v1.4.2</td>
-  </tr>
-</table>
+GIFs from v1.0.0 and v1.4.2
 
 ## Download  
   
