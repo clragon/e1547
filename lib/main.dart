@@ -197,7 +197,7 @@ class NavigationDrawer extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               const CircleAvatar(
-                backgroundImage: const AssetImage('assets/icon/paw.png'),
+                backgroundImage: const AssetImage('assets/icon/app/paw.png'),
                 radius: 36.0,
               ),
               new Expanded(
