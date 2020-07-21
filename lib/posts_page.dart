@@ -407,6 +407,7 @@ class PostProvider {
   PostProvider({tags, this.provider}) {
     this.tags.value = tags;
     this.tags.addListener(() {
+      isLoading = false;
       loadNextPage(reset: true);
     });
     this.pages.addListener(() {
