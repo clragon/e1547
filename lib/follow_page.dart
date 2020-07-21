@@ -52,6 +52,9 @@ class _FollowingPageState extends State<FollowingPage> {
                                 onTap: () => wikiDialog(
                                     context, _follows[index],
                                     actions: true),
+                                onLongPress: () => wikiDialog(
+                                    context, _follows[index],
+                                    actions: true),
                                 child: Card(
                                     child: Padding(
                                   padding: EdgeInsets.all(8),

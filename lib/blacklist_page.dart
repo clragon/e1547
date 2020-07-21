@@ -126,28 +126,6 @@ class _BlacklistPageState extends State<BlacklistPage> {
 
   @override
   Widget build(BuildContext context) {
-    Widget listHolder(String title, List<Widget> list) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Padding(
-            padding: EdgeInsets.all(8),
-            child: Text(title),
-          ),
-          Row(
-            children: <Widget>[
-              Expanded(
-                child: Wrap(
-                  direction: Axis.horizontal,
-                  children: list,
-                ),
-              ),
-            ],
-          )
-        ],
-      );
-    }
-
     Widget body() {
       return ListView.builder(
         itemCount: _blacklist.length,
@@ -155,47 +133,56 @@ class _BlacklistPageState extends State<BlacklistPage> {
           return Padding(
             padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
                 Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Expanded(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.max,
+                      child: Wrap(
+                        direction: Axis.horizontal,
                         children: () {
+                          Widget cardWidget(String tag) {
+                            return InkWell(
+                                onTap: () =>
+                                    wikiDialog(context, noDash(tag), actions: true),
+                                onLongPress: () =>
+                                    wikiDialog(context, noDash(tag), actions: true),
+                                child: Card(
+                                    clipBehavior: Clip.antiAlias,
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: <Widget>[
+                                        Container(
+                                          height: 24,
+                                          width: 5,
+                                          color: () {
+                                            if ('${tag[0]}' == '-') {
+                                              return Colors.green[300];
+                                            } else {
+                                              return Colors.red[300];
+                                            }
+                                          }(),
+                                        ),
+                                        Padding(
+                                          padding: EdgeInsets.only(
+                                              top: 4,
+                                              bottom: 4,
+                                              right: 8,
+                                              left: 6),
+                                          child: Text(noDash(tag.replaceAll('_', ' '))),
+                                        ),
+                                      ],
+                                    )));
+                          }
+
                           List<Widget> rows = [];
-                          List<Widget> blackTags = [];
-                          List<Widget> whiteTags = [];
                           if (_blacklist.length > 0) {
                             List<String> tags = _blacklist[index].split(' ');
                             for (String tag in tags) {
                               if (tag == '') {
                                 continue;
                               }
-                              Widget card = InkWell(
-                                  onTap: () {
-                                    wikiDialog(context, noDash(tag),
-                                        actions: true);
-                                  },
-                                  child: Card(
-                                      child: Padding(
-                                    padding: EdgeInsets.all(4),
-                                    child: Text(noDash(tag)),
-                                  )));
-                              if ('${tag[0]}' == '-') {
-                                whiteTags.add(card);
-                              } else {
-                                blackTags.add(card);
-                              }
-                            }
-                            if (blackTags.length > 0) {
-                              rows.add(listHolder(
-                                  'Filter posts with these tags:', blackTags));
-                            }
-                            if (whiteTags.length > 0) {
-                              rows.add(listHolder(
-                                  'Except if they have these tags:',
-                                  whiteTags));
+                              rows.add(cardWidget(tag));
                             }
                             return rows;
                           } else {

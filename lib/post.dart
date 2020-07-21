@@ -254,19 +254,17 @@ class _PostWidgetState extends State<PostWidget> {
           try {
             _bottomSheetController?.close();
           } on NoSuchMethodError {
-            // just ignore this goddamn bullshit
+            // this error is thrown when hot reloading in debug mode
           }
         });
       }
     });
 
-    /*
     widget.provider?.pages?.addListener(() {
       if (!widget.provider.posts.contains(widget.post)) {
         Navigator.of(context).pop();
       }
     });
-    */
 
     Widget postContentsWidget() {
       Widget overlayImageWidget() {
