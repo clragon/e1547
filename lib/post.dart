@@ -83,7 +83,7 @@ class Post {
     updated = raw['updated_at'];
 
     description.value = raw['description'] as String;
-    rating.value = (raw['rating'] as String).toUpperCase();
+    rating.value = (raw['rating'] as String).toLowerCase();
     comments.value = (raw['comment_count'] as int);
 
     // somehow, there are sometimes duplicates in there
@@ -833,6 +833,7 @@ class _PostWidgetState extends State<PostWidget> {
                                         if (_textController.text
                                             .trim()
                                             .isEmpty) {
+                                          widget.post.parent.value = null;
                                           isLoading.value = false;
                                           return Future.value(true);
                                         }
@@ -1281,12 +1282,12 @@ class _PostWidgetState extends State<PostWidget> {
 
       Widget ratingDisplay() {
         IconData getIcon(String rating) {
-          switch (rating.toUpperCase()) {
-            case 'S':
+          switch (rating) {
+            case 's':
               return Icons.check_circle_outline;
-            case 'Q':
+            case 'q':
               return Icons.help_outline;
-            case 'E':
+            case 'e':
               return Icons.warning;
             default:
               return Icons.error_outline;
@@ -1315,29 +1316,34 @@ class _PostWidgetState extends State<PostWidget> {
                 ),
                 ListTile(
                   title: Text(ratings[value]),
-                  leading: Icon(getIcon(value)),
-                  onTap: () => showDialog(
-                      context: context,
-                      child: AlertDialog(
-                        title: Text('Rating'),
-                        content: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: () {
-                            List<Widget> choices = [];
-                            ratings.forEach((k, v) {
-                              choices.add(ListTile(
-                                title: Text(v),
-                                leading: Icon(getIcon(k)),
-                                onTap: () {
-                                  widget.post.rating.value = k.toUpperCase();
-                                  Navigator.of(context).pop();
-                                },
-                              ));
-                            });
-                            return choices;
-                          }(),
-                        ),
-                      )),
+                  leading: Icon(
+                      !widget.post.raw['flags']['rating_locked']
+                          ? getIcon(value) : Icons.lock),
+                  onTap: !widget.post.raw['flags']['rating_locked']
+                      ? () => showDialog(
+                          context: context,
+                          child: AlertDialog(
+                            title: Text('Rating'),
+                            content: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: () {
+                                List<Widget> choices = [];
+                                ratings.forEach((k, v) {
+                                  choices.add(ListTile(
+                                    title: Text(v),
+                                    leading: Icon(getIcon(k)),
+                                    onTap: () {
+                                      widget.post.rating.value =
+                                          k.toLowerCase();
+                                      Navigator.of(context).pop();
+                                    },
+                                  ));
+                                });
+                                return choices;
+                              }(),
+                            ),
+                          ))
+                      : () {},
                 ),
                 Divider(),
               ],
@@ -1375,7 +1381,7 @@ class _PostWidgetState extends State<PostWidget> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Text(ratings[widget.post.rating.value.toUpperCase()]),
+                  Text(ratings[widget.post.rating.value]),
                   Text(
                       '${widget.post.file['width']} x ${widget.post.file['height']}'),
                 ],
@@ -2053,9 +2059,9 @@ enum VoteStatus {
 }
 
 Map<String, String> ratings = {
-  'S': 'Safe',
-  'Q': 'Questionable',
-  'E': 'Explicit',
+  's': 'Safe',
+  'q': 'Questionable',
+  'e': 'Explicit',
 };
 
 Future<void> tryRemoveFav(BuildContext context, Post post) async {

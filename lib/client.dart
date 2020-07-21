@@ -369,11 +369,7 @@ class Client {
       body.addEntries([
         MapEntry(
           'post[parent_id]',
-          update.parent.value.toString(),
-        ),
-        MapEntry(
-          'post[old_parent_id]',
-          old.parent.value.toString(),
+          update.parent.value?.toString() ?? '',
         ),
       ]);
     }
@@ -384,10 +380,6 @@ class Client {
           'post[description]',
           update.description.value,
         ),
-        MapEntry(
-          'post[old_description]',
-          old.description.value,
-        ),
       ]);
     }
 
@@ -395,11 +387,7 @@ class Client {
       body.addEntries([
         MapEntry(
           'post[rating]',
-          update.rating.value.toUpperCase(),
-        ),
-        MapEntry(
-          'post[old_rating]',
-          old.rating.value.toUpperCase(),
+          update.rating.value.toLowerCase(),
         ),
       ]);
     }
