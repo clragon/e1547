@@ -27,68 +27,58 @@ class Comment {
 }
 
 class CommentsWidget extends StatefulWidget {
-  const CommentsWidget(this.post, {Key key}) : super(key: key);
-
   final Post post;
+  CommentsWidget(this.post);
 
   @override
-  State createState() => new _CommentsWidgetState();
+  State createState() => _CommentsWidgetState();
 }
 
 class _CommentsWidgetState extends State<CommentsWidget> {
-  final List<List<Comment>> _pages = [];
   bool _loading = true;
+  ValueNotifier<List<List<Comment>>> _pages = ValueNotifier([]);
+  List<Comment> get _comments {
+    return _pages.value
+        .fold<Iterable<Comment>>(Iterable.empty(), (a, b) => a.followedBy(b))
+        .toList();
+  }
 
-  Future<Null> _loadNextPage() async {
-    int p = _pages.length;
-    List<Comment> newComments = await client.comments(widget.post.id, p);
-    setState(() {
-      if (newComments != []) {
-        _pages.add(newComments);
-      }
-      _loading = false;
-    });
+  @override
+  void initState() {
+    super.initState();
+    _loadNextPage();
+  }
+
+  Future<void> _loadNextPage({bool reset = false}) async {
+    int page = reset ? 0 : _pages.value.length;
+    List<Comment> nextPage = [];
+    nextPage.addAll(await client.comments(widget.post.id, page));
+    if (reset && nextPage.length != 0) {
+      _pages.value.clear();
+    }
+    _pages.value = List.from(_pages.value..add(nextPage));
   }
 
   RefreshController _refreshController =
-  RefreshController(initialRefresh: false);
-
-  void _clearPages() {
-    setState(() {
-      _loading = true;
-      _pages.clear();
-      _refreshController.refreshCompleted();
-    });
-  }
-
-  int _itemCount() {
-    int i = 0;
-    if (_pages.isEmpty) {
-      _loadNextPage();
-    }
-    for (List<Comment> p in _pages) {
-      i += p.length;
-    }
-    return i;
-  }
+      RefreshController(initialRefresh: false);
 
   Widget body() {
-    return new Stack(
+    return Stack(
       children: <Widget>[
-        new Visibility(
+        Visibility(
           visible: _loading,
-          child: new Center(
-            child: new Column(
+          child: Center(
+            child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                new Container(
+                Container(
                   height: 28,
                   width: 28,
-                  child: new CircularProgressIndicator(),
+                  child: CircularProgressIndicator(),
                 ),
-                new Padding(
+                Padding(
                   padding: EdgeInsets.all(20),
-                  child: new Text('Loading comments'),
+                  child: Text('Loading comments'),
                 ),
               ],
             ),
@@ -97,30 +87,34 @@ class _CommentsWidgetState extends State<CommentsWidget> {
         SmartRefresher(
           controller: _refreshController,
           header: ClassicHeader(
-            completeText: 'refreshing...',
+            refreshingText: 'Refreshing...',
+            completeText: 'Refreshed comments!',
           ),
-          onRefresh: _clearPages,
+          onRefresh: () async {
+            await _loadNextPage(reset: true);
+            _refreshController.refreshCompleted();
+          },
           physics: BouncingScrollPhysics(),
-          child: new ListView.builder(
+          child: ListView.builder(
             itemBuilder: _itemBuilder,
-            itemCount: _itemCount(),
-            padding: const EdgeInsets.all(10.0),
+            itemCount: _comments.length,
+            padding: EdgeInsets.all(10.0),
             physics: BouncingScrollPhysics(),
           ),
         ),
-        new Visibility(
-          visible: (!_loading && _pages.length == 1 && _pages[0].length == 0),
-          child: new Center(
-            child: new Column(
+        Visibility(
+          visible: (!_loading && _comments.length == 0),
+          child: Center(
+            child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                new Icon(
+                Icon(
                   Icons.error_outline,
                   size: 32,
                 ),
-                new Padding(
+                Padding(
                   padding: EdgeInsets.all(20),
-                  child: new Text('No comments'),
+                  child: Text('No comments'),
                 ),
               ],
             ),
@@ -132,9 +126,21 @@ class _CommentsWidgetState extends State<CommentsWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(
-        title: new Text('#${widget.post.id} comments'),
+    _pages.addListener(() {
+      if (this.mounted) {
+        setState(() {
+          if (_pages.value.length == 0) {
+            _loading = true;
+          } else {
+            _loading = false;
+          }
+        });
+      }
+    });
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('#${widget.post.id} comments'),
       ),
       body: body(),
     );
@@ -184,15 +190,20 @@ class _CommentsWidgetState extends State<CommentsWidget> {
 
                             int ago;
                             String measurement;
-                            for (int period = 0; period <= periods.length; period++) {
-                              if (period == periods.length || duration.inSeconds < periods[period]) {
+                            for (int period = 0;
+                                period <= periods.length;
+                                period++) {
+                              if (period == periods.length ||
+                                  duration.inSeconds < periods[period]) {
                                 if (period != 0) {
-                                  ago = (duration.inSeconds / periods[period -1]).round();
+                                  ago =
+                                      (duration.inSeconds / periods[period - 1])
+                                          .round();
                                 } else {
                                   ago = duration.inSeconds;
                                 }
                                 bool single = (ago == 1);
-                                switch (periods[period -1] ?? 1) {
+                                switch (periods[period - 1] ?? 1) {
                                   case 1:
                                     measurement = single ? 'second' : 'seconds';
                                     break;
@@ -225,7 +236,6 @@ class _CommentsWidgetState extends State<CommentsWidget> {
                               time += ' (edited)';
                             }
                             return time;
-
                           }(),
                           style: TextStyle(
                             color: Colors.grey[600],
@@ -250,27 +260,19 @@ class _CommentsWidgetState extends State<CommentsWidget> {
   }
 
   Widget _itemBuilder(BuildContext context, int item) {
-    int comments = 0;
-
-    for (int p = 0; p < _pages.length; p++) {
-      List<Comment> page = _pages[p];
+    for (List<Comment> page in _pages.value) {
       if (page.isEmpty) {
-        return new Container();
+        return null;
       }
 
-      comments += page.length;
-
-      if (item == comments - 1) {
-        if (p + 1 >= _pages.length) {
-          _loadNextPage();
-        }
+      if (item == _comments.length) {
+        _loadNextPage();
       }
 
-      if (item < comments) {
+      if (item < _comments.length) {
         return commentWidget(page[item]);
       }
     }
-
     return null;
   }
 }

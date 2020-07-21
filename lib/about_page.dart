@@ -13,17 +13,18 @@ class AboutPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     AppBar appBarWidget() {
-      return new AppBar(
-        title: new Text('About'),
+      return AppBar(
+        title: Text('About'),
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
         ),
         actions: <Widget>[
-          new FutureBuilder(
+          FutureBuilder(
             builder: (context, snapshot) {
               if (snapshot.hasData && snapshot.data.length != 0) {
-                int latest = int.tryParse(snapshot.data[0]['version'].replaceAll('.', '') ?? 0);
+                int latest = int.tryParse(
+                    snapshot.data[0]['version'].replaceAll('.', '') ?? 0);
                 return Stack(
                   children: <Widget>[
                     IconButton(
@@ -32,8 +33,10 @@ class AboutPage extends StatelessWidget {
                         Widget msg;
                         FlatButton b1;
                         FlatButton b2;
-                        if (latest <= int.parse(appVersion.replaceAll('.', ''))) {
-                          msg = Text("You have the newest version ($appVersion)");
+                        if (latest <=
+                            int.parse(appVersion.replaceAll('.', ''))) {
+                          msg =
+                              Text("You have the newest version ($appVersion)");
                           b1 = FlatButton(
                             child: Text("GITHUB"),
                             onPressed: () {
@@ -48,41 +51,43 @@ class AboutPage extends StatelessWidget {
                           );
                         } else {
                           msg = Column(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: (){
-                                List<Widget> releases = [];
-                                releases.add(
-                                  Text(
-                                    'A newer version is available: ',
-                                    style: TextStyle(
-                                      color: Colors.grey[500],
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: () {
+                              List<Widget> releases = [];
+                              releases.add(Text(
+                                'A newer version is available: ',
+                                style: TextStyle(
+                                  color: Colors.grey[500],
+                                ),
+                              ));
+                              for (Map release in snapshot.data) {
+                                if ((int.tryParse(release['version']
+                                            .replaceAll('.', '')) ??
+                                        0) >
+                                    int.parse(appVersion.replaceAll('.', ''))) {
+                                  releases.addAll([
+                                    Padding(
+                                      padding:
+                                          EdgeInsets.only(top: 8, bottom: 8),
+                                      child: Text(
+                                        release['title'] +
+                                            ' (${release['version']}) ',
+                                        style: TextStyle(
+                                          fontSize: 22,
+                                        ),
+                                      ),
                                     ),
-                                  )
-                                );
-                                for (Map release in snapshot.data) {
-                                  if ((int.tryParse(release['version'].replaceAll('.', '')) ?? 0) > int.parse(appVersion.replaceAll('.', ''))) {
-                                    releases.addAll(
-                                        [
-                                          Padding(
-                                            padding: EdgeInsets.only(top: 8, bottom: 8),
-                                            child: Text(
-                                              release['title'] + ' (${release['version']}) ',
-                                              style: TextStyle(
-                                                fontSize: 22,
-                                              ),
-                                            ),
-                                          ),
-                                          Flexible(
-                                            child: Text(release['description'].replaceAll('-', '•')),
-                                          )
-                                        ]
-                                    );
-                                  }
+                                    Flexible(
+                                      child: Text(release['description']
+                                          .replaceAll('-', '•')),
+                                    )
+                                  ]);
                                 }
-                                return releases;
-                              }(),
-                            );
+                              }
+                              return releases;
+                            }(),
+                          );
                           b1 = FlatButton(
                             child: Text("CANCEL"),
                             onPressed: () {
@@ -146,31 +151,31 @@ class AboutPage extends StatelessWidget {
     }
 
     Widget body() {
-      return new Row(children: [
-        new Flexible(
-          child: new Center(
-              child: new Padding(
+      return Row(children: [
+        Flexible(
+          child: Center(
+              child: Padding(
             padding: EdgeInsets.only(bottom: 100),
-            child: new Column(
+            child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                const CircleAvatar(
-                  backgroundImage: const AssetImage('assets/icon/paw.png'),
+                CircleAvatar(
+                  backgroundImage: AssetImage('assets/icon/paw.png'),
                   radius: 44.0,
                 ),
-                new Padding(
+                Padding(
                   padding: EdgeInsets.only(top: 24, bottom: 12),
-                  child: const Text(
+                  child: Text(
                     appName,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 22,
                     ),
                   ),
                 ),
-                const Text(
+                Text(
                   appVersion,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 16,
                   ),
                 ),
@@ -181,7 +186,7 @@ class AboutPage extends StatelessWidget {
       ]);
     }
 
-    return new Scaffold(
+    return Scaffold(
       appBar: appBarWidget(),
       body: body(),
     );
@@ -193,19 +198,16 @@ List<Map> githubData = [];
 Future<List<Map>> getVersions() async {
   if (kReleaseMode) {
     if (githubData.length == 0) {
-      await new HttpHelper().get(
-          'api.github.com', '/repos/$github/releases',
+      await HttpHelper().get('api.github.com', '/repos/$github/releases',
           query: {}).then((response) {
-            for (Map release in json.decode(response.body)) {
-              print(release);
-              githubData.add(
-                  {
-                    'version': release['tag_name'],
-                    'title': release['name'],
-                    'description': release['body'],
-                  }
-              );
-            }
+        for (Map release in json.decode(response.body)) {
+          print(release);
+          githubData.add({
+            'version': release['tag_name'],
+            'title': release['name'],
+            'description': release['body'],
+          });
+        }
       });
     }
     return Future.value(githubData);

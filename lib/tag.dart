@@ -1,6 +1,9 @@
 import 'dart:collection' show IterableMixin;
 
 class Tag {
+  final String name;
+  final String value;
+
   Tag(this.name, [this.value]);
 
   factory Tag.parse(String tag) {
@@ -11,11 +14,8 @@ class Tag {
 
     String name = components[0];
     String value = components.length == 2 ? components[1] : null;
-    return new Tag(name, value);
+    return Tag(name, value);
   }
-
-  final String name;
-  final String value;
 
   @override
   String toString() => value == null ? name : '$name:$value';
@@ -30,18 +30,18 @@ class Tag {
 
 class Tagset extends Object with IterableMixin<Tag> {
   Tagset(Set<Tag> tags)
-      : _tags = new Map.fromIterable(
+      : _tags = Map.fromIterable(
           tags,
           key: (t) => (t as Tag).name,
           value: (t) => t as Tag,
         );
 
   Tagset.parse(String tagString) : _tags = {} {
-    for (String ts in tagString.split(new RegExp(r'\s+'))) {
+    for (String ts in tagString.split(RegExp(r'\s+'))) {
       if (ts.trim().isEmpty) {
         continue;
       }
-      Tag t = new Tag.parse(ts);
+      Tag t = Tag.parse(ts);
       _tags[t.name] = t;
     }
   }
@@ -49,7 +49,7 @@ class Tagset extends Object with IterableMixin<Tag> {
   final Map<String, Tag> _tags;
 
   // Get the URL for this search/tagset.
-  Uri url(String host) => new Uri(
+  Uri url(String host) => Uri(
         scheme: 'https',
         host: host,
         path: '/post',
@@ -71,7 +71,7 @@ class Tagset extends Object with IterableMixin<Tag> {
   }
 
   void operator []=(String name, String value) {
-    _tags[name] = new Tag(name, value);
+    _tags[name] = Tag(name, value);
   }
 
   void remove(String name) {

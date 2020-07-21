@@ -9,10 +9,10 @@ import 'package:e1547/persistence.dart' show db;
 import 'package:e1547/post.dart' show Post;
 import 'package:e1547/tag.dart';
 
-final Client client = new Client();
+final Client client = Client();
 
 class Client {
-  final HttpHelper _http = new HttpHelper();
+  final HttpHelper _http = HttpHelper();
 
   Future<String> _host = db.host.value;
   Future<String> _username = db.username.value;
@@ -28,7 +28,7 @@ class Client {
     db.follows.addListener(() => _following = db.follows.value);
   }
 
-  Future<bool> addAsFavorite(int post) async {
+  Future<bool> addFavorite(int post) async {
     if (!await hasLogin()) {
       return false;
     }
@@ -40,7 +40,7 @@ class Client {
     }).then((response) => response.statusCode == 201);
   }
 
-  Future<bool> removeAsFavorite(int post) async {
+  Future<bool> removeFavorite(int post) async {
     if (!await hasLogin()) {
       return false;
     }
@@ -109,8 +109,8 @@ class Client {
   }
 
   Future<void> logout() async {
-    db.username.value = new Future.value(null);
-    db.apiKey.value = new Future.value(null);
+    db.username.value = Future.value(null);
+    db.apiKey.value = Future.value(null);
   }
 
   Future<bool> hasLogin() async {
@@ -121,7 +121,7 @@ class Client {
     List<String> blacklist = await _blacklist;
     if (blacklist.length > 0) {
       List<String> tags = [];
-      post.tags.forEach((k, v) {
+      post.tags.value.forEach((k, v) {
         tags.addAll(v.cast<String>());
       });
 
@@ -144,7 +144,7 @@ class Client {
             String value = tag.split(':')[1];
             switch (identifier) {
               case 'rating':
-                if (post.rating == value.toUpperCase()) {
+                if (post.rating.value == value.toUpperCase()) {
                   return true;
                 }
                 break;
@@ -214,40 +214,36 @@ class Client {
   }
 
   Future<List<Post>> posts(Tagset tags, int page, {bool filter = true}) async {
-    try {
-      String body = await _http.get(await _host, '/posts.json', query: {
-        'tags': tags,
-        'page': page + 1,
-        'login': await _username,
-        'api_key': await _apiKey,
-      }).then((response) => response.body);
+    String body = await _http.get(await _host, '/posts.json', query: {
+      'tags': tags,
+      'page': page + 1,
+      'login': await _username,
+      'api_key': await _apiKey,
+    }).then((response) => response.body);
 
-      List<Post> posts = [];
-      bool loggedIn = await this.hasLogin();
-      bool showWebm = await db.showWebm.value;
-      bool hasPosts = false;
-      for (Map rawPost in json.decode(body)['posts']) {
-        hasPosts = true;
-        Post post = new Post.fromRaw(rawPost);
-        post.isLoggedIn = loggedIn;
-        if (post.file['url'] == null || post.file['ext'] == 'swf') {
-          continue;
-        }
-        if (!showWebm && post.file['ext'] == 'webm') {
-          continue;
-        }
-        if (filter && await isBlacklisted(post)) {
-          continue;
-        }
-        posts.add(post);
+    List<Post> posts = [];
+    bool loggedIn = await this.hasLogin();
+    bool showWebm = await db.showWebm.value;
+    bool hasPosts = false;
+    for (Map rawPost in json.decode(body)['posts']) {
+      hasPosts = true;
+      Post post = Post.fromRaw(rawPost);
+      post.isLoggedIn = loggedIn;
+      if (post.file['ext'] == 'swf') {
+        continue;
       }
-      if (hasPosts && posts.length == 0) {
-        return client.posts(tags, page + 1, filter: filter);
+      if (!showWebm && post.file['ext'] == 'webm') {
+        continue;
       }
-      return posts;
-    } catch (SocketException) {
-      return [];
+      if (filter && await isBlacklisted(post)) {
+        continue;
+      }
+      posts.add(post);
     }
+    if (hasPosts && posts.length == 0) {
+      return client.posts(tags, page + 1, filter: filter);
+    }
+    return posts;
   }
 
   Future<List<Pool>> pools(String title, int page) async {
@@ -261,7 +257,7 @@ class Client {
 
       List<Pool> pools = [];
       for (Map rawPool in json.decode(body)) {
-        Pool pool = new Pool.fromRaw(rawPool);
+        Pool pool = Pool.fromRaw(rawPool);
         pools.add(pool);
       }
 
@@ -281,10 +277,6 @@ class Client {
     return Pool.fromRaw(json.decode(body));
   }
 
-  Future<List<Post>> poolPosts(Pool pool, int page) async {
-    return posts(new Tagset.parse('pool:${pool.id} order:id'), page);
-  }
-
   Future<List<Post>> follows(int page) async {
     List<List<String>> tags = [];
     List<Post> posts = [];
@@ -298,26 +290,142 @@ class Client {
     }
 
     for (List<String> tag in tags) {
-      posts.addAll(await client.posts(Tagset.parse('~' + tag.join(' ~')), page));
+      posts
+          .addAll(await client.posts(Tagset.parse('~' + tag.join(' ~')), page));
     }
     return posts;
   }
 
   Future<Post> post(int postID, {bool unsafe = false}) async {
     try {
-      String body = await _http
-          .get((unsafe ? 'e621.net' : await _host), '/posts/' + postID.toString() + '.json', query: {
-        'login': await _username,
-        'api_key': await _apiKey,
-      }).then((response) => response.body);
+      String body = await _http.get((unsafe ? 'e621.net' : await _host),
+          '/posts/' + postID.toString() + '.json',
+          query: {
+            'login': await _username,
+            'api_key': await _apiKey,
+          }).then((response) => response.body);
 
-      Post post = new Post.fromRaw(json.decode(body)['post']);
+      Post post = Post.fromRaw(json.decode(body)['post']);
       post.isLoggedIn = await hasLogin();
       post.isBlacklisted = await isBlacklisted(post);
       return post;
     } catch (SocketException) {
       return null;
     }
+  }
+
+  Future<Map> updatePost(Post update, Post old, {String editReason}) async {
+    Map<String, String> body = {};
+
+    List<String> tags(Post post) {
+      List<String> _tags = [];
+      post.tags.value.forEach((key, value) {
+        _tags.addAll(List<String>.from(value));
+      });
+      return _tags;
+    }
+
+    List<String> oldTags = tags(old);
+    List<String> newTags = tags(update);
+    List<String> removedTags =
+        oldTags.where((element) => !newTags.contains(element)).toList();
+    removedTags = removedTags.map((t) => '-$t').toList();
+    List<String> addedTags =
+        newTags.where((element) => !oldTags.contains(element)).toList();
+    List<String> tagDiff = [];
+    tagDiff.addAll(removedTags);
+    tagDiff.addAll(addedTags);
+
+    if (tagDiff.length != 0) {
+      body.addEntries([
+        MapEntry(
+          'post[tag_string_diff]',
+          tagDiff.join(' '),
+        ),
+      ]);
+    }
+
+    List<String> removedSource = old.sources.value
+        .where((element) => !update.sources.value.contains(element))
+        .toList();
+    removedSource = removedSource.map((s) => '-$s').toList();
+    List<String> addedSource = update.sources.value
+        .where((element) => !old.sources.value.contains(element))
+        .toList();
+    List<String> sourceDiff = [];
+    sourceDiff.addAll(removedSource);
+    sourceDiff.addAll(addedSource);
+
+    if (sourceDiff.length != 0) {
+      body.addEntries([
+        MapEntry(
+          'post[source_diff]',
+          sourceDiff.join(' '),
+        ),
+      ]);
+    }
+
+    if (old.parent.value != update.parent.value) {
+      body.addEntries([
+        MapEntry(
+          'post[parent_id]',
+          update.parent.value.toString(),
+        ),
+        MapEntry(
+          'post[old_parent_id]',
+          old.parent.value.toString(),
+        ),
+      ]);
+    }
+
+    if (old.description.value != update.description.value) {
+      body.addEntries([
+        MapEntry(
+          'post[description]',
+          update.description.value,
+        ),
+        MapEntry(
+          'post[old_description]',
+          old.description.value,
+        ),
+      ]);
+    }
+
+    if (old.rating.value != update.rating.value) {
+      body.addEntries([
+        MapEntry(
+          'post[rating]',
+          update.rating.value.toUpperCase(),
+        ),
+        MapEntry(
+          'post[old_rating]',
+          old.rating.value.toUpperCase(),
+        ),
+      ]);
+    }
+
+    if (body.length > 0) {
+      if (editReason.trim().isNotEmpty) {
+        body.addEntries([
+          MapEntry(
+            'post[edit_reason]',
+            editReason.trim(),
+          ),
+        ]);
+      }
+
+      Map response = await _http
+          .patch(await _host, '/posts/${update.id}.json',
+              query: {
+                'login': await _username,
+                'api_key': await _apiKey,
+              },
+              body: body)
+          .then((response) =>
+              {'code': response.statusCode, 'reason': response.reasonPhrase});
+      return response;
+    }
+    return null;
   }
 
   Future<List> wiki(String search, int page) async {
@@ -340,9 +448,10 @@ class Client {
     return json.decode(body);
   }
 
-  Future<List<String>> tags(String search, int page) async {
+  Future<List> tags(String search, {int category, int page = 0}) async {
     String body = await _http.get(await _host, '/tags.json', query: {
       'search[name_matches]': search + '*',
+      'search[category]': category,
       'search[order]': 'count',
       'page': page + 1,
       'limit': 3,
@@ -350,9 +459,10 @@ class Client {
       'api_key': await _apiKey,
     }).then((response) => response.body);
 
-    List<String> tags = [];
-    for (Map rawTag in json.decode(body)) {
-      tags.add(rawTag['name']);
+    List tags = [];
+    var tagList = json.decode(body);
+    if (tagList is List) {
+      tags = tagList;
     }
     return tags;
   }
@@ -370,10 +480,24 @@ class Client {
     var commentList = json.decode(body);
     if (commentList is List) {
       for (Map rawComment in commentList) {
-        comments.add(new Comment.fromRaw(rawComment));
+        comments.add(Comment.fromRaw(rawComment));
       }
     }
 
     return comments;
+  }
+
+  Future<Map> postComment(String comment, Post post) async {
+    String body = await _http.post(await _host, '/comments.json', query: {
+      'login': await _username,
+      'api_key': await _apiKey,
+    }, body: {
+      'comment[body]': comment,
+      'comment[post_id]': post.id.toString(),
+      'commit': 'Submit',
+      'comment[do_not_bump]': '0',
+    }).then((response) => response.body);
+
+    return json.decode(body);
   }
 }

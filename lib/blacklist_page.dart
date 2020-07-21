@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'client.dart';
@@ -13,53 +12,46 @@ class BlacklistPage extends StatefulWidget {
 }
 
 class _BlacklistPageState extends State<BlacklistPage> {
+  int _editing;
+  bool _isSearching = false;
   List<String> _blacklist = [];
+  TextEditingController _tagController = TextEditingController();
+  PersistentBottomSheetController<String> _bottomSheetController;
 
   @override
   void initState() {
     super.initState();
+    db.blacklist.addListener(() async {
+      List<String> blacklist = await db.blacklist.value;
+      setState(() => _blacklist = blacklist);
+    });
     db.blacklist.value.then((a) async => setState(() => _blacklist = a));
   }
 
-  int _editing = -1;
-  bool _isSearching = false;
-  TextEditingController _tagController = TextEditingController();
-  PersistentBottomSheetController<String> _bottomSheetController;
-
-  Function() _onPressedFloatingActionButton(BuildContext context,
-      {int edit = -1}) {
+  Function() _addTags(BuildContext context, {int edit}) {
     return () async {
-      void onCloseBottomSheet() {
-        setState(() {
-          _isSearching = false;
-          _editing = -1;
-        });
-      }
-
-      if (!_isSearching) {
-        if (edit != -1) {
-          _editing = edit;
-          _tagController = TextEditingController()..text = _blacklist[_editing];
-        } else {
-          _tagController = TextEditingController()..text = '';
-        }
-      }
       setFocusToEnd(_tagController);
-
       if (_isSearching) {
-        if (_editing != -1) {
-          _blacklist[_editing] = _tagController.text;
-        } else {
-          _blacklist.add(_tagController.text);
+        if (_tagController.text.trim() != '') {
+          if (_editing != null) {
+            _blacklist[_editing] = _tagController.text;
+          } else {
+            _blacklist.add(_tagController.text);
+          }
+          db.blacklist.value = Future.value(_blacklist);
+          _bottomSheetController?.close();
         }
-        db.blacklist.value = Future.value(_blacklist);
-        _bottomSheetController?.close();
       } else {
+        if (edit != null) {
+          _editing = edit;
+          _tagController.text = _blacklist[_editing];
+        } else {
+          _tagController.text = '';
+        }
         _bottomSheetController =
-            Scaffold.of(context).showBottomSheet((context) => new Container(
-                  padding: const EdgeInsets.only(
-                      left: 10.0, right: 10.0, bottom: 10),
-                  child: new Column(mainAxisSize: MainAxisSize.min, children: [
+            Scaffold.of(context).showBottomSheet((context) => Container(
+                  padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10),
+                  child: Column(mainAxisSize: MainAxisSize.min, children: [
                     TypeAheadField(
                       direction: AxisDirection.up,
                       hideOnLoading: true,
@@ -69,51 +61,65 @@ class _BlacklistPageState extends State<BlacklistPage> {
                         controller: _tagController,
                         autofocus: true,
                         maxLines: 1,
-                        inputFormatters: [new LowercaseTextInputFormatter()],
+                        inputFormatters: [LowercaseTextInputFormatter()],
                         decoration: InputDecoration(
                             labelText: 'Add to blacklist',
                             border: UnderlineInputBorder()),
                       ),
                       onSuggestionSelected: (suggestion) {
-                        List<String> tags =
-                            _tagController.text.toString().split(' ');
-                        if (suggestion
-                            .contains(noDash(tags[tags.length - 1]))) {
-                          String operator = tags[tags.length - 1][0];
-                          if (operator == '-' || operator == '~') {
-                            tags[tags.length - 1] = operator + suggestion;
-                          } else {
-                            tags[tags.length - 1] = suggestion;
-                          }
-                        } else {
-                          tags.add(suggestion);
-                        }
-                        String query = '';
+                        List<String> tags = _tagController.text.split(' ');
+                        List<String> before = [];
                         for (String tag in tags) {
-                          query = query + tag + ' ';
+                          before.add(tag);
+                          if (before.join(' ').length >=
+                              _tagController.selection.extent.offset) {
+                            String operator = tags[tags.indexOf(tag)][0];
+                            if (operator != '-' && operator != '~') {
+                              operator = '';
+                            }
+                            tags[tags.indexOf(tag)] = operator + suggestion;
+                            break;
+                          }
                         }
-                        setState(() {
-                          _tagController.text = query;
-                        });
+                        _tagController.text = tags.join(' ');
                       },
                       itemBuilder: (BuildContext context, itemData) {
-                        return new ListTile(
+                        return ListTile(
                           title: Text(itemData),
                         );
                       },
-                      suggestionsCallback: (String pattern) {
-                        List<String> tags = pattern.split(' ');
-                        return client.tags(noDash(tags[tags.length - 1]), 0);
+                      suggestionsCallback: (String pattern) async {
+                        List<String> tags = _tagController.text.split(' ');
+                        List<String> before = [];
+                        int selection = 0;
+                        for (String tag in tags) {
+                          before.add(tag);
+                          if (before.join(' ').length >=
+                              _tagController.selection.extent.offset) {
+                            selection = tags.indexOf(tag);
+                            break;
+                          }
+                        }
+                        if (noDash(tags[selection].trim()).isNotEmpty) {
+                          return (await client.tags(noDash(tags[selection])))
+                              .map((t) => t['name'])
+                              .toList();
+                        } else {
+                          return [];
+                        }
                       },
                     ),
                   ]),
                 ));
-
         setState(() {
           _isSearching = true;
         });
-
-        _bottomSheetController.closed.then((a) => onCloseBottomSheet());
+        _bottomSheetController.closed.then((a) {
+          setState(() {
+            _isSearching = false;
+            _editing = null;
+          });
+        });
       }
     };
   }
@@ -168,8 +174,7 @@ class _BlacklistPageState extends State<BlacklistPage> {
                               }
                               Widget card = InkWell(
                                   onTap: () {
-                                    wikiDialog(
-                                        context, noDash(tag),
+                                    wikiDialog(context, noDash(tag),
                                         actions: true);
                                   },
                                   child: Card(
@@ -237,8 +242,7 @@ class _BlacklistPageState extends State<BlacklistPage> {
                                 });
                                 break;
                               case 'edit':
-                                _onPressedFloatingActionButton(context,
-                                    edit: index)();
+                                _addTags(context, edit: index)();
                                 break;
                             }
                           },
@@ -258,8 +262,8 @@ class _BlacklistPageState extends State<BlacklistPage> {
 
     Widget floatingActionButton(BuildContext context) {
       return FloatingActionButton(
-        child: _isSearching ? const Icon(Icons.check) : const Icon(Icons.add),
-        onPressed: _onPressedFloatingActionButton(context),
+        child: _isSearching ? Icon(Icons.check) : Icon(Icons.add),
+        onPressed: _addTags(context),
       );
     }
 
@@ -335,7 +339,7 @@ class _BlacklistPageState extends State<BlacklistPage> {
 }
 
 String noDash(String s) {
-  if (s != '') {
+  if (s.isNotEmpty) {
     if (s[0] == '-' || s[0] == '~') {
       return s.substring(1);
     } else {

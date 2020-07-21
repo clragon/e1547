@@ -9,54 +9,70 @@ import 'package:e1547/persistence.dart' show db;
 class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    List<Widget> columnChildren = [
-      new _InstructionStep(
-          1, _buttonLink('Login via web browser', '/session/new')),
-      new _InstructionStep(2, _buttonLink('Enable API Access', '/users/home')),
-      const _InstructionStep(
-          3,
-          const Padding(
-              padding: EdgeInsets.all(16),
-              child: const Text('Copy and paste your API key'))),
-      new _LoginFormFields(),
-    ];
+    Widget stepWidget(int stepNumber, Widget content) {
+      return Padding(
+        padding: EdgeInsets.symmetric(vertical: 10.0),
+        child: Row(children: [
+          Container(
+            width: 36.0,
+            height: 36.0,
+            alignment: Alignment.center,
+            child: Text(
+              stepNumber.toString(),
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 26.0),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.only(left: 16),
+            child: content,
+          ),
+        ]),
+      );
+    }
 
-    return new Scaffold(
-      appBar: new AppBar(
-          title: const Text('Login')),
-      body: new SingleChildScrollView(
-          padding: const EdgeInsets.all(10.0),
-          child: new Form(child: new Column(children: columnChildren))),
-    );
-  }
-
-  Function() _launch(String path) {
-    return () {
-      db.host.value.then((h) {
-        url.launch('https://$h$path');
-      });
-    };
-  }
-
-  FlatButton _buttonLink(String text, String path) {
-    return new FlatButton(
-      onPressed: _launch(path),
-      child: new Text(
-        text,
-        style: const TextStyle(decoration: TextDecoration.underline),
-      ),
+    return Scaffold(
+      appBar: AppBar(title: Text('Login')),
+      body: SingleChildScrollView(
+          padding: EdgeInsets.all(16.0),
+          child: Form(
+              child: Column(children: [
+            stepWidget(
+                1,
+                FlatButton(
+                  onPressed: () async {
+                    url.launch('https://${await db.host.value}/session/new');
+                  },
+                  child: Text(
+                    'Login via web browser',
+                    style: TextStyle(
+                        decoration: TextDecoration.underline,
+                        color: Colors.blue[400]),
+                  ),
+                )),
+            stepWidget(
+                2,
+                Padding(
+                    padding: EdgeInsets.all(16),
+                    child: Text('Enable API Access'))),
+            stepWidget(
+                3,
+                Padding(
+                    padding: EdgeInsets.all(16),
+                    child: Text('Copy and paste your API key'))),
+            _LoginFormFields(),
+          ]))),
     );
   }
 }
 
 class _LoginFormFields extends StatefulWidget {
   @override
-  _LoginFormFieldsState createState() => new _LoginFormFieldsState();
+  _LoginFormFieldsState createState() => _LoginFormFieldsState();
 }
 
 class _LoginFormFieldsState extends State<_LoginFormFields> {
-  final TextEditingController _apiKeyFieldController =
-      new TextEditingController();
+  final TextEditingController _apiKeyFieldController = TextEditingController();
 
   bool _didJustPaste = false;
   String _beforePasteText;
@@ -110,7 +126,7 @@ class _LoginFormFieldsState extends State<_LoginFormFields> {
           'e.g. 1ca1d165e973d7f8d35b7deb7a2ae54c';
     }
 
-    if (!new RegExp(r'^[A-z0-9]{24,32}$').hasMatch(apiKey)) {
+    if (!RegExp(r'^[A-z0-9]{24,32}$').hasMatch(apiKey)) {
       return 'API key is a 24 or 32-character sequence of {A..z} and {0..9}\n'
           'e.g. 1ca1d165e973d7f8d35b7deb7a2ae54c';
     }
@@ -125,7 +141,7 @@ class _LoginFormFieldsState extends State<_LoginFormFields> {
       if (form.validate()) {
         bool ok = await showDialog(
           context: context,
-          builder: (context) => new _LoginProgressDialog(_username, _apiKey),
+          builder: (context) => _LoginProgressDialog(_username, _apiKey),
         );
 
         if (ok) {
@@ -133,9 +149,9 @@ class _LoginFormFieldsState extends State<_LoginFormFields> {
         } else {
           _authDidJustFail = true;
           form.validate();
-          Scaffold.of(context).showSnackBar(const SnackBar(
-              duration: const Duration(seconds: 10),
-              content: const Text('Failed to login. '
+          Scaffold.of(context).showSnackBar(SnackBar(
+              duration: Duration(seconds: 10),
+              content: Text('Failed to login. '
                   'Check your network connection and login details')));
         }
       }
@@ -145,9 +161,9 @@ class _LoginFormFieldsState extends State<_LoginFormFields> {
   @override
   Widget build(BuildContext context) {
     Widget usernameWidget() {
-      return new TextFormField(
+      return TextFormField(
         autocorrect: false,
-        decoration: const InputDecoration(
+        decoration: InputDecoration(
           labelText: 'Username',
         ),
         onSaved: _saveUsername,
@@ -157,10 +173,10 @@ class _LoginFormFieldsState extends State<_LoginFormFields> {
 
     Widget apiKeyWidget() {
       Widget textEntryWidget() {
-        return new TextFormField(
+        return TextFormField(
           autocorrect: false,
           controller: _apiKeyFieldController,
-          decoration: const InputDecoration(
+          decoration: InputDecoration(
             labelText: 'API Key',
             helperText: 'e.g. 1ca1d165e973d7f8d35b7deb7a2ae54c',
           ),
@@ -171,8 +187,8 @@ class _LoginFormFieldsState extends State<_LoginFormFields> {
 
       Widget specialActionWidget() {
         if (_didJustPaste) {
-          return new IconButton(
-            icon: const Icon(Icons.undo),
+          return IconButton(
+            icon: Icon(Icons.undo),
             tooltip: 'Undo previous paste',
             onPressed: () {
               setState(() {
@@ -182,14 +198,14 @@ class _LoginFormFieldsState extends State<_LoginFormFields> {
             },
           );
         } else {
-          return new IconButton(
-            icon: const Icon(Icons.content_paste),
+          return IconButton(
+            icon: Icon(Icons.content_paste),
             tooltip: 'Paste',
             onPressed: () async {
               var data = await Clipboard.getData('text/plain');
               if (data == null || data.text.trim().isEmpty) {
                 Scaffold.of(context).showSnackBar(
-                    const SnackBar(content: const Text('Clipboard is empty')));
+                    SnackBar(content: Text('Clipboard is empty')));
                 return;
               }
 
@@ -199,7 +215,7 @@ class _LoginFormFieldsState extends State<_LoginFormFields> {
                 _apiKeyFieldController.text = data.text;
               });
 
-              _pasteUndoTimer = new Timer(const Duration(seconds: 10), () {
+              _pasteUndoTimer = Timer(Duration(seconds: 10), () {
                 setState(() {
                   _didJustPaste = false;
                 });
@@ -209,25 +225,25 @@ class _LoginFormFieldsState extends State<_LoginFormFields> {
         }
       }
 
-      return new Row(children: [
-        new Expanded(child: textEntryWidget()),
+      return Row(children: [
+        Expanded(child: textEntryWidget()),
         specialActionWidget(),
       ]);
     }
 
     Widget saveAndTestWidget() {
-      return new Padding(
-        padding: const EdgeInsets.only(top: 26.0),
-        child: new RaisedButton(
-          child: const Text('LOGIN'),
+      return Padding(
+        padding: EdgeInsets.only(top: 26.0),
+        child: RaisedButton(
+          child: Text('LOGIN'),
           onPressed: _saveAndTest(context),
         ),
       );
     }
 
-    return new Padding(
+    return Padding(
       padding: EdgeInsets.all(16),
-      child: new Column(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           usernameWidget(),
@@ -240,14 +256,13 @@ class _LoginFormFieldsState extends State<_LoginFormFields> {
 }
 
 class _LoginProgressDialog extends StatefulWidget {
-  const _LoginProgressDialog(this.username, this.apiKey, {Key key})
-      : super(key: key);
+  _LoginProgressDialog(this.username, this.apiKey, {Key key}) : super(key: key);
 
   final String username;
   final String apiKey;
 
   @override
-  _LoginProgressDialogState createState() => new _LoginProgressDialogState();
+  _LoginProgressDialogState createState() => _LoginProgressDialogState();
 }
 
 class _LoginProgressDialogState extends State<_LoginProgressDialog> {
@@ -268,55 +283,20 @@ class _LoginProgressDialogState extends State<_LoginProgressDialog> {
       Navigator.of(context).pop(ok);
     });
 
-    return new Dialog(
-        child: new Container(
-      padding: const EdgeInsets.all(20.0),
-      child: new Row(children: [
-        new Container(
+    return Dialog(
+        child: Container(
+      padding: EdgeInsets.all(20.0),
+      child: Row(children: [
+        Container(
           height: 28,
           width: 28,
-          child: const CircularProgressIndicator(),
+          child: CircularProgressIndicator(),
         ),
-        new Padding(
+        Padding(
           padding: EdgeInsets.only(left: 16),
-          child: new Text('Logging in as ${widget.username}'),
+          child: Text('Logging in as ${widget.username}'),
         )
       ]),
     ));
-  }
-}
-
-class _InstructionStep extends StatelessWidget {
-  const _InstructionStep(this._stepNumber, this._content, {Key key})
-      : super(key: key);
-
-  final int _stepNumber;
-  final Widget _content;
-
-  @override
-  Widget build(BuildContext context) {
-    Widget stepNumber() {
-      return new Container(
-        width: 36.0,
-        height: 36.0,
-        alignment: Alignment.center,
-        child: new Text(
-          _stepNumber.toString(),
-          textAlign: TextAlign.center,
-          style: const TextStyle(fontSize: 26.0),
-        ),
-      );
-    }
-
-    return new Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10.0),
-      child: new Row(children: [
-        stepNumber(),
-        new Padding(
-          padding: EdgeInsets.only(left: 16),
-          child: _content,
-        ),
-      ]),
-    );
   }
 }

@@ -37,30 +37,30 @@ class Main extends StatelessWidget {
           routes: <String, WidgetBuilder>{
             '/': (context) => () {
                   _drawerSelection = _DrawerSelection.home;
-                  return new HomePage();
+                  return HomePage();
                 }(),
             '/hot': (context) => () {
                   _drawerSelection = _DrawerSelection.hot;
-                  return new HotPage();
+                  return HotPage();
                 }(),
-            '/search': (context) => new SearchPage(),
+            '/search': (context) => SearchPage(),
             '/fav': (context) => () {
                   _drawerSelection = _DrawerSelection.favorites;
-                  return new FavPage();
+                  return FavPage();
                 }(),
             '/pools': (context) => () {
                   _drawerSelection = _DrawerSelection.pools;
-                  return new PoolsPage();
+                  return PoolsPage();
                 }(),
             '/follows': (context) => () {
                   _drawerSelection = _DrawerSelection.follows;
-                  return new FollowsPage();
+                  return FollowsPage();
                 }(),
-            '/login': (context) => new LoginPage(),
-            '/settings': (context) => new SettingsPage(),
-            '/about': (context) => new AboutPage(),
-            '/blacklist': (context) => new BlacklistPage(),
-            '/following': (context) => new FollowingPage(),
+            '/login': (context) => LoginPage(),
+            '/settings': (context) => SettingsPage(),
+            '/about': (context) => AboutPage(),
+            '/blacklist': (context) => BlacklistPage(),
+            '/following': (context) => FollowingPage(),
           },
         );
       },
@@ -80,8 +80,6 @@ Map<String, ThemeData> themeMap = {
     brightness: Brightness.light,
   ),
   'dark': ThemeData(
-    primaryColorBrightness: Brightness.dark,
-    brightness: Brightness.dark,
     primaryColor: Colors.grey[900],
     primaryColorLight: Colors.grey[900],
     primaryColorDark: Colors.grey[900],
@@ -89,10 +87,10 @@ Map<String, ThemeData> themeMap = {
     canvasColor: Colors.grey[900],
     cardColor: Colors.grey[850],
     dialogBackgroundColor: Colors.grey[850],
-  ),
-  'amoled': ThemeData(
     primaryColorBrightness: Brightness.dark,
     brightness: Brightness.dark,
+  ),
+  'amoled': ThemeData(
     primaryColor: Colors.black,
     primaryColorLight: Colors.black,
     primaryColorDark: Colors.black,
@@ -101,6 +99,8 @@ Map<String, ThemeData> themeMap = {
     dialogBackgroundColor: Colors.black,
     cardColor: Color.fromARGB(255, 20, 20, 20),
     accentColor: Colors.deepPurple,
+    primaryColorBrightness: Brightness.dark,
+    brightness: Brightness.dark,
   ),
   'blue': () {
     Color blueBG = Color.fromARGB(255, 2, 15, 35);
@@ -148,28 +148,28 @@ class NavigationDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     Widget headerWidget() {
       Widget userInfoWidget() {
-        return new FutureBuilder<String>(
+        return FutureBuilder<String>(
           future: db.username.value,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.done &&
                 !snapshot.hasError &&
                 snapshot.hasData) {
               if (snapshot.data != null) {
-                return new Row(
+                return Row(
                   children: <Widget>[
-                    new Expanded(
-                        child: new Text(
+                    Expanded(
+                        child: Text(
                       snapshot.data,
-                      style: new TextStyle(fontSize: 16.0),
+                      style: TextStyle(fontSize: 16.0),
                       overflow: TextOverflow.ellipsis,
                     )),
-                    new IconButton(
-                        icon: new Icon(Icons.exit_to_app),
+                    IconButton(
+                        icon: Icon(Icons.exit_to_app),
                         onPressed: () {
                           client.logout();
-                          Scaffold.of(context).showSnackBar(new SnackBar(
-                            duration: const Duration(seconds: 5),
-                            content: new Text('Forgot login details'),
+                          Scaffold.of(context).showSnackBar(SnackBar(
+                            duration: Duration(seconds: 5),
+                            content: Text('Forgot login details'),
                           ));
                           Navigator.of(context).pushNamedAndRemoveUntil(
                               '/', (Route<dynamic> route) => false);
@@ -178,10 +178,10 @@ class NavigationDrawer extends StatelessWidget {
                 );
               }
             }
-            return new Padding(
+            return Padding(
               padding: EdgeInsets.symmetric(horizontal: 20),
-              child: new OutlineButton(
-                child: const Text('LOGIN'),
+              child: OutlineButton(
+                child: Text('LOGIN'),
                 onPressed: () => Navigator.popAndPushNamed(context, '/login'),
               ),
             );
@@ -190,17 +190,17 @@ class NavigationDrawer extends StatelessWidget {
       }
 
       // TODO: add user profile picture
-      return new Container(
+      return Container(
           height: 140,
-          child: new DrawerHeader(
-              child: new Row(
+          child: DrawerHeader(
+              child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              const CircleAvatar(
-                backgroundImage: const AssetImage('assets/icon/app/paw.png'),
+              CircleAvatar(
+                backgroundImage: AssetImage('assets/icon/app/paw.png'),
                 radius: 36.0,
               ),
-              new Expanded(
+              Expanded(
                 child: Padding(
                   padding: EdgeInsets.all(20),
                   child: userInfoWidget(),
@@ -210,36 +210,36 @@ class NavigationDrawer extends StatelessWidget {
           )));
     }
 
-    return new Drawer(
-      child: new ListView(children: [
+    return Drawer(
+      child: ListView(children: [
         headerWidget(),
-        new ListTile(
+        ListTile(
           selected: _drawerSelection == _DrawerSelection.home,
-          leading: const Icon(Icons.home),
-          title: const Text('Home'),
+          leading: Icon(Icons.home),
+          title: Text('Home'),
           onTap: () {
             Navigator.of(context)
                 .pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
           },
         ),
-        new ListTile(
+        ListTile(
             selected: _drawerSelection == _DrawerSelection.hot,
-            leading: const Icon(Icons.show_chart),
-            title: const Text('Hot'),
+            leading: Icon(Icons.show_chart),
+            title: Text('Hot'),
             onTap: () {
               Navigator.of(context).pushNamedAndRemoveUntil(
                   '/hot', (Route<dynamic> route) => false);
             }),
-        new ListTile(
-          leading: const Icon(Icons.search),
-          title: const Text("Search"),
+        ListTile(
+          leading: Icon(Icons.search),
+          title: Text("Search"),
           onTap: () => Navigator.popAndPushNamed(context, '/search'),
         ),
         Divider(),
-        new ListTile(
+        ListTile(
             selected: _drawerSelection == _DrawerSelection.favorites,
-            leading: const Icon(Icons.favorite),
-            title: const Text('Favorites'),
+            leading: Icon(Icons.favorite),
+            title: Text('Favorites'),
             onTap: () async {
               if (await client.hasLogin()) {
                 Navigator.of(context).pushNamedAndRemoveUntil(
@@ -248,31 +248,31 @@ class NavigationDrawer extends StatelessWidget {
                 Navigator.popAndPushNamed(context, '/login');
               }
             }),
-        new ListTile(
+        ListTile(
           selected: _drawerSelection == _DrawerSelection.follows,
-          leading: const Icon(Icons.turned_in),
-          title: const Text('Following'),
+          leading: Icon(Icons.turned_in),
+          title: Text('Following'),
           onTap: () {
             Navigator.of(context).pushNamedAndRemoveUntil(
                 '/follows', (Route<dynamic> route) => false);
           },
         ),
-        new ListTile(
+        ListTile(
           selected: _drawerSelection == _DrawerSelection.pools,
-          leading: const Icon(Icons.group),
-          title: const Text('Pools'),
+          leading: Icon(Icons.group),
+          title: Text('Pools'),
           onTap: () {
             Navigator.of(context).pushNamedAndRemoveUntil(
                 '/pools', (Route<dynamic> route) => false);
           },
         ),
         Divider(),
-        new ListTile(
-          leading: const Icon(Icons.settings),
-          title: const Text('Settings'),
+        ListTile(
+          leading: Icon(Icons.settings),
+          title: Text('Settings'),
           onTap: () => Navigator.popAndPushNamed(context, '/settings'),
         ),
-        new ListTile(
+        ListTile(
           leading: FutureBuilder(
             builder: (context, snapshot) {
               if (snapshot.hasData && snapshot.data.length != 0) {
@@ -305,7 +305,7 @@ class NavigationDrawer extends StatelessWidget {
             },
             future: getVersions(),
           ),
-          title: const Text('About'),
+          title: Text('About'),
           onTap: () => Navigator.popAndPushNamed(context, '/about'),
         ),
       ]),

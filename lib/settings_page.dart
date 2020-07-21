@@ -48,7 +48,7 @@ class _SettingsPageState extends State<SettingsPage> {
         msg = msg + ' for $username';
       }
 
-      Scaffold.of(context).showSnackBar(new SnackBar(
+      Scaffold.of(context).showSnackBar(SnackBar(
         duration: Duration(seconds: 5),
         content: Text(msg),
       ));
@@ -62,9 +62,9 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     Widget bodyWidgetBuilder(BuildContext context) {
-      return new Container(
-        padding: const EdgeInsets.all(10.0),
-        child: new ListView(
+      return Container(
+        padding: EdgeInsets.all(10.0),
+        child: ListView(
           physics: BouncingScrollPhysics(),
           children: [
             Padding(
@@ -180,6 +180,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                   }(),
                                   onTap: () {
                                     setState(() {
+                                      _theme = theme;
                                       db.theme.value = Future.value(theme);
                                     });
                                     Navigator.of(context).pop();

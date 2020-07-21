@@ -1,7 +1,6 @@
 import 'package:e1547/pool.dart';
 import 'package:e1547/posts_page.dart';
 import 'package:e1547/tag.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
@@ -24,83 +23,15 @@ class _FollowingPageState extends State<FollowingPage> {
   @override
   void initState() {
     super.initState();
+    db.follows.addListener(() async {
+      List<String> follows = await db.follows.value;
+      setState(() => _follows = follows);
+    });
     db.follows.value.then((a) async => setState(() => _follows = a));
-  }
-
-  bool _isSearching = false;
-  TextEditingController _tagController = TextEditingController();
-  PersistentBottomSheetController<String> _bottomSheetController;
-
-  Function() _onPressedFloatingActionButton(BuildContext context) {
-    return () async {
-      void onCloseBottomSheet() {
-        setState(() {
-          _isSearching = false;
-        });
-      }
-
-      if (!_isSearching) {
-        _tagController = TextEditingController()..text = '';
-      }
-      setFocusToEnd(_tagController);
-
-      if (_isSearching) {
-        _follows.add(_tagController.text);
-        _refresh = true;
-        db.follows.value = Future.value(_follows);
-        _bottomSheetController?.close();
-      } else {
-        _bottomSheetController =
-            Scaffold.of(context).showBottomSheet((context) => new Container(
-                  padding: const EdgeInsets.only(
-                      left: 10.0, right: 10.0, bottom: 10),
-                  child: new Column(mainAxisSize: MainAxisSize.min, children: [
-                    TypeAheadField(
-                      direction: AxisDirection.up,
-                      hideOnLoading: true,
-                      hideOnEmpty: true,
-                      hideOnError: true,
-                      textFieldConfiguration: TextFieldConfiguration(
-                        controller: _tagController,
-                        autofocus: true,
-                        maxLines: 1,
-                        inputFormatters: [new BlacklistingTextInputFormatter(' ')],
-                        decoration: InputDecoration(
-                            labelText: 'Follow Tag',
-                            border: UnderlineInputBorder()),
-                      ),
-                      onSuggestionSelected: (suggestion) {
-                        String tag = _tagController.text.toString().toLowerCase();
-                        tag = (suggestion);
-                        setState(() {
-                          _tagController.text = tag;
-                        });
-                      },
-                      itemBuilder: (BuildContext context, itemData) {
-                        return new ListTile(
-                          title: Text(itemData),
-                        );
-                      },
-                      suggestionsCallback: (String pattern) {
-                        List<String> tags = pattern.split(' ');
-                        return client.tags(tags[tags.length - 1], 0);
-                      },
-                    ),
-                  ]),
-                ));
-
-        setState(() {
-          _isSearching = true;
-        });
-
-        _bottomSheetController.closed.then((a) => onCloseBottomSheet());
-      }
-    };
   }
 
   @override
   Widget build(BuildContext context) {
-
     Widget body() {
       return ListView.builder(
         itemCount: _follows.length,
@@ -137,29 +68,27 @@ class _FollowingPageState extends State<FollowingPage> {
                           icon: Icon(Icons.search),
                           onPressed: () async {
                             if (_follows[index].startsWith('pool:')) {
-                              Pool p = await client.pool(int.parse(_follows[index].split(':')[1]));
-                              Navigator.of(context)
-                                  .push(new MaterialPageRoute<Null>(builder: (context) {
-                                return new PoolPage(p);
+                              Pool p = await client.pool(
+                                  int.parse(_follows[index].split(':')[1]));
+                              Navigator.of(context).push(
+                                  MaterialPageRoute<Null>(builder: (context) {
+                                return PoolPage(p);
                               }));
                             } else {
                               Navigator.of(context).push(
-                                  new MaterialPageRoute<Null>(builder: (context) {
-                                    return new SearchPage(tags:
-                                        Tagset.parse(_follows[index]));
-                                  }));
+                                  MaterialPageRoute<Null>(builder: (context) {
+                                return SearchPage(
+                                    tags: Tagset.parse(_follows[index]));
+                              }));
                             }
-
                           },
                         ),
                         IconButton(
                           icon: Icon(Icons.delete),
                           onPressed: () {
-                            setState(() {
-                              _follows.removeAt(index);
-                              db.follows.value = Future.value(_follows);
-                              _refresh = true;
-                            });
+                            db.follows.value =
+                                Future.value(_follows..removeAt(index));
+                            _refresh = true;
                           },
                         ),
                       ],
@@ -176,9 +105,73 @@ class _FollowingPageState extends State<FollowingPage> {
     }
 
     Widget floatingActionButton(BuildContext context) {
-      return FloatingActionButton(
-        child: _isSearching ? const Icon(Icons.check) : const Icon(Icons.add),
-        onPressed: _onPressedFloatingActionButton(context),
+      TextEditingController _tagController = TextEditingController();
+      PersistentBottomSheetController<String> _bottomSheetController;
+      ValueNotifier<bool> isSearching = ValueNotifier(false);
+      return ValueListenableBuilder(
+        valueListenable: isSearching,
+        builder: (context, value, child) {
+          return FloatingActionButton(
+            child: isSearching.value ? Icon(Icons.check) : Icon(Icons.add),
+            onPressed: () async {
+              setFocusToEnd(_tagController);
+              if (isSearching.value) {
+                if (_tagController.text.trim() != '') {
+                  _refresh = true;
+                  db.follows.value =
+                      Future.value(_follows..add(_tagController.text.trim()));
+                  _bottomSheetController?.close();
+                }
+              } else {
+                _tagController.text = '';
+                _bottomSheetController =
+                    Scaffold.of(context).showBottomSheet((context) => Container(
+                          padding: EdgeInsets.only(
+                              left: 10.0, right: 10.0, bottom: 10),
+                          child:
+                              Column(mainAxisSize: MainAxisSize.min, children: [
+                            TypeAheadField(
+                              direction: AxisDirection.up,
+                              hideOnLoading: true,
+                              hideOnEmpty: true,
+                              hideOnError: true,
+                              textFieldConfiguration: TextFieldConfiguration(
+                                controller: _tagController,
+                                autofocus: true,
+                                maxLines: 1,
+                                inputFormatters: [
+                                  BlacklistingTextInputFormatter(' ')
+                                ],
+                                decoration: InputDecoration(
+                                    labelText: 'Follow Tag',
+                                    border: UnderlineInputBorder()),
+                              ),
+                              onSuggestionSelected: (suggestion) {
+                                _tagController.text = suggestion.toLowerCase();
+                              },
+                              itemBuilder: (BuildContext context, itemData) {
+                                return ListTile(
+                                  title: Text(itemData['name']),
+                                );
+                              },
+                              suggestionsCallback: (String pattern) {
+                                if (pattern.trim().isNotEmpty) {
+                                  return client.tags(pattern);
+                                } else {
+                                  return [];
+                                }
+                              },
+                            ),
+                          ]),
+                        ));
+                isSearching.value = true;
+                _bottomSheetController.closed.then((a) {
+                  isSearching.value = false;
+                });
+              }
+            },
+          );
+        },
       );
     }
 

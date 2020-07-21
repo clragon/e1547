@@ -10,6 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart' as url;
 import 'package:e1547/client.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
+import 'dart:math' as math show max, min;
 
 void wikiDialog(BuildContext context, String tag, {actions = false}) {
   Widget body() {
@@ -46,7 +47,7 @@ void wikiDialog(BuildContext context, String tag, {actions = false}) {
           },
           future: client.wiki(tag, 0),
         ),
-        constraints: new BoxConstraints(
+        constraints: BoxConstraints(
           maxHeight: 400.0,
         ));
   }
@@ -84,7 +85,7 @@ void wikiDialog(BuildContext context, String tag, {actions = false}) {
 class _TagActions extends StatefulWidget {
   final String tag;
 
-  const _TagActions(this.tag);
+  _TagActions(this.tag);
 
   @override
   State<StatefulWidget> createState() {
@@ -146,7 +147,7 @@ class _TagActionsState extends State<_TagActions> {
                 icon: following
                     ? Icon(Icons.turned_in)
                     : Icon(Icons.turned_in_not),
-                tooltip: following ? 'follow tag' : 'unfollow tag',
+                tooltip: following ? 'unfollow tag' : 'follow tag',
               ),
               IconButton(
                 onPressed: () {
@@ -170,7 +171,7 @@ class _TagActionsState extends State<_TagActions> {
                   }
                 },
                 icon: blacklisted ? Icon(Icons.check) : Icon(Icons.block),
-                tooltip: blacklisted ? 'block tag' : 'unblock tag',
+                tooltip: blacklisted ? 'unblock tag' : 'block tag',
               ),
             ],
           );
@@ -284,6 +285,50 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
           ));
     }
 
+    Widget spoilerWrap(List<Widget> children) {
+      ValueNotifier<bool> isShown = ValueNotifier(false);
+      return Card(
+          clipBehavior: Clip.antiAliasWithSaveLayer,
+          child: InkWell(
+            child: Stack(
+              children: <Widget>[
+                Padding(
+                  padding: EdgeInsets.all(8),
+                  child: Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: children,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Positioned.fill(
+                  child: ValueListenableBuilder(
+                    valueListenable: isShown,
+                    builder: (context, value, child) {
+                      return Container(
+                        child: Center(
+                          child: value
+                              ? Container()
+                              : Text('SPOILER',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                  )),
+                        ),
+                        color: value ? Colors.transparent : Colors.black,
+                      );
+                    },
+                  ),
+                )
+              ],
+            ),
+            onTap: () => isShown.value = !isShown.value,
+          ));
+    }
+
     // get string in plain text. no parsing.
     List<TextSpan> getText(String msg, Map<String, bool> states,
         {Function() onTap}) {
@@ -295,15 +340,16 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
       return [
         TextSpan(
           text: msg,
-          recognizer: new TapGestureRecognizer()..onTap = onTap,
+          recognizer: TapGestureRecognizer()..onTap = onTap,
           style: TextStyle(
             color: states['link']
                 ? Colors.blue[400]
                 : states['dark']
                     ? Colors.grey[600]
-                    : Theme.of(context).textTheme.body1.color,
+                    : Theme.of(context).textTheme.bodyText2.color,
             fontWeight: states['bold'] ? FontWeight.bold : FontWeight.normal,
             fontStyle: states['italic'] ? FontStyle.italic : FontStyle.normal,
+            fontSize: states['headline'] ? 18 : null,
             decoration: TextDecoration.combine([
               states['strike']
                   ? TextDecoration.lineThrough
@@ -454,8 +500,8 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
 
             if (!sameSite) {
               onTap = () => Navigator.of(context)
-                      .push(new MaterialPageRoute<Null>(builder: (context) {
-                    return new SearchPage(tags: new Tagset.parse(search));
+                      .push(MaterialPageRoute<Null>(builder: (context) {
+                    return SearchPage(tags: Tagset.parse(search));
                   }));
             }
 
@@ -475,6 +521,7 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
             RegExp blankLess = RegExp(r'(^[\r\n]*)|([\r\n]*$)');
 
             switch (key.toLowerCase()) {
+              case 'spoiler':
               case 'code':
               case 'section':
               case 'quote':
@@ -497,6 +544,10 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
                       .substring(0, split)
                       .replaceAllMapped(blankLess, (match) => '');
                   switch (key.toLowerCase()) {
+                    case 'spoiler':
+                      blocked =
+                          spoilerWrap(toWidgets(resolve(between, states)));
+                      break;
                     case 'code':
                       blocked = quoteWrap(toWidgets(getText(between, states)));
                       break;
@@ -627,8 +678,8 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
               onTap = () async {
                 Post p = await client.post(int.parse(match.split('#')[1]));
                 Navigator.of(context)
-                    .push(new MaterialPageRoute<Null>(builder: (context) {
-                  return new PostWidget(p);
+                    .push(MaterialPageRoute<Null>(builder: (context) {
+                  return PostWidget(p);
                 }));
               };
               break;
@@ -636,8 +687,8 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
               onTap = () async {
                 Pool p = await client.pool(int.parse(match.split('#')[1]));
                 Navigator.of(context)
-                    .push(new MaterialPageRoute<Null>(builder: (context) {
-                  return new PoolPage(p);
+                    .push(MaterialPageRoute<Null>(builder: (context) {
+                  return PoolPage(p);
                 }));
               };
               break;
@@ -683,8 +734,8 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
             onTap = () async {
               Post p = await client.post(id);
               Navigator.of(context)
-                  .push(new MaterialPageRoute<Null>(builder: (context) {
-                return new PostWidget(p);
+                  .push(MaterialPageRoute<Null>(builder: (context) {
+                return PostWidget(p);
               }));
             };
           }
@@ -694,15 +745,13 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
             onTap = () async {
               Pool p = await client.pool(id);
               Navigator.of(context)
-                  .push(new MaterialPageRoute<Null>(builder: (context) {
-                return new PoolPage(p);
+                  .push(MaterialPageRoute<Null>(builder: (context) {
+                return PoolPage(p);
               }));
             };
           }
         } catch (Exception) {
-          // parsing this ain't safe
-          // and its not a temporary solution.
-          // but we're gonna give it a try because its neat if it works.
+          // this shouldnt be triggered. but I am not sure.
         }
       } else {
         onTap = () async {
@@ -714,8 +763,8 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
             onTap = () async {
               Post p = await client.post(id);
               Navigator.of(context)
-                  .push(new MaterialPageRoute<Null>(builder: (context) {
-                return new PostWidget(p);
+                  .push(MaterialPageRoute<Null>(builder: (context) {
+                return PostWidget(p);
               }));
             };
           }
@@ -724,8 +773,8 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
             onTap = () async {
               Pool p = await client.pool(id);
               Navigator.of(context)
-                  .push(new MaterialPageRoute<Null>(builder: (context) {
-                return new PoolPage(p);
+                  .push(MaterialPageRoute<Null>(builder: (context) {
+                return PoolPage(p);
               }));
             };
           }
@@ -751,8 +800,8 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
           onTap = () async {
             Post p = await client.post(int.parse(match.split('#')[1]));
             Navigator.of(context)
-                .push(new MaterialPageRoute<Null>(builder: (context) {
-              return new PostWidget(p);
+                .push(MaterialPageRoute<Null>(builder: (context) {
+              return PostWidget(p);
             }));
           };
           break;
@@ -760,8 +809,8 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
           onTap = () async {
             Pool p = await client.pool(int.parse(match.split('#')[1]));
             Navigator.of(context)
-                .push(new MaterialPageRoute<Null>(builder: (context) {
-              return new PoolPage(p);
+                .push(MaterialPageRoute<Null>(builder: (context) {
+              return PoolPage(p);
             }));
           };
           break;
@@ -782,12 +831,11 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
 
         Function onTap = () {
           Navigator.of(context)
-              .push(new MaterialPageRoute<Null>(builder: (context) {
+              .push(MaterialPageRoute<Null>(builder: (context) {
             // split of display text after |
             // and replace spaces with _ to produce a valid tag
-            return new SearchPage(
-                tags:
-                    new Tagset.parse(match.split('|')[0].replaceAll(' ', '_')));
+            return SearchPage(
+                tags: Tagset.parse(match.split('|')[0].replaceAll(' ', '_')));
           }));
         };
 
@@ -879,7 +927,7 @@ class LowercaseTextInputFormatter extends TextInputFormatter {
 }
 
 void setFocusToEnd(TextEditingController controller) {
-  controller.selection = new TextSelection(
+  controller.selection = TextSelection(
     baseOffset: controller.text.length,
     extentOffset: controller.text.length,
   );
@@ -903,19 +951,19 @@ Future<bool> getConsent(BuildContext context) async {
 
   await showDialog(
     context: context,
-    child: new AlertDialog(
-      title: const Text('Age verification'),
-      content: const Text(
-          'You need to be above the age of 18 to view explicit content.'),
+    child: AlertDialog(
+      title: Text('Age verification'),
+      content:
+          Text('You need to be above the age of 18 to view explicit content.'),
       actions: [
-        new FlatButton(
-          child: const Text('CANCEL'),
+        FlatButton(
+          child: Text('CANCEL'),
           onPressed: () {
             Navigator.of(context).pop();
           },
         ),
-        new FlatButton(
-          child: const Text('OK'),
+        FlatButton(
+          child: Text('OK'),
           onPressed: () {
             hasConsent = true;
             db.hasConsent.value = Future.value(true);
@@ -927,4 +975,332 @@ Future<bool> getConsent(BuildContext context) async {
   );
 
   return hasConsent;
+}
+
+class TextEditor extends StatefulWidget {
+  final String title;
+  final String content;
+  final bool richEditor;
+
+  const TextEditor(
+      {@required this.title, this.content, this.richEditor = true});
+
+  @override
+  State<StatefulWidget> createState() {
+    return _TextEditorState();
+  }
+}
+
+class _TextEditorState extends State<TextEditor> with TickerProviderStateMixin {
+  bool showBar = true;
+  bool showBlocks = false;
+  TabController tabController;
+  TextEditingController textController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    tabController = TabController(
+      vsync: this,
+      length: 2,
+    );
+    textController.text = widget.content ?? '';
+    tabController.addListener(() {
+      if (tabController.index == 0) {
+        setState(() {
+          showBar = true;
+        });
+      } else {
+        setState(() {
+          FocusScope.of(context).unfocus();
+          showBar = false;
+        });
+      }
+    });
+    textController.addListener(() {
+      setState(() {});
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    Widget frame(Widget child) {
+      return SingleChildScrollView(
+        physics: BouncingScrollPhysics(),
+        child: Padding(
+          padding: EdgeInsets.all(8),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Row(
+                mainAxisSize: MainAxisSize.max,
+                children: <Widget>[
+                  Expanded(
+                    child: child,
+                  )
+                ],
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    Widget editor() {
+      return frame(Padding(
+        padding: EdgeInsets.only(left: 8, right: 8),
+        child: TextField(
+          controller: textController,
+          keyboardType: TextInputType.multiline,
+          autofocus: true,
+          decoration: InputDecoration(
+            border: InputBorder.none,
+            hintText: 'type here...',
+          ),
+          maxLines: null,
+        ),
+      ));
+    }
+
+    Widget preview() {
+      return frame(
+        Card(
+          child: Padding(
+            padding: EdgeInsets.all(16),
+            child: dTextField(context, textController.text.trim()),
+          ),
+        ),
+      );
+    }
+
+    Widget fab(BuildContext context) {
+      return FloatingActionButton(
+        heroTag: 'float',
+        backgroundColor: Theme.of(context).cardColor,
+        child: Icon(Icons.check, color: Theme.of(context).iconTheme.color),
+        onPressed: () {
+          Navigator.of(context).pop(textController.text.trim());
+        },
+      );
+    }
+
+    Widget hotkeys() {
+      void enclose(String blockTag) {
+        String before = textController.text
+            .substring(0, textController.selection.baseOffset);
+        String block = textController.text.substring(
+            textController.selection.baseOffset,
+            textController.selection.extentOffset);
+        String after = textController.text
+            .substring(textController.selection.extentOffset);
+        int pos = before.length + block.length + '[$blockTag]'.length;
+        block = '[$blockTag]$block[/$blockTag]';
+        textController.text = '$before$block$after';
+        textController.selection = TextSelection(
+          baseOffset: pos,
+          extentOffset: pos,
+        );
+      }
+
+      return Padding(
+          padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10),
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+            IntrinsicHeight(
+              child: Row(
+                mainAxisSize: MainAxisSize.max,
+                children: () {
+                  List<Widget> buttons = [];
+                  if (showBlocks) {
+                    buttons.addAll([
+                      IconButton(
+                        icon: Icon(Icons.subject),
+                        onPressed: () => enclose('section'),
+                        tooltip: 'Section',
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.format_quote),
+                        onPressed: () => enclose('quote'),
+                        tooltip: 'Quote',
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.code),
+                        onPressed: () => enclose('code'),
+                        tooltip: 'Code',
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.warning),
+                        onPressed: () => enclose('spoiler'),
+                        tooltip: 'Spoiler',
+                      ),
+                    ]);
+                  } else {
+                    buttons.addAll([
+                      IconButton(
+                        icon: Icon(Icons.format_bold),
+                        onPressed: () => enclose('b'),
+                        tooltip: 'Bold',
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.format_italic),
+                        onPressed: () => enclose('i'),
+                        tooltip: 'Italic',
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.format_underlined),
+                        onPressed: () => enclose('u'),
+                        tooltip: 'Underlined',
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.format_strikethrough),
+                        onPressed: () => enclose('s'),
+                        tooltip: 'Strikethrough',
+                      ),
+                    ]);
+                  }
+                  buttons.addAll([
+                    VerticalDivider(),
+                    IconButton(
+                      icon: Icon(
+                          showBlocks ? Icons.expand_less : Icons.expand_more),
+                      onPressed: () => setState(() {
+                        showBlocks = !showBlocks;
+                      }),
+                    ),
+                  ]);
+                  return buttons;
+                }(),
+              ),
+            )
+          ]));
+    }
+
+    return Scaffold(
+        floatingActionButton: fab(context),
+        bottomSheet: (widget.richEditor && showBar) ? hotkeys() : null,
+        body: NestedScrollView(
+          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+            return <Widget>[
+              SliverAppBar(
+                floating: true,
+                pinned: true,
+                snap: false,
+                leading: IconButton(
+                  icon: Icon(
+                    Icons.clear,
+                    color: Theme.of(context).iconTheme.color,
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+                title: Text(widget.title),
+                bottom: widget.richEditor
+                    ? TabBar(
+                        controller: tabController,
+                        tabs: [
+                          Tab(text: 'WRITE'),
+                          Tab(text: 'PREVIEW'),
+                        ],
+                      )
+                    : null,
+              ),
+            ];
+          },
+          body: widget.richEditor
+              ? TabBarView(
+                  controller: tabController,
+                  children: [
+                    editor(),
+                    preview(),
+                  ],
+                )
+              : editor(),
+        ));
+  }
+}
+
+class RangeDialog extends StatefulWidget {
+  RangeDialog({this.title, this.value, this.max, this.min, this.division});
+
+  final String title;
+  final int value;
+  final int max;
+  final int min;
+  final int division;
+
+  @override
+  RangeDialogState createState() => RangeDialogState();
+}
+
+class RangeDialogState extends State<RangeDialog> {
+  final TextEditingController _controller = TextEditingController();
+  int _value;
+
+  @override
+  void initState() {
+    super.initState();
+    _value = widget.value;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    Widget numberWidget() {
+      _controller.text = _value.toString();
+      FocusScope.of(context)
+          .requestFocus(FocusNode()); // Clear text entry focus, if any.
+
+      Widget number = TextField(
+        keyboardType: TextInputType.number,
+        style: TextStyle(fontSize: 48.0),
+        textAlign: TextAlign.center,
+        decoration: InputDecoration(border: InputBorder.none),
+        controller: _controller,
+        onSubmitted: (v) => Navigator.of(context).pop(int.parse(v)),
+      );
+
+      return Container(
+        padding: EdgeInsets.only(bottom: 20.0),
+        child: number,
+      );
+    }
+
+    Widget sliderWidget() {
+      return Slider(
+          min: math.min(widget.min != null ? widget.min.toDouble() : 0.0,
+              _value.toDouble()),
+          max: math.max(widget.max.toDouble(), _value.toDouble()),
+          divisions: widget.division,
+          value: _value.toDouble(),
+          activeColor: Theme.of(context).accentColor,
+          onChanged: (v) {
+            setState(() => _value = v.toInt());
+          });
+    }
+
+    return AlertDialog(
+      title: Text(widget.title),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          numberWidget(),
+          sliderWidget(),
+        ],
+      ),
+      actions: <Widget>[
+        FlatButton(
+          child: Text('cancel'),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        FlatButton(
+          child: Text('save'),
+          onPressed: () {
+            // We could pop up an error, but using the last known good value
+            // works also.
+            int textValue = int.parse(_controller.text);
+            Navigator.of(context).pop(textValue ?? _value);
+          },
+        ),
+      ],
+    );
+  }
 }

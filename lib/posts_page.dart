@@ -9,29 +9,26 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart'
     show StaggeredGridView, StaggeredTile;
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:meta/meta.dart' show required;
-import 'package:intl/intl.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:share/share.dart';
 
-import 'package:e1547/blacklist_page.dart';
 import 'package:e1547/client.dart' show client;
 import 'package:e1547/interface.dart';
 import 'package:e1547/main.dart';
 import 'package:e1547/persistence.dart' show db;
 import 'package:e1547/post.dart';
-import 'package:e1547/range_dialog.dart' show RangeDialog;
 import 'package:e1547/tag.dart' show Tagset;
 
 class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return new PostsPage(
+    return PostsPage(
       appBarBuilder: appBarWidget('Home'),
-      tags: db.homeTags.value,
-      postProvider: (tags, page) {
-        db.homeTags.value = new Future.value(tags);
-        return client.posts(tags, page);
-      },
+      postProvider: PostProvider(
+          provider: (tags, page) {
+            db.homeTags.value = Future.value(tags);
+            return client.posts(tags, page);
+          },
+          tags: db.homeTags.value),
     );
   }
 }
@@ -39,24 +36,27 @@ class HomePage extends StatelessWidget {
 class HotPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return new PostsPage(
-        appBarBuilder: appBarWidget('Hot'),
-        tags: Future.value(new Tagset.parse("order:rank")));
+    return PostsPage(
+      appBarBuilder: appBarWidget('Hot'),
+      postProvider:
+          PostProvider(tags: Future.value(Tagset.parse("order:rank"))),
+    );
   }
 }
 
 class FavPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return new PostsPage(
-      appBarBuilder: appBarWidget('Favorites'),
-      tags: db.username.value.then((username) {
-        return new Tagset.parse('fav:' + username);
-      }),
-      postProvider: (tags, page) {
-        return client.posts(tags, page, filter: false);
-      },
-    );
+    return PostsPage(
+        appBarBuilder: appBarWidget('Favorites'),
+        postProvider: PostProvider(
+          provider: (tags, page) {
+            return client.posts(tags, page, filter: false);
+          },
+          tags: db.username.value.then((username) {
+            return Tagset.parse('fav:' + username);
+          }),
+        ));
   }
 }
 
@@ -67,7 +67,7 @@ class PoolPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new PostsPage(
+    return PostsPage(
       appBarBuilder: (context) {
         return AppBar(
           title: Text(pool.name.replaceAll('_', ' ')),
@@ -89,9 +89,9 @@ class PoolPage extends StatelessWidget {
           ],
         );
       },
-      postProvider: (tags, page) {
-        return client.poolPosts(pool, page);
-      },
+      postProvider: PostProvider(provider: (tags, page) {
+        return client.posts(Tagset.parse('pool:${pool.id} order:id'), page);
+      }),
       canSearch: false,
     );
   }
@@ -114,9 +114,9 @@ class FollowsPage extends StatelessWidget {
         );
       },
       canSearch: false,
-      postProvider: (tags, page) {
+      postProvider: PostProvider(provider: (tags, page) {
         return client.follows(page);
-      },
+      }),
     );
   }
 }
@@ -128,8 +128,8 @@ class SearchPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    ValueNotifier<Tagset> _tags = ValueNotifier(tags ?? new Tagset.parse(''));
-    return new PostsPage(
+    ValueNotifier<Tagset> _tags = ValueNotifier(tags ?? Tagset.parse(''));
+    return PostsPage(
       appBarBuilder: (context) {
         return AppBar(
           title: ValueListenableBuilder(
@@ -138,7 +138,7 @@ class SearchPage extends StatelessWidget {
               if (value.length == 1) {
                 return Text(value.toString().replaceAll('_', ' '));
               } else {
-                return const Text('Search');
+                return Text('Search');
               }
             },
           ),
@@ -164,11 +164,12 @@ class SearchPage extends StatelessWidget {
           ],
         );
       },
-      postProvider: (tags, page) {
-        _tags.value = tags;
-        return client.posts(tags, page);
-      },
-      tags: Future.value(tags),
+      postProvider: PostProvider(
+          provider: (tags, page) {
+            _tags.value = tags;
+            return client.posts(tags, page);
+          },
+          tags: Future.value(tags)),
     );
   }
 }
@@ -176,8 +177,8 @@ class SearchPage extends StatelessWidget {
 AppBar Function(BuildContext context) appBarWidget(String title,
     {bool isHome = true}) {
   return (context) {
-    return new AppBar(
-      title: new Text(title),
+    return AppBar(
+      title: Text(title),
       leading: isHome
           ? null
           : IconButton(
@@ -188,194 +189,13 @@ AppBar Function(BuildContext context) appBarWidget(String title,
   };
 }
 
-class _FollowButton extends StatefulWidget {
-  final Pool pool;
-
-  const _FollowButton(this.pool);
-
-  @override
-  State<StatefulWidget> createState() {
-    return _FollowButtonState();
-  }
-}
-
-class _FollowButtonState extends State<_FollowButton> {
-  bool following = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder(
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          List<String> follows = snapshot.data;
-          String tag = 'pool:${widget.pool.id}';
-          follows.forEach((b) {
-            if (b == tag) {
-              following = true;
-            }
-          });
-          return Row(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              IconButton(
-                onPressed: () {
-                  if (following) {
-                    follows.removeAt(follows.indexOf(tag));
-                    db.follows.value = Future.value(follows);
-                    setState(() {
-                      following = false;
-                    });
-                  } else {
-                    follows.add(tag);
-                    db.follows.value = Future.value(follows);
-                    setState(() {
-                      following = true;
-                    });
-                  }
-                },
-                icon: following
-                    ? Icon(Icons.turned_in)
-                    : Icon(Icons.turned_in_not),
-                tooltip: following ? 'follow tag' : 'unfollow tag',
-              ),
-            ],
-          );
-        } else {
-          return Row(
-            children: <Widget>[
-              IconButton(
-                icon: Icon(Icons.turned_in_not),
-                onPressed: () {},
-              ),
-            ],
-          );
-        }
-      },
-      future: db.follows.value,
-    );
-  }
-}
-
-Widget poolInfo(BuildContext context, Pool pool) {
-  DateFormat dateFormat = DateFormat('dd.MM.yy HH:mm');
-  Color textColor = Colors.grey[600];
-  return AlertDialog(
-    title: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: <Widget>[
-        Flexible(
-          child: Text(
-            '${pool.name.replaceAll('_', ' ')} (#${pool.id})',
-            softWrap: true,
-          ),
-        ),
-        _FollowButton(pool),
-      ],
-    ),
-    content: ConstrainedBox(
-        child: SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              pool.description != ''
-                  ? dTextField(context, pool.description)
-                  : Text(
-                      'no description',
-                      style: TextStyle(fontStyle: FontStyle.italic),
-                    ),
-              Padding(
-                padding: EdgeInsets.only(top: 16, bottom: 8),
-                child: Divider(),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Text(
-                    'posts',
-                    style: TextStyle(color: textColor),
-                  ),
-                  Text(
-                    pool.postIDs.length.toString(),
-                    style: TextStyle(color: textColor),
-                  ),
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Text(
-                    'status',
-                    style: TextStyle(color: textColor),
-                  ),
-                  pool.active
-                      ? Text(
-                          'active',
-                          style: TextStyle(color: textColor),
-                        )
-                      : Text(
-                          'inactive',
-                          style: TextStyle(color: textColor),
-                        ),
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Text(
-                    'created',
-                    style: TextStyle(color: textColor),
-                  ),
-                  Text(
-                    dateFormat.format(DateTime.parse(pool.creation).toLocal()),
-                    style: TextStyle(color: textColor),
-                  ),
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Text(
-                    'updated',
-                    style: TextStyle(color: textColor),
-                  ),
-                  Text(
-                    dateFormat.format(DateTime.parse(pool.updated).toLocal()),
-                    style: TextStyle(color: textColor),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          physics: BouncingScrollPhysics(),
-        ),
-        constraints: new BoxConstraints(
-          maxHeight: 400.0,
-        )),
-    actions: [
-      FlatButton(
-        child: Text('SHARE'),
-        onPressed: () async =>
-            Share.share(pool.url(await db.host.value).toString()),
-      ),
-      FlatButton(
-        child: Text('OK'),
-        onPressed: () => Navigator.of(context).pop(),
-      ),
-    ],
-  );
-}
-
 class PostsPage extends StatefulWidget {
   final bool canSearch;
-  final Future<Tagset> tags;
   final AppBar Function(BuildContext) appBarBuilder;
-  final Future<List<Post>> Function(Tagset tags, int page) postProvider;
+  final PostProvider postProvider;
 
-  const PostsPage({
+  PostsPage({
     this.canSearch = true,
-    this.tags,
     this.postProvider,
     this.appBarBuilder,
   });
@@ -385,114 +205,28 @@ class PostsPage extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-    return new _PostsPageState();
+    return _PostsPageState();
   }
 }
 
 class _PostsPageState extends State<PostsPage> {
-  Tagset _tags;
-  bool _isSearching = false;
-  TextEditingController _tagController;
+  TextEditingController _tagController = TextEditingController();
+  ValueNotifier<bool> isSearching = ValueNotifier(false);
   PersistentBottomSheetController<Tagset> _bottomSheetController;
 
-  Function() _onPressedFloatingActionButton(BuildContext context) {
-    return () async {
-      void onCloseBottomSheet() {
-        setState(() {
-          _isSearching = false;
-        });
-      }
-
-      if (!_isSearching) {
-        _tagController = new TextEditingController()
-          ..text = _tags.toString() + ' ';
-      }
-      setFocusToEnd(_tagController);
-
-      if (_isSearching) {
-        _tags = await new Future.value(new Tagset.parse(_tagController.text));
-
-        _bottomSheetController?.close();
-        _clearPages();
-      } else {
-        _bottomSheetController = Scaffold.of(context).showBottomSheet(
-          (context) => new TagEntry(
-              controller: _tagController,
-              onEnter: () {
-                print('done here');
-              }),
-        );
-
-        setState(() {
-          _isSearching = true;
-        });
-
-        _bottomSheetController.closed.then((a) => onCloseBottomSheet());
-      }
-    };
-  }
-
-  final List<List<Post>> _pages = [];
   bool _loading = true;
-
-  void _loadNextPage() async {
-    int page = _pages.length;
-
-    List<Post> nextPage = [];
-    _pages.add(nextPage);
-
-    if (_tags == null) {
-      _tags = await widget.tags ?? new Tagset.parse('');
-      _tagController = new TextEditingController()
-        ..text = _tags.toString() + ' ';
-    }
-
-    if (widget.postProvider != null) {
-      nextPage.addAll(await widget.postProvider(_tags, page));
-    } else {
-      nextPage.addAll(await client.posts(_tags, page));
-    }
-
-    if (this.mounted) {
-      setState(() {
-        _loading = false;
-      });
-    }
-  }
 
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
-
-  void _clearPages() {
-    setState(() {
-      _loading = true;
-      _pages.clear();
-      _refreshController.refreshCompleted();
-    });
-  }
-
-  int _itemCount() {
-    int i = 0;
-    if (_pages.isEmpty) {
-      _loadNextPage();
-    }
-    for (List<Post> p in _pages) {
-      i += p.length;
-    }
-    return i;
-  }
 
   Widget _itemBuilder(BuildContext context, int item) {
     Widget preview(List<Post> page, int pageIndex, int listIndex) {
       return Container(
         height: 250,
-        child: new PostPreview(page[pageIndex], onPressed: () {
-          Navigator.of(context).push(new MaterialPageRoute<Null>(
-            builder: (context) => new PostSwipe(
-              _pages
-                  .fold<Iterable<Post>>(
-                      const Iterable.empty(), (a, b) => a.followedBy(b))
-                  .toList(),
+        child: PostPreview(page[pageIndex], onPressed: () {
+          Navigator.of(context).push(MaterialPageRoute<Null>(
+            builder: (context) => PostSwipe(
+              widget.postProvider,
               startingIndex: listIndex,
             ),
           ));
@@ -502,79 +236,65 @@ class _PostsPageState extends State<PostsPage> {
 
     int posts = 0;
 
-    for (int p = 0; p < _pages.length; p++) {
-      List<Post> page = _pages[p];
+    for (List<Post> page in widget.postProvider.pages.value) {
       if (page.isEmpty) {
-        return new Container();
+        return null;
       }
       posts += page.length;
-
-      if (item == posts - 1) {
-        if (p + 1 >= _pages.length) {
-          _loadNextPage();
-        }
+      if (item == widget.postProvider.posts.length - 1) {
+        widget.postProvider.loadNextPage();
       }
-
       if (item < posts) {
         return preview(page, item - (posts - page.length), item);
       }
     }
-
     return null;
   }
 
   StaggeredTile Function(int) _staggeredTileBuilder() {
     return (item) {
       int i = 0;
-      for (int p = 0; p < _pages.length; p++) {
-        List<Post> page = _pages[p];
+      for (List<Post> page in widget.postProvider.pages.value) {
         i += page.length;
-
-        // this ensures that there isn't a large
-        // empty space on an even number of posts on a page.
-        if (item == i - 1 - p) {
-          return new StaggeredTile.fit(1);
-        }
-
-        // do not make all of them fit, since that causes lag.
         if (item < i) {
-          return const StaggeredTile.extent(1, 250.0);
+          return StaggeredTile.extent(1, 250.0);
         }
-
         i += 1;
       }
-
       return null;
     };
   }
 
   @override
-  void didUpdateWidget(Widget oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    setState(() {
-      _pages.clear();
-      _loading = true;
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
+    widget.postProvider.pages.addListener(() {
+      if (this.mounted) {
+        setState(() {
+          if (widget.postProvider.pages.value.length == 0) {
+            _loading = true;
+          } else {
+            _loading = false;
+          }
+        });
+      }
+    });
+
     Widget bodyWidget() {
-      return new Stack(children: [
-        new Visibility(
+      return Stack(children: [
+        Visibility(
           visible: _loading,
-          child: new Center(
-            child: new Column(
+          child: Center(
+            child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                new Container(
+                Container(
                   height: 28,
                   width: 28,
-                  child: new CircularProgressIndicator(),
+                  child: CircularProgressIndicator(),
                 ),
-                new Padding(
+                Padding(
                   padding: EdgeInsets.all(20),
-                  child: new Text('Loading posts'),
+                  child: Text('Loading posts'),
                 ),
               ],
             ),
@@ -583,30 +303,37 @@ class _PostsPageState extends State<PostsPage> {
         SmartRefresher(
             controller: _refreshController,
             header: ClassicHeader(
-              completeText: 'refreshing...',
+              refreshingText: 'Refreshing...',
+              completeText: 'Refreshed posts!',
             ),
-            onRefresh: _clearPages,
+            onRefresh: () async {
+              await widget.postProvider.loadNextPage(reset: true);
+              _refreshController.refreshCompleted();
+            },
             physics: BouncingScrollPhysics(),
-            child: new StaggeredGridView.countBuilder(
+            // it is possible to replace this
+            // with a normal GridView
+            // however, I didn't like the aspect ratios.
+            child: StaggeredGridView.countBuilder(
               crossAxisCount: (MediaQuery.of(context).size.width / 200).round(),
-              itemCount: _itemCount(),
+              itemCount: widget.postProvider.posts.length,
               itemBuilder: _itemBuilder,
               staggeredTileBuilder: _staggeredTileBuilder(),
               physics: BouncingScrollPhysics(),
             )),
-        new Visibility(
-          visible: (!_loading && _pages.length == 1 && _pages[0].length == 0),
-          child: new Center(
-            child: new Column(
+        Visibility(
+          visible: (!_loading && widget.postProvider.posts.length == 0),
+          child: Center(
+            child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                new Icon(
+                Icon(
                   Icons.error_outline,
                   size: 32,
                 ),
-                new Padding(
+                Padding(
                   padding: EdgeInsets.all(20),
-                  child: new Text('No posts'),
+                  child: Text('No posts'),
                 ),
               ],
             ),
@@ -616,18 +343,43 @@ class _PostsPageState extends State<PostsPage> {
     }
 
     Widget floatingActionButtonWidget() {
-      return new Builder(builder: (context) {
-        return new Visibility(
-          visible: widget.canSearch,
-          child: new FloatingActionButton(
-            heroTag: 'searchButton',
-            child: _isSearching
-                ? const Icon(Icons.check)
-                : const Icon(Icons.search),
-            onPressed: _onPressedFloatingActionButton(context),
-          ),
-        ).build(context);
-      });
+      return Builder(builder: (context) {
+        if (widget.canSearch) {
+          return ValueListenableBuilder(
+            valueListenable: isSearching,
+            builder: (BuildContext context, value, Widget child) {
+              return FloatingActionButton(
+                heroTag: 'float',
+                child: Icon(value ? Icons.check : Icons.search),
+                onPressed: () async {
+                  setFocusToEnd(_tagController);
+                  if (isSearching.value) {
+                    widget.postProvider.tags.value =
+                        Future.value(Tagset.parse(_tagController.text));
+                    _bottomSheetController?.close();
+                    widget.postProvider.pages.value = [];
+                  } else {
+                    _tagController.text =
+                        (await widget.postProvider.tags.value).toString() + ' ';
+                    _bottomSheetController =
+                        Scaffold.of(context).showBottomSheet(
+                      (context) => TagEntry(
+                        controller: _tagController,
+                      ),
+                    );
+                    isSearching.value = true;
+                    _bottomSheetController.closed.then((a) {
+                      isSearching.value = false;
+                    });
+                  }
+                },
+              );
+            },
+          );
+        } else {
+          return Container();
+        }
+      }).build(context);
     }
 
     return Scaffold(
@@ -639,99 +391,77 @@ class _PostsPageState extends State<PostsPage> {
   }
 }
 
-typedef Future<Tagset> TagEditor(Tagset tags);
+class PostProvider {
+  bool isLoading = false;
+  ValueNotifier<Future<Tagset>> tags =
+      ValueNotifier(Future.value(Tagset.parse('')));
+  ValueNotifier<List<List<Post>>> pages = ValueNotifier([]);
+  final Future<List<Post>> Function(Tagset tags, int page) provider;
+
+  List<Post> get posts {
+    return pages.value
+        .fold<Iterable<Post>>(Iterable.empty(), (a, b) => a.followedBy(b))
+        .toList();
+  }
+
+  PostProvider({tags, this.provider}) {
+    this.tags.value = tags;
+    this.tags.addListener(() {
+      loadNextPage(reset: true);
+    });
+    this.pages.addListener(() {
+      if (pages.value.length == 0) {
+        loadNextPage();
+      }
+    });
+    loadNextPage();
+  }
+
+  Future<void> loadNextPage({bool reset = false}) async {
+    if (!isLoading) {
+      isLoading = true;
+      if (await tags.value == null) {
+        tags.value = Future.value(new Tagset.parse(''));
+      }
+      int page = reset ? 0 : pages.value.length;
+      List<Post> nextPage = [];
+      if (provider != null) {
+        nextPage.addAll(await provider((await tags.value), page));
+      } else {
+        nextPage.addAll(await client.posts((await tags.value), page));
+      }
+      if (nextPage.length != 0) {
+        if (reset) {
+          pages.value = [nextPage];
+        } else {
+          pages.value = List.from(pages.value..add(nextPage));
+        }
+      }
+      isLoading = false;
+    }
+  }
+}
 
 class TagEntry extends StatelessWidget {
-  const TagEntry({
-    @required this.controller,
-    this.onEnter,
-    Key key,
-  }) : super(key: key);
-
   final TextEditingController controller;
-  final Function onEnter;
 
-  void _setTags(Tagset tags) {
+  TagEntry({
+    @required this.controller,
+  });
+
+  void _withTags(Future<Tagset> Function(Tagset tags) editor) async {
+    Tagset tags = await editor(Tagset.parse(controller.text));
     controller.text = tags.toString() + ' ';
     setFocusToEnd(controller);
-  }
-
-  void _withTags(TagEditor editor) async {
-    Tagset tags = await editor(new Tagset.parse(controller.text));
-    _setTags(tags);
-  }
-
-  Function(String) _onSelectedFilterBy(BuildContext context) {
-    return (selectedFilter) {
-      String filterType = const {
-        'Score': 'score',
-        'Favorites': 'favcount',
-      }[selectedFilter];
-      assert(filterType != null);
-
-      _withTags((tags) async {
-        String valueString = tags[filterType];
-        int value =
-            valueString == null ? 0 : int.parse(valueString.substring(2));
-
-        int min = await showDialog<int>(
-            context: context,
-            builder: (context) {
-              return new RangeDialog(
-                title: 'Minimum $filterType',
-                value: value,
-                division: 10,
-                max: 100,
-              );
-            });
-
-        if (min == null) {
-          return tags;
-        }
-
-        if (min == 0) {
-          tags.remove(filterType);
-        } else {
-          tags[filterType] = '>=$min';
-        }
-        return tags;
-      });
-    };
-  }
-
-  void _onSelectedSortBy(String selectedSort) {
-    String orderType = const {
-      'New': 'new',
-      'Score': 'score',
-      'Favorites': 'favcount',
-      'Rank': 'rank'
-    }[selectedSort];
-    assert(orderType != null);
-
-    _withTags((tags) {
-      if (orderType == 'new') {
-        tags.remove('order');
-      } else {
-        tags['order'] = orderType;
-      }
-
-      return new Future.value(tags);
-    });
-  }
-
-  Future<Null> _onPressedCopyLink() async {
-    Clipboard.setData(new ClipboardData(
-      text: Tagset.parse(controller.text).url(await db.host.value).toString(),
-    ));
   }
 
   List<PopupMenuEntry<String>> Function(BuildContext)
       _popupMenuButtonItemBuilder(List<String> text) {
     return (context) {
-      List<PopupMenuEntry<String>> items = new List(text.length);
+      List<PopupMenuEntry<String>> items = List(text.length);
       for (int i = 0; i < items.length; i++) {
         String t = text[i];
-        items[i] = new PopupMenuItem(child: new Text(t), value: t);
+        items[i] = PopupMenuItem(child: Text(t), value: t);
       }
       return items;
     };
@@ -740,38 +470,94 @@ class TagEntry extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Widget filterByWidget() {
-      return new PopupMenuButton<String>(
-        icon: const Icon(Icons.filter_list),
-        tooltip: 'Filter by',
-        itemBuilder: _popupMenuButtonItemBuilder(
-          ['Score', 'Favorites'],
-        ),
-        onSelected: _onSelectedFilterBy(context),
-      );
+      return PopupMenuButton<String>(
+          icon: Icon(Icons.filter_list),
+          tooltip: 'Filter by',
+          itemBuilder: _popupMenuButtonItemBuilder(
+            ['Score', 'Favorites'],
+          ),
+          onSelected: (selectedFilter) {
+            String filterType = {
+              'Score': 'score',
+              'Favorites': 'favcount',
+            }[selectedFilter];
+
+            _withTags((tags) async {
+              String valueString = tags[filterType];
+              int value =
+                  valueString == null ? 0 : int.parse(valueString.substring(2));
+
+              int min = await showDialog<int>(
+                  context: context,
+                  builder: (context) {
+                    return RangeDialog(
+                      title: 'Minimum $filterType',
+                      value: value,
+                      division: 10,
+                      max: 100,
+                    );
+                  });
+
+              if (min == null) {
+                return tags;
+              }
+
+              if (min == 0) {
+                tags.remove(filterType);
+              } else {
+                tags[filterType] = '>=$min';
+              }
+              return tags;
+            });
+          });
     }
 
     Widget sortByWidget() {
-      return new PopupMenuButton<String>(
-        icon: const Icon(Icons.sort),
+      return PopupMenuButton<String>(
+        icon: Icon(Icons.sort),
         tooltip: 'Sort by',
         itemBuilder: _popupMenuButtonItemBuilder(
           ['New', 'Score', 'Favorites', 'Rank'],
         ),
-        onSelected: _onSelectedSortBy,
+        onSelected: (String selectedSort) {
+          String orderType = {
+            'New': 'new',
+            'Score': 'score',
+            'Favorites': 'favcount',
+            'Rank': 'rank'
+          }[selectedSort];
+          assert(orderType != null);
+
+          _withTags((tags) {
+            if (orderType == 'new') {
+              tags.remove('order');
+            } else {
+              tags['order'] = orderType;
+            }
+
+            return Future.value(tags);
+          });
+        },
       );
     }
 
     Widget copyLinkWidget() {
-      return new IconButton(
-        icon: const Icon(Icons.content_copy),
+      return IconButton(
+        icon: Icon(Icons.content_copy),
         tooltip: 'Copy link',
-        onPressed: _onPressedCopyLink,
+        onPressed: () async {
+          Clipboard.setData(ClipboardData(
+            text: Tagset.parse(controller.text)
+                .url(await db.host.value)
+                .toString(),
+          ));
+        },
       );
     }
 
-    return new Container(
-      padding: const EdgeInsets.only(left: 10.0, right: 10.0, top: 20.0),
-      child: new Column(mainAxisSize: MainAxisSize.min, children: [
+    return Container(
+      padding: EdgeInsets.only(left: 10.0, right: 10.0, top: 20.0),
+      child: Column(mainAxisSize: MainAxisSize.min, children: [
         TypeAheadField(
           direction: AxisDirection.up,
           hideOnLoading: true,
@@ -781,52 +567,57 @@ class TagEntry extends StatelessWidget {
             controller: controller,
             autofocus: true,
             maxLines: 1,
-            inputFormatters: [new LowercaseTextInputFormatter()],
+            inputFormatters: [LowercaseTextInputFormatter()],
             decoration: InputDecoration(
                 labelText: 'Tags', border: UnderlineInputBorder()),
           ),
           onSuggestionSelected: (suggestion) {
-            List<String> tags = controller.text.toString().split(' ');
-            if (suggestion.contains(noDash(tags[tags.length - 1]))) {
-              String operator = tags[tags.length - 1][0];
-              if (operator == '-' || operator == '~') {
-                tags[tags.length - 1] = operator + suggestion;
-              } else {
-                tags[tags.length - 1] = suggestion;
-              }
-            } else {
-              tags.add(suggestion);
-            }
-            String query = '';
+            List<String> tags = controller.text.split(' ');
+            List<String> before = [];
             for (String tag in tags) {
-              query = query + tag + ' ';
+              before.add(tag);
+              if (before.join(' ').length >=
+                  controller.selection.extent.offset) {
+                tags[tags.indexOf(tag)] = suggestion;
+                break;
+              }
             }
-            controller.text = query;
+            controller.text = tags.join(' ') + ' ';
           },
           itemBuilder: (BuildContext context, itemData) {
-            return new ListTile(
+            return ListTile(
               title: Text(itemData),
             );
           },
-          suggestionsCallback: (String pattern) {
-            List<String> tags = pattern.split(' ');
-            String completion = noDash(tags[tags.length - 1]);
-            if (completion.isNotEmpty) {
-              return client.tags(completion, 0);
+          suggestionsCallback: (String pattern) async {
+            List<String> tags = controller.text.split(' ');
+            List<String> before = [];
+            int selection = 0;
+            for (String tag in tags) {
+              before.add(tag);
+              if (before.join(' ').length >=
+                  controller.selection.extent.offset) {
+                selection = tags.indexOf(tag);
+                break;
+              }
+            }
+            if (tags[selection].trim().isNotEmpty) {
+              return (await client.tags(tags[selection]))
+                  .map((t) => t['name'])
+                  .toList();
             } else {
               return [];
             }
           },
         ),
-        new Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10.0),
-          child: new Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                copyLinkWidget(),
-                filterByWidget(),
-                sortByWidget(),
-              ]),
+        Padding(
+          padding: EdgeInsets.symmetric(vertical: 10.0),
+          child:
+              Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
+            copyLinkWidget(),
+            filterByWidget(),
+            sortByWidget(),
+          ]),
         ),
       ]),
     );

@@ -8,11 +8,11 @@ import 'package:e1547/client.dart';
 import 'package:e1547/interface.dart';
 
 class PoolsPage extends StatefulWidget {
-  const PoolsPage();
+  PoolsPage();
 
   @override
   State<StatefulWidget> createState() {
-    return new _PoolsPageState();
+    return _PoolsPageState();
   }
 }
 
@@ -31,7 +31,7 @@ class _PoolsPageState extends State<PoolsPage> {
       }
 
       if (!_isSearching) {
-        _tagController = new TextEditingController()..text = query + ' ';
+        _tagController = TextEditingController()..text = query + ' ';
       }
       setFocusToEnd(_tagController);
 
@@ -42,16 +42,15 @@ class _PoolsPageState extends State<PoolsPage> {
         _clearPages();
       } else {
         _bottomSheetController =
-            Scaffold.of(context).showBottomSheet((context) => new Container(
-                  padding: const EdgeInsets.only(
-                      left: 10.0, right: 10.0, bottom: 10),
-                  child: new Column(mainAxisSize: MainAxisSize.min, children: [
-                    new TextField(
+            Scaffold.of(context).showBottomSheet((context) => Container(
+                  padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10),
+                  child: Column(mainAxisSize: MainAxisSize.min, children: [
+                    TextField(
                       controller: _tagController,
                       autofocus: true,
                       maxLines: 1,
-                      inputFormatters: [new LowercaseTextInputFormatter()],
-                      decoration: const InputDecoration(
+                      inputFormatters: [LowercaseTextInputFormatter()],
+                      decoration: InputDecoration(
                         labelText: 'Title',
                       ),
                     ),
@@ -85,7 +84,7 @@ class _PoolsPageState extends State<PoolsPage> {
   }
 
   RefreshController _refreshController =
-  RefreshController(initialRefresh: false);
+      RefreshController(initialRefresh: false);
 
   void _clearPages() {
     setState(() {
@@ -108,9 +107,9 @@ class _PoolsPageState extends State<PoolsPage> {
 
   Widget _itemBuilder(BuildContext context, int item) {
     Widget preview(List<Pool> page, int pageIndex, int listIndex) {
-      return new PoolPreview(page[pageIndex], onPressed: () {
-        Navigator.of(context).push(new MaterialPageRoute<Null>(
-          builder: (context) => new PoolPage(page[pageIndex]),
+      return PoolPreview(page[pageIndex], onPressed: () {
+        Navigator.of(context).push(MaterialPageRoute<Null>(
+          builder: (context) => PoolPage(page[pageIndex]),
         ));
       });
     }
@@ -120,7 +119,7 @@ class _PoolsPageState extends State<PoolsPage> {
     for (int p = 0; p < _pages.length; p++) {
       List<Pool> page = _pages[p];
       if (page.isEmpty) {
-        return new Container();
+        return Container();
       }
       pools += page.length;
       if (item == pools - 1) {
@@ -140,27 +139,27 @@ class _PoolsPageState extends State<PoolsPage> {
   @override
   Widget build(BuildContext context) {
     AppBar appBar() {
-      return new AppBar(
+      return AppBar(
         title: Text('Pools'),
       );
     }
 
     Widget bodyWidget() {
-      return new Stack(children: [
+      return Stack(children: [
         Visibility(
           visible: _loading,
-          child: new Center(
-            child: new Column(
+          child: Center(
+            child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                new Container(
+                Container(
                   height: 28,
                   width: 28,
-                  child: new CircularProgressIndicator(),
+                  child: CircularProgressIndicator(),
                 ),
-                new Padding(
+                Padding(
                   padding: EdgeInsets.all(20),
-                  child: new Text('Loading pools'),
+                  child: Text('Loading pools'),
                 ),
               ],
             ),
@@ -176,22 +175,22 @@ class _PoolsPageState extends State<PoolsPage> {
           child: ListView.builder(
             itemCount: _itemCount(),
             itemBuilder: _itemBuilder,
-            physics: new BouncingScrollPhysics(),
+            physics: BouncingScrollPhysics(),
           ),
         ),
         Visibility(
           visible: (!_loading && _pages.length == 1 && _pages[0].length == 0),
-          child: new Center(
-            child: new Column(
+          child: Center(
+            child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                new Icon(
+                Icon(
                   Icons.error_outline,
                   size: 32,
                 ),
-                new Padding(
+                Padding(
                   padding: EdgeInsets.all(20),
-                  child: new Text('No pools'),
+                  child: Text('No pools'),
                 ),
               ],
             ),
@@ -201,16 +200,15 @@ class _PoolsPageState extends State<PoolsPage> {
     }
 
     Widget floatingActionButtonWidget() {
-      return new Builder(builder: (context) {
-        return new FloatingActionButton(
-          child:
-              _isSearching ? const Icon(Icons.check) : const Icon(Icons.search),
+      return Builder(builder: (context) {
+        return FloatingActionButton(
+          child: _isSearching ? Icon(Icons.check) : Icon(Icons.search),
           onPressed: _onPressedFloatingActionButton(context),
         ).build(context);
       });
     }
 
-    return new Scaffold(
+    return Scaffold(
       appBar: appBar(),
       body: bodyWidget(),
       drawer: NavigationDrawer(),

@@ -5,12 +5,11 @@ import 'package:flutter/foundation.dart' show ValueNotifier;
 import 'package:shared_preferences/shared_preferences.dart'
     show SharedPreferences;
 
-import 'package:e1547/appinfo.dart' as appInfo;
 import 'package:e1547/tag.dart' show Tagset;
 
 typedef T _SharedPreferencesReceiver<T>(SharedPreferences prefs);
 
-final Persistence db = new Persistence();
+final Persistence db = Persistence();
 
 class Persistence {
   ValueNotifier<Future<String>> host;
@@ -24,10 +23,11 @@ class Persistence {
   ValueNotifier<Future<List<String>>> follows;
 
   Persistence() {
-    host = _makeNotifier((p) => p.getString('host') ?? appInfo.defaultEndpoint);
+    host = _makeNotifier((p) => p.getString('host') ?? 'e926.net');
     host.addListener(_saveString('host', host));
 
-    homeTags = _makeNotifier((p) => new Tagset.parse(p.getString('homeTags') ?? ''));
+    homeTags =
+        _makeNotifier((p) => Tagset.parse(p.getString('homeTags') ?? ''));
     homeTags.addListener(_saveString('homeTags', homeTags));
 
     username = _makeNotifier((p) => p.getString('username'));
@@ -56,7 +56,7 @@ class Persistence {
 
   ValueNotifier<Future<T>> _makeNotifier<T>(
       _SharedPreferencesReceiver<T> receiver) {
-    return new ValueNotifier(_prefs.then(receiver));
+    return ValueNotifier(_prefs.then(receiver));
   }
 
   Function() _saveString(String key, ValueNotifier<Future<dynamic>> notifier) {
@@ -66,7 +66,8 @@ class Persistence {
     };
   }
 
-  Function() _saveList(String key, ValueNotifier<Future<List<String>>> notifier) {
+  Function() _saveList(
+      String key, ValueNotifier<Future<List<String>>> notifier) {
     return () async {
       (await _prefs).setStringList(key, await notifier.value);
     };
