@@ -850,7 +850,12 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
       RegExp(r'h[1-6]\..*', caseSensitive: false): (match) {
         states['headline'] = true;
 
-        newParts.addAll(resolve(match.substring(3), states));
+        String blocked = match.substring(3);
+        if (blocked.isNotEmpty && blocked[0] == ' ') {
+          blocked = blocked.substring(1);
+        }
+
+        newParts.addAll(resolve(blocked, states));
 
         states['headline'] = false;
       },
@@ -1085,7 +1090,7 @@ class _TextEditorState extends State<TextEditor> with TickerProviderStateMixin {
     }
 
     Widget hotkeys() {
-      void enclose(String blockTag) {
+      void enclose(String blockTag, {String endTag}) {
         String before = textController.text
             .substring(0, textController.selection.baseOffset);
         String block = textController.text.substring(
@@ -1094,7 +1099,7 @@ class _TextEditorState extends State<TextEditor> with TickerProviderStateMixin {
         String after = textController.text
             .substring(textController.selection.extentOffset);
         int pos = before.length + block.length + '[$blockTag]'.length;
-        block = '[$blockTag]$block[/$blockTag]';
+        block = '[$blockTag]$block[/${endTag ?? blockTag}]';
         textController.text = '$before$block$after';
         textController.selection = TextSelection(
           baseOffset: pos,
@@ -1102,76 +1107,93 @@ class _TextEditorState extends State<TextEditor> with TickerProviderStateMixin {
         );
       }
 
-      return Padding(
-          padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10),
-          child: Column(mainAxisSize: MainAxisSize.min, children: [
-            IntrinsicHeight(
-              child: Row(
-                mainAxisSize: MainAxisSize.max,
-                children: () {
-                  List<Widget> buttons = [];
-                  if (showBlocks) {
-                    buttons.addAll([
-                      IconButton(
-                        icon: Icon(Icons.subject),
-                        onPressed: () => enclose('section'),
-                        tooltip: 'Section',
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.format_quote),
-                        onPressed: () => enclose('quote'),
-                        tooltip: 'Quote',
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.code),
-                        onPressed: () => enclose('code'),
-                        tooltip: 'Code',
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.warning),
-                        onPressed: () => enclose('spoiler'),
-                        tooltip: 'Spoiler',
-                      ),
-                    ]);
-                  } else {
-                    buttons.addAll([
-                      IconButton(
-                        icon: Icon(Icons.format_bold),
-                        onPressed: () => enclose('b'),
-                        tooltip: 'Bold',
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.format_italic),
-                        onPressed: () => enclose('i'),
-                        tooltip: 'Italic',
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.format_underlined),
-                        onPressed: () => enclose('u'),
-                        tooltip: 'Underlined',
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.format_strikethrough),
-                        onPressed: () => enclose('s'),
-                        tooltip: 'Strikethrough',
-                      ),
-                    ]);
-                  }
-                  buttons.addAll([
-                    VerticalDivider(),
-                    IconButton(
-                      icon: Icon(
-                          showBlocks ? Icons.expand_less : Icons.expand_more),
-                      onPressed: () => setState(() {
-                        showBlocks = !showBlocks;
-                      }),
-                    ),
-                  ]);
-                  return buttons;
-                }(),
-              ),
-            )
-          ]));
+      return OrientationBuilder(
+        builder: (BuildContext context, Orientation orientation) {
+          return Padding(
+              padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10),
+              child: Column(mainAxisSize: MainAxisSize.min, children: [
+                IntrinsicHeight(
+                  child: Row(
+                    mainAxisSize: MainAxisSize.max,
+                    children: () {
+                      List<Widget> buttons = [];
+                      int rowSize =
+                          (MediaQuery.of(context).size.width / 40).round();
+                      List<Widget> blockButtons = [
+                        IconButton(
+                          icon: Icon(Icons.subject),
+                          onPressed: () =>
+                              enclose('section,expanded=', endTag: 'section'),
+                          tooltip: 'Section',
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.format_quote),
+                          onPressed: () => enclose('quote'),
+                          tooltip: 'Quote',
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.code),
+                          onPressed: () => enclose('code'),
+                          tooltip: 'Code',
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.warning),
+                          onPressed: () => enclose('spoiler'),
+                          tooltip: 'Spoiler',
+                        ),
+                      ];
+                      List<Widget> textbuttons = [
+                        IconButton(
+                          icon: Icon(Icons.format_bold),
+                          onPressed: () => enclose('b'),
+                          tooltip: 'Bold',
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.format_italic),
+                          onPressed: () => enclose('i'),
+                          tooltip: 'Italic',
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.format_underlined),
+                          onPressed: () => enclose('u'),
+                          tooltip: 'Underlined',
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.format_strikethrough),
+                          onPressed: () => enclose('s'),
+                          tooltip: 'Strikethrough',
+                        ),
+                      ];
+
+                      if (rowSize > 10) {
+                        buttons.addAll(textbuttons);
+                        buttons.addAll(blockButtons);
+                      } else {
+                        if (showBlocks) {
+                          buttons.addAll(blockButtons);
+                        } else {
+                          buttons.addAll(textbuttons);
+                        }
+                        buttons.addAll([
+                          VerticalDivider(),
+                          IconButton(
+                            icon: Icon(showBlocks
+                                ? Icons.expand_less
+                                : Icons.expand_more),
+                            onPressed: () => setState(() {
+                              showBlocks = !showBlocks;
+                            }),
+                          ),
+                        ]);
+                      }
+
+                      return buttons;
+                    }(),
+                  ),
+                )
+              ]));
+        },
+      );
     }
 
     return Scaffold(

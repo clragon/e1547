@@ -143,10 +143,11 @@ class _BlacklistPageState extends State<BlacklistPage> {
                         children: () {
                           Widget cardWidget(String tag) {
                             return InkWell(
-                                onTap: () =>
-                                    wikiDialog(context, noDash(tag), actions: true),
-                                onLongPress: () =>
-                                    wikiDialog(context, noDash(tag), actions: true),
+                                onTap: () => wikiDialog(context, noDash(tag),
+                                    actions: true),
+                                onLongPress: () => wikiDialog(
+                                    context, noDash(tag),
+                                    actions: true),
                                 child: Card(
                                     clipBehavior: Clip.antiAlias,
                                     child: Row(
@@ -169,7 +170,8 @@ class _BlacklistPageState extends State<BlacklistPage> {
                                               bottom: 4,
                                               right: 8,
                                               left: 6),
-                                          child: Text(noDash(tag.replaceAll('_', ' '))),
+                                          child: Text(
+                                              noDash(tag.replaceAll('_', ' '))),
                                         ),
                                       ],
                                     )));

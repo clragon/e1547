@@ -431,7 +431,7 @@ class PostProvider {
       } else {
         nextPage.addAll(await client.posts((await tags.value), page));
       }
-      if (nextPage.length != 0) {
+      if (nextPage.length != 0 || pages.value.length == 0) {
         if (reset) {
           pages.value = [nextPage];
         } else {

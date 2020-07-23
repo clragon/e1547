@@ -50,8 +50,7 @@ class _FollowingPageState extends State<FollowingPage> {
                           return [
                             InkWell(
                                 onTap: () => wikiDialog(
-                                    context, _follows[index],
-                                    actions: true),
+                                    context, _follows[index], actions: true),
                                 onLongPress: () => wikiDialog(
                                     context, _follows[index],
                                     actions: true),

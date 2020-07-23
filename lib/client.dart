@@ -75,11 +75,7 @@ class Client {
       'login': username,
       'api_key': apiKey,
     }).then((response) {
-      if (response.statusCode == 200) {
-        return true;
-      } else {
-        return false;
-      }
+      return response.statusCode == 200;
     });
   }
 
@@ -214,36 +210,40 @@ class Client {
   }
 
   Future<List<Post>> posts(Tagset tags, int page, {bool filter = true}) async {
-    String body = await _http.get(await _host, '/posts.json', query: {
-      'tags': tags,
-      'page': page + 1,
-      'login': await _username,
-      'api_key': await _apiKey,
-    }).then((response) => response.body);
+    try {
+      String body = await _http.get(await _host, '/posts.json', query: {
+        'tags': tags,
+        'page': page + 1,
+        'login': await _username,
+        'api_key': await _apiKey,
+      }).then((response) => response.body);
 
-    List<Post> posts = [];
-    bool loggedIn = await this.hasLogin();
-    bool showWebm = await db.showWebm.value;
-    bool hasPosts = false;
-    for (Map rawPost in json.decode(body)['posts']) {
-      hasPosts = true;
-      Post post = Post.fromRaw(rawPost);
-      post.isLoggedIn = loggedIn;
-      if (post.file['ext'] == 'swf') {
-        continue;
+      List<Post> posts = [];
+      bool loggedIn = await this.hasLogin();
+      bool showWebm = await db.showWebm.value;
+      bool hasPosts = false;
+      for (Map rawPost in json.decode(body)['posts']) {
+        hasPosts = true;
+        Post post = Post.fromRaw(rawPost);
+        post.isLoggedIn = loggedIn;
+        if (post.file['ext'] == 'swf') {
+          continue;
+        }
+        if (!showWebm && post.file['ext'] == 'webm') {
+          continue;
+        }
+        if (filter && await isBlacklisted(post)) {
+          continue;
+        }
+        posts.add(post);
       }
-      if (!showWebm && post.file['ext'] == 'webm') {
-        continue;
+      if (hasPosts && posts.length == 0) {
+        return client.posts(tags, page + 1, filter: filter);
       }
-      if (filter && await isBlacklisted(post)) {
-        continue;
-      }
-      posts.add(post);
+      return posts;
+    } catch (SocketException) {
+      return [];
     }
-    if (hasPosts && posts.length == 0) {
-      return client.posts(tags, page + 1, filter: filter);
-    }
-    return posts;
   }
 
   Future<List<Pool>> pools(String title, int page) async {

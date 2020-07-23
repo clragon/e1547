@@ -729,10 +729,17 @@ class _PostWidgetState extends State<PostWidget> {
                   title: Text(pool.toString()),
                   onTap: () async {
                     Pool p = await client.pool(pool);
-                    Navigator.of(context)
-                        .push(MaterialPageRoute<Null>(builder: (context) {
-                      return PoolPage(p);
-                    }));
+                    if (p != null) {
+                      Navigator.of(context)
+                          .push(MaterialPageRoute<Null>(builder: (context) {
+                        return PoolPage(p);
+                      }));
+                    } else {
+                      Scaffold.of(context).showSnackBar(SnackBar(
+                        duration: Duration(seconds: 1),
+                        content: Text('Coulnd\'t retrieve Pool #${p.id}'),
+                      ));
+                    }
                   },
                 ));
               }
@@ -1316,9 +1323,9 @@ class _PostWidgetState extends State<PostWidget> {
                 ),
                 ListTile(
                   title: Text(ratings[value]),
-                  leading: Icon(
-                      !widget.post.raw['flags']['rating_locked']
-                          ? getIcon(value) : Icons.lock),
+                  leading: Icon(!widget.post.raw['flags']['rating_locked']
+                      ? getIcon(value)
+                      : Icons.lock),
                   onTap: !widget.post.raw['flags']['rating_locked']
                       ? () => showDialog(
                           context: context,
@@ -1765,6 +1772,7 @@ class _PostWidgetState extends State<PostWidget> {
           initialPage: index,
         ),
         onPageChanged: (index) {
+          current = index;
           if (widget.controller != null) {
             widget.controller.jumpToPage(index);
           }
