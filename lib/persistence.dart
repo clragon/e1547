@@ -1,11 +1,9 @@
 import 'dart:async' show Future;
 
+import 'package:e1547/tag.dart' show Tagset;
 import 'package:flutter/foundation.dart' show ValueNotifier;
-
 import 'package:shared_preferences/shared_preferences.dart'
     show SharedPreferences;
-
-import 'package:e1547/tag.dart' show Tagset;
 
 typedef T _SharedPreferencesReceiver<T>(SharedPreferences prefs);
 

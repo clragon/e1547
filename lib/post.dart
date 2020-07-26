@@ -5,7 +5,7 @@ import 'dart:io' show Directory, File, Platform;
 import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:e1547/appinfo.dart';
+import 'package:e1547/appInfo.dart';
 import 'package:e1547/comment.dart';
 import 'package:e1547/pool.dart';
 import 'package:e1547/posts_page.dart';
@@ -262,7 +262,9 @@ class _PostWidgetState extends State<PostWidget> {
 
     widget.provider?.pages?.addListener(() {
       if (!widget.provider.posts.contains(widget.post)) {
-        Navigator.of(context).pop();
+        if (ModalRoute.of(context).isCurrent) {
+          Navigator.of(context).pop();
+        }
       }
     });
 
@@ -1821,18 +1823,6 @@ class _PostWidgetState extends State<PostWidget> {
 }
 
 Widget postAppBar(BuildContext context, Post post) {
-  Widget popMenuListTile(String title, IconData icon) {
-    return Row(
-      children: <Widget>[
-        Icon(icon, size: 20),
-        Padding(
-          padding: EdgeInsets.only(left: 16, right: 16, top: 4, bottom: 4),
-          child: Text(title),
-        ),
-      ],
-    );
-  }
-
   return AppBar(
     backgroundColor: Colors.transparent,
     elevation: 0,

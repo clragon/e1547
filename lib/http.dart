@@ -1,9 +1,9 @@
 import 'dart:async' show Future;
-import 'package:e1547/appinfo.dart' as appInfo;
+
+import 'package:e1547/appInfo.dart';
 import 'package:http/http.dart' as http;
 
-String userAgent =
-    '${appInfo.appName}/${appInfo.appVersion} (${appInfo.developer})';
+String userAgent = '$appName/$appVersion ($developer)';
 
 class HttpHelper {
   Map<String, String> headers = {'User-Agent': userAgent};

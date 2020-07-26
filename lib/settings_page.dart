@@ -1,14 +1,13 @@
 import 'dart:async' show Future;
+import 'dart:io' show File, Platform;
 
+import 'package:e1547/appInfo.dart';
+import 'package:e1547/client.dart';
+import 'package:e1547/interface.dart';
 import 'package:e1547/main.dart';
+import 'package:e1547/persistence.dart' show db;
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-
-import 'package:e1547/interface.dart';
-import 'package:e1547/client.dart';
-import 'package:e1547/appinfo.dart';
-import 'package:e1547/persistence.dart' show db;
-import 'dart:io' show File, Platform;
 
 class SettingsPage extends StatefulWidget {
   @override

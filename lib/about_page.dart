@@ -1,13 +1,10 @@
 import 'dart:convert';
 
-import 'package:e1547/appinfo.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-
-import 'package:url_launcher/url_launcher.dart' as url;
-
+import 'package:e1547/appInfo.dart';
 import 'package:e1547/http.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart' as url;
 
 class AboutPage extends StatelessWidget {
   @override

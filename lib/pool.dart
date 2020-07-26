@@ -1,8 +1,8 @@
-import 'package:flutter/material.dart';
 import 'package:e1547/interface.dart';
+import 'package:e1547/persistence.dart' show db;
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:share/share.dart';
-import 'package:e1547/persistence.dart' show db;
 
 class Pool {
   Map raw;

@@ -26,6 +26,7 @@ class _FollowingPageState extends State<FollowingPage> {
     db.follows.addListener(() async {
       List<String> follows = await db.follows.value;
       setState(() => _follows = follows);
+      _refresh = true;
     });
     db.follows.value.then((a) async => setState(() => _follows = a));
   }
@@ -49,8 +50,12 @@ class _FollowingPageState extends State<FollowingPage> {
                         children: () {
                           return [
                             InkWell(
-                                onTap: () => wikiDialog(
-                                    context, _follows[index], actions: true),
+                                onTap: () => Navigator.of(context).push(
+                                        MaterialPageRoute<Null>(
+                                            builder: (context) {
+                                      return SearchPage(
+                                          tags: Tagset.parse(_follows[index]));
+                                    })),
                                 onLongPress: () => wikiDialog(
                                     context, _follows[index],
                                     actions: true),
@@ -66,31 +71,47 @@ class _FollowingPageState extends State<FollowingPage> {
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: <Widget>[
-                        IconButton(
-                          icon: Icon(Icons.search),
-                          onPressed: () async {
-                            if (_follows[index].startsWith('pool:')) {
-                              Pool p = await client.pool(
-                                  int.parse(_follows[index].split(':')[1]));
-                              Navigator.of(context).push(
-                                  MaterialPageRoute<Null>(builder: (context) {
-                                return PoolPage(p);
-                              }));
-                            } else {
-                              Navigator.of(context).push(
-                                  MaterialPageRoute<Null>(builder: (context) {
-                                return SearchPage(
-                                    tags: Tagset.parse(_follows[index]));
-                              }));
+                        PopupMenuButton<String>(
+                          icon: Icon(
+                            Icons.more_vert,
+                            color: Theme.of(context).iconTheme.color,
+                          ),
+                          itemBuilder: (BuildContext context) =>
+                              <PopupMenuEntry<String>>[
+                            PopupMenuItem(
+                              value: 'search',
+                              child: popMenuListTile('Search', Icons.search),
+                            ),
+                            PopupMenuItem(
+                              value: 'delete',
+                              child: popMenuListTile('Delete', Icons.delete),
+                            ),
+                          ],
+                          onSelected: (value) async {
+                            switch (value) {
+                              case 'search':
+                                if (_follows[index].startsWith('pool:')) {
+                                  Pool p = await client.pool(
+                                      int.parse(_follows[index].split(':')[1]));
+                                  Navigator.of(context).push(
+                                      MaterialPageRoute<Null>(
+                                          builder: (context) {
+                                    return PoolPage(p);
+                                  }));
+                                } else {
+                                  Navigator.of(context).push(
+                                      MaterialPageRoute<Null>(
+                                          builder: (context) {
+                                    return SearchPage(
+                                        tags: Tagset.parse(_follows[index]));
+                                  }));
+                                }
+                                break;
+                              case 'delete':
+                                db.follows.value =
+                                    Future.value(_follows..removeAt(index));
+                                break;
                             }
-                          },
-                        ),
-                        IconButton(
-                          icon: Icon(Icons.delete),
-                          onPressed: () {
-                            db.follows.value =
-                                Future.value(_follows..removeAt(index));
-                            _refresh = true;
                           },
                         ),
                       ],
@@ -119,7 +140,6 @@ class _FollowingPageState extends State<FollowingPage> {
               setFocusToEnd(_tagController);
               if (isSearching.value) {
                 if (_tagController.text.trim() != '') {
-                  _refresh = true;
                   db.follows.value =
                       Future.value(_follows..add(_tagController.text.trim()));
                   _bottomSheetController?.close();
@@ -149,7 +169,7 @@ class _FollowingPageState extends State<FollowingPage> {
                                     border: UnderlineInputBorder()),
                               ),
                               onSuggestionSelected: (suggestion) {
-                                _tagController.text = suggestion.toLowerCase();
+                                _tagController.text = suggestion['name'];
                               },
                               itemBuilder: (BuildContext context, itemData) {
                                 return ListTile(
@@ -177,6 +197,42 @@ class _FollowingPageState extends State<FollowingPage> {
       );
     }
 
+    Widget editor() {
+      TextEditingController controller = TextEditingController();
+      controller.text = _follows.join('\n');
+      return AlertDialog(
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Text('Following'),
+          ],
+        ),
+        content: TextField(
+          controller: controller,
+          keyboardType: TextInputType.multiline,
+          inputFormatters: [BlacklistingTextInputFormatter(' ')],
+          maxLines: null,
+        ),
+        actions: <Widget>[
+          FlatButton(
+            child: Text('CANCEL'),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+          FlatButton(
+            child: Text('OK'),
+            onPressed: () {
+              setState(() {
+                db.follows.value = Future.value(controller.text.split('\n'));
+              });
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      );
+    }
+
     return WillPopScope(
       onWillPop: () async {
         if (_refresh) {
@@ -198,6 +254,16 @@ class _FollowingPageState extends State<FollowingPage> {
                   Navigator.pop(context);
                 }
               }),
+          actions: <Widget>[
+            IconButton(
+                icon: Icon(Icons.edit),
+                onPressed: () async {
+                  showDialog(
+                    context: context,
+                    builder: (context) => editor(),
+                  );
+                }),
+          ],
         ),
         body: body(),
         floatingActionButton: Builder(

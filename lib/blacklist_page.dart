@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
+
 import 'client.dart';
 import 'interface.dart';
 import 'persistence.dart' show db;
@@ -32,14 +33,20 @@ class _BlacklistPageState extends State<BlacklistPage> {
     return () async {
       setFocusToEnd(_tagController);
       if (_isSearching) {
-        if (_tagController.text.trim() != '') {
-          if (_editing != null) {
+        if (_editing != null) {
+          if (_tagController.text.trim().isNotEmpty) {
             _blacklist[_editing] = _tagController.text;
           } else {
-            _blacklist.add(_tagController.text);
+            _blacklist.removeAt(_editing);
           }
           db.blacklist.value = Future.value(_blacklist);
           _bottomSheetController?.close();
+        } else {
+          if (_tagController.text.trim().isNotEmpty) {
+            _blacklist.add(_tagController.text);
+            db.blacklist.value = Future.value(_blacklist);
+            _bottomSheetController?.close();
+          }
         }
       } else {
         if (edit != null) {
@@ -205,33 +212,24 @@ class _BlacklistPageState extends State<BlacklistPage> {
                           itemBuilder: (BuildContext context) =>
                               <PopupMenuEntry<String>>[
                             PopupMenuItem(
-                              value: 'delete',
-                              child: Padding(
-                                padding: EdgeInsets.all(4),
-                                child: Text('Delete'),
-                              ),
+                              value: 'edit',
+                              child: popMenuListTile('Edit', Icons.edit),
                             ),
                             PopupMenuItem(
-                              value: 'edit',
-                              child: Padding(
-                                padding: EdgeInsets.all(4),
-                                child: Text(
-                                  'Edit',
-                                  maxLines: 1,
-                                ),
-                              ),
-                            )
+                              value: 'delete',
+                              child: popMenuListTile('Delete', Icons.delete),
+                            ),
                           ],
                           onSelected: (value) async {
                             switch (value) {
+                              case 'edit':
+                                _addTags(context, edit: index)();
+                                break;
                               case 'delete':
                                 setState(() {
                                   _blacklist.removeAt(index);
                                   db.blacklist.value = Future.value(_blacklist);
                                 });
-                                break;
-                              case 'edit':
-                                _addTags(context, edit: index)();
                                 break;
                             }
                           },

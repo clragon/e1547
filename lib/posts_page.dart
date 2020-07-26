@@ -220,46 +220,33 @@ class _PostsPageState extends State<PostsPage> {
       RefreshController(initialRefresh: false);
 
   Widget _itemBuilder(BuildContext context, int item) {
-    Widget preview(List<Post> page, int pageIndex, int listIndex) {
+    Widget preview(Post post, PostProvider provider) {
       return Container(
         height: 250,
-        child: PostPreview(page[pageIndex], onPressed: () {
+        child: PostPreview(post, onPressed: () {
           Navigator.of(context).push(MaterialPageRoute<Null>(
             builder: (context) => PostSwipe(
-              widget.postProvider,
-              startingIndex: listIndex,
+              provider,
+              startingIndex: provider.posts.indexOf(post),
             ),
           ));
         }),
       );
     }
 
-    int posts = 0;
-
-    for (List<Post> page in widget.postProvider.pages.value) {
-      if (page.isEmpty) {
-        return null;
-      }
-      posts += page.length;
-      if (item == widget.postProvider.posts.length - 1) {
-        widget.postProvider.loadNextPage();
-      }
-      if (item < posts) {
-        return preview(page, item - (posts - page.length), item);
-      }
+    if (item == widget.postProvider.posts.length - 1) {
+      widget.postProvider.loadNextPage();
+    }
+    if (item < widget.postProvider.posts.length) {
+      return preview(widget.postProvider.posts[item], widget.postProvider);
     }
     return null;
   }
 
   StaggeredTile Function(int) _staggeredTileBuilder() {
     return (item) {
-      int i = 0;
-      for (List<Post> page in widget.postProvider.pages.value) {
-        i += page.length;
-        if (item < i) {
-          return StaggeredTile.extent(1, 250.0);
-        }
-        i += 1;
+      if (item < widget.postProvider.posts.length) {
+        return StaggeredTile.extent(1, 250.0);
       }
       return null;
     };
@@ -551,6 +538,11 @@ class TagEntry extends StatelessWidget {
             text: Tagset.parse(controller.text)
                 .url(await db.host.value)
                 .toString(),
+          ));
+          Scaffold.of(context).showSnackBar(SnackBar(
+            duration: Duration(seconds: 1),
+            content: Text('Copied URL to clipboard'),
+            behavior: SnackBarBehavior.floating,
           ));
         },
       );

@@ -1,3 +1,6 @@
+import 'dart:math' as math show max, min;
+
+import 'package:e1547/client.dart';
 import 'package:e1547/persistence.dart';
 import 'package:e1547/pool.dart';
 import 'package:e1547/post.dart';
@@ -7,10 +10,8 @@ import 'package:expandable/expandable.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:url_launcher/url_launcher.dart' as url;
-import 'package:e1547/client.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
-import 'dart:math' as math show max, min;
+import 'package:url_launcher/url_launcher.dart' as url;
 
 void wikiDialog(BuildContext context, String tag, {actions = false}) {
   Widget body() {
@@ -1239,6 +1240,18 @@ class _TextEditorState extends State<TextEditor> with TickerProviderStateMixin {
               : editor(),
         ));
   }
+}
+
+Widget popMenuListTile(String title, IconData icon) {
+  return Row(
+    children: <Widget>[
+      Icon(icon, size: 20),
+      Padding(
+        padding: EdgeInsets.only(left: 16, right: 16, top: 4, bottom: 4),
+        child: Text(title),
+      ),
+    ],
+  );
 }
 
 class RangeDialog extends StatefulWidget {

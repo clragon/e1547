@@ -1,17 +1,16 @@
 import 'package:e1547/about_page.dart';
+import 'package:e1547/appInfo.dart';
 import 'package:e1547/blacklist_page.dart';
-import 'package:e1547/interface.dart';
-import 'package:e1547/persistence.dart';
-import 'package:e1547/pools_page.dart';
-import 'package:e1547/settings_page.dart';
-import 'package:flutter/services.dart';
 import 'package:e1547/client.dart';
 import 'package:e1547/follow_page.dart';
+import 'package:e1547/interface.dart';
 import 'package:e1547/login_page.dart';
+import 'package:e1547/persistence.dart';
+import 'package:e1547/pools_page.dart';
 import 'package:e1547/posts_page.dart';
-import 'package:e1547/appinfo.dart' as appInfo;
+import 'package:e1547/settings_page.dart';
 import 'package:flutter/material.dart';
-import 'package:e1547/appinfo.dart';
+import 'package:flutter/services.dart';
 
 ValueNotifier<ThemeData> _theme = ValueNotifier(themeMap['dark']);
 
@@ -32,7 +31,7 @@ class Main extends StatelessWidget {
       builder: (context, value, child) {
         setUIColors(value);
         return MaterialApp(
-          title: appInfo.appName,
+          title: appName,
           theme: value,
           routes: <String, WidgetBuilder>{
             '/': (context) => () {
