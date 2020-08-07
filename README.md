@@ -46,6 +46,12 @@ GIFs from v1.0.0 and v1.4.2
   
 APK and IPA files can be found over at the [releases](https://github.com/clragon/e1547/releases/latest).  
 
+## Installation
+
+### Installing on Android
+
+TODO
+
 ### Installing on iOS
 
 1. Grab [Cydia Impactor](http://www.cydiaimpactor.com/)
