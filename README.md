@@ -47,11 +47,35 @@ GIFs from v1.0.0 and v1.4.2
   
 APK and IPA files can be found over at the [releases](https://github.com/clragon/e1547/releases/latest).  
 
+### Installing on iOS
+
+1. Grab [Cydia Impactor](http://www.cydiaimpactor.com/)
+2. Drag the downloaded .ipa file onto Cydia Impactor after opening it. 
+3. Enter your Apple ID and password. If the password fails, [use an App Specific 2fa Password](https://support.apple.com/en-us/HT204397#sections)
+
+#### Installing on iOS 14
+
+Due to codesign changes, at the moment you'll need to compile this project for iOS, and then after you've built it, run `flutter run`. No other tools are capable of installing it properly yet.
+
 ## Compilation
 
 Compiling the app for yourself should be possible for both platforms, iOS and Android.
 
-(There could be a guide here soon™.)
+### Android
+
+TODO
+
+### iOS
+
+Compiling for iOS, at the moment, requires running macOS. You may be able to use a VM.
+
+1. Install https://github.com/Flutter/Flutter
+2. Run `git clone https://github.com/clragon/e1547.git && cd e1547`
+3. Run `sh ios/build.sh`
+
+This will create a release build through Flutter, fix a few flutter bugs, and then package it into an .ipa file. It will open the folder containing the .ipa on completion.
+
+---
 
 ## Contact
 The app is currently under development.  
