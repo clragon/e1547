@@ -38,8 +38,7 @@
 ## Screenshots  
   
 <p align="center">
-  <img src="https://github.com/perlatus/e1547/raw/master/gif/v1.0.0.gif" width="45%">
-  <img src="assets/screenshots/v142.gif" width="45%">
+  <img src="assets/screenshots/1547.gif" width="45%">
 </p>
 GIFs from v1.0.0 and v1.4.2
 
@@ -47,11 +46,42 @@ GIFs from v1.0.0 and v1.4.2
   
 APK and IPA files can be found over at the [releases](https://github.com/clragon/e1547/releases/latest).  
 
+## Installation
+
+### Installing on Android
+
+TODO
+
+### Installing on iOS
+
+1. Grab [Cydia Impactor](http://www.cydiaimpactor.com/)
+2. Drag the downloaded .ipa file onto Cydia Impactor after opening it. 
+3. Enter your Apple ID and password. If the password fails, [use an App Specific 2fa Password](https://support.apple.com/en-us/HT204397#sections)
+
+#### Installing on iOS 14
+
+1. Follow the instructions in [Compiling for iOS](#iOS)
+2. Run `flutter run --release` to install the App.
+
 ## Compilation
 
 Compiling the app for yourself should be possible for both platforms, iOS and Android.
 
-(There could be a guide here soon™.)
+### Android
+
+TODO
+
+### iOS
+
+Compiling for iOS, at the moment, requires running macOS. You may be able to use a VM.
+
+1. Install https://github.com/Flutter/Flutter
+2. Run `git clone https://github.com/clragon/e1547.git && cd e1547`
+3. Run `sh ios/build.sh`
+
+This will create a release build through Flutter, fix a few flutter bugs, and then package it into an .ipa file. It will open the folder containing the .ipa on completion.
+
+---
 
 ## Contact
 The app is currently under development.  
