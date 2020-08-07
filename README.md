@@ -1,11 +1,10 @@
 
-<p align="center">
-<table style="margin-left:auto;margin-right:auto;">
+<table>
     <tr>
-    <td valign="middle" width="20%">
-    <img src="assets/icon/app/paw.png" style="vertical-align:middle;"/>
+    <td width="20%">
+    <img src="assets/icon/app/paw.png"/>
     </td>
-    <td valign="middle">
+    <td>
     <h1>e1547</h1>
     <h4>A mobile app to browse e621 and e926.</h4>
     <a href="https://github.com/clragon/e1547/commits/master"><img src="https://badgen.net/github/commits/clragon/e1547"></a>
@@ -14,7 +13,6 @@
     </td>
     </tr>
 </table>
-</p>
 
 
 ## Features  
@@ -38,9 +36,11 @@
 ## Screenshots  
   
 <p align="center">
-  <img src="assets/screenshots/1547.gif" width="45%">
+  <img src="assets/screenshots/1547.gif">
 </p>
-GIFs from v1.0.0 and v1.4.2
+
+v1.5.2 GIF by [Kritana](https://github.com/KritantaDev) on iOS
+
 
 ## Download  
   
@@ -50,9 +50,13 @@ APK and IPA files can be found over at the [releases](https://github.com/clragon
 
 ### Installing on Android
 
-TODO
+_instructions could be here soon™_
 
 ### Installing on iOS
+
+- Follow the instructions on [AltStore](https://altstore.io/)
+
+or 
 
 1. Grab [Cydia Impactor](http://www.cydiaimpactor.com/)
 2. Drag the downloaded .ipa file onto Cydia Impactor after opening it. 
@@ -69,13 +73,15 @@ Compiling the app for yourself should be possible for both platforms, iOS and An
 
 ### Android
 
-TODO
+1. Install [Flutter](https://flutter.dev/docs/get-started/install)
+2. Clone the e1547 GitHub Repository
+2. Build with Android Studio
 
 ### iOS
 
 Compiling for iOS, at the moment, requires running macOS. You may be able to use a VM.
 
-1. Install https://github.com/Flutter/Flutter
+1. Install [Flutter](https://flutter.dev/docs/get-started/install)
 2. Run `git clone https://github.com/clragon/e1547.git && cd e1547`
 3. Run `sh ios/build.sh`
 
