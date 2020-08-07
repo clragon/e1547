@@ -4,7 +4,7 @@
     <td width="20%">
     <img src="assets/icon/app/paw.png"/>
     </td>
-    <td>
+    <td width="80%">
     <h1>e1547</h1>
     <h4>A mobile app to browse e621 and e926.</h4>
     <a href="https://github.com/clragon/e1547/commits/master"><img src="https://badgen.net/github/commits/clragon/e1547"></a>
@@ -95,6 +95,8 @@ If you have questions/comments/suggestions, you can open a github Issue.
 You can also post in the [e926 forum thread](https://e926.net/forum_topics/25854).  
 
 ## Credit
+- iOS build script is provided by [Kritana](https://github.com/KritantaDev).
+
 - iOS releases for this app are compiled by [CamperGuy](https://github.com/camperguy).
 
 - This app is a continuation of a project by [Perlatus](https://github.com/perlatus).
