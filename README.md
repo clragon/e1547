@@ -50,7 +50,10 @@ APK and IPA files can be found over at the [releases](https://github.com/clragon
 
 ### Installing on Android
 
-_instructions could be here soon™_
+1. Download the latest APK
+2. Open it on your Android device
+3. ???
+4. Profit
 
 ### Installing on iOS
 
