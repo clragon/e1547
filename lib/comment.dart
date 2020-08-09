@@ -315,7 +315,7 @@ class _CommentsWidgetState extends State<CommentsWidget> {
                             dotAll: true),
                         (match) => '')
                     .trim();
-                body = '[quote]"${comment.creator}":/user/${comment.creator} said:\n$body[/quote]\n';
+                body = '[quote]"${comment.creator}":/users/${comment.creator} said:\n$body[/quote]\n';
                 sendComment(context, widget.post, text: body);
               }
             },
