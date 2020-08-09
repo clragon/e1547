@@ -155,8 +155,7 @@ class _CommentsWidgetState extends State<CommentsWidget> {
         title: Text('#${widget.post.id} comments'),
       ),
       body: body(),
-      // floatingActionButton: widget.post.isLoggedIn ? fab() : null,
-      floatingActionButton: fab(),
+      floatingActionButton: widget.post.isLoggedIn ? fab() : null,
     );
   }
 
@@ -307,15 +306,17 @@ class _CommentsWidgetState extends State<CommentsWidget> {
               ],
             ),
             onTap: () async {
-              String body = comment.body;
-              body = body
-                  .replaceAllMapped(
-                      RegExp(
-                          r'\[quote\]".*?":/user/show/[0-9]* said:.*\[\/quote\]',
-                          dotAll: true),
-                      (match) => '')
-                  .trim();
-              sendComment(context, widget.post);
+              if (widget.post.isLoggedIn) {
+                String body = comment.body;
+                body = body
+                    .replaceAllMapped(
+                    RegExp(
+                        r'\[quote\]".*?":/user/show/[0-9]* said:.*\[\/quote\]',
+                        dotAll: true),
+                        (match) => '')
+                    .trim();
+                sendComment(context, widget.post);
+              }
             },
           ),
           Divider(),
