@@ -85,7 +85,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 bool consent = _showUnsafe || await getConsent(context);
                 setState(() {
                   if (consent) {
-                    _refresh = true;
+                    // _refresh = true;
                     _showUnsafe = show;
                     if (show) {
                       _host = 'e621.net';
@@ -105,7 +105,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 secondary: Icon(Icons.play_circle_outline),
                 value: _showWebm,
                 onChanged: (show) {
-                  _refresh = true;
+                  // _refresh = true;
                   setState(() {
                     _showWebm = show;
                     db.showWebm.value = Future.value(show);

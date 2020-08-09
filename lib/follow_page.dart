@@ -6,7 +6,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'client.dart';
 import 'interface.dart';
-import 'main.dart';
 import 'persistence.dart' show db;
 
 class FollowingPage extends StatefulWidget {
@@ -18,7 +17,6 @@ class FollowingPage extends StatefulWidget {
 
 class _FollowingPageState extends State<FollowingPage> {
   List<String> _follows = [];
-  bool _refresh = false;
 
   @override
   void initState() {
@@ -26,7 +24,6 @@ class _FollowingPageState extends State<FollowingPage> {
     db.follows.addListener(() async {
       List<String> follows = await db.follows.value;
       setState(() => _follows = follows);
-      _refresh = true;
     });
     db.follows.value.then((a) async => setState(() => _follows = a));
   }
@@ -96,7 +93,7 @@ class _FollowingPageState extends State<FollowingPage> {
                                   Navigator.of(context).push(
                                       MaterialPageRoute<Null>(
                                           builder: (context) {
-                                    return PoolPage(p);
+                                    return PoolPage(pool: p);
                                   }));
                                 } else {
                                   Navigator.of(context).push(
@@ -233,44 +230,25 @@ class _FollowingPageState extends State<FollowingPage> {
       );
     }
 
-    return WillPopScope(
-      onWillPop: () async {
-        if (_refresh) {
-          refreshPage(context);
-          return false;
-        } else {
-          return true;
-        }
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text('Following'),
-          leading: IconButton(
-              icon: Icon(Icons.arrow_back),
-              onPressed: () {
-                if (_refresh) {
-                  refreshPage(context);
-                } else {
-                  Navigator.pop(context);
-                }
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Following'),
+        actions: <Widget>[
+          IconButton(
+              icon: Icon(Icons.edit),
+              onPressed: () async {
+                showDialog(
+                  context: context,
+                  builder: (context) => editor(),
+                );
               }),
-          actions: <Widget>[
-            IconButton(
-                icon: Icon(Icons.edit),
-                onPressed: () async {
-                  showDialog(
-                    context: context,
-                    builder: (context) => editor(),
-                  );
-                }),
-          ],
-        ),
-        body: body(),
-        floatingActionButton: Builder(
-          builder: (context) {
-            return floatingActionButton(context);
-          },
-        ),
+        ],
+      ),
+      body: body(),
+      floatingActionButton: Builder(
+        builder: (context) {
+          return floatingActionButton(context);
+        },
       ),
     );
   }

@@ -20,6 +20,7 @@
 - Browse and search posts
 - Browse and search pools
 - Edit posts
+- Comment on posts
 - Download Images
 - Upvote and downvote posts
 - Access to Hot and your favourites

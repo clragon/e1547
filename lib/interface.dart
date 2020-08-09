@@ -680,7 +680,7 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
                 Post p = await client.post(int.parse(match.split('#')[1]));
                 Navigator.of(context)
                     .push(MaterialPageRoute<Null>(builder: (context) {
-                  return PostWidget(p);
+                  return PostWidget(post: p);
                 }));
               };
               break;
@@ -689,7 +689,7 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
                 Pool p = await client.pool(int.parse(match.split('#')[1]));
                 Navigator.of(context)
                     .push(MaterialPageRoute<Null>(builder: (context) {
-                  return PoolPage(p);
+                  return PoolPage(pool: p);
                 }));
               };
               break;
@@ -736,7 +736,7 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
               Post p = await client.post(id);
               Navigator.of(context)
                   .push(MaterialPageRoute<Null>(builder: (context) {
-                return PostWidget(p);
+                return PostWidget(post: p);
               }));
             };
           }
@@ -747,7 +747,7 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
               Pool p = await client.pool(id);
               Navigator.of(context)
                   .push(MaterialPageRoute<Null>(builder: (context) {
-                return PoolPage(p);
+                return PoolPage(pool: p);
               }));
             };
           }
@@ -765,7 +765,7 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
               Post p = await client.post(id);
               Navigator.of(context)
                   .push(MaterialPageRoute<Null>(builder: (context) {
-                return PostWidget(p);
+                return PostWidget(post: p);
               }));
             };
           }
@@ -775,7 +775,7 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
               Pool p = await client.pool(id);
               Navigator.of(context)
                   .push(MaterialPageRoute<Null>(builder: (context) {
-                return PoolPage(p);
+                return PoolPage(pool: p);
               }));
             };
           }
@@ -802,7 +802,7 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
             Post p = await client.post(int.parse(match.split('#')[1]));
             Navigator.of(context)
                 .push(MaterialPageRoute<Null>(builder: (context) {
-              return PostWidget(p);
+              return PostWidget(post: p);
             }));
           };
           break;
@@ -811,7 +811,7 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
             Pool p = await client.pool(int.parse(match.split('#')[1]));
             Navigator.of(context)
                 .push(MaterialPageRoute<Null>(builder: (context) {
-              return PoolPage(p);
+              return PoolPage(pool: p);
             }));
           };
           break;
@@ -987,9 +987,14 @@ class TextEditor extends StatefulWidget {
   final String title;
   final String content;
   final bool richEditor;
+  final Future<bool> Function(BuildContext context, String text) validator;
 
-  const TextEditor(
-      {@required this.title, this.content, this.richEditor = true});
+  const TextEditor({
+    @required this.title,
+    this.content,
+    @required this.validator,
+    this.richEditor = true,
+  });
 
   @override
   State<StatefulWidget> createState() {
@@ -1000,6 +1005,7 @@ class TextEditor extends StatefulWidget {
 class _TextEditorState extends State<TextEditor> with TickerProviderStateMixin {
   bool showBar = true;
   bool showBlocks = false;
+  bool isLoading = false;
   TabController tabController;
   TextEditingController textController = TextEditingController();
 
@@ -1079,13 +1085,26 @@ class _TextEditorState extends State<TextEditor> with TickerProviderStateMixin {
       );
     }
 
-    Widget fab(BuildContext context) {
-      return FloatingActionButton(
-        heroTag: 'float',
-        backgroundColor: Theme.of(context).cardColor,
-        child: Icon(Icons.check, color: Theme.of(context).iconTheme.color),
-        onPressed: () {
-          Navigator.of(context).pop(textController.text.trim());
+    Widget fab() {
+      return Builder(
+        builder: (context) {
+          return FloatingActionButton(
+            heroTag: 'float',
+            backgroundColor: Theme.of(context).cardColor,
+            child: Icon(Icons.check, color: Theme.of(context).iconTheme.color),
+            onPressed: () async {
+              String text = textController.text.trim();
+              setState(() {
+                isLoading = true;
+              });
+              if ((await widget.validator?.call(context, text)) ?? true) {
+                Navigator.of(context).pop();
+              }
+              setState(() {
+                isLoading = false;
+              });
+            },
+          );
         },
       );
     }
@@ -1187,7 +1206,6 @@ class _TextEditorState extends State<TextEditor> with TickerProviderStateMixin {
                           ),
                         ]);
                       }
-
                       return buttons;
                     }(),
                   ),
@@ -1198,8 +1216,30 @@ class _TextEditorState extends State<TextEditor> with TickerProviderStateMixin {
     }
 
     return Scaffold(
-        floatingActionButton: fab(context),
-        bottomSheet: (widget.richEditor && showBar) ? hotkeys() : null,
+        floatingActionButton: fab(),
+        bottomSheet: () {
+          if (isLoading) {
+            return Padding(
+                padding: EdgeInsets.only(
+                    left: 10.0, right: 10.0, bottom: 16, top: 16),
+                child: Column(mainAxisSize: MainAxisSize.min, children: [
+                  IntrinsicHeight(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.max,
+                      children: <Widget>[
+                        Container(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(),
+                        )
+                      ],
+                    ),
+                  )
+                ]));
+          }
+          return (widget.richEditor && showBar) ? hotkeys() : null;
+        }(),
         body: NestedScrollView(
           headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
             return <Widget>[

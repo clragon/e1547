@@ -198,7 +198,6 @@ Future<List<Map>> getVersions() async {
       await HttpHelper().get('api.github.com', '/repos/$github/releases',
           query: {}).then((response) {
         for (Map release in json.decode(response.body)) {
-          print(release);
           githubData.add({
             'version': release['tag_name'],
             'title': release['name'],

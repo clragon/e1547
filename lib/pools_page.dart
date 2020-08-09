@@ -108,7 +108,7 @@ class _PoolsPageState extends State<PoolsPage> {
     Widget preview(List<Pool> page, int pageIndex, int listIndex) {
       return PoolPreview(page[pageIndex], onPressed: () {
         Navigator.of(context).push(MaterialPageRoute<Null>(
-          builder: (context) => PoolPage(page[pageIndex]),
+          builder: (context) => PoolPage(pool: page[pageIndex]),
         ));
       });
     }

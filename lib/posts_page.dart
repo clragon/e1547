@@ -1,5 +1,3 @@
-import 'dart:async' show Future;
-
 import 'package:e1547/pool.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart' show EdgeInsets;
@@ -63,7 +61,7 @@ class FavPage extends StatelessWidget {
 class PoolPage extends StatelessWidget {
   final Pool pool;
 
-  PoolPage(this.pool);
+  PoolPage({@required this.pool});
 
   @override
   Widget build(BuildContext context) {
@@ -89,9 +87,9 @@ class PoolPage extends StatelessWidget {
           ],
         );
       },
-      postProvider: PostProvider(provider: (tags, page) {
-        return client.posts(Tagset.parse('pool:${pool.id} order:id'), page);
-      }),
+      postProvider: PostProvider(
+          provider: (tags, page) =>
+              client.posts(Tagset.parse('pool:${pool.id} order:id'), page)),
       canSearch: false,
     );
   }
@@ -100,23 +98,27 @@ class PoolPage extends StatelessWidget {
 class FollowsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return PostsPage(
-      appBarBuilder: (context) {
-        return AppBar(
-          title: Text('Following'),
-          actions: <Widget>[
-            IconButton(
-              icon: Icon(Icons.turned_in),
-              tooltip: 'Settings',
-              onPressed: () => Navigator.pushNamed(context, '/following'),
-            )
-          ],
+    return ValueListenableBuilder(
+      valueListenable: db.follows,
+      builder: (context, value, child) {
+        return PostsPage(
+          appBarBuilder: (context) {
+            return AppBar(
+              title: Text('Following'),
+              actions: <Widget>[
+                IconButton(
+                  icon: Icon(Icons.turned_in),
+                  tooltip: 'Settings',
+                  onPressed: () => Navigator.pushNamed(context, '/following'),
+                )
+              ],
+            );
+          },
+          canSearch: false,
+          postProvider:
+              PostProvider(provider: (tags, page) => client.follows(page)),
         );
       },
-      canSearch: false,
-      postProvider: PostProvider(provider: (tags, page) {
-        return client.follows(page);
-      }),
     );
   }
 }
@@ -200,9 +202,6 @@ class PostsPage extends StatefulWidget {
     this.appBarBuilder,
   });
 
-  static _PostsPageState of(BuildContext context) =>
-      context.findAncestorStateOfType();
-
   @override
   State<StatefulWidget> createState() {
     return _PostsPageState();
@@ -219,18 +218,26 @@ class _PostsPageState extends State<PostsPage> {
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
+  @override
+  void didUpdateWidget(PostsPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _loading = true;
+  }
+
   Widget _itemBuilder(BuildContext context, int item) {
     Widget preview(Post post, PostProvider provider) {
       return Container(
         height: 250,
-        child: PostPreview(post, onPressed: () {
-          Navigator.of(context).push(MaterialPageRoute<Null>(
-            builder: (context) => PostSwipe(
-              provider,
-              startingIndex: provider.posts.indexOf(post),
-            ),
-          ));
-        }),
+        child: PostPreview(
+            post: post,
+            onPressed: () {
+              Navigator.of(context).push(MaterialPageRoute<Null>(
+                builder: (context) => PostSwipe(
+                  provider: provider,
+                  startingIndex: provider.posts.indexOf(post),
+                ),
+              ));
+            }),
       );
     }
 
@@ -379,6 +386,7 @@ class _PostsPageState extends State<PostsPage> {
 }
 
 class PostProvider {
+  bool willLoad = false;
   bool isLoading = false;
   ValueNotifier<Future<Tagset>> tags =
       ValueNotifier(Future.value(Tagset.parse('')));
@@ -391,17 +399,20 @@ class PostProvider {
         .toList();
   }
 
-  PostProvider({tags, this.provider}) {
+  PostProvider({Future<Tagset> tags, this.provider}) {
     this.tags.value = tags;
-    this.tags.addListener(() {
-      isLoading = false;
-      loadNextPage(reset: true);
-    });
     this.pages.addListener(() {
       if (pages.value.length == 0) {
-        loadNextPage();
+        if (isLoading) {
+          willLoad = true;
+        } else {
+          loadNextPage(reset: true);
+        }
       }
     });
+    db.host.addListener(() => pages.value = []);
+    db.showWebm.addListener(() => pages.value = []);
+    this.tags.addListener(() => pages.value = []);
     loadNextPage();
   }
 
@@ -409,7 +420,9 @@ class PostProvider {
     if (!isLoading) {
       isLoading = true;
       if (await tags.value == null) {
+        isLoading = false;
         tags.value = Future.value(new Tagset.parse(''));
+        return;
       }
       int page = reset ? 0 : pages.value.length;
       List<Post> nextPage = [];
@@ -426,6 +439,10 @@ class PostProvider {
         }
       }
       isLoading = false;
+      if (willLoad) {
+        pages.value = [];
+        willLoad = false;
+      }
     }
   }
 }

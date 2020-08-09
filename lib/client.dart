@@ -45,7 +45,7 @@ class Client {
     }
 
     return await _http
-        .delete(await _host, '/favorites/' + post.toString() + '.json', query: {
+        .delete(await _host, '/favorites/${post.toString()}.json', query: {
       'login': await _username,
       'api_key': await _apiKey,
     }).then((response) {
@@ -139,7 +139,7 @@ class Client {
             String value = tag.split(':')[1];
             switch (identifier) {
               case 'rating':
-                if (post.rating.value == value.toUpperCase()) {
+                if (post.rating.value.toLowerCase() == value.toLowerCase()) {
                   return true;
                 }
                 break;
@@ -149,7 +149,7 @@ class Client {
                 }
                 break;
               case 'type':
-                if (post.file['ext'] == value) {
+                if (post.image.value.file['ext'] == value) {
                   return true;
                 }
                 break;
@@ -225,10 +225,10 @@ class Client {
         hasPosts = true;
         Post post = Post.fromRaw(rawPost);
         post.isLoggedIn = loggedIn;
-        if (post.file['ext'] == 'swf') {
+        if (post.image.value.file['ext'] == 'swf') {
           continue;
         }
-        if (!showWebm && post.file['ext'] == 'webm') {
+        if (!showWebm && post.image.value.file['ext'] == 'webm') {
           continue;
         }
         if (filter && await isBlacklisted(post)) {
@@ -268,7 +268,7 @@ class Client {
 
   Future<Pool> pool(int poolID) async {
     String body = await _http
-        .get(await _host, '/pools/' + poolID.toString() + '.json', query: {
+        .get(await _host, '/pools/${poolID.toString()}.json', query: {
       'login': await _username,
       'api_key': await _apiKey,
     }).then((response) => response.body);
@@ -298,7 +298,7 @@ class Client {
   Future<Post> post(int postID, {bool unsafe = false}) async {
     try {
       String body = await _http.get((unsafe ? 'e621.net' : await _host),
-          '/posts/' + postID.toString() + '.json',
+          '/posts/${postID.toString()}.json',
           query: {
             'login': await _username,
             'api_key': await _apiKey,
@@ -474,17 +474,27 @@ class Client {
     return comments;
   }
 
-  Future<Map> postComment(String comment, Post post) async {
-    String body = await _http.post(await _host, '/comments.json', query: {
+  Future<Map> postComment(String text, Post post, {Comment comment}) async {
+    Map<String, dynamic> query = {
       'login': await _username,
       'api_key': await _apiKey,
-    }, body: {
-      'comment[body]': comment,
+    };
+    Map<String, String> body = {
+      'comment[body]': text,
       'comment[post_id]': post.id.toString(),
       'commit': 'Submit',
-      'comment[do_not_bump]': '0',
-    }).then((response) => response.body);
-
-    return json.decode(body);
+    };
+    Future request;
+    if (comment != null) {
+      request = _http.patch(await _host, '/comments/${comment.id}.json',
+          query: query, body: body);
+    } else {
+      request =
+          _http.post(await _host, '/comments.json', query: query, body: body);
+    }
+    Map response = await request.then((response) {
+      return {'code': response.statusCode, 'reason': response.reasonPhrase};
+    });
+    return response;
   }
 }
