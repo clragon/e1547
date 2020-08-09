@@ -310,12 +310,13 @@ class _CommentsWidgetState extends State<CommentsWidget> {
                 String body = comment.body;
                 body = body
                     .replaceAllMapped(
-                    RegExp(
-                        r'\[quote\]".*?":/user/show/[0-9]* said:.*\[\/quote\]',
-                        dotAll: true),
+                        RegExp(
+                            r'\[quote\]".*?":/user/show/[0-9]* said:.*\[\/quote\]',
+                            dotAll: true),
                         (match) => '')
                     .trim();
-                sendComment(context, widget.post);
+                body = '[quote]"${comment.creator}":/user/${comment.creator} said:\n$body[/quote]\n';
+                sendComment(context, widget.post, text: body);
               }
             },
           ),
@@ -344,12 +345,12 @@ class _CommentsWidgetState extends State<CommentsWidget> {
 }
 
 Future<bool> sendComment(BuildContext context, Post post,
-    {Comment comment}) async {
+    {String text, Comment comment}) async {
   bool sent = false;
   await Navigator.of(context).push(MaterialPageRoute<Null>(builder: (context) {
     return TextEditor(
       title: '#${post.id} comment',
-      content: comment != null ? comment.body : null,
+      content: text ?? (comment != null ? comment.body : null),
       validator: (context, text) async {
         if (text.isNotEmpty) {
           Map response;
