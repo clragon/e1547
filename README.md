@@ -58,10 +58,12 @@ APK and IPA files can be found over at the [releases](https://github.com/clragon
 
 ### Installing on iOS
 
+#### Without Jailbreak:
 - Follow the instructions on [AltStore](https://altstore.io/)
 
 or 
 
+#### With Jailbreak:
 1. Grab [Cydia Impactor](http://www.cydiaimpactor.com/)
 2. Drag the downloaded .ipa file onto Cydia Impactor after opening it. 
 3. Enter your Apple ID and password. If the password fails, [use an App Specific 2fa Password](https://support.apple.com/en-us/HT204397#sections)
@@ -75,23 +77,22 @@ or
 
 Compiling the app for yourself should be possible for both platforms, iOS and Android.
 
-### Android
+### Getting started
 
 1. Install [Flutter](https://flutter.dev/docs/get-started/install)
 2. Clone the e1547 GitHub Repository
-2. Build with Android Studio
+
+### Android
+
+- Build with [Android Studio](https://developer.android.com/studio)
 
 ### iOS
 
-Compiling for iOS, at the moment, requires running macOS. You may be able to use a VM.
+**Compiling for iOS requires running macOS.**
 
-1. Install [Flutter](https://flutter.dev/docs/get-started/install)
-2. Run `git clone https://github.com/clragon/e1547.git && cd e1547`
-3. Run `sh ios/build.sh`
+- Run `ios/build.sh`
 
-This will create a release build through Flutter, fix a few flutter bugs, and then package it into an .ipa file. It will open the folder containing the .ipa on completion.
-
----
+This will create a release build IPA file for you, as well as reduce the file size by removing unecessary Flutter artifacts.
 
 ## Contact
 The app is currently under development.  
