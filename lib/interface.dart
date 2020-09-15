@@ -19,6 +19,10 @@ void wikiDialog(BuildContext context, String tag, {actions = false}) {
         child: FutureBuilder(
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.done) {
+              if (snapshot.data == null) {
+                return Text('unable to retrieve wiki entry',
+                    style: TextStyle(fontStyle: FontStyle.italic));
+              }
               if (snapshot.data.length != 0) {
                 return SingleChildScrollView(
                   scrollDirection: Axis.vertical,
@@ -502,7 +506,7 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
             if (!sameSite) {
               onTap = () => Navigator.of(context)
                       .push(MaterialPageRoute<Null>(builder: (context) {
-                    return SearchPage(tags: Tagset.parse(search));
+                    return SearchPage(tags: search);
                   }));
             }
 
@@ -835,8 +839,7 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
               .push(MaterialPageRoute<Null>(builder: (context) {
             // split of display text after |
             // and replace spaces with _ to produce a valid tag
-            return SearchPage(
-                tags: Tagset.parse(match.split('|')[0].replaceAll(' ', '_')));
+            return SearchPage(tags: match.split('|')[0].replaceAll(' ', '_'));
           }));
         };
 
@@ -1377,5 +1380,118 @@ class RangeDialogState extends State<RangeDialog> {
         ),
       ],
     );
+  }
+}
+
+Widget pageLoader(
+    {@required Widget child,
+    Widget onLoading,
+    Widget onEmpty,
+    bool isLoading,
+    bool isEmpty}) {
+  return Stack(children: [
+    Visibility(
+      visible: isLoading,
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              height: 28,
+              width: 28,
+              child: CircularProgressIndicator(),
+            ),
+            Padding(
+              padding: EdgeInsets.all(20),
+              child: onLoading,
+            ),
+          ],
+        ),
+      ),
+    ),
+    child,
+    Visibility(
+      visible: (isEmpty),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.error_outline,
+              size: 32,
+            ),
+            Padding(
+              padding: EdgeInsets.all(20),
+              child: onEmpty,
+            ),
+          ],
+        ),
+      ),
+    ),
+  ]);
+}
+
+class DataProvider<T> {
+  bool willLoad = false;
+  bool isLoading = false;
+  ValueNotifier<String> search = ValueNotifier('');
+  ValueNotifier<List<List<T>>> pages = ValueNotifier([]);
+  Future<List<T>> Function(String search, int page) provider;
+  Future<List<T>> Function(String search, List<List<T>> pages) extendedProvider;
+
+  List<T> get items {
+    return pages.value
+        .fold<Iterable<T>>(Iterable.empty(), (a, b) => a.followedBy(b))
+        .toList();
+  }
+
+  DataProvider({String search, @required this.provider}) {
+    this.search.value = sortTags(search ?? '');
+    [db.host, db.username, db.showWebm, this.search]
+        .forEach((notifier) => notifier.addListener(resetPages));
+    loadNextPage();
+  }
+
+  DataProvider.extended({String search, @required this.extendedProvider}) {
+    DataProvider(search: search, provider: null);
+  }
+
+  Future<void> resetPages() async {
+    pages.value = [];
+    if (pages.value.length == 0) {
+      if (isLoading) {
+        willLoad = true;
+      } else {
+        loadNextPage(reset: true);
+      }
+    }
+  }
+
+  Future<void> loadNextPage({bool reset = false}) async {
+    if (!isLoading) {
+      isLoading = true;
+      List<T> nextPage = [];
+
+      int page = reset ? 0 : pages.value.length + 1;
+
+      if (extendedProvider != null) {
+        nextPage.addAll(await extendedProvider(search.value, pages.value));
+      } else {
+        nextPage.addAll(await provider(search.value, page));
+      }
+
+      if (nextPage.length != 0 || pages.value.length == 0) {
+        if (reset) {
+          pages.value = [nextPage];
+        } else {
+          pages.value = List.from(pages.value..add(nextPage));
+        }
+      }
+      isLoading = false;
+      if (willLoad) {
+        willLoad = false;
+        resetPages();
+      }
+    }
   }
 }

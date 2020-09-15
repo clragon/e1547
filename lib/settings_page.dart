@@ -20,7 +20,6 @@ class _SettingsPageState extends State<SettingsPage> {
   String _theme;
   bool _showUnsafe = false;
   bool _showWebm = false;
-  bool _refresh = false;
 
   @override
   void initState() {
@@ -36,8 +35,6 @@ class _SettingsPageState extends State<SettingsPage> {
 
   Function() _onTapSignOut(BuildContext context) {
     return () async {
-      _refresh = true;
-
       String username = await db.username.value;
       db.username.value = Future.value(null);
       db.apiKey.value = Future.value(null);
@@ -166,7 +163,8 @@ class _SettingsPageState extends State<SettingsPage> {
                                       height: 36,
                                       width: 36,
                                       decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(5)),
                                         color: themeMap[theme].canvasColor,
                                         border: Border.all(
                                           color:
@@ -252,30 +250,16 @@ class _SettingsPageState extends State<SettingsPage> {
       );
     }
 
-    return WillPopScope(
-      onWillPop: () async {
-        if (_refresh) {
-          refreshPage(context);
-          return false;
-        } else {
-          return true;
-        }
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text('Settings'),
-          leading: IconButton(
-              icon: Icon(Icons.arrow_back),
-              onPressed: () {
-                if (_refresh) {
-                  refreshPage(context);
-                } else {
-                  Navigator.pop(context);
-                }
-              }),
-        ),
-        body: Builder(builder: bodyWidgetBuilder),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Settings'),
+        leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.pop(context);
+            }),
       ),
+      body: Builder(builder: bodyWidgetBuilder),
     );
   }
 }

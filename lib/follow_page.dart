@@ -1,9 +1,9 @@
 import 'package:e1547/pool.dart';
 import 'package:e1547/posts_page.dart';
-import 'package:e1547/tag.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
+
 import 'client.dart';
 import 'interface.dart';
 import 'persistence.dart' show db;
@@ -46,21 +46,33 @@ class _FollowingPageState extends State<FollowingPage> {
                         mainAxisSize: MainAxisSize.max,
                         children: () {
                           return [
-                            InkWell(
-                                onTap: () => Navigator.of(context).push(
-                                        MaterialPageRoute<Null>(
-                                            builder: (context) {
-                                      return SearchPage(
-                                          tags: Tagset.parse(_follows[index]));
-                                    })),
-                                onLongPress: () => wikiDialog(
-                                    context, _follows[index],
-                                    actions: true),
-                                child: Card(
+                            Card(
+                                child: InkWell(
+                                    onTap: () async {
+                                      if (_follows[index].startsWith('pool:')) {
+                                        Pool p = await client.pool(int.parse(
+                                            _follows[index].split(':')[1]));
+                                        Navigator.of(context).push(
+                                            MaterialPageRoute<Null>(
+                                                builder: (context) {
+                                          return PoolPage(pool: p);
+                                        }));
+                                      } else {
+                                        Navigator.of(context).push(
+                                            MaterialPageRoute<Null>(
+                                                builder: (context) {
+                                          return SearchPage(
+                                              tags: _follows[index]);
+                                        }));
+                                      }
+                                    },
+                                    onLongPress: () => wikiDialog(
+                                        context, _follows[index],
+                                        actions: true),
                                     child: Padding(
-                                  padding: EdgeInsets.all(8),
-                                  child: Text(_follows[index]),
-                                )))
+                                      padding: EdgeInsets.all(8),
+                                      child: Text(_follows[index]),
+                                    )))
                           ];
                         }(),
                       ),
@@ -99,8 +111,7 @@ class _FollowingPageState extends State<FollowingPage> {
                                   Navigator.of(context).push(
                                       MaterialPageRoute<Null>(
                                           builder: (context) {
-                                    return SearchPage(
-                                        tags: Tagset.parse(_follows[index]));
+                                    return SearchPage(tags: _follows[index]);
                                   }));
                                 }
                                 break;
@@ -159,7 +170,7 @@ class _FollowingPageState extends State<FollowingPage> {
                                 autofocus: true,
                                 maxLines: 1,
                                 inputFormatters: [
-                                  BlacklistingTextInputFormatter(' ')
+                                  FilteringTextInputFormatter.deny(' ')
                                 ],
                                 decoration: InputDecoration(
                                     labelText: 'Follow Tag',
@@ -207,7 +218,7 @@ class _FollowingPageState extends State<FollowingPage> {
         content: TextField(
           controller: controller,
           keyboardType: TextInputType.multiline,
-          inputFormatters: [BlacklistingTextInputFormatter(' ')],
+          inputFormatters: [FilteringTextInputFormatter.deny(' ')],
           maxLines: null,
         ),
         actions: <Widget>[

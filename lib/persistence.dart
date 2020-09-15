@@ -1,6 +1,5 @@
 import 'dart:async' show Future;
 
-import 'package:e1547/tag.dart' show Tagset;
 import 'package:flutter/foundation.dart' show ValueNotifier;
 import 'package:shared_preferences/shared_preferences.dart'
     show SharedPreferences;
@@ -11,7 +10,7 @@ final Persistence db = Persistence();
 
 class Persistence {
   ValueNotifier<Future<String>> host;
-  ValueNotifier<Future<Tagset>> homeTags;
+  ValueNotifier<Future<String>> homeTags;
   ValueNotifier<Future<String>> username;
   ValueNotifier<Future<String>> apiKey;
   ValueNotifier<Future<String>> theme;
@@ -24,8 +23,7 @@ class Persistence {
     host = _makeNotifier((p) => p.getString('host') ?? 'e926.net');
     host.addListener(_saveString('host', host));
 
-    homeTags =
-        _makeNotifier((p) => Tagset.parse(p.getString('homeTags') ?? ''));
+    homeTags = _makeNotifier((p) => p.getString('homeTags') ?? '');
     homeTags.addListener(_saveString('homeTags', homeTags));
 
     username = _makeNotifier((p) => p.getString('username'));

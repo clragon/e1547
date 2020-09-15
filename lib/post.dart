@@ -6,29 +6,26 @@ import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e1547/appInfo.dart';
+import 'package:e1547/client.dart' show client;
 import 'package:e1547/comment.dart';
+import 'package:e1547/interface.dart';
+import 'package:e1547/persistence.dart' show db;
 import 'package:e1547/pool.dart';
 import 'package:e1547/posts_page.dart';
-import 'package:e1547/tag.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show SystemChrome, SystemUiOverlay;
+import 'package:flutter/services.dart' show Clipboard, ClipboardData;
 import 'package:flutter_cache_manager/flutter_cache_manager.dart'
     show DefaultCacheManager;
-import 'package:flutter/services.dart' show Clipboard, ClipboardData;
 import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:icon_shadow/icon_shadow.dart';
 import 'package:intl/intl.dart';
 import 'package:like_button/like_button.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
-import 'package:url_launcher/url_launcher.dart' as url;
-
-import 'package:e1547/client.dart' show client;
-import 'package:e1547/interface.dart';
-import 'package:e1547/persistence.dart' show db;
-import 'package:icon_shadow/icon_shadow.dart';
 import 'package:share/share.dart';
+import 'package:url_launcher/url_launcher.dart' as url;
 
 class _Image {
   Map file;
@@ -202,15 +199,16 @@ class PostSwipe extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     int lastIndex = startingIndex;
-    PageController controller = PageController(initialPage: startingIndex);
+    PageController controller = PageController(
+        initialPage: startingIndex, viewportFraction: 1.000000000001);
 
     Widget _pageBuilder(BuildContext context, int index) {
-      if (index == provider.posts.length - 1) {
+      if (index == provider.items.length - 1) {
         provider.loadNextPage();
       }
-      return index < provider.posts.length
+      return index < provider.items.length
           ? PostWidget(
-              post: provider.posts[index],
+              post: provider.items[index],
               provider: provider,
               controller: controller,
             )
@@ -224,9 +222,21 @@ class PostSwipe extends StatelessWidget {
           controller: controller,
           itemBuilder: _pageBuilder,
           onPageChanged: (index) {
-            if (provider.posts.length != 0) {
-              if (provider.posts[lastIndex].isEditing.value) {
-                resetPost(provider.posts[lastIndex]);
+            int precache = 2;
+            for (int i = -precache - 1; i < precache; i++) {
+              int target = index + 1 + i;
+              if (target > 0 && target < provider.items.length) {
+                precacheImage(
+                  CachedNetworkImageProvider(
+                      provider.items[target].image.value.sample['url']),
+                  context,
+                );
+              }
+            }
+
+            if (provider.items.length != 0) {
+              if (provider.items[lastIndex].isEditing.value) {
+                resetPost(provider.items[lastIndex]);
               }
             }
             lastIndex = index;
@@ -261,35 +271,48 @@ class _PostWidgetState extends State<PostWidget> {
         !widget.post.isBlacklisted);
   }
 
+  void updateWidget() {
+    if (this.mounted && !widget.provider.items.contains(widget.post)) {
+      if (ModalRoute.of(context).isCurrent) {
+        Navigator.of(context).pushReplacement(MaterialPageRoute<Null>(
+            builder: (context) => PostWidget(post: widget.post)));
+      } else {
+        Navigator.of(context).replace(
+            oldRoute: ModalRoute.of(context),
+            newRoute: MaterialPageRoute<Null>(
+                builder: (context) => PostWidget(post: widget.post)));
+      }
+    }
+  }
+
+  void closeBottomSheet() {
+    if (!widget.post.isEditing.value) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        try {
+          _bottomSheetController?.close?.call();
+        } on NoSuchMethodError {
+          // this error is thrown when hot reloading in debug mode
+        }
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    widget.post.isEditing.addListener(closeBottomSheet);
+    widget.provider?.pages?.addListener(updateWidget);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    widget.provider?.pages?.removeListener(updateWidget);
+    widget.post.isEditing.removeListener(closeBottomSheet);
+  }
+
   @override
   Widget build(BuildContext context) {
-    widget.post.isEditing.addListener(() {
-      if (!widget.post.isEditing.value) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          try {
-            _bottomSheetController?.close?.call();
-          } on NoSuchMethodError {
-            // this error is thrown when hot reloading in debug mode
-          }
-        });
-      }
-    });
-
-    widget.provider?.pages?.addListener(() {
-      if (!widget.provider.posts.contains(widget.post)) {
-        if (ModalRoute.of(context).isCurrent) {
-          Navigator.of(context).pushReplacement(MaterialPageRoute<Null>(
-              builder: (context) => PostWidget(post: widget.post)));
-        } else {
-          Navigator.of(context).replace(
-              oldRoute: ModalRoute.of(context),
-              newRoute: MaterialPageRoute<Null>(
-                  builder: (context) => PostWidget(post: widget.post)));
-        }
-        // Navigator.of(context).removeRoute(ModalRoute.of(context));
-      }
-    });
-
     Widget postContentsWidget() {
       Widget overlayImageWidget() {
         Widget image() {
@@ -431,12 +454,7 @@ class _PostWidgetState extends State<PostWidget> {
           );
         }
 
-        return Stack(
-          children: <Widget>[
-            Center(child: imageWidget()),
-            postAppBar(context, widget.post),
-          ],
-        );
+        return imageWidget();
       }
 
       return ValueListenableBuilder(
@@ -447,7 +465,7 @@ class _PostWidgetState extends State<PostWidget> {
               if (widget.post.image.value.file['ext'] != 'webm' &&
                   widget.post.image.value.file['url'] != null &&
                   isVisible()) {
-                List<Post> posts = widget.provider?.posts ?? [widget.post];
+                List<Post> posts = widget.provider?.items ?? [widget.post];
                 _onTapImage(context, posts, posts.indexOf(widget.post));
               }
             },
@@ -464,58 +482,73 @@ class _PostWidgetState extends State<PostWidget> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Padding(
-                      padding: EdgeInsets.only(right: 12),
-                      child: Icon(Icons.account_circle),
-                    ),
-                    () {
-                      if (widget.post.tags.value['artist'].length != 0) {
-                        return RichText(
-                          text: TextSpan(children: () {
-                            List<TextSpan> spans = [];
-                            int count = 0;
-                            for (String artist
-                                in widget.post.tags.value['artist']) {
-                              switch (artist) {
-                                case 'conditional_dnp':
-                                case 'sound_warning':
-                                case 'epilepsy_warning':
-                                case 'avoid_posting':
-                                  break;
-                                default:
-                                  count++;
-                                  spans.add(TextSpan(
-                                    text: count > 1 ? ', ' + artist : artist,
-                                    style:
-                                        Theme.of(context).textTheme.bodyText2,
-                                    recognizer: TapGestureRecognizer()
-                                      ..onTap = () {
-                                        Navigator.of(context).push(
-                                            MaterialPageRoute<Null>(
-                                                builder: (context) {
-                                          return SearchPage(
-                                              tags: Tagset.parse(artist));
-                                        }));
-                                      },
-                                  ));
-                                  break;
-                              }
+                Flexible(
+                  child: Row(
+                    children: <Widget>[
+                      Padding(
+                        padding: EdgeInsets.only(right: 12),
+                        child: Icon(Icons.account_circle),
+                      ),
+                      Flexible(
+                        child: ValueListenableBuilder(
+                          builder: (BuildContext context, value, Widget child) {
+                            if (widget.post.tags.value['artist'].length != 0) {
+                              return Text.rich(
+                                TextSpan(children: () {
+                                  List<InlineSpan> spans = [];
+                                  int count = 0;
+                                  for (String artist
+                                      in widget.post.tags.value['artist']) {
+                                    switch (artist) {
+                                      case 'conditional_dnp':
+                                      case 'sound_warning':
+                                      case 'epilepsy_warning':
+                                      case 'avoid_posting':
+                                        break;
+                                      default:
+                                        count++;
+                                        if (count > 1) {
+                                          spans.add(TextSpan(text: ', '));
+                                        }
+                                        spans.add(WidgetSpan(
+                                            child: InkWell(
+                                          child: Text(
+                                            artist,
+                                            style: TextStyle(
+                                              fontSize: 14.0,
+                                            ),
+                                          ),
+                                          onTap: () => Navigator.of(context)
+                                              .push(MaterialPageRoute<Null>(
+                                                  builder: (context) {
+                                            return SearchPage(tags: artist);
+                                          })),
+                                          onLongPress: () => wikiDialog(
+                                              context, artist,
+                                              actions: true),
+                                        )));
+                                        break;
+                                    }
+                                  }
+                                  return spans;
+                                }()),
+                                overflow: TextOverflow.ellipsis,
+                              );
+                            } else {
+                              return Text('no artist',
+                                  style: TextStyle(
+                                      color: Theme.of(context)
+                                          .textTheme
+                                          .subtitle2
+                                          .color,
+                                      fontStyle: FontStyle.italic));
                             }
-                            return spans;
-                          }()),
-                        );
-                      } else {
-                        return Text('no artist',
-                            style: TextStyle(
-                                color:
-                                    Theme.of(context).textTheme.subtitle2.color,
-                                fontStyle: FontStyle.italic));
-                      }
-                    }(),
-                  ],
+                          },
+                          valueListenable: widget.post.tags,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
@@ -547,8 +580,7 @@ class _PostWidgetState extends State<PostWidget> {
                             .user(widget.post.uploader.toString()))['name'];
                         Navigator.of(context)
                             .push(MaterialPageRoute<Null>(builder: (context) {
-                          return SearchPage(
-                              tags: Tagset.parse('user:$uploader'));
+                          return SearchPage(tags: 'user:$uploader');
                         }));
                       },
                     ),
@@ -973,39 +1005,43 @@ class _PostWidgetState extends State<PostWidget> {
 
       Widget tagDisplay() {
         Widget tagCard(String tag, String tagSet) {
-          return InkWell(
-              onTap: () => Navigator.of(context)
-                      .push(MaterialPageRoute<Null>(builder: (context) {
-                    return SearchPage(tags: Tagset.parse(tag));
-                  })),
-              onLongPress: () => wikiDialog(context, tag, actions: true),
-              child: Card(
-                  clipBehavior: Clip.antiAlias,
+          return Card(
+              child: InkWell(
+                  onTap: () => Navigator.of(context)
+                          .push(MaterialPageRoute<Null>(builder: (context) {
+                        return SearchPage(tags: tag);
+                      })),
+                  onLongPress: () => wikiDialog(context, tag, actions: true),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
                       Container(
+                        decoration: BoxDecoration(
+                          color: () {
+                            switch (tagSet) {
+                              case 'general':
+                                return Colors.indigo[300];
+                              case 'species':
+                                return Colors.teal[300];
+                              case 'character':
+                                return Colors.lightGreen[300];
+                              case 'copyright':
+                                return Colors.yellow[300];
+                              case 'meta':
+                                return Colors.deepOrange[300];
+                              case 'lore':
+                                return Colors.pink[300];
+                              case 'artist':
+                                return Colors.deepPurple[300];
+                              default:
+                                return Colors.grey[300];
+                            }
+                          }(),
+                          borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(5),
+                              bottomLeft: Radius.circular(5)),
+                        ),
                         height: 24,
-                        color: () {
-                          switch (tagSet) {
-                            case 'general':
-                              return Colors.indigo[300];
-                            case 'species':
-                              return Colors.teal[300];
-                            case 'character':
-                              return Colors.lightGreen[300];
-                            case 'copyright':
-                              return Colors.yellow[300];
-                            case 'meta':
-                              return Colors.deepOrange[300];
-                            case 'lore':
-                              return Colors.pink[300];
-                            case 'artist':
-                              return Colors.deepPurple[300];
-                            default:
-                              return Colors.grey[300];
-                          }
-                        }(),
                         child: () {
                           if (widget.post.isEditing.value) {
                             return InkWell(
@@ -1027,10 +1063,15 @@ class _PostWidgetState extends State<PostWidget> {
                           }
                         }(),
                       ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: 4, bottom: 4, right: 8, left: 6),
-                        child: Text(tag.replaceAll('_', ' ')),
+                      Flexible(
+                        child: Padding(
+                          padding: EdgeInsets.only(
+                              top: 4, bottom: 4, right: 8, left: 6),
+                          child: Text(
+                            tag.replaceAll('_', ' '),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
                       ),
                     ],
                   )));
@@ -1176,8 +1217,8 @@ class _PostWidgetState extends State<PostWidget> {
                           String category;
                           if (validator.length == 0) {
                             category = 'general';
-                          }
-                          if (group[tagSet] != validator[0]['category']) {
+                          } else if (group[tagSet] !=
+                              validator[0]['category']) {
                             category = group.keys.firstWhere(
                                 (k) => group[k] == validator[0]['category']);
                           }
@@ -1732,13 +1773,18 @@ class _PostWidgetState extends State<PostWidget> {
             }
           },
           child: Scaffold(
-            body: ListView(
-              children: <Widget>[
-                postContentsWidget(),
-                postMetadataWidget(),
-              ],
-              physics: BouncingScrollPhysics(),
-            ),
+            extendBodyBehindAppBar: true,
+            appBar: postAppBar(context, widget.post),
+            body: MediaQuery.removeViewInsets(
+                context: context,
+                removeTop: true,
+                child: ListView(
+                  children: <Widget>[
+                    postContentsWidget(),
+                    postMetadataWidget(),
+                  ],
+                  physics: BouncingScrollPhysics(),
+                )),
             floatingActionButton: widget.post.isLoggedIn
                 ? Builder(
                     builder: (context) {
@@ -1754,6 +1800,29 @@ class _PostWidgetState extends State<PostWidget> {
 
   Future<void> _onTapImage(
       BuildContext context, List<Post> posts, int index) async {
+    Widget loadingPicture(BuildContext context, Post post) {
+      return GestureDetector(
+        child: Container(
+          child: Stack(alignment: Alignment.center, children: [
+            Hero(
+              tag: 'image_${post.id}',
+              child: CachedNetworkImage(
+                imageUrl: post.image.value.sample['url'],
+                placeholder: (context, url) => CircularProgressIndicator(),
+                errorWidget: (context, url, error) => Icon(Icons.error_outline),
+              ),
+            ),
+            Container(
+              alignment: Alignment.bottomCenter,
+              child: LinearProgressIndicator(),
+            ),
+          ]),
+          color: Theme.of(context).canvasColor,
+        ),
+        onTap: () => Navigator.of(context).pop(),
+      );
+    }
+
     Widget fullScreenGallery(BuildContext context) {
       int current = index;
       return PhotoViewGallery.builder(
@@ -1761,7 +1830,7 @@ class _PostWidgetState extends State<PostWidget> {
         backgroundDecoration: BoxDecoration(
           color: Theme.of(context).canvasColor,
         ),
-        builder: (BuildContext context, int index) {
+        builder: (context, index) {
           current = index;
           return PhotoViewGalleryPageOptions(
             heroAttributes: PhotoViewHeroAttributes(
@@ -1777,32 +1846,21 @@ class _PostWidgetState extends State<PostWidget> {
           );
         },
         itemCount: posts.length,
-        loadingBuilder: (buildContext, imageChunkEvent) => GestureDetector(
-          child: Container(
-            child: Stack(alignment: Alignment.center, children: [
-              Hero(
-                tag: 'image_${posts[current].id}',
-                child: CachedNetworkImage(
-                  imageUrl: posts[current].image.value.sample['url'],
-                  placeholder: (context, url) => CircularProgressIndicator(),
-                  errorWidget: (context, url, error) =>
-                      Icon(Icons.error_outline),
-                ),
-              ),
-              Container(
-                alignment: Alignment.bottomCenter,
-                child: LinearProgressIndicator(),
-              ),
-            ]),
-            color: Theme.of(context).canvasColor,
-          ),
-          onTap: () => Navigator.of(context).pop(),
-        ),
-        pageController: PageController(
-          initialPage: index,
-        ),
+        loadingBuilder: (context, chunk) =>
+            loadingPicture(context, posts[current]),
+        pageController: PageController(initialPage: index),
         onPageChanged: (index) {
-          current = index;
+          int precache = 2;
+          for (int i = -precache - 1; i < precache; i++) {
+            int target = index + 1 + i;
+            if (target > 0 && target < posts.length) {
+              precacheImage(
+                CachedNetworkImageProvider(
+                    posts[target].image.value.file['url']),
+                context,
+              );
+            }
+          }
           if (widget.controller != null) {
             widget.controller.jumpToPage(index);
           }
@@ -1820,17 +1878,7 @@ class _PostWidgetState extends State<PostWidget> {
         imageProvider:
             CachedNetworkImageProvider(posts[index].image.value.sample['url']),
         loadingBuilder: (buildContext, imageChunkEvent) =>
-            Stack(alignment: Alignment.center, children: [
-          CachedNetworkImage(
-            imageUrl: posts[index].image.value.sample['url'],
-            placeholder: (context, url) => CircularProgressIndicator(),
-            errorWidget: (context, url, error) => Icon(Icons.error_outline),
-          ),
-          Container(
-            alignment: Alignment.topCenter,
-            child: LinearProgressIndicator(),
-          ),
-        ]),
+            loadingPicture(context, posts[index]),
         minScale: PhotoViewComputedScale.contained,
         maxScale: PhotoViewComputedScale.contained * 6,
         onTapUp: (buildContext, tapDownDetails, photoViewControllerValue) =>
@@ -1959,10 +2007,7 @@ Future<File> download(Post post) async {
 }
 
 void downloadDialog(BuildContext context, Post post) async {
-  Map<PermissionGroup, PermissionStatus> permissions =
-      await PermissionHandler().requestPermissions([PermissionGroup.storage]);
-
-  if (permissions[PermissionGroup.storage] != PermissionStatus.granted) {
+  if (!await Permission.storage.request().isGranted) {
     showDialog(
         context: context,
         builder: (context) {

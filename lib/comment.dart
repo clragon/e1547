@@ -5,7 +5,6 @@ import 'package:e1547/interface.dart';
 import 'package:e1547/persistence.dart';
 import 'package:e1547/post.dart' show Post;
 import 'package:e1547/posts_page.dart';
-import 'package:e1547/tag.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -13,6 +12,7 @@ class Comment {
   Map raw;
 
   int id;
+  int creatorID;
   String creator;
   String body;
   int score;
@@ -21,6 +21,7 @@ class Comment {
 
   Comment.fromRaw(this.raw) {
     id = raw['id'] as int;
+    creatorID = raw['creator_id'] as int;
     creator = raw['creator_name'] as String;
     body = raw['body'] as String;
     score = raw['score'] as int;
@@ -31,6 +32,7 @@ class Comment {
 
 class CommentsWidget extends StatefulWidget {
   final Post post;
+
   CommentsWidget(this.post);
 
   @override
@@ -39,38 +41,22 @@ class CommentsWidget extends StatefulWidget {
 
 class _CommentsWidgetState extends State<CommentsWidget> {
   bool _loading = true;
-  ValueNotifier<List<List<Comment>>> _pages = ValueNotifier([]);
-  List<Comment> get _comments {
-    return _pages.value
-        .fold<Iterable<Comment>>(Iterable.empty(), (a, b) => a.followedBy(b))
-        .toList();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _loadNextPage();
-  }
-
-  Future<void> _loadNextPage({bool reset = false}) async {
-    int page = reset ? 0 : _pages.value.length;
-    List<Comment> nextPage = [];
-    nextPage.addAll(await client.comments(widget.post.id, page));
-    if (reset && nextPage.length != 0) {
-      _pages.value.clear();
-    }
-    _pages.value = List.from(_pages.value..add(nextPage));
-  }
-
+  CommentProvider provider;
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
   @override
+  void initState() {
+    super.initState();
+    provider = CommentProvider(postID: widget.post.id);
+  }
+
+  @override
   Widget build(BuildContext context) {
-    _pages.addListener(() {
+    provider.pages.addListener(() {
       if (this.mounted) {
         setState(() {
-          if (_pages.value.length == 0) {
+          if (provider.pages.value.length == 0) {
             _loading = true;
           } else {
             _loading = false;
@@ -80,64 +66,29 @@ class _CommentsWidgetState extends State<CommentsWidget> {
     });
 
     Widget body() {
-      return Stack(
-        children: <Widget>[
-          Visibility(
-            visible: _loading,
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    height: 28,
-                    width: 28,
-                    child: CircularProgressIndicator(),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.all(20),
-                    child: Text('Loading comments'),
-                  ),
-                ],
-              ),
-            ),
+      return pageLoader(
+        onLoading: Text('Loading comments'),
+        onEmpty: Text('No comments'),
+        isLoading: _loading,
+        isEmpty: (!_loading && provider.comments.length == 0),
+        child: SmartRefresher(
+          controller: _refreshController,
+          header: ClassicHeader(
+            refreshingText: 'Refreshing...',
+            completeText: 'Refreshed comments!',
           ),
-          SmartRefresher(
-            controller: _refreshController,
-            header: ClassicHeader(
-              refreshingText: 'Refreshing...',
-              completeText: 'Refreshed comments!',
-            ),
-            onRefresh: () async {
-              await _loadNextPage(reset: true);
-              _refreshController.refreshCompleted();
-            },
+          onRefresh: () async {
+            await provider.loadNextPage(reset: true);
+            _refreshController.refreshCompleted();
+          },
+          physics: BouncingScrollPhysics(),
+          child: ListView.builder(
+            itemBuilder: _itemBuilder,
+            itemCount: provider.comments.length,
+            padding: EdgeInsets.all(10.0),
             physics: BouncingScrollPhysics(),
-            child: ListView.builder(
-              itemBuilder: _itemBuilder,
-              itemCount: _comments.length,
-              padding: EdgeInsets.all(10.0),
-              physics: BouncingScrollPhysics(),
-            ),
           ),
-          Visibility(
-            visible: (!_loading && _comments.length == 0),
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.error_outline,
-                    size: 32,
-                  ),
-                  Padding(
-                    padding: EdgeInsets.all(20),
-                    child: Text('No comments'),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
+        ),
       );
     }
 
@@ -244,8 +195,7 @@ class _CommentsWidgetState extends State<CommentsWidget> {
                                 Navigator.of(context).push(
                                     MaterialPageRoute<Null>(builder: (context) {
                                   return SearchPage(
-                                      tags: Tagset.parse(
-                                          'user:${comment.creator}'));
+                                      tags: 'user:${comment.creator}');
                                 }));
                               },
                             ),
@@ -315,7 +265,8 @@ class _CommentsWidgetState extends State<CommentsWidget> {
                             dotAll: true),
                         (match) => '')
                     .trim();
-                body = '[quote]"${comment.creator}":/users/${comment.creator} said:\n$body[/quote]\n';
+                body =
+                    '[quote]"${comment.creator}":/users/${comment.creatorID} said:\n$body[/quote]\n';
                 sendComment(context, widget.post, text: body);
               }
             },
@@ -327,21 +278,41 @@ class _CommentsWidgetState extends State<CommentsWidget> {
   }
 
   Widget _itemBuilder(BuildContext context, int item) {
-    for (List<Comment> page in _pages.value) {
-      if (page.isEmpty) {
-        return null;
-      }
+    if (item == provider.comments.length - 1) {
+      provider.loadNextPage();
+    }
 
-      if (item == _comments.length) {
-        _loadNextPage();
-      }
-
-      if (item < _comments.length) {
-        return commentWidget(page[item]);
-      }
+    if (item < provider.comments.length) {
+      return commentWidget(provider.comments[item]);
     }
     return null;
   }
+}
+
+class CommentProvider extends DataProvider<Comment> {
+  final int postID;
+  List<Comment> get comments => super.items;
+
+  CommentProvider({@required this.postID})
+      : super(provider: ((search, page) => client.comments(postID, page)));
+
+  /*
+  provider: provider ??
+    (search, page, {pages}) async {
+      String cursor;
+      if (pages.length == 0) {
+        cursor = 'a0';
+      } else {
+        cursor =
+            'a${pages.last.reduce((value, element) => (value.id > element.id) ? value : element).id.toString()}';
+      }
+      List<Comment> comments =
+          await client.comments(postID, cursor);
+      comments.sort((one, two) => DateTime.parse(one.creation)
+          .compareTo(DateTime.parse(two.creation)));
+      return comments;
+    }
+   */
 }
 
 Future<bool> sendComment(BuildContext context, Post post,

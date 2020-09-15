@@ -1,7 +1,6 @@
 import 'dart:async' show Future, Timer;
 
 import 'package:e1547/client.dart' show client;
-import 'package:e1547/main.dart';
 import 'package:e1547/persistence.dart' show db;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show Clipboard;
@@ -146,7 +145,7 @@ class _LoginFormFieldsState extends State<_LoginFormFields> {
         );
 
         if (ok) {
-          refreshPage(context);
+          Navigator.of(context).pop();
         } else {
           _authDidJustFail = true;
           form.validate();

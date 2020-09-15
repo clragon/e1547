@@ -17,14 +17,14 @@ class Pool {
   bool active;
 
   Pool.fromRaw(this.raw) {
-    id = raw['id'];
-    name = raw['name'];
-    description = raw['description'];
+    id = raw['id'] as int;
+    name = raw['name'] as String;
+    description = raw['description'] as String;
     postIDs.addAll(raw['post_ids'].cast<int>());
-    creator = raw['creator_name'];
+    creator = raw['creator_name'] as String;
     active = raw['is_active'] as bool;
-    creation = raw['created_at'];
-    updated = raw['updated_at'];
+    creation = raw['created_at'] as String;
+    updated = raw['updated_at'] as String;
   }
 
   Uri url(String host) => Uri(scheme: 'https', host: host, path: '/pools/$id');
@@ -36,9 +36,8 @@ class PoolPreview extends StatelessWidget {
 
   PoolPreview(
     this.pool, {
-    Key key,
     this.onPressed,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -70,33 +69,34 @@ class PoolPreview extends StatelessWidget {
       );
     }
 
-    return GestureDetector(
-        onTap: this.onPressed,
-        child: Card(
+    return Card(
+        child: InkWell(
+            onTap: this.onPressed,
             child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Container(
-              height: 42,
-              child: Center(child: title()),
-            ),
-            () {
-              if (pool.description != '') {
-                return Padding(
-                  padding: EdgeInsets.only(
-                    left: 16,
-                    right: 16,
-                    top: 0,
-                    bottom: 8,
-                  ),
-                  child: dTextField(context, pool.description, darkText: true),
-                );
-              } else {
-                return Container();
-              }
-            }(),
-          ],
-        )));
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Container(
+                  height: 42,
+                  child: Center(child: title()),
+                ),
+                () {
+                  if (pool.description != '') {
+                    return Padding(
+                      padding: EdgeInsets.only(
+                        left: 16,
+                        right: 16,
+                        top: 0,
+                        bottom: 8,
+                      ),
+                      child:
+                          dTextField(context, pool.description, darkText: true),
+                    );
+                  } else {
+                    return Container();
+                  }
+                }(),
+              ],
+            )));
   }
 }
 

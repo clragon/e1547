@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e1547/about_page.dart';
 import 'package:e1547/appInfo.dart';
 import 'package:e1547/blacklist_page.dart';
@@ -7,6 +8,7 @@ import 'package:e1547/interface.dart';
 import 'package:e1547/login_page.dart';
 import 'package:e1547/persistence.dart';
 import 'package:e1547/pools_page.dart';
+import 'package:e1547/post.dart';
 import 'package:e1547/posts_page.dart';
 import 'package:e1547/settings_page.dart';
 import 'package:flutter/material.dart';
@@ -129,89 +131,14 @@ enum _DrawerSelection {
 
 _DrawerSelection _drawerSelection = _DrawerSelection.home;
 
-void refreshPage(BuildContext context) {
-  Map<_DrawerSelection, String> routes = {
-    _DrawerSelection.home: '/',
-    _DrawerSelection.hot: '/hot',
-    _DrawerSelection.favorites: '/fav',
-    _DrawerSelection.pools: '/pools',
-    _DrawerSelection.follows: '/follows',
-  };
-
-  Navigator.of(context).pushNamedAndRemoveUntil(
-      routes[_drawerSelection], (Route<dynamic> route) => false);
-}
+ProfileHeader header = ProfileHeader();
 
 class NavigationDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    Widget headerWidget() {
-      Widget userInfoWidget() {
-        return FutureBuilder<String>(
-          future: db.username.value,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.done &&
-                !snapshot.hasError &&
-                snapshot.hasData) {
-              if (snapshot.data != null) {
-                return Row(
-                  children: <Widget>[
-                    Expanded(
-                        child: Text(
-                      snapshot.data,
-                      style: TextStyle(fontSize: 16.0),
-                      overflow: TextOverflow.ellipsis,
-                    )),
-                    IconButton(
-                        icon: Icon(Icons.exit_to_app),
-                        onPressed: () {
-                          client.logout();
-                          Scaffold.of(context).showSnackBar(SnackBar(
-                            duration: Duration(seconds: 5),
-                            content: Text('Forgot login details'),
-                          ));
-                          Navigator.of(context).pushNamedAndRemoveUntil(
-                              '/', (Route<dynamic> route) => false);
-                        })
-                  ],
-                );
-              }
-            }
-            return Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              child: OutlineButton(
-                child: Text('LOGIN'),
-                onPressed: () => Navigator.popAndPushNamed(context, '/login'),
-              ),
-            );
-          },
-        );
-      }
-
-      // TODO: add user profile picture
-      return Container(
-          height: 140,
-          child: DrawerHeader(
-              child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              CircleAvatar(
-                backgroundImage: AssetImage('assets/icon/app/paw.png'),
-                radius: 36.0,
-              ),
-              Expanded(
-                child: Padding(
-                  padding: EdgeInsets.all(20),
-                  child: userInfoWidget(),
-                ),
-              ),
-            ],
-          )));
-    }
-
     return Drawer(
       child: ListView(children: [
-        headerWidget(),
+        header,
         ListTile(
           selected: _drawerSelection == _DrawerSelection.home,
           leading: Icon(Icons.home),
@@ -223,7 +150,7 @@ class NavigationDrawer extends StatelessWidget {
         ),
         ListTile(
             selected: _drawerSelection == _DrawerSelection.hot,
-            leading: Icon(Icons.show_chart),
+            leading: Icon(Icons.whatshot),
             title: Text('Hot'),
             onTap: () {
               Navigator.of(context).pushNamedAndRemoveUntil(
@@ -309,5 +236,110 @@ class NavigationDrawer extends StatelessWidget {
         ),
       ]),
     );
+  }
+}
+
+class ProfileHeader extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() {
+    return _ProfileHeaderState();
+  }
+}
+
+class _ProfileHeaderState extends State<ProfileHeader> {
+  String username;
+  String picture;
+
+  @override
+  void initState() {
+    super.initState();
+    void refresh() {
+      db.username.value.then((username) async {
+        setState(() {
+          this.username = username;
+        });
+        if (username == null) {
+          picture = null;
+        } else {
+          int postID = (await client.user(username))['avatar_id'];
+          Post post = await client.post(postID);
+          setState(() {
+            picture = post.image.value.sample['url'];
+          });
+        }
+      });
+    }
+
+    db.username.addListener(() {
+      refresh();
+    });
+    refresh();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    Widget userNameWidget() {
+      if (username != null) {
+        return Row(
+          children: <Widget>[
+            Expanded(
+                child: Text(
+              username,
+              style: TextStyle(fontSize: 16.0),
+              overflow: TextOverflow.ellipsis,
+            )),
+            IconButton(
+                icon: Icon(Icons.exit_to_app),
+                onPressed: () {
+                  client.logout();
+                  String msg = 'Forgot login details';
+                  if (username != null) {
+                    msg = msg + ' for $username';
+                  }
+
+                  Scaffold.of(context).showSnackBar(SnackBar(
+                    duration: Duration(seconds: 5),
+                    content: Text(msg),
+                  ));
+                  Navigator.of(context).pop();
+                })
+          ],
+        );
+      } else {
+        return Padding(
+          padding: EdgeInsets.symmetric(horizontal: 20),
+          child: OutlineButton(
+            child: Text('LOGIN'),
+            onPressed: () => Navigator.popAndPushNamed(context, '/login'),
+          ),
+        );
+      }
+    }
+
+    Widget userAvatarWidget() {
+      return CircleAvatar(
+        // TODO: fix user avatar
+        backgroundImage: picture == null || true
+            ? AssetImage('assets/icon/app/paw.png')
+            : CachedNetworkImageProvider(picture),
+        radius: 36.0,
+      );
+    }
+
+    return Container(
+        height: 140,
+        child: DrawerHeader(
+            child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            userAvatarWidget(),
+            Expanded(
+              child: Padding(
+                padding: EdgeInsets.all(20),
+                child: userNameWidget(),
+              ),
+            ),
+          ],
+        )));
   }
 }

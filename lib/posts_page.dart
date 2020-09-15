@@ -1,4 +1,10 @@
+import 'package:e1547/client.dart' show client;
+import 'package:e1547/interface.dart';
+import 'package:e1547/main.dart';
+import 'package:e1547/persistence.dart' show db;
 import 'package:e1547/pool.dart';
+import 'package:e1547/post.dart';
+import 'package:e1547/tag.dart' show Tagset, sortTags;
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart' show EdgeInsets;
 import 'package:flutter/services.dart' show Clipboard, ClipboardData;
@@ -9,24 +15,33 @@ import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:meta/meta.dart' show required;
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-import 'package:e1547/client.dart' show client;
-import 'package:e1547/interface.dart';
-import 'package:e1547/main.dart';
-import 'package:e1547/persistence.dart' show db;
-import 'package:e1547/post.dart';
-import 'package:e1547/tag.dart' show Tagset;
-
 class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return PostsPage(
-      appBarBuilder: appBarWidget('Home'),
-      postProvider: PostProvider(
-          provider: (tags, page) {
-            db.homeTags.value = Future.value(tags);
-            return client.posts(tags, page);
-          },
-          tags: db.homeTags.value),
+    AppBar Function(BuildContext) appbar = appBarWidget('Home');
+    return FutureBuilder(
+      future: db.homeTags.value,
+      builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+        if (snapshot.hasData) {
+          PostProvider provider = PostProvider(
+            search: snapshot.data,
+          );
+          provider.search.addListener(
+              () => db.homeTags.value = Future.value(provider.search.value));
+          return PostsPage(appBarBuilder: appbar, provider: provider);
+        } else {
+          return Scaffold(
+            appBar: appbar(context),
+            body: Center(
+              child: Container(
+                height: 28,
+                width: 28,
+                child: CircularProgressIndicator(),
+              ),
+            ),
+          );
+        }
+      },
     );
   }
 }
@@ -36,8 +51,7 @@ class HotPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return PostsPage(
       appBarBuilder: appBarWidget('Hot'),
-      postProvider:
-          PostProvider(tags: Future.value(Tagset.parse("order:rank"))),
+      provider: PostProvider(search: "order:rank"),
     );
   }
 }
@@ -45,16 +59,32 @@ class HotPage extends StatelessWidget {
 class FavPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return PostsPage(
-        appBarBuilder: appBarWidget('Favorites'),
-        postProvider: PostProvider(
-          provider: (tags, page) {
-            return client.posts(tags, page, filter: false);
-          },
-          tags: db.username.value.then((username) {
-            return Tagset.parse('fav:' + username);
-          }),
-        ));
+    return FutureBuilder(
+      future: db.username.value,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return PostsPage(
+              appBarBuilder: appBarWidget('Favorites'),
+              provider: PostProvider(
+                provider: (tags, page) {
+                  return client.posts(tags, page, filter: false);
+                },
+                search: 'fav:${snapshot.data}',
+              ));
+        } else {
+          return Scaffold(
+            appBar: appBarWidget('Favorites')(context),
+            body: Center(
+              child: Container(
+                height: 28,
+                width: 28,
+                child: CircularProgressIndicator(),
+              ),
+            ),
+          );
+        }
+      },
+    );
   }
 }
 
@@ -87,9 +117,9 @@ class PoolPage extends StatelessWidget {
           ],
         );
       },
-      postProvider: PostProvider(
+      provider: PostProvider(
           provider: (tags, page) =>
-              client.posts(Tagset.parse('pool:${pool.id} order:id'), page)),
+              client.posts('pool:${pool.id} order:id', page)),
       canSearch: false,
     );
   }
@@ -115,7 +145,7 @@ class FollowsPage extends StatelessWidget {
             );
           },
           canSearch: false,
-          postProvider:
+          provider:
               PostProvider(provider: (tags, page) => client.follows(page)),
         );
       },
@@ -124,20 +154,19 @@ class FollowsPage extends StatelessWidget {
 }
 
 class SearchPage extends StatelessWidget {
-  final Tagset tags;
-
+  final String tags;
   SearchPage({this.tags});
 
   @override
   Widget build(BuildContext context) {
-    ValueNotifier<Tagset> _tags = ValueNotifier(tags ?? Tagset.parse(''));
+    PostProvider provider = PostProvider(search: tags);
     return PostsPage(
       appBarBuilder: (context) {
         return AppBar(
           title: ValueListenableBuilder(
-            valueListenable: _tags,
+            valueListenable: provider.search,
             builder: (context, value, child) {
-              if (value.length == 1) {
+              if (Tagset.parse(value).length == 1) {
                 return Text(value.toString().replaceAll('_', ' '));
               } else {
                 return Text('Search');
@@ -150,13 +179,12 @@ class SearchPage extends StatelessWidget {
           ),
           actions: <Widget>[
             ValueListenableBuilder(
-              valueListenable: _tags,
+              valueListenable: provider.search,
               builder: (context, value, child) {
-                if (value.length == 1) {
+                if (Tagset.parse(value).length == 1) {
                   return IconButton(
                     icon: Icon(Icons.info_outline),
-                    onPressed: () => wikiDialog(context, value.first.toString(),
-                        actions: true),
+                    onPressed: () => wikiDialog(context, value, actions: true),
                   );
                 } else {
                   return Container();
@@ -166,12 +194,7 @@ class SearchPage extends StatelessWidget {
           ],
         );
       },
-      postProvider: PostProvider(
-          provider: (tags, page) {
-            _tags.value = tags;
-            return client.posts(tags, page);
-          },
-          tags: Future.value(tags)),
+      provider: provider,
     );
   }
 }
@@ -194,18 +217,16 @@ AppBar Function(BuildContext context) appBarWidget(String title,
 class PostsPage extends StatefulWidget {
   final bool canSearch;
   final AppBar Function(BuildContext) appBarBuilder;
-  final PostProvider postProvider;
+  final PostProvider provider;
 
   PostsPage({
     this.canSearch = true,
-    this.postProvider,
-    this.appBarBuilder,
+    @required this.provider,
+    @required this.appBarBuilder,
   });
 
   @override
-  State<StatefulWidget> createState() {
-    return _PostsPageState();
-  }
+  State<StatefulWidget> createState() => _PostsPageState();
 }
 
 class _PostsPageState extends State<PostsPage> {
@@ -234,25 +255,25 @@ class _PostsPageState extends State<PostsPage> {
               Navigator.of(context).push(MaterialPageRoute<Null>(
                 builder: (context) => PostSwipe(
                   provider: provider,
-                  startingIndex: provider.posts.indexOf(post),
+                  startingIndex: provider.items.indexOf(post),
                 ),
               ));
             }),
       );
     }
 
-    if (item == widget.postProvider.posts.length - 1) {
-      widget.postProvider.loadNextPage();
+    if (item == widget.provider.items.length - 1) {
+      widget.provider.loadNextPage();
     }
-    if (item < widget.postProvider.posts.length) {
-      return preview(widget.postProvider.posts[item], widget.postProvider);
+    if (item < widget.provider.items.length) {
+      return preview(widget.provider.items[item], widget.provider);
     }
     return null;
   }
 
   StaggeredTile Function(int) _staggeredTileBuilder() {
     return (item) {
-      if (item < widget.postProvider.posts.length) {
+      if (item < widget.provider.items.length) {
         return StaggeredTile.extent(1, 250.0);
       }
       return null;
@@ -261,10 +282,10 @@ class _PostsPageState extends State<PostsPage> {
 
   @override
   Widget build(BuildContext context) {
-    widget.postProvider.pages.addListener(() {
+    widget.provider.pages.addListener(() {
       if (this.mounted) {
         setState(() {
-          if (widget.postProvider.pages.value.length == 0) {
+          if (widget.provider.pages.value.length == 0) {
             _loading = true;
           } else {
             _loading = false;
@@ -274,34 +295,19 @@ class _PostsPageState extends State<PostsPage> {
     });
 
     Widget bodyWidget() {
-      return Stack(children: [
-        Visibility(
-          visible: _loading,
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  height: 28,
-                  width: 28,
-                  child: CircularProgressIndicator(),
-                ),
-                Padding(
-                  padding: EdgeInsets.all(20),
-                  child: Text('Loading posts'),
-                ),
-              ],
-            ),
-          ),
-        ),
-        SmartRefresher(
+      return pageLoader(
+        onLoading: Text('Loading posts'),
+        onEmpty: Text('No posts'),
+        isLoading: _loading,
+        isEmpty: (!_loading && widget.provider.items.length == 0),
+        child: SmartRefresher(
             controller: _refreshController,
             header: ClassicHeader(
               refreshingText: 'Refreshing...',
               completeText: 'Refreshed posts!',
             ),
             onRefresh: () async {
-              await widget.postProvider.loadNextPage(reset: true);
+              await widget.provider.loadNextPage(reset: true);
               _refreshController.refreshCompleted();
             },
             physics: BouncingScrollPhysics(),
@@ -310,30 +316,12 @@ class _PostsPageState extends State<PostsPage> {
             // however, I didn't like the aspect ratios.
             child: StaggeredGridView.countBuilder(
               crossAxisCount: (MediaQuery.of(context).size.width / 200).round(),
-              itemCount: widget.postProvider.posts.length,
+              itemCount: widget.provider.items.length,
               itemBuilder: _itemBuilder,
               staggeredTileBuilder: _staggeredTileBuilder(),
               physics: BouncingScrollPhysics(),
             )),
-        Visibility(
-          visible: (!_loading && widget.postProvider.posts.length == 0),
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.error_outline,
-                  size: 32,
-                ),
-                Padding(
-                  padding: EdgeInsets.all(20),
-                  child: Text('No posts'),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ]);
+      );
     }
 
     Widget floatingActionButtonWidget() {
@@ -348,13 +336,12 @@ class _PostsPageState extends State<PostsPage> {
                 onPressed: () async {
                   setFocusToEnd(_tagController);
                   if (isSearching.value) {
-                    widget.postProvider.tags.value =
-                        Future.value(Tagset.parse(_tagController.text));
+                    widget.provider.search.value =
+                        sortTags(_tagController.text);
                     _bottomSheetController?.close();
-                    widget.postProvider.pages.value = [];
+                    widget.provider.resetPages();
                   } else {
-                    _tagController.text =
-                        (await widget.postProvider.tags.value).toString() + ' ';
+                    _tagController.text = widget.provider.search.value + ' ';
                     _bottomSheetController =
                         Scaffold.of(context).showBottomSheet(
                       (context) => TagEntry(
@@ -385,66 +372,13 @@ class _PostsPageState extends State<PostsPage> {
   }
 }
 
-class PostProvider {
-  bool willLoad = false;
-  bool isLoading = false;
-  ValueNotifier<Future<Tagset>> tags =
-      ValueNotifier(Future.value(Tagset.parse('')));
-  ValueNotifier<List<List<Post>>> pages = ValueNotifier([]);
-  final Future<List<Post>> Function(Tagset tags, int page) provider;
+class PostProvider extends DataProvider<Post> {
+  List<Post> get posts => super.items;
 
-  List<Post> get posts {
-    return pages.value
-        .fold<Iterable<Post>>(Iterable.empty(), (a, b) => a.followedBy(b))
-        .toList();
-  }
-
-  PostProvider({Future<Tagset> tags, this.provider}) {
-    this.tags.value = tags;
-    this.pages.addListener(() {
-      if (pages.value.length == 0) {
-        if (isLoading) {
-          willLoad = true;
-        } else {
-          loadNextPage(reset: true);
-        }
-      }
-    });
-    db.host.addListener(() => pages.value = []);
-    db.showWebm.addListener(() => pages.value = []);
-    this.tags.addListener(() => pages.value = []);
-    loadNextPage();
-  }
-
-  Future<void> loadNextPage({bool reset = false}) async {
-    if (!isLoading) {
-      isLoading = true;
-      if (await tags.value == null) {
-        isLoading = false;
-        tags.value = Future.value(new Tagset.parse(''));
-        return;
-      }
-      int page = reset ? 0 : pages.value.length;
-      List<Post> nextPage = [];
-      if (provider != null) {
-        nextPage.addAll(await provider((await tags.value), page));
-      } else {
-        nextPage.addAll(await client.posts((await tags.value), page));
-      }
-      if (nextPage.length != 0 || pages.value.length == 0) {
-        if (reset) {
-          pages.value = [nextPage];
-        } else {
-          pages.value = List.from(pages.value..add(nextPage));
-        }
-      }
-      isLoading = false;
-      if (willLoad) {
-        pages.value = [];
-        willLoad = false;
-      }
-    }
-  }
+  PostProvider(
+      {String search,
+      Future<List<Post>> Function(String search, int page) provider})
+      : super(search: search, provider: provider ?? client.posts);
 }
 
 class TagEntry extends StatelessWidget {
@@ -573,6 +507,7 @@ class TagEntry extends StatelessWidget {
           hideOnLoading: true,
           hideOnEmpty: true,
           hideOnError: true,
+          keepSuggestionsOnSuggestionSelected: true,
           textFieldConfiguration: TextFieldConfiguration(
             controller: controller,
             autofocus: true,
@@ -592,7 +527,8 @@ class TagEntry extends StatelessWidget {
                 break;
               }
             }
-            controller.text = tags.join(' ') + ' ';
+            controller.text = sortTags(tags.join(' ')) + ' ';
+            setFocusToEnd(controller);
           },
           itemBuilder: (BuildContext context, itemData) {
             return ListTile(

@@ -208,11 +208,11 @@ class Client {
     return false;
   }
 
-  Future<List<Post>> posts(Tagset tags, int page, {bool filter = true}) async {
+  Future<List<Post>> posts(String tags, int page, {bool filter = true}) async {
     try {
       String body = await _http.get(await _host, '/posts.json', query: {
-        'tags': tags,
-        'page': page + 1,
+        'tags': sortTags(tags),
+        'page': page,
         'login': await _username,
         'api_key': await _apiKey,
       }).then((response) => response.body);
@@ -249,7 +249,7 @@ class Client {
     try {
       String body = await _http.get(await _host, '/pools.json', query: {
         'search[name_matches]': title,
-        'page': page + 1,
+        'page': page,
         'login': await _username,
         'api_key': await _apiKey,
       }).then((response) => response.body);
@@ -289,8 +289,7 @@ class Client {
     }
 
     for (List<String> tag in tags) {
-      posts
-          .addAll(await client.posts(Tagset.parse('~' + tag.join(' ~')), page));
+      posts.addAll(await client.posts('~${tag.join(' ~')}', page));
     }
     return posts;
   }
@@ -416,14 +415,18 @@ class Client {
   }
 
   Future<List> wiki(String search, int page) async {
-    String body = await _http.get(await _host, 'wiki_pages.json', query: {
-      'search[title]': search,
-      'page': page + 1,
-      'login': await _username,
-      'api_key': await _apiKey,
-    }).then((response) => response.body);
+    try {
+      String body = await _http.get(await _host, 'wiki_pages.json', query: {
+        'search[title]': search,
+        'page': page + 1,
+        'login': await _username,
+        'api_key': await _apiKey,
+      }).then((response) => response.body);
 
-    return json.decode(body);
+      return json.decode(body);
+    } catch (SocketException) {
+      return null;
+    }
   }
 
   Future<Map> user(String name) async {
@@ -454,11 +457,11 @@ class Client {
     return tags;
   }
 
-  Future<List<Comment>> comments(int postId, int page) async {
+  Future<List<Comment>> comments(int postID, int page) async {
     String body = await _http.get(await _host, '/comments.json', query: {
       'group_by': 'comment',
-      'search[post_id]': '$postId',
-      'page': page + 1,
+      'search[post_id]': '$postID',
+      'page': page,
       'login': await _username,
       'api_key': await _apiKey,
     }).then((response) => response.body);
@@ -475,7 +478,7 @@ class Client {
   }
 
   Future<Map> postComment(String text, Post post, {Comment comment}) async {
-    Map<String, dynamic> query = {
+    Map<String, String> query = {
       'login': await _username,
       'api_key': await _apiKey,
     };

@@ -16,202 +16,137 @@ class PoolsPage extends StatefulWidget {
 }
 
 class _PoolsPageState extends State<PoolsPage> {
-  String query = '';
-  bool _isSearching = false;
-  TextEditingController _tagController;
-  PersistentBottomSheetController<String> _bottomSheetController;
-
-  Function() _onPressedFloatingActionButton(BuildContext context) {
-    return () async {
-      void onCloseBottomSheet() {
-        setState(() {
-          _isSearching = false;
-        });
-      }
-
-      if (!_isSearching) {
-        _tagController = TextEditingController()..text = query + ' ';
-      }
-      setFocusToEnd(_tagController);
-
-      if (_isSearching) {
-        query = _tagController.text;
-
-        _bottomSheetController?.close();
-        _clearPages();
-      } else {
-        _bottomSheetController =
-            Scaffold.of(context).showBottomSheet((context) => Container(
-                  padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10),
-                  child: Column(mainAxisSize: MainAxisSize.min, children: [
-                    TextField(
-                      controller: _tagController,
-                      autofocus: true,
-                      maxLines: 1,
-                      inputFormatters: [LowercaseTextInputFormatter()],
-                      decoration: InputDecoration(
-                        labelText: 'Title',
-                      ),
-                    ),
-                  ]),
-                ));
-
-        setState(() {
-          _isSearching = true;
-        });
-
-        _bottomSheetController.closed.then((a) => onCloseBottomSheet());
-      }
-    };
-  }
-
-  final List<List<Pool>> _pages = [];
   bool _loading = true;
-
-  void _loadNextPage() async {
-    int p = _pages.length;
-
-    List<Pool> nextPage = [];
-    _pages.add(nextPage);
-
-    nextPage.addAll(await client.pools(query, p));
-    if (this.mounted) {
-      setState(() {
-        _loading = false;
-      });
-    }
-  }
+  PoolProvider provider = PoolProvider();
+  TextEditingController _tagController = TextEditingController();
+  ValueNotifier<bool> isSearching = ValueNotifier(false);
+  PersistentBottomSheetController<String> _bottomSheetController;
 
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
-  void _clearPages() {
-    setState(() {
-      _loading = true;
-      _pages.clear();
-      _refreshController.refreshCompleted();
-    });
-  }
-
-  int _itemCount() {
-    int i = 0;
-    if (_pages.isEmpty) {
-      _loadNextPage();
-    }
-    for (List<Pool> p in _pages) {
-      i += p.length;
-    }
-    return i;
-  }
-
   Widget _itemBuilder(BuildContext context, int item) {
-    Widget preview(List<Pool> page, int pageIndex, int listIndex) {
-      return PoolPreview(page[pageIndex], onPressed: () {
+    Widget preview(Pool pool, PoolProvider provider) {
+      return PoolPreview(pool, onPressed: () {
         Navigator.of(context).push(MaterialPageRoute<Null>(
-          builder: (context) => PoolPage(pool: page[pageIndex]),
+          builder: (context) => PoolPage(pool: pool),
         ));
       });
     }
 
-    int pools = 0;
-
-    for (int p = 0; p < _pages.length; p++) {
-      List<Pool> page = _pages[p];
-      if (page.isEmpty) {
-        return Container();
-      }
-      pools += page.length;
-      if (item == pools - 1) {
-        if (p + 1 >= _pages.length) {
-          _loadNextPage();
-        }
-      }
-
-      if (item < pools) {
-        return preview(page, item - (pools - page.length), item);
-      }
+    if (item == provider.pools.length - 1) {
+      provider.loadNextPage();
     }
 
+    if (item < provider.pools.length) {
+      return preview(provider.pools[item], provider);
+    }
     return null;
   }
 
   @override
   Widget build(BuildContext context) {
-    AppBar appBar() {
-      return AppBar(
-        title: Text('Pools'),
-      );
-    }
+    provider.pages.addListener(() {
+      if (this.mounted) {
+        setState(() {
+          if (provider.pages.value.length == 0) {
+            _loading = true;
+          } else {
+            _loading = false;
+          }
+        });
+      }
+    });
 
     Widget bodyWidget() {
-      return Stack(children: [
-        Visibility(
-          visible: _loading,
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  height: 28,
-                  width: 28,
-                  child: CircularProgressIndicator(),
-                ),
-                Padding(
-                  padding: EdgeInsets.all(20),
-                  child: Text('Loading pools'),
-                ),
-              ],
-            ),
-          ),
-        ),
-        SmartRefresher(
+      return pageLoader(
+        onLoading: Text('Loading pools'),
+        onEmpty: Text('No pools'),
+        isLoading: _loading,
+        isEmpty: (!_loading &&
+            provider.pages.value.length == 1 &&
+            provider.pages.value[0].length == 0),
+        child: SmartRefresher(
           controller: _refreshController,
           header: ClassicHeader(
             completeText: 'refreshing...',
           ),
-          onRefresh: _clearPages,
+          onRefresh: () async {
+            await provider.loadNextPage(reset: true);
+            _refreshController.refreshCompleted();
+          },
           physics: BouncingScrollPhysics(),
           child: ListView.builder(
-            itemCount: _itemCount(),
+            itemCount: provider.pools.length,
             itemBuilder: _itemBuilder,
             physics: BouncingScrollPhysics(),
           ),
         ),
-        Visibility(
-          visible: (!_loading && _pages.length == 1 && _pages[0].length == 0),
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.error_outline,
-                  size: 32,
-                ),
-                Padding(
-                  padding: EdgeInsets.all(20),
-                  child: Text('No pools'),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ]);
+      );
     }
 
     Widget floatingActionButtonWidget() {
       return Builder(builder: (context) {
-        return FloatingActionButton(
-          child: _isSearching ? Icon(Icons.check) : Icon(Icons.search),
-          onPressed: _onPressedFloatingActionButton(context),
-        ).build(context);
+        return ValueListenableBuilder(
+          valueListenable: isSearching,
+          builder: (context, value, child) {
+            return FloatingActionButton(
+              child: value ? Icon(Icons.check) : Icon(Icons.search),
+              onPressed: () async {
+                setFocusToEnd(_tagController);
+                if (value) {
+                  provider.search.value = _tagController.text;
+                  _bottomSheetController?.close();
+                  provider.resetPages();
+                } else {
+                  _tagController.text = provider.search.value;
+                  _bottomSheetController = Scaffold.of(context)
+                      .showBottomSheet((context) => Container(
+                            padding: EdgeInsets.only(
+                                left: 10.0, right: 10.0, bottom: 10),
+                            child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  TextField(
+                                    controller: _tagController,
+                                    autofocus: true,
+                                    maxLines: 1,
+                                    inputFormatters: [
+                                      LowercaseTextInputFormatter()
+                                    ],
+                                    decoration: InputDecoration(
+                                      labelText: 'Title',
+                                    ),
+                                  ),
+                                ]),
+                          ));
+                  isSearching.value = true;
+                  _bottomSheetController.closed.then((a) {
+                    isSearching.value = false;
+                  });
+                }
+              },
+            ).build(context);
+          },
+        );
       });
     }
 
     return Scaffold(
-      appBar: appBar(),
+      appBar: AppBar(
+        title: Text('Pools'),
+      ),
       body: bodyWidget(),
       drawer: NavigationDrawer(),
       floatingActionButton: floatingActionButtonWidget(),
     );
   }
+}
+
+class PoolProvider extends DataProvider<Pool> {
+  List<Pool> get pools => super.items;
+
+  PoolProvider({
+    String search,
+  }) : super(search: search, provider: client.pools);
 }

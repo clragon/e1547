@@ -149,27 +149,31 @@ class _BlacklistPageState extends State<BlacklistPage> {
                         direction: Axis.horizontal,
                         children: () {
                           Widget cardWidget(String tag) {
-                            return InkWell(
-                                onTap: () => wikiDialog(context, noDash(tag),
-                                    actions: true),
-                                onLongPress: () => wikiDialog(
-                                    context, noDash(tag),
-                                    actions: true),
-                                child: Card(
-                                    clipBehavior: Clip.antiAlias,
+                            return Card(
+                                child: InkWell(
+                                    onTap: () => wikiDialog(
+                                        context, noDash(tag), actions: true),
+                                    onLongPress: () => wikiDialog(
+                                        context, noDash(tag),
+                                        actions: true),
                                     child: Row(
                                       mainAxisSize: MainAxisSize.min,
                                       children: <Widget>[
                                         Container(
                                           height: 24,
                                           width: 5,
-                                          color: () {
-                                            if ('${tag[0]}' == '-') {
-                                              return Colors.green[300];
-                                            } else {
-                                              return Colors.red[300];
-                                            }
-                                          }(),
+                                          decoration: BoxDecoration(
+                                            color: () {
+                                              if ('${tag[0]}' == '-') {
+                                                return Colors.green[300];
+                                              } else {
+                                                return Colors.red[300];
+                                              }
+                                            }(),
+                                            borderRadius: BorderRadius.only(
+                                                topLeft: Radius.circular(5),
+                                                bottomLeft: Radius.circular(5)),
+                                          ),
                                         ),
                                         Padding(
                                           padding: EdgeInsets.only(

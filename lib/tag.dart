@@ -108,3 +108,7 @@ class Tagset extends Object with IterableMixin<Tag> {
     return meta.join(' ');
   }
 }
+
+String sortTags(String tags) {
+  return Tagset.parse(tags).toString();
+}
