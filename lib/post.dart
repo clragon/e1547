@@ -302,6 +302,10 @@ class _PostWidgetState extends State<PostWidget> {
     super.initState();
     widget.post.isEditing.addListener(closeBottomSheet);
     widget.provider?.pages?.addListener(updateWidget);
+    precacheImage(
+      CachedNetworkImageProvider(widget.post.image.value.file['url']),
+      context,
+    );
   }
 
   @override
