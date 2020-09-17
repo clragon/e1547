@@ -251,14 +251,7 @@ class _SettingsPageState extends State<SettingsPage> {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Settings'),
-        leading: IconButton(
-            icon: Icon(Icons.arrow_back),
-            onPressed: () {
-              Navigator.pop(context);
-            }),
-      ),
+      appBar: AppBar(title: Text('Settings')),
       body: Builder(builder: bodyWidgetBuilder),
     );
   }

@@ -13,7 +13,8 @@ import 'package:e1547/persistence.dart' show db;
 import 'package:e1547/pool.dart';
 import 'package:e1547/posts_page.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show SystemChrome, SystemUiOverlay;
+import 'package:flutter/services.dart'
+    show SystemChrome, SystemUiOverlay, SystemUiOverlayStyle;
 import 'package:flutter/services.dart' show Clipboard, ClipboardData;
 import 'package:flutter_cache_manager/flutter_cache_manager.dart'
     show DefaultCacheManager;
@@ -302,6 +303,11 @@ class _PostWidgetState extends State<PostWidget> {
     super.initState();
     widget.post.isEditing.addListener(closeBottomSheet);
     widget.provider?.pages?.addListener(updateWidget);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     precacheImage(
       CachedNetworkImageProvider(widget.post.image.value.file['url']),
       context,
@@ -469,7 +475,9 @@ class _PostWidgetState extends State<PostWidget> {
               if (widget.post.image.value.file['ext'] != 'webm' &&
                   widget.post.image.value.file['url'] != null &&
                   isVisible()) {
-                List<Post> posts = widget.provider?.items ?? [widget.post];
+                List<Post> posts = widget.post.isEditing.value
+                    ? [widget.post]
+                    : (widget.provider?.items ?? [widget.post]);
                 _onTapImage(context, posts, posts.indexOf(widget.post));
               }
             },
@@ -495,6 +503,7 @@ class _PostWidgetState extends State<PostWidget> {
                       ),
                       Flexible(
                         child: ValueListenableBuilder(
+                          valueListenable: widget.post.tags,
                           builder: (BuildContext context, value, Widget child) {
                             if (widget.post.tags.value['artist'].length != 0) {
                               return Text.rich(
@@ -548,7 +557,6 @@ class _PostWidgetState extends State<PostWidget> {
                                       fontStyle: FontStyle.italic));
                             }
                           },
-                          valueListenable: widget.post.tags,
                         ),
                       ),
                     ],
@@ -827,18 +835,19 @@ class _PostWidgetState extends State<PostWidget> {
                       valueListenable: isLoading,
                       builder: (context, value, child) {
                         if (value) {
-                          return Center(
-                              child: Padding(
-                            padding: EdgeInsets.only(right: 10),
-                            child: Container(
-                                height: 16,
-                                width: 16,
-                                child: CircularProgressIndicator()),
-                          ));
+                          return child;
                         } else {
                           return Container();
                         }
                       },
+                      child: Center(
+                          child: Padding(
+                        padding: EdgeInsets.only(right: 10),
+                        child: Container(
+                            height: 16,
+                            width: 16,
+                            child: CircularProgressIndicator()),
+                      )),
                     ),
                     Expanded(
                       child: TextField(
@@ -1119,18 +1128,19 @@ class _PostWidgetState extends State<PostWidget> {
                                   valueListenable: isLoading,
                                   builder: (context, value, child) {
                                     if (value) {
-                                      return Center(
-                                          child: Padding(
-                                        padding: EdgeInsets.only(right: 10),
-                                        child: Container(
-                                            height: 16,
-                                            width: 16,
-                                            child: CircularProgressIndicator()),
-                                      ));
+                                      return child;
                                     } else {
                                       return Container();
                                     }
                                   },
+                                  child: Center(
+                                      child: Padding(
+                                    padding: EdgeInsets.only(right: 10),
+                                    child: Container(
+                                        height: 16,
+                                        width: 16,
+                                        child: CircularProgressIndicator()),
+                                  )),
                                 ),
                                 Expanded(
                                   child: TypeAheadField(
@@ -1373,61 +1383,60 @@ class _PostWidgetState extends State<PostWidget> {
           }
         }
 
-        return ValueListenableBuilder(
-          valueListenable: widget.post.rating,
-          builder: (context, value, child) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Padding(
-                  padding: EdgeInsets.only(
-                    right: 4,
-                    left: 4,
-                    top: 2,
-                    bottom: 2,
-                  ),
-                  child: Text(
-                    'Rating',
-                    style: TextStyle(
-                      fontSize: 16,
-                    ),
-                  ),
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Padding(
+              padding: EdgeInsets.only(
+                right: 4,
+                left: 4,
+                top: 2,
+                bottom: 2,
+              ),
+              child: Text(
+                'Rating',
+                style: TextStyle(
+                  fontSize: 16,
                 ),
-                ListTile(
-                  title: Text(ratings[value]),
-                  leading: Icon(!widget.post.raw['flags']['rating_locked']
-                      ? getIcon(value)
-                      : Icons.lock),
-                  onTap: !widget.post.raw['flags']['rating_locked']
-                      ? () => showDialog(
-                          context: context,
-                          child: AlertDialog(
-                            title: Text('Rating'),
-                            content: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: () {
-                                List<Widget> choices = [];
-                                ratings.forEach((k, v) {
-                                  choices.add(ListTile(
-                                    title: Text(v),
-                                    leading: Icon(getIcon(k)),
-                                    onTap: () {
-                                      widget.post.rating.value =
-                                          k.toLowerCase();
-                                      Navigator.of(context).pop();
-                                    },
-                                  ));
-                                });
-                                return choices;
-                              }(),
-                            ),
-                          ))
-                      : () {},
-                ),
-                Divider(),
-              ],
-            );
-          },
+              ),
+            ),
+            ValueListenableBuilder(
+                valueListenable: widget.post.rating,
+                builder: (context, value, child) {
+                  return ListTile(
+                    title: Text(ratings[value]),
+                    leading: Icon(!widget.post.raw['flags']['rating_locked']
+                        ? getIcon(value)
+                        : Icons.lock),
+                    onTap: !widget.post.raw['flags']['rating_locked']
+                        ? () => showDialog(
+                            context: context,
+                            child: AlertDialog(
+                              title: Text('Rating'),
+                              content: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: () {
+                                  List<Widget> choices = [];
+                                  ratings.forEach((k, v) {
+                                    choices.add(ListTile(
+                                      title: Text(v),
+                                      leading: Icon(getIcon(k)),
+                                      onTap: () {
+                                        widget.post.rating.value =
+                                            k.toLowerCase();
+                                        Navigator.of(context).pop();
+                                      },
+                                    ));
+                                  });
+                                  return choices;
+                                }(),
+                              ),
+                            ))
+                        : () {},
+                  );
+                }),
+            Divider(),
+          ],
         );
       }
 
@@ -1804,38 +1813,53 @@ class _PostWidgetState extends State<PostWidget> {
 
   Future<void> _onTapImage(
       BuildContext context, List<Post> posts, int index) async {
-    Widget loadingPicture(BuildContext context, Post post) {
-      return GestureDetector(
-        child: Container(
-          child: Stack(alignment: Alignment.center, children: [
-            Hero(
-              tag: 'image_${post.id}',
-              child: CachedNetworkImage(
-                imageUrl: post.image.value.sample['url'],
-                placeholder: (context, url) => CircularProgressIndicator(),
-                errorWidget: (context, url, error) => Icon(Icons.error_outline),
-              ),
-            ),
-            Container(
-              alignment: Alignment.bottomCenter,
-              child: LinearProgressIndicator(),
-            ),
-          ]),
-          color: Theme.of(context).canvasColor,
-        ),
-        onTap: () => Navigator.of(context).pop(),
-      );
+    ValueNotifier current = ValueNotifier(index);
+    ValueNotifier showFrame = ValueNotifier(false);
+
+    void toggleFrame() {
+      showFrame.value = !showFrame.value;
+      showFrame.value
+          ? SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values)
+          : SystemChrome.setEnabledSystemUIOverlays([]);
     }
 
-    Widget fullScreenGallery(BuildContext context) {
-      int current = index;
+    Widget pictureFrame(BuildContext context, Widget child) {
+      return Scaffold(
+          appBar: PreferredSize(
+            preferredSize: Size.fromHeight(
+                MediaQuery.of(context).padding.top + kToolbarHeight),
+            child: ValueListenableBuilder(
+              valueListenable: showFrame,
+              builder: (context, value, child) {
+                return AnimatedOpacity(
+                  opacity: value ? 1.0 : 0.0,
+                  duration: Duration(milliseconds: 100),
+                  // The green box must be a child of the AnimatedOpacity widget.
+                  child: child,
+                );
+              },
+              child: ValueListenableBuilder(
+                valueListenable: current,
+                builder: (context, value, child) =>
+                    postAppBar(context, posts[current.value], canEdit: false),
+              ),
+            ),
+          ),
+          extendBodyBehindAppBar: true,
+          body: MediaQuery.removeViewInsets(
+            context: context,
+            removeTop: true,
+            child: child,
+          ));
+    }
+
+    Widget pictureGallery(BuildContext context) {
       return PhotoViewGallery.builder(
         scrollPhysics: BouncingScrollPhysics(),
         backgroundDecoration: BoxDecoration(
           color: Theme.of(context).canvasColor,
         ),
         builder: (context, index) {
-          current = index;
           return PhotoViewGalleryPageOptions(
             heroAttributes: PhotoViewHeroAttributes(
               tag: 'image_${posts[index].id}',
@@ -1846,12 +1870,31 @@ class _PostWidgetState extends State<PostWidget> {
             minScale: PhotoViewComputedScale.contained,
             maxScale: PhotoViewComputedScale.contained * 6,
             onTapUp: (buildContext, tapDownDetails, photoViewControllerValue) =>
-                Navigator.of(context).pop(),
+                toggleFrame(),
           );
         },
         itemCount: posts.length,
-        loadingBuilder: (context, chunk) =>
-            loadingPicture(context, posts[current]),
+        loadingBuilder: (context, chunk) => GestureDetector(
+          child: Container(
+            child: Stack(alignment: Alignment.center, children: [
+              Hero(
+                tag: 'image_${posts[current.value].id}',
+                child: CachedNetworkImage(
+                  imageUrl: posts[current.value].image.value.sample['url'],
+                  placeholder: (context, url) => CircularProgressIndicator(),
+                  errorWidget: (context, url, error) =>
+                      Icon(Icons.error_outline),
+                ),
+              ),
+              Container(
+                alignment: Alignment.bottomCenter,
+                child: LinearProgressIndicator(),
+              ),
+            ]),
+            color: Theme.of(context).canvasColor,
+          ),
+          onTap: toggleFrame,
+        ),
         pageController: PageController(initialPage: index),
         onPageChanged: (index) {
           int precache = 2;
@@ -1868,25 +1911,8 @@ class _PostWidgetState extends State<PostWidget> {
           if (widget.controller != null) {
             widget.controller.jumpToPage(index);
           }
+          current.value = index;
         },
-      );
-    }
-
-    Widget fullScreenImage(BuildContext context) {
-      return PhotoView(
-        heroAttributes:
-            PhotoViewHeroAttributes(tag: 'image_${posts[index].id}'),
-        backgroundDecoration: BoxDecoration(
-          color: Theme.of(context).canvasColor,
-        ),
-        imageProvider:
-            CachedNetworkImageProvider(posts[index].image.value.sample['url']),
-        loadingBuilder: (buildContext, imageChunkEvent) =>
-            loadingPicture(context, posts[index]),
-        minScale: PhotoViewComputedScale.contained,
-        maxScale: PhotoViewComputedScale.contained * 6,
-        onTapUp: (buildContext, tapDownDetails, photoViewControllerValue) =>
-            Navigator.of(context).pop(),
       );
     }
 
@@ -1895,29 +1921,33 @@ class _PostWidgetState extends State<PostWidget> {
       url.launch(widget.post.image.value.file['url']);
     } else {
       SystemChrome.setEnabledSystemUIOverlays([]);
+      SystemChrome.setSystemUIOverlayStyle(
+        SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+        ),
+      );
       await Navigator.of(context).push(MaterialPageRoute<Null>(
-        builder:
-            posts[index].isEditing.value ? fullScreenImage : fullScreenGallery,
+        builder: (context) => pictureFrame(context, pictureGallery(context)),
       ));
+      SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle());
       SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
     }
   }
 }
 
-Widget postAppBar(BuildContext context, Post post) {
+Widget postAppBar(BuildContext context, Post post, {bool canEdit = true}) {
   return AppBar(
     backgroundColor: Colors.transparent,
     elevation: 0,
     leading: IconButton(
       icon: IconShadowWidget(
         Icon(
-          post.isEditing.value ? Icons.clear : Icons.arrow_back,
+          post.isEditing.value && canEdit ? Icons.clear : Icons.arrow_back,
           color: Theme.of(context).iconTheme.color,
         ),
         shadowColor: Colors.black,
       ),
-      onPressed: () =>
-          post.isEditing.value ? resetPost(post) : Navigator.of(context).pop(),
+      onPressed: () => Navigator.of(context).maybePop(),
     ),
     actions: post.isEditing.value
         ? null
@@ -1950,7 +1980,7 @@ Widget postAppBar(BuildContext context, Post post) {
                       value: 'browse',
                       child: popMenuListTile('Browse', Icons.open_in_browser),
                     ),
-                    post.isLoggedIn
+                    post.isLoggedIn && canEdit
                         ? PopupMenuItem(
                             value: 'edit',
                             child: popMenuListTile('Edit', Icons.edit),

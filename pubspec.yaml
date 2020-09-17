@@ -1,7 +1,7 @@
 name: e1547
 description: A mobile app for e621+e926.
 
-version: 1.6.1+34
+version: 1.6.2+35
 
 environment:
   sdk: ">=2.2.2 <3.0.0"
