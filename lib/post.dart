@@ -13,8 +13,7 @@ import 'package:e1547/persistence.dart' show db;
 import 'package:e1547/pool.dart';
 import 'package:e1547/posts_page.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart'
-    show SystemChrome, SystemUiOverlay, SystemUiOverlayStyle;
+import 'package:flutter/services.dart' show SystemChrome, SystemUiOverlay;
 import 'package:flutter/services.dart' show Clipboard, ClipboardData;
 import 'package:flutter_cache_manager/flutter_cache_manager.dart'
     show DefaultCacheManager;
@@ -373,9 +372,9 @@ class _PostWidgetState extends State<PostWidget> {
                           child: Card(
                               child: Padding(
                                   padding: EdgeInsets.all(8),
-                                  child: Text('Browse'))),
-                          onTap: () async => url.launch(
-                              widget.post.url(await db.host.value).toString()),
+                                  child: Text('Open'))),
+                          onTap: () async =>
+                              url.launch(widget.post.image.value.file['url']),
                         )
                       ],
                     );
@@ -472,13 +471,23 @@ class _PostWidgetState extends State<PostWidget> {
         builder: (context, value, child) {
           return InkWell(
             onTap: () {
-              if (widget.post.image.value.file['ext'] != 'webm' &&
-                  widget.post.image.value.file['url'] != null &&
-                  isVisible()) {
-                List<Post> posts = widget.post.isEditing.value
-                    ? [widget.post]
-                    : (widget.provider?.items ?? [widget.post]);
-                _onTapImage(context, posts, posts.indexOf(widget.post));
+              String ext = widget.post.image.value.file['ext'];
+
+              if (widget.post.image.value.file['url'] != null) {
+                if (ext == 'webm' || ext == 'swf') {
+                  url.launch(widget.post.image.value.file['url']);
+                } else if (isVisible()) {
+                  List<Post> posts = widget.post.isEditing.value
+                      ? [widget.post]
+                      : (widget.provider?.items ?? [widget.post]);
+
+                  Navigator.of(context).push(MaterialPageRoute<Null>(
+                      builder: (context) => ImageGallery(
+                            index: posts.indexOf(widget.post),
+                            posts: posts,
+                            controller: widget.controller,
+                          )));
+                }
               }
             },
             child: overlayImageWidget(),
@@ -1104,162 +1113,169 @@ class _PostWidgetState extends State<PostWidget> {
           ValueNotifier isLoading = ValueNotifier(false);
           return Builder(
             builder: (BuildContext context) {
-              return InkWell(
-                child: Card(
+              return Card(
+                child: InkWell(
                   child: Padding(
                     padding:
                         EdgeInsets.only(top: 4, bottom: 4, left: 4, right: 4),
                     child: Icon(Icons.add, size: 16),
                   ),
-                ),
-                onTap: () async {
-                  _textController.text = '';
-                  _bottomSheetController = Scaffold.of(context).showBottomSheet(
-                    (context) {
-                      return Padding(
-                          padding: EdgeInsets.only(
-                              left: 10.0, right: 10.0, bottom: 10),
-                          child:
-                              Column(mainAxisSize: MainAxisSize.min, children: [
-                            Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: <Widget>[
-                                ValueListenableBuilder(
-                                  valueListenable: isLoading,
-                                  builder: (context, value, child) {
-                                    if (value) {
-                                      return child;
-                                    } else {
-                                      return Container();
-                                    }
-                                  },
-                                  child: Center(
-                                      child: Padding(
-                                    padding: EdgeInsets.only(right: 10),
-                                    child: Container(
-                                        height: 16,
-                                        width: 16,
-                                        child: CircularProgressIndicator()),
-                                  )),
-                                ),
-                                Expanded(
-                                  child: TypeAheadField(
-                                    direction: AxisDirection.up,
-                                    hideOnLoading: true,
-                                    hideOnEmpty: true,
-                                    hideOnError: true,
-                                    textFieldConfiguration:
-                                        TextFieldConfiguration(
-                                      controller: _textController,
-                                      autofocus: true,
-                                      maxLines: 1,
-                                      inputFormatters: [
-                                        LowercaseTextInputFormatter()
-                                      ],
-                                      decoration: InputDecoration(
-                                          labelText: tagSet,
-                                          border: UnderlineInputBorder()),
-                                    ),
-                                    onSuggestionSelected: (suggestion) {
-                                      List<String> tags =
-                                          _textController.text.split(' ');
-                                      List<String> before = [];
-                                      for (String tag in tags) {
-                                        before.add(tag);
-                                        if (before.join(' ').length >=
-                                            _textController
-                                                .selection.extent.offset) {
-                                          tags[tags.indexOf(tag)] = suggestion;
-                                          break;
-                                        }
-                                      }
-                                      _textController.text =
-                                          tags.join(' ') + ' ';
-                                    },
-                                    itemBuilder:
-                                        (BuildContext context, itemData) {
-                                      return ListTile(
-                                        title: Text(itemData),
-                                      );
-                                    },
-                                    suggestionsCallback:
-                                        (String pattern) async {
-                                      List<String> tags =
-                                          _textController.text.split(' ');
-                                      List<String> before = [];
-                                      int selection = 0;
-                                      for (String tag in tags) {
-                                        before.add(tag);
-                                        if (before.join(' ').length >=
-                                            _textController
-                                                .selection.extent.offset) {
-                                          selection = tags.indexOf(tag);
-                                          break;
-                                        }
-                                      }
-                                      if (tags[selection].trim().isNotEmpty) {
-                                        return (await client.tags(
-                                                tags[selection],
-                                                category: group[tagSet]))
-                                            .map((t) => t['name'])
-                                            .toList();
-                                      } else {
-                                        return [];
-                                      }
-                                    },
-                                  ),
-                                ),
-                              ],
-                            )
-                          ]));
-                    },
-                  );
-                  doEdit.value = () async {
-                    isLoading.value = true;
-                    if (_textController.text.trim() == '') {
-                      isLoading.value = false;
-                      return Future.value(true);
-                    }
-                    List<String> tags = _textController.text.trim().split(' ');
-                    widget.post.tags.value[tagSet].addAll(tags);
-                    widget.post.tags.value[tagSet].sort();
-                    widget.post.tags.value = Map.from(widget.post.tags.value);
-                    () async {
-                      if (tagSet != 'general') {
-                        for (String tag in tags) {
-                          List validator = (await client.tags(tag));
-                          String category;
-                          if (validator.length == 0) {
-                            category = 'general';
-                          } else if (group[tagSet] !=
-                              validator[0]['category']) {
-                            category = group.keys.firstWhere(
-                                (k) => group[k] == validator[0]['category']);
-                          }
-                          if (category != null) {
-                            widget.post.tags.value[tagSet].remove(tag);
-                            widget.post.tags.value[category].add(tag);
-                            widget.post.tags.value[category].sort();
-                            widget.post.tags.value =
-                                Map.from(widget.post.tags.value);
-                            Scaffold.of(context).showSnackBar(SnackBar(
-                              duration: Duration(seconds: 1),
-                              content: Text('Moved $tag to $category tags'),
-                              behavior: SnackBarBehavior.floating,
-                            ));
-                          }
-                          await new Future.delayed(
-                              const Duration(milliseconds: 200));
-                        }
+                  onTap: () async {
+                    _textController.text = '';
+                    _bottomSheetController =
+                        Scaffold.of(context).showBottomSheet(
+                      (context) {
+                        return Padding(
+                            padding: EdgeInsets.only(
+                                left: 10.0, right: 10.0, bottom: 10),
+                            child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: <Widget>[
+                                      ValueListenableBuilder(
+                                        valueListenable: isLoading,
+                                        builder: (context, value, child) {
+                                          if (value) {
+                                            return child;
+                                          } else {
+                                            return Container();
+                                          }
+                                        },
+                                        child: Center(
+                                            child: Padding(
+                                          padding: EdgeInsets.only(right: 10),
+                                          child: Container(
+                                              height: 16,
+                                              width: 16,
+                                              child:
+                                                  CircularProgressIndicator()),
+                                        )),
+                                      ),
+                                      Expanded(
+                                        child: TypeAheadField(
+                                          direction: AxisDirection.up,
+                                          hideOnLoading: true,
+                                          hideOnEmpty: true,
+                                          hideOnError: true,
+                                          textFieldConfiguration:
+                                              TextFieldConfiguration(
+                                            controller: _textController,
+                                            autofocus: true,
+                                            maxLines: 1,
+                                            inputFormatters: [
+                                              LowercaseTextInputFormatter()
+                                            ],
+                                            decoration: InputDecoration(
+                                                labelText: tagSet,
+                                                border: UnderlineInputBorder()),
+                                          ),
+                                          onSuggestionSelected: (suggestion) {
+                                            List<String> tags =
+                                                _textController.text.split(' ');
+                                            List<String> before = [];
+                                            for (String tag in tags) {
+                                              before.add(tag);
+                                              if (before.join(' ').length >=
+                                                  _textController.selection
+                                                      .extent.offset) {
+                                                tags[tags.indexOf(tag)] =
+                                                    suggestion;
+                                                break;
+                                              }
+                                            }
+                                            _textController.text =
+                                                tags.join(' ') + ' ';
+                                          },
+                                          itemBuilder:
+                                              (BuildContext context, itemData) {
+                                            return ListTile(
+                                              title: Text(itemData),
+                                            );
+                                          },
+                                          suggestionsCallback:
+                                              (String pattern) async {
+                                            List<String> tags =
+                                                _textController.text.split(' ');
+                                            List<String> before = [];
+                                            int selection = 0;
+                                            for (String tag in tags) {
+                                              before.add(tag);
+                                              if (before.join(' ').length >=
+                                                  _textController.selection
+                                                      .extent.offset) {
+                                                selection = tags.indexOf(tag);
+                                                break;
+                                              }
+                                            }
+                                            if (tags[selection]
+                                                .trim()
+                                                .isNotEmpty) {
+                                              return (await client.tags(
+                                                      tags[selection],
+                                                      category: group[tagSet]))
+                                                  .map((t) => t['name'])
+                                                  .toList();
+                                            } else {
+                                              return [];
+                                            }
+                                          },
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                ]));
+                      },
+                    );
+                    doEdit.value = () async {
+                      isLoading.value = true;
+                      if (_textController.text.trim() == '') {
+                        isLoading.value = false;
+                        return Future.value(true);
                       }
-                    }();
-                    return Future.value(true);
-                  };
-                  _bottomSheetController.closed.then((_) {
-                    doEdit.value = null;
-                    isLoading.value = false;
-                  });
-                },
+                      List<String> tags =
+                          _textController.text.trim().split(' ');
+                      widget.post.tags.value[tagSet].addAll(tags);
+                      widget.post.tags.value[tagSet].sort();
+                      widget.post.tags.value = Map.from(widget.post.tags.value);
+                      () async {
+                        if (tagSet != 'general') {
+                          for (String tag in tags) {
+                            List validator = (await client.tags(tag));
+                            String category;
+                            if (validator.length == 0) {
+                              category = 'general';
+                            } else if (group[tagSet] !=
+                                validator[0]['category']) {
+                              category = group.keys.firstWhere(
+                                  (k) => group[k] == validator[0]['category']);
+                            }
+                            if (category != null) {
+                              widget.post.tags.value[tagSet].remove(tag);
+                              widget.post.tags.value[category].add(tag);
+                              widget.post.tags.value[category].sort();
+                              widget.post.tags.value =
+                                  Map.from(widget.post.tags.value);
+                              Scaffold.of(context).showSnackBar(SnackBar(
+                                duration: Duration(seconds: 1),
+                                content: Text('Moved $tag to $category tags'),
+                                behavior: SnackBarBehavior.floating,
+                              ));
+                            }
+                            await new Future.delayed(
+                                const Duration(milliseconds: 200));
+                          }
+                        }
+                      }();
+                      return Future.value(true);
+                    };
+                    _bottomSheetController.closed.then((_) {
+                      doEdit.value = null;
+                      isLoading.value = false;
+                    });
+                  },
+                ),
               );
             },
           );
@@ -1764,15 +1780,6 @@ class _PostWidgetState extends State<PostWidget> {
     return ValueListenableBuilder(
       valueListenable: widget.post.isEditing,
       builder: (context, value, child) {
-        if (!value) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            try {
-              _bottomSheetController?.close();
-            } on NoSuchMethodError {
-              // just ignore this crap.
-            }
-          });
-        }
         return WillPopScope(
           onWillPop: () {
             if (doEdit.value != null) {
@@ -1810,38 +1817,64 @@ class _PostWidgetState extends State<PostWidget> {
       },
     );
   }
+}
 
-  Future<void> _onTapImage(
-      BuildContext context, List<Post> posts, int index) async {
-    ValueNotifier current = ValueNotifier(index);
-    ValueNotifier showFrame = ValueNotifier(false);
+class ImageGallery extends StatefulWidget {
+  final int index;
+  final List<Post> posts;
+  final PageController controller;
 
-    void toggleFrame() {
-      showFrame.value = !showFrame.value;
-      showFrame.value
-          ? SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values)
-          : SystemChrome.setEnabledSystemUIOverlays([]);
-    }
+  const ImageGallery({this.index = 0, @required this.posts, this.controller});
 
+  @override
+  _ImageGalleryState createState() => _ImageGalleryState();
+}
+
+class _ImageGalleryState extends State<ImageGallery> {
+  ValueNotifier<int> current = ValueNotifier(null);
+  ValueNotifier<bool> showFrame = ValueNotifier(false);
+
+  void toggleFrame() {
+    showFrame.value = !showFrame.value;
+    showFrame.value
+        ? SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values)
+        : SystemChrome.setEnabledSystemUIOverlays([]);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    SystemChrome.setEnabledSystemUIOverlays([]);
+    current.value = widget.index;
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     Widget pictureFrame(BuildContext context, Widget child) {
       return Scaffold(
+          backgroundColor: Colors.transparent,
           appBar: PreferredSize(
             preferredSize: Size.fromHeight(
                 MediaQuery.of(context).padding.top + kToolbarHeight),
             child: ValueListenableBuilder(
               valueListenable: showFrame,
               builder: (context, value, child) {
-                return AnimatedOpacity(
-                  opacity: value ? 1.0 : 0.0,
+                return AnimatedSwitcher(
                   duration: Duration(milliseconds: 100),
-                  // The green box must be a child of the AnimatedOpacity widget.
-                  child: child,
+                  child: value ? child : Container(),
                 );
               },
               child: ValueListenableBuilder(
                 valueListenable: current,
-                builder: (context, value, child) =>
-                    postAppBar(context, posts[current.value], canEdit: false),
+                builder: (context, value, child) => postAppBar(
+                    context, widget.posts[current.value],
+                    canEdit: false),
               ),
             ),
           ),
@@ -1860,12 +1893,32 @@ class _PostWidgetState extends State<PostWidget> {
           color: Theme.of(context).canvasColor,
         ),
         builder: (context, index) {
-          return PhotoViewGalleryPageOptions(
+          return PhotoViewGalleryPageOptions.customChild(
             heroAttributes: PhotoViewHeroAttributes(
-              tag: 'image_${posts[index].id}',
+              tag: 'image_${widget.posts[index].id}',
             ),
-            imageProvider: CachedNetworkImageProvider(
-                posts[index].image.value.file['url']),
+            childSize: Size(
+                widget.posts[index].image.value.sample['width'].toDouble(),
+                widget.posts[index].image.value.sample['height'].toDouble()),
+            child: CachedNetworkImage(
+              imageUrl: widget.posts[index].image.value.file['url'],
+              placeholder: (context, chunk) => Stack(
+                children: [
+                  CachedNetworkImage(
+                      imageUrl: widget.posts[index].image.value.sample['url'],
+                      placeholder: (context, chunk) => Center(
+                            child: Container(
+                                height: 26,
+                                width: 26,
+                                child: CircularProgressIndicator()),
+                          )),
+                  Container(
+                    alignment: Alignment.bottomCenter,
+                    child: LinearProgressIndicator(),
+                  ),
+                ],
+              ),
+            ),
             initialScale: PhotoViewComputedScale.contained * 0.8,
             minScale: PhotoViewComputedScale.contained,
             maxScale: PhotoViewComputedScale.contained * 6,
@@ -1873,37 +1926,16 @@ class _PostWidgetState extends State<PostWidget> {
                 toggleFrame(),
           );
         },
-        itemCount: posts.length,
-        loadingBuilder: (context, chunk) => GestureDetector(
-          child: Container(
-            child: Stack(alignment: Alignment.center, children: [
-              Hero(
-                tag: 'image_${posts[current.value].id}',
-                child: CachedNetworkImage(
-                  imageUrl: posts[current.value].image.value.sample['url'],
-                  placeholder: (context, url) => CircularProgressIndicator(),
-                  errorWidget: (context, url, error) =>
-                      Icon(Icons.error_outline),
-                ),
-              ),
-              Container(
-                alignment: Alignment.bottomCenter,
-                child: LinearProgressIndicator(),
-              ),
-            ]),
-            color: Theme.of(context).canvasColor,
-          ),
-          onTap: toggleFrame,
-        ),
-        pageController: PageController(initialPage: index),
+        itemCount: widget.posts.length,
+        pageController: PageController(initialPage: widget.index),
         onPageChanged: (index) {
           int precache = 2;
           for (int i = -precache - 1; i < precache; i++) {
             int target = index + 1 + i;
-            if (target > 0 && target < posts.length) {
+            if (target > 0 && target < widget.posts.length) {
               precacheImage(
                 CachedNetworkImageProvider(
-                    posts[target].image.value.file['url']),
+                    widget.posts[target].image.value.file['url']),
                 context,
               );
             }
@@ -1916,108 +1948,105 @@ class _PostWidgetState extends State<PostWidget> {
       );
     }
 
-    if (widget.post.image.value.file['ext'] == 'webm' ||
-        widget.post.image.value.file['ext'] == 'swf') {
-      url.launch(widget.post.image.value.file['url']);
-    } else {
-      SystemChrome.setEnabledSystemUIOverlays([]);
-      SystemChrome.setSystemUIOverlayStyle(
-        SystemUiOverlayStyle(
-          statusBarColor: Colors.transparent,
-        ),
-      );
-      await Navigator.of(context).push(MaterialPageRoute<Null>(
-        builder: (context) => pictureFrame(context, pictureGallery(context)),
-      ));
-      SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle());
-      SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
-    }
+    return pictureFrame(context, pictureGallery(context));
   }
 }
 
 Widget postAppBar(BuildContext context, Post post, {bool canEdit = true}) {
-  return AppBar(
-    backgroundColor: Colors.transparent,
-    elevation: 0,
-    leading: IconButton(
-      icon: IconShadowWidget(
-        Icon(
-          post.isEditing.value && canEdit ? Icons.clear : Icons.arrow_back,
-          color: Theme.of(context).iconTheme.color,
-        ),
-        shadowColor: Colors.black,
-      ),
-      onPressed: () => Navigator.of(context).maybePop(),
-    ),
-    actions: post.isEditing.value
-        ? null
-        : <Widget>[
-            ValueListenableBuilder(
-              valueListenable: post.comments,
-              builder: (BuildContext context, value, Widget child) {
-                return PopupMenuButton<String>(
-                  icon: IconShadowWidget(
-                    Icon(
-                      Icons.more_vert,
-                      color: Theme.of(context).iconTheme.color,
-                    ),
-                    shadowColor: Colors.black,
-                  ),
-                  itemBuilder: (BuildContext context) =>
-                      <PopupMenuEntry<String>>[
-                    PopupMenuItem(
-                      value: 'share',
-                      child: popMenuListTile('Share', Icons.share),
-                    ),
-                    post.image.value.file['url'] != null && (Platform.isAndroid)
-                        ? PopupMenuItem(
-                            value: 'download',
-                            child: popMenuListTile(
-                                'Download', Icons.file_download),
-                          )
-                        : null,
-                    PopupMenuItem(
-                      value: 'browse',
-                      child: popMenuListTile('Browse', Icons.open_in_browser),
-                    ),
-                    post.isLoggedIn && canEdit
-                        ? PopupMenuItem(
-                            value: 'edit',
-                            child: popMenuListTile('Edit', Icons.edit),
-                          )
-                        : null,
-                    post.isLoggedIn && value == 0
-                        ? PopupMenuItem(
-                            value: 'comment',
-                            child: popMenuListTile('Comment', Icons.comment),
-                          )
-                        : null,
-                  ],
-                  onSelected: (value) async {
-                    switch (value) {
-                      case 'share':
-                        Share.share(post.url(await db.host.value).toString());
-                        break;
-                      case 'download':
-                        downloadDialog(context, post);
-                        break;
-                      case 'browse':
-                        url.launch(post.url(await db.host.value).toString());
-                        break;
-                      case 'edit':
-                        post.isEditing.value = true;
-                        break;
-                      case 'comment':
-                        if (await sendComment(context, post)) {
-                          post.comments.value++;
-                        }
-                        break;
-                    }
-                  },
-                );
-              },
+  return PreferredSize(
+    preferredSize:
+        Size.fromHeight(MediaQuery.of(context).padding.top + kToolbarHeight),
+    child: Hero(
+      tag: 'appbar',
+      child: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          icon: IconShadowWidget(
+            Icon(
+              post.isEditing.value && canEdit ? Icons.clear : Icons.arrow_back,
+              color: Theme.of(context).iconTheme.color,
             ),
-          ],
+            shadowColor: Colors.black,
+          ),
+          onPressed: () => Navigator.of(context).maybePop(),
+        ),
+        actions: post.isEditing.value
+            ? null
+            : <Widget>[
+                ValueListenableBuilder(
+                  valueListenable: post.comments,
+                  builder: (BuildContext context, value, Widget child) {
+                    return PopupMenuButton<String>(
+                      icon: IconShadowWidget(
+                        Icon(
+                          Icons.more_vert,
+                          color: Theme.of(context).iconTheme.color,
+                        ),
+                        shadowColor: Colors.black,
+                      ),
+                      itemBuilder: (BuildContext context) =>
+                          <PopupMenuEntry<String>>[
+                        PopupMenuItem(
+                          value: 'share',
+                          child: popMenuListTile('Share', Icons.share),
+                        ),
+                        post.image.value.file['url'] != null &&
+                                (Platform.isAndroid)
+                            ? PopupMenuItem(
+                                value: 'download',
+                                child: popMenuListTile(
+                                    'Download', Icons.file_download),
+                              )
+                            : null,
+                        PopupMenuItem(
+                          value: 'browse',
+                          child:
+                              popMenuListTile('Browse', Icons.open_in_browser),
+                        ),
+                        post.isLoggedIn && canEdit
+                            ? PopupMenuItem(
+                                value: 'edit',
+                                child: popMenuListTile('Edit', Icons.edit),
+                              )
+                            : null,
+                        post.isLoggedIn && value == 0
+                            ? PopupMenuItem(
+                                value: 'comment',
+                                child:
+                                    popMenuListTile('Comment', Icons.comment),
+                              )
+                            : null,
+                      ],
+                      onSelected: (value) async {
+                        switch (value) {
+                          case 'share':
+                            Share.share(
+                                post.url(await db.host.value).toString());
+                            break;
+                          case 'download':
+                            downloadDialog(context, post);
+                            break;
+                          case 'browse':
+                            url.launch(
+                                post.url(await db.host.value).toString());
+                            break;
+                          case 'edit':
+                            post.isEditing.value = true;
+                            break;
+                          case 'comment':
+                            if (await sendComment(context, post)) {
+                              post.comments.value++;
+                            }
+                            break;
+                        }
+                      },
+                    );
+                  },
+                ),
+              ],
+      ),
+    ),
   );
 }
 
