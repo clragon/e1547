@@ -676,7 +676,7 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
 
           Function onTap;
 
-          switch (word) {
+          switch (word.toLowerCase()) {
             case 'thumb':
             // add actual pictures here some day.
             case 'post':
@@ -1244,11 +1244,11 @@ class _TextEditorState extends State<TextEditor> with TickerProviderStateMixin {
           return (widget.richEditor && showBar) ? hotkeys() : null;
         }(),
         body: NestedScrollView(
-          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+          headerSliverBuilder: (context, innerBoxIsScrolled) {
             return <Widget>[
               SliverAppBar(
                 floating: true,
-                pinned: true,
+                pinned: false,
                 snap: false,
                 leading: IconButton(
                   icon: Icon(
@@ -1272,15 +1272,18 @@ class _TextEditorState extends State<TextEditor> with TickerProviderStateMixin {
               ),
             ];
           },
-          body: widget.richEditor
-              ? TabBarView(
-                  controller: tabController,
-                  children: [
-                    editor(),
-                    preview(),
-                  ],
-                )
-              : editor(),
+          body: Padding(
+            padding: EdgeInsets.only(bottom: 42),
+            child: widget.richEditor
+                ? TabBarView(
+                    controller: tabController,
+                    children: [
+                      editor(),
+                      preview(),
+                    ],
+                  )
+                : editor(),
+          ),
         ));
   }
 }
@@ -1453,7 +1456,10 @@ class DataProvider<T> {
   }
 
   DataProvider.extended({String search, @required this.extendedProvider}) {
-    DataProvider(search: search, provider: null);
+    this.search.value = sortTags(search ?? '');
+    [db.host, db.username, db.showWebm, this.search]
+        .forEach((notifier) => notifier.addListener(resetPages));
+    loadNextPage();
   }
 
   Future<void> resetPages() async {
@@ -1494,4 +1500,56 @@ class DataProvider<T> {
       }
     }
   }
+}
+
+String getAge(String date) {
+  Duration duration = DateTime.now().difference(DateTime.parse(date).toLocal());
+
+  List<int> periods = [
+    1,
+    60,
+    3600,
+    86400,
+    604800,
+    2419200,
+    29030400,
+  ];
+
+  int ago;
+  String measurement;
+  for (int period = 0; period <= periods.length; period++) {
+    if (period == periods.length || duration.inSeconds < periods[period]) {
+      if (period != 0) {
+        ago = (duration.inSeconds / periods[period - 1]).round();
+      } else {
+        ago = duration.inSeconds;
+      }
+      bool single = (ago == 1);
+      switch (periods[period - 1] ?? 1) {
+        case 1:
+          measurement = single ? 'second' : 'seconds';
+          break;
+        case 60:
+          measurement = single ? 'minute' : 'minutes';
+          break;
+        case 3600:
+          measurement = single ? 'hour' : 'hours';
+          break;
+        case 86400:
+          measurement = single ? 'day' : 'days';
+          break;
+        case 604800:
+          measurement = single ? 'week' : 'weeks';
+          break;
+        case 2419200:
+          measurement = single ? 'month' : 'months';
+          break;
+        case 29030400:
+          measurement = single ? 'year' : 'years';
+          break;
+      }
+      break;
+    }
+  }
+  return '$ago $measurement ago';
 }

@@ -8,9 +8,9 @@ import 'package:e1547/interface.dart';
 import 'package:e1547/login_page.dart';
 import 'package:e1547/persistence.dart';
 import 'package:e1547/pools_page.dart';
-import 'package:e1547/post.dart';
 import 'package:e1547/posts_page.dart';
 import 'package:e1547/settings_page.dart';
+import 'package:e1547/threads_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -28,6 +28,7 @@ void main() async {
 class Main extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    initUser(context: context);
     return ValueListenableBuilder(
       valueListenable: _theme,
       builder: (context, value, child) {
@@ -49,13 +50,17 @@ class Main extends StatelessWidget {
                   _drawerSelection = _DrawerSelection.favorites;
                   return FavPage();
                 }(),
+            '/follows': (context) => () {
+                  _drawerSelection = _DrawerSelection.follows;
+                  return FollowsPage();
+                }(),
             '/pools': (context) => () {
                   _drawerSelection = _DrawerSelection.pools;
                   return PoolsPage();
                 }(),
-            '/follows': (context) => () {
-                  _drawerSelection = _DrawerSelection.follows;
-                  return FollowsPage();
+            '/forum': (context) => () {
+                  _drawerSelection = _DrawerSelection.forum;
+                  return ThreadsPage();
                 }(),
             '/login': (context) => LoginPage(),
             '/settings': (context) => SettingsPage(),
@@ -125,8 +130,9 @@ enum _DrawerSelection {
   home,
   hot,
   favorites,
-  pools,
   follows,
+  pools,
+  forum,
 }
 
 _DrawerSelection _drawerSelection = _DrawerSelection.home;
@@ -137,7 +143,7 @@ class NavigationDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      child: ListView(children: [
+      child: ListView(physics: BouncingScrollPhysics(), children: [
         header,
         ListTile(
           selected: _drawerSelection == _DrawerSelection.home,
@@ -183,15 +189,27 @@ class NavigationDrawer extends StatelessWidget {
                 '/follows', (Route<dynamic> route) => false);
           },
         ),
+        Divider(),
         ListTile(
           selected: _drawerSelection == _DrawerSelection.pools,
-          leading: Icon(Icons.group),
+          leading: Icon(Icons.collections),
           title: Text('Pools'),
           onTap: () {
             Navigator.of(context).pushNamedAndRemoveUntil(
                 '/pools', (Route<dynamic> route) => false);
           },
         ),
+        /*
+        ListTile(
+          selected: _drawerSelection == _DrawerSelection.forum,
+          leading: Icon(Icons.group),
+          title: Text('Forum'),
+          onTap: () {
+            Navigator.of(context).pushNamedAndRemoveUntil(
+                '/forum', (Route<dynamic> route) => false);
+          },
+        ),
+        */
         Divider(),
         ListTile(
           leading: Icon(Icons.settings),
@@ -239,6 +257,23 @@ class NavigationDrawer extends StatelessWidget {
   }
 }
 
+ValueNotifier<String> userName = ValueNotifier(null);
+ValueNotifier<String> userAvatar = ValueNotifier(null);
+
+void initUser({BuildContext context}) {
+  db.username.value.then((name) {
+    userName.value = name;
+    if (userName.value != null) {
+      client.avatar.then((avatar) {
+        userAvatar.value = avatar;
+        if (avatar != null && context != null) {
+          precacheImage(CachedNetworkImageProvider(avatar), context);
+        }
+      });
+    }
+  });
+}
+
 class ProfileHeader extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
@@ -247,82 +282,74 @@ class ProfileHeader extends StatefulWidget {
 }
 
 class _ProfileHeaderState extends State<ProfileHeader> {
-  String username;
-  String picture;
-
   @override
   void initState() {
     super.initState();
-    void refresh() {
-      db.username.value.then((username) async {
-        setState(() {
-          this.username = username;
-        });
-        if (username == null) {
-          picture = null;
-        } else {
-          int postID = (await client.user(username))['avatar_id'];
-          Post post = await client.post(postID);
-          setState(() {
-            picture = post.image.value.sample['url'];
-          });
-        }
-      });
-    }
+    db.username.addListener(initUser);
+  }
 
-    db.username.addListener(() {
-      refresh();
-    });
-    refresh();
+  @override
+  void dispose() {
+    super.dispose();
+    db.username.removeListener(initUser);
   }
 
   @override
   Widget build(BuildContext context) {
     Widget userNameWidget() {
-      if (username != null) {
-        return Row(
-          children: <Widget>[
-            Expanded(
-                child: Text(
-              username,
-              style: TextStyle(fontSize: 16.0),
-              overflow: TextOverflow.ellipsis,
-            )),
-            IconButton(
-                icon: Icon(Icons.exit_to_app),
-                onPressed: () {
-                  client.logout();
-                  String msg = 'Forgot login details';
-                  if (username != null) {
-                    msg = msg + ' for $username';
-                  }
+      return ValueListenableBuilder(
+        valueListenable: userName,
+        builder: (context, value, child) {
+          if (value != null) {
+            return Row(
+              children: <Widget>[
+                Expanded(
+                    child: Text(
+                  value,
+                  style: TextStyle(fontSize: 16.0),
+                  overflow: TextOverflow.ellipsis,
+                )),
+                IconButton(
+                    icon: Icon(Icons.exit_to_app),
+                    onPressed: () {
+                      client.logout();
+                      String msg = 'Forgot login details';
+                      if (value != null) {
+                        msg = msg + ' for $value';
+                      }
 
-                  Scaffold.of(context).showSnackBar(SnackBar(
-                    duration: Duration(seconds: 5),
-                    content: Text(msg),
-                  ));
-                  Navigator.of(context).pop();
-                })
-          ],
-        );
-      } else {
-        return Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20),
-          child: OutlineButton(
-            child: Text('LOGIN'),
-            onPressed: () => Navigator.popAndPushNamed(context, '/login'),
-          ),
-        );
-      }
+                      Scaffold.of(context).showSnackBar(SnackBar(
+                        duration: Duration(seconds: 5),
+                        content: Text(msg),
+                      ));
+                      Navigator.of(context).pop();
+                    })
+              ],
+            );
+          } else {
+            return Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: OutlineButton(
+                child: Text('LOGIN'),
+                onPressed: () => Navigator.popAndPushNamed(context, '/login'),
+              ),
+            );
+          }
+        },
+      );
     }
 
     Widget userAvatarWidget() {
-      return CircleAvatar(
-        // TODO: fix user avatar
-        backgroundImage: picture == null || true
-            ? AssetImage('assets/icon/app/paw.png')
-            : CachedNetworkImageProvider(picture),
-        radius: 36.0,
+      return ValueListenableBuilder(
+        valueListenable: userAvatar,
+        builder: (context, value, child) {
+          return CircleAvatar(
+            backgroundImage: value == null
+                ? AssetImage('assets/icon/app/paw.png')
+                : CachedNetworkImageProvider(value),
+            radius: 36.0,
+          );
+        },
       );
     }
 

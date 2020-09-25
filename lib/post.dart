@@ -226,11 +226,13 @@ class PostSwipe extends StatelessWidget {
             for (int i = -precache - 1; i < precache; i++) {
               int target = index + 1 + i;
               if (target > 0 && target < provider.items.length) {
-                precacheImage(
-                  CachedNetworkImageProvider(
-                      provider.items[target].image.value.sample['url']),
-                  context,
-                );
+                if (provider.items[target].image.value.sample['url'] != null) {
+                  precacheImage(
+                    CachedNetworkImageProvider(
+                        provider.items[target].image.value.sample['url']),
+                    context,
+                  );
+                }
               }
             }
 
@@ -307,10 +309,12 @@ class _PostWidgetState extends State<PostWidget> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    precacheImage(
-      CachedNetworkImageProvider(widget.post.image.value.file['url']),
-      context,
-    );
+    if (widget.post.image.value.file['url'] != null) {
+      precacheImage(
+        CachedNetworkImageProvider(widget.post.image.value.file['url']),
+        context,
+      );
+    }
   }
 
   @override

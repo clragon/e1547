@@ -30,7 +30,49 @@ class _FollowingPageState extends State<FollowingPage> {
 
   @override
   Widget build(BuildContext context) {
+    Widget cardWidget(String tag) {
+      return Card(
+          child: InkWell(
+              onTap: () async {
+                if (tag.startsWith('pool:')) {
+                  Pool p = await client.pool(int.parse(tag.split(':')[1]));
+                  Navigator.of(context)
+                      .push(MaterialPageRoute<Null>(builder: (context) {
+                    return PoolPage(pool: p);
+                  }));
+                } else {
+                  Navigator.of(context)
+                      .push(MaterialPageRoute<Null>(builder: (context) {
+                    return SearchPage(tags: tag);
+                  }));
+                }
+              },
+              onLongPress: () => wikiDialog(context, tag, actions: true),
+              child: Padding(
+                padding: EdgeInsets.all(8),
+                child: Text(tag),
+              )));
+    }
+
     Widget body() {
+      if (_follows.length == 0) {
+        return Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.bookmark,
+                size: 32,
+              ),
+              Padding(
+                padding: EdgeInsets.all(20),
+                child: Text('You are not following any tags'),
+              ),
+            ],
+          ),
+        );
+      }
+
       return ListView.builder(
         itemCount: _follows.length,
         itemBuilder: (BuildContext context, int index) {
@@ -45,35 +87,7 @@ class _FollowingPageState extends State<FollowingPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisSize: MainAxisSize.max,
                         children: () {
-                          return [
-                            Card(
-                                child: InkWell(
-                                    onTap: () async {
-                                      if (_follows[index].startsWith('pool:')) {
-                                        Pool p = await client.pool(int.parse(
-                                            _follows[index].split(':')[1]));
-                                        Navigator.of(context).push(
-                                            MaterialPageRoute<Null>(
-                                                builder: (context) {
-                                          return PoolPage(pool: p);
-                                        }));
-                                      } else {
-                                        Navigator.of(context).push(
-                                            MaterialPageRoute<Null>(
-                                                builder: (context) {
-                                          return SearchPage(
-                                              tags: _follows[index]);
-                                        }));
-                                      }
-                                    },
-                                    onLongPress: () => wikiDialog(
-                                        context, _follows[index],
-                                        actions: true),
-                                    child: Padding(
-                                      padding: EdgeInsets.all(8),
-                                      child: Text(_follows[index]),
-                                    )))
-                          ];
+                          return [cardWidget(_follows[index])];
                         }(),
                       ),
                     ),

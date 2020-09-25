@@ -133,7 +133,59 @@ class _BlacklistPageState extends State<BlacklistPage> {
 
   @override
   Widget build(BuildContext context) {
+    Widget cardWidget(String tag) {
+      return Card(
+          child: InkWell(
+              onTap: () => wikiDialog(context, noDash(tag), actions: true),
+              onLongPress: () =>
+                  wikiDialog(context, noDash(tag), actions: true),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Container(
+                    height: 24,
+                    width: 5,
+                    decoration: BoxDecoration(
+                      color: () {
+                        if ('${tag[0]}' == '-') {
+                          return Colors.green[300];
+                        } else {
+                          return Colors.red[300];
+                        }
+                      }(),
+                      borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(5),
+                          bottomLeft: Radius.circular(5)),
+                    ),
+                  ),
+                  Padding(
+                    padding:
+                        EdgeInsets.only(top: 4, bottom: 4, right: 8, left: 6),
+                    child: Text(noDash(tag.replaceAll('_', ' '))),
+                  ),
+                ],
+              )));
+    }
+
     Widget body() {
+      if (_blacklist.length == 0) {
+        return Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.block,
+                size: 32,
+              ),
+              Padding(
+                padding: EdgeInsets.all(20),
+                child: Text('Your blacklist is empty'),
+              ),
+            ],
+          ),
+        );
+      }
+
       return ListView.builder(
         itemCount: _blacklist.length,
         itemBuilder: (BuildContext context, int index) {
@@ -148,46 +200,6 @@ class _BlacklistPageState extends State<BlacklistPage> {
                       child: Wrap(
                         direction: Axis.horizontal,
                         children: () {
-                          Widget cardWidget(String tag) {
-                            return Card(
-                                child: InkWell(
-                                    onTap: () => wikiDialog(
-                                        context, noDash(tag), actions: true),
-                                    onLongPress: () => wikiDialog(
-                                        context, noDash(tag),
-                                        actions: true),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: <Widget>[
-                                        Container(
-                                          height: 24,
-                                          width: 5,
-                                          decoration: BoxDecoration(
-                                            color: () {
-                                              if ('${tag[0]}' == '-') {
-                                                return Colors.green[300];
-                                              } else {
-                                                return Colors.red[300];
-                                              }
-                                            }(),
-                                            borderRadius: BorderRadius.only(
-                                                topLeft: Radius.circular(5),
-                                                bottomLeft: Radius.circular(5)),
-                                          ),
-                                        ),
-                                        Padding(
-                                          padding: EdgeInsets.only(
-                                              top: 4,
-                                              bottom: 4,
-                                              right: 8,
-                                              left: 6),
-                                          child: Text(
-                                              noDash(tag.replaceAll('_', ' '))),
-                                        ),
-                                      ],
-                                    )));
-                          }
-
                           List<Widget> rows = [];
                           if (_blacklist.length > 0) {
                             List<String> tags = _blacklist[index].split(' ');

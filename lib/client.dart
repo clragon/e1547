@@ -7,70 +7,64 @@ import 'package:e1547/persistence.dart' show db;
 import 'package:e1547/pool.dart';
 import 'package:e1547/post.dart' show Post;
 import 'package:e1547/tag.dart';
+import 'package:e1547/thread.dart';
+import 'package:e1547/threads_page.dart';
 
 final Client client = Client();
 
 class Client {
-  final HttpHelper _http = HttpHelper();
+  Future<bool> initialized;
 
-  Future<String> _host = db.host.value;
-  Future<String> _username = db.username.value;
-  Future<String> _apiKey = db.apiKey.value;
-  Future<List<String>> _blacklist = db.blacklist.value;
-  Future<List<String>> _following = db.follows.value;
+  HttpHelper http = HttpHelper();
+
+  Future<String> host = db.host.value;
+  Future<String> username = db.username.value;
+  Future<String> apiKey = db.apiKey.value;
+  Future<List<String>> blacklist = db.blacklist.value;
+  Future<List<String>> following = db.follows.value;
+
+  String _avatar;
+
+  Future<String> get avatar async {
+    int postID = (await client.user(await username))['avatar_id'];
+    Post post = await client.post(postID);
+    _avatar = post.image.value.sample['url'];
+    return _avatar;
+  }
 
   Client() {
-    db.host.addListener(() => _host = db.host.value);
-    db.username.addListener(() => _username = db.username.value);
-    db.apiKey.addListener(() => _apiKey = db.apiKey.value);
-    db.blacklist.addListener(() => _blacklist = db.blacklist.value);
-    db.follows.addListener(() => _following = db.follows.value);
+    db.host.addListener(() => host = db.host.value);
+    db.username.addListener(() => username = db.username.value);
+    db.apiKey.addListener(() => apiKey = db.apiKey.value);
+    db.blacklist.addListener(() => blacklist = db.blacklist.value);
+    db.follows.addListener(() => following = db.follows.value);
+
+    db.username.addListener(() => login());
+    db.apiKey.addListener(() => login());
+    login();
   }
 
-  Future<bool> addFavorite(int post) async {
-    if (!await hasLogin()) {
-      return false;
-    }
-
-    return await _http.post(await _host, '/favorites.json', query: {
-      'login': await _username,
-      'api_key': await _apiKey,
-      'post_id': post,
-    }).then((response) => response.statusCode == 201);
-  }
-
-  Future<bool> removeFavorite(int post) async {
-    if (!await hasLogin()) {
-      return false;
-    }
-
-    return await _http
-        .delete(await _host, '/favorites/${post.toString()}.json', query: {
-      'login': await _username,
-      'api_key': await _apiKey,
-    }).then((response) {
-      return response.statusCode == 204;
-    });
-  }
-
-  Future<bool> votePost(int post, bool upvote, bool replace) async {
-    if (!await hasLogin()) {
-      return false;
-    }
-
-    return await _http
-        .post(await _host, '/posts/' + post.toString() + '/votes.json', query: {
-      'score': upvote ? 1 : -1,
-      'no_unvote': replace,
-      'login': await _username,
-      'api_key': await _apiKey,
-    }).then((response) {
-      return response.statusCode == 200;
-    });
+  Future<bool> login() async {
+    initialized = () async {
+      String username = await this.username;
+      String apiKey = await this.apiKey;
+      if (username != null && apiKey != null) {
+        if (await tryLogin(username, apiKey)) {
+          http = HttpHelper(username: username, apiKey: apiKey);
+          return true;
+        } else {
+          logout();
+          return false;
+        }
+      } else {
+        return false;
+      }
+    }();
+    return await initialized;
   }
 
   Future<bool> tryLogin(String username, String apiKey) async {
-    return await _http.get(await _host, '/favorites.json', query: {
+    return await http.get(await host, '/favorites.json', query: {
       'login': username,
       'api_key': apiKey,
     }).then((response) {
@@ -88,32 +82,93 @@ class Client {
     }
   }
 
-  Future<bool> verifyLogin() async {
-    String username = await _username;
-    String apiKey = await _apiKey;
-    if (username != null && apiKey != null) {
-      if (await tryLogin(username, apiKey)) {
-        return true;
-      } else {
-        logout();
-        return false;
-      }
-    } else {
-      return false;
-    }
+  Future<bool> hasLogin() async {
+    await initialized;
+    return !(await username == null || await apiKey == null);
   }
 
   Future<void> logout() async {
     db.username.value = Future.value(null);
     db.apiKey.value = Future.value(null);
+    _avatar = null;
+    http = HttpHelper();
   }
 
-  Future<bool> hasLogin() async {
-    return !(await _username == null || await _apiKey == null);
+  Future<List<Post>> posts(String tags, int page, {bool filter = true}) async {
+    await initialized;
+    try {
+      String body = await http.get(await host, '/posts.json', query: {
+        'tags': sortTags(tags),
+        'page': page,
+        'limit': 20,
+      }).then((response) => response.body);
+
+      List<Post> posts = [];
+      bool loggedIn = await this.hasLogin();
+      bool showWebm = await db.showWebm.value;
+      bool hasPosts = false;
+      for (Map rawPost in json.decode(body)['posts']) {
+        hasPosts = true;
+        Post post = Post.fromRaw(rawPost);
+        post.isLoggedIn = loggedIn;
+        if (post.image.value.file['ext'] == 'swf') {
+          continue;
+        }
+        if (!showWebm && post.image.value.file['ext'] == 'webm') {
+          continue;
+        }
+        if (filter && await isBlacklisted(post)) {
+          continue;
+        }
+        posts.add(post);
+      }
+      if (hasPosts && posts.length == 0) {
+        return client.posts(tags, page + 1, filter: filter);
+      }
+      return posts;
+    } catch (SocketException) {
+      return [];
+    }
+  }
+
+  Future<bool> addFavorite(int post) async {
+    if (!await hasLogin()) {
+      return false;
+    }
+
+    return await http.post(await host, '/favorites.json', query: {
+      'post_id': post,
+    }).then((response) => response.statusCode == 201);
+  }
+
+  Future<bool> removeFavorite(int post) async {
+    if (!await hasLogin()) {
+      return false;
+    }
+
+    return await http
+        .delete(await host, '/favorites/${post.toString()}.json')
+        .then((response) {
+      return response.statusCode == 204;
+    });
+  }
+
+  Future<bool> votePost(int post, bool upvote, bool replace) async {
+    if (!await hasLogin()) {
+      return false;
+    }
+
+    return await http
+        .post(await host, '/posts/' + post.toString() + '/votes.json', query: {
+      'score': upvote ? 1 : -1,
+      'no_unvote': replace,
+    }).then((response) {
+      return response.statusCode == 200;
+    });
   }
 
   Future<bool> isBlacklisted(Post post) async {
-    List<String> blacklist = await _blacklist;
+    List<String> blacklist = await this.blacklist;
     if (blacklist.length > 0) {
       List<String> tags = [];
       post.tags.value.forEach((k, v) {
@@ -208,50 +263,11 @@ class Client {
     return false;
   }
 
-  Future<List<Post>> posts(String tags, int page, {bool filter = true}) async {
-    try {
-      String body = await _http.get(await _host, '/posts.json', query: {
-        'tags': sortTags(tags),
-        'page': page,
-        'login': await _username,
-        'api_key': await _apiKey,
-      }).then((response) => response.body);
-
-      List<Post> posts = [];
-      bool loggedIn = await this.hasLogin();
-      bool showWebm = await db.showWebm.value;
-      bool hasPosts = false;
-      for (Map rawPost in json.decode(body)['posts']) {
-        hasPosts = true;
-        Post post = Post.fromRaw(rawPost);
-        post.isLoggedIn = loggedIn;
-        if (post.image.value.file['ext'] == 'swf') {
-          continue;
-        }
-        if (!showWebm && post.image.value.file['ext'] == 'webm') {
-          continue;
-        }
-        if (filter && await isBlacklisted(post)) {
-          continue;
-        }
-        posts.add(post);
-      }
-      if (hasPosts && posts.length == 0) {
-        return client.posts(tags, page + 1, filter: filter);
-      }
-      return posts;
-    } catch (SocketException) {
-      return [];
-    }
-  }
-
   Future<List<Pool>> pools(String title, int page) async {
     try {
-      String body = await _http.get(await _host, '/pools.json', query: {
+      String body = await http.get(await host, '/pools.json', query: {
         'search[name_matches]': title,
         'page': page,
-        'login': await _username,
-        'api_key': await _apiKey,
       }).then((response) => response.body);
 
       List<Pool> pools = [];
@@ -267,11 +283,9 @@ class Client {
   }
 
   Future<Pool> pool(int poolID) async {
-    String body = await _http
-        .get(await _host, '/pools/${poolID.toString()}.json', query: {
-      'login': await _username,
-      'api_key': await _apiKey,
-    }).then((response) => response.body);
+    String body = await http
+        .get(await host, '/pools/${poolID.toString()}.json')
+        .then((response) => response.body);
 
     return Pool.fromRaw(json.decode(body));
   }
@@ -280,12 +294,12 @@ class Client {
     List<List<String>> tags = [];
     List<Post> posts = [];
 
-    int length = (await _following).length;
+    int length = (await following).length;
     int max = 40;
 
     for (int i = 0; i < length; i += max) {
       int end = (length > i + max) ? i + max : length;
-      tags.add((await _following).sublist(i, end));
+      tags.add((await following).sublist(i, end));
     }
 
     for (List<String> tag in tags) {
@@ -295,13 +309,12 @@ class Client {
   }
 
   Future<Post> post(int postID, {bool unsafe = false}) async {
+    await initialized;
     try {
-      String body = await _http.get((unsafe ? 'e621.net' : await _host),
-          '/posts/${postID.toString()}.json',
-          query: {
-            'login': await _username,
-            'api_key': await _apiKey,
-          }).then((response) => response.body);
+      String body = await http
+          .get((unsafe ? 'e621.net' : await host),
+              '/posts/${postID.toString()}.json')
+          .then((response) => response.body);
 
       Post post = Post.fromRaw(json.decode(body)['post']);
       post.isLoggedIn = await hasLogin();
@@ -313,6 +326,10 @@ class Client {
   }
 
   Future<Map> updatePost(Post update, Post old, {String editReason}) async {
+    await initialized;
+    if (!await hasLogin()) {
+      return null;
+    }
     Map<String, String> body = {};
 
     List<String> tags(Post post) {
@@ -400,13 +417,8 @@ class Client {
         ]);
       }
 
-      Map response = await _http
-          .patch(await _host, '/posts/${update.id}.json',
-              query: {
-                'login': await _username,
-                'api_key': await _apiKey,
-              },
-              body: body)
+      Map response = await http
+          .patch(await host, '/posts/${update.id}.json', body: body)
           .then((response) =>
               {'code': response.statusCode, 'reason': response.reasonPhrase});
       return response;
@@ -416,11 +428,9 @@ class Client {
 
   Future<List> wiki(String search, int page) async {
     try {
-      String body = await _http.get(await _host, 'wiki_pages.json', query: {
+      String body = await http.get(await host, 'wiki_pages.json', query: {
         'search[title]': search,
         'page': page + 1,
-        'login': await _username,
-        'api_key': await _apiKey,
       }).then((response) => response.body);
 
       return json.decode(body);
@@ -430,23 +440,21 @@ class Client {
   }
 
   Future<Map> user(String name) async {
-    String body = await _http.get(await _host, '/users/$name.json', query: {
-      'login': await _username,
-      'api_key': await _apiKey,
-    }).then((response) => response.body);
+    await initialized;
+    String body = await http
+        .get(await host, '/users/$name.json')
+        .then((response) => response.body);
 
     return json.decode(body);
   }
 
   Future<List> tags(String search, {int category, int page = 0}) async {
-    String body = await _http.get(await _host, '/tags.json', query: {
+    String body = await http.get(await host, '/tags.json', query: {
       'search[name_matches]': search + '*',
       'search[category]': category,
       'search[order]': 'count',
       'page': page + 1,
       'limit': 3,
-      'login': await _username,
-      'api_key': await _apiKey,
     }).then((response) => response.body);
 
     List tags = [];
@@ -458,12 +466,10 @@ class Client {
   }
 
   Future<List<Comment>> comments(int postID, int page) async {
-    String body = await _http.get(await _host, '/comments.json', query: {
+    String body = await http.get(await host, '/comments.json', query: {
       'group_by': 'comment',
       'search[post_id]': '$postID',
       'page': page,
-      'login': await _username,
-      'api_key': await _apiKey,
     }).then((response) => response.body);
 
     List<Comment> comments = [];
@@ -478,10 +484,11 @@ class Client {
   }
 
   Future<Map> postComment(String text, Post post, {Comment comment}) async {
-    Map<String, String> query = {
-      'login': await _username,
-      'api_key': await _apiKey,
-    };
+    await initialized;
+    if (!await hasLogin()) {
+      return null;
+    }
+    Map<String, String> query = {};
     Map<String, String> body = {
       'comment[body]': text,
       'comment[post_id]': post.id.toString(),
@@ -489,15 +496,63 @@ class Client {
     };
     Future request;
     if (comment != null) {
-      request = _http.patch(await _host, '/comments/${comment.id}.json',
+      request = http.patch(await host, '/comments/${comment.id}.json',
           query: query, body: body);
     } else {
       request =
-          _http.post(await _host, '/comments.json', query: query, body: body);
+          http.post(await host, '/comments.json', query: query, body: body);
     }
     Map response = await request.then((response) {
       return {'code': response.statusCode, 'reason': response.reasonPhrase};
     });
     return response;
+  }
+
+  Future<List<Thread>> threads(int page) async {
+    String body = await http.get(await host, '/forum_topics.json', query: {
+      'page': page + 1,
+    }).then((response) => response.body);
+
+    List<Thread> threads = [];
+    var data = json.decode(body);
+    if (data is List) {
+      for (Map thread in data) {
+        threads.add(Thread.fromRaw(thread));
+      }
+    }
+
+    return threads;
+  }
+
+  Future<Thread> thread(int id) async {
+    String body = await http
+        .get(await host, '/forum_topics/$id.json')
+        .then((response) => response.body);
+
+    Thread thread;
+    var data = json.decode(body);
+    if (data is Map) {
+      thread = Thread.fromRaw(data);
+    }
+
+    return thread;
+  }
+
+  Future<List<Reply>> replies(Thread thread, String page) async {
+    String body = await http.get(await host, '/forum_posts.json', query: {
+      'commit': 'Search',
+      'search[topic_title_matches]': thread.title,
+      'page': page,
+    }).then((response) => response.body);
+
+    List<Reply> replies = [];
+    var data = json.decode(body);
+    if (data is List) {
+      for (Map reply in data) {
+        replies.add(Reply.fromRaw(reply));
+      }
+    }
+
+    return replies;
   }
 }

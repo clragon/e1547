@@ -1,23 +1,46 @@
 import 'package:e1547/client.dart';
 import 'package:e1547/interface.dart';
 import 'package:e1547/main.dart';
-import 'package:e1547/pool.dart';
-import 'package:e1547/posts_page.dart';
+import 'package:e1547/thread.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-class PoolsPage extends StatefulWidget {
-  PoolsPage();
+class Thread {
+  Map raw;
 
-  @override
-  State<StatefulWidget> createState() {
-    return _PoolsPageState();
+  int id;
+  int creatorID;
+  String title;
+  int posts;
+  bool sticky;
+  bool locked;
+  String creation;
+  String updated;
+
+  Thread.fromRaw(this.raw) {
+    id = raw['id'] as int;
+    title = raw['title'] as String;
+    creatorID = raw['creator_id'] as int;
+    creation = raw['created_at'] as String;
+    updated = raw['updated_at'] as String;
+    posts = raw['response_count'] as int;
+    sticky = raw['is_sticky'] as bool;
+    locked = raw['is_locked'] as bool;
   }
 }
 
-class _PoolsPageState extends State<PoolsPage> {
+class ThreadsPage extends StatefulWidget {
+  ThreadsPage();
+
+  @override
+  State<StatefulWidget> createState() {
+    return _ThreadsPageState();
+  }
+}
+
+class _ThreadsPageState extends State<ThreadsPage> {
   bool _loading = true;
-  PoolProvider provider = PoolProvider();
+  ThreadProvider provider = ThreadProvider();
   TextEditingController _tagController = TextEditingController();
   ValueNotifier<bool> isSearching = ValueNotifier(false);
   PersistentBottomSheetController<String> _bottomSheetController;
@@ -26,20 +49,20 @@ class _PoolsPageState extends State<PoolsPage> {
       RefreshController(initialRefresh: false);
 
   Widget _itemBuilder(BuildContext context, int item) {
-    Widget preview(Pool pool, PoolProvider provider) {
-      return PoolPreview(pool, onPressed: () {
+    Widget preview(Thread thread, ThreadProvider provider) {
+      return ThreadPreview(thread, onPressed: () {
         Navigator.of(context).push(MaterialPageRoute<Null>(
-          builder: (context) => PoolPage(pool: pool),
+          builder: (context) => ThreadWidget(thread),
         ));
       });
     }
 
-    if (item == provider.pools.length - 1) {
+    if (item == provider.threads.length - 1) {
       provider.loadNextPage();
     }
 
-    if (item < provider.pools.length) {
-      return preview(provider.pools[item], provider);
+    if (item < provider.threads.length) {
+      return preview(provider.threads[item], provider);
     }
     return null;
   }
@@ -60,8 +83,8 @@ class _PoolsPageState extends State<PoolsPage> {
 
     Widget bodyWidget() {
       return pageLoader(
-        onLoading: Text('Loading pools'),
-        onEmpty: Text('No pools'),
+        onLoading: Text('Loading threads'),
+        onEmpty: Text('No threads'),
         isLoading: _loading,
         isEmpty: (!_loading &&
             provider.pages.value.length == 1 &&
@@ -70,7 +93,7 @@ class _PoolsPageState extends State<PoolsPage> {
           controller: _refreshController,
           header: ClassicHeader(
             refreshingText: 'Refreshing...',
-            completeText: 'Refreshed pools!',
+            completeText: 'Refreshed threads!',
           ),
           onRefresh: () async {
             await provider.loadNextPage(reset: true);
@@ -78,7 +101,7 @@ class _PoolsPageState extends State<PoolsPage> {
           },
           physics: BouncingScrollPhysics(),
           child: ListView.builder(
-            itemCount: provider.pools.length,
+            itemCount: provider.threads.length,
             itemBuilder: _itemBuilder,
             physics: BouncingScrollPhysics(),
           ),
@@ -135,7 +158,7 @@ class _PoolsPageState extends State<PoolsPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Pools'),
+        title: Text('Forum'),
       ),
       body: bodyWidget(),
       drawer: NavigationDrawer(),
@@ -144,10 +167,10 @@ class _PoolsPageState extends State<PoolsPage> {
   }
 }
 
-class PoolProvider extends DataProvider<Pool> {
-  List<Pool> get pools => super.items;
+class ThreadProvider extends DataProvider<Thread> {
+  List<Thread> get threads => super.items;
 
-  PoolProvider({
+  ThreadProvider({
     String search,
-  }) : super(search: search, provider: client.pools);
+  }) : super(provider: (String search, int page) => client.threads(page));
 }

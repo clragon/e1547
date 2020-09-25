@@ -1,31 +1,44 @@
 import 'dart:async' show Future;
 
 import 'package:e1547/appInfo.dart';
-import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
+import 'package:http_auth/http_auth.dart';
 
 String userAgent = '$appName/$appVersion ($developer)';
 
 class HttpHelper {
+  final String username;
+  final String apiKey;
+  final BaseClient client;
+  final bool hasLogin;
+
+  HttpHelper({this.username, this.apiKey})
+      : hasLogin = username != null && apiKey != null,
+        client = username != null && apiKey != null
+            ? BasicAuthClient(username, apiKey)
+            : Client();
+
   Map<String, String> headers = {'User-Agent': userAgent};
 
-  Future<http.Response> post(String host, String path,
+  Future<Response> post(String host, String path,
       {Map<String, dynamic> query, Map<String, String> body}) {
-    return http.post(_getUri(host, path, query), headers: headers, body: body);
+    return client.post(_getUri(host, path, query),
+        headers: headers, body: body);
   }
 
-  Future<http.Response> get(String host, String path,
-      {Map<String, dynamic> query}) {
-    return http.get(_getUri(host, path, query), headers: headers);
+  Future<Response> get(String host, String path, {Map<String, dynamic> query}) {
+    return client.get(_getUri(host, path, query), headers: headers);
   }
 
-  Future<http.Response> patch(String host, String path,
+  Future<Response> patch(String host, String path,
       {Map<String, dynamic> query, Map<String, String> body}) {
-    return http.patch(_getUri(host, path, query), headers: headers, body: body);
+    return client.patch(_getUri(host, path, query),
+        headers: headers, body: body);
   }
 
-  Future<http.Response> delete(String host, String path,
+  Future<Response> delete(String host, String path,
       {Map<String, dynamic> query}) {
-    return http.delete(_getUri(host, path, query), headers: headers);
+    return client.delete(_getUri(host, path, query), headers: headers);
   }
 
   Uri _getUri(host, path, query) {
