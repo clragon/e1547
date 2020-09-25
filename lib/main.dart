@@ -189,7 +189,7 @@ class NavigationDrawer extends StatelessWidget {
                 '/follows', (Route<dynamic> route) => false);
           },
         ),
-        Divider(),
+        // Divider(),
         ListTile(
           selected: _drawerSelection == _DrawerSelection.pools,
           leading: Icon(Icons.collections),
@@ -270,6 +270,8 @@ void initUser({BuildContext context}) {
           precacheImage(CachedNetworkImageProvider(avatar), context);
         }
       });
+    } else {
+      userAvatar.value = null;
     }
   });
 }
@@ -286,6 +288,7 @@ class _ProfileHeaderState extends State<ProfileHeader> {
   void initState() {
     super.initState();
     db.username.addListener(initUser);
+    initUser();
   }
 
   @override

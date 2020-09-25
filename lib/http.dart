@@ -10,11 +10,9 @@ class HttpHelper {
   final String username;
   final String apiKey;
   final BaseClient client;
-  final bool hasLogin;
 
   HttpHelper({this.username, this.apiKey})
-      : hasLogin = username != null && apiKey != null,
-        client = username != null && apiKey != null
+      : client = username != null && apiKey != null
             ? BasicAuthClient(username, apiKey)
             : Client();
 

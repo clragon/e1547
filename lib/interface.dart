@@ -1082,7 +1082,11 @@ class _TextEditorState extends State<TextEditor> with TickerProviderStateMixin {
         Card(
           child: Padding(
             padding: EdgeInsets.all(16),
-            child: dTextField(context, textController.text.trim()),
+            child: textController.text.trim() != ''
+                ? dTextField(context, textController.text.trim())
+                : Text('your text here',
+                    style: TextStyle(
+                        color: Colors.grey[600], fontStyle: FontStyle.italic)),
           ),
         ),
       );
@@ -1375,8 +1379,6 @@ class RangeDialogState extends State<RangeDialog> {
         FlatButton(
           child: Text('save'),
           onPressed: () {
-            // We could pop up an error, but using the last known good value
-            // works also.
             int textValue = int.parse(_controller.text);
             Navigator.of(context).pop(textValue ?? _value);
           },

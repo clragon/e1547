@@ -26,9 +26,11 @@ class Client {
   String _avatar;
 
   Future<String> get avatar async {
-    int postID = (await client.user(await username))['avatar_id'];
-    Post post = await client.post(postID);
-    _avatar = post.image.value.sample['url'];
+    if (_avatar == null) {
+      int postID = (await client.user(await username))['avatar_id'];
+      Post post = await client.post(postID);
+      _avatar = post.image.value.sample['url'];
+    }
     return _avatar;
   }
 
@@ -100,7 +102,6 @@ class Client {
       String body = await http.get(await host, '/posts.json', query: {
         'tags': sortTags(tags),
         'page': page,
-        'limit': 20,
       }).then((response) => response.body);
 
       List<Post> posts = [];

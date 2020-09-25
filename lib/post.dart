@@ -3,6 +3,7 @@ import 'dart:collection';
 import 'dart:core';
 import 'dart:io' show Directory, File, Platform;
 import 'dart:math';
+import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e1547/appInfo.dart';
@@ -217,7 +218,7 @@ class PostSwipe extends StatelessWidget {
 
     return ValueListenableBuilder(
       valueListenable: provider.pages,
-      builder: (BuildContext context, value, Widget child) {
+      builder: (context, value, child) {
         return PageView.builder(
           controller: controller,
           itemBuilder: _pageBuilder,
@@ -359,16 +360,18 @@ class _PostWidgetState extends State<PostWidget> {
                       ],
                     );
                   }
-                  if (widget.post.image.value.file['ext'] == 'swf' ||
-                      widget.post.image.value.file['ext'] == 'webm') {
+                  String ext = widget.post.image.value.file['ext'];
+                  if (ext == 'swf' || ext == 'webm') {
                     return Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
                         Padding(
                           padding: EdgeInsets.all(8),
-                          child: const Text(
-                            'Webm support under development',
+                          child: Text(
+                            ext == 'webm'
+                                ? 'Webm support under development'
+                                : 'Flash is not supported',
                             textAlign: TextAlign.center,
                           ),
                         ),
@@ -481,16 +484,19 @@ class _PostWidgetState extends State<PostWidget> {
                 if (ext == 'webm' || ext == 'swf') {
                   url.launch(widget.post.image.value.file['url']);
                 } else if (isVisible()) {
-                  List<Post> posts = widget.post.isEditing.value
-                      ? [widget.post]
-                      : (widget.provider?.items ?? [widget.post]);
-
                   Navigator.of(context).push(MaterialPageRoute<Null>(
-                      builder: (context) => ImageGallery(
-                            index: posts.indexOf(widget.post),
-                            posts: posts,
-                            controller: widget.controller,
-                          )));
+                      builder: (context) => ValueListenableBuilder(
+                          valueListenable: widget.provider.pages,
+                          builder: (context, value, child) {
+                            List<Post> posts = widget.post.isEditing.value
+                                ? [widget.post]
+                                : (widget.provider?.items ?? [widget.post]);
+                            return ImageGallery(
+                              index: posts.indexOf(widget.post),
+                              posts: posts,
+                              controller: widget.controller,
+                            );
+                          })));
                 }
               }
             },
@@ -661,7 +667,12 @@ class _PostWidgetState extends State<PostWidget> {
                         child: Card(
                           child: Padding(
                             padding: EdgeInsets.all(16),
-                            child: dTextField(context, value),
+                            child: value != ''
+                                ? dTextField(context, value)
+                                : Text('no description',
+                                    style: TextStyle(
+                                        color: Colors.grey[600],
+                                        fontStyle: FontStyle.italic)),
                           ),
                         ),
                       )
@@ -1572,7 +1583,7 @@ class _PostWidgetState extends State<PostWidget> {
                                     richEditor: false,
                                     validator: (context, text) {
                                       widget.post.sources.value =
-                                          text.split('\n');
+                                          text.trim().split('\n');
                                       return Future.value(true);
                                     },
                                   );
@@ -1589,13 +1600,15 @@ class _PostWidgetState extends State<PostWidget> {
                       top: 2,
                       bottom: 2,
                     ),
-                    child: dTextField(context, () {
-                      String msg = '';
-                      for (String source in value) {
-                        msg = '$msg$source\n';
-                      }
-                      return msg;
-                    }()),
+                    child: value.join('\n').trim() != ''
+                        ? dTextField(context, value.join('\n'))
+                        : Padding(
+                            padding: EdgeInsets.all(4),
+                            child: Text('no sources',
+                                style: TextStyle(
+                                    color: Colors.grey[600],
+                                    fontStyle: FontStyle.italic)),
+                          ),
                   ),
                   Divider(),
                 ],
@@ -1897,31 +1910,41 @@ class _ImageGalleryState extends State<ImageGallery> {
           color: Theme.of(context).canvasColor,
         ),
         builder: (context, index) {
+          double width =
+              widget.posts[index].image.value.sample['width'].toDouble();
+          double height =
+              widget.posts[index].image.value.sample['height'].toDouble();
           return PhotoViewGalleryPageOptions.customChild(
             heroAttributes: PhotoViewHeroAttributes(
               tag: 'image_${widget.posts[index].id}',
             ),
-            childSize: Size(
-                widget.posts[index].image.value.sample['width'].toDouble(),
-                widget.posts[index].image.value.sample['height'].toDouble()),
+            childSize: Size(width, height),
             child: CachedNetworkImage(
               imageUrl: widget.posts[index].image.value.file['url'],
-              placeholder: (context, chunk) => Stack(
-                children: [
-                  CachedNetworkImage(
+              placeholder: (context, chunk) {
+                return Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    CachedNetworkImage(
                       imageUrl: widget.posts[index].image.value.sample['url'],
                       placeholder: (context, chunk) => Center(
-                            child: Container(
-                                height: 26,
-                                width: 26,
-                                child: CircularProgressIndicator()),
-                          )),
-                  Container(
-                    alignment: Alignment.bottomCenter,
-                    child: LinearProgressIndicator(),
-                  ),
-                ],
-              ),
+                        child: Container(
+                            height: 26 * window.devicePixelRatio,
+                            width: 26 * window.devicePixelRatio,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2 * window.devicePixelRatio,
+                            )),
+                      ),
+                    ),
+                    Container(
+                      alignment: Alignment.bottomCenter,
+                      child: LinearProgressIndicator(
+                        minHeight: 3 * window.devicePixelRatio,
+                      ),
+                    ),
+                  ],
+                );
+              },
             ),
             initialScale: PhotoViewComputedScale.contained * 0.8,
             minScale: PhotoViewComputedScale.contained,
@@ -2095,59 +2118,19 @@ void downloadDialog(BuildContext context, Post post) async {
     return;
   }
 
-  showDialog(
-    context: context,
-    builder: (context) {
-      return FutureBuilder(
-        future: download(post),
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return AlertDialog(
-              title: Text('Error'),
-              content: Text(snapshot.error.toString()),
-              actions: [
-                FlatButton(
-                  child: Text('OK'),
-                  onPressed: () => Navigator.pop(context),
-                ),
-              ],
-            );
-          }
-
-          bool done = snapshot.connectionState == ConnectionState.done &&
-              snapshot.hasData;
-
-          return AlertDialog(
-            title: Text('Download'),
-            content: Row(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('${post.tags.value['artist'].join(', ')} - ${post.id}',
-                    softWrap: true),
-                Padding(
-                  padding: const EdgeInsets.all(8),
-                  child: done
-                      ? const Icon(Icons.done)
-                      : Container(
-                          height: 18,
-                          width: 18,
-                          child: CircularProgressIndicator(),
-                        ),
-                ),
-              ],
-            ),
-            actions: [
-              FlatButton(
-                child: const Text('OK'),
-                onPressed: () => Navigator.pop(context),
-              ),
-            ],
-          );
-        },
-      );
-    },
-  );
+  String message;
+  await download(post).then(
+      (value) => message = 'Saved to ${post.tags.value['artist'].where((tag) => ![
+            'conditional_dnp',
+            'sound_warning',
+            'epilepsy_warning',
+            'avoid_posting',
+          ].contains(tag)).join(', ')} - ${post.id}.${post.image.value.file['ext']}',
+      onError: (error) => message = 'Failed to download post ${post.id}');
+  Scaffold.of(context).showSnackBar(SnackBar(
+    duration: Duration(seconds: 1),
+    content: Text(message),
+  ));
 }
 
 Widget loadingListTile(
