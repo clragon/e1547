@@ -161,7 +161,7 @@ class _FollowingPageState extends State<FollowingPage> {
             onPressed: () async {
               setFocusToEnd(_tagController);
               if (isSearching.value) {
-                if (_tagController.text.trim() != '') {
+                if (_tagController.text.trim().isNotEmpty) {
                   db.follows.value =
                       Future.value(_follows..add(_tagController.text.trim()));
                   _bottomSheetController?.close();

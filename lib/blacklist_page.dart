@@ -204,7 +204,7 @@ class _BlacklistPageState extends State<BlacklistPage> {
                           if (_blacklist.length > 0) {
                             List<String> tags = _blacklist[index].split(' ');
                             for (String tag in tags) {
-                              if (tag == '') {
+                              if (tag.isEmpty) {
                                 continue;
                               }
                               rows.add(cardWidget(tag));

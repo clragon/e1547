@@ -1082,7 +1082,7 @@ class _TextEditorState extends State<TextEditor> with TickerProviderStateMixin {
         Card(
           child: Padding(
             padding: EdgeInsets.all(16),
-            child: textController.text.trim() != ''
+            child: textController.text.trim().isNotEmpty
                 ? dTextField(context, textController.text.trim())
                 : Text('your text here',
                     style: TextStyle(

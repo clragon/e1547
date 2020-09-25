@@ -14,7 +14,8 @@ import 'package:e1547/persistence.dart' show db;
 import 'package:e1547/pool.dart';
 import 'package:e1547/posts_page.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show SystemChrome, SystemUiOverlay;
+import 'package:flutter/services.dart'
+    show FilteringTextInputFormatter, SystemChrome, SystemUiOverlay;
 import 'package:flutter/services.dart' show Clipboard, ClipboardData;
 import 'package:flutter_cache_manager/flutter_cache_manager.dart'
     show DefaultCacheManager;
@@ -628,7 +629,7 @@ class _PostWidgetState extends State<PostWidget> {
         return ValueListenableBuilder(
           valueListenable: widget.post.description,
           builder: (context, value, child) {
-            if (value != '' || widget.post.isEditing.value) {
+            if (value.isNotEmpty || widget.post.isEditing.value) {
               return Column(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
@@ -667,7 +668,7 @@ class _PostWidgetState extends State<PostWidget> {
                         child: Card(
                           child: Padding(
                             padding: EdgeInsets.all(16),
-                            child: value != ''
+                            child: value.isNotEmpty
                                 ? dTextField(context, value)
                                 : Text('no description',
                                     style: TextStyle(
@@ -879,6 +880,9 @@ class _PostWidgetState extends State<PostWidget> {
                         autofocus: true,
                         maxLines: 1,
                         keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(RegExp(r'^ ?\d*')),
+                        ],
                         decoration: InputDecoration(
                             labelText: 'Parent ID',
                             border: UnderlineInputBorder()),
@@ -923,7 +927,7 @@ class _PostWidgetState extends State<PostWidget> {
                                     onPressed: () {
                                       isLoading.value = false;
                                       _textController.text =
-                                          value?.toString() ?? '';
+                                          value?.toString() ?? ' ';
                                       setFocusToEnd(_textController);
                                       _bottomSheetController =
                                           Scaffold.of(context).showBottomSheet(
@@ -1245,7 +1249,7 @@ class _PostWidgetState extends State<PostWidget> {
                     );
                     doEdit.value = () async {
                       isLoading.value = true;
-                      if (_textController.text.trim() == '') {
+                      if (_textController.text.trim().isEmpty) {
                         isLoading.value = false;
                         return Future.value(true);
                       }
@@ -1600,7 +1604,7 @@ class _PostWidgetState extends State<PostWidget> {
                       top: 2,
                       bottom: 2,
                     ),
-                    child: value.join('\n').trim() != ''
+                    child: value.join('\n').trim().isNotEmpty
                         ? dTextField(context, value.join('\n'))
                         : Padding(
                             padding: EdgeInsets.all(4),

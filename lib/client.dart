@@ -180,7 +180,7 @@ class Client {
         List<String> black = [];
         List<String> white = [];
         line.split(' ').forEach((s) {
-          if (s != '') {
+          if (s.isNotEmpty) {
             if (s[0] == '-') {
               white.add(s.substring(1));
             } else {

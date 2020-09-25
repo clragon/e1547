@@ -80,7 +80,7 @@ class PoolPreview extends StatelessWidget {
                   child: Center(child: title()),
                 ),
                 () {
-                  if (pool.description != '') {
+                  if (pool.description.isNotEmpty) {
                     return Padding(
                       padding: EdgeInsets.only(
                         left: 16,
@@ -191,7 +191,7 @@ Widget poolInfo(BuildContext context, Pool pool) {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              pool.description != ''
+              pool.description.isNotEmpty
                   ? dTextField(context, pool.description)
                   : Text(
                       'no description',
