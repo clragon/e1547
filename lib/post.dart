@@ -10,9 +10,9 @@ import 'package:e1547/appInfo.dart';
 import 'package:e1547/client.dart' show client;
 import 'package:e1547/comment.dart';
 import 'package:e1547/interface.dart';
-import 'package:e1547/persistence.dart' show db;
 import 'package:e1547/pool.dart';
 import 'package:e1547/posts_page.dart';
+import 'package:e1547/settings.dart' show db;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'
     show FilteringTextInputFormatter, SystemChrome, SystemUiOverlay;
@@ -28,6 +28,7 @@ import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:share/share.dart';
 import 'package:url_launcher/url_launcher.dart' as url;
+import 'package:video_player/video_player.dart';
 
 class _Image {
   Map file;
@@ -312,10 +313,13 @@ class _PostWidgetState extends State<PostWidget> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (widget.post.image.value.file['url'] != null) {
-      precacheImage(
-        CachedNetworkImageProvider(widget.post.image.value.file['url']),
-        context,
-      );
+      String ext = widget.post.image.value.file['ext'];
+      if (ext != 'webm' && ext != 'sfw') {
+        precacheImage(
+          CachedNetworkImageProvider(widget.post.image.value.file['url']),
+          context,
+        );
+      }
     }
   }
 
@@ -328,88 +332,76 @@ class _PostWidgetState extends State<PostWidget> {
 
   @override
   Widget build(BuildContext context) {
-    Widget postContentsWidget() {
-      Widget overlayImageWidget() {
+    Widget postImageWidget() {
+      Widget imageContainerWidget() {
         Widget image() {
-          return Container(
-              child: Center(
-                child: () {
-                  if (widget.post.isDeleted) {
-                    return const Text(
-                      'Post was deleted',
-                      textAlign: TextAlign.center,
-                    );
-                  }
-                  if (!isVisible()) {
-                    return Text(
-                      'Post is blacklisted',
-                      textAlign: TextAlign.center,
-                    );
-                  }
-                  if (widget.post.image.value.file['url'] == null) {
-                    return Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: <Widget>[
-                        Padding(
-                          padding: EdgeInsets.all(8),
-                          child: const Text(
-                            'Image unavailable in safe mode',
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      ],
-                    );
-                  }
-                  String ext = widget.post.image.value.file['ext'];
-                  if (ext == 'swf' || ext == 'webm') {
-                    return Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: <Widget>[
-                        Padding(
-                          padding: EdgeInsets.all(8),
-                          child: Text(
-                            ext == 'webm'
-                                ? 'Webm support under development'
-                                : 'Flash is not supported',
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                        InkWell(
-                          child: Card(
-                              child: Padding(
-                                  padding: EdgeInsets.all(8),
-                                  child: Text('Open'))),
-                          onTap: () async =>
-                              url.launch(widget.post.image.value.file['url']),
-                        )
-                      ],
-                    );
-                  }
-                  return Hero(
-                    tag: 'image_${widget.post.id}',
-                    child: CachedNetworkImage(
-                      imageUrl: widget.post.image.value.sample['url'],
-                      placeholder: (context, url) => Center(
-                          child: Container(
-                        height: 26,
-                        width: 26,
-                        child: const CircularProgressIndicator(),
-                      )),
-                      errorWidget: (context, url, error) =>
-                          Center(child: Icon(Icons.error_outline)),
-                    ),
-                  );
-                }(),
-              ),
-              constraints: BoxConstraints(
-                minHeight: (MediaQuery.of(context).size.height /
-                    2), // maybe set this to around 50% of screen DPS
-              ));
+          return CachedNetworkImage(
+            imageUrl: widget.post.image.value.sample['url'],
+            placeholder: (context, url) => Center(
+                child: Container(
+              height: 26,
+              width: 26,
+              child: const CircularProgressIndicator(),
+            )),
+            errorWidget: (context, url, error) =>
+                Center(child: Icon(Icons.error_outline)),
+          );
         }
 
-        Widget overlayButton() {
+        Widget video() {
+          return Stack(
+            children: [
+              () {
+                return Container(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      Padding(
+                        padding: EdgeInsets.all(8),
+                        child: Text(
+                          'Webm support under development',
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      Card(
+                        child: InkWell(
+                          child: Padding(
+                              padding: EdgeInsets.all(8), child: Text('Open')),
+                          onTap: () async =>
+                              url.launch(widget.post.image.value.file['url']),
+                        ),
+                      )
+                    ],
+                  ),
+                );
+              }(),
+              Positioned(
+                child: Card(
+                  elevation: 0,
+                  color: Colors.black38,
+                  child: InkWell(
+                    child: Padding(
+                      padding: EdgeInsets.all(4),
+                      child: Icon(
+                        Icons.fullscreen,
+                        size: 24,
+                        color: Theme.of(context).iconTheme.color,
+                      ),
+                    ),
+                    onTap: () async {},
+                  ),
+                ),
+                bottom: 0,
+                left: 5,
+                height: 0,
+                width: 0,
+              ),
+            ],
+          );
+        }
+
+        Widget imageToggle() {
           return ValueListenableBuilder(
               valueListenable: widget.post.showUnsafe,
               builder: (context, value, child) {
@@ -457,21 +449,86 @@ class _PostWidgetState extends State<PostWidget> {
               });
         }
 
-        Widget imageWidget() {
+        Widget imageOverlay() {
           return ValueListenableBuilder(
             valueListenable: widget.post.image,
             builder: (BuildContext context, value, Widget child) {
               return Stack(
                 children: <Widget>[
-                  image(),
-                  overlayButton(),
+                  Container(
+                    constraints: BoxConstraints(
+                      minHeight: (MediaQuery.of(context).size.height / 2),
+                    ),
+                    child: Center(
+                      child: () {
+                        if (widget.post.isDeleted) {
+                          return const Text(
+                            'Post was deleted',
+                            textAlign: TextAlign.center,
+                          );
+                        }
+                        if (!isVisible()) {
+                          return Text(
+                            'Post is blacklisted',
+                            textAlign: TextAlign.center,
+                          );
+                        }
+                        if (widget.post.image.value.file['url'] == null) {
+                          return Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: <Widget>[
+                              Padding(
+                                padding: EdgeInsets.all(8),
+                                child: const Text(
+                                  'Image unavailable in safe mode',
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            ],
+                          );
+                        }
+                        if (widget.post.image.value.file['ext'] == "sfw") {
+                          return Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: <Widget>[
+                              Padding(
+                                padding: EdgeInsets.all(8),
+                                child: Text(
+                                  'Flash is not supported',
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                              Card(
+                                child: InkWell(
+                                  child: Padding(
+                                      padding: EdgeInsets.all(8),
+                                      child: Text('Open')),
+                                  onTap: () async => url.launch(
+                                      widget.post.image.value.file['url']),
+                                ),
+                              )
+                            ],
+                          );
+                        }
+                        return Hero(
+                          tag: 'image_${widget.post.id}',
+                          child: widget.post.image.value.file['ext'] == 'webm'
+                              ? video()
+                              : image(),
+                        );
+                      }(),
+                    ),
+                  ),
+                  imageToggle(),
                 ],
               );
             },
           );
         }
 
-        return imageWidget();
+        return imageOverlay();
       }
 
       return ValueListenableBuilder(
@@ -479,10 +536,8 @@ class _PostWidgetState extends State<PostWidget> {
         builder: (context, value, child) {
           return InkWell(
             onTap: () {
-              String ext = widget.post.image.value.file['ext'];
-
               if (widget.post.image.value.file['url'] != null) {
-                if (ext == 'webm' || ext == 'swf') {
+                if (widget.post.image.value.file['ext'] == 'swf') {
                   url.launch(widget.post.image.value.file['url']);
                 } else if (isVisible()) {
                   Navigator.of(context).push(MaterialPageRoute<Null>(
@@ -501,7 +556,7 @@ class _PostWidgetState extends State<PostWidget> {
                 }
               }
             },
-            child: overlayImageWidget(),
+            child: imageContainerWidget(),
           );
         },
       );
@@ -1821,7 +1876,7 @@ class _PostWidgetState extends State<PostWidget> {
                 removeTop: true,
                 child: ListView(
                   children: <Widget>[
-                    postContentsWidget(),
+                    postImageWidget(),
                     postMetadataWidget(),
                   ],
                   physics: BouncingScrollPhysics(),
@@ -1837,6 +1892,62 @@ class _PostWidgetState extends State<PostWidget> {
         );
       },
     );
+  }
+}
+
+class VideoWidget extends StatefulWidget {
+  final Post post;
+  final Widget Function(BuildContext context, Post post, Widget video) builder;
+
+  const VideoWidget({@required this.post, @required this.builder});
+
+  @override
+  _VideoWidgetState createState() => _VideoWidgetState();
+}
+
+class _VideoWidgetState extends State<VideoWidget> {
+  Future<void> _videoLoaded;
+  VideoPlayerController controller;
+
+  @override
+  void initState() {
+    super.initState();
+    () async {
+      controller =
+          VideoPlayerController.network(widget.post.image.value.file['url']);
+      _videoLoaded = controller.initialize();
+      await _videoLoaded.then((_) {
+        controller.setLooping(true);
+        setState(() {});
+      });
+    }();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    controller.pause();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    controller.play();
+    Widget video() {
+      return AspectRatio(
+        aspectRatio: controller.value.aspectRatio,
+        child: VideoPlayer(controller),
+      );
+    }
+
+    if (widget.builder != null) {
+      return widget.builder(context, widget.post, video());
+    } else {
+      return GestureDetector(
+        child: video(),
+        onTap: () =>
+            controller.value.isPlaying ? controller.pause() : controller.play(),
+      );
+    }
   }
 }
 
@@ -1914,17 +2025,68 @@ class _ImageGalleryState extends State<ImageGallery> {
           color: Theme.of(context).canvasColor,
         ),
         builder: (context, index) {
-          double width =
-              widget.posts[index].image.value.sample['width'].toDouble();
-          double height =
-              widget.posts[index].image.value.sample['height'].toDouble();
+          if (widget.posts[index].image.value.file['url'] != 'webm' &&
+              widget.posts[index].image.value.file['url'] != 'sfw') {
+            return PhotoViewGalleryPageOptions.customChild(
+              child: Container(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Padding(
+                      padding: EdgeInsets.all(8),
+                      child: Text(
+                        'Webm support under development',
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    Card(
+                      child: InkWell(
+                        child: Padding(
+                            padding: EdgeInsets.all(8), child: Text('Open')),
+                        onTap: () async => url.launch(
+                            widget.posts[index].image.value.file['url']),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            );
+          }
           return PhotoViewGalleryPageOptions.customChild(
             heroAttributes: PhotoViewHeroAttributes(
               tag: 'image_${widget.posts[index].id}',
             ),
-            childSize: Size(width, height),
+            childSize: () {
+              double width;
+              double height;
+              if (DefaultCacheManager().getFileFromMemory(
+                      widget.posts[index].image.value.file['url']) !=
+                  null) {
+                width =
+                    widget.posts[index].image.value.file['width'].toDouble();
+                height =
+                    widget.posts[index].image.value.file['height'].toDouble();
+              } else {
+                width =
+                    widget.posts[index].image.value.sample['width'].toDouble();
+                height =
+                    widget.posts[index].image.value.sample['height'].toDouble();
+              }
+              return Size(width, height);
+            }(),
             child: CachedNetworkImage(
+              fadeInDuration: Duration(milliseconds: 0),
+              fadeOutDuration: Duration(milliseconds: 0),
               imageUrl: widget.posts[index].image.value.file['url'],
+              imageBuilder: (context, provider) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  setState(() {});
+                });
+                return Image(
+                  image: provider,
+                );
+              },
               placeholder: (context, chunk) {
                 return Stack(
                   alignment: Alignment.center,
@@ -1950,7 +2112,7 @@ class _ImageGalleryState extends State<ImageGallery> {
                 );
               },
             ),
-            initialScale: PhotoViewComputedScale.contained * 0.8,
+            initialScale: PhotoViewComputedScale.contained,
             minScale: PhotoViewComputedScale.contained,
             maxScale: PhotoViewComputedScale.contained * 6,
             onTapUp: (buildContext, tapDownDetails, photoViewControllerValue) =>
@@ -1964,11 +2126,14 @@ class _ImageGalleryState extends State<ImageGallery> {
           for (int i = -precache - 1; i < precache; i++) {
             int target = index + 1 + i;
             if (target > 0 && target < widget.posts.length) {
-              precacheImage(
-                CachedNetworkImageProvider(
-                    widget.posts[target].image.value.file['url']),
-                context,
-              );
+              String ext = widget.posts[target].image.value.file['ext'];
+              if (ext != 'webm' && ext != 'sfw') {
+                precacheImage(
+                  CachedNetworkImageProvider(
+                      widget.posts[target].image.value.file['url']),
+                  context,
+                );
+              }
             }
           }
           if (widget.controller != null) {

@@ -2,8 +2,8 @@ import 'dart:async' show Future;
 
 import 'package:e1547/client.dart' show client;
 import 'package:e1547/interface.dart';
-import 'package:e1547/persistence.dart';
 import 'package:e1547/posts_page.dart';
+import 'package:e1547/settings.dart';
 import 'package:e1547/threads_page.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';

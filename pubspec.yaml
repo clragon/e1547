@@ -12,19 +12,20 @@ dependencies:
   flutter_typeahead: ^1.8.0
   pull_to_refresh: ^1.5.8
   icon_shadow: ^1.0.1
-
-  http_auth: ^0.3.0
-  url_launcher: ^5.5.3
-  share: ^0.6.3+6
-  intl: ^0.16.1
-
   like_button: ^1.0.1
+  flutter_staggered_grid_view: ^0.3.0
+
+  video_player: ^0.11.0
   photo_view:
     git:
       url: https://github.com/fireslime/photo_view.git
       ref: master
   cached_network_image: ^2.3.2
-  flutter_staggered_grid_view: ^0.3.0
+
+  http_auth: ^0.3.0
+  url_launcher: ^5.5.3
+  share: ^0.6.3+6
+  intl: ^0.16.1
 
   permission_handler: ^5.0.1+1
   shared_preferences: ^0.5.6
@@ -35,8 +36,6 @@ dependencies:
 
   flutter:
     sdk: flutter
-
-  cupertino_icons: ^1.0.0
 
 dev_dependencies:
   flutter_test:

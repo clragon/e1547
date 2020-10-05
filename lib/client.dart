@@ -3,9 +3,9 @@ import 'dart:convert' show json;
 
 import 'package:e1547/comment.dart' show Comment;
 import 'package:e1547/http.dart';
-import 'package:e1547/persistence.dart' show db;
 import 'package:e1547/pool.dart';
 import 'package:e1547/post.dart' show Post;
+import 'package:e1547/settings.dart' show db;
 import 'package:e1547/tag.dart';
 import 'package:e1547/thread.dart';
 import 'package:e1547/threads_page.dart';

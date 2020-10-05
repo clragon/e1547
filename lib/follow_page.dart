@@ -6,7 +6,7 @@ import 'package:flutter_typeahead/flutter_typeahead.dart';
 
 import 'client.dart';
 import 'interface.dart';
-import 'persistence.dart' show db;
+import 'settings.dart' show db;
 
 class FollowingPage extends StatefulWidget {
   @override

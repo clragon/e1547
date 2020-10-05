@@ -1,9 +1,9 @@
 import 'package:e1547/client.dart' show client;
 import 'package:e1547/interface.dart';
 import 'package:e1547/main.dart';
-import 'package:e1547/persistence.dart' show db;
 import 'package:e1547/pool.dart';
 import 'package:e1547/post.dart';
+import 'package:e1547/settings.dart' show db;
 import 'package:e1547/tag.dart' show Tagset, sortTags;
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart' show EdgeInsets;

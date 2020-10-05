@@ -1,7 +1,7 @@
 import 'dart:async' show Future, Timer;
 
 import 'package:e1547/client.dart' show client;
-import 'package:e1547/persistence.dart' show db;
+import 'package:e1547/settings.dart' show db;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show Clipboard;
 import 'package:url_launcher/url_launcher.dart' as url;

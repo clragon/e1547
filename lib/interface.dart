@@ -1,10 +1,10 @@
 import 'dart:math' as math show max, min;
 
 import 'package:e1547/client.dart';
-import 'package:e1547/persistence.dart';
 import 'package:e1547/pool.dart';
 import 'package:e1547/post.dart';
 import 'package:e1547/posts_page.dart';
+import 'package:e1547/settings.dart';
 import 'package:e1547/tag.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/gestures.dart';
