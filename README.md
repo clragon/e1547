@@ -96,7 +96,9 @@ This will create a release build IPA file for you, as well as reduce the file si
 
 ## Contact
 The app is currently under development.  
-If you have questions/comments/suggestions, you can open a github Issue.  
+
+If you have questions/comments/suggestions, you can join the [discord server](https://discord.gg/knyhWmz)
+or you can open a github Issue.  
 You can also post in the [e926 forum thread](https://e926.net/forum_topics/25854).  
 
 ## Credit
