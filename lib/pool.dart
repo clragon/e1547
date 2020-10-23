@@ -145,9 +145,12 @@ class _FollowButtonState extends State<_FollowButton> {
                     });
                   }
                 },
-                icon: following
-                    ? Icon(Icons.turned_in)
-                    : Icon(Icons.turned_in_not),
+                icon: crossFade(
+                  duration: Duration(milliseconds: 200),
+                  showChild: following,
+                  child: Icon(Icons.turned_in),
+                  secondChild: Icon(Icons.turned_in_not),
+                ),
                 tooltip: following ? 'follow tag' : 'unfollow tag',
               ),
             ],

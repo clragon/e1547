@@ -13,193 +13,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:url_launcher/url_launcher.dart' as url;
 
-void wikiDialog(BuildContext context, String tag, {actions = false}) {
-  Widget body() {
-    return ConstrainedBox(
-        child: FutureBuilder(
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.done) {
-              if (snapshot.data == null) {
-                return Text('unable to retrieve wiki entry',
-                    style: TextStyle(fontStyle: FontStyle.italic));
-              }
-              if (snapshot.data.length != 0) {
-                return SingleChildScrollView(
-                  scrollDirection: Axis.vertical,
-                  child: dTextField(context, snapshot.data[0]['body']),
-                  physics: BouncingScrollPhysics(),
-                );
-              } else {
-                return Text(
-                  'no wiki entry',
-                  style: TextStyle(fontStyle: FontStyle.italic),
-                );
-              }
-            } else {
-              return Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Padding(
-                      padding: EdgeInsets.all(16),
-                      child: Container(
-                        height: 26,
-                        width: 26,
-                        child: CircularProgressIndicator(),
-                      ))
-                ],
-              );
-            }
-          },
-          future: client.wiki(tag, 0),
-        ),
-        constraints: BoxConstraints(
-          maxHeight: 400.0,
-        ));
-  }
-
-  Widget title() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: <Widget>[
-        Flexible(
-          child: Text(
-            tag.replaceAll('_', ' '),
-            softWrap: true,
-          ),
-        ),
-        actions ? _TagActions(tag) : Container(),
-      ],
-    );
-  }
-
-  showDialog(
-    context: context,
-    child: AlertDialog(
-      title: title(),
-      content: body(),
-      actions: [
-        FlatButton(
-          child: Text('OK'),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-      ],
-    ),
-  );
-}
-
-class _TagActions extends StatefulWidget {
-  final String tag;
-
-  _TagActions(this.tag);
-
-  @override
-  State<StatefulWidget> createState() {
-    return _TagActionsState();
-  }
-}
-
-class _TagActionsState extends State<_TagActions> {
-  @override
-  Widget build(BuildContext context) {
-    bool blacklisted = false;
-    bool following = false;
-    List<String> blacklist;
-    List<String> follows;
-
-    Future getLists() async {
-      blacklist = await db.blacklist.value;
-      blacklist.forEach((b) {
-        if (b == widget.tag) {
-          blacklisted = true;
-        }
-      });
-      follows = await db.follows.value;
-      follows.forEach((b) {
-        if (b == widget.tag) {
-          following = true;
-        }
-      });
-      return;
-    }
-
-    return FutureBuilder(
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.done) {
-          return Row(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              IconButton(
-                onPressed: () {
-                  if (following) {
-                    follows.removeAt(follows.indexOf(widget.tag));
-                    db.follows.value = Future.value(follows);
-                    setState(() {
-                      following = false;
-                    });
-                  } else {
-                    follows.add(widget.tag);
-                    db.follows.value = Future.value(follows);
-                    setState(() {
-                      following = true;
-                      if (blacklisted) {
-                        blacklist.removeAt(blacklist.indexOf(widget.tag));
-                        db.blacklist.value = Future.value(blacklist);
-                        blacklisted = false;
-                      }
-                    });
-                  }
-                },
-                icon: following
-                    ? Icon(Icons.turned_in)
-                    : Icon(Icons.turned_in_not),
-                tooltip: following ? 'unfollow tag' : 'follow tag',
-              ),
-              IconButton(
-                onPressed: () {
-                  if (blacklisted) {
-                    blacklist.removeAt(blacklist.indexOf(widget.tag));
-                    db.blacklist.value = Future.value(blacklist);
-                    setState(() {
-                      blacklisted = false;
-                    });
-                  } else {
-                    blacklist.add(widget.tag);
-                    db.blacklist.value = Future.value(blacklist);
-                    setState(() {
-                      blacklisted = true;
-                      if (following) {
-                        follows.removeAt(follows.indexOf(widget.tag));
-                        db.follows.value = Future.value(follows);
-                        following = false;
-                      }
-                    });
-                  }
-                },
-                icon: blacklisted ? Icon(Icons.check) : Icon(Icons.block),
-                tooltip: blacklisted ? 'unblock tag' : 'block tag',
-              ),
-            ],
-          );
-        } else {
-          return Row(
-            children: <Widget>[
-              IconButton(
-                icon: Icon(Icons.turned_in_not),
-                onPressed: () {},
-              ),
-              IconButton(
-                icon: Icon(Icons.block),
-                onPressed: () {},
-              ),
-            ],
-          );
-        }
-      },
-      future: getLists(),
-    );
-  }
-}
-
 Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
   // transform dynamic list to widgets
   // wrap all consecutive TextSpans into RichText
@@ -314,16 +127,18 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
                   child: ValueListenableBuilder(
                     valueListenable: isShown,
                     builder: (context, value, child) {
-                      return Container(
-                        child: Center(
-                          child: value
-                              ? Container()
-                              : Text('SPOILER',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                  )),
+                      return AnimatedOpacity(
+                        opacity: value ? 0 : 1,
+                        duration: Duration(milliseconds: 200),
+                        child: Container(
+                          child: Center(
+                            child: Text('SPOILER',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                )),
+                          ),
+                          color: Colors.black,
                         ),
-                        color: value ? Colors.transparent : Colors.black,
                       );
                     },
                   ),
@@ -1196,11 +1011,15 @@ class _TextEditorState extends State<TextEditor> with TickerProviderStateMixin {
                         buttons.addAll(textbuttons);
                         buttons.addAll(blockButtons);
                       } else {
-                        if (showBlocks) {
-                          buttons.addAll(blockButtons);
-                        } else {
-                          buttons.addAll(textbuttons);
-                        }
+                        buttons.add(crossFade(
+                          showChild: showBlocks,
+                          child: Row(
+                            children: blockButtons,
+                          ),
+                          secondChild: Row(
+                            children: textbuttons,
+                          ),
+                        ));
                         buttons.addAll([
                           VerticalDivider(),
                           IconButton(
@@ -1450,18 +1269,21 @@ class DataProvider<T> {
         .toList();
   }
 
-  DataProvider({String search, @required this.provider}) {
+  void _init(String search) {
     this.search.value = sortTags(search ?? '');
-    [db.host, db.username, db.showWebm, this.search]
+    // this should probably include db.denylist,
+    // but it will fuck with wikidialogues
+    [db.host, db.username, this.search]
         .forEach((notifier) => notifier.addListener(resetPages));
     loadNextPage();
   }
 
+  DataProvider({String search, @required this.provider}) {
+    _init(search);
+  }
+
   DataProvider.extended({String search, @required this.extendedProvider}) {
-    this.search.value = sortTags(search ?? '');
-    [db.host, db.username, db.showWebm, this.search]
-        .forEach((notifier) => notifier.addListener(resetPages));
-    loadNextPage();
+    _init(search);
   }
 
   Future<void> resetPages() async {
@@ -1554,4 +1376,19 @@ String getAge(String date) {
     }
   }
   return '$ago $measurement ago';
+}
+
+Widget crossFade({
+  @required bool showChild,
+  @required Widget child,
+  Widget secondChild,
+  Duration duration,
+}) {
+  return AnimatedCrossFade(
+    duration: duration ?? Duration(milliseconds: 400),
+    crossFadeState:
+        showChild ? CrossFadeState.showFirst : CrossFadeState.showSecond,
+    firstChild: child,
+    secondChild: secondChild ?? Container(),
+  );
 }

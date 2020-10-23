@@ -19,7 +19,6 @@ class _SettingsPageState extends State<SettingsPage> {
   String _username;
   String _theme;
   bool _showUnsafe = false;
-  bool _showWebm = false;
 
   @override
   void initState() {
@@ -29,7 +28,6 @@ class _SettingsPageState extends State<SettingsPage> {
           _showUnsafe = _host == 'e621.net' ? true : false;
         }));
     db.username.value.then((a) async => setState(() => _username = a));
-    db.showWebm.value.then((a) async => setState(() => _showWebm = a));
     db.theme.value.then((a) async => setState(() => _theme = a));
   }
 
@@ -94,18 +92,6 @@ class _SettingsPageState extends State<SettingsPage> {
                 });
               },
             ),
-            SwitchListTile(
-                title: Text('Show webm'),
-                subtitle:
-                    Text(_showWebm ? 'Webm are shown' : 'Webm are hidden'),
-                secondary: Icon(Icons.play_circle_outline),
-                value: _showWebm,
-                onChanged: (show) {
-                  setState(() {
-                    _showWebm = show;
-                    db.showWebm.value = Future.value(show);
-                  });
-                }),
             () {
               File nomedia = File(
                   '${Platform.environment['EXTERNAL_STORAGE']}/Pictures/$appName/.nomedia');

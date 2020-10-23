@@ -1,3 +1,4 @@
+import 'package:e1547/wiki_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 
@@ -5,57 +6,57 @@ import 'client.dart';
 import 'interface.dart';
 import 'settings.dart' show db;
 
-class BlacklistPage extends StatefulWidget {
+class DenyListPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    return _BlacklistPageState();
+    return _DenyListPageState();
   }
 }
 
-class _BlacklistPageState extends State<BlacklistPage> {
-  int _editing;
-  bool _isSearching = false;
-  List<String> _blacklist = [];
-  TextEditingController _tagController = TextEditingController();
-  PersistentBottomSheetController<String> _bottomSheetController;
+class _DenyListPageState extends State<DenyListPage> {
+  int editing;
+  bool isSearching = false;
+  List<String> denylist = [];
+  TextEditingController tagController = TextEditingController();
+  PersistentBottomSheetController<String> bottomSheetController;
 
   @override
   void initState() {
     super.initState();
-    db.blacklist.addListener(() async {
-      List<String> blacklist = await db.blacklist.value;
-      setState(() => _blacklist = blacklist);
+    db.denylist.addListener(() async {
+      denylist = await db.denylist.value;
+      setState(() {});
     });
-    db.blacklist.value.then((a) async => setState(() => _blacklist = a));
+    db.denylist.value.then((list) async => setState(() => denylist = list));
   }
 
   Function() _addTags(BuildContext context, {int edit}) {
     return () async {
-      setFocusToEnd(_tagController);
-      if (_isSearching) {
-        if (_editing != null) {
-          if (_tagController.text.trim().isNotEmpty) {
-            _blacklist[_editing] = _tagController.text;
+      setFocusToEnd(tagController);
+      if (isSearching) {
+        if (editing != null) {
+          if (tagController.text.trim().isNotEmpty) {
+            denylist[editing] = tagController.text.trim();
           } else {
-            _blacklist.removeAt(_editing);
+            denylist.removeAt(editing);
           }
-          db.blacklist.value = Future.value(_blacklist);
-          _bottomSheetController?.close();
+          db.denylist.value = Future.value(denylist);
+          bottomSheetController?.close();
         } else {
-          if (_tagController.text.trim().isNotEmpty) {
-            _blacklist.add(_tagController.text);
-            db.blacklist.value = Future.value(_blacklist);
-            _bottomSheetController?.close();
+          if (tagController.text.trim().isNotEmpty) {
+            denylist.add(tagController.text.trim());
+            db.denylist.value = Future.value(denylist);
+            bottomSheetController?.close();
           }
         }
       } else {
         if (edit != null) {
-          _editing = edit;
-          _tagController.text = _blacklist[_editing];
+          editing = edit;
+          tagController.text = denylist[editing];
         } else {
-          _tagController.text = '';
+          tagController.text = '';
         }
-        _bottomSheetController =
+        bottomSheetController =
             Scaffold.of(context).showBottomSheet((context) => Container(
                   padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10),
                   child: Column(mainAxisSize: MainAxisSize.min, children: [
@@ -64,22 +65,26 @@ class _BlacklistPageState extends State<BlacklistPage> {
                       hideOnLoading: true,
                       hideOnEmpty: true,
                       hideOnError: true,
+                      keepSuggestionsOnSuggestionSelected: true,
                       textFieldConfiguration: TextFieldConfiguration(
-                        controller: _tagController,
+                        controller: tagController,
                         autofocus: true,
                         maxLines: 1,
                         inputFormatters: [LowercaseTextInputFormatter()],
                         decoration: InputDecoration(
                             labelText: 'Add to blacklist',
                             border: UnderlineInputBorder()),
+                        onSubmitted: (_) {
+                          _addTags(context)();
+                        },
                       ),
                       onSuggestionSelected: (suggestion) {
-                        List<String> tags = _tagController.text.split(' ');
+                        List<String> tags = tagController.text.split(' ');
                         List<String> before = [];
                         for (String tag in tags) {
                           before.add(tag);
                           if (before.join(' ').length >=
-                              _tagController.selection.extent.offset) {
+                              tagController.selection.extent.offset) {
                             String operator = tags[tags.indexOf(tag)][0];
                             if (operator != '-' && operator != '~') {
                               operator = '';
@@ -88,7 +93,8 @@ class _BlacklistPageState extends State<BlacklistPage> {
                             break;
                           }
                         }
-                        _tagController.text = tags.join(' ');
+                        tagController.text = tags.join(' ') + ' ';
+                        setFocusToEnd(tagController);
                       },
                       itemBuilder: (BuildContext context, itemData) {
                         return ListTile(
@@ -96,13 +102,13 @@ class _BlacklistPageState extends State<BlacklistPage> {
                         );
                       },
                       suggestionsCallback: (String pattern) async {
-                        List<String> tags = _tagController.text.split(' ');
+                        List<String> tags = tagController.text.split(' ');
                         List<String> before = [];
                         int selection = 0;
                         for (String tag in tags) {
                           before.add(tag);
                           if (before.join(' ').length >=
-                              _tagController.selection.extent.offset) {
+                              tagController.selection.extent.offset) {
                             selection = tags.indexOf(tag);
                             break;
                           }
@@ -119,12 +125,12 @@ class _BlacklistPageState extends State<BlacklistPage> {
                   ]),
                 ));
         setState(() {
-          _isSearching = true;
+          isSearching = true;
         });
-        _bottomSheetController.closed.then((a) {
+        bottomSheetController.closed.then((a) {
           setState(() {
-            _isSearching = false;
-            _editing = null;
+            isSearching = false;
+            editing = null;
           });
         });
       }
@@ -168,13 +174,13 @@ class _BlacklistPageState extends State<BlacklistPage> {
     }
 
     Widget body() {
-      if (_blacklist.length == 0) {
+      if (denylist.length == 0) {
         return Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
-                Icons.block,
+                Icons.check,
                 size: 32,
               ),
               Padding(
@@ -187,7 +193,7 @@ class _BlacklistPageState extends State<BlacklistPage> {
       }
 
       return ListView.builder(
-        itemCount: _blacklist.length,
+        itemCount: denylist.length,
         itemBuilder: (BuildContext context, int index) {
           return Padding(
             padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
@@ -201,8 +207,8 @@ class _BlacklistPageState extends State<BlacklistPage> {
                         direction: Axis.horizontal,
                         children: () {
                           List<Widget> rows = [];
-                          if (_blacklist.length > 0) {
-                            List<String> tags = _blacklist[index].split(' ');
+                          if (denylist.length > 0) {
+                            List<String> tags = denylist[index].split(' ');
                             for (String tag in tags) {
                               if (tag.isEmpty) {
                                 continue;
@@ -243,8 +249,8 @@ class _BlacklistPageState extends State<BlacklistPage> {
                                 break;
                               case 'delete':
                                 setState(() {
-                                  _blacklist.removeAt(index);
-                                  db.blacklist.value = Future.value(_blacklist);
+                                  denylist.removeAt(index);
+                                  db.denylist.value = Future.value(denylist);
                                 });
                                 break;
                             }
@@ -265,14 +271,14 @@ class _BlacklistPageState extends State<BlacklistPage> {
 
     Widget floatingActionButton(BuildContext context) {
       return FloatingActionButton(
-        child: _isSearching ? Icon(Icons.check) : Icon(Icons.add),
+        child: isSearching ? Icon(Icons.check) : Icon(Icons.add),
         onPressed: _addTags(context),
       );
     }
 
     Widget editor() {
       TextEditingController controller = TextEditingController();
-      controller.text = _blacklist.join('\n');
+      controller.text = denylist.join('\n');
       return AlertDialog(
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -300,15 +306,15 @@ class _BlacklistPageState extends State<BlacklistPage> {
             child: Text('OK'),
             onPressed: () {
               setState(() {
-                _blacklist = controller.text.split('\n');
+                denylist = controller.text.split('\n');
                 List<String> newList = [];
-                for (String b in _blacklist) {
-                  if (b.trim().isNotEmpty) {
-                    newList.add(b);
+                for (String line in denylist) {
+                  if (line.trim().isNotEmpty) {
+                    newList.add(line.trim());
                   }
                 }
-                _blacklist = newList;
-                db.blacklist.value = Future.value(_blacklist);
+                denylist = newList;
+                db.denylist.value = Future.value(denylist);
               });
               Navigator.of(context).pop();
             },

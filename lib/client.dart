@@ -20,7 +20,7 @@ class Client {
   Future<String> host = db.host.value;
   Future<String> username = db.username.value;
   Future<String> apiKey = db.apiKey.value;
-  Future<List<String>> blacklist = db.blacklist.value;
+  Future<List<String>> denylist = db.denylist.value;
   Future<List<String>> following = db.follows.value;
 
   String _avatar;
@@ -38,7 +38,7 @@ class Client {
     db.host.addListener(() => host = db.host.value);
     db.username.addListener(() => username = db.username.value);
     db.apiKey.addListener(() => apiKey = db.apiKey.value);
-    db.blacklist.addListener(() => blacklist = db.blacklist.value);
+    db.denylist.addListener(() => denylist = db.denylist.value);
     db.follows.addListener(() => following = db.follows.value);
 
     db.username.addListener(() => login());
@@ -96,7 +96,8 @@ class Client {
     http = HttpHelper();
   }
 
-  Future<List<Post>> posts(String tags, int page, {bool filter = true}) async {
+  Future<List<Post>> posts(String tags, int page,
+      {bool filter = true, int attempt = 0}) async {
     await initialized;
     try {
       String body = await http.get(await host, '/posts.json', query: {
@@ -106,16 +107,15 @@ class Client {
 
       List<Post> posts = [];
       bool loggedIn = await this.hasLogin();
-      bool showWebm = await db.showWebm.value;
       bool hasPosts = false;
       for (Map rawPost in json.decode(body)['posts']) {
         hasPosts = true;
         Post post = Post.fromRaw(rawPost);
         post.isLoggedIn = loggedIn;
-        if (post.image.value.file['ext'] == 'swf') {
+        if (post.image.value.file['url'] == null && !post.isDeleted) {
           continue;
         }
-        if (!showWebm && post.image.value.file['ext'] == 'webm') {
+        if (post.image.value.file['ext'] == 'swf') {
           continue;
         }
         if (filter && await isBlacklisted(post)) {
@@ -123,8 +123,9 @@ class Client {
         }
         posts.add(post);
       }
-      if (hasPosts && posts.length == 0) {
-        return client.posts(tags, page + 1, filter: filter);
+      if (hasPosts && posts.length == 0 && attempt < 3) {
+        return client.posts(tags, page + 1,
+            filter: filter, attempt: attempt + 1);
       }
       return posts;
     } catch (SocketException) {
@@ -169,22 +170,22 @@ class Client {
   }
 
   Future<bool> isBlacklisted(Post post) async {
-    List<String> blacklist = await this.blacklist;
-    if (blacklist.length > 0) {
+    List<String> denylist = await this.denylist;
+    if (denylist.length > 0) {
       List<String> tags = [];
       post.tags.value.forEach((k, v) {
         tags.addAll(v.cast<String>());
       });
 
-      for (String line in blacklist) {
-        List<String> black = [];
-        List<String> white = [];
-        line.split(' ').forEach((s) {
-          if (s.isNotEmpty) {
-            if (s[0] == '-') {
-              white.add(s.substring(1));
+      for (String line in denylist) {
+        List<String> deny = [];
+        List<String> allow = [];
+        line.split(' ').forEach((tag) {
+          if (tag.isNotEmpty) {
+            if (tag[0] == '-') {
+              allow.add(tag.substring(1));
             } else {
-              black.add(s);
+              deny.add(tag);
             }
           }
         });
@@ -200,7 +201,7 @@ class Client {
                 }
                 break;
               case 'id':
-                if (post.id == int.parse(value)) {
+                if (post.id == int.tryParse(value)) {
                   return true;
                 }
                 break;
@@ -215,6 +216,40 @@ class Client {
                 }
                 break;
               case 'user':
+                if (post.uploader == value) {
+                  return true;
+                }
+                break;
+              case 'score':
+                bool greater = value.contains('>');
+                bool smaller = value.contains('<');
+                bool equal = value.contains('=');
+                int score = int.tryParse(value.replaceAll(r'[<>=]', ''));
+                if (greater) {
+                  if (equal) {
+                    if (post.score.value >= score) {
+                      return true;
+                    }
+                  } else {
+                    if (post.score.value > score) {
+                      return true;
+                    }
+                  }
+                }
+                if (smaller) {
+                  if (equal) {
+                    if (post.score.value <= score) {
+                      return true;
+                    }
+                  } else {
+                    if (post.score.value < score) {
+                      return true;
+                    }
+                  }
+                }
+                if ((!greater && !smaller) && post.score.value == score) {
+                  return true;
+                }
                 break;
             }
           }
@@ -226,35 +261,35 @@ class Client {
           }
         }
 
-        bool bMatch = true;
-        bool wMatch = true;
+        bool denied = true;
+        bool allowed = true;
 
-        for (String tag in black) {
+        for (String tag in deny) {
           if (!checkTags(tags, tag)) {
-            bMatch = false;
+            denied = false;
             break;
           }
         }
-        for (String tag in white) {
+        for (String tag in allow) {
           if (!checkTags(tags, tag)) {
-            wMatch = false;
+            allowed = false;
             break;
           }
         }
 
-        if (black.length > 0 && white.length > 0) {
-          if (bMatch) {
-            if (!wMatch) {
+        if (deny.length > 0 && allow.length > 0) {
+          if (denied) {
+            if (!allowed) {
               return true;
             }
           }
         } else {
-          if (black.length > 0) {
-            if (bMatch) {
+          if (deny.length > 0) {
+            if (denied) {
               return true;
             }
           } else {
-            if (!wMatch) {
+            if (!allowed) {
               return true;
             }
           }

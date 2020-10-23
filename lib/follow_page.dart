@@ -1,5 +1,6 @@
 import 'package:e1547/pool.dart';
 import 'package:e1547/posts_page.dart';
+import 'package:e1547/wiki_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
@@ -156,16 +157,20 @@ class _FollowingPageState extends State<FollowingPage> {
       return ValueListenableBuilder(
         valueListenable: isSearching,
         builder: (context, value, child) {
+          void submit() {
+            if (_tagController.text.trim().isNotEmpty) {
+              db.follows.value =
+                  Future.value(_follows..add(_tagController.text.trim()));
+              _bottomSheetController?.close();
+            }
+          }
+
           return FloatingActionButton(
             child: isSearching.value ? Icon(Icons.check) : Icon(Icons.add),
             onPressed: () async {
               setFocusToEnd(_tagController);
               if (isSearching.value) {
-                if (_tagController.text.trim().isNotEmpty) {
-                  db.follows.value =
-                      Future.value(_follows..add(_tagController.text.trim()));
-                  _bottomSheetController?.close();
-                }
+                submit();
               } else {
                 _tagController.text = '';
                 _bottomSheetController =
@@ -179,6 +184,7 @@ class _FollowingPageState extends State<FollowingPage> {
                               hideOnLoading: true,
                               hideOnEmpty: true,
                               hideOnError: true,
+                              keepSuggestionsOnSuggestionSelected: true,
                               textFieldConfiguration: TextFieldConfiguration(
                                 controller: _tagController,
                                 autofocus: true,
@@ -189,6 +195,7 @@ class _FollowingPageState extends State<FollowingPage> {
                                 decoration: InputDecoration(
                                     labelText: 'Follow Tag',
                                     border: UnderlineInputBorder()),
+                                onSubmitted: (_) => submit(),
                               ),
                               onSuggestionSelected: (suggestion) {
                                 _tagController.text = suggestion['name'];

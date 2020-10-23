@@ -166,6 +166,7 @@ class _LoginFormFieldsState extends State<_LoginFormFields> {
         decoration: InputDecoration(
           labelText: 'Username',
         ),
+        autofillHints: [AutofillHints.username],
         onSaved: _saveUsername,
         validator: _validateUsername,
       );
@@ -180,6 +181,7 @@ class _LoginFormFieldsState extends State<_LoginFormFields> {
             labelText: 'API Key',
             helperText: 'e.g. 1ca1d165e973d7f8d35b7deb7a2ae54c',
           ),
+          autofillHints: [AutofillHints.password],
           onSaved: _saveApiKey,
           validator: _validateApiKey,
         );

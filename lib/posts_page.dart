@@ -5,6 +5,7 @@ import 'package:e1547/pool.dart';
 import 'package:e1547/post.dart';
 import 'package:e1547/settings.dart' show db;
 import 'package:e1547/tag.dart' show Tagset, sortTags;
+import 'package:e1547/wiki_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart' show EdgeInsets;
 import 'package:flutter/services.dart' show Clipboard, ClipboardData;
@@ -330,22 +331,26 @@ class _PostsPageState extends State<PostsPage> {
           return ValueListenableBuilder(
             valueListenable: isSearching,
             builder: (BuildContext context, value, Widget child) {
+              void submit() {
+                widget.provider.search.value = sortTags(_tagController.text);
+                _bottomSheetController?.close();
+                widget.provider.resetPages();
+              }
+
               return FloatingActionButton(
                 heroTag: 'float',
                 child: Icon(value ? Icons.check : Icons.search),
                 onPressed: () async {
                   setFocusToEnd(_tagController);
                   if (isSearching.value) {
-                    widget.provider.search.value =
-                        sortTags(_tagController.text);
-                    _bottomSheetController?.close();
-                    widget.provider.resetPages();
+                    submit();
                   } else {
                     _tagController.text = widget.provider.search.value + ' ';
                     _bottomSheetController =
                         Scaffold.of(context).showBottomSheet(
                       (context) => TagEntry(
                         controller: _tagController,
+                        onSubmit: submit,
                       ),
                     );
                     isSearching.value = true;
@@ -383,9 +388,11 @@ class PostProvider extends DataProvider<Post> {
 
 class TagEntry extends StatelessWidget {
   final TextEditingController controller;
+  final Function onSubmit;
 
   TagEntry({
     @required this.controller,
+    this.onSubmit,
   });
 
   void _withTags(Future<Tagset> Function(Tagset tags) editor) async {
@@ -509,13 +516,17 @@ class TagEntry extends StatelessWidget {
           hideOnError: true,
           keepSuggestionsOnSuggestionSelected: true,
           textFieldConfiguration: TextFieldConfiguration(
-            controller: controller,
-            autofocus: true,
-            maxLines: 1,
-            inputFormatters: [LowercaseTextInputFormatter()],
-            decoration: InputDecoration(
-                labelText: 'Tags', border: UnderlineInputBorder()),
-          ),
+              controller: controller,
+              autofocus: true,
+              maxLines: 1,
+              inputFormatters: [LowercaseTextInputFormatter()],
+              decoration: InputDecoration(
+                  labelText: 'Tags', border: UnderlineInputBorder()),
+              onSubmitted: (_) {
+                if (onSubmit != null) {
+                  onSubmit();
+                }
+              }),
           onSuggestionSelected: (suggestion) {
             List<String> tags = controller.text.split(' ');
             List<String> before = [];

@@ -4,8 +4,6 @@ import 'package:flutter/foundation.dart' show ValueNotifier;
 import 'package:shared_preferences/shared_preferences.dart'
     show SharedPreferences;
 
-typedef T _SharedPreferencesReceiver<T>(SharedPreferences prefs);
-
 final Persistence db = Persistence();
 
 class Persistence {
@@ -14,71 +12,80 @@ class Persistence {
   ValueNotifier<Future<String>> username;
   ValueNotifier<Future<String>> apiKey;
   ValueNotifier<Future<String>> theme;
-  ValueNotifier<Future<bool>> showWebm;
   ValueNotifier<Future<bool>> hasConsent;
-  ValueNotifier<Future<List<String>>> blacklist;
+  ValueNotifier<Future<List<String>>> denylist;
   ValueNotifier<Future<List<String>>> follows;
 
   Persistence() {
-    host = _makeNotifier((p) => p.getString('host') ?? 'e926.net');
-    host.addListener(_saveString('host', host));
-
-    homeTags = _makeNotifier((p) => p.getString('homeTags') ?? '');
-    homeTags.addListener(_saveString('homeTags', homeTags));
-
-    username = _makeNotifier((p) => p.getString('username'));
-    username.addListener(_saveString('username', username));
-
-    apiKey = _makeNotifier((p) => p.getString('apiKey'));
-    apiKey.addListener(_saveString('apiKey', apiKey));
-
-    theme = _makeNotifier((p) => p.getString('theme') ?? 'dark');
-    theme.addListener(_saveString('theme', theme));
-
-    showWebm = _makeNotifier((p) => p.getBool('showWebm') ?? false);
-    showWebm.addListener(_saveBool('showWebm', showWebm));
-
-    hasConsent = _makeNotifier((p) => p.getBool('hasConsent') ?? false);
-    hasConsent.addListener(_saveBool('hasConsent', hasConsent));
-
-    blacklist = _makeNotifier((p) => p.getStringList('blacklist') ?? []);
-    blacklist.addListener(_saveList('blacklist', blacklist));
-
-    follows = _makeNotifier((p) => p.getStringList('follows') ?? []);
-    follows.addListener(_saveList('follows', follows));
+    host = createSetting<String>('host', initial: 'e926.net');
+    homeTags = createSetting<String>('homeTags', initial: '');
+    username = createSetting<String>('username');
+    apiKey = createSetting<String>('apiKey');
+    theme = createSetting<String>('theme', initial: 'dark');
+    hasConsent = createSetting<bool>('hasConsent', initial: false);
+    denylist = createSetting<List<String>>('blacklist', initial: []);
+    follows = createSetting<List<String>>('follows', initial: []);
   }
 
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
-  ValueNotifier<Future<T>> _makeNotifier<T>(
-      _SharedPreferencesReceiver<T> receiver) {
-    return ValueNotifier(_prefs.then(receiver));
-  }
+  Type _typeify<T>() => T;
 
-  Function() _saveString(String key, ValueNotifier<Future<dynamic>> notifier) {
-    return () async {
-      var val = await notifier.value;
-      (await _prefs).setString(key, val != null ? val.toString() : null);
-    };
-  }
+  ValueNotifier<Future<T>> createSetting<T>(
+    String key, {
+    T initial,
+    Future<T> Function(SharedPreferences prefs) getSetting,
+    Function(SharedPreferences prefs) setSetting,
+  }) {
+    ValueNotifier<Future<T>> setting = ValueNotifier<Future<T>>(() async {
+      SharedPreferences prefs = await _prefs;
+      T value;
+      if (getSetting == null) {
+        switch (T) {
+          case String:
+            value = prefs.getString(key) as T;
+            break;
+          case bool:
+            value = prefs.getBool(key) as T;
+            break;
+          case int:
+            value = prefs.getInt(key) as T;
+            break;
+          default:
+            if (T == _typeify<List<String>>()) {
+              value = prefs.getStringList(key) as T;
+            }
+        }
+      } else {
+        value = await getSetting(prefs);
+      }
+      return value ?? initial;
+    }());
 
-  Function() _saveList(
-      String key, ValueNotifier<Future<List<String>>> notifier) {
-    return () async {
-      (await _prefs).setStringList(key, await notifier.value);
-    };
-  }
+    setting.addListener(() async {
+      SharedPreferences prefs = await _prefs;
+      if (setSetting == null) {
+        T value = await setting.value;
+        switch (T) {
+          case String:
+            prefs.setString(key, value as String);
+            break;
+          case bool:
+            prefs.setBool(key, value as bool);
+            break;
+          case int:
+            prefs.setInt(key, value as int);
+            break;
+          default:
+            if (T == _typeify<List<String>>()) {
+              prefs.setStringList(key, value as List);
+            }
+        }
+      } else {
+        setSetting(prefs);
+      }
+    });
 
-  Function() _saveBool(String key, ValueNotifier<Future<bool>> notifier) {
-    return () async {
-      (await _prefs).setBool(key, await notifier.value);
-    };
-  }
-
-  // ignore: unused_element
-  Function() _saveInt(String key, ValueNotifier<Future<int>> notifier) {
-    return () async {
-      (await _prefs).setInt(key, await notifier.value);
-    };
+    return setting;
   }
 }

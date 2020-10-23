@@ -1,4 +1,4 @@
-import 'dart:async' show Future;
+import 'dart:async' show Future, Timer;
 import 'dart:collection';
 import 'dart:core';
 import 'dart:io' show Directory, File, Platform;
@@ -13,6 +13,7 @@ import 'package:e1547/interface.dart';
 import 'package:e1547/pool.dart';
 import 'package:e1547/posts_page.dart';
 import 'package:e1547/settings.dart' show db;
+import 'package:e1547/wiki_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'
     show FilteringTextInputFormatter, SystemChrome, SystemUiOverlay;
@@ -29,6 +30,9 @@ import 'package:photo_view/photo_view_gallery.dart';
 import 'package:share/share.dart';
 import 'package:url_launcher/url_launcher.dart' as url;
 import 'package:video_player/video_player.dart';
+import 'package:wakelock/wakelock.dart';
+
+import 'main.dart';
 
 class _Image {
   Map file;
@@ -78,6 +82,8 @@ class Post {
 
   ValueNotifier<VoteStatus> voteStatus = ValueNotifier(VoteStatus.unknown);
 
+  VideoPlayerController controller;
+
   Post.fromRaw(this.raw) {
     id = raw['id'] as int;
     favorites = ValueNotifier(raw['fav_count'] as int);
@@ -111,6 +117,10 @@ class Post {
     uploader = (raw['uploader_id'] as int).toString();
 
     image.value = _Image.fromRaw(raw);
+    if (image.value.file['ext'] == 'webm') {
+      controller = VideoPlayerController.network(image.value.file['url']);
+      controller.setLooping(true);
+    }
   }
 
   // build post URL
@@ -143,9 +153,7 @@ class PostPreview extends StatelessWidget {
                 ),
               );
             } else {
-              return Center(
-                child: Text('deleted'),
-              );
+              return Center(child: Text(post.isDeleted ? 'deleted' : 'unsafe'));
             }
           });
     }
@@ -163,8 +171,16 @@ class PostPreview extends StatelessWidget {
     }
 
     Widget playOverlay() {
-      if (post.image.value.file['ext'] == 'gif' ||
-          post.image.value.file['ext'] == 'webm') {
+      if (post.image.value.file['ext'] == 'gif') {
+        return Positioned(
+            top: 0,
+            right: 0,
+            child: Container(
+              color: Colors.black12,
+              child: Icon(Icons.gif),
+            ));
+      }
+      if (post.image.value.file['ext'] == 'webm') {
         return Positioned(
             top: 0,
             right: 0,
@@ -172,9 +188,8 @@ class PostPreview extends StatelessWidget {
               color: Colors.black12,
               child: Icon(Icons.play_arrow),
             ));
-      } else {
-        return Container();
       }
+      return Container();
     }
 
     return Card(
@@ -265,10 +280,11 @@ class PostWidget extends StatefulWidget {
   }
 }
 
-class _PostWidgetState extends State<PostWidget> {
-  TextEditingController _textController = TextEditingController();
+class _PostWidgetState extends State<PostWidget> with RouteAware {
+  TextEditingController textController = TextEditingController();
   ValueNotifier<Future<bool> Function()> doEdit = ValueNotifier(null);
-  PersistentBottomSheetController _bottomSheetController;
+  PersistentBottomSheetController bottomSheetController;
+  bool keepPlaying = false;
 
   bool isVisible() {
     return (widget.post.isFavorite.value ||
@@ -294,11 +310,19 @@ class _PostWidgetState extends State<PostWidget> {
     if (!widget.post.isEditing.value) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         try {
-          _bottomSheetController?.close?.call();
+          bottomSheetController?.close?.call();
         } on NoSuchMethodError {
           // this error is thrown when hot reloading in debug mode
         }
       });
+    }
+  }
+
+  void videoWakelock() {
+    if (widget.post.controller != null) {
+      widget.post.controller.value.isPlaying
+          ? Wakelock.enable()
+          : Wakelock.disable();
     }
   }
 
@@ -307,14 +331,20 @@ class _PostWidgetState extends State<PostWidget> {
     super.initState();
     widget.post.isEditing.addListener(closeBottomSheet);
     widget.provider?.pages?.addListener(updateWidget);
+    if (widget.post.controller != null &&
+        !widget.post.controller.value.initialized) {
+      widget.post.controller?.initialize();
+      widget.post.controller.addListener(videoWakelock);
+    }
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    routeObserver.subscribe(this, ModalRoute.of(context));
     if (widget.post.image.value.file['url'] != null) {
       String ext = widget.post.image.value.file['ext'];
-      if (ext != 'webm' && ext != 'sfw') {
+      if (ext != 'webm' && ext != 'swf') {
         precacheImage(
           CachedNetworkImageProvider(widget.post.image.value.file['url']),
           context,
@@ -324,14 +354,65 @@ class _PostWidgetState extends State<PostWidget> {
   }
 
   @override
+  void didPushNext() {
+    super.didPushNext();
+    if (!keepPlaying) {
+      widget.post.controller?.pause();
+    } else {
+      keepPlaying = false;
+    }
+  }
+
+  @override
   void dispose() {
     super.dispose();
+    routeObserver.unsubscribe(this);
     widget.provider?.pages?.removeListener(updateWidget);
+    if (widget.post.isEditing.value) {
+      resetPost(widget.post);
+    }
     widget.post.isEditing.removeListener(closeBottomSheet);
+    if (widget.post.controller != null &&
+        widget.post.controller.value.initialized) {
+      widget.post.controller.pause();
+    }
+    widget.post.controller?.removeListener(videoWakelock);
   }
 
   @override
   Widget build(BuildContext context) {
+    void onImageTap(BuildContext context) {
+      if (widget.post.image.value.file['url'] != null) {
+        if (widget.post.image.value.file['ext'] == 'swf') {
+          url.launch(widget.post.image.value.file['url']);
+        } else if (isVisible()) {
+          keepPlaying = true;
+          Navigator.of(context).push(MaterialPageRoute<Null>(
+              settings: RouteSettings(name: 'gallery'),
+              builder: (context) {
+                Widget gallery(List<Post> posts) {
+                  return ImageGallery(
+                    index: posts.indexOf(widget.post),
+                    posts: posts,
+                    controller: widget.controller,
+                  );
+                }
+
+                List<Post> posts = widget.post.isEditing.value
+                    ? [widget.post]
+                    : (widget.provider?.items ?? [widget.post]);
+                if (widget.provider != null) {
+                  return ValueListenableBuilder(
+                      valueListenable: widget.provider.pages,
+                      builder: (context, value, child) => gallery(posts));
+                } else {
+                  return gallery(posts);
+                }
+              }));
+        }
+      }
+    }
+
     Widget postImageWidget() {
       Widget imageContainerWidget() {
         Widget image() {
@@ -349,104 +430,137 @@ class _PostWidgetState extends State<PostWidget> {
         }
 
         Widget video() {
-          return Stack(
-            children: [
-              () {
-                return Container(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      Padding(
-                        padding: EdgeInsets.all(8),
-                        child: Text(
-                          'Webm support under development',
-                          textAlign: TextAlign.center,
+          return ValueListenableBuilder(
+            valueListenable: widget.post.controller,
+            builder: (context, value, child) => InkWell(
+              onTap: () => value.isPlaying
+                  ? widget.post.controller.pause()
+                  : widget.post.controller.play(),
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  value.initialized
+                      ? AspectRatio(
+                          aspectRatio: value.aspectRatio,
+                          child: VideoPlayer(widget.post.controller),
+                        )
+                      : CachedNetworkImage(
+                          imageUrl: widget.post.image.value.sample['url'],
+                          placeholder: (context, url) => Center(
+                              child: Container(
+                            height: 26,
+                            width: 26,
+                            child: const CircularProgressIndicator(),
+                          )),
+                          errorWidget: (context, url, error) =>
+                              Center(child: Icon(Icons.error_outline)),
+                        ),
+                  Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      AnimatedOpacity(
+                        duration: Duration(seconds: 1),
+                        opacity: value.isPlaying &&
+                                (!value.initialized || value.isBuffering)
+                            ? 1
+                            : 0,
+                        child: Container(
+                          height: 24,
+                          width: 24,
+                          child: CircularProgressIndicator(),
                         ),
                       ),
-                      Card(
-                        child: InkWell(
-                          child: Padding(
-                              padding: EdgeInsets.all(8), child: Text('Open')),
-                          onTap: () async =>
-                              url.launch(widget.post.image.value.file['url']),
+                      AnimatedOpacity(
+                        duration: Duration(milliseconds: 300),
+                        opacity: value.isPlaying ? 0 : 1,
+                        child: IconShadowWidget(
+                          Icon(
+                            value.isPlaying ? Icons.pause : Icons.play_arrow,
+                            size: 54,
+                            color: Theme.of(context).iconTheme.color,
+                          ),
+                          shadowColor: Colors.black,
                         ),
                       )
                     ],
                   ),
-                );
-              }(),
-              Positioned(
-                child: Card(
-                  elevation: 0,
-                  color: Colors.black38,
-                  child: InkWell(
-                    child: Padding(
-                      padding: EdgeInsets.all(4),
-                      child: Icon(
-                        Icons.fullscreen,
-                        size: 24,
-                        color: Theme.of(context).iconTheme.color,
-                      ),
-                    ),
-                    onTap: () async {},
-                  ),
-                ),
-                bottom: 0,
-                left: 5,
-                height: 0,
-                width: 0,
+                ],
               ),
-            ],
+            ),
           );
         }
 
         Widget imageToggle() {
           return ValueListenableBuilder(
-              valueListenable: widget.post.showUnsafe,
-              builder: (context, value, child) {
-                if (!widget.post.isDeleted &&
-                    (widget.post.image.value.file['url'] == null ||
-                        !isVisible() ||
-                        widget.post.showUnsafe.value)) {
-                  return Positioned(
-                    child: FlatButton(
-                      color: value ? Colors.black12 : null,
-                      child: Row(
-                        children: <Widget>[
-                          Icon(
-                            value ? Icons.visibility_off : Icons.visibility,
-                            size: 16,
-                          ),
-                          Padding(
-                            padding: EdgeInsets.only(right: 5, left: 5),
-                            child: value ? Text('hide') : Text('show'),
-                          )
-                        ],
-                      ),
-                      onPressed: () async {
-                        bool consent = await getConsent(context);
-                        if (consent) {
-                          widget.post.showUnsafe.value =
-                              !widget.post.showUnsafe.value;
-                          Post urls =
-                              await client.post(widget.post.id, unsafe: true);
-                          if (widget.post.image.value.file['url'] == null) {
-                            widget.post.image.value = urls.image.value;
-                          } else if (!widget.post.isBlacklisted) {
-                            widget.post.image.value =
-                                _Image.fromRaw(widget.post.raw);
-                          }
-                        }
-                      },
+            valueListenable: widget.post.showUnsafe,
+            builder: (context, value, child) => crossFade(
+              showChild: !widget.post.isDeleted &&
+                  (widget.post.image.value.file['url'] == null ||
+                      !isVisible() ||
+                      widget.post.showUnsafe.value),
+              duration: Duration(milliseconds: 200),
+              child: Card(
+                color: value ? Colors.black12 : Colors.transparent,
+                elevation: 0,
+                child: InkWell(
+                  child: Padding(
+                    padding: EdgeInsets.all(8),
+                    child: Row(
+                      children: <Widget>[
+                        Icon(
+                          value ? Icons.visibility_off : Icons.visibility,
+                          size: 16,
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(right: 5, left: 5),
+                          child: value ? Text('hide') : Text('show'),
+                        )
+                      ],
                     ),
-                    bottom: 0,
-                    right: 5,
-                  );
-                } else {
-                  return Container();
-                }
-              });
+                  ),
+                  onTap: () async {
+                    bool consent = await getConsent(context);
+                    if (consent) {
+                      widget.post.showUnsafe.value =
+                          !widget.post.showUnsafe.value;
+                      Post urls =
+                          await client.post(widget.post.id, unsafe: true);
+                      if (widget.post.image.value.file['url'] == null) {
+                        widget.post.image.value = urls.image.value;
+                      } else if (!widget.post.isBlacklisted) {
+                        widget.post.image.value =
+                            _Image.fromRaw(widget.post.raw);
+                      }
+                    }
+                  },
+                ),
+              ),
+            ),
+          );
+        }
+
+        Widget fullscreenButton() {
+          return crossFade(
+            showChild: widget.post.image.value.file['url'] != null &&
+                isVisible() &&
+                widget.post.controller != null,
+            duration: Duration(milliseconds: 200),
+            child: Card(
+              elevation: 0,
+              color: Colors.black12,
+              child: InkWell(
+                child: Padding(
+                  padding: EdgeInsets.all(4),
+                  child: Icon(
+                    Icons.fullscreen,
+                    size: 24,
+                    color: Theme.of(context).iconTheme.color,
+                  ),
+                ),
+                onTap: () => onImageTap(context),
+              ),
+            ),
+          );
         }
 
         Widget imageOverlay() {
@@ -488,7 +602,7 @@ class _PostWidgetState extends State<PostWidget> {
                             ],
                           );
                         }
-                        if (widget.post.image.value.file['ext'] == "sfw") {
+                        if (widget.post.image.value.file['ext'] == "swf") {
                           return Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.center,
@@ -521,7 +635,18 @@ class _PostWidgetState extends State<PostWidget> {
                       }(),
                     ),
                   ),
-                  imageToggle(),
+                  Positioned(
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        fullscreenButton(),
+                        imageToggle(),
+                      ],
+                    ),
+                    bottom: 0,
+                    right: 5,
+                  )
                 ],
               );
             },
@@ -535,27 +660,7 @@ class _PostWidgetState extends State<PostWidget> {
         valueListenable: widget.post.showUnsafe,
         builder: (context, value, child) {
           return InkWell(
-            onTap: () {
-              if (widget.post.image.value.file['url'] != null) {
-                if (widget.post.image.value.file['ext'] == 'swf') {
-                  url.launch(widget.post.image.value.file['url']);
-                } else if (isVisible()) {
-                  Navigator.of(context).push(MaterialPageRoute<Null>(
-                      builder: (context) => ValueListenableBuilder(
-                          valueListenable: widget.provider.pages,
-                          builder: (context, value, child) {
-                            List<Post> posts = widget.post.isEditing.value
-                                ? [widget.post]
-                                : (widget.provider?.items ?? [widget.post]);
-                            return ImageGallery(
-                              index: posts.indexOf(widget.post),
-                              posts: posts,
-                              controller: widget.controller,
-                            );
-                          })));
-                }
-              }
-            },
+            onTap: () => onImageTap(context),
             child: imageContainerWidget(),
           );
         },
@@ -563,6 +668,61 @@ class _PostWidgetState extends State<PostWidget> {
     }
 
     Widget postMetadataWidget() {
+      Widget artists() {
+        return ValueListenableBuilder(
+          valueListenable: widget.post.tags,
+          builder: (BuildContext context, value, Widget child) {
+            if (widget.post.tags.value['artist'].length != 0) {
+              return Text.rich(
+                TextSpan(children: () {
+                  List<InlineSpan> spans = [];
+                  int count = 0;
+                  for (String artist in widget.post.tags.value['artist']) {
+                    switch (artist) {
+                      case 'conditional_dnp':
+                      case 'sound_warning':
+                      case 'epilepsy_warning':
+                      case 'avoid_posting':
+                        break;
+                      default:
+                        count++;
+                        if (count > 1) {
+                          spans.add(TextSpan(text: ', '));
+                        }
+                        spans.add(WidgetSpan(
+                            child: InkWell(
+                          child: Text(
+                            artist,
+                            style: TextStyle(
+                              fontSize: 14.0,
+                            ),
+                          ),
+                          onTap: () {
+                            return Navigator.of(context).push(
+                                MaterialPageRoute<Null>(builder: (context) {
+                              return SearchPage(tags: artist);
+                            }));
+                          },
+                          onLongPress: () =>
+                              wikiDialog(context, artist, actions: true),
+                        )));
+                        break;
+                    }
+                  }
+                  return spans;
+                }()),
+                overflow: TextOverflow.fade,
+              );
+            } else {
+              return Text('no artist',
+                  style: TextStyle(
+                      color: Theme.of(context).textTheme.subtitle2.color,
+                      fontStyle: FontStyle.italic));
+            }
+          },
+        );
+      }
+
       Widget artistDisplay() {
         return Column(
           children: <Widget>[
@@ -577,62 +737,7 @@ class _PostWidgetState extends State<PostWidget> {
                         child: Icon(Icons.account_circle),
                       ),
                       Flexible(
-                        child: ValueListenableBuilder(
-                          valueListenable: widget.post.tags,
-                          builder: (BuildContext context, value, Widget child) {
-                            if (widget.post.tags.value['artist'].length != 0) {
-                              return Text.rich(
-                                TextSpan(children: () {
-                                  List<InlineSpan> spans = [];
-                                  int count = 0;
-                                  for (String artist
-                                      in widget.post.tags.value['artist']) {
-                                    switch (artist) {
-                                      case 'conditional_dnp':
-                                      case 'sound_warning':
-                                      case 'epilepsy_warning':
-                                      case 'avoid_posting':
-                                        break;
-                                      default:
-                                        count++;
-                                        if (count > 1) {
-                                          spans.add(TextSpan(text: ', '));
-                                        }
-                                        spans.add(WidgetSpan(
-                                            child: InkWell(
-                                          child: Text(
-                                            artist,
-                                            style: TextStyle(
-                                              fontSize: 14.0,
-                                            ),
-                                          ),
-                                          onTap: () => Navigator.of(context)
-                                              .push(MaterialPageRoute<Null>(
-                                                  builder: (context) {
-                                            return SearchPage(tags: artist);
-                                          })),
-                                          onLongPress: () => wikiDialog(
-                                              context, artist,
-                                              actions: true),
-                                        )));
-                                        break;
-                                    }
-                                  }
-                                  return spans;
-                                }()),
-                                overflow: TextOverflow.ellipsis,
-                              );
-                            } else {
-                              return Text('no artist',
-                                  style: TextStyle(
-                                      color: Theme.of(context)
-                                          .textTheme
-                                          .subtitle2
-                                          .color,
-                                      fontStyle: FontStyle.italic));
-                            }
-                          },
-                        ),
+                        child: artists(),
                       ),
                     ],
                   ),
@@ -684,38 +789,39 @@ class _PostWidgetState extends State<PostWidget> {
         return ValueListenableBuilder(
           valueListenable: widget.post.description,
           builder: (context, value, child) {
-            if (value.isNotEmpty || widget.post.isEditing.value) {
-              return Column(
+            return crossFade(
+              showChild: value.isNotEmpty || widget.post.isEditing.value,
+              child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
-                  widget.post.isEditing.value
-                      ? Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            Text(
-                              'Description',
-                              style: TextStyle(fontSize: 16),
-                            ),
-                            IconButton(
-                              icon: Icon(Icons.edit),
-                              onPressed: () async {
-                                await Navigator.of(context).push(
-                                    MaterialPageRoute<String>(
-                                        builder: (context) {
-                                  return TextEditor(
-                                    title: '#${widget.post.id} description',
-                                    content: value,
-                                    validator: (context, text) {
-                                      widget.post.description.value = text;
-                                      return Future.value(true);
-                                    },
-                                  );
-                                }));
-                              },
-                            ),
-                          ],
-                        )
-                      : Container(),
+                  crossFade(
+                    showChild: widget.post.isEditing.value,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Text(
+                          'Description',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.edit),
+                          onPressed: () async {
+                            await Navigator.of(context).push(
+                                MaterialPageRoute<String>(builder: (context) {
+                              return TextEditor(
+                                title: '#${widget.post.id} description',
+                                content: value,
+                                validator: (context, text) {
+                                  widget.post.description.value = text;
+                                  return Future.value(true);
+                                },
+                              );
+                            }));
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
                   Row(
                     mainAxisSize: MainAxisSize.max,
                     children: <Widget>[
@@ -736,10 +842,8 @@ class _PostWidgetState extends State<PostWidget> {
                   ),
                   Divider(),
                 ],
-              );
-            } else {
-              return Container();
-            }
+              ),
+            );
           },
         );
       }
@@ -914,24 +1018,26 @@ class _PostWidgetState extends State<PostWidget> {
                     ValueListenableBuilder(
                       valueListenable: isLoading,
                       builder: (context, value, child) {
-                        if (value) {
-                          return child;
-                        } else {
-                          return Container();
-                        }
+                        return crossFade(
+                          showChild: value,
+                          child: child,
+                        );
                       },
                       child: Center(
                           child: Padding(
                         padding: EdgeInsets.only(right: 10),
                         child: Container(
-                            height: 16,
-                            width: 16,
-                            child: CircularProgressIndicator()),
+                            height: 20,
+                            width: 20,
+                            child: Padding(
+                              padding: EdgeInsets.all(2),
+                              child: CircularProgressIndicator(),
+                            )),
                       )),
                     ),
                     Expanded(
                       child: TextField(
-                        controller: _textController,
+                        controller: textController,
                         autofocus: true,
                         maxLines: 1,
                         keyboardType: TextInputType.number,
@@ -941,6 +1047,11 @@ class _PostWidgetState extends State<PostWidget> {
                         decoration: InputDecoration(
                             labelText: 'Parent ID',
                             border: UnderlineInputBorder()),
+                        onSubmitted: (_) async {
+                          if (await doEdit.value()) {
+                            bottomSheetController.close();
+                          }
+                        },
                       ),
                     ),
                   ],
@@ -953,148 +1064,160 @@ class _PostWidgetState extends State<PostWidget> {
           builder: (context, value, child) {
             return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: () {
-                  List<Widget> items = [];
-                  if (value != null || widget.post.isEditing.value) {
-                    items.addAll([
-                      Padding(
-                        padding: EdgeInsets.only(
-                          right: 4,
-                          left: 4,
-                          top: 2,
-                          bottom: 2,
-                        ),
-                        child: Text(
-                          'Parent',
-                          style: TextStyle(
-                            fontSize: 16,
+                children: [
+                  crossFade(
+                    showChild: value != null || widget.post.isEditing.value,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(
+                            right: 4,
+                            left: 4,
+                            top: 2,
+                            bottom: 2,
+                          ),
+                          child: Text(
+                            'Parent',
+                            style: TextStyle(
+                              fontSize: 16,
+                            ),
                           ),
                         ),
-                      ),
-                      loadingListTile(
-                        leading: Icon(Icons.supervisor_account),
-                        title: Text(value?.toString() ?? 'none'),
-                        trailing: widget.post.isEditing.value
-                            ? Builder(
-                                builder: (BuildContext context) {
-                                  return IconButton(
-                                    icon: Icon(Icons.edit),
-                                    onPressed: () {
-                                      isLoading.value = false;
-                                      _textController.text =
-                                          value?.toString() ?? ' ';
-                                      setFocusToEnd(_textController);
-                                      _bottomSheetController =
-                                          Scaffold.of(context).showBottomSheet(
-                                        (context) {
-                                          return parentInput();
-                                        },
-                                      );
-                                      doEdit.value = () async {
-                                        isLoading.value = true;
-                                        if (_textController.text
-                                            .trim()
-                                            .isEmpty) {
-                                          widget.post.parent.value = null;
-                                          isLoading.value = false;
-                                          return Future.value(true);
-                                        }
-                                        if (int.tryParse(
-                                                _textController.text) !=
-                                            null) {
-                                          Post parent = await client.post(
-                                              int.tryParse(
-                                                  _textController.text));
-                                          if (parent != null) {
-                                            widget.post.parent.value =
-                                                parent.id;
-                                            return true;
-                                          }
-                                        }
-                                        Scaffold.of(context)
-                                            .showSnackBar(SnackBar(
-                                          duration: Duration(seconds: 1),
-                                          content: Text('Invalid parent post'),
-                                          behavior: SnackBarBehavior.floating,
-                                        ));
+                        loadingListTile(
+                          leading: Icon(Icons.supervisor_account),
+                          title: Text(value?.toString() ?? 'none'),
+                          trailing: widget.post.isEditing.value
+                              ? Builder(
+                                  builder: (BuildContext context) {
+                                    return IconButton(
+                                      icon: Icon(Icons.edit),
+                                      onPressed: () {
                                         isLoading.value = false;
-                                        return false;
-                                      };
-                                      _bottomSheetController.closed.then((_) {
-                                        doEdit.value = null;
-                                      });
-                                    },
-                                  );
-                                },
-                              )
-                            : null,
-                        onTap: () async {
-                          if (value != null) {
-                            Post post = await client.post(value);
-                            if (post != null) {
-                              Navigator.of(context).push(
-                                  MaterialPageRoute<Null>(builder: (context) {
-                                return PostWidget(post: post);
-                              }));
-                            } else {
-                              Scaffold.of(context).showSnackBar(SnackBar(
-                                duration: Duration(seconds: 1),
-                                content:
-                                    Text('Coulnd\'t retrieve Post #$value'),
-                              ));
+                                        textController.text =
+                                            value?.toString() ?? ' ';
+                                        setFocusToEnd(textController);
+                                        bottomSheetController =
+                                            Scaffold.of(context)
+                                                .showBottomSheet(
+                                          (context) {
+                                            return parentInput();
+                                          },
+                                        );
+                                        doEdit.value = () async {
+                                          isLoading.value = true;
+                                          if (textController.text
+                                              .trim()
+                                              .isEmpty) {
+                                            widget.post.parent.value = null;
+                                            isLoading.value = false;
+                                            return Future.value(true);
+                                          }
+                                          if (int.tryParse(
+                                                  textController.text) !=
+                                              null) {
+                                            Post parent = await client.post(
+                                                int.tryParse(
+                                                    textController.text));
+                                            if (parent != null) {
+                                              widget.post.parent.value =
+                                                  parent.id;
+                                              return true;
+                                            }
+                                          }
+                                          Scaffold.of(context)
+                                              .showSnackBar(SnackBar(
+                                            duration: Duration(seconds: 1),
+                                            content:
+                                                Text('Invalid parent post'),
+                                            behavior: SnackBarBehavior.floating,
+                                          ));
+                                          isLoading.value = false;
+                                          return false;
+                                        };
+                                        bottomSheetController.closed.then((_) {
+                                          doEdit.value = null;
+                                        });
+                                      },
+                                    );
+                                  },
+                                )
+                              : null,
+                          onTap: () async {
+                            if (value != null) {
+                              Post post = await client.post(value);
+                              if (post != null) {
+                                Navigator.of(context).push(
+                                    MaterialPageRoute<Null>(builder: (context) {
+                                  return PostWidget(post: post);
+                                }));
+                              } else {
+                                Scaffold.of(context).showSnackBar(SnackBar(
+                                  duration: Duration(seconds: 1),
+                                  content:
+                                      Text('Coulnd\'t retrieve Post #$value'),
+                                ));
+                              }
                             }
-                          }
-                        },
-                      ),
-                      Divider(),
-                    ]);
-                  }
-                  if (widget.post.children.length != 0 &&
-                      !widget.post.isEditing.value) {
-                    items.add(
-                      Padding(
-                        padding: EdgeInsets.only(
-                          right: 4,
-                          left: 4,
-                          top: 2,
-                          bottom: 2,
+                          },
                         ),
-                        child: Text(
-                          'Children',
-                          style: TextStyle(
-                            fontSize: 16,
-                          ),
-                        ),
-                      ),
-                    );
-                    for (int child in widget.post.children) {
-                      items.add(loadingListTile(
-                        leading: Icon(Icons.supervised_user_circle),
-                        title: Text(child.toString()),
-                        onTap: () async {
-                          Post post = await client.post(child);
-                          if (post != null) {
-                            await Navigator.of(context).push(
-                                MaterialPageRoute<Null>(builder: (context) {
-                              return PostWidget(post: post);
-                            }));
-                          } else {
-                            Scaffold.of(context).showSnackBar(SnackBar(
-                              duration: Duration(seconds: 1),
-                              content: Text(
-                                  'Coulnd\'t retrieve Post #${child.toString()}'),
+                        Divider(),
+                      ],
+                    ),
+                  ),
+                  crossFade(
+                    showChild: widget.post.children.length != 0 &&
+                        !widget.post.isEditing.value,
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: () {
+                          List<Widget> items = [];
+                          items.add(
+                            Padding(
+                              padding: EdgeInsets.only(
+                                right: 4,
+                                left: 4,
+                                top: 2,
+                                bottom: 2,
+                              ),
+                              child: Text(
+                                'Children',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ),
+                          );
+                          for (int child in widget.post.children) {
+                            items.add(loadingListTile(
+                              leading: Icon(Icons.supervised_user_circle),
+                              title: Text(child.toString()),
+                              onTap: () async {
+                                Post post = await client.post(child);
+                                if (post != null) {
+                                  await Navigator.of(context).push(
+                                      MaterialPageRoute<Null>(
+                                          builder: (context) {
+                                    return PostWidget(post: post);
+                                  }));
+                                } else {
+                                  Scaffold.of(context).showSnackBar(SnackBar(
+                                    duration: Duration(seconds: 1),
+                                    content: Text(
+                                        'Coulnd\'t retrieve Post #${child.toString()}'),
+                                  ));
+                                }
+                              },
                             ));
                           }
-                        },
-                      ));
-                    }
-                    items.add(Divider());
-                  }
-                  if (items.length == 0) {
-                    items.add(Container());
-                  }
-                  return items;
-                }());
+                          items.add(Divider());
+                          if (items.length == 0) {
+                            items.add(Container());
+                          }
+                          return items;
+                        }()),
+                  ),
+                ]);
           },
         );
       }
@@ -1103,10 +1226,10 @@ class _PostWidgetState extends State<PostWidget> {
         Widget tagCard(String tag, String tagSet) {
           return Card(
               child: InkWell(
-                  onTap: () => Navigator.of(context)
-                          .push(MaterialPageRoute<Null>(builder: (context) {
-                        return SearchPage(tags: tag);
-                      })),
+                  onTap: () =>
+                      Navigator.of(context).push(MaterialPageRoute<Null>(
+                        builder: (context) => SearchPage(tags: tag),
+                      )),
                   onLongPress: () => wikiDialog(context, tag, actions: true),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -1138,26 +1261,22 @@ class _PostWidgetState extends State<PostWidget> {
                               bottomLeft: Radius.circular(5)),
                         ),
                         height: 24,
-                        child: () {
-                          if (widget.post.isEditing.value) {
-                            return InkWell(
-                              child: Padding(
-                                padding: EdgeInsets.only(
-                                    right: 4, left: 4, top: 4, bottom: 4),
-                                child: Icon(Icons.clear, size: 16),
-                              ),
-                              onTap: () {
-                                widget.post.tags.value[tagSet].remove(tag);
-                                widget.post.tags.value =
-                                    Map.from(widget.post.tags.value);
-                              },
-                            );
-                          } else {
-                            return Container(
-                              width: 5,
-                            );
-                          }
-                        }(),
+                        child: crossFade(
+                          showChild: widget.post.isEditing.value,
+                          child: InkWell(
+                            child: Padding(
+                              padding: EdgeInsets.only(
+                                  right: 4, left: 4, top: 4, bottom: 4),
+                              child: Icon(Icons.clear, size: 16),
+                            ),
+                            onTap: () {
+                              widget.post.tags.value[tagSet].remove(tag);
+                              widget.post.tags.value =
+                                  Map.from(widget.post.tags.value);
+                            },
+                          ),
+                          secondChild: Container(width: 5),
+                        ),
                       ),
                       Flexible(
                         child: Padding(
@@ -1185,6 +1304,100 @@ class _PostWidgetState extends State<PostWidget> {
             'meta': 7,
           };
           ValueNotifier isLoading = ValueNotifier(false);
+
+          Widget tagInput() {
+            return Padding(
+                padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10),
+                child: Column(mainAxisSize: MainAxisSize.min, children: [
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      ValueListenableBuilder(
+                        valueListenable: isLoading,
+                        builder: (context, value, child) {
+                          if (value) {
+                            return child;
+                          } else {
+                            return Container();
+                          }
+                        },
+                        child: Center(
+                            child: Padding(
+                          padding: EdgeInsets.only(right: 10),
+                          child: Container(
+                              height: 16,
+                              width: 16,
+                              child: CircularProgressIndicator()),
+                        )),
+                      ),
+                      Expanded(
+                        child: TypeAheadField(
+                          direction: AxisDirection.up,
+                          hideOnLoading: true,
+                          hideOnEmpty: true,
+                          hideOnError: true,
+                          keepSuggestionsOnSuggestionSelected: true,
+                          textFieldConfiguration: TextFieldConfiguration(
+                            controller: textController,
+                            autofocus: true,
+                            maxLines: 1,
+                            inputFormatters: [LowercaseTextInputFormatter()],
+                            decoration: InputDecoration(
+                                labelText: tagSet,
+                                border: UnderlineInputBorder()),
+                            onSubmitted: (_) async {
+                              if (await doEdit.value()) {
+                                bottomSheetController.close();
+                              }
+                            },
+                          ),
+                          onSuggestionSelected: (suggestion) {
+                            List<String> tags = textController.text.split(' ');
+                            List<String> before = [];
+                            for (String tag in tags) {
+                              before.add(tag);
+                              if (before.join(' ').length >=
+                                  textController.selection.extent.offset) {
+                                tags[tags.indexOf(tag)] = suggestion;
+                                break;
+                              }
+                            }
+                            textController.text = tags.join(' ') + ' ';
+                            setFocusToEnd(textController);
+                          },
+                          itemBuilder: (BuildContext context, itemData) {
+                            return ListTile(
+                              title: Text(itemData),
+                            );
+                          },
+                          suggestionsCallback: (String pattern) async {
+                            List<String> tags = textController.text.split(' ');
+                            List<String> before = [];
+                            int selection = 0;
+                            for (String tag in tags) {
+                              before.add(tag);
+                              if (before.join(' ').length >=
+                                  textController.selection.extent.offset) {
+                                selection = tags.indexOf(tag);
+                                break;
+                              }
+                            }
+                            if (tags[selection].trim().isNotEmpty) {
+                              return (await client.tags(tags[selection],
+                                      category: group[tagSet]))
+                                  .map((t) => t['name'])
+                                  .toList();
+                            } else {
+                              return [];
+                            }
+                          },
+                        ),
+                      ),
+                    ],
+                  )
+                ]));
+          }
+
           return Builder(
             builder: (BuildContext context) {
               return Card(
@@ -1195,121 +1408,20 @@ class _PostWidgetState extends State<PostWidget> {
                     child: Icon(Icons.add, size: 16),
                   ),
                   onTap: () async {
-                    _textController.text = '';
-                    _bottomSheetController =
+                    textController.text = '';
+                    bottomSheetController =
                         Scaffold.of(context).showBottomSheet(
                       (context) {
-                        return Padding(
-                            padding: EdgeInsets.only(
-                                left: 10.0, right: 10.0, bottom: 10),
-                            child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: <Widget>[
-                                      ValueListenableBuilder(
-                                        valueListenable: isLoading,
-                                        builder: (context, value, child) {
-                                          if (value) {
-                                            return child;
-                                          } else {
-                                            return Container();
-                                          }
-                                        },
-                                        child: Center(
-                                            child: Padding(
-                                          padding: EdgeInsets.only(right: 10),
-                                          child: Container(
-                                              height: 16,
-                                              width: 16,
-                                              child:
-                                                  CircularProgressIndicator()),
-                                        )),
-                                      ),
-                                      Expanded(
-                                        child: TypeAheadField(
-                                          direction: AxisDirection.up,
-                                          hideOnLoading: true,
-                                          hideOnEmpty: true,
-                                          hideOnError: true,
-                                          textFieldConfiguration:
-                                              TextFieldConfiguration(
-                                            controller: _textController,
-                                            autofocus: true,
-                                            maxLines: 1,
-                                            inputFormatters: [
-                                              LowercaseTextInputFormatter()
-                                            ],
-                                            decoration: InputDecoration(
-                                                labelText: tagSet,
-                                                border: UnderlineInputBorder()),
-                                          ),
-                                          onSuggestionSelected: (suggestion) {
-                                            List<String> tags =
-                                                _textController.text.split(' ');
-                                            List<String> before = [];
-                                            for (String tag in tags) {
-                                              before.add(tag);
-                                              if (before.join(' ').length >=
-                                                  _textController.selection
-                                                      .extent.offset) {
-                                                tags[tags.indexOf(tag)] =
-                                                    suggestion;
-                                                break;
-                                              }
-                                            }
-                                            _textController.text =
-                                                tags.join(' ') + ' ';
-                                          },
-                                          itemBuilder:
-                                              (BuildContext context, itemData) {
-                                            return ListTile(
-                                              title: Text(itemData),
-                                            );
-                                          },
-                                          suggestionsCallback:
-                                              (String pattern) async {
-                                            List<String> tags =
-                                                _textController.text.split(' ');
-                                            List<String> before = [];
-                                            int selection = 0;
-                                            for (String tag in tags) {
-                                              before.add(tag);
-                                              if (before.join(' ').length >=
-                                                  _textController.selection
-                                                      .extent.offset) {
-                                                selection = tags.indexOf(tag);
-                                                break;
-                                              }
-                                            }
-                                            if (tags[selection]
-                                                .trim()
-                                                .isNotEmpty) {
-                                              return (await client.tags(
-                                                      tags[selection],
-                                                      category: group[tagSet]))
-                                                  .map((t) => t['name'])
-                                                  .toList();
-                                            } else {
-                                              return [];
-                                            }
-                                          },
-                                        ),
-                                      ),
-                                    ],
-                                  )
-                                ]));
+                        return tagInput();
                       },
                     );
                     doEdit.value = () async {
                       isLoading.value = true;
-                      if (_textController.text.trim().isEmpty) {
+                      if (textController.text.trim().isEmpty) {
                         isLoading.value = false;
                         return Future.value(true);
                       }
-                      List<String> tags =
-                          _textController.text.trim().split(' ');
+                      List<String> tags = textController.text.trim().split(' ');
                       widget.post.tags.value[tagSet].addAll(tags);
                       widget.post.tags.value[tagSet].sort();
                       widget.post.tags.value = Map.from(widget.post.tags.value);
@@ -1344,7 +1456,7 @@ class _PostWidgetState extends State<PostWidget> {
                       }();
                       return Future.value(true);
                     };
-                    _bottomSheetController.closed.then((_) {
+                    bottomSheetController.closed.then((_) {
                       doEdit.value = null;
                       isLoading.value = false;
                     });
@@ -1386,7 +1498,7 @@ class _PostWidgetState extends State<PostWidget> {
                             bottom: 2,
                           ),
                           child: Text(
-                            tagSet,
+                            '${tagSet[0].toUpperCase()}${tagSet.substring(1)}',
                             style: TextStyle(
                               fontSize: 16,
                             ),
@@ -1404,11 +1516,10 @@ class _PostWidgetState extends State<PostWidget> {
                                       tagCard(tag, tagSet),
                                     );
                                   }
-                                  if (widget.post.isEditing.value) {
-                                    tags.add(
-                                      tagCreator(tagSet),
-                                    );
-                                  }
+                                  tags.add(crossFade(
+                                    showChild: widget.post.isEditing.value,
+                                    child: tagCreator(tagSet),
+                                  ));
                                   return tags;
                                 }(),
                               ),
@@ -1430,32 +1541,29 @@ class _PostWidgetState extends State<PostWidget> {
       Widget commentDisplay() {
         return ValueListenableBuilder(
           valueListenable: widget.post.comments,
-          builder: (BuildContext context, value, Widget child) {
-            if (value > 0) {
-              return Column(
-                children: <Widget>[
-                  Row(
-                    children: <Widget>[
-                      Expanded(
-                        child: OutlineButton(
-                          child: Text('COMMENTS ($value)'),
-                          onPressed: () {
-                            Navigator.of(context).push(
-                                MaterialPageRoute<Null>(builder: (context) {
-                              return CommentsWidget(widget.post);
-                            }));
-                          },
-                        ),
-                      )
-                    ],
-                  ),
-                  Divider(),
-                ],
-              );
-            } else {
-              return Container();
-            }
-          },
+          builder: (BuildContext context, value, Widget child) => crossFade(
+            showChild: value > 0,
+            child: Column(
+              children: <Widget>[
+                Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: OutlineButton(
+                        child: Text('COMMENTS ($value)'),
+                        onPressed: () {
+                          Navigator.of(context).push(MaterialPageRoute<Null>(
+                            settings: RouteSettings(name: 'comments'),
+                            builder: (context) => CommentsWidget(widget.post),
+                          ));
+                        },
+                      ),
+                    )
+                  ],
+                ),
+                Divider(),
+              ],
+            ),
+          ),
         );
       }
 
@@ -1530,7 +1638,7 @@ class _PostWidgetState extends State<PostWidget> {
         );
       }
 
-      Widget fileInfoDisplay() {
+      Widget fileDisplay() {
         DateFormat dateFormat = DateFormat('dd.MM.yy HH:mm');
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -1595,7 +1703,14 @@ class _PostWidgetState extends State<PostWidget> {
                       ? Text(dateFormat.format(
                           DateTime.parse(widget.post.updated).toLocal()))
                       : Container(),
-                  Text(widget.post.image.value.file['ext']),
+                  InkWell(
+                      child: Text(widget.post.image.value.file['ext']),
+                      onTap: () =>
+                          Navigator.of(context).push(MaterialPageRoute<Null>(
+                            builder: (context) => SearchPage(
+                                tags:
+                                    'type:${widget.post.image.value.file['ext']}'),
+                          ))),
                 ],
               ),
             ),
@@ -1607,105 +1722,97 @@ class _PostWidgetState extends State<PostWidget> {
       Widget sourceDisplay() {
         return ValueListenableBuilder(
           valueListenable: widget.post.sources,
-          builder: (BuildContext context, value, Widget child) {
-            if (value.length != 0 || widget.post.isEditing.value) {
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Padding(
-                        padding: EdgeInsets.only(
-                          right: 4,
-                          left: 4,
-                          top: 2,
-                          bottom: 2,
-                        ),
-                        child: Text(
-                          'Sources',
-                          style: TextStyle(
-                            fontSize: 16,
-                          ),
+          builder: (BuildContext context, value, Widget child) => crossFade(
+            showChild: value.length != 0 || widget.post.isEditing.value,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Padding(
+                      padding: EdgeInsets.only(
+                        right: 4,
+                        left: 4,
+                        top: 2,
+                        bottom: 2,
+                      ),
+                      child: Text(
+                        'Sources',
+                        style: TextStyle(
+                          fontSize: 16,
                         ),
                       ),
-                      widget.post.isEditing.value
-                          ? IconButton(
-                              icon: Icon(Icons.edit),
-                              onPressed: () async {
-                                await Navigator.of(context).push(
-                                    MaterialPageRoute<String>(
-                                        builder: (context) {
-                                  return TextEditor(
-                                    title: '#${widget.post.id} sources',
-                                    content: value.join('\n'),
-                                    richEditor: false,
-                                    validator: (context, text) {
-                                      widget.post.sources.value =
-                                          text.trim().split('\n');
-                                      return Future.value(true);
-                                    },
-                                  );
-                                }));
-                              },
-                            )
-                          : Container(),
-                    ],
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(
-                      right: 4,
-                      left: 4,
-                      top: 2,
-                      bottom: 2,
                     ),
-                    child: value.join('\n').trim().isNotEmpty
-                        ? dTextField(context, value.join('\n'))
-                        : Padding(
-                            padding: EdgeInsets.all(4),
-                            child: Text('no sources',
-                                style: TextStyle(
-                                    color: Colors.grey[600],
-                                    fontStyle: FontStyle.italic)),
-                          ),
+                    crossFade(
+                      showChild: widget.post.isEditing.value,
+                      child: IconButton(
+                        icon: Icon(Icons.edit),
+                        onPressed: () async {
+                          await Navigator.of(context).push(
+                              MaterialPageRoute<String>(builder: (context) {
+                            return TextEditor(
+                              title: '#${widget.post.id} sources',
+                              content: value.join('\n'),
+                              richEditor: false,
+                              validator: (context, text) {
+                                widget.post.sources.value =
+                                    text.trim().split('\n');
+                                return Future.value(true);
+                              },
+                            );
+                          }));
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+                Padding(
+                  padding: EdgeInsets.only(
+                    right: 4,
+                    left: 4,
+                    top: 2,
+                    bottom: 2,
                   ),
-                  Divider(),
-                ],
-              );
-            } else {
-              return Container();
-            }
-          },
+                  child: value.join('\n').trim().isNotEmpty
+                      ? dTextField(context, value.join('\n'))
+                      : Padding(
+                          padding: EdgeInsets.all(4),
+                          child: Text('no sources',
+                              style: TextStyle(
+                                  color: Colors.grey[600],
+                                  fontStyle: FontStyle.italic)),
+                        ),
+                ),
+                Divider(),
+              ],
+            ),
+          ),
+        );
+      }
+
+      Widget editorDependant({@required Widget child, @required bool shown}) {
+        return crossFade(
+          showChild: shown == widget.post.isEditing.value,
+          child: child,
         );
       }
 
       return Padding(
         padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
         child: Column(
-          children: () {
-            if (!widget.post.isEditing.value) {
-              return [
-                artistDisplay(),
-                descriptionDisplay(),
-                likeDisplay(),
-                commentDisplay(),
-                parentDisplay(),
-                poolDisplay(),
-                tagDisplay(),
-                fileInfoDisplay(),
-                sourceDisplay(),
-              ];
-            } else {
-              return [
-                artistDisplay(),
-                descriptionDisplay(),
-                parentDisplay(),
-                tagDisplay(),
-                ratingDisplay(),
-                sourceDisplay(),
-              ];
-            }
-          }(),
+          children: [
+            artistDisplay(),
+            descriptionDisplay(),
+            editorDependant(child: likeDisplay(), shown: false),
+            editorDependant(child: commentDisplay(), shown: false),
+            parentDisplay(),
+            editorDependant(child: poolDisplay(), shown: false),
+            tagDisplay(),
+            editorDependant(child: fileDisplay(), shown: false),
+            editorDependant(child: ratingDisplay(), shown: true),
+            sourceDisplay(),
+          ],
         ),
       );
     }
@@ -1791,7 +1898,7 @@ class _PostWidgetState extends State<PostWidget> {
                   ),
                   Expanded(
                     child: TextField(
-                      controller: _textController,
+                      controller: textController,
                       autofocus: true,
                       maxLines: 1,
                       keyboardType: TextInputType.text,
@@ -1806,7 +1913,6 @@ class _PostWidgetState extends State<PostWidget> {
       }
 
       return FloatingActionButton(
-        // TODO: fix the duplicate post widget issue and add float tag
         heroTag: null,
         backgroundColor: Theme.of(context).cardColor,
         child: fabIcon(),
@@ -1814,16 +1920,16 @@ class _PostWidgetState extends State<PostWidget> {
           if (widget.post.isEditing.value) {
             if (doEdit.value != null) {
               if (await doEdit.value()) {
-                _bottomSheetController.close();
+                bottomSheetController.close();
               }
             } else {
-              _textController.text = '';
-              _bottomSheetController = Scaffold.of(context).showBottomSheet(
+              textController.text = '';
+              bottomSheetController = Scaffold.of(context).showBottomSheet(
                 (context) {
                   return reasonEditor();
                 },
               );
-              _bottomSheetController.closed.then((_) {
+              bottomSheetController.closed.then((_) {
                 doEdit.value = null;
                 isLoading.value = false;
               });
@@ -1831,7 +1937,7 @@ class _PostWidgetState extends State<PostWidget> {
                 isLoading.value = true;
                 Map response = await client.updatePost(
                     widget.post, Post.fromRaw(widget.post.raw),
-                    editReason: _textController.text);
+                    editReason: textController.text);
                 isLoading.value = false;
                 if (response == null || response['code'] == 200) {
                   isLoading.value = false;
@@ -1895,60 +2001,10 @@ class _PostWidgetState extends State<PostWidget> {
   }
 }
 
-class VideoWidget extends StatefulWidget {
-  final Post post;
-  final Widget Function(BuildContext context, Post post, Widget video) builder;
-
-  const VideoWidget({@required this.post, @required this.builder});
-
-  @override
-  _VideoWidgetState createState() => _VideoWidgetState();
-}
-
-class _VideoWidgetState extends State<VideoWidget> {
-  Future<void> _videoLoaded;
-  VideoPlayerController controller;
-
-  @override
-  void initState() {
-    super.initState();
-    () async {
-      controller =
-          VideoPlayerController.network(widget.post.image.value.file['url']);
-      _videoLoaded = controller.initialize();
-      await _videoLoaded.then((_) {
-        controller.setLooping(true);
-        setState(() {});
-      });
-    }();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    controller.pause();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    controller.play();
-    Widget video() {
-      return AspectRatio(
-        aspectRatio: controller.value.aspectRatio,
-        child: VideoPlayer(controller),
-      );
-    }
-
-    if (widget.builder != null) {
-      return widget.builder(context, widget.post, video());
-    } else {
-      return GestureDetector(
-        child: video(),
-        onTap: () =>
-            controller.value.isPlaying ? controller.pause() : controller.play(),
-      );
-    }
-  }
+enum ImageSize {
+  screen,
+  sample,
+  full,
 }
 
 class ImageGallery extends StatefulWidget {
@@ -1965,9 +2021,11 @@ class ImageGallery extends StatefulWidget {
 class _ImageGalleryState extends State<ImageGallery> {
   ValueNotifier<int> current = ValueNotifier(null);
   ValueNotifier<bool> showFrame = ValueNotifier(false);
+  ImageSize imageSize;
+  Timer frameToggler;
 
-  void toggleFrame() {
-    showFrame.value = !showFrame.value;
+  void toggleFrame({bool shown}) {
+    showFrame.value = shown ?? !showFrame.value;
     showFrame.value
         ? SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values)
         : SystemChrome.setEnabledSystemUIOverlays([]);
@@ -1983,151 +2041,363 @@ class _ImageGalleryState extends State<ImageGallery> {
   @override
   void dispose() {
     super.dispose();
+    frameToggler?.cancel();
     SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
   }
 
   @override
   Widget build(BuildContext context) {
-    Widget pictureFrame(BuildContext context, Widget child) {
-      return Scaffold(
-          backgroundColor: Colors.transparent,
-          appBar: PreferredSize(
-            preferredSize: Size.fromHeight(
-                MediaQuery.of(context).padding.top + kToolbarHeight),
-            child: ValueListenableBuilder(
-              valueListenable: showFrame,
-              builder: (context, value, child) {
-                return AnimatedSwitcher(
-                  duration: Duration(milliseconds: 100),
-                  child: value ? child : Container(),
-                );
-              },
-              child: ValueListenableBuilder(
-                valueListenable: current,
-                builder: (context, value, child) => postAppBar(
-                    context, widget.posts[current.value],
-                    canEdit: false),
-              ),
+    Widget pictureFrame(Widget picture) {
+      Widget frameDependant(Widget control) {
+        return ValueListenableBuilder(
+          valueListenable: showFrame,
+          builder: (context, value, child) => crossFade(
+            duration: Duration(milliseconds: 200),
+            showChild: value,
+            child: child,
+          ),
+          child: control,
+        );
+      }
+
+      Widget bottomBar() {
+        return Column(mainAxisSize: MainAxisSize.min, children: [
+          frameDependant(ValueListenableBuilder(
+            valueListenable: widget.posts[current.value].controller,
+            builder: (context, value, child) => value.initialized
+                ? Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(value.position.toString().substring(2, 7)),
+                        Expanded(
+                            child: Slider(
+                          min: 0,
+                          max: value.duration.inMilliseconds.toDouble(),
+                          value: value.position.inMilliseconds.toDouble(),
+                          onChangeStart: (double value) {
+                            frameToggler?.cancel();
+                          },
+                          onChanged: (double value) {
+                            widget.posts[current.value].controller
+                                .seekTo(Duration(milliseconds: value.toInt()));
+                          },
+                          onChangeEnd: (double value) {
+                            frameToggler = Timer(Duration(seconds: 2), () {
+                              toggleFrame(shown: false);
+                            });
+                          },
+                        )),
+                        Text(value.duration.toString().substring(2, 7)),
+                      ],
+                    ),
+                  )
+                : Container(),
+          ))
+        ]);
+      }
+
+      Widget playButton() {
+        return ValueListenableBuilder(
+            valueListenable: widget.posts[current.value].controller,
+            builder: (context, controller, child) {
+              return ValueListenableBuilder(
+                valueListenable: showFrame,
+                builder: (context, value, child) {
+                  return AnimatedOpacity(
+                    duration: Duration(milliseconds: 200),
+                    opacity: value || !controller.isPlaying ? 1 : 0,
+                    child: value || !controller.isPlaying
+                        ? child
+                        : IgnorePointer(child: child),
+                  );
+                },
+                child: InkWell(
+                  onTap: () {
+                    frameToggler?.cancel();
+                    if (controller.isPlaying) {
+                      widget.posts[current.value].controller.pause();
+                      Wakelock.disable();
+                    } else {
+                      widget.posts[current.value].controller.play();
+                      Wakelock.enable();
+                      frameToggler = Timer(Duration(milliseconds: 500), () {
+                        toggleFrame(shown: false);
+                      });
+                    }
+                  },
+                  child: crossFade(
+                    duration: Duration(milliseconds: 100),
+                    showChild: controller.isPlaying,
+                    child: crossFade(
+                      duration: Duration(milliseconds: 100),
+                      showChild:
+                          controller.initialized && !controller.isBuffering,
+                      child: IconShadowWidget(
+                        Icon(
+                          Icons.pause,
+                          size: 54,
+                          color: Theme.of(context).iconTheme.color,
+                        ),
+                        shadowColor: Colors.black,
+                      ),
+                      secondChild: Container(
+                        height: 54,
+                        width: 54,
+                        child: Padding(
+                          padding: EdgeInsets.all(4),
+                          child: CircularProgressIndicator(),
+                        ),
+                      ),
+                    ),
+                    secondChild: IconShadowWidget(
+                      Icon(
+                        Icons.play_arrow,
+                        size: 54,
+                        color: Theme.of(context).iconTheme.color,
+                      ),
+                      shadowColor: Colors.black,
+                    ),
+                  ),
+                ),
+              );
+            });
+      }
+
+      Widget body(Widget child) {
+        return MediaQuery.removeViewInsets(
+          context: context,
+          removeTop: true,
+          child: GestureDetector(
+            behavior: HitTestBehavior.translucent,
+            onTap: () {
+              frameToggler?.cancel();
+              toggleFrame();
+              if (widget.posts[current.value].controller != null &&
+                  widget.posts[current.value].controller.value.isPlaying &&
+                  widget.posts[current.value].controller.value.initialized &&
+                  showFrame.value) {
+                frameToggler = Timer(Duration(seconds: 2), () {
+                  toggleFrame(shown: false);
+                });
+              }
+            },
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                child,
+                widget.posts[current.value].controller != null
+                    ? playButton()
+                    : Container(),
+              ],
             ),
           ),
-          extendBodyBehindAppBar: true,
-          body: MediaQuery.removeViewInsets(
-            context: context,
-            removeTop: true,
-            child: child,
-          ));
+        );
+      }
+
+      return ValueListenableBuilder(
+        valueListenable: current,
+        builder: (context, value, child) {
+          return Scaffold(
+            backgroundColor: Colors.transparent,
+            extendBodyBehindAppBar: true,
+            appBar: PreferredSize(
+              preferredSize: Size.fromHeight(
+                  MediaQuery.of(context).padding.top + kToolbarHeight),
+              child: frameDependant(postAppBar(
+                  context, widget.posts[current.value],
+                  canEdit: false)),
+            ),
+            body: body(child),
+            bottomSheet: widget.posts[current.value].controller != null
+                ? bottomBar()
+                : null,
+          );
+        },
+        child: picture,
+      );
     }
 
-    Widget pictureGallery(BuildContext context) {
+    Widget pictureGallery() {
       return PhotoViewGallery.builder(
         scrollPhysics: BouncingScrollPhysics(),
         backgroundDecoration: BoxDecoration(
           color: Theme.of(context).canvasColor,
         ),
         builder: (context, index) {
-          if (widget.posts[index].image.value.file['url'] != 'webm' &&
-              widget.posts[index].image.value.file['url'] != 'sfw') {
-            return PhotoViewGalleryPageOptions.customChild(
-              child: Container(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    Padding(
-                      padding: EdgeInsets.all(8),
-                      child: Text(
-                        'Webm support under development',
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                    Card(
-                      child: InkWell(
-                        child: Padding(
-                            padding: EdgeInsets.all(8), child: Text('Open')),
-                        onTap: () async => url.launch(
-                            widget.posts[index].image.value.file['url']),
-                      ),
-                    )
-                  ],
-                ),
-              ),
-            );
-          }
+          _Image image = widget.posts[index].image.value;
+          imageSize =
+              (image.file['ext'] == 'webm' || image.file['ext'] == 'swf')
+                  ? ImageSize.screen
+                  : ImageSize.sample;
           return PhotoViewGalleryPageOptions.customChild(
+            disableGestures:
+                (image.file['ext'] == 'webm' || image.file['ext'] == 'swf'),
             heroAttributes: PhotoViewHeroAttributes(
               tag: 'image_${widget.posts[index].id}',
             ),
             childSize: () {
               double width;
               double height;
-              if (DefaultCacheManager().getFileFromMemory(
-                      widget.posts[index].image.value.file['url']) !=
-                  null) {
-                width =
-                    widget.posts[index].image.value.file['width'].toDouble();
-                height =
-                    widget.posts[index].image.value.file['height'].toDouble();
-              } else {
-                width =
-                    widget.posts[index].image.value.sample['width'].toDouble();
-                height =
-                    widget.posts[index].image.value.sample['height'].toDouble();
+              switch (imageSize) {
+                case ImageSize.screen:
+                  width = MediaQuery.of(context).size.width;
+                  height = MediaQuery.of(context).size.height;
+                  break;
+                case ImageSize.sample:
+                  width = image.sample['width'].toDouble();
+                  height = image.sample['height'].toDouble();
+                  break;
+                case ImageSize.full:
+                  width = image.file['width'].toDouble();
+                  height = image.file['height'].toDouble();
+                  break;
               }
+              /*
+              if (image.file['ext'] == 'webm' || image.file['ext'] == 'swf') {
+                width = MediaQuery.of(context).size.width;
+                height = MediaQuery.of(context).size.height;
+              } else if (DefaultCacheManager()
+                      .getFileFromMemory(image.file['url']) !=
+                  null) {
+                print('choosing full size');
+                width = image.file['width'].toDouble();
+                height = image.file['height'].toDouble();
+              } else {
+                print('choosing sample size');
+                width = image.sample['width'].toDouble();
+                height = image.sample['height'].toDouble();
+              }
+              */
               return Size(width, height);
             }(),
-            child: CachedNetworkImage(
-              fadeInDuration: Duration(milliseconds: 0),
-              fadeOutDuration: Duration(milliseconds: 0),
-              imageUrl: widget.posts[index].image.value.file['url'],
-              imageBuilder: (context, provider) {
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  setState(() {});
-                });
-                return Image(
-                  image: provider,
-                );
-              },
-              placeholder: (context, chunk) {
-                return Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    CachedNetworkImage(
-                      imageUrl: widget.posts[index].image.value.sample['url'],
-                      placeholder: (context, chunk) => Center(
-                        child: Container(
-                            height: 26 * window.devicePixelRatio,
-                            width: 26 * window.devicePixelRatio,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2 * window.devicePixelRatio,
-                            )),
+            child: () {
+              if (image.file['ext'] == 'swf') {
+                return Container(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      Padding(
+                        padding: EdgeInsets.all(8),
+                        child: Text(
+                          'Flash is not supported',
+                          textAlign: TextAlign.center,
+                        ),
                       ),
-                    ),
-                    Container(
-                      alignment: Alignment.bottomCenter,
-                      child: LinearProgressIndicator(
-                        minHeight: 3 * window.devicePixelRatio,
-                      ),
-                    ),
-                  ],
+                      Card(
+                        child: InkWell(
+                          child: Padding(
+                              padding: EdgeInsets.all(8), child: Text('Open')),
+                          onTap: () async => url.launch(widget.posts[index]
+                              .url(await db.host.value)
+                              .toString()),
+                        ),
+                      )
+                    ],
+                  ),
                 );
-              },
-            ),
+              } else if (image.file['ext'] == 'webm') {
+                return ValueListenableBuilder(
+                  valueListenable: widget.posts[index].controller,
+                  builder: (context, value, child) => Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      crossFade(
+                        showChild:
+                            widget.posts[index].controller.value.initialized,
+                        child: AspectRatio(
+                          aspectRatio:
+                              widget.posts[index].controller.value.aspectRatio,
+                          child: VideoPlayer(widget.posts[index].controller),
+                        ),
+                        secondChild: CachedNetworkImage(
+                          imageUrl:
+                              widget.posts[index].image.value.sample['url'],
+                          placeholder: (context, url) => Center(
+                              child: Container(
+                            height: 26,
+                            width: 26,
+                            child: const CircularProgressIndicator(),
+                          )),
+                          errorWidget: (context, url, error) =>
+                              Center(child: Icon(Icons.error_outline)),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              } else {
+                imageSize = ImageSize.sample;
+                return CachedNetworkImage(
+                  fadeInDuration: Duration(milliseconds: 0),
+                  fadeOutDuration: Duration(milliseconds: 0),
+                  imageUrl: widget.posts[index].image.value.file['url'],
+                  imageBuilder: (context, provider) {
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      setState(() {
+                        imageSize = ImageSize.full;
+                      });
+                    });
+                    return Image(image: provider);
+                  },
+                  placeholder: (context, chunk) {
+                    return Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        CachedNetworkImage(
+                          imageUrl:
+                              widget.posts[index].image.value.sample['url'],
+                          imageBuilder: (context, provider) {
+                            WidgetsBinding.instance.addPostFrameCallback((_) {
+                              setState(() {
+                                imageSize = ImageSize.sample;
+                              });
+                            });
+                            return Image(image: provider);
+                          },
+                          placeholder: (context, chunk) => Center(
+                            child: Container(
+                                // TODO: using zoom level, calculate accurate size
+                                height: 26 * window.devicePixelRatio,
+                                width: 26 * window.devicePixelRatio,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2 * window.devicePixelRatio,
+                                )),
+                          ),
+                          errorWidget: (context, url, error) =>
+                              Center(child: Icon(Icons.error_outline)),
+                        ),
+                        Container(
+                          alignment: Alignment.bottomCenter,
+                          child: LinearProgressIndicator(
+                            minHeight: 3 * window.devicePixelRatio,
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                  errorWidget: (context, url, error) =>
+                      Center(child: Icon(Icons.error_outline)),
+                );
+              }
+            }(),
             initialScale: PhotoViewComputedScale.contained,
             minScale: PhotoViewComputedScale.contained,
             maxScale: PhotoViewComputedScale.contained * 6,
-            onTapUp: (buildContext, tapDownDetails, photoViewControllerValue) =>
-                toggleFrame(),
           );
         },
         itemCount: widget.posts.length,
         pageController: PageController(initialPage: widget.index),
         onPageChanged: (index) {
+          frameToggler?.cancel();
           int precache = 2;
           for (int i = -precache - 1; i < precache; i++) {
             int target = index + 1 + i;
             if (target > 0 && target < widget.posts.length) {
               String ext = widget.posts[target].image.value.file['ext'];
-              if (ext != 'webm' && ext != 'sfw') {
+              if (ext != 'webm' && ext != 'swf') {
                 precacheImage(
                   CachedNetworkImageProvider(
                       widget.posts[target].image.value.file['url']),
@@ -2144,14 +2414,19 @@ class _ImageGalleryState extends State<ImageGallery> {
       );
     }
 
-    return pictureFrame(context, pictureGallery(context));
+    return WillPopScope(
+      onWillPop: () {
+        SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
+        return Future.value(true);
+      },
+      child: pictureFrame(pictureGallery()),
+    );
   }
 }
 
 Widget postAppBar(BuildContext context, Post post, {bool canEdit = true}) {
   return PreferredSize(
-    preferredSize:
-        Size.fromHeight(MediaQuery.of(context).padding.top + kToolbarHeight),
+    preferredSize: Size.fromHeight(kToolbarHeight),
     child: Hero(
       tag: 'appbar',
       child: AppBar(
@@ -2165,7 +2440,7 @@ Widget postAppBar(BuildContext context, Post post, {bool canEdit = true}) {
             ),
             shadowColor: Colors.black,
           ),
-          onPressed: () => Navigator.of(context).maybePop(),
+          onPressed: Navigator.of(context).maybePop,
         ),
         actions: post.isEditing.value
             ? null
@@ -2311,13 +2586,18 @@ Widget loadingListTile(
       return ListTile(
         leading: leading,
         title: title,
-        trailing: isLoading.value
-            ? Container(
-                child: CircularProgressIndicator(),
-                height: 16,
-                width: 16,
-              )
-            : trailing ?? Icon(Icons.arrow_right),
+        trailing: crossFade(
+          child: Container(
+            child: Padding(
+              padding: EdgeInsets.all(2),
+              child: CircularProgressIndicator(),
+            ),
+            height: 20,
+            width: 20,
+          ),
+          secondChild: trailing ?? Icon(Icons.arrow_right),
+          showChild: isLoading.value,
+        ),
         onTap: () async {
           if (!isLoading.value) {
             isLoading.value = true;

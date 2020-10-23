@@ -15,6 +15,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 ValueNotifier<ThemeData> _theme = ValueNotifier(themeMap['dark']);
+final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -36,6 +37,7 @@ class Main extends StatelessWidget {
         return MaterialApp(
           title: appName,
           theme: value,
+          navigatorObservers: [routeObserver],
           routes: <String, WidgetBuilder>{
             '/': (context) => () {
                   _drawerSelection = _DrawerSelection.home;
@@ -65,7 +67,7 @@ class Main extends StatelessWidget {
             '/login': (context) => LoginPage(),
             '/settings': (context) => SettingsPage(),
             '/about': (context) => AboutPage(),
-            '/blacklist': (context) => BlacklistPage(),
+            '/blacklist': (context) => DenyListPage(),
             '/following': (context) => FollowingPage(),
           },
         );
