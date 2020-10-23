@@ -29,9 +29,9 @@
 - View tag wiki entries by long-pressing 
 - Local blacklist
 - DText parsing
-- Hide Webm posts (playing webm planned)
+- Webm support
 - Automatic update check
-- Multiple Themes to choose from
+- Multiple App Themes
  
 
 ## Screenshots  
