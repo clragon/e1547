@@ -1,28 +1,43 @@
 import 'dart:async' show Future;
+import 'dart:io' show File, Platform;
 
 import 'package:flutter/foundation.dart' show ValueNotifier;
 import 'package:shared_preferences/shared_preferences.dart'
     show SharedPreferences;
 
+import 'appInfo.dart';
+
 final Persistence db = Persistence();
 
 class Persistence {
   ValueNotifier<Future<String>> host;
+  ValueNotifier<Future<String>> customHost;
   ValueNotifier<Future<String>> homeTags;
+  ValueNotifier<Future<bool>> hideGallery;
   ValueNotifier<Future<String>> username;
   ValueNotifier<Future<String>> apiKey;
   ValueNotifier<Future<String>> theme;
-  ValueNotifier<Future<bool>> hasConsent;
   ValueNotifier<Future<List<String>>> denylist;
   ValueNotifier<Future<List<String>>> follows;
 
   Persistence() {
-    host = createSetting<String>('host', initial: 'e926.net');
+    host = createSetting<String>('currentHost', initial: 'e926.net');
+    customHost = createSetting<String>('customHost');
     homeTags = createSetting<String>('homeTags', initial: '');
+    File nomedia = File(
+        '${Platform.environment['EXTERNAL_STORAGE']}/Pictures/$appName/.nomedia');
+    hideGallery = createSetting<bool>('hideGallery',
+        getSetting: (prefs) => Platform.isAndroid
+            ? Future.value(nomedia.existsSync())
+            : Future.value(false),
+        setSetting: (prefs, value) => Platform.isAndroid
+            ? value
+                ? nomedia.writeAsString('')
+                : nomedia.delete()
+            : () {});
     username = createSetting<String>('username');
     apiKey = createSetting<String>('apiKey');
     theme = createSetting<String>('theme', initial: 'dark');
-    hasConsent = createSetting<bool>('hasConsent', initial: false);
     denylist = createSetting<List<String>>('blacklist', initial: []);
     follows = createSetting<List<String>>('follows', initial: []);
   }
@@ -35,7 +50,7 @@ class Persistence {
     String key, {
     T initial,
     Future<T> Function(SharedPreferences prefs) getSetting,
-    Function(SharedPreferences prefs) setSetting,
+    Function(SharedPreferences prefs, T value) setSetting,
   }) {
     ValueNotifier<Future<T>> setting = ValueNotifier<Future<T>>(() async {
       SharedPreferences prefs = await _prefs;
@@ -64,8 +79,8 @@ class Persistence {
 
     setting.addListener(() async {
       SharedPreferences prefs = await _prefs;
+      T value = await setting.value;
       if (setSetting == null) {
-        T value = await setting.value;
         switch (T) {
           case String:
             prefs.setString(key, value as String);
@@ -82,7 +97,7 @@ class Persistence {
             }
         }
       } else {
-        setSetting(prefs);
+        setSetting(prefs, value);
       }
     });
 

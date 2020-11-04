@@ -237,7 +237,11 @@ class _LoginFormFieldsState extends State<_LoginFormFields> {
       return Padding(
         padding: EdgeInsets.only(top: 26.0),
         child: RaisedButton(
-          child: Text('LOGIN'),
+          color: Theme.of(context).accentColor,
+          child: Text(
+            'LOGIN',
+            style: Theme.of(context).accentTextTheme.button,
+          ),
           onPressed: _saveAndTest(context),
         ),
       );

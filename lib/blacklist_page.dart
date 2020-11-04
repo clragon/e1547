@@ -27,7 +27,7 @@ class _DenyListPageState extends State<DenyListPage> {
       denylist = await db.denylist.value;
       setState(() {});
     });
-    db.denylist.value.then((list) async => setState(() => denylist = list));
+    db.denylist.value.then((list) => setState(() => denylist = list));
   }
 
   Function() _addTags(BuildContext context, {int edit}) {

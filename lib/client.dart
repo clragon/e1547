@@ -41,8 +41,8 @@ class Client {
     db.denylist.addListener(() => denylist = db.denylist.value);
     db.follows.addListener(() => following = db.follows.value);
 
-    db.username.addListener(() => login());
-    db.apiKey.addListener(() => login());
+    db.username.addListener(login);
+    db.apiKey.addListener(login);
     login();
   }
 

@@ -9,7 +9,7 @@ void wikiDialog(BuildContext context, String tag, {actions = false}) {
     return ConstrainedBox(
         child: wikiBody(context, tag),
         constraints: BoxConstraints(
-          maxHeight: 400.0,
+          maxHeight: MediaQuery.of(context).size.height * 0.5,
         ));
   }
 

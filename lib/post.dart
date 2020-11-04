@@ -519,8 +519,10 @@ class _PostWidgetState extends State<PostWidget> with RouteAware {
                     ),
                   ),
                   onTap: () async {
-                    bool consent = await getConsent(context);
-                    if (consent) {
+                    if (await db.customHost.value == null) {
+                      await setCustomHost(context);
+                    }
+                    if (await db.customHost.value != null) {
                       widget.post.showUnsafe.value =
                           !widget.post.showUnsafe.value;
                       Post urls =
@@ -2090,6 +2092,17 @@ class _ImageGalleryState extends State<ImageGallery> {
                           },
                         )),
                         Text(value.duration.toString().substring(2, 7)),
+                        InkWell(
+                          child: Padding(
+                            padding: EdgeInsets.all(4),
+                            child: Icon(
+                              Icons.fullscreen_exit,
+                              size: 24,
+                              color: Theme.of(context).iconTheme.color,
+                            ),
+                          ),
+                          onTap: Navigator.of(context).maybePop,
+                        ),
                       ],
                     ),
                   )
@@ -2254,22 +2267,6 @@ class _ImageGalleryState extends State<ImageGallery> {
                   height = image.file['height'].toDouble();
                   break;
               }
-              /*
-              if (image.file['ext'] == 'webm' || image.file['ext'] == 'swf') {
-                width = MediaQuery.of(context).size.width;
-                height = MediaQuery.of(context).size.height;
-              } else if (DefaultCacheManager()
-                      .getFileFromMemory(image.file['url']) !=
-                  null) {
-                print('choosing full size');
-                width = image.file['width'].toDouble();
-                height = image.file['height'].toDouble();
-              } else {
-                print('choosing sample size');
-                width = image.sample['width'].toDouble();
-                height = image.sample['height'].toDouble();
-              }
-              */
               return Size(width, height);
             }(),
             child: () {
@@ -2385,7 +2382,7 @@ class _ImageGalleryState extends State<ImageGallery> {
             }(),
             initialScale: PhotoViewComputedScale.contained,
             minScale: PhotoViewComputedScale.contained,
-            maxScale: PhotoViewComputedScale.contained * 6,
+            maxScale: PhotoViewComputedScale.covered * 6,
           );
         },
         itemCount: widget.posts.length,

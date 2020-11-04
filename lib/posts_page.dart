@@ -9,7 +9,6 @@ import 'package:e1547/wiki_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart' show EdgeInsets;
 import 'package:flutter/services.dart' show Clipboard, ClipboardData;
-import 'package:flutter/widgets.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart'
     show StaggeredGridView, StaggeredTile;
 import 'package:flutter_typeahead/flutter_typeahead.dart';
@@ -249,7 +248,6 @@ class _PostsPageState extends State<PostsPage> {
   Widget _itemBuilder(BuildContext context, int item) {
     Widget preview(Post post, PostProvider provider) {
       return Container(
-        height: 250,
         child: PostPreview(
             post: post,
             onPressed: () {

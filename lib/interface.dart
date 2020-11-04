@@ -7,11 +7,14 @@ import 'package:e1547/posts_page.dart';
 import 'package:e1547/settings.dart';
 import 'package:e1547/tag.dart';
 import 'package:expandable/expandable.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:url_launcher/url_launcher.dart' as url;
+
+import 'http.dart';
 
 Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
   // transform dynamic list to widgets
@@ -131,13 +134,13 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
                         opacity: value ? 0 : 1,
                         duration: Duration(milliseconds: 200),
                         child: Container(
+                          color: Colors.black,
                           child: Center(
                             child: Text('SPOILER',
                                 style: TextStyle(
                                   color: Colors.white,
                                 )),
                           ),
-                          color: Colors.black,
                         ),
                       );
                     },
@@ -340,49 +343,46 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
             Widget blocked;
             RegExp blankLess = RegExp(r'(^[\r\n]*)|([\r\n]*$)');
 
-            switch (key.toLowerCase()) {
-              case 'spoiler':
-              case 'code':
-              case 'section':
-              case 'quote':
-                if (active) {
-                  String end = '[/${key.toLowerCase()}]';
-                  int split = -1;
-                  for (Match endMatch in end.allMatches(after)) {
-                    String container = after.substring(0, endMatch.start);
-                    if ('[$key'.allMatches(container).length !=
-                        end.allMatches(container).length) {
-                      continue;
-                    }
-                    split = endMatch.start;
-                    break;
-                  }
-                  if (split == -1) {
-                    break;
-                  }
-                  String between = after
-                      .substring(0, split)
-                      .replaceAllMapped(blankLess, (match) => '');
-                  switch (key.toLowerCase()) {
-                    case 'spoiler':
-                      blocked =
-                          spoilerWrap(toWidgets(resolve(between, states)));
-                      break;
-                    case 'code':
-                      blocked = quoteWrap(toWidgets(getText(between, states)));
-                      break;
-                    case 'quote':
-                      blocked = quoteWrap(toWidgets(resolve(between, states)));
-                      break;
-                    case 'section':
-                      blocked = sectionWrap(
-                          toWidgets(resolve(between, states)), value,
-                          expanded: expanded);
-                      break;
-                  }
-                  after = after.substring(split + end.length);
+            if ([
+                  'spoiler',
+                  'code',
+                  'section',
+                  'quote',
+                ].any((block) => block == key.toLowerCase()) &&
+                active) {
+              String end = '[/${key.toLowerCase()}]';
+              int split;
+              for (Match endMatch in end.allMatches(after)) {
+                String container = after.substring(0, endMatch.start);
+                if ('[$key'.allMatches(container).length !=
+                    end.allMatches(container).length) {
+                  continue;
                 }
+                split = endMatch.start;
                 break;
+              }
+              if (split != null) {
+                String between = after
+                    .substring(0, split)
+                    .replaceAllMapped(blankLess, (match) => '');
+                switch (key.toLowerCase()) {
+                  case 'spoiler':
+                    blocked = spoilerWrap(toWidgets(resolve(between, states)));
+                    break;
+                  case 'code':
+                    blocked = quoteWrap(toWidgets(getText(between, states)));
+                    break;
+                  case 'quote':
+                    blocked = quoteWrap(toWidgets(resolve(between, states)));
+                    break;
+                  case 'section':
+                    blocked = sectionWrap(
+                        toWidgets(resolve(between, states)), value,
+                        expanded: expanded);
+                    break;
+                }
+                after = after.substring(split + end.length);
+              }
             }
 
             if (blocked != null) {
@@ -766,39 +766,135 @@ void setUIColors(ThemeData theme) {
       theme.brightness == Brightness.dark);
 }
 
-Future<bool> getConsent(BuildContext context) async {
-  bool hasConsent = false;
-
-  if (await db.hasConsent.value) {
-    return true;
+Future<bool> setCustomHost(BuildContext context) async {
+  bool success = false;
+  ValueNotifier<bool> isLoading = ValueNotifier<bool>(false);
+  ValueNotifier<String> error = ValueNotifier<String>(null);
+  TextEditingController controller =
+      TextEditingController(text: await db.customHost.value);
+  Future<bool> submit(String text) async {
+    error.value = null;
+    isLoading.value = true;
+    String host = text.trim();
+    host = host.replaceAll(RegExp(r'^http(s)?://'), '');
+    host = host.replaceAll(RegExp(r'^(www.)?'), '');
+    host = host.replaceAll(RegExp(r'/$'), '');
+    HttpHelper http = HttpHelper();
+    await Future.delayed(Duration(seconds: 1));
+    try {
+      if ((await http
+          .get(host, '/')
+          .then((response) => response.statusCode != 200))) {
+        error.value = 'Cannot reach host';
+      } else {
+        if (host == 'e621.net') {
+          db.customHost.value = Future.value(host);
+          error.value = null;
+          success = true;
+        } else {
+          error.value = 'Host API incompatible';
+        }
+      }
+    } catch (SocketException) {
+      error.value = 'Cannot reach host';
+    }
+    isLoading.value = false;
+    return error.value == null;
   }
 
   await showDialog(
-    context: context,
-    child: AlertDialog(
-      title: Text('Age verification'),
-      content:
-          Text('You need to be above the age of 18 to view explicit content.'),
-      actions: [
-        FlatButton(
-          child: Text('CANCEL'),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
+      context: context,
+      child: AlertDialog(
+        title: Text('Custom Host'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              children: [
+                ValueListenableBuilder(
+                  valueListenable: isLoading,
+                  builder: (BuildContext context, value, Widget child) =>
+                      crossFade(
+                          showChild: value,
+                          child: Padding(
+                            padding: EdgeInsets.only(right: 8),
+                            child: Padding(
+                              padding: EdgeInsets.all(4),
+                              child: Container(
+                                height: 16,
+                                width: 16,
+                                child: CircularProgressIndicator(),
+                              ),
+                            ),
+                          )),
+                ),
+                Expanded(
+                    child: ValueListenableBuilder(
+                  valueListenable: error,
+                  builder: (BuildContext context, value, Widget child) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Theme(
+                          data: value != null
+                              ? Theme.of(context)
+                                  .copyWith(accentColor: Colors.red)
+                              : Theme.of(context),
+                          child: TextField(
+                            controller: controller,
+                            keyboardType: TextInputType.url,
+                            autofocus: true,
+                            maxLines: 1,
+                            decoration: InputDecoration(
+                                labelText: 'url',
+                                border: UnderlineInputBorder()),
+                            onSubmitted: (_) async {
+                              if (await submit(controller.text)) {
+                                Navigator.of(context).pop();
+                              }
+                            },
+                          ),
+                        ),
+                        crossFade(
+                          duration: Duration(milliseconds: 200),
+                          showChild: value != null,
+                          child: Padding(
+                            padding: EdgeInsets.only(top: 8),
+                            child: Text(
+                              value ?? '',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.red,
+                              ),
+                            ),
+                          ),
+                          secondChild: Container(),
+                        ),
+                      ],
+                    );
+                  },
+                ))
+              ],
+            )
+          ],
         ),
-        FlatButton(
-          child: Text('OK'),
-          onPressed: () {
-            hasConsent = true;
-            db.hasConsent.value = Future.value(true);
-            Navigator.of(context).pop();
-          },
-        ),
-      ],
-    ),
-  );
-
-  return hasConsent;
+        actions: [
+          FlatButton(
+            child: Text('CANCEL'),
+            onPressed: Navigator.of(context).pop,
+          ),
+          FlatButton(
+            child: Text('OK'),
+            onPressed: () async {
+              if (await submit(controller.text)) {
+                Navigator.of(context).pop();
+              }
+            },
+          ),
+        ],
+      ));
+  return success;
 }
 
 class TextEditor extends StatefulWidget {
