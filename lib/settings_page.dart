@@ -20,6 +20,8 @@ class _SettingsPageState extends State<SettingsPage> {
   String theme;
   bool useCustomHost = false;
   bool hideGallery = false;
+  bool staggered;
+  int tileSize;
 
   @override
   void initState() {
@@ -40,6 +42,10 @@ class _SettingsPageState extends State<SettingsPage> {
       setState(() {});
     });
     db.username.value.then((a) => setState(() => username = a));
+    db.username.addListener(() async {
+      username = await db.username.value;
+      setState(() {});
+    });
     db.theme.value.then((a) => setState(() => theme = a));
     db.theme.addListener(() async {
       theme = await db.theme.value;
@@ -48,6 +54,16 @@ class _SettingsPageState extends State<SettingsPage> {
     db.hideGallery.value.then((a) => setState(() => hideGallery = a));
     db.hideGallery.addListener(() async {
       hideGallery = await db.hideGallery.value;
+      setState(() {});
+    });
+    db.tileSize.value.then((a) => setState(() => tileSize = a));
+    db.tileSize.addListener(() async {
+      tileSize = await db.tileSize.value;
+      setState(() {});
+    });
+    db.staggered.value.then((a) => setState(() => staggered = a));
+    db.staggered.addListener(() async {
+      staggered = await db.staggered.value;
       setState(() {});
     });
   }
@@ -100,9 +116,9 @@ class _SettingsPageState extends State<SettingsPage> {
               behavior: HitTestBehavior.translucent,
               onLongPress: () => setCustomHost(context),
               child: SwitchListTile(
-                title: Text('Use custom host'),
+                title: Text('Custom host'),
                 subtitle: Text(currentHost ?? ' '),
-                secondary: Icon(Icons.warning),
+                secondary: Icon(useCustomHost ? Icons.warning : Icons.security),
                 value: useCustomHost,
                 onChanged: (value) async {
                   if (customHost == null) {
@@ -117,11 +133,12 @@ class _SettingsPageState extends State<SettingsPage> {
             ),
             Platform.isAndroid
                 ? SwitchListTile(
-                    title: Text('Hide in gallery'),
+                    title: Text('Hide from gallery'),
                     subtitle: hideGallery
                         ? Text('Downloads are hidden')
                         : Text('Downloads are shown'),
-                    secondary: Icon(Icons.image),
+                    secondary: Icon(
+                        hideGallery ? Icons.image_not_supported : Icons.image),
                     value: hideGallery,
                     onChanged: (hide) {
                       db.hideGallery.value = Future.value(hide);
@@ -175,6 +192,39 @@ class _SettingsPageState extends State<SettingsPage> {
                     });
               },
             ),
+            ListTile(
+              title: Text('Post tile size'),
+              subtitle: Text(tileSize.toString()),
+              leading: Icon(Icons.crop),
+              onTap: () async {
+                int size = await showDialog<int>(
+                    context: context,
+                    builder: (context) {
+                      return RangeDialog(
+                        title: Text('Tile size'),
+                        value: tileSize,
+                        division: (350 / 50).round(),
+                        min: 50,
+                        max: 400,
+                      );
+                    });
+                if (size != null) {
+                  db.tileSize.value = Future.value(size);
+                }
+              },
+            ),
+            SwitchListTile(
+                title: Text('Staggered grid'),
+                subtitle: Text(staggered
+                    ? 'post tiles adapt their size'
+                    : 'post tiles are quadratic'),
+                secondary:
+                    Icon(staggered ? Icons.view_quilt : Icons.view_module),
+                value: staggered,
+                onChanged: (value) {
+                  db.staggered.value = Future.value(value);
+                  setState(() {});
+                }),
             Divider(),
             settingsHeader('Listing'),
             ListTile(
@@ -192,20 +242,20 @@ class _SettingsPageState extends State<SettingsPage> {
             FutureBuilder(
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  if (snapshot.data) {
-                    return ListTile(
-                      title: Text('Sign out'),
-                      subtitle: Text(username ?? ' '),
-                      leading: Icon(Icons.exit_to_app),
-                      onTap: _onTapSignOut(context),
-                    );
-                  } else {
-                    return ListTile(
-                      title: Text('Sign in'),
-                      leading: Icon(Icons.person_add),
-                      onTap: () => Navigator.pushNamed(context, '/login'),
-                    );
-                  }
+                  return crossFade(
+                      duration: Duration(milliseconds: 200),
+                      showChild: snapshot.data,
+                      child: ListTile(
+                        title: Text('Sign out'),
+                        subtitle: Text(username ?? ' '),
+                        leading: Icon(Icons.exit_to_app),
+                        onTap: _onTapSignOut(context),
+                      ),
+                      secondChild: ListTile(
+                        title: Text('Sign in'),
+                        leading: Icon(Icons.person_add),
+                        onTap: () => Navigator.pushNamed(context, '/login'),
+                      ));
                 } else {
                   return Container();
                 }

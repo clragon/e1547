@@ -230,19 +230,47 @@ class PostsPage extends StatefulWidget {
 }
 
 class _PostsPageState extends State<PostsPage> {
-  TextEditingController _tagController = TextEditingController();
+  TextEditingController tagController = TextEditingController();
   ValueNotifier<bool> isSearching = ValueNotifier(false);
-  PersistentBottomSheetController<Tagset> _bottomSheetController;
+  PersistentBottomSheetController<Tagset> bottomSheetController;
 
-  bool _loading = true;
+  bool loading = true;
+  int tileSize;
+  bool staggered;
 
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
   @override
+  void initState() {
+    super.initState();
+    db.tileSize.addListener(() async {
+      tileSize = await db.tileSize.value;
+      setState(() {});
+    });
+    db.staggered.addListener(() async {
+      staggered = await db.staggered.value;
+      setState(() {});
+    });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    db.tileSize.value.then((value) {
+      tileSize = value;
+      setState(() {});
+    });
+    db.staggered.value.then((value) {
+      staggered = value;
+      setState(() {});
+    });
+  }
+
+  @override
   void didUpdateWidget(PostsPage oldWidget) {
     super.didUpdateWidget(oldWidget);
-    _loading = true;
+    loading = true;
   }
 
   Widget _itemBuilder(BuildContext context, int item) {
@@ -273,7 +301,19 @@ class _PostsPageState extends State<PostsPage> {
   StaggeredTile Function(int) _staggeredTileBuilder() {
     return (item) {
       if (item < widget.provider.items.length) {
-        return StaggeredTile.extent(1, 250.0);
+        if (staggered) {
+          int heightRatio =
+              (widget.provider.items[item].image.value.file['height'] /
+                      widget.provider.items[item].image.value.file['width'])
+                  .round();
+          int widthRatio =
+              (widget.provider.items[item].image.value.file['width'] /
+                      widget.provider.items[item].image.value.file['height'])
+                  .round();
+          return StaggeredTile.count(widthRatio, heightRatio);
+        } else {
+          return StaggeredTile.extent(1, tileSize.toDouble());
+        }
       }
       return null;
     };
@@ -284,10 +324,12 @@ class _PostsPageState extends State<PostsPage> {
     widget.provider.pages.addListener(() {
       if (this.mounted) {
         setState(() {
-          if (widget.provider.pages.value.length == 0) {
-            _loading = true;
+          if (widget.provider.pages.value.length == 0 ||
+              tileSize == null ||
+              staggered == null) {
+            loading = true;
           } else {
-            _loading = false;
+            loading = false;
           }
         });
       }
@@ -297,29 +339,29 @@ class _PostsPageState extends State<PostsPage> {
       return pageLoader(
         onLoading: Text('Loading posts'),
         onEmpty: Text('No posts'),
-        isLoading: _loading,
-        isEmpty: (!_loading && widget.provider.items.length == 0),
-        child: SmartRefresher(
-            controller: _refreshController,
-            header: ClassicHeader(
-              refreshingText: 'Refreshing...',
-              completeText: 'Refreshed posts!',
-            ),
-            onRefresh: () async {
-              await widget.provider.loadNextPage(reset: true);
-              _refreshController.refreshCompleted();
-            },
-            physics: BouncingScrollPhysics(),
-            // it is possible to replace this
-            // with a normal GridView
-            // however, I didn't like the aspect ratios.
-            child: StaggeredGridView.countBuilder(
-              crossAxisCount: (MediaQuery.of(context).size.width / 200).round(),
-              itemCount: widget.provider.items.length,
-              itemBuilder: _itemBuilder,
-              staggeredTileBuilder: _staggeredTileBuilder(),
-              physics: BouncingScrollPhysics(),
-            )),
+        isLoading: loading,
+        isEmpty: (!loading && widget.provider.items.length == 0),
+        child: tileSize != null && staggered != null
+            ? SmartRefresher(
+                controller: _refreshController,
+                header: ClassicHeader(
+                  refreshingText: 'Refreshing...',
+                  completeText: 'Refreshed posts!',
+                ),
+                onRefresh: () async {
+                  await widget.provider.loadNextPage(reset: true);
+                  _refreshController.refreshCompleted();
+                },
+                physics: BouncingScrollPhysics(),
+                child: StaggeredGridView.countBuilder(
+                  crossAxisCount:
+                      (MediaQuery.of(context).size.width / tileSize).round(),
+                  itemCount: widget.provider.items.length,
+                  itemBuilder: _itemBuilder,
+                  staggeredTileBuilder: _staggeredTileBuilder(),
+                  physics: BouncingScrollPhysics(),
+                ))
+            : Container(),
       );
     }
 
@@ -330,8 +372,8 @@ class _PostsPageState extends State<PostsPage> {
             valueListenable: isSearching,
             builder: (BuildContext context, value, Widget child) {
               void submit() {
-                widget.provider.search.value = sortTags(_tagController.text);
-                _bottomSheetController?.close();
+                widget.provider.search.value = sortTags(tagController.text);
+                bottomSheetController?.close();
                 widget.provider.resetPages();
               }
 
@@ -339,20 +381,20 @@ class _PostsPageState extends State<PostsPage> {
                 heroTag: 'float',
                 child: Icon(value ? Icons.check : Icons.search),
                 onPressed: () async {
-                  setFocusToEnd(_tagController);
+                  setFocusToEnd(tagController);
                   if (isSearching.value) {
                     submit();
                   } else {
-                    _tagController.text = widget.provider.search.value + ' ';
-                    _bottomSheetController =
+                    tagController.text = widget.provider.search.value + ' ';
+                    bottomSheetController =
                         Scaffold.of(context).showBottomSheet(
                       (context) => TagEntry(
-                        controller: _tagController,
+                        controller: tagController,
                         onSubmit: submit,
                       ),
                     );
                     isSearching.value = true;
-                    _bottomSheetController.closed.then((a) {
+                    bottomSheetController.closed.then((a) {
                       isSearching.value = false;
                     });
                   }
@@ -435,7 +477,7 @@ class TagEntry extends StatelessWidget {
                   context: context,
                   builder: (context) {
                     return RangeDialog(
-                      title: 'Minimum $filterType',
+                      title: Text('Minimum $filterType'),
                       value: value,
                       division: 10,
                       max: 100,

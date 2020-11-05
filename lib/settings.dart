@@ -1,6 +1,7 @@
 import 'dart:async' show Future;
 import 'dart:io' show File, Platform;
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart' show ValueNotifier;
 import 'package:shared_preferences/shared_preferences.dart'
     show SharedPreferences;
@@ -19,6 +20,8 @@ class Persistence {
   ValueNotifier<Future<String>> theme;
   ValueNotifier<Future<List<String>>> denylist;
   ValueNotifier<Future<List<String>>> follows;
+  ValueNotifier<Future<int>> tileSize;
+  ValueNotifier<Future<bool>> staggered;
 
   Persistence() {
     host = createSetting<String>('currentHost', initial: 'e926.net');
@@ -40,6 +43,8 @@ class Persistence {
     theme = createSetting<String>('theme', initial: 'dark');
     denylist = createSetting<List<String>>('blacklist', initial: []);
     follows = createSetting<List<String>>('follows', initial: []);
+    tileSize = createSetting('tileSize', initial: 200);
+    staggered = createSetting('staggered', initial: false);
   }
 
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();

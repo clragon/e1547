@@ -1191,17 +1191,17 @@ Widget popMenuListTile(String title, IconData icon) {
 class RangeDialog extends StatefulWidget {
   RangeDialog({this.title, this.value, this.max, this.min, this.division});
 
-  final String title;
+  final Widget title;
   final int value;
   final int max;
   final int min;
   final int division;
 
   @override
-  RangeDialogState createState() => RangeDialogState();
+  _RangeDialogState createState() => _RangeDialogState();
 }
 
-class RangeDialogState extends State<RangeDialog> {
+class _RangeDialogState extends State<RangeDialog> {
   final TextEditingController _controller = TextEditingController();
   int _value;
 
@@ -1247,7 +1247,7 @@ class RangeDialogState extends State<RangeDialog> {
     }
 
     return AlertDialog(
-      title: Text(widget.title),
+      title: widget.title,
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
