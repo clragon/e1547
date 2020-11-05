@@ -244,13 +244,20 @@ class _PostsPageState extends State<PostsPage> {
   @override
   void initState() {
     super.initState();
+    // cant do this, will totally fuck everything up
+    /*
     db.tileSize.addListener(() async {
       tileSize = await db.tileSize.value;
-      setState(() {});
+      if (mounted) {
+        setState(() {});
+      }
     });
+    */
     db.staggered.addListener(() async {
       staggered = await db.staggered.value;
-      setState(() {});
+      if (mounted) {
+        setState(() {});
+      }
     });
   }
 
@@ -259,11 +266,15 @@ class _PostsPageState extends State<PostsPage> {
     super.didChangeDependencies();
     db.tileSize.value.then((value) {
       tileSize = value;
-      setState(() {});
+      if (mounted) {
+        setState(() {});
+      }
     });
     db.staggered.value.then((value) {
       staggered = value;
-      setState(() {});
+      if (mounted) {
+        setState(() {});
+      }
     });
   }
 
@@ -272,6 +283,8 @@ class _PostsPageState extends State<PostsPage> {
     super.didUpdateWidget(oldWidget);
     loading = true;
   }
+
+  int notZero(int value) => value == 0 ? 1 : value;
 
   Widget _itemBuilder(BuildContext context, int item) {
     Widget preview(Post post, PostProvider provider) {
@@ -303,16 +316,16 @@ class _PostsPageState extends State<PostsPage> {
       if (item < widget.provider.items.length) {
         if (staggered) {
           int heightRatio =
-              (widget.provider.items[item].image.value.file['height'] /
-                      widget.provider.items[item].image.value.file['width'])
+              (widget.provider.items[item].image.value.sample['height'] /
+                      widget.provider.items[item].image.value.sample['width'])
                   .round();
           int widthRatio =
-              (widget.provider.items[item].image.value.file['width'] /
-                      widget.provider.items[item].image.value.file['height'])
+              (widget.provider.items[item].image.value.sample['width'] /
+                      widget.provider.items[item].image.value.sample['height'])
                   .round();
-          return StaggeredTile.count(widthRatio, heightRatio);
+          return StaggeredTile.count(notZero(widthRatio), notZero(heightRatio));
         } else {
-          return StaggeredTile.extent(1, tileSize.toDouble());
+          return StaggeredTile.count(1, 1.2);
         }
       }
       return null;
@@ -354,8 +367,8 @@ class _PostsPageState extends State<PostsPage> {
                 },
                 physics: BouncingScrollPhysics(),
                 child: StaggeredGridView.countBuilder(
-                  crossAxisCount:
-                      (MediaQuery.of(context).size.width / tileSize).round(),
+                  crossAxisCount: notZero(
+                      (MediaQuery.of(context).size.width / tileSize).round()),
                   itemCount: widget.provider.items.length,
                   itemBuilder: _itemBuilder,
                   staggeredTileBuilder: _staggeredTileBuilder(),

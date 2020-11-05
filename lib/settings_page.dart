@@ -20,8 +20,10 @@ class _SettingsPageState extends State<SettingsPage> {
   String theme;
   bool useCustomHost = false;
   bool hideGallery = false;
-  bool staggered;
-  int tileSize;
+  bool staggered = false;
+  int tileSize = 0;
+
+  bool resetApp = false;
 
   @override
   void initState() {
@@ -29,42 +31,58 @@ class _SettingsPageState extends State<SettingsPage> {
     db.host.value.then((a) async {
       currentHost = a;
       useCustomHost = currentHost == await db.customHost.value;
-      setState(() {});
+      if (mounted) {
+        setState(() {});
+      }
     });
     db.host.addListener(() async {
       currentHost = await db.host.value;
       useCustomHost = currentHost == await db.customHost.value;
-      setState(() {});
+      if (mounted) {
+        setState(() {});
+      }
     });
     db.customHost.value.then((a) => setState(() => customHost = a));
     db.customHost.addListener(() async {
       customHost = await db.customHost.value;
-      setState(() {});
+      if (mounted) {
+        setState(() {});
+      }
     });
     db.username.value.then((a) => setState(() => username = a));
     db.username.addListener(() async {
       username = await db.username.value;
-      setState(() {});
+      if (mounted) {
+        setState(() {});
+      }
     });
     db.theme.value.then((a) => setState(() => theme = a));
     db.theme.addListener(() async {
       theme = await db.theme.value;
-      setState(() {});
+      if (mounted) {
+        setState(() {});
+      }
     });
     db.hideGallery.value.then((a) => setState(() => hideGallery = a));
     db.hideGallery.addListener(() async {
       hideGallery = await db.hideGallery.value;
-      setState(() {});
+      if (mounted) {
+        setState(() {});
+      }
     });
     db.tileSize.value.then((a) => setState(() => tileSize = a));
     db.tileSize.addListener(() async {
       tileSize = await db.tileSize.value;
-      setState(() {});
+      if (mounted) {
+        setState(() {});
+      }
     });
     db.staggered.value.then((a) => setState(() => staggered = a));
     db.staggered.addListener(() async {
       staggered = await db.staggered.value;
-      setState(() {});
+      if (mounted) {
+        setState(() {});
+      }
     });
   }
 
@@ -203,14 +221,19 @@ class _SettingsPageState extends State<SettingsPage> {
                       return RangeDialog(
                         title: Text('Tile size'),
                         value: tileSize,
-                        division: (350 / 50).round(),
-                        min: 50,
+                        division: (300 / 50).round(),
+                        min: 100,
                         max: 400,
                       );
                     });
-                if (size != null) {
-                  db.tileSize.value = Future.value(size);
+                if (size == null) {
+                  return;
                 }
+                if (size == 0) {
+                  return;
+                }
+                resetApp = true;
+                db.tileSize.value = Future.value(size);
               },
             ),
             SwitchListTile(
@@ -267,9 +290,32 @@ class _SettingsPageState extends State<SettingsPage> {
       );
     }
 
-    return Scaffold(
-      appBar: AppBar(title: Text('Settings')),
-      body: Builder(builder: bodyWidgetBuilder),
+    return WillPopScope(
+      onWillPop: () async {
+        if (resetApp) {
+          Navigator.of(context)
+              .pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
+          return false;
+        } else {
+          return true;
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('Settings'),
+          leading: IconButton(
+              icon: Icon(Icons.arrow_back),
+              onPressed: () {
+                if (resetApp) {
+                  Navigator.of(context).pushNamedAndRemoveUntil(
+                      '/', (Route<dynamic> route) => false);
+                } else {
+                  Navigator.pop(context);
+                }
+              }),
+        ),
+        body: Builder(builder: bodyWidgetBuilder),
+      ),
     );
   }
 }
