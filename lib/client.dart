@@ -348,7 +348,7 @@ class Client {
     await initialized;
     try {
       String body = await http
-          .get((unsafe ? 'e621.net' : await host),
+          .get((unsafe ? await db.customHost.value : await host),
               '/posts/${postID.toString()}.json')
           .then((response) => response.body);
 

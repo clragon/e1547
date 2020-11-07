@@ -432,7 +432,7 @@ class _PostWidgetState extends State<PostWidget> with RouteAware {
         Widget video() {
           return ValueListenableBuilder(
             valueListenable: widget.post.controller,
-            builder: (context, value, child) => InkWell(
+            builder: (context, value, child) => GestureDetector(
               onTap: () => value.isPlaying
                   ? widget.post.controller.pause()
                   : widget.post.controller.play(),
@@ -2066,47 +2066,51 @@ class _ImageGalleryState extends State<ImageGallery> {
         return Column(mainAxisSize: MainAxisSize.min, children: [
           frameDependant(ValueListenableBuilder(
             valueListenable: widget.posts[current.value].controller,
-            builder: (context, value, child) => value.initialized
-                ? Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(value.position.toString().substring(2, 7)),
-                        Expanded(
-                            child: Slider(
-                          min: 0,
-                          max: value.duration.inMilliseconds.toDouble(),
-                          value: value.position.inMilliseconds.toDouble(),
-                          onChangeStart: (double value) {
-                            frameToggler?.cancel();
-                          },
-                          onChanged: (double value) {
-                            widget.posts[current.value].controller
-                                .seekTo(Duration(milliseconds: value.toInt()));
-                          },
-                          onChangeEnd: (double value) {
-                            frameToggler = Timer(Duration(seconds: 2), () {
-                              toggleFrame(shown: false);
-                            });
-                          },
-                        )),
-                        Text(value.duration.toString().substring(2, 7)),
-                        InkWell(
-                          child: Padding(
-                            padding: EdgeInsets.all(4),
-                            child: Icon(
-                              Icons.fullscreen_exit,
-                              size: 24,
-                              color: Theme.of(context).iconTheme.color,
-                            ),
+            builder: (context, controller, child) {
+              if (controller.initialized) {
+                return Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(controller.position.toString().substring(2, 7)),
+                      Expanded(
+                          child: Slider(
+                        min: 0,
+                        max: controller.duration.inMilliseconds.toDouble(),
+                        value: controller.position.inMilliseconds.toDouble(),
+                        onChangeStart: (double value) {
+                          frameToggler?.cancel();
+                        },
+                        onChanged: (double value) {
+                          widget.posts[current.value].controller
+                              .seekTo(Duration(milliseconds: value.toInt()));
+                        },
+                        onChangeEnd: (double value) {
+                          frameToggler = Timer(Duration(seconds: 2), () {
+                            toggleFrame(shown: false);
+                          });
+                        },
+                      )),
+                      Text(controller.duration.toString().substring(2, 7)),
+                      InkWell(
+                        child: Padding(
+                          padding: EdgeInsets.all(4),
+                          child: Icon(
+                            Icons.fullscreen_exit,
+                            size: 24,
+                            color: Theme.of(context).iconTheme.color,
                           ),
-                          onTap: Navigator.of(context).maybePop,
                         ),
-                      ],
-                    ),
-                  )
-                : Container(),
+                        onTap: Navigator.of(context).maybePop,
+                      ),
+                    ],
+                  ),
+                );
+              } else {
+                return Container();
+              }
+            },
           ))
         ]);
       }
@@ -2216,11 +2220,11 @@ class _ImageGalleryState extends State<ImageGallery> {
             backgroundColor: Colors.transparent,
             extendBodyBehindAppBar: true,
             appBar: PreferredSize(
-              preferredSize: Size.fromHeight(
-                  MediaQuery.of(context).padding.top + kToolbarHeight),
-              child: frameDependant(postAppBar(
-                  context, widget.posts[current.value],
-                  canEdit: false)),
+              preferredSize: Size.fromHeight(kToolbarHeight),
+              child: frameDependant(
+                postAppBar(context, widget.posts[current.value],
+                    canEdit: false),
+              ),
             ),
             body: body(child),
             bottomSheet: widget.posts[current.value].controller != null
@@ -2493,7 +2497,17 @@ Widget postAppBar(BuildContext context, Post post, {bool canEdit = true}) {
                                 post.url(await db.host.value).toString());
                             break;
                           case 'download':
-                            downloadDialog(context, post);
+                            String message;
+                            if (await downloadDialog(context, post)) {
+                              message =
+                                  'Saved to ${post.id}.${post.image.value.file['ext']}';
+                            } else {
+                              message = 'Failed to download post ${post.id}';
+                            }
+                            Scaffold.of(context).showSnackBar(SnackBar(
+                              duration: Duration(seconds: 1),
+                              content: Text(message),
+                            ));
                             break;
                           case 'browse':
                             url.launch(
@@ -2523,8 +2537,12 @@ Future<File> download(Post post) async {
       '${Platform.environment['EXTERNAL_STORAGE']}/Pictures/$appName';
   Directory(downloadFolder).createSync();
 
-  String filename =
-      '${post.tags.value['artist'].join(', ')} - ${post.id}.${post.image.value.file['ext']}';
+  String filename = '${post.tags.value['artist'].where((tag) => ![
+        'conditional_dnp',
+        'sound_warning',
+        'epilepsy_warning',
+        'avoid_posting',
+      ].contains(tag)).join(', ')} - ${post.id}.${post.image.value.file['ext']}';
   String filepath = '$downloadFolder/$filename';
 
   File file = File(filepath);
@@ -2537,7 +2555,8 @@ Future<File> download(Post post) async {
       .copySync(filepath);
 }
 
-void downloadDialog(BuildContext context, Post post) async {
+Future<bool> downloadDialog(BuildContext context, Post post) async {
+  bool success = false;
   if (!await Permission.storage.request().isGranted) {
     showDialog(
         context: context,
@@ -2548,30 +2567,21 @@ void downloadDialog(BuildContext context, Post post) async {
             actions: [
               RaisedButton(
                 child: Text('TRY AGAIN'),
-                onPressed: () {
+                onPressed: () async {
                   Navigator.of(context).pop();
-                  downloadDialog(context, post); // recursively re-execute
+                  success = await downloadDialog(
+                      context, post); // recursively re-execute
                 },
               ),
             ],
           );
         });
-    return;
+    return success;
   }
 
-  String message;
-  await download(post).then(
-      (value) => message = 'Saved to ${post.tags.value['artist'].where((tag) => ![
-            'conditional_dnp',
-            'sound_warning',
-            'epilepsy_warning',
-            'avoid_posting',
-          ].contains(tag)).join(', ')} - ${post.id}.${post.image.value.file['ext']}',
-      onError: (error) => message = 'Failed to download post ${post.id}');
-  Scaffold.of(context).showSnackBar(SnackBar(
-    duration: Duration(seconds: 1),
-    content: Text(message),
-  ));
+  await download(post)
+      .then((value) => success = true, onError: (error) => success = false);
+  return success;
 }
 
 Widget loadingListTile(

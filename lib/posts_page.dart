@@ -12,6 +12,7 @@ import 'package:flutter/services.dart' show Clipboard, ClipboardData;
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart'
     show StaggeredGridView, StaggeredTile;
 import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:like_button/like_button.dart';
 import 'package:meta/meta.dart' show required;
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -230,13 +231,14 @@ class PostsPage extends StatefulWidget {
 }
 
 class _PostsPageState extends State<PostsPage> {
-  TextEditingController tagController = TextEditingController();
   ValueNotifier<bool> isSearching = ValueNotifier(false);
+  TextEditingController tagController = TextEditingController();
   PersistentBottomSheetController<Tagset> bottomSheetController;
 
+  Set<Post> selections = Set();
   bool loading = true;
-  int tileSize;
   bool staggered;
+  int tileSize;
 
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
@@ -244,15 +246,7 @@ class _PostsPageState extends State<PostsPage> {
   @override
   void initState() {
     super.initState();
-    // cant do this, will totally fuck everything up
-    /*
-    db.tileSize.addListener(() async {
-      tileSize = await db.tileSize.value;
-      if (mounted) {
-        setState(() {});
-      }
-    });
-    */
+    // tileSize is not linked because updating it will break the grid
     db.staggered.addListener(() async {
       staggered = await db.staggered.value;
       if (mounted) {
@@ -281,6 +275,7 @@ class _PostsPageState extends State<PostsPage> {
   @override
   void didUpdateWidget(PostsPage oldWidget) {
     super.didUpdateWidget(oldWidget);
+    selections.clear();
     loading = true;
   }
 
@@ -288,17 +283,54 @@ class _PostsPageState extends State<PostsPage> {
 
   Widget _itemBuilder(BuildContext context, int item) {
     Widget preview(Post post, PostProvider provider) {
-      return Container(
-        child: PostPreview(
-            post: post,
-            onPressed: () {
-              Navigator.of(context).push(MaterialPageRoute<Null>(
-                builder: (context) => PostSwipe(
-                  provider: provider,
-                  startingIndex: provider.items.indexOf(post),
+      void select() {
+        if (selections.contains(post)) {
+          selections.remove(post);
+        } else {
+          selections.add(post);
+        }
+        setState(() {});
+      }
+
+      return Stack(
+        alignment: Alignment.center,
+        children: [
+          Container(
+            child: PostPreview(
+                post: post,
+                onPressed: () {
+                  Navigator.of(context).push(MaterialPageRoute<Null>(
+                    builder: (context) => PostSwipe(
+                      provider: provider,
+                      startingIndex: provider.items.indexOf(post),
+                    ),
+                  ));
+                }),
+          ),
+          Positioned.fill(
+            child: GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onTap: selections.isNotEmpty ? select : null,
+              onLongPress: select,
+              child: IgnorePointer(
+                child: AnimatedOpacity(
+                  duration: Duration(milliseconds: 200),
+                  opacity: selections.contains(post) ? 1 : 0,
+                  child: Padding(
+                    padding: EdgeInsets.all(4),
+                    child: Container(
+                      color: Colors.black38,
+                      child: Icon(
+                        Icons.check_circle_outline,
+                        size: 54,
+                      ),
+                    ),
+                  ),
                 ),
-              ));
-            }),
+              ),
+            ),
+          ),
+        ],
       );
     }
 
@@ -315,15 +347,16 @@ class _PostsPageState extends State<PostsPage> {
     return (item) {
       if (item < widget.provider.items.length) {
         if (staggered) {
-          int heightRatio =
-              (widget.provider.items[item].image.value.sample['height'] /
-                      widget.provider.items[item].image.value.sample['width'])
-                  .round();
-          int widthRatio =
-              (widget.provider.items[item].image.value.sample['width'] /
-                      widget.provider.items[item].image.value.sample['height'])
-                  .round();
-          return StaggeredTile.count(notZero(widthRatio), notZero(heightRatio));
+          Map sample = widget.provider.items[item].image.value.sample;
+          double heightRatio = (sample['height'] / sample['width']);
+          double widthRatio = (sample['width'] / sample['height']);
+          if (notZero((MediaQuery.of(context).size.width / tileSize).round()) ==
+              1) {
+            return StaggeredTile.count(1, heightRatio);
+          } else {
+            return StaggeredTile.count(
+                notZero(widthRatio.round()), notZero(heightRatio.round()));
+          }
         } else {
           return StaggeredTile.count(1, 1.2);
         }
@@ -364,6 +397,7 @@ class _PostsPageState extends State<PostsPage> {
                 onRefresh: () async {
                   await widget.provider.loadNextPage(reset: true);
                   _refreshController.refreshCompleted();
+                  selections.clear();
                 },
                 physics: BouncingScrollPhysics(),
                 child: StaggeredGridView.countBuilder(
@@ -394,6 +428,7 @@ class _PostsPageState extends State<PostsPage> {
                 heroTag: 'float',
                 child: Icon(value ? Icons.check : Icons.search),
                 onPressed: () async {
+                  selections.clear();
                   setFocusToEnd(tagController);
                   if (isSearching.value) {
                     submit();
@@ -421,11 +456,161 @@ class _PostsPageState extends State<PostsPage> {
       }).build(context);
     }
 
-    return Scaffold(
-      appBar: widget.appBarBuilder(context),
-      body: bodyWidget(),
-      drawer: NavigationDrawer(),
-      floatingActionButton: floatingActionButtonWidget(),
+    Widget selectionAppBar() {
+      return AppBar(
+        title: Text('selected ${selections.length} posts'),
+        leading: IconButton(
+          icon: Icon(Icons.clear),
+          onPressed: () => setState(selections.clear),
+        ),
+        actions: [
+          IconButton(
+              icon: Icon(Icons.select_all),
+              onPressed: () {
+                selections.addAll(widget.provider.items.toSet());
+                setState(() {});
+              }),
+          IconButton(
+              icon: Icon(Icons.file_download),
+              onPressed: () async {
+                bool cancel = false;
+                bool failure = false;
+                List<Post> downloading = List.from(selections);
+                ValueNotifier<int> progress = ValueNotifier<int>(0);
+                showDialog(
+                    context: context,
+                    child: ValueListenableBuilder(
+                        valueListenable: progress,
+                        builder:
+                            (BuildContext context, int value, Widget child) {
+                          return AlertDialog(
+                            title: Text('Download'),
+                            content: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      value == downloading.length
+                                          ? failure
+                                              ? 'Failure'
+                                              : 'Done'
+                                          : 'Post #${widget.provider.items[value].id}',
+                                      overflow: TextOverflow.visible,
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.only(left: 4),
+                                      child:
+                                          Text('$value/${downloading.length}'),
+                                    )
+                                  ],
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 8),
+                                  child: TweenAnimationBuilder(
+                                    duration: Duration(milliseconds: 200),
+                                    builder: (BuildContext context, value,
+                                        Widget child) {
+                                      return LinearProgressIndicator(
+                                        value: (1 / downloading.length) * value,
+                                      );
+                                    },
+                                    tween: Tween<double>(
+                                        begin: 0, end: value.toDouble()),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            actions: value == downloading.length
+                                ? [
+                                    FlatButton(
+                                      child: Text('OK'),
+                                      onPressed: Navigator.of(context).pop,
+                                    ),
+                                  ]
+                                : [
+                                    FlatButton(
+                                      child: Text('BACKGROUND'),
+                                      onPressed: Navigator.of(context).pop,
+                                    ),
+                                    FlatButton(
+                                      child: Text('CANCEL'),
+                                      onPressed: () {
+                                        cancel = true;
+                                        Navigator.of(context).pop();
+                                      },
+                                    ),
+                                  ],
+                          );
+                        })).then((value) {
+                  selections.clear();
+                  setState(() {});
+                });
+                for (Post post in downloading) {
+                  if (await downloadDialog(context, post)) {
+                    await Future.delayed(const Duration(milliseconds: 200));
+                    progress.value++;
+                  } else {
+                    failure = true;
+                    progress.value = downloading.length;
+                    break;
+                  }
+                  if (cancel) {
+                    break;
+                  }
+                }
+              }),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 4),
+            child: LikeButton(
+              isLiked: selections.every((post) => post.isFavorite.value),
+              circleColor: CircleColor(start: Colors.pink, end: Colors.red),
+              bubblesColor: BubblesColor(
+                  dotPrimaryColor: Colors.pink, dotSecondaryColor: Colors.red),
+              likeBuilder: (bool isLiked) {
+                return Icon(
+                  Icons.favorite,
+                  color: isLiked
+                      ? Colors.pinkAccent
+                      : Theme.of(context).iconTheme.color,
+                );
+              },
+              onTap: (isLiked) async {
+                if (isLiked) {
+                  // tryRemoveFav(context, widget.post);
+                  return false;
+                } else {
+                  // tryAddFav(context, widget.post);
+                  return true;
+                }
+              },
+            ),
+          ),
+        ],
+      );
+    }
+
+    return WillPopScope(
+      onWillPop: () {
+        if (selections.length > 0) {
+          selections.clear();
+          setState(() {});
+          return Future.value(false);
+        } else {
+          return Future.value(true);
+        }
+      },
+      child: Scaffold(
+        appBar: selections.length == 0
+            ? widget.appBarBuilder(context)
+            : selectionAppBar(),
+        body: bodyWidget(),
+        drawer: NavigationDrawer(),
+        floatingActionButton: floatingActionButtonWidget(),
+      ),
     );
   }
 }
