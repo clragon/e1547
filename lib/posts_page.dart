@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:e1547/client.dart' show client;
 import 'package:e1547/interface.dart';
 import 'package:e1547/main.dart';
@@ -553,13 +555,15 @@ class _PostsPageState extends State<PostsPage> {
                 selections.addAll(widget.provider.posts.value.toSet());
                 setState(() {});
               }),
-          Builder(
-              builder: (context) => IconButton(
-                  icon: Icon(Icons.file_download),
-                  onPressed: () => loadingSnackbar(
-                      context,
-                      (post) => downloadDialog(context, post),
-                      Duration(milliseconds: 100)))),
+          (Platform.isAndroid)
+              ? Builder(
+                  builder: (context) => IconButton(
+                      icon: Icon(Icons.file_download),
+                      onPressed: () => loadingSnackbar(
+                          context,
+                          (post) => downloadDialog(context, post),
+                          Duration(milliseconds: 100))))
+              : Container(),
           Builder(
             builder: (context) {
               return Padding(

@@ -2452,6 +2452,9 @@ Widget postAppBar(BuildContext context, Post post, {bool canEdit = true}) {
 }
 
 Future<File> download(Post post) async {
+  if (!Platform.isAndroid) {
+    throw('platform is unsupported');
+  }
   String downloadFolder =
       '${Platform.environment['EXTERNAL_STORAGE']}/Pictures/$appName';
   Directory(downloadFolder).createSync();
