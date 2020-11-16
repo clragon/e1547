@@ -1,19 +1,20 @@
 import 'dart:async' show Future;
+import 'dart:convert';
 
 import 'package:e1547/appInfo.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:http_auth/http_auth.dart';
 
 String userAgent = '$appName/$appVersion ($developer)';
 
 class HttpHelper {
-  final String username;
-  final String apiKey;
+  final Credentials credentials;
   final BaseClient client;
 
-  HttpHelper({this.username, this.apiKey})
-      : client = username != null && apiKey != null
-            ? BasicAuthClient(username, apiKey)
+  HttpHelper({this.credentials})
+      : client = credentials != null
+            ? BasicAuthClient(credentials.username, credentials.apikey)
             : Client();
 
   Map<String, String> headers = {'User-Agent': userAgent};
@@ -57,4 +58,29 @@ class HttpHelper {
     });
     return stringMap;
   }
+}
+
+class Credentials {
+  Credentials({
+    @required this.username,
+    @required this.apikey,
+  });
+
+  final String username;
+  final String apikey;
+
+  factory Credentials.fromJson(String str) =>
+      Credentials.fromMap(json.decode(str));
+
+  String toJson() => json.encode(toMap());
+
+  factory Credentials.fromMap(Map<String, dynamic> json) => Credentials(
+        username: json["username"],
+        apikey: json["apikey"],
+      );
+
+  Map<String, dynamic> toMap() => {
+        "username": username,
+        "apikey": apikey,
+      };
 }

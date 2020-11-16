@@ -259,12 +259,12 @@ class NavigationDrawer extends StatelessWidget {
   }
 }
 
-ValueNotifier<String> userName = ValueNotifier(null);
-ValueNotifier<String> userAvatar = ValueNotifier(null);
+final ValueNotifier<String> userName = ValueNotifier(null);
+final ValueNotifier<String> userAvatar = ValueNotifier(null);
 
 void initUser({BuildContext context}) {
-  db.username.value.then((name) {
-    userName.value = name;
+  db.credentials.value.then((credentials) {
+    userName.value = credentials.username;
     if (userName.value != null) {
       client.avatar.then((avatar) {
         userAvatar.value = avatar;
@@ -289,14 +289,14 @@ class _ProfileHeaderState extends State<ProfileHeader> {
   @override
   void initState() {
     super.initState();
-    db.username.addListener(initUser);
+    db.credentials.addListener(initUser);
     initUser();
   }
 
   @override
   void dispose() {
     super.dispose();
-    db.username.removeListener(initUser);
+    db.credentials.removeListener(initUser);
   }
 
   @override

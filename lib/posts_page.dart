@@ -4,14 +4,13 @@ import 'package:e1547/main.dart';
 import 'package:e1547/pool.dart';
 import 'package:e1547/post.dart';
 import 'package:e1547/settings.dart' show db;
-import 'package:e1547/tag.dart' show Tagset, sortTags;
+import 'package:e1547/tag.dart' show Tagset;
 import 'package:e1547/wiki_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart' show EdgeInsets;
 import 'package:flutter/services.dart' show Clipboard, ClipboardData;
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart'
     show StaggeredGridView, StaggeredTile;
-import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:like_button/like_button.dart';
 import 'package:meta/meta.dart' show required;
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -61,16 +60,17 @@ class FavPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: db.username.value,
+      future: db.credentials.value,
       builder: (context, snapshot) {
-        if (snapshot.hasData) {
+        if (snapshot.connectionState == ConnectionState.done &&
+            snapshot.data != null) {
           return PostsPage(
               appBarBuilder: appBarWidget('Favorites'),
               provider: PostProvider(
                 provider: (tags, page) {
-                  return client.posts(tags, page, filter: false);
+                  return client.posts(tags, page);
                 },
-                search: 'fav:${snapshot.data}',
+                search: 'fav:${snapshot.data.username}',
               ));
         } else {
           return Scaffold(
@@ -146,6 +146,7 @@ class FollowsPage extends StatelessWidget {
             );
           },
           canSearch: false,
+          canDeny: false,
           provider:
               PostProvider(provider: (tags, page) => client.follows(page)),
         );
@@ -217,11 +218,15 @@ AppBar Function(BuildContext context) appBarWidget(String title,
 
 class PostsPage extends StatefulWidget {
   final bool canSearch;
+  final bool canSelect;
+  final bool canDeny;
   final AppBar Function(BuildContext) appBarBuilder;
   final PostProvider provider;
 
   PostsPage({
     this.canSearch = true,
+    this.canSelect = true,
+    this.canDeny = true,
     @required this.provider,
     @required this.appBarBuilder,
   });
@@ -231,8 +236,8 @@ class PostsPage extends StatefulWidget {
 }
 
 class _PostsPageState extends State<PostsPage> {
+  TextEditingController controller = TextEditingController();
   ValueNotifier<bool> isSearching = ValueNotifier(false);
-  TextEditingController tagController = TextEditingController();
   PersistentBottomSheetController<Tagset> bottomSheetController;
 
   Set<Post> selections = Set();
@@ -284,12 +289,14 @@ class _PostsPageState extends State<PostsPage> {
   Widget _itemBuilder(BuildContext context, int item) {
     Widget preview(Post post, PostProvider provider) {
       void select() {
-        if (selections.contains(post)) {
-          selections.remove(post);
-        } else {
-          selections.add(post);
+        if (widget.canSelect) {
+          if (selections.contains(post)) {
+            selections.remove(post);
+          } else {
+            selections.add(post);
+          }
+          setState(() {});
         }
-        setState(() {});
       }
 
       return Stack(
@@ -302,7 +309,7 @@ class _PostsPageState extends State<PostsPage> {
                   Navigator.of(context).push(MaterialPageRoute<Null>(
                     builder: (context) => PostSwipe(
                       provider: provider,
-                      startingIndex: provider.items.indexOf(post),
+                      startingIndex: provider.posts.value.indexOf(post),
                     ),
                   ));
                 }),
@@ -334,20 +341,20 @@ class _PostsPageState extends State<PostsPage> {
       );
     }
 
-    if (item == widget.provider.items.length - 1) {
+    if (item == widget.provider.posts.value.length - 1) {
       widget.provider.loadNextPage();
     }
-    if (item < widget.provider.items.length) {
-      return preview(widget.provider.items[item], widget.provider);
+    if (item < widget.provider.posts.value.length) {
+      return preview(widget.provider.posts.value[item], widget.provider);
     }
     return null;
   }
 
   StaggeredTile Function(int) _staggeredTileBuilder() {
     return (item) {
-      if (item < widget.provider.items.length) {
+      if (item < widget.provider.posts.value.length) {
         if (staggered) {
-          Map sample = widget.provider.items[item].image.value.sample;
+          Map sample = widget.provider.posts.value[item].image.value.sample;
           double heightRatio = (sample['height'] / sample['width']);
           double widthRatio = (sample['width'] / sample['height']);
           if (notZero((MediaQuery.of(context).size.width / tileSize).round()) ==
@@ -386,7 +393,7 @@ class _PostsPageState extends State<PostsPage> {
         onLoading: Text('Loading posts'),
         onEmpty: Text('No posts'),
         isLoading: loading,
-        isEmpty: (!loading && widget.provider.items.length == 0),
+        isEmpty: (!loading && widget.provider.posts.value.length == 0),
         child: tileSize != null && staggered != null
             ? SmartRefresher(
                 controller: _refreshController,
@@ -403,7 +410,7 @@ class _PostsPageState extends State<PostsPage> {
                 child: StaggeredGridView.countBuilder(
                   crossAxisCount: notZero(
                       (MediaQuery.of(context).size.width / tileSize).round()),
-                  itemCount: widget.provider.items.length,
+                  itemCount: widget.provider.posts.value.length,
                   itemBuilder: _itemBuilder,
                   staggeredTileBuilder: _staggeredTileBuilder(),
                   physics: BouncingScrollPhysics(),
@@ -419,9 +426,9 @@ class _PostsPageState extends State<PostsPage> {
             valueListenable: isSearching,
             builder: (BuildContext context, value, Widget child) {
               void submit() {
-                widget.provider.search.value = sortTags(tagController.text);
-                bottomSheetController?.close();
+                widget.provider.search.value = controller.text;
                 widget.provider.resetPages();
+                bottomSheetController?.close();
               }
 
               return FloatingActionButton(
@@ -429,15 +436,15 @@ class _PostsPageState extends State<PostsPage> {
                 child: Icon(value ? Icons.check : Icons.search),
                 onPressed: () async {
                   selections.clear();
-                  setFocusToEnd(tagController);
                   if (isSearching.value) {
                     submit();
                   } else {
-                    tagController.text = widget.provider.search.value + ' ';
+                    controller.text = widget.provider.search.value + ' ';
+                    isSearching.value = true;
                     bottomSheetController =
                         Scaffold.of(context).showBottomSheet(
                       (context) => TagEntry(
-                        controller: tagController,
+                        controller: controller,
                         onSubmit: submit,
                       ),
                     );
@@ -456,6 +463,82 @@ class _PostsPageState extends State<PostsPage> {
       }).build(context);
     }
 
+    Future<void> loadingSnackbar(BuildContext context,
+        Future<bool> Function(Post post) process, Duration timeout) async {
+      bool cancel = false;
+      bool failure = false;
+      List<Post> processing = List.from(selections);
+      selections.clear();
+      ValueNotifier<int> progress = ValueNotifier<int>(0);
+      ScaffoldFeatureController controller =
+          Scaffold.of(context).showSnackBar(SnackBar(
+        content: ValueListenableBuilder(
+            valueListenable: progress,
+            builder: (BuildContext context, int value, Widget child) {
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        value == processing.length
+                            ? failure
+                                ? 'Failure'
+                                : 'Done'
+                            : 'Post #${widget.provider.posts.value[value].id} ($value/${processing.length})',
+                        overflow: TextOverflow.visible,
+                      ),
+                      Flexible(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 8),
+                          child: TweenAnimationBuilder(
+                            duration: timeout,
+                            builder:
+                                (BuildContext context, value, Widget child) {
+                              return LinearProgressIndicator(
+                                value: (1 / processing.length) * value,
+                              );
+                            },
+                            tween:
+                                Tween<double>(begin: 0, end: value.toDouble()),
+                          ),
+                        ),
+                      ),
+                      value == processing.length || failure
+                          ? Container()
+                          : InkWell(
+                              child: Text('CANCEL'),
+                              onTap: () {
+                                cancel = true;
+                              },
+                            ),
+                    ],
+                  )
+                ],
+              );
+            }),
+        duration: Duration(days: 1),
+      ));
+      for (Post post in processing) {
+        if (await process(post)) {
+          await Future.delayed(timeout);
+          progress.value++;
+          setState(() {});
+        } else {
+          failure = true;
+          progress.value = processing.length;
+          break;
+        }
+        if (cancel) {
+          break;
+        }
+      }
+      await Future.delayed(const Duration(milliseconds: 400));
+      controller.close();
+      setState(() {});
+      return;
+    }
+
     Widget selectionAppBar() {
       return AppBar(
         title: Text('selected ${selections.length} posts'),
@@ -467,127 +550,58 @@ class _PostsPageState extends State<PostsPage> {
           IconButton(
               icon: Icon(Icons.select_all),
               onPressed: () {
-                selections.addAll(widget.provider.items.toSet());
+                selections.addAll(widget.provider.posts.value.toSet());
                 setState(() {});
               }),
-          IconButton(
-              icon: Icon(Icons.file_download),
-              onPressed: () async {
-                bool cancel = false;
-                bool failure = false;
-                List<Post> downloading = List.from(selections);
-                ValueNotifier<int> progress = ValueNotifier<int>(0);
-                showDialog(
-                    context: context,
-                    child: ValueListenableBuilder(
-                        valueListenable: progress,
-                        builder:
-                            (BuildContext context, int value, Widget child) {
-                          return AlertDialog(
-                            title: Text('Download'),
-                            content: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      value == downloading.length
-                                          ? failure
-                                              ? 'Failure'
-                                              : 'Done'
-                                          : 'Post #${widget.provider.items[value].id}',
-                                      overflow: TextOverflow.visible,
-                                    ),
-                                    Padding(
-                                      padding: EdgeInsets.only(left: 4),
-                                      child:
-                                          Text('$value/${downloading.length}'),
-                                    )
-                                  ],
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 8),
-                                  child: TweenAnimationBuilder(
-                                    duration: Duration(milliseconds: 200),
-                                    builder: (BuildContext context, value,
-                                        Widget child) {
-                                      return LinearProgressIndicator(
-                                        value: (1 / downloading.length) * value,
-                                      );
-                                    },
-                                    tween: Tween<double>(
-                                        begin: 0, end: value.toDouble()),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            actions: value == downloading.length
-                                ? [
-                                    FlatButton(
-                                      child: Text('OK'),
-                                      onPressed: Navigator.of(context).pop,
-                                    ),
-                                  ]
-                                : [
-                                    FlatButton(
-                                      child: Text('BACKGROUND'),
-                                      onPressed: Navigator.of(context).pop,
-                                    ),
-                                    FlatButton(
-                                      child: Text('CANCEL'),
-                                      onPressed: () {
-                                        cancel = true;
-                                        Navigator.of(context).pop();
-                                      },
-                                    ),
-                                  ],
-                          );
-                        })).then((value) {
-                  selections.clear();
-                  setState(() {});
-                });
-                for (Post post in downloading) {
-                  if (await downloadDialog(context, post)) {
-                    await Future.delayed(const Duration(milliseconds: 200));
-                    progress.value++;
-                  } else {
-                    failure = true;
-                    progress.value = downloading.length;
-                    break;
-                  }
-                  if (cancel) {
-                    break;
-                  }
-                }
-              }),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 4),
-            child: LikeButton(
-              isLiked: selections.every((post) => post.isFavorite.value),
-              circleColor: CircleColor(start: Colors.pink, end: Colors.red),
-              bubblesColor: BubblesColor(
-                  dotPrimaryColor: Colors.pink, dotSecondaryColor: Colors.red),
-              likeBuilder: (bool isLiked) {
-                return Icon(
-                  Icons.favorite,
-                  color: isLiked
-                      ? Colors.pinkAccent
-                      : Theme.of(context).iconTheme.color,
-                );
-              },
-              onTap: (isLiked) async {
-                if (isLiked) {
-                  // tryRemoveFav(context, widget.post);
-                  return false;
-                } else {
-                  // tryAddFav(context, widget.post);
-                  return true;
-                }
-              },
-            ),
+          Builder(
+              builder: (context) => IconButton(
+                  icon: Icon(Icons.file_download),
+                  onPressed: () => loadingSnackbar(
+                      context,
+                      (post) => downloadDialog(context, post),
+                      Duration(milliseconds: 100)))),
+          Builder(
+            builder: (context) {
+              return Padding(
+                padding: EdgeInsets.symmetric(horizontal: 4),
+                child: LikeButton(
+                  isLiked: selections.every((post) => post.isFavorite.value),
+                  circleColor: CircleColor(start: Colors.pink, end: Colors.red),
+                  bubblesColor: BubblesColor(
+                      dotPrimaryColor: Colors.pink,
+                      dotSecondaryColor: Colors.red),
+                  likeBuilder: (bool isLiked) {
+                    return Icon(
+                      Icons.favorite,
+                      color: isLiked
+                          ? Colors.pinkAccent
+                          : Theme.of(context).iconTheme.color,
+                    );
+                  },
+                  onTap: (isLiked) async {
+                    if (isLiked) {
+                      loadingSnackbar(context, (post) {
+                        if (post.isFavorite.value) {
+                          return tryRemoveFav(context, post);
+                        } else {
+                          return Future.value(true);
+                        }
+                      }, Duration(milliseconds: 800));
+                      return false;
+                    } else {
+                      loadingSnackbar(context, (post) {
+                        if (!post.isFavorite.value) {
+                          return tryAddFav(context, post);
+                        } else {
+                          return Future.value(true);
+                        }
+                      }, Duration(milliseconds: 800));
+                      return true;
+                    }
+                  },
+                ),
+              );
+            },
           ),
         ],
       );
@@ -616,12 +630,18 @@ class _PostsPageState extends State<PostsPage> {
 }
 
 class PostProvider extends DataProvider<Post> {
-  List<Post> get posts => super.items;
+  ValueNotifier<List<Post>> denied = ValueNotifier([]);
+  ValueNotifier<List<Post>> posts = ValueNotifier([]);
 
   PostProvider(
       {String search,
       Future<List<Post>> Function(String search, int page) provider})
-      : super(search: search, provider: provider ?? client.posts);
+      : super(search: search, provider: provider ?? client.posts) {
+    super.pages.addListener(() {
+      posts.value = super.items.where((item) => !item.isBlacklisted).toList();
+      denied.value = super.items.where((item) => item.isBlacklisted).toList();
+    });
+  }
 }
 
 class TagEntry extends StatelessWidget {
@@ -630,12 +650,11 @@ class TagEntry extends StatelessWidget {
 
   TagEntry({
     @required this.controller,
-    this.onSubmit,
+    @required this.onSubmit,
   });
 
   void _withTags(Future<Tagset> Function(Tagset tags) editor) async {
-    Tagset tags = await editor(Tagset.parse(controller.text));
-    controller.text = tags.toString() + ' ';
+    controller.text = (await editor(Tagset.parse(controller.text))).toString();
     setFocusToEnd(controller);
   }
 
@@ -747,63 +766,10 @@ class TagEntry extends StatelessWidget {
     return Container(
       padding: EdgeInsets.only(left: 10.0, right: 10.0, top: 20.0),
       child: Column(mainAxisSize: MainAxisSize.min, children: [
-        TypeAheadField(
-          direction: AxisDirection.up,
-          hideOnLoading: true,
-          hideOnEmpty: true,
-          hideOnError: true,
-          keepSuggestionsOnSuggestionSelected: true,
-          textFieldConfiguration: TextFieldConfiguration(
-              controller: controller,
-              autofocus: true,
-              maxLines: 1,
-              inputFormatters: [LowercaseTextInputFormatter()],
-              decoration: InputDecoration(
-                  labelText: 'Tags', border: UnderlineInputBorder()),
-              onSubmitted: (_) {
-                if (onSubmit != null) {
-                  onSubmit();
-                }
-              }),
-          onSuggestionSelected: (suggestion) {
-            List<String> tags = controller.text.split(' ');
-            List<String> before = [];
-            for (String tag in tags) {
-              before.add(tag);
-              if (before.join(' ').length >=
-                  controller.selection.extent.offset) {
-                tags[tags.indexOf(tag)] = suggestion;
-                break;
-              }
-            }
-            controller.text = sortTags(tags.join(' ')) + ' ';
-            setFocusToEnd(controller);
-          },
-          itemBuilder: (BuildContext context, itemData) {
-            return ListTile(
-              title: Text(itemData),
-            );
-          },
-          suggestionsCallback: (String pattern) async {
-            List<String> tags = controller.text.split(' ');
-            List<String> before = [];
-            int selection = 0;
-            for (String tag in tags) {
-              before.add(tag);
-              if (before.join(' ').length >=
-                  controller.selection.extent.offset) {
-                selection = tags.indexOf(tag);
-                break;
-              }
-            }
-            if (tags[selection].trim().isNotEmpty) {
-              return (await client.tags(tags[selection]))
-                  .map((t) => t['name'])
-                  .toList();
-            } else {
-              return [];
-            }
-          },
+        tagInputField(
+          controller: controller,
+          labelText: 'Tags',
+          onSubmit: onSubmit,
         ),
         Padding(
           padding: EdgeInsets.symmetric(vertical: 10.0),

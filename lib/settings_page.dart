@@ -49,9 +49,9 @@ class _SettingsPageState extends State<SettingsPage> {
         setState(() {});
       }
     });
-    db.username.value.then((a) => setState(() => username = a));
-    db.username.addListener(() async {
-      username = await db.username.value;
+    db.credentials.value.then((a) => setState(() => username = a.username));
+    db.credentials.addListener(() async {
+      username = (await db.credentials.value).username;
       if (mounted) {
         setState(() {});
       }
@@ -88,9 +88,8 @@ class _SettingsPageState extends State<SettingsPage> {
 
   Function() _onTapSignOut(BuildContext context) {
     return () async {
-      String name = await db.username.value;
-      db.username.value = Future.value(null);
-      db.apiKey.value = Future.value(null);
+      String name = username;
+      await client.logout();
 
       String msg = 'Forgot login details';
       if (name != null) {
@@ -98,13 +97,9 @@ class _SettingsPageState extends State<SettingsPage> {
       }
 
       Scaffold.of(context).showSnackBar(SnackBar(
-        duration: Duration(seconds: 2),
+        duration: Duration(seconds: 1),
         content: Text(msg),
       ));
-
-      setState(() {
-        username = null;
-      });
     };
   }
 
@@ -305,14 +300,7 @@ class _SettingsPageState extends State<SettingsPage> {
           title: Text('Settings'),
           leading: IconButton(
               icon: Icon(Icons.arrow_back),
-              onPressed: () {
-                if (resetApp) {
-                  Navigator.of(context).pushNamedAndRemoveUntil(
-                      '/', (Route<dynamic> route) => false);
-                } else {
-                  Navigator.pop(context);
-                }
-              }),
+              onPressed: Navigator.of(context).maybePop),
         ),
         body: Builder(builder: bodyWidgetBuilder),
       ),

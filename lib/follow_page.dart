@@ -3,7 +3,6 @@ import 'package:e1547/posts_page.dart';
 import 'package:e1547/wiki_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_typeahead/flutter_typeahead.dart';
 
 import 'client.dart';
 import 'interface.dart';
@@ -151,72 +150,44 @@ class _FollowingPageState extends State<FollowingPage> {
     }
 
     Widget floatingActionButton(BuildContext context) {
-      TextEditingController _tagController = TextEditingController();
-      PersistentBottomSheetController<String> _bottomSheetController;
+      TextEditingController controller = TextEditingController();
+      PersistentBottomSheetController<String> sheetController;
       ValueNotifier<bool> isSearching = ValueNotifier(false);
+
       return ValueListenableBuilder(
         valueListenable: isSearching,
         builder: (context, value, child) {
           void submit() {
-            if (_tagController.text.trim().isNotEmpty) {
+            if (controller.text.trim().isNotEmpty) {
               db.follows.value =
-                  Future.value(_follows..add(_tagController.text.trim()));
-              _bottomSheetController?.close();
+                  Future.value(_follows..add(controller.text.trim()));
+              sheetController?.close();
             }
           }
 
           return FloatingActionButton(
             child: isSearching.value ? Icon(Icons.check) : Icon(Icons.add),
             onPressed: () async {
-              setFocusToEnd(_tagController);
+              setFocusToEnd(controller);
               if (isSearching.value) {
                 submit();
               } else {
-                _tagController.text = '';
-                _bottomSheetController =
+                controller.text = '';
+                sheetController =
                     Scaffold.of(context).showBottomSheet((context) => Container(
                           padding: EdgeInsets.only(
                               left: 10.0, right: 10.0, bottom: 10),
                           child:
                               Column(mainAxisSize: MainAxisSize.min, children: [
-                            TypeAheadField(
-                              direction: AxisDirection.up,
-                              hideOnLoading: true,
-                              hideOnEmpty: true,
-                              hideOnError: true,
-                              keepSuggestionsOnSuggestionSelected: true,
-                              textFieldConfiguration: TextFieldConfiguration(
-                                controller: _tagController,
-                                autofocus: true,
-                                maxLines: 1,
-                                inputFormatters: [
-                                  FilteringTextInputFormatter.deny(' ')
-                                ],
-                                decoration: InputDecoration(
-                                    labelText: 'Follow Tag',
-                                    border: UnderlineInputBorder()),
-                                onSubmitted: (_) => submit(),
-                              ),
-                              onSuggestionSelected: (suggestion) {
-                                _tagController.text = suggestion['name'];
-                              },
-                              itemBuilder: (BuildContext context, itemData) {
-                                return ListTile(
-                                  title: Text(itemData['name']),
-                                );
-                              },
-                              suggestionsCallback: (String pattern) {
-                                if (pattern.trim().isNotEmpty) {
-                                  return client.tags(pattern);
-                                } else {
-                                  return [];
-                                }
-                              },
-                            ),
+                            tagInputField(
+                                labelText: 'Follow Tag',
+                                onSubmit: submit,
+                                controller: controller,
+                                multiInput: false),
                           ]),
                         ));
                 isSearching.value = true;
-                _bottomSheetController.closed.then((a) {
+                sheetController.closed.then((a) {
                   isSearching.value = false;
                 });
               }

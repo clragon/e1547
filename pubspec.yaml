@@ -1,7 +1,7 @@
 name: e1547
 description: A mobile app for e621+e926.
 
-version: 1.7.0+36
+version: 1.7.1+37
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
@@ -15,12 +15,9 @@ dependencies:
   like_button: ^1.0.1
   flutter_staggered_grid_view: ^0.3.0
 
-  video_player: ^0.11.0
+  video_player: ^1.0.0
   wakelock: ^0.2.0+1
-  photo_view:
-    git:
-      url: https://github.com/fireslime/photo_view.git
-      ref: master
+  photo_view: ^0.10.3
   cached_network_image: ^2.3.2
 
   http_auth: ^0.3.0

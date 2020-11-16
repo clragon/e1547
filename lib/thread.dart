@@ -309,10 +309,10 @@ class _ThreadWidgetState extends State<ThreadWidget> {
                             ),
                           ),
                           FutureBuilder(
-                            future: db.username.value,
+                            future: db.credentials.value,
                             builder: (context, snapshot) {
                               if (snapshot.hasData &&
-                                  snapshot.data == reply.creatorID.toString()) {
+                                  snapshot.data.username == reply.creatorID.toString()) {
                                 return Padding(
                                   padding: EdgeInsets.only(left: 8),
                                   child: InkWell(

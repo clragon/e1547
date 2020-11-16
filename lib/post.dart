@@ -20,7 +20,6 @@ import 'package:flutter/services.dart'
 import 'package:flutter/services.dart' show Clipboard, ClipboardData;
 import 'package:flutter_cache_manager/flutter_cache_manager.dart'
     show DefaultCacheManager;
-import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:icon_shadow/icon_shadow.dart';
 import 'package:intl/intl.dart';
 import 'package:like_button/like_button.dart';
@@ -221,12 +220,12 @@ class PostSwipe extends StatelessWidget {
         initialPage: startingIndex, viewportFraction: 1.000000000001);
 
     Widget _pageBuilder(BuildContext context, int index) {
-      if (index == provider.items.length - 1) {
+      if (index == provider.posts.value.length - 1) {
         provider.loadNextPage();
       }
-      return index < provider.items.length
+      return index < provider.posts.value.length
           ? PostWidget(
-              post: provider.items[index],
+              post: provider.posts.value[index],
               provider: provider,
               controller: controller,
             )
@@ -243,20 +242,21 @@ class PostSwipe extends StatelessWidget {
             int precache = 2;
             for (int i = -precache - 1; i < precache; i++) {
               int target = index + 1 + i;
-              if (target > 0 && target < provider.items.length) {
-                if (provider.items[target].image.value.sample['url'] != null) {
+              if (target > 0 && target < provider.posts.value.length) {
+                if (provider.posts.value[target].image.value.sample['url'] !=
+                    null) {
                   precacheImage(
                     CachedNetworkImageProvider(
-                        provider.items[target].image.value.sample['url']),
+                        provider.posts.value[target].image.value.sample['url']),
                     context,
                   );
                 }
               }
             }
 
-            if (provider.items.length != 0) {
-              if (provider.items[lastIndex].isEditing.value) {
-                resetPost(provider.items[lastIndex]);
+            if (provider.posts.value.length != 0) {
+              if (provider.posts.value[lastIndex].isEditing.value) {
+                resetPost(provider.posts.value[lastIndex]);
               }
             }
             lastIndex = index;
@@ -293,7 +293,7 @@ class _PostWidgetState extends State<PostWidget> with RouteAware {
   }
 
   void updateWidget() {
-    if (this.mounted && !widget.provider.items.contains(widget.post)) {
+    if (this.mounted && !widget.provider.posts.value.contains(widget.post)) {
       if (ModalRoute.of(context).isCurrent) {
         Navigator.of(context).pushReplacement(MaterialPageRoute<Null>(
             builder: (context) => PostWidget(post: widget.post)));
@@ -400,7 +400,7 @@ class _PostWidgetState extends State<PostWidget> with RouteAware {
 
                 List<Post> posts = widget.post.isEditing.value
                     ? [widget.post]
-                    : (widget.provider?.items ?? [widget.post]);
+                    : (widget.provider?.posts?.value ?? [widget.post]);
                 if (widget.provider != null) {
                   return ValueListenableBuilder(
                       valueListenable: widget.provider.pages,
@@ -1238,26 +1238,7 @@ class _PostWidgetState extends State<PostWidget> with RouteAware {
                     children: <Widget>[
                       Container(
                         decoration: BoxDecoration(
-                          color: () {
-                            switch (tagSet) {
-                              case 'general':
-                                return Colors.indigo[300];
-                              case 'species':
-                                return Colors.teal[300];
-                              case 'character':
-                                return Colors.lightGreen[300];
-                              case 'copyright':
-                                return Colors.yellow[300];
-                              case 'meta':
-                                return Colors.deepOrange[300];
-                              case 'lore':
-                                return Colors.pink[300];
-                              case 'artist':
-                                return Colors.deepPurple[300];
-                              default:
-                                return Colors.grey[300];
-                            }
-                          }(),
+                          color: getCategoryColor(tagSet),
                           borderRadius: BorderRadius.only(
                               topLeft: Radius.circular(5),
                               bottomLeft: Radius.circular(5)),
@@ -1295,16 +1276,6 @@ class _PostWidgetState extends State<PostWidget> with RouteAware {
         }
 
         Widget tagCreator(String tagSet) {
-          Map group = {
-            'general': 0,
-            'species': 5,
-            'character': 4,
-            'copyright': 3,
-            'artist': 1,
-            'invalid': 6,
-            'lore': 8,
-            'meta': 7,
-          };
           ValueNotifier isLoading = ValueNotifier(false);
 
           Widget tagInput() {
@@ -1333,67 +1304,15 @@ class _PostWidgetState extends State<PostWidget> with RouteAware {
                         )),
                       ),
                       Expanded(
-                        child: TypeAheadField(
-                          direction: AxisDirection.up,
-                          hideOnLoading: true,
-                          hideOnEmpty: true,
-                          hideOnError: true,
-                          keepSuggestionsOnSuggestionSelected: true,
-                          textFieldConfiguration: TextFieldConfiguration(
-                            controller: textController,
-                            autofocus: true,
-                            maxLines: 1,
-                            inputFormatters: [LowercaseTextInputFormatter()],
-                            decoration: InputDecoration(
-                                labelText: tagSet,
-                                border: UnderlineInputBorder()),
-                            onSubmitted: (_) async {
+                        child: tagInputField(
+                            labelText: tagSet,
+                            onSubmit: () async {
                               if (await doEdit.value()) {
                                 bottomSheetController.close();
                               }
                             },
-                          ),
-                          onSuggestionSelected: (suggestion) {
-                            List<String> tags = textController.text.split(' ');
-                            List<String> before = [];
-                            for (String tag in tags) {
-                              before.add(tag);
-                              if (before.join(' ').length >=
-                                  textController.selection.extent.offset) {
-                                tags[tags.indexOf(tag)] = suggestion;
-                                break;
-                              }
-                            }
-                            textController.text = tags.join(' ') + ' ';
-                            setFocusToEnd(textController);
-                          },
-                          itemBuilder: (BuildContext context, itemData) {
-                            return ListTile(
-                              title: Text(itemData),
-                            );
-                          },
-                          suggestionsCallback: (String pattern) async {
-                            List<String> tags = textController.text.split(' ');
-                            List<String> before = [];
-                            int selection = 0;
-                            for (String tag in tags) {
-                              before.add(tag);
-                              if (before.join(' ').length >=
-                                  textController.selection.extent.offset) {
-                                selection = tags.indexOf(tag);
-                                break;
-                              }
-                            }
-                            if (tags[selection].trim().isNotEmpty) {
-                              return (await client.tags(tags[selection],
-                                      category: group[tagSet]))
-                                  .map((t) => t['name'])
-                                  .toList();
-                            } else {
-                              return [];
-                            }
-                          },
-                        ),
+                            controller: textController,
+                            category: categories[tagSet]),
                       ),
                     ],
                   )
@@ -1434,10 +1353,10 @@ class _PostWidgetState extends State<PostWidget> with RouteAware {
                             String category;
                             if (validator.length == 0) {
                               category = 'general';
-                            } else if (group[tagSet] !=
+                            } else if (categories[tagSet] !=
                                 validator[0]['category']) {
-                              category = group.keys.firstWhere(
-                                  (k) => group[k] == validator[0]['category']);
+                              category = categories.keys.firstWhere((k) =>
+                                  categories[k] == validator[0]['category']);
                             }
                             if (category != null) {
                               widget.post.tags.value[tagSet].remove(tag);
@@ -2636,28 +2555,32 @@ Map<String, String> ratings = {
   'e': 'Explicit',
 };
 
-Future<void> tryRemoveFav(BuildContext context, Post post) async {
+Future<bool> tryRemoveFav(BuildContext context, Post post) async {
   if (await client.removeFavorite(post.id)) {
     post.isFavorite.value = false;
     post.favorites.value -= 1;
+    return Future.value(true);
   } else {
     post.isFavorite.value = true;
     Scaffold.of(context).showSnackBar(SnackBar(
       duration: Duration(seconds: 1),
       content: Text('Failed to remove Post #${post.id} from favorites'),
     ));
+    return Future.value(false);
   }
 }
 
-Future<void> tryAddFav(BuildContext context, Post post) async {
+Future<bool> tryAddFav(BuildContext context, Post post) async {
   if (await client.addFavorite(post.id)) {
     post.isFavorite.value = true;
     post.favorites.value += 1;
+    return Future.value(true);
   } else {
     Scaffold.of(context).showSnackBar(SnackBar(
       duration: Duration(seconds: 1),
       content: Text('Failed to add Post #${post.id} to favorites'),
     ));
+    return Future.value(false);
   }
 }
 
@@ -2717,3 +2640,35 @@ Future<void> resetPost(Post post, {bool online = false}) async {
   post.parent.value = reset.parent.value;
   post.isEditing.value = false;
 }
+
+Color getCategoryColor(String category) {
+  switch (category) {
+    case 'general':
+      return Colors.indigo[300];
+    case 'species':
+      return Colors.teal[300];
+    case 'character':
+      return Colors.lightGreen[300];
+    case 'copyright':
+      return Colors.yellow[300];
+    case 'meta':
+      return Colors.deepOrange[300];
+    case 'lore':
+      return Colors.pink[300];
+    case 'artist':
+      return Colors.deepPurple[300];
+    default:
+      return Colors.grey[300];
+  }
+}
+
+Map<String, int> categories = {
+  'general': 0,
+  'species': 5,
+  'character': 4,
+  'copyright': 3,
+  'artist': 1,
+  'invalid': 6,
+  'lore': 8,
+  'meta': 7,
+};

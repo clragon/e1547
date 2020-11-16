@@ -18,16 +18,16 @@ class Client {
   HttpHelper http = HttpHelper();
 
   Future<String> host = db.host.value;
-  Future<String> username = db.username.value;
-  Future<String> apiKey = db.apiKey.value;
   Future<List<String>> denylist = db.denylist.value;
   Future<List<String>> following = db.follows.value;
+  Future<Credentials> credentials = db.credentials.value;
 
   String _avatar;
 
   Future<String> get avatar async {
     if (_avatar == null) {
-      int postID = (await client.user(await username))['avatar_id'];
+      int postID =
+          (await client.user((await credentials).username))['avatar_id'];
       Post post = await client.post(postID);
       _avatar = post.image.value.sample['url'];
     }
@@ -36,23 +36,20 @@ class Client {
 
   Client() {
     db.host.addListener(() => host = db.host.value);
-    db.username.addListener(() => username = db.username.value);
-    db.apiKey.addListener(() => apiKey = db.apiKey.value);
+    db.credentials.addListener(() => credentials = db.credentials.value);
     db.denylist.addListener(() => denylist = db.denylist.value);
     db.follows.addListener(() => following = db.follows.value);
 
-    db.username.addListener(login);
-    db.apiKey.addListener(login);
+    db.credentials.addListener(login);
     login();
   }
 
   Future<bool> login() async {
     initialized = () async {
-      String username = await this.username;
-      String apiKey = await this.apiKey;
-      if (username != null && apiKey != null) {
-        if (await tryLogin(username, apiKey)) {
-          http = HttpHelper(username: username, apiKey: apiKey);
+      Credentials credentials = await db.credentials.value;
+      if (credentials != null) {
+        if (await tryLogin(credentials.username, credentials.apikey)) {
+          http = HttpHelper(credentials: credentials);
           return true;
         } else {
           logout();
@@ -74,10 +71,10 @@ class Client {
     });
   }
 
-  Future<bool> saveLogin(String username, String apiKey) async {
-    if (await tryLogin(username, apiKey)) {
-      db.username.value = Future.value(username);
-      db.apiKey.value = Future.value(apiKey);
+  Future<bool> saveLogin(String username, String apikey) async {
+    if (await tryLogin(username, apikey)) {
+      db.credentials.value =
+          Future.value(Credentials(username: username, apikey: apikey));
       return true;
     } else {
       return false;
@@ -86,18 +83,16 @@ class Client {
 
   Future<bool> hasLogin() async {
     await initialized;
-    return !(await username == null || await apiKey == null);
+    return (await credentials != null);
   }
 
   Future<void> logout() async {
-    db.username.value = Future.value(null);
-    db.apiKey.value = Future.value(null);
+    db.credentials.value = Future.value(null);
     _avatar = null;
     http = HttpHelper();
   }
 
-  Future<List<Post>> posts(String tags, int page,
-      {bool filter = true, int attempt = 0}) async {
+  Future<List<Post>> posts(String tags, int page, {int attempt = 0}) async {
     await initialized;
     try {
       String body = await http.get(await host, '/posts.json', query: {
@@ -118,14 +113,13 @@ class Client {
         if (post.image.value.file['ext'] == 'swf') {
           continue;
         }
-        if (filter && await isBlacklisted(post)) {
-          continue;
+        if (await isBlacklisted(post)) {
+          post.isBlacklisted = true;
         }
         posts.add(post);
       }
       if (hasPosts && posts.length == 0 && attempt < 3) {
-        return client.posts(tags, page + 1,
-            filter: filter, attempt: attempt + 1);
+        return client.posts(tags, page + 1, attempt: attempt + 1);
       }
       return posts;
     } catch (SocketException) {
@@ -501,7 +495,7 @@ class Client {
     return tags;
   }
 
-  Future<List<Comment>> comments(int postID, int page) async {
+  Future<List<Comment>> comments(int postID, String page) async {
     String body = await http.get(await host, '/comments.json', query: {
       'group_by': 'comment',
       'search[post_id]': '$postID',

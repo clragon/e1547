@@ -1,8 +1,6 @@
 import 'package:e1547/wiki_page.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_typeahead/flutter_typeahead.dart';
 
-import 'client.dart';
 import 'interface.dart';
 import 'settings.dart' show db;
 
@@ -17,7 +15,7 @@ class _DenyListPageState extends State<DenyListPage> {
   int editing;
   bool isSearching = false;
   List<String> denylist = [];
-  TextEditingController tagController = TextEditingController();
+  TextEditingController controller = TextEditingController();
   PersistentBottomSheetController<String> bottomSheetController;
 
   @override
@@ -32,19 +30,19 @@ class _DenyListPageState extends State<DenyListPage> {
 
   Function() _addTags(BuildContext context, {int edit}) {
     return () async {
-      setFocusToEnd(tagController);
+      setFocusToEnd(controller);
       if (isSearching) {
         if (editing != null) {
-          if (tagController.text.trim().isNotEmpty) {
-            denylist[editing] = tagController.text.trim();
+          if (controller.text.trim().isNotEmpty) {
+            denylist[editing] = controller.text.trim();
           } else {
             denylist.removeAt(editing);
           }
           db.denylist.value = Future.value(denylist);
           bottomSheetController?.close();
         } else {
-          if (tagController.text.trim().isNotEmpty) {
-            denylist.add(tagController.text.trim());
+          if (controller.text.trim().isNotEmpty) {
+            denylist.add(controller.text.trim());
             db.denylist.value = Future.value(denylist);
             bottomSheetController?.close();
           }
@@ -52,75 +50,18 @@ class _DenyListPageState extends State<DenyListPage> {
       } else {
         if (edit != null) {
           editing = edit;
-          tagController.text = denylist[editing];
+          controller.text = denylist[editing];
         } else {
-          tagController.text = '';
+          controller.text = '';
         }
         bottomSheetController =
             Scaffold.of(context).showBottomSheet((context) => Container(
                   padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10),
                   child: Column(mainAxisSize: MainAxisSize.min, children: [
-                    TypeAheadField(
-                      direction: AxisDirection.up,
-                      hideOnLoading: true,
-                      hideOnEmpty: true,
-                      hideOnError: true,
-                      keepSuggestionsOnSuggestionSelected: true,
-                      textFieldConfiguration: TextFieldConfiguration(
-                        controller: tagController,
-                        autofocus: true,
-                        maxLines: 1,
-                        inputFormatters: [LowercaseTextInputFormatter()],
-                        decoration: InputDecoration(
-                            labelText: 'Add to blacklist',
-                            border: UnderlineInputBorder()),
-                        onSubmitted: (_) {
-                          _addTags(context)();
-                        },
-                      ),
-                      onSuggestionSelected: (suggestion) {
-                        List<String> tags = tagController.text.split(' ');
-                        List<String> before = [];
-                        for (String tag in tags) {
-                          before.add(tag);
-                          if (before.join(' ').length >=
-                              tagController.selection.extent.offset) {
-                            String operator = tags[tags.indexOf(tag)][0];
-                            if (operator != '-' && operator != '~') {
-                              operator = '';
-                            }
-                            tags[tags.indexOf(tag)] = operator + suggestion;
-                            break;
-                          }
-                        }
-                        tagController.text = tags.join(' ') + ' ';
-                        setFocusToEnd(tagController);
-                      },
-                      itemBuilder: (BuildContext context, itemData) {
-                        return ListTile(
-                          title: Text(itemData),
-                        );
-                      },
-                      suggestionsCallback: (String pattern) async {
-                        List<String> tags = tagController.text.split(' ');
-                        List<String> before = [];
-                        int selection = 0;
-                        for (String tag in tags) {
-                          before.add(tag);
-                          if (before.join(' ').length >=
-                              tagController.selection.extent.offset) {
-                            selection = tags.indexOf(tag);
-                            break;
-                          }
-                        }
-                        if (noDash(tags[selection].trim()).isNotEmpty) {
-                          return (await client.tags(noDash(tags[selection])))
-                              .map((t) => t['name'])
-                              .toList();
-                        } else {
-                          return [];
-                        }
-                      },
+                    tagInputField(
+                      controller: controller,
+                      labelText: 'Add to blacklist',
+                      onSubmit: _addTags(context),
                     ),
                   ]),
                 ));
@@ -345,15 +286,4 @@ class _DenyListPageState extends State<DenyListPage> {
       ),
     );
   }
-}
-
-String noDash(String s) {
-  if (s.isNotEmpty) {
-    if (s[0] == '-' || s[0] == '~') {
-      return s.substring(1);
-    } else {
-      return s;
-    }
-  }
-  return '';
 }

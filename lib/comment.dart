@@ -173,10 +173,10 @@ class _CommentsWidgetState extends State<CommentsWidget> {
                             ),
                           ),
                           FutureBuilder(
-                            future: db.username.value,
+                            future: db.credentials.value,
                             builder: (context, snapshot) {
                               if (snapshot.hasData &&
-                                  snapshot.data == comment.creator) {
+                                  snapshot.data.username == comment.creator) {
                                 return Padding(
                                   padding: EdgeInsets.only(left: 8),
                                   child: InkWell(
@@ -241,25 +241,19 @@ class CommentProvider extends DataProvider<Comment> {
   List<Comment> get comments => super.items;
 
   CommentProvider({@required this.postID})
-      : super(provider: ((search, page) => client.comments(postID, page)));
-
-  /*
-  provider: provider ??
-    (search, page, {pages}) async {
-      String cursor;
-      if (pages.length == 0) {
-        cursor = 'a0';
-      } else {
-        cursor =
-            'a${pages.last.reduce((value, element) => (value.id > element.id) ? value : element).id.toString()}';
-      }
-      List<Comment> comments =
-          await client.comments(postID, cursor);
-      comments.sort((one, two) => DateTime.parse(one.creation)
-          .compareTo(DateTime.parse(two.creation)));
-      return comments;
-    }
-   */
+      : super.extended(extendedProvider: ((search, pages) async {
+          String cursor;
+          if (pages.length == 0) {
+            cursor = 'a0';
+          } else {
+            cursor =
+                'a${pages.last.reduce((value, element) => (value.id > element.id) ? value : element).id.toString()}';
+          }
+          List<Comment> comments = await client.comments(postID, cursor);
+          comments.sort((one, two) => DateTime.parse(one.creation)
+              .compareTo(DateTime.parse(two.creation)));
+          return comments;
+        }));
 }
 
 Future<bool> sendComment(BuildContext context, Post post,
