@@ -14,6 +14,7 @@ import 'package:e1547/pool.dart';
 import 'package:e1547/posts_page.dart';
 import 'package:e1547/settings.dart' show db;
 import 'package:e1547/wiki_page.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'
     show FilteringTextInputFormatter, SystemChrome, SystemUiOverlay;
@@ -25,13 +26,16 @@ import 'package:intl/intl.dart';
 import 'package:like_button/like_button.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:photo_view/photo_view.dart';
-import 'package:photo_view/photo_view_gallery.dart';
 import 'package:share/share.dart';
 import 'package:url_launcher/url_launcher.dart' as url;
 import 'package:video_player/video_player.dart';
 import 'package:wakelock/wakelock.dart';
 
 import 'main.dart';
+
+List<Post> loadedVideos = [];
+
+enum ImageType { Image, Video, Unsupported }
 
 class _Image {
   Map file;
@@ -57,31 +61,33 @@ class Post {
   List<int> pools = [];
   List<int> children = [];
 
-  bool isDeleted;
-  bool isLoggedIn;
-  bool isBlacklisted;
+  bool isDeleted = false;
+  bool isLoggedIn = false;
+  bool isBlacklisted = false;
 
   ValueNotifier<_Image> image = ValueNotifier(null);
 
   ValueNotifier<Map> tags = ValueNotifier({});
 
   ValueNotifier<int> comments = ValueNotifier(null);
-  ValueNotifier<int> parent = ValueNotifier(null);
   ValueNotifier<int> score = ValueNotifier(null);
   ValueNotifier<int> favorites = ValueNotifier(null);
+  ValueNotifier<int> parent = ValueNotifier(null);
 
   ValueNotifier<String> rating = ValueNotifier(null);
   ValueNotifier<String> description = ValueNotifier(null);
 
   ValueNotifier<List<String>> sources = ValueNotifier([]);
 
-  ValueNotifier<bool> isFavorite = ValueNotifier(null);
+  ValueNotifier<bool> isFavorite = ValueNotifier(false);
   ValueNotifier<bool> isEditing = ValueNotifier(false);
   ValueNotifier<bool> showUnsafe = ValueNotifier(false);
 
   ValueNotifier<VoteStatus> voteStatus = ValueNotifier(VoteStatus.unknown);
 
   VideoPlayerController controller;
+
+  ImageType type;
 
   Post.fromRaw(this.raw) {
     id = raw['id'] as int;
@@ -101,9 +107,7 @@ class Post {
     rating.value = (raw['rating'] as String).toLowerCase();
     comments.value = (raw['comment_count'] as int);
 
-    // somehow, there are sometimes duplicates in there
-    // not my fault, the json just is like that
-    // we remove them with this convenient LinkedHashSet
+    // remove occasional duplicate data
     pools.addAll(LinkedHashSet<int>.from(raw['pools'].cast<int>()).toList());
 
     sources.value.addAll(raw['sources'].cast<String>());
@@ -116,10 +120,69 @@ class Post {
     uploader = (raw['uploader_id'] as int).toString();
 
     image.value = _Image.fromRaw(raw);
-    if (image.value.file['ext'] == 'webm') {
+
+    switch (image.value.file['ext'].toLowerCase()) {
+      case 'webm':
+        if (!Platform.isIOS) {
+          type = ImageType.Video;
+        } else {
+          type = ImageType.Unsupported;
+        }
+        break;
+      case 'swf':
+        type = ImageType.Unsupported;
+        break;
+      default:
+        type = ImageType.Image;
+        break;
+    }
+
+    prepareVideo();
+  }
+
+  Future<void> prepareVideo() async {
+    if (type == ImageType.Video) {
+      if (controller != null) {
+        await controller.pause();
+        await controller.dispose();
+      }
       controller = VideoPlayerController.network(image.value.file['url']);
       controller.setLooping(true);
+      controller.addListener(() {
+        controller.value.isPlaying ? Wakelock.enable() : Wakelock.disable();
+      });
     }
+  }
+
+  Future<void> initVideo() async {
+    if (type != ImageType.Video || loadedVideos.contains(this)) {
+      return;
+    }
+    if (loadedVideos.length >= 6) {
+      await loadedVideos[0].prepareVideo();
+      loadedVideos.removeAt(0);
+    }
+    loadedVideos.add(this);
+    await this.controller.initialize();
+  }
+
+  bool get isVisible =>
+      (isFavorite.value || showUnsafe.value || !isBlacklisted);
+
+  void dispose() {
+    tags.dispose();
+    comments.dispose();
+    parent.dispose();
+    score.dispose();
+    favorites.dispose();
+    rating.dispose();
+    description.dispose();
+    sources.dispose();
+    isFavorite.dispose();
+    isEditing.dispose();
+    showUnsafe.dispose();
+    controller?.dispose();
+    loadedVideos.remove(this);
   }
 
   // build post URL
@@ -138,55 +201,50 @@ class PostPreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget imagePreviewWidget() {
-      return ValueListenableBuilder(
-          valueListenable: post.image,
-          builder: (context, value, child) {
-            if (post.image.value.file['url'] != null) {
-              return Hero(
-                tag: 'image_${post.id}',
-                child: CachedNetworkImage(
-                  imageUrl: post.image.value.sample['url'],
-                  errorWidget: (context, url, error) => const Icon(Icons.error),
-                  fit: BoxFit.cover,
-                ),
-              );
-            } else {
-              return Center(child: Text(post.isDeleted ? 'deleted' : 'unsafe'));
-            }
-          });
-    }
-
-    Widget imageContainer() {
+    Widget image() {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Expanded(
-            child: imagePreviewWidget(),
+            child: ValueListenableBuilder(
+                valueListenable: post.image,
+                builder: (context, value, child) {
+                  if (post.isDeleted) {
+                    return Center(child: Text('deleted'));
+                  }
+                  if (post.type == ImageType.Unsupported) {
+                    return Center(child: Text('unsupported'));
+                  }
+                  if (post.image.value.file['url'] == null) {
+                    return Center(child: Text('unsafe'));
+                  }
+                  return Hero(
+                    tag: 'image_${post.id}',
+                    child: CachedNetworkImage(
+                      imageUrl: post.image.value.sample['url'],
+                      errorWidget: (context, url, error) =>
+                          const Icon(Icons.error),
+                      fit: BoxFit.cover,
+                    ),
+                  );
+                }),
           ),
-          // postInfoWidget(),
         ],
       );
     }
 
-    Widget playOverlay() {
+    Widget overlay() {
       if (post.image.value.file['ext'] == 'gif') {
-        return Positioned(
-            top: 0,
-            right: 0,
-            child: Container(
-              color: Colors.black12,
-              child: Icon(Icons.gif),
-            ));
+        return Container(
+          color: Colors.black12,
+          child: Icon(Icons.gif),
+        );
       }
-      if (post.image.value.file['ext'] == 'webm') {
-        return Positioned(
-            top: 0,
-            right: 0,
-            child: Container(
-              color: Colors.black12,
-              child: Icon(Icons.play_arrow),
-            ));
+      if (post.type == ImageType.Video) {
+        return Container(
+          color: Colors.black12,
+          child: Icon(Icons.play_arrow),
+        );
       }
       return Container();
     }
@@ -194,30 +252,27 @@ class PostPreview extends StatelessWidget {
     return Card(
       child: InkWell(
           onTap: onPressed,
-          child: () {
-            return Stack(
-              children: <Widget>[
-                imageContainer(),
-                playOverlay(),
-              ],
-            );
-          }()),
+          child: Stack(
+            children: <Widget>[
+              image(),
+              Positioned(top: 0, right: 0, child: overlay()),
+            ],
+          )),
     );
   }
 }
 
-// this thing allows swiping through posts
 class PostSwipe extends StatelessWidget {
   final PostProvider provider;
-  final int startingIndex;
+  final int initialPage;
 
-  PostSwipe({@required this.provider, this.startingIndex = 0});
+  PostSwipe({@required this.provider, this.initialPage = 0});
 
   @override
   Widget build(BuildContext context) {
-    int lastIndex = startingIndex;
+    int lastIndex = initialPage;
     PageController controller = PageController(
-        initialPage: startingIndex, viewportFraction: 1.000000000001);
+        initialPage: initialPage, viewportFraction: 1.000000000001);
 
     Widget _pageBuilder(BuildContext context, int index) {
       if (index == provider.posts.value.length - 1) {
@@ -239,21 +294,20 @@ class PostSwipe extends StatelessWidget {
           controller: controller,
           itemBuilder: _pageBuilder,
           onPageChanged: (index) {
-            int precache = 2;
-            for (int i = -precache - 1; i < precache; i++) {
+            int reach = 2;
+            for (int i = -(reach + 1); i < reach; i++) {
               int target = index + 1 + i;
-              if (target > 0 && target < provider.posts.value.length) {
-                if (provider.posts.value[target].image.value.sample['url'] !=
-                    null) {
+              if (0 < target && target < provider.posts.value.length) {
+                String url =
+                    provider.posts.value[target].image.value.sample['url'];
+                if (url != null) {
                   precacheImage(
-                    CachedNetworkImageProvider(
-                        provider.posts.value[target].image.value.sample['url']),
+                    CachedNetworkImageProvider(url),
                     context,
                   );
                 }
               }
             }
-
             if (provider.posts.value.length != 0) {
               if (provider.posts.value[lastIndex].isEditing.value) {
                 resetPost(provider.posts.value[lastIndex]);
@@ -286,22 +340,19 @@ class _PostWidgetState extends State<PostWidget> with RouteAware {
   PersistentBottomSheetController bottomSheetController;
   bool keepPlaying = false;
 
-  bool isVisible() {
-    return (widget.post.isFavorite.value ||
-        widget.post.showUnsafe.value ||
-        !widget.post.isBlacklisted);
-  }
-
-  void updateWidget() {
+  Future<void> updateWidget() async {
     if (this.mounted && !widget.provider.posts.value.contains(widget.post)) {
+      Post replacement = Post.fromRaw(widget.post.raw);
+      replacement.isLoggedIn = widget.post.isLoggedIn;
+      replacement.isBlacklisted = widget.post.isBlacklisted;
       if (ModalRoute.of(context).isCurrent) {
         Navigator.of(context).pushReplacement(MaterialPageRoute<Null>(
-            builder: (context) => PostWidget(post: widget.post)));
+            builder: (context) => PostWidget(post: replacement)));
       } else {
         Navigator.of(context).replace(
             oldRoute: ModalRoute.of(context),
             newRoute: MaterialPageRoute<Null>(
-                builder: (context) => PostWidget(post: widget.post)));
+                builder: (context) => PostWidget(post: replacement)));
       }
     }
   }
@@ -318,23 +369,13 @@ class _PostWidgetState extends State<PostWidget> with RouteAware {
     }
   }
 
-  void videoWakelock() {
-    if (widget.post.controller != null) {
-      widget.post.controller.value.isPlaying
-          ? Wakelock.enable()
-          : Wakelock.disable();
-    }
-  }
-
   @override
   void initState() {
     super.initState();
     widget.post.isEditing.addListener(closeBottomSheet);
-    widget.provider?.pages?.addListener(updateWidget);
-    if (widget.post.controller != null &&
-        !widget.post.controller.value.initialized) {
-      widget.post.controller?.initialize();
-      widget.post.controller.addListener(videoWakelock);
+    widget.provider?.posts?.addListener(updateWidget);
+    if (!(widget.post.controller?.value?.initialized ?? true)) {
+      widget.post.initVideo();
     }
   }
 
@@ -343,8 +384,7 @@ class _PostWidgetState extends State<PostWidget> with RouteAware {
     super.didChangeDependencies();
     routeObserver.subscribe(this, ModalRoute.of(context));
     if (widget.post.image.value.file['url'] != null) {
-      String ext = widget.post.image.value.file['ext'];
-      if (ext != 'webm' && ext != 'swf') {
+      if (widget.post.type == ImageType.Image) {
         precacheImage(
           CachedNetworkImageProvider(widget.post.image.value.file['url']),
           context,
@@ -367,72 +407,89 @@ class _PostWidgetState extends State<PostWidget> with RouteAware {
   void dispose() {
     super.dispose();
     routeObserver.unsubscribe(this);
-    widget.provider?.pages?.removeListener(updateWidget);
     if (widget.post.isEditing.value) {
       resetPost(widget.post);
     }
+    widget.provider?.pages?.removeListener(updateWidget);
     widget.post.isEditing.removeListener(closeBottomSheet);
-    if (widget.post.controller != null &&
-        widget.post.controller.value.initialized) {
-      widget.post.controller.pause();
-    }
-    widget.post.controller?.removeListener(videoWakelock);
+    widget.post.controller?.pause();
   }
 
   @override
   Widget build(BuildContext context) {
-    void onImageTap(BuildContext context) {
-      if (widget.post.image.value.file['url'] != null) {
-        if (widget.post.image.value.file['ext'] == 'swf') {
-          url.launch(widget.post.image.value.file['url']);
-        } else if (isVisible()) {
-          keepPlaying = true;
-          Navigator.of(context).push(MaterialPageRoute<Null>(
-              settings: RouteSettings(name: 'gallery'),
-              builder: (context) {
-                Widget gallery(List<Post> posts) {
-                  return ImageGallery(
-                    index: posts.indexOf(widget.post),
-                    posts: posts,
-                    controller: widget.controller,
-                  );
-                }
-
-                List<Post> posts = widget.post.isEditing.value
-                    ? [widget.post]
-                    : (widget.provider?.posts?.value ?? [widget.post]);
-                if (widget.provider != null) {
-                  return ValueListenableBuilder(
-                      valueListenable: widget.provider.pages,
-                      builder: (context, value, child) => gallery(posts));
-                } else {
-                  return gallery(posts);
-                }
-              }));
-        }
+    void onTapImage(BuildContext context) {
+      if (widget.post.image.value.file['url'] == null) {
+        return;
       }
-    }
-
-    Widget postImageWidget() {
-      Widget imageContainerWidget() {
-        Widget image() {
-          return CachedNetworkImage(
-            imageUrl: widget.post.image.value.sample['url'],
-            placeholder: (context, url) => Center(
-                child: Container(
-              height: 26,
-              width: 26,
-              child: const CircularProgressIndicator(),
-            )),
-            errorWidget: (context, url, error) =>
-                Center(child: Icon(Icons.error_outline)),
+      if (!widget.post.isVisible) {
+        return;
+      }
+      if (widget.post.type == ImageType.Unsupported) {
+        url.launch(widget.post.image.value.file['url']);
+        return;
+      }
+      keepPlaying = true;
+      Navigator.of(context).push(MaterialPageRoute<Null>(builder: (context) {
+        Widget gallery(List<Post> posts) {
+          return ImageGallery(
+            index: posts.indexOf(widget.post),
+            posts: posts,
+            controller: widget.controller,
           );
         }
 
-        Widget video() {
+        List<Post> posts;
+        if (widget.post.isEditing.value) {
+          posts = [widget.post];
+        } else {
+          posts = widget.provider?.posts?.value ?? [widget.post];
+        }
+
+        if (widget.provider != null) {
+          return ValueListenableBuilder(
+            valueListenable: widget.provider.pages,
+            builder: (context, value, child) {
+              return gallery(posts);
+            },
+          );
+        } else {
+          return gallery(posts);
+        }
+      }));
+    }
+
+    Widget postImageWidget() {
+      Widget imageContainer() {
+        Widget image(Post post) {
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Flexible(
+                child: CachedNetworkImage(
+                  imageUrl: widget.post.image.value.sample['url'],
+                  fit: BoxFit.contain,
+                  placeholder: (context, url) => Center(
+                      child: Container(
+                    height: 26,
+                    width: 26,
+                    child: CircularProgressIndicator(),
+                  )),
+                  errorWidget: (context, url, error) =>
+                      Center(child: Icon(Icons.error_outline)),
+                ),
+              ),
+              // postInfoWidget(),
+            ],
+          );
+        }
+
+        Widget video(Post post) {
           return ValueListenableBuilder(
             valueListenable: widget.post.controller,
             builder: (context, value, child) => GestureDetector(
+              behavior: HitTestBehavior.opaque,
               onTap: () => value.isPlaying
                   ? widget.post.controller.pause()
                   : widget.post.controller.play(),
@@ -444,33 +501,19 @@ class _PostWidgetState extends State<PostWidget> with RouteAware {
                           aspectRatio: value.aspectRatio,
                           child: VideoPlayer(widget.post.controller),
                         )
-                      : CachedNetworkImage(
-                          imageUrl: widget.post.image.value.sample['url'],
-                          placeholder: (context, url) => Center(
-                              child: Container(
-                            height: 26,
-                            width: 26,
-                            child: const CircularProgressIndicator(),
-                          )),
-                          errorWidget: (context, url, error) =>
-                              Center(child: Icon(Icons.error_outline)),
-                        ),
-                  Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      AnimatedOpacity(
-                        duration: Duration(seconds: 1),
-                        opacity: value.isPlaying &&
-                                (!value.initialized || value.isBuffering)
-                            ? 1
-                            : 0,
-                        child: Container(
-                          height: 24,
-                          width: 24,
+                      : image(post),
+                  crossFade(
+                      showChild: value.isPlaying &&
+                          (!value.initialized || value.isBuffering),
+                      child: Container(
+                        height: 30,
+                        width: 30,
+                        child: Padding(
+                          padding: EdgeInsets.all(4),
                           child: CircularProgressIndicator(),
                         ),
                       ),
-                      AnimatedOpacity(
+                      secondChild: AnimatedOpacity(
                         duration: Duration(milliseconds: 300),
                         opacity: value.isPlaying ? 0 : 1,
                         child: IconShadowWidget(
@@ -481,9 +524,7 @@ class _PostWidgetState extends State<PostWidget> with RouteAware {
                           ),
                           shadowColor: Colors.black,
                         ),
-                      )
-                    ],
-                  ),
+                      )),
                 ],
               ),
             ),
@@ -496,7 +537,7 @@ class _PostWidgetState extends State<PostWidget> with RouteAware {
             builder: (context, value, child) => crossFade(
               showChild: !widget.post.isDeleted &&
                   (widget.post.image.value.file['url'] == null ||
-                      !isVisible() ||
+                      !widget.post.isVisible ||
                       widget.post.showUnsafe.value),
               duration: Duration(milliseconds: 200),
               child: Card(
@@ -529,7 +570,7 @@ class _PostWidgetState extends State<PostWidget> with RouteAware {
                           await client.post(widget.post.id, unsafe: true);
                       if (widget.post.image.value.file['url'] == null) {
                         widget.post.image.value = urls.image.value;
-                      } else if (!widget.post.isBlacklisted) {
+                      } else {
                         widget.post.image.value =
                             _Image.fromRaw(widget.post.raw);
                       }
@@ -544,8 +585,8 @@ class _PostWidgetState extends State<PostWidget> with RouteAware {
         Widget fullscreenButton() {
           return crossFade(
             showChild: widget.post.image.value.file['url'] != null &&
-                isVisible() &&
-                widget.post.controller != null,
+                widget.post.isVisible &&
+                widget.post.type == ImageType.Video,
             duration: Duration(milliseconds: 200),
             child: Card(
               elevation: 0,
@@ -559,7 +600,7 @@ class _PostWidgetState extends State<PostWidget> with RouteAware {
                     color: Theme.of(context).iconTheme.color,
                   ),
                 ),
-                onTap: () => onImageTap(context),
+                onTap: () => onTapImage(context),
               ),
             ),
           );
@@ -571,70 +612,23 @@ class _PostWidgetState extends State<PostWidget> with RouteAware {
             builder: (BuildContext context, value, Widget child) {
               return Stack(
                 children: <Widget>[
-                  Container(
-                    constraints: BoxConstraints(
-                      minHeight: (MediaQuery.of(context).size.height / 2),
-                    ),
-                    child: Center(
-                      child: () {
-                        if (widget.post.isDeleted) {
-                          return const Text(
-                            'Post was deleted',
-                            textAlign: TextAlign.center,
-                          );
-                        }
-                        if (!isVisible()) {
-                          return Text(
-                            'Post is blacklisted',
-                            textAlign: TextAlign.center,
-                          );
-                        }
-                        if (widget.post.image.value.file['url'] == null) {
-                          return Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: <Widget>[
-                              Padding(
-                                padding: EdgeInsets.all(8),
-                                child: const Text(
-                                  'Image unavailable in safe mode',
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                            ],
-                          );
-                        }
-                        if (widget.post.image.value.file['ext'] == "swf") {
-                          return Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: <Widget>[
-                              Padding(
-                                padding: EdgeInsets.all(8),
-                                child: Text(
-                                  'Flash is not supported',
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                              Card(
-                                child: InkWell(
-                                  child: Padding(
-                                      padding: EdgeInsets.all(8),
-                                      child: Text('Open')),
-                                  onTap: () async => url.launch(
-                                      widget.post.image.value.file['url']),
-                                ),
-                              )
-                            ],
-                          );
-                        }
-                        return Hero(
+                  InkWell(
+                    onTap: () => onTapImage(context),
+                    child: Container(
+                      constraints: BoxConstraints(
+                        minHeight: (MediaQuery.of(context).size.height / 2),
+                      ),
+                      child: Center(
+                        child: Hero(
                           tag: 'image_${widget.post.id}',
-                          child: widget.post.image.value.file['ext'] == 'webm'
-                              ? video()
-                              : image(),
-                        );
-                      }(),
+                          child: PostOverlay(
+                            post: widget.post,
+                            builder: widget.post.type == ImageType.Video
+                                ? video
+                                : image,
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                   Positioned(
@@ -661,10 +655,7 @@ class _PostWidgetState extends State<PostWidget> with RouteAware {
       return ValueListenableBuilder(
         valueListenable: widget.post.showUnsafe,
         builder: (context, value, child) {
-          return InkWell(
-            onTap: () => onImageTap(context),
-            child: imageContainerWidget(),
-          );
+          return imageContainer();
         },
       );
     }
@@ -681,9 +672,9 @@ class _PostWidgetState extends State<PostWidget> with RouteAware {
                   int count = 0;
                   for (String artist in widget.post.tags.value['artist']) {
                     switch (artist) {
+                      case 'epilepsy_warning':
                       case 'conditional_dnp':
                       case 'sound_warning':
-                      case 'epilepsy_warning':
                       case 'avoid_posting':
                         break;
                       default:
@@ -699,12 +690,10 @@ class _PostWidgetState extends State<PostWidget> with RouteAware {
                               fontSize: 14.0,
                             ),
                           ),
-                          onTap: () {
-                            return Navigator.of(context).push(
-                                MaterialPageRoute<Null>(builder: (context) {
-                              return SearchPage(tags: artist);
-                            }));
-                          },
+                          onTap: () => Navigator.of(context).push(
+                              MaterialPageRoute<Null>(
+                                  builder: (context) =>
+                                      SearchPage(tags: artist))),
                           onLongPress: () =>
                               wikiDialog(context, artist, actions: true),
                         )));
@@ -757,8 +746,8 @@ class _PostWidgetState extends State<PostWidget> with RouteAware {
                             ));
                             Scaffold.of(context).showSnackBar(SnackBar(
                               duration: Duration(seconds: 1),
-                              content: Text(
-                                  'Copied post ID #${widget.post.id.toString()}'),
+                              content:
+                                  Text('Copied post ID #${widget.post.id}'),
                             ));
                           },
                         );
@@ -767,11 +756,14 @@ class _PostWidgetState extends State<PostWidget> with RouteAware {
                     InkWell(
                       child: Row(children: [
                         Icon(Icons.person, size: 14.0),
-                        Text(' ${widget.post.uploader}'),
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 4),
+                          child: Text(widget.post.uploader),
+                        ),
                       ]),
                       onTap: () async {
-                        String uploader = (await client
-                            .user(widget.post.uploader.toString()))['name'];
+                        String uploader =
+                            (await client.user(widget.post.uploader))['name'];
                         Navigator.of(context)
                             .push(MaterialPageRoute<Null>(builder: (context) {
                           return SearchPage(tags: 'user:$uploader');
@@ -813,9 +805,9 @@ class _PostWidgetState extends State<PostWidget> with RouteAware {
                               return TextEditor(
                                 title: '#${widget.post.id} description',
                                 content: value,
-                                validator: (context, text) {
+                                validator: (context, text) async {
                                   widget.post.description.value = text;
-                                  return Future.value(true);
+                                  return true;
                                 },
                               );
                             }));
@@ -872,8 +864,7 @@ class _PostWidgetState extends State<PostWidget> with RouteAware {
                             );
                           },
                           onTap: (isLiked) async {
-                            if (widget.post.isLoggedIn &&
-                                !widget.post.isDeleted) {
+                            if (widget.post.isLoggedIn) {
                               if (isLiked) {
                                 tryVote(context, widget.post, true, false);
                                 return false;
@@ -893,7 +884,7 @@ class _PostWidgetState extends State<PostWidget> with RouteAware {
                       child: ValueListenableBuilder(
                         valueListenable: widget.post.score,
                         builder: (context, value, child) {
-                          return Text(value.toString());
+                          return Text((value ?? 0).toString());
                         },
                       ),
                     ),
@@ -918,8 +909,7 @@ class _PostWidgetState extends State<PostWidget> with RouteAware {
                                   );
                                 },
                                 onTap: (isLiked) async {
-                                  if (widget.post.isLoggedIn &&
-                                      !widget.post.isDeleted) {
+                                  if (widget.post.isLoggedIn) {
                                     if (isLiked) {
                                       tryVote(
                                           context, widget.post, false, false);
@@ -944,7 +934,7 @@ class _PostWidgetState extends State<PostWidget> with RouteAware {
                     ValueListenableBuilder(
                       valueListenable: widget.post.favorites,
                       builder: (context, value, child) {
-                        return Text(value.toString());
+                        return Text((value ?? 0).toString());
                       },
                     ),
                     Padding(
@@ -1113,7 +1103,7 @@ class _PostWidgetState extends State<PostWidget> with RouteAware {
                                               .isEmpty) {
                                             widget.post.parent.value = null;
                                             isLoading.value = false;
-                                            return Future.value(true);
+                                            return true;
                                           }
                                           if (int.tryParse(
                                                   textController.text) !=
@@ -1340,16 +1330,16 @@ class _PostWidgetState extends State<PostWidget> with RouteAware {
                       isLoading.value = true;
                       if (textController.text.trim().isEmpty) {
                         isLoading.value = false;
-                        return Future.value(true);
+                        return true;
                       }
                       List<String> tags = textController.text.trim().split(' ');
                       widget.post.tags.value[tagSet].addAll(tags);
                       widget.post.tags.value[tagSet].sort();
                       widget.post.tags.value = Map.from(widget.post.tags.value);
-                      () async {
-                        if (tagSet != 'general') {
+                      if (tagSet != 'general') {
+                        () async {
                           for (String tag in tags) {
-                            List validator = (await client.tags(tag));
+                            List validator = (await client.autocomplete(tag));
                             String category;
                             if (validator.length == 0) {
                               category = 'general';
@@ -1373,9 +1363,9 @@ class _PostWidgetState extends State<PostWidget> with RouteAware {
                             await new Future.delayed(
                                 const Duration(milliseconds: 200));
                           }
-                        }
-                      }();
-                      return Future.value(true);
+                        }();
+                      }
+                      return true;
                     };
                     bottomSheetController.closed.then((_) {
                       doEdit.value = null;
@@ -1462,29 +1452,32 @@ class _PostWidgetState extends State<PostWidget> with RouteAware {
       Widget commentDisplay() {
         return ValueListenableBuilder(
           valueListenable: widget.post.comments,
-          builder: (BuildContext context, value, Widget child) => crossFade(
-            showChild: value > 0,
-            child: Column(
-              children: <Widget>[
-                Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: OutlineButton(
-                        child: Text('COMMENTS ($value)'),
-                        onPressed: () {
-                          Navigator.of(context).push(MaterialPageRoute<Null>(
-                            settings: RouteSettings(name: 'comments'),
-                            builder: (context) => CommentsWidget(widget.post),
-                          ));
-                        },
-                      ),
-                    )
-                  ],
-                ),
-                Divider(),
-              ],
-            ),
-          ),
+          builder: (BuildContext context, int value, Widget child) {
+            int count = value ?? 0;
+            return crossFade(
+              showChild: count > 0,
+              child: Column(
+                children: <Widget>[
+                  Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: OutlineButton(
+                          child: Text('COMMENTS ($count)'),
+                          onPressed: () {
+                            Navigator.of(context).push(MaterialPageRoute<Null>(
+                              settings: RouteSettings(name: 'comments'),
+                              builder: (context) => CommentsWidget(widget.post),
+                            ));
+                          },
+                        ),
+                      )
+                    ],
+                  ),
+                  Divider(),
+                ],
+              ),
+            );
+          },
         );
       }
 
@@ -1676,10 +1669,10 @@ class _PostWidgetState extends State<PostWidget> with RouteAware {
                               title: '#${widget.post.id} sources',
                               content: value.join('\n'),
                               richEditor: false,
-                              validator: (context, text) {
+                              validator: (context, text) async {
                                 widget.post.sources.value =
                                     text.trim().split('\n');
-                                return Future.value(true);
+                                return true;
                               },
                             );
                           }));
@@ -1872,7 +1865,7 @@ class _PostWidgetState extends State<PostWidget> with RouteAware {
                     behavior: SnackBarBehavior.floating,
                   ));
                 }
-                return Future.value(true);
+                return true;
               };
             }
           }
@@ -1884,15 +1877,15 @@ class _PostWidgetState extends State<PostWidget> with RouteAware {
       valueListenable: widget.post.isEditing,
       builder: (context, value, child) {
         return WillPopScope(
-          onWillPop: () {
+          onWillPop: () async {
             if (doEdit.value != null) {
-              return Future.value(true);
+              return true;
             }
             if (value) {
               resetPost(widget.post);
-              return Future.value(false);
+              return false;
             } else {
-              return Future.value(true);
+              return true;
             }
           },
           child: Scaffold(
@@ -1922,8 +1915,8 @@ class _PostWidgetState extends State<PostWidget> with RouteAware {
   }
 }
 
-enum ImageSize {
-  screen,
+enum LoadingState {
+  none,
   sample,
   full,
 }
@@ -1940,16 +1933,13 @@ class ImageGallery extends StatefulWidget {
 }
 
 class _ImageGalleryState extends State<ImageGallery> {
-  ValueNotifier<int> current = ValueNotifier(null);
   ValueNotifier<bool> showFrame = ValueNotifier(false);
-  ImageSize imageSize;
-  Timer frameToggler;
+  ValueNotifier<int> current = ValueNotifier(null);
 
   void toggleFrame({bool shown}) {
     showFrame.value = shown ?? !showFrame.value;
-    showFrame.value
-        ? SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values)
-        : SystemChrome.setEnabledSystemUIOverlays([]);
+    SystemChrome.setEnabledSystemUIOverlays(
+        showFrame.value ? SystemUiOverlay.values : []);
   }
 
   @override
@@ -1962,38 +1952,302 @@ class _ImageGalleryState extends State<ImageGallery> {
   @override
   void dispose() {
     super.dispose();
-    frameToggler?.cancel();
     SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
   }
 
   @override
   Widget build(BuildContext context) {
-    Widget pictureFrame(Widget picture) {
-      Widget frameDependant(Widget control) {
-        return ValueListenableBuilder(
-          valueListenable: showFrame,
-          builder: (context, value, child) => crossFade(
-            duration: Duration(milliseconds: 200),
-            showChild: value,
-            child: child,
-          ),
-          child: control,
-        );
-      }
+    Widget frame(Widget picture) {
+      return ValueListenableBuilder(
+        valueListenable: current,
+        builder: (context, value, child) {
+          return Scaffold(
+            extendBodyBehindAppBar: true,
+            appBar: PreferredSize(
+              preferredSize: Size.fromHeight(kToolbarHeight),
+              child: ValueListenableBuilder(
+                valueListenable: showFrame,
+                builder: (context, visible, child) => crossFade(
+                  duration: Duration(milliseconds: 200),
+                  showChild: visible,
+                  child: child,
+                ),
+                child: postAppBar(context, widget.posts[value], canEdit: false),
+              ),
+            ),
+            body: VideoFrame(
+              child: child,
+              post: widget.posts[value],
+              onFrameToggle: (shown) => toggleFrame(shown: shown),
+            ),
+          );
+        },
+        child: picture,
+      );
+    }
 
-      Widget bottomBar() {
-        return Column(mainAxisSize: MainAxisSize.min, children: [
-          frameDependant(ValueListenableBuilder(
-            valueListenable: widget.posts[current.value].controller,
+    Widget video(Post post) {
+      return ValueListenableBuilder(
+        valueListenable: post.controller,
+        builder: (context, value, child) => Stack(
+          alignment: Alignment.center,
+          children: [
+            crossFade(
+              showChild: post.controller.value.initialized,
+              child: AspectRatio(
+                aspectRatio: post.controller.value.aspectRatio,
+                child: VideoPlayer(post.controller),
+              ),
+              secondChild: CachedNetworkImage(
+                imageUrl: post.image.value.sample['url'],
+                placeholder: (context, url) => Center(
+                    child: Container(
+                  height: 26,
+                  width: 26,
+                  child: const CircularProgressIndicator(),
+                )),
+                errorWidget: (context, url, error) =>
+                    Center(child: Icon(Icons.error_outline)),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    Widget gallery() {
+      return PageView.builder(
+        itemCount: widget.posts.length,
+        controller: PageController(initialPage: widget.index),
+        physics: BouncingScrollPhysics(),
+        itemBuilder: (BuildContext context, int index) {
+          return PostOverlay(
+              post: widget.posts[index],
+              builder: (post) {
+                switch (widget.posts[index].type) {
+                  case ImageType.Image:
+                    return FullscreenImage(post);
+                  case ImageType.Video:
+                    return Hero(
+                      tag: 'image_${widget.posts[index].id}',
+                      child: video(post),
+                    );
+                  case ImageType.Unsupported:
+                  default:
+                    return Container();
+                }
+              });
+        },
+        onPageChanged: (index) {
+          int reach = 2;
+          for (int i = -(reach + 1); i < reach; i++) {
+            int target = index + 1 + i;
+            if (0 < target && target < widget.posts.length) {
+              String url = widget.posts[target].image.value.file['url'];
+              if (url != null) {
+                precacheImage(
+                  CachedNetworkImageProvider(url),
+                  context,
+                );
+              }
+            }
+          }
+          if (widget.controller != null) {
+            widget.controller.jumpToPage(index);
+          }
+          current.value = index;
+        },
+      );
+    }
+
+    return WillPopScope(
+      onWillPop: () async {
+        SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
+        return true;
+      },
+      child: frame(gallery()),
+    );
+  }
+}
+
+class FullscreenImage extends StatefulWidget {
+  final Post post;
+
+  const FullscreenImage(this.post);
+
+  @override
+  _FullscreenImageState createState() => _FullscreenImageState();
+}
+
+class _FullscreenImageState extends State<FullscreenImage> {
+  LoadingState loadingState = LoadingState.none;
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        AnimatedOpacity(
+          duration: Duration(milliseconds: 200),
+          opacity: loadingState == LoadingState.none ? 1 : 0,
+          child: Container(
+            height: 24,
+            width: 24,
+            child: CircularProgressIndicator(),
+          ),
+        ),
+        PhotoViewGestureDetectorScope(
+            axis: Axis.horizontal,
+            child: PhotoView.customChild(
+              heroAttributes:
+                  PhotoViewHeroAttributes(tag: 'image_${widget.post.id}'),
+              backgroundDecoration: BoxDecoration(
+                color: Colors.transparent,
+              ),
+              childSize: () {
+                double width;
+                double height;
+                _Image image = widget.post.image.value;
+                switch (loadingState) {
+                  case LoadingState.none:
+                  // this is unecessary, because no image is shown
+                  // I commented it out to prevent possible size flickering
+                  /*
+                    width = MediaQuery.of(context).size.width;
+                    height = MediaQuery.of(context).size.height;
+                    break;
+                    */
+                  case LoadingState.sample:
+                    width = image.sample['width'].toDouble();
+                    height = image.sample['height'].toDouble();
+                    break;
+                  case LoadingState.full:
+                    width = image.file['width'].toDouble();
+                    height = image.file['height'].toDouble();
+                    break;
+                }
+                return Size(width, height);
+              }(),
+              child: CachedNetworkImage(
+                fadeInDuration: Duration(milliseconds: 0),
+                fadeOutDuration: Duration(milliseconds: 0),
+                imageUrl: widget.post.image.value.file['url'],
+                imageBuilder: (context, provider) {
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    setState(() {
+                      loadingState = LoadingState.full;
+                    });
+                  });
+                  return Image(image: provider);
+                },
+                placeholder: (context, chunk) {
+                  return Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      CachedNetworkImage(
+                        imageUrl: widget.post.image.value.sample['url'],
+                        imageBuilder: (context, provider) {
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            setState(() {
+                              if (loadingState == LoadingState.none) {
+                                loadingState = LoadingState.sample;
+                              }
+                            });
+                          });
+                          return Image(image: provider);
+                        },
+                        errorWidget: (context, url, error) =>
+                            Center(child: Icon(Icons.error_outline)),
+                      ),
+                      Positioned(
+                        child: crossFade(
+                          child: LinearProgressIndicator(
+                            minHeight: widget.post.image.value.sample['height']
+                                    .toDouble() /
+                                100,
+                          ),
+                          showChild: loadingState == LoadingState.sample,
+                        ),
+                        bottom: 0,
+                        right: 0,
+                        left: 0,
+                      ),
+                    ],
+                  );
+                },
+                errorWidget: (context, url, error) =>
+                    Center(child: Icon(Icons.error_outline)),
+              ),
+              initialScale: PhotoViewComputedScale.contained,
+              minScale: PhotoViewComputedScale.contained,
+              maxScale: PhotoViewComputedScale.covered * 6,
+            )),
+      ],
+    );
+  }
+}
+
+class VideoFrame extends StatefulWidget {
+  final Post post;
+  final Widget child;
+  final bool showFrame;
+  final Function(bool shown) onFrameToggle;
+
+  const VideoFrame(
+      {@required this.child,
+      @required this.post,
+      this.onFrameToggle,
+      this.showFrame});
+
+  @override
+  _VideoFrameState createState() => _VideoFrameState();
+}
+
+class _VideoFrameState extends State<VideoFrame> {
+  ValueNotifier<bool> showFrame = ValueNotifier(false);
+  Timer frameToggler;
+
+  void toggleFrame({bool shown}) {
+    frameToggler?.cancel();
+    showFrame.value = shown ?? !showFrame.value;
+    widget.onFrameToggle?.call(shown);
+  }
+
+  @override
+  void didUpdateWidget(VideoFrame oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    frameToggler?.cancel();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    frameToggler?.cancel();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    Widget bottomBar() {
+      return ValueListenableBuilder(
+        valueListenable: showFrame,
+        builder: (context, value, child) => crossFade(
+          duration: Duration(milliseconds: 200),
+          showChild: value,
+          child: child,
+        ),
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          ValueListenableBuilder(
+            valueListenable: widget.post.controller,
             builder: (context, controller, child) {
               if (controller.initialized) {
                 return Padding(
                   padding: EdgeInsets.symmetric(horizontal: 16),
                   child: Row(
+                    mainAxisSize: MainAxisSize.min,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(controller.position.toString().substring(2, 7)),
-                      Expanded(
+                      Flexible(
                           child: Slider(
                         min: 0,
                         max: controller.duration.inMilliseconds.toDouble(),
@@ -2002,13 +2256,15 @@ class _ImageGalleryState extends State<ImageGallery> {
                           frameToggler?.cancel();
                         },
                         onChanged: (double value) {
-                          widget.posts[current.value].controller
+                          widget.post.controller
                               .seekTo(Duration(milliseconds: value.toInt()));
                         },
                         onChangeEnd: (double value) {
-                          frameToggler = Timer(Duration(seconds: 2), () {
-                            toggleFrame(shown: false);
-                          });
+                          if (widget.post.controller.value.isPlaying) {
+                            frameToggler = Timer(Duration(seconds: 2), () {
+                              toggleFrame(shown: false);
+                            });
+                          }
                         },
                       )),
                       Text(controller.duration.toString().substring(2, 7)),
@@ -2030,317 +2286,156 @@ class _ImageGalleryState extends State<ImageGallery> {
                 return Container();
               }
             },
-          ))
-        ]);
-      }
+          )
+        ]),
+      );
+    }
 
-      Widget playButton() {
-        return ValueListenableBuilder(
-            valueListenable: widget.posts[current.value].controller,
-            builder: (context, controller, child) {
-              return ValueListenableBuilder(
-                valueListenable: showFrame,
-                builder: (context, value, child) {
-                  return AnimatedOpacity(
-                    duration: Duration(milliseconds: 200),
-                    opacity: value || !controller.isPlaying ? 1 : 0,
-                    child: value || !controller.isPlaying
-                        ? child
-                        : IgnorePointer(child: child),
-                  );
+    Widget playButton() {
+      return ValueListenableBuilder(
+          valueListenable: widget.post.controller,
+          builder: (context, controller, child) {
+            return ValueListenableBuilder(
+              valueListenable: showFrame,
+              builder: (context, value, child) {
+                return AnimatedOpacity(
+                  duration: Duration(milliseconds: 200),
+                  opacity:
+                      value || !widget.post.controller.value.isPlaying ? 1 : 0,
+                  child: value || !widget.post.controller.value.isPlaying
+                      ? child
+                      : IgnorePointer(child: child),
+                );
+              },
+              child: InkWell(
+                onTap: () {
+                  frameToggler?.cancel();
+                  if (controller.isPlaying) {
+                    widget.post.controller.pause();
+                  } else {
+                    widget.post.controller.play();
+                    frameToggler = Timer(Duration(milliseconds: 500), () {
+                      toggleFrame(shown: false);
+                    });
+                  }
                 },
-                child: InkWell(
-                  onTap: () {
-                    frameToggler?.cancel();
-                    if (controller.isPlaying) {
-                      widget.posts[current.value].controller.pause();
-                      Wakelock.disable();
-                    } else {
-                      widget.posts[current.value].controller.play();
-                      Wakelock.enable();
-                      frameToggler = Timer(Duration(milliseconds: 500), () {
-                        toggleFrame(shown: false);
-                      });
-                    }
-                  },
+                child: crossFade(
+                  duration: Duration(milliseconds: 100),
+                  showChild: controller.isPlaying,
                   child: crossFade(
                     duration: Duration(milliseconds: 100),
-                    showChild: controller.isPlaying,
-                    child: crossFade(
-                      duration: Duration(milliseconds: 100),
-                      showChild:
-                          controller.initialized && !controller.isBuffering,
-                      child: IconShadowWidget(
-                        Icon(
-                          Icons.pause,
-                          size: 54,
-                          color: Theme.of(context).iconTheme.color,
-                        ),
-                        shadowColor: Colors.black,
-                      ),
-                      secondChild: Container(
-                        height: 54,
-                        width: 54,
-                        child: Padding(
-                          padding: EdgeInsets.all(4),
-                          child: CircularProgressIndicator(),
-                        ),
-                      ),
-                    ),
-                    secondChild: IconShadowWidget(
+                    showChild:
+                        controller.initialized && !controller.isBuffering,
+                    child: IconShadowWidget(
                       Icon(
-                        Icons.play_arrow,
+                        Icons.pause,
                         size: 54,
                         color: Theme.of(context).iconTheme.color,
                       ),
                       shadowColor: Colors.black,
                     ),
+                    secondChild: Container(
+                      height: 54,
+                      width: 54,
+                      child: Padding(
+                        padding: EdgeInsets.all(4),
+                        child: CircularProgressIndicator(),
+                      ),
+                    ),
+                  ),
+                  secondChild: IconShadowWidget(
+                    Icon(
+                      Icons.play_arrow,
+                      size: 54,
+                      color: Theme.of(context).iconTheme.color,
+                    ),
+                    shadowColor: Colors.black,
                   ),
                 ),
-              );
-            });
-      }
-
-      Widget body(Widget child) {
-        return MediaQuery.removeViewInsets(
-          context: context,
-          removeTop: true,
-          child: GestureDetector(
-            behavior: HitTestBehavior.translucent,
-            onTap: () {
-              frameToggler?.cancel();
-              toggleFrame();
-              if (widget.posts[current.value].controller != null &&
-                  widget.posts[current.value].controller.value.isPlaying &&
-                  widget.posts[current.value].controller.value.initialized &&
-                  showFrame.value) {
-                frameToggler = Timer(Duration(seconds: 2), () {
-                  toggleFrame(shown: false);
-                });
-              }
-            },
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                child,
-                widget.posts[current.value].controller != null
-                    ? playButton()
-                    : Container(),
-              ],
-            ),
-          ),
-        );
-      }
-
-      return ValueListenableBuilder(
-        valueListenable: current,
-        builder: (context, value, child) {
-          return Scaffold(
-            backgroundColor: Colors.transparent,
-            extendBodyBehindAppBar: true,
-            appBar: PreferredSize(
-              preferredSize: Size.fromHeight(kToolbarHeight),
-              child: frameDependant(
-                postAppBar(context, widget.posts[current.value],
-                    canEdit: false),
               ),
-            ),
-            body: body(child),
-            bottomSheet: widget.posts[current.value].controller != null
-                ? bottomBar()
-                : null,
-          );
-        },
-        child: picture,
-      );
+            );
+          });
     }
 
-    Widget pictureGallery() {
-      return PhotoViewGallery.builder(
-        scrollPhysics: BouncingScrollPhysics(),
-        backgroundDecoration: BoxDecoration(
-          color: Theme.of(context).canvasColor,
-        ),
-        builder: (context, index) {
-          _Image image = widget.posts[index].image.value;
-          imageSize =
-              (image.file['ext'] == 'webm' || image.file['ext'] == 'swf')
-                  ? ImageSize.screen
-                  : ImageSize.sample;
-          return PhotoViewGalleryPageOptions.customChild(
-            disableGestures:
-                (image.file['ext'] == 'webm' || image.file['ext'] == 'swf'),
-            heroAttributes: PhotoViewHeroAttributes(
-              tag: 'image_${widget.posts[index].id}',
-            ),
-            childSize: () {
-              double width;
-              double height;
-              switch (imageSize) {
-                case ImageSize.screen:
-                  width = MediaQuery.of(context).size.width;
-                  height = MediaQuery.of(context).size.height;
-                  break;
-                case ImageSize.sample:
-                  width = image.sample['width'].toDouble();
-                  height = image.sample['height'].toDouble();
-                  break;
-                case ImageSize.full:
-                  width = image.file['width'].toDouble();
-                  height = image.file['height'].toDouble();
-                  break;
-              }
-              return Size(width, height);
-            }(),
-            child: () {
-              if (image.file['ext'] == 'swf') {
-                return Container(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      Padding(
-                        padding: EdgeInsets.all(8),
-                        child: Text(
-                          'Flash is not supported',
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                      Card(
-                        child: InkWell(
-                          child: Padding(
-                              padding: EdgeInsets.all(8), child: Text('Open')),
-                          onTap: () async => url.launch(widget.posts[index]
-                              .url(await db.host.value)
-                              .toString()),
-                        ),
-                      )
-                    ],
-                  ),
-                );
-              } else if (image.file['ext'] == 'webm') {
-                return ValueListenableBuilder(
-                  valueListenable: widget.posts[index].controller,
-                  builder: (context, value, child) => Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      crossFade(
-                        showChild:
-                            widget.posts[index].controller.value.initialized,
-                        child: AspectRatio(
-                          aspectRatio:
-                              widget.posts[index].controller.value.aspectRatio,
-                          child: VideoPlayer(widget.posts[index].controller),
-                        ),
-                        secondChild: CachedNetworkImage(
-                          imageUrl:
-                              widget.posts[index].image.value.sample['url'],
-                          placeholder: (context, url) => Center(
-                              child: Container(
-                            height: 26,
-                            width: 26,
-                            child: const CircularProgressIndicator(),
-                          )),
-                          errorWidget: (context, url, error) =>
-                              Center(child: Icon(Icons.error_outline)),
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              } else {
-                imageSize = ImageSize.sample;
-                return CachedNetworkImage(
-                  fadeInDuration: Duration(milliseconds: 0),
-                  fadeOutDuration: Duration(milliseconds: 0),
-                  imageUrl: widget.posts[index].image.value.file['url'],
-                  imageBuilder: (context, provider) {
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      setState(() {
-                        imageSize = ImageSize.full;
-                      });
-                    });
-                    return Image(image: provider);
-                  },
-                  placeholder: (context, chunk) {
-                    return Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        CachedNetworkImage(
-                          imageUrl:
-                              widget.posts[index].image.value.sample['url'],
-                          imageBuilder: (context, provider) {
-                            WidgetsBinding.instance.addPostFrameCallback((_) {
-                              setState(() {
-                                imageSize = ImageSize.sample;
-                              });
-                            });
-                            return Image(image: provider);
-                          },
-                          placeholder: (context, chunk) => Center(
-                            child: Container(
-                                // TODO: using zoom level, calculate accurate size
-                                height: 26 * window.devicePixelRatio,
-                                width: 26 * window.devicePixelRatio,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2 * window.devicePixelRatio,
-                                )),
-                          ),
-                          errorWidget: (context, url, error) =>
-                              Center(child: Icon(Icons.error_outline)),
-                        ),
-                        Container(
-                          alignment: Alignment.bottomCenter,
-                          child: LinearProgressIndicator(
-                            minHeight: 3 * window.devicePixelRatio,
-                          ),
-                        ),
-                      ],
-                    );
-                  },
-                  errorWidget: (context, url, error) =>
-                      Center(child: Icon(Icons.error_outline)),
-                );
-              }
-            }(),
-            initialScale: PhotoViewComputedScale.contained,
-            minScale: PhotoViewComputedScale.contained,
-            maxScale: PhotoViewComputedScale.covered * 6,
-          );
-        },
-        itemCount: widget.posts.length,
-        pageController: PageController(initialPage: widget.index),
-        onPageChanged: (index) {
-          frameToggler?.cancel();
-          int precache = 2;
-          for (int i = -precache - 1; i < precache; i++) {
-            int target = index + 1 + i;
-            if (target > 0 && target < widget.posts.length) {
-              String ext = widget.posts[target].image.value.file['ext'];
-              if (ext != 'webm' && ext != 'swf') {
-                precacheImage(
-                  CachedNetworkImageProvider(
-                      widget.posts[target].image.value.file['url']),
-                  context,
-                );
-              }
-            }
-          }
-          if (widget.controller != null) {
-            widget.controller.jumpToPage(index);
-          }
-          current.value = index;
-        },
-      );
+    List<Widget> children = [widget.child];
+    if (widget.post.type == ImageType.Video) {
+      children.addAll([
+        Positioned(bottom: 0, right: 0, left: 0, child: bottomBar()),
+        playButton(),
+      ]);
     }
 
-    return WillPopScope(
-      onWillPop: () {
-        SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
-        return Future.value(true);
+    return GestureDetector(
+      behavior: HitTestBehavior.translucent,
+      onTap: () {
+        toggleFrame();
+        if ((widget.post.controller?.value?.isPlaying ?? false) &&
+            showFrame.value) {
+          frameToggler =
+              Timer(Duration(seconds: 2), () => toggleFrame(shown: false));
+        }
       },
-      child: pictureFrame(pictureGallery()),
+      child: Stack(
+        alignment: Alignment.center,
+        children: children,
+      ),
     );
+  }
+}
+
+class PostOverlay extends StatelessWidget {
+  final Post post;
+  final Widget Function(Post post) builder;
+
+  const PostOverlay({@required this.post, @required this.builder});
+
+  @override
+  Widget build(BuildContext context) {
+    Widget centerText(String text) {
+      return Center(
+        child: Text(
+          text,
+          textAlign: TextAlign.center,
+        ),
+      );
+    }
+
+    if (post.isDeleted) {
+      return centerText('Post was deleted');
+    }
+    if (!post.isVisible) {
+      return centerText('Post is blacklisted');
+    }
+    if (post.image.value.file['url'] == null) {
+      return centerText('Image unavailable in safe mode');
+    }
+    if (post.type == ImageType.Unsupported) {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Padding(
+                padding: EdgeInsets.all(8),
+                child: Text(
+                  '${post.image.value.file['ext']} files are not supported',
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              Card(
+                child: InkWell(
+                  child:
+                      Padding(padding: EdgeInsets.all(8), child: Text('Open')),
+                  onTap: () async => url.launch(post.image.value.file['url']),
+                ),
+              )
+            ],
+          )
+        ],
+      );
+    }
+    return builder(post);
   }
 }
 
@@ -2453,7 +2548,7 @@ Widget postAppBar(BuildContext context, Post post, {bool canEdit = true}) {
 
 Future<File> download(Post post) async {
   if (!Platform.isAndroid) {
-    throw('platform is unsupported');
+    throw ('platform is unsupported');
   }
   String downloadFolder =
       '${Platform.environment['EXTERNAL_STORAGE']}/Pictures/$appName';
@@ -2562,28 +2657,33 @@ Future<bool> tryRemoveFav(BuildContext context, Post post) async {
   if (await client.removeFavorite(post.id)) {
     post.isFavorite.value = false;
     post.favorites.value -= 1;
-    return Future.value(true);
+    return true;
   } else {
     post.isFavorite.value = true;
     Scaffold.of(context).showSnackBar(SnackBar(
       duration: Duration(seconds: 1),
       content: Text('Failed to remove Post #${post.id} from favorites'),
     ));
-    return Future.value(false);
+    return false;
   }
 }
 
 Future<bool> tryAddFav(BuildContext context, Post post) async {
+  Future<void> cooldown = Future.delayed(const Duration(milliseconds: 1000));
   if (await client.addFavorite(post.id)) {
-    post.isFavorite.value = true;
+    () async {
+      // cooldown ensures no interference with like animation
+      await cooldown;
+      post.isFavorite.value = true;
+    }();
     post.favorites.value += 1;
-    return Future.value(true);
+    return true;
   } else {
     Scaffold.of(context).showSnackBar(SnackBar(
       duration: Duration(seconds: 1),
       content: Text('Failed to add Post #${post.id} to favorites'),
     ));
-    return Future.value(false);
+    return false;
   }
 }
 

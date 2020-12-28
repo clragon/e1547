@@ -48,13 +48,13 @@ class Client {
     initialized = () async {
       Credentials credentials = await db.credentials.value;
       if (credentials != null) {
-        if (await tryLogin(credentials.username, credentials.apikey)) {
-          http = HttpHelper(credentials: credentials);
-          return true;
-        } else {
-          logout();
-          return false;
-        }
+        http = HttpHelper(credentials: credentials);
+        tryLogin(credentials.username, credentials.apikey).then((authed) {
+          if (!authed) {
+            logout();
+          }
+        });
+        return true;
       } else {
         return false;
       }
@@ -113,9 +113,6 @@ class Client {
         if (post.image.value.file['ext'] == 'swf') {
           continue;
         }
-        if (await isBlacklisted(post)) {
-          post.isBlacklisted = true;
-        }
         posts.add(post);
       }
       if (hasPosts && posts.length == 0 && attempt < 3) {
@@ -163,8 +160,7 @@ class Client {
     });
   }
 
-  Future<bool> isBlacklisted(Post post) async {
-    List<String> denylist = await this.denylist;
+  Future<bool> isBlacklisted(Post post, List<String> denylist) async {
     if (denylist.length > 0) {
       List<String> tags = [];
       post.tags.value.forEach((k, v) {
@@ -348,7 +344,7 @@ class Client {
 
       Post post = Post.fromRaw(json.decode(body)['post']);
       post.isLoggedIn = await hasLogin();
-      post.isBlacklisted = await isBlacklisted(post);
+      post.isBlacklisted = await isBlacklisted(post, await db.denylist.value);
       return post;
     } catch (SocketException) {
       return null;
@@ -478,20 +474,26 @@ class Client {
     return json.decode(body);
   }
 
-  Future<List> tags(String search, {int category, int page = 0}) async {
-    String body = await http.get(await host, '/tags.json', query: {
-      'search[name_matches]': search + '*',
-      'search[category]': category,
-      'search[order]': 'count',
-      'page': page + 1,
-      'limit': 3,
-    }).then((response) => response.body);
-
+  Future<List> autocomplete(String search, {int category}) async {
+    String body;
+    if (category == null) {
+      body = await http.get(await host, '/tags/autocomplete.json', query: {
+        'search[name_matches]': search,
+      }).then((response) => response.body);
+    } else {
+      body = await http.get(await host, '/tags.json', query: {
+        'search[name_matches]': search + '*',
+        'search[category]': category,
+        'search[order]': 'count',
+        'limit': 3,
+      }).then((response) => response.body);
+    }
     List tags = [];
     var tagList = json.decode(body);
     if (tagList is List) {
       tags = tagList;
     }
+    tags = tags.take(3).toList();
     return tags;
   }
 

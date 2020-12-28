@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'client.dart';
 import 'interface.dart';
 
-void wikiDialog(BuildContext context, String tag, {actions = false}) {
+void wikiDialog(BuildContext context, String tag, {bool actions = false}) {
   Widget body() {
     return ConstrainedBox(
         child: wikiBody(context, tag),
@@ -83,8 +83,8 @@ class _TagActionsState extends State<TagActions> {
   @override
   void initState() {
     super.initState();
-    db.denylist.addListener(() => updateLists());
-    db.follows.addListener(() => updateLists());
+    db.denylist.addListener(updateLists);
+    db.follows.addListener(updateLists);
   }
 
   @override
@@ -96,8 +96,8 @@ class _TagActionsState extends State<TagActions> {
   @override
   void dispose() {
     super.dispose();
-    db.denylist.removeListener(() => updateLists());
-    db.follows.removeListener(() => updateLists());
+    db.denylist.removeListener(updateLists);
+    db.follows.removeListener(updateLists);
   }
 
   @override
@@ -176,62 +176,66 @@ class WikiWidget extends StatelessWidget {
   const WikiWidget(this.tag, this.actions);
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(
-          title: Flexible(
-            child: Text(
-              tag.replaceAll('_', ' '),
-              overflow: TextOverflow.ellipsis,
-            ),
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Flexible(
+          child: Text(
+            tag.replaceAll('_', ' '),
+            overflow: TextOverflow.ellipsis,
           ),
-          actions: [
-            actions ? TagActions(tag) : Container(),
-          ],
         ),
-        body: wikiBody(context, tag),
-      );
+        actions: [
+          actions ? TagActions(tag) : Container(),
+        ],
+      ),
+      body: wikiBody(context, tag),
+    );
+  }
 }
 
-Widget wikiBody(BuildContext context, String tag) => FutureBuilder(
-      builder: (context, snapshot) => crossFade(
-          duration: Duration(milliseconds: 200),
-          showChild: snapshot.connectionState == ConnectionState.done,
-          child: () {
-            if (snapshot.data == null) {
-              return Text('unable to retrieve wiki entry',
-                  style: TextStyle(fontStyle: FontStyle.italic));
-            }
-            if (snapshot.data.length != 0) {
-              return SingleChildScrollView(
-                scrollDirection: Axis.vertical,
-                child: dTextField(context, snapshot.data[0]['body']),
-                physics: BouncingScrollPhysics(),
-              );
-            } else {
-              return Text(
-                'no wiki entry',
-                style: TextStyle(fontStyle: FontStyle.italic),
-              );
-            }
-          }(),
-          secondChild: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Row(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Padding(
-                      padding: EdgeInsets.all(16),
-                      child: Container(
-                        height: 26,
-                        width: 26,
-                        child: CircularProgressIndicator(),
-                      ))
-                ],
-              ),
-            ],
-          )),
-      future: client.wiki(tag, 0),
-    );
+Widget wikiBody(BuildContext context, String tag) {
+  return FutureBuilder(
+    builder: (context, snapshot) => crossFade(
+        duration: Duration(milliseconds: 200),
+        showChild: snapshot.connectionState == ConnectionState.done,
+        child: () {
+          if (snapshot.data == null) {
+            return Text('unable to retrieve wiki entry',
+                style: TextStyle(fontStyle: FontStyle.italic));
+          }
+          if (snapshot.data.length != 0) {
+            return SingleChildScrollView(
+              scrollDirection: Axis.vertical,
+              child: dTextField(context, snapshot.data[0]['body']),
+              physics: BouncingScrollPhysics(),
+            );
+          } else {
+            return Text(
+              'no wiki entry',
+              style: TextStyle(fontStyle: FontStyle.italic),
+            );
+          }
+        }(),
+        secondChild: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Row(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Padding(
+                    padding: EdgeInsets.all(16),
+                    child: Container(
+                      height: 26,
+                      width: 26,
+                      child: CircularProgressIndicator(),
+                    ))
+              ],
+            ),
+          ],
+        )),
+    future: client.wiki(tag, 0),
+  );
+}

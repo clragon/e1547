@@ -148,22 +148,17 @@ class NavigationDrawer extends StatelessWidget {
       child: ListView(physics: BouncingScrollPhysics(), children: [
         header,
         ListTile(
-          selected: _drawerSelection == _DrawerSelection.home,
-          leading: Icon(Icons.home),
-          title: Text('Home'),
-          onTap: () {
-            Navigator.of(context)
-                .pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
-          },
-        ),
+            selected: _drawerSelection == _DrawerSelection.home,
+            leading: Icon(Icons.home),
+            title: Text('Home'),
+            onTap: () => Navigator.of(context)
+                .pushNamedAndRemoveUntil('/', (_) => false)),
         ListTile(
             selected: _drawerSelection == _DrawerSelection.hot,
             leading: Icon(Icons.whatshot),
             title: Text('Hot'),
-            onTap: () {
-              Navigator.of(context).pushNamedAndRemoveUntil(
-                  '/hot', (Route<dynamic> route) => false);
-            }),
+            onTap: () => Navigator.of(context)
+                .pushNamedAndRemoveUntil('/hot', (_) => false)),
         ListTile(
           leading: Icon(Icons.search),
           title: Text("Search"),
@@ -176,8 +171,8 @@ class NavigationDrawer extends StatelessWidget {
             title: Text('Favorites'),
             onTap: () async {
               if (await client.hasLogin()) {
-                Navigator.of(context).pushNamedAndRemoveUntil(
-                    '/fav', (Route<dynamic> route) => false);
+                Navigator.of(context)
+                    .pushNamedAndRemoveUntil('/fav', (_) => false);
               } else {
                 Navigator.popAndPushNamed(context, '/login');
               }
@@ -186,32 +181,24 @@ class NavigationDrawer extends StatelessWidget {
           selected: _drawerSelection == _DrawerSelection.follows,
           leading: Icon(Icons.turned_in),
           title: Text('Following'),
-          onTap: () {
-            Navigator.of(context).pushNamedAndRemoveUntil(
-                '/follows', (Route<dynamic> route) => false);
-          },
+          onTap: () => Navigator.of(context)
+              .pushNamedAndRemoveUntil('/follows', (_) => false),
         ),
         // Divider(),
         ListTile(
-          selected: _drawerSelection == _DrawerSelection.pools,
-          leading: Icon(Icons.collections),
-          title: Text('Pools'),
-          onTap: () {
-            Navigator.of(context).pushNamedAndRemoveUntil(
-                '/pools', (Route<dynamic> route) => false);
-          },
-        ),
+            selected: _drawerSelection == _DrawerSelection.pools,
+            leading: Icon(Icons.collections),
+            title: Text('Pools'),
+            onTap: () => Navigator.of(context)
+                .pushNamedAndRemoveUntil('/pools', (_) => false)),
         /*
         ListTile(
-          selected: _drawerSelection == _DrawerSelection.forum,
-          leading: Icon(Icons.group),
-          title: Text('Forum'),
-          onTap: () {
-            Navigator.of(context).pushNamedAndRemoveUntil(
-                '/forum', (Route<dynamic> route) => false);
-          },
-        ),
-        */
+            selected: _drawerSelection == _DrawerSelection.forum,
+            leading: Icon(Icons.group),
+            title: Text('Forum'),
+            onTap: () => Navigator.of(context)
+                .pushNamedAndRemoveUntil('/forum', (_) => false)),
+         */
         Divider(),
         ListTile(
           leading: Icon(Icons.settings),
@@ -224,7 +211,8 @@ class NavigationDrawer extends StatelessWidget {
               if (snapshot.hasData && snapshot.data.length != 0) {
                 int latest = int.tryParse(
                     snapshot.data[0]['version'].replaceAll('.', '') ?? 0);
-                if (int.parse(appVersion.replaceAll('.', '')) < latest) {
+                int current = int.parse(appVersion.replaceAll('.', '') ?? 0);
+                if (current < latest) {
                   return Stack(
                     children: <Widget>[
                       Icon(Icons.update),
@@ -264,7 +252,7 @@ final ValueNotifier<String> userAvatar = ValueNotifier(null);
 
 void initUser({BuildContext context}) {
   db.credentials.value.then((credentials) {
-    userName.value = credentials.username;
+    userName.value = credentials?.username;
     if (userName.value != null) {
       client.avatar.then((avatar) {
         userAvatar.value = avatar;

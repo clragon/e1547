@@ -10,7 +10,7 @@ String userAgent = '$appName/$appVersion ($developer)';
 
 class HttpHelper {
   final Credentials credentials;
-  final BaseClient client;
+  final Client client;
 
   HttpHelper({this.credentials})
       : client = credentials != null

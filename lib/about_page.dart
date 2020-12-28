@@ -22,6 +22,7 @@ class AboutPage extends StatelessWidget {
               if (snapshot.hasData && snapshot.data.length != 0) {
                 int latest = int.tryParse(
                     snapshot.data[0]['version'].replaceAll('.', '') ?? 0);
+                int current = int.parse(appVersion.replaceAll('.', '') ?? 0);
                 return Stack(
                   children: <Widget>[
                     IconButton(
@@ -30,8 +31,7 @@ class AboutPage extends StatelessWidget {
                         Widget msg;
                         FlatButton b1;
                         FlatButton b2;
-                        if (latest <=
-                            int.parse(appVersion.replaceAll('.', ''))) {
+                        if (latest <= current) {
                           msg =
                               Text("You have the newest version ($appVersion)");
                           b1 = FlatButton(
@@ -62,7 +62,7 @@ class AboutPage extends StatelessWidget {
                                 if ((int.tryParse(release['version']
                                             .replaceAll('.', '')) ??
                                         0) >
-                                    int.parse(appVersion.replaceAll('.', ''))) {
+                                    current) {
                                   releases.addAll([
                                     Padding(
                                       padding:
@@ -114,7 +114,7 @@ class AboutPage extends StatelessWidget {
                       },
                     ),
                     () {
-                      if (latest > int.parse(appVersion.replaceAll('.', ''))) {
+                      if (latest > current) {
                         return Positioned(
                           bottom: 20,
                           left: 12,
@@ -206,7 +206,7 @@ Future<List<Map>> getVersions() async {
         }
       });
     }
-    return Future.value(githubData);
+    return githubData;
   } else {
     return [];
   }

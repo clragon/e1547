@@ -49,9 +49,9 @@ class _SettingsPageState extends State<SettingsPage> {
         setState(() {});
       }
     });
-    db.credentials.value.then((a) => setState(() => username = a.username));
+    db.credentials.value.then((a) => setState(() => username = a?.username));
     db.credentials.addListener(() async {
-      username = (await db.credentials.value).username;
+      username = (await db.credentials.value)?.username;
       if (mounted) {
         setState(() {});
       }
@@ -275,7 +275,19 @@ class _SettingsPageState extends State<SettingsPage> {
                         onTap: () => Navigator.pushNamed(context, '/login'),
                       ));
                 } else {
-                  return Container();
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.all(4),
+                        child: Container(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(),
+                        ),
+                      )
+                    ],
+                  );
                 }
               },
               future: client.hasLogin(),
@@ -288,8 +300,7 @@ class _SettingsPageState extends State<SettingsPage> {
     return WillPopScope(
       onWillPop: () async {
         if (resetApp) {
-          Navigator.of(context)
-              .pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
+          Navigator.of(context).pushNamedAndRemoveUntil('/', (_) => false);
           return false;
         } else {
           return true;

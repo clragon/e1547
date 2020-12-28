@@ -448,7 +448,7 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
     ];
 
     for (String word in words) {
-      RegExp rex = RegExp('$word #[0-9]{1,9}');
+      RegExp rex = RegExp('$word #[0-9]{1,9}', caseSensitive: false);
       if (rex.hasMatch(msg)) {
         for (Match wordMatch in rex.allMatches(msg)) {
           String before = msg.substring(0, wordMatch.start);
@@ -463,7 +463,7 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
 
           Function onTap;
 
-          switch (word.toLowerCase()) {
+          switch (word) {
             case 'thumb':
             // add actual pictures here some day.
             case 'post':
@@ -750,24 +750,39 @@ Future<bool> setCustomHost(BuildContext context) async {
     host = host.replaceAll(RegExp(r'^(www.)?'), '');
     host = host.replaceAll(RegExp(r'/$'), '');
     HttpHelper http = HttpHelper();
-    await Future.delayed(Duration(seconds: 1));
-    try {
-      if ((await http
-          .get(host, '/')
-          .then((response) => response.statusCode != 200))) {
-        error.value = 'Cannot reach host';
-      } else {
-        if (host == 'e621.net') {
-          db.customHost.value = Future.value(host);
-          error.value = null;
-          success = true;
+    if (host.isEmpty) {
+      success = false;
+      error.value = null;
+      db.customHost.value = Future.value(null);
+    } else {
+      await Future.delayed(Duration(seconds: 1));
+      try {
+        if ((await http
+            .get(host, '/')
+            .then((response) => response.statusCode != 200))) {
+          error.value = 'Cannot reach host';
         } else {
-          error.value = 'Host API incompatible';
+          switch (host) {
+            case 'e621.net':
+              db.customHost.value = Future.value(host);
+              error.value = null;
+              success = true;
+              break;
+            case 'e926.net':
+              error.value = 'default host cannot be custom host';
+              success = false;
+              break;
+            default:
+              error.value = 'Host API incompatible';
+              success = false;
+              break;
+          }
         }
+      } catch (SocketException) {
+        error.value = 'Cannot reach host';
       }
-    } catch (SocketException) {
-      error.value = 'Cannot reach host';
     }
+
     isLoading.value = false;
     return error.value == null;
   }
@@ -1584,12 +1599,8 @@ Widget tagInputField({
         }
       }
       if (noDash(tags[selection].trim()).isNotEmpty) {
-        if (category != null) {
-          return (await client.tags(noDash(tags[selection]),
-              category: category));
-        } else {
-          return (await client.tags(noDash(tags[selection])));
-        }
+        return (await client.autocomplete(noDash(tags[selection]),
+            category: category));
       } else {
         return [];
       }

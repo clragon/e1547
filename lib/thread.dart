@@ -312,7 +312,8 @@ class _ThreadWidgetState extends State<ThreadWidget> {
                             future: db.credentials.value,
                             builder: (context, snapshot) {
                               if (snapshot.hasData &&
-                                  snapshot.data.username == reply.creatorID.toString()) {
+                                  snapshot.data.username ==
+                                      reply.creatorID.toString()) {
                                 return Padding(
                                   padding: EdgeInsets.only(left: 8),
                                   child: InkWell(
@@ -407,7 +408,7 @@ Future<bool> sendReply(BuildContext context, Thread thread,
           }
           if (response['code'] == 200 || response['code'] == 204) {
             sent = true;
-            return Future.value(true);
+            return true;
           } else {
             Scaffold.of(context).showSnackBar(SnackBar(
               duration: Duration(seconds: 1),
@@ -417,7 +418,7 @@ Future<bool> sendReply(BuildContext context, Thread thread,
             ));
           }
         }
-        return Future.value(false);
+        return false;
       },
     );
   }));

@@ -273,7 +273,7 @@ Future<bool> sendComment(BuildContext context, Post post,
           }
           if (response['code'] == 200 || response['code'] == 204) {
             sent = true;
-            return Future.value(true);
+            return true;
           } else {
             Scaffold.of(context).showSnackBar(SnackBar(
               duration: Duration(seconds: 1),
@@ -283,7 +283,7 @@ Future<bool> sendComment(BuildContext context, Post post,
             ));
           }
         }
-        return Future.value(false);
+        return false;
       },
     );
   }));

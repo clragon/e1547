@@ -73,6 +73,7 @@ class FavPage extends StatelessWidget {
                   return client.posts(tags, page);
                 },
                 search: 'fav:${snapshot.data.username}',
+                denying: false,
               ));
         } else {
           return Scaffold(
@@ -148,7 +149,6 @@ class FollowsPage extends StatelessWidget {
             );
           },
           canSearch: false,
-          canDeny: false,
           provider:
               PostProvider(provider: (tags, page) => client.follows(page)),
         );
@@ -221,14 +221,12 @@ AppBar Function(BuildContext context) appBarWidget(String title,
 class PostsPage extends StatefulWidget {
   final bool canSearch;
   final bool canSelect;
-  final bool canDeny;
   final AppBar Function(BuildContext) appBarBuilder;
   final PostProvider provider;
 
   PostsPage({
     this.canSearch = true,
     this.canSelect = true,
-    this.canDeny = true,
     @required this.provider,
     @required this.appBarBuilder,
   });
@@ -286,6 +284,12 @@ class _PostsPageState extends State<PostsPage> {
     loading = true;
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+    widget.provider.dispose();
+  }
+
   int notZero(int value) => value == 0 ? 1 : value;
 
   Widget _itemBuilder(BuildContext context, int item) {
@@ -311,7 +315,7 @@ class _PostsPageState extends State<PostsPage> {
                   Navigator.of(context).push(MaterialPageRoute<Null>(
                     builder: (context) => PostSwipe(
                       provider: provider,
-                      startingIndex: provider.posts.value.indexOf(post),
+                      initialPage: provider.posts.value.indexOf(post),
                     ),
                   ));
                 }),
@@ -584,20 +588,20 @@ class _PostsPageState extends State<PostsPage> {
                   },
                   onTap: (isLiked) async {
                     if (isLiked) {
-                      loadingSnackbar(context, (post) {
+                      loadingSnackbar(context, (post) async {
                         if (post.isFavorite.value) {
                           return tryRemoveFav(context, post);
                         } else {
-                          return Future.value(true);
+                          return true;
                         }
                       }, Duration(milliseconds: 800));
                       return false;
                     } else {
-                      loadingSnackbar(context, (post) {
+                      loadingSnackbar(context, (post) async {
                         if (!post.isFavorite.value) {
                           return tryAddFav(context, post);
                         } else {
-                          return Future.value(true);
+                          return true;
                         }
                       }, Duration(milliseconds: 800));
                       return true;
@@ -612,13 +616,13 @@ class _PostsPageState extends State<PostsPage> {
     }
 
     return WillPopScope(
-      onWillPop: () {
+      onWillPop: () async {
         if (selections.length > 0) {
           selections.clear();
           setState(() {});
-          return Future.value(false);
+          return false;
         } else {
-          return Future.value(true);
+          return true;
         }
       },
       child: Scaffold(
@@ -634,17 +638,45 @@ class _PostsPageState extends State<PostsPage> {
 }
 
 class PostProvider extends DataProvider<Post> {
+  ValueNotifier<List<String>> allowlist = ValueNotifier([]);
   ValueNotifier<List<Post>> denied = ValueNotifier([]);
   ValueNotifier<List<Post>> posts = ValueNotifier([]);
+  ValueNotifier<bool> denying = ValueNotifier(true);
 
   PostProvider(
       {String search,
-      Future<List<Post>> Function(String search, int page) provider})
+      Future<List<Post>> Function(String search, int page) provider,
+      bool denying = true})
       : super(search: search, provider: provider ?? client.posts) {
-    super.pages.addListener(() {
-      posts.value = super.items.where((item) => !item.isBlacklisted).toList();
-      denied.value = super.items.where((item) => item.isBlacklisted).toList();
-    });
+    this.denying.value = denying;
+    this.denying.addListener(refresh);
+    pages.addListener(refresh);
+    allowlist.addListener(refresh);
+  }
+
+  Future<void> resetPages() async {
+    super.resetPages();
+    dispose();
+  }
+
+  void refresh() async {
+    List<String> denylist = [];
+    if (denying.value) {
+      denylist = (await db.denylist.value).where((line) {
+        return !allowlist.value.contains(line);
+      }).toList();
+    }
+    for (Post item in items) {
+      item.isBlacklisted = await client.isBlacklisted(item, denylist);
+    }
+    posts.value = items.where((item) => !item.isBlacklisted).toList();
+    denied.value = items.where((item) => item.isBlacklisted).toList();
+  }
+
+  void dispose() {
+    for (Post post in items) {
+      post.dispose();
+    }
   }
 }
 
@@ -735,14 +767,14 @@ class TagEntry extends StatelessWidget {
           }[selectedSort];
           assert(orderType != null);
 
-          _withTags((tags) {
+          _withTags((tags) async {
             if (orderType == 'new') {
               tags.remove('order');
             } else {
               tags['order'] = orderType;
             }
 
-            return Future.value(tags);
+            return tags;
           });
         },
       );
