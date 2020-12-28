@@ -14,7 +14,6 @@ import 'package:e1547/pool.dart';
 import 'package:e1547/posts_page.dart';
 import 'package:e1547/settings.dart' show db;
 import 'package:e1547/wiki_page.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'
     show FilteringTextInputFormatter, SystemChrome, SystemUiOverlay;

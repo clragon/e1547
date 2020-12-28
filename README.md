@@ -29,7 +29,7 @@
 - View tag wiki entries by long-pressing 
 - Local blacklist
 - DText parsing
-- Webm support
+- Webm support (android only)
 - Automatic update check
 - Multiple App Themes
  

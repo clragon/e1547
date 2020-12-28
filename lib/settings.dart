@@ -1,7 +1,6 @@
 import 'dart:async' show Future;
 import 'dart:io' show File, Platform;
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart' show ValueNotifier;
 import 'package:shared_preferences/shared_preferences.dart'
     show SharedPreferences;

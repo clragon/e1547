@@ -7,7 +7,6 @@ import 'package:e1547/posts_page.dart';
 import 'package:e1547/settings.dart';
 import 'package:e1547/tag.dart';
 import 'package:expandable/expandable.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
