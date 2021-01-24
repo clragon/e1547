@@ -16,16 +16,16 @@ class FollowingPage extends StatefulWidget {
 }
 
 class _FollowingPageState extends State<FollowingPage> {
-  List<String> _follows = [];
+  List<String> follows = [];
 
   @override
   void initState() {
     super.initState();
     db.follows.addListener(() async {
-      List<String> follows = await db.follows.value;
-      setState(() => _follows = follows);
+      List<String> tags = await db.follows.value;
+      setState(() => follows = tags);
     });
-    db.follows.value.then((a) async => setState(() => _follows = a));
+    db.follows.value.then((a) async => setState(() => follows = a));
   }
 
   @override
@@ -55,7 +55,7 @@ class _FollowingPageState extends State<FollowingPage> {
     }
 
     Widget body() {
-      if (_follows.length == 0) {
+      if (follows.length == 0) {
         return Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -74,7 +74,7 @@ class _FollowingPageState extends State<FollowingPage> {
       }
 
       return ListView.builder(
-        itemCount: _follows.length,
+        itemCount: follows.length,
         itemBuilder: (BuildContext context, int index) {
           return Padding(
             padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
@@ -87,7 +87,7 @@ class _FollowingPageState extends State<FollowingPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisSize: MainAxisSize.max,
                         children: () {
-                          return [cardWidget(_follows[index])];
+                          return [cardWidget(follows[index])];
                         }(),
                       ),
                     ),
@@ -113,9 +113,9 @@ class _FollowingPageState extends State<FollowingPage> {
                           onSelected: (value) async {
                             switch (value) {
                               case 'search':
-                                if (_follows[index].startsWith('pool:')) {
+                                if (follows[index].startsWith('pool:')) {
                                   Pool p = await client.pool(
-                                      int.parse(_follows[index].split(':')[1]));
+                                      int.parse(follows[index].split(':')[1]));
                                   Navigator.of(context).push(
                                       MaterialPageRoute<Null>(
                                           builder: (context) {
@@ -125,13 +125,13 @@ class _FollowingPageState extends State<FollowingPage> {
                                   Navigator.of(context).push(
                                       MaterialPageRoute<Null>(
                                           builder: (context) {
-                                    return SearchPage(tags: _follows[index]);
+                                    return SearchPage(tags: follows[index]);
                                   }));
                                 }
                                 break;
                               case 'delete':
                                 db.follows.value =
-                                    Future.value(_follows..removeAt(index));
+                                    Future.value(follows..removeAt(index));
                                 break;
                             }
                           },
@@ -160,7 +160,7 @@ class _FollowingPageState extends State<FollowingPage> {
           void submit() {
             if (controller.text.trim().isNotEmpty) {
               db.follows.value =
-                  Future.value(_follows..add(controller.text.trim()));
+                  Future.value(follows..add(controller.text.trim()));
               sheetController?.close();
             }
           }
@@ -199,7 +199,7 @@ class _FollowingPageState extends State<FollowingPage> {
 
     Widget editor() {
       TextEditingController controller = TextEditingController();
-      controller.text = _follows.join('\n');
+      controller.text = follows.join('\n');
       return AlertDialog(
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -223,8 +223,10 @@ class _FollowingPageState extends State<FollowingPage> {
           FlatButton(
             child: Text('OK'),
             onPressed: () {
+              List<String> tags = controller.text.split('\n');
+              tags.removeWhere((tag) => tag.trim().isEmpty);
               setState(() {
-                db.follows.value = Future.value(controller.text.split('\n'));
+                db.follows.value = Future.value(tags);
               });
               Navigator.of(context).pop();
             },

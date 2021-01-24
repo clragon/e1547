@@ -120,7 +120,7 @@ class _LoginFormFieldsState extends State<_LoginFormFields> {
           'e.g. 1ca1d165e973d7f8d35b7deb7a2ae54c';
     }
 
-    apiKey = apiKey.trim(); // ignore: parameter_assignments
+    apiKey = apiKey.trim();
     if (apiKey.isEmpty) {
       return 'You must provide an API key.\n'
           'e.g. 1ca1d165e973d7f8d35b7deb7a2ae54c';
@@ -136,8 +136,7 @@ class _LoginFormFieldsState extends State<_LoginFormFields> {
 
   Function() _saveAndTest(BuildContext context) {
     return () async {
-      FormState form = Form.of(context)
-        ..save(); // TODO: fix this so we don't need to save->validate->validate
+      FormState form = Form.of(context)..save();
       if (form.validate()) {
         bool ok = await showDialog(
           context: context,
@@ -262,10 +261,10 @@ class _LoginFormFieldsState extends State<_LoginFormFields> {
 }
 
 class _LoginProgressDialog extends StatefulWidget {
-  _LoginProgressDialog(this.username, this.apiKey, {Key key}) : super(key: key);
-
   final String username;
   final String apiKey;
+
+  _LoginProgressDialog(this.username, this.apiKey);
 
   @override
   _LoginProgressDialogState createState() => _LoginProgressDialogState();

@@ -170,7 +170,7 @@ class NavigationDrawer extends StatelessWidget {
             leading: Icon(Icons.favorite),
             title: Text('Favorites'),
             onTap: () async {
-              if (await client.hasLogin()) {
+              if (await client.hasLogin) {
                 Navigator.of(context)
                     .pushNamedAndRemoveUntil('/fav', (_) => false);
               } else {
@@ -209,35 +209,28 @@ class NavigationDrawer extends StatelessWidget {
           leading: FutureBuilder(
             builder: (context, snapshot) {
               if (snapshot.hasData && snapshot.data.length != 0) {
-                int latest = int.tryParse(
-                    snapshot.data[0]['version'].replaceAll('.', '') ?? 0);
-                int current = int.parse(appVersion.replaceAll('.', '') ?? 0);
-                if (current < latest) {
-                  return Stack(
-                    children: <Widget>[
-                      Icon(Icons.update),
-                      Positioned(
-                        bottom: 0,
-                        left: 0,
-                        child: Container(
-                          height: 10,
-                          width: 10,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.red,
-                          ),
+                return Stack(
+                  children: <Widget>[
+                    Icon(Icons.update),
+                    Positioned(
+                      bottom: 0,
+                      left: 0,
+                      child: Container(
+                        height: 10,
+                        width: 10,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.red,
                         ),
                       ),
-                    ],
-                  );
-                } else {
-                  return Icon(Icons.info);
-                }
+                    ),
+                  ],
+                );
               } else {
                 return Icon(Icons.info);
               }
             },
-            future: getVersions(),
+            future: getNewVersions(),
           ),
           title: Text('About'),
           onTap: () => Navigator.popAndPushNamed(context, '/about'),

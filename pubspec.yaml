@@ -4,7 +4,7 @@ description: A mobile app for e621+e926.
 version: 1.7.2+38
 
 environment:
-  sdk: ">=2.7.0 <3.0.0"
+  sdk: ">=2.2.2 <3.0.0"
 
 dependencies:
 
@@ -19,6 +19,9 @@ dependencies:
   wakelock: ^0.2.0+1
   photo_view: ^0.10.3
   cached_network_image: ^2.5.0
+  copy_to_gallery:
+    git:
+      url: git://github.com/clragon/copy_to_gallery.git
 
   http_auth: ^0.3.0
   url_launcher: ^5.5.3

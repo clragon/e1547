@@ -180,7 +180,7 @@ class _ThreadWidgetState extends State<ThreadWidget> {
       ),
       body: body(),
       floatingActionButton: FutureBuilder(
-        future: client.hasLogin(),
+        future: client.hasLogin,
         builder: (context, snapshot) {
           if (snapshot.hasData && snapshot.data) {
             return fab();
@@ -270,7 +270,11 @@ class _ThreadWidgetState extends State<ThreadWidget> {
                               child: Text(
                                 reply.creatorID.toString(),
                                 style: TextStyle(
-                                  color: Colors.grey[600],
+                                  color: Theme.of(context)
+                                      .textTheme
+                                      .bodyText1
+                                      .color
+                                      .withOpacity(0.35),
                                 ),
                               ),
                               onTap: () {
@@ -293,7 +297,11 @@ class _ThreadWidgetState extends State<ThreadWidget> {
                               return time;
                             }(),
                             style: TextStyle(
-                              color: Colors.grey[600],
+                              color: Theme.of(context)
+                                  .textTheme
+                                  .bodyText1
+                                  .color
+                                  .withOpacity(0.35),
                               fontSize: 12,
                             ),
                           ),
@@ -340,7 +348,7 @@ class _ThreadWidgetState extends State<ThreadWidget> {
               ],
             ),
             onTap: () async {
-              if (await client.hasLogin()) {
+              if (await client.hasLogin) {
                 String body = reply.body;
                 body = body
                     .replaceAllMapped(

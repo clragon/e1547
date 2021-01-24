@@ -135,7 +135,11 @@ class _CommentsWidgetState extends State<CommentsWidget> {
                               child: Text(
                                 comment.creator,
                                 style: TextStyle(
-                                  color: Colors.grey[600],
+                                  color: Theme.of(context)
+                                      .textTheme
+                                      .bodyText1
+                                      .color
+                                      .withOpacity(0.35),
                                 ),
                               ),
                               onTap: () {
@@ -157,7 +161,11 @@ class _CommentsWidgetState extends State<CommentsWidget> {
                               return time;
                             }(),
                             style: TextStyle(
-                              color: Colors.grey[600],
+                              color: Theme.of(context)
+                                  .textTheme
+                                  .bodyText1
+                                  .color
+                                  .withOpacity(0.35),
                               fontSize: 12,
                             ),
                           ),

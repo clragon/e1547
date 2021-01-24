@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:e1547/client.dart' show client;
 import 'package:e1547/interface.dart';
 import 'package:e1547/main.dart';
@@ -313,7 +311,7 @@ class _PostsPageState extends State<PostsPage> {
                 post: post,
                 onPressed: () {
                   Navigator.of(context).push(MaterialPageRoute<Null>(
-                    builder: (context) => PostSwipe(
+                    builder: (context) => PostDetailGallery(
                       provider: provider,
                       initialPage: provider.posts.value.indexOf(post),
                     ),
@@ -381,17 +379,19 @@ class _PostsPageState extends State<PostsPage> {
   @override
   Widget build(BuildContext context) {
     widget.provider.pages.addListener(() {
-      if (this.mounted) {
-        setState(() {
-          if (widget.provider.pages.value.length == 0 ||
-              tileSize == null ||
-              staggered == null) {
-            loading = true;
-          } else {
-            loading = false;
-          }
-        });
-      }
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (this.mounted) {
+          setState(() {
+            if (widget.provider.pages.value.length == 0 ||
+                tileSize == null ||
+                staggered == null) {
+              loading = true;
+            } else {
+              loading = false;
+            }
+          });
+        }
+      });
     });
 
     Widget bodyWidget() {
@@ -559,15 +559,13 @@ class _PostsPageState extends State<PostsPage> {
                 selections.addAll(widget.provider.posts.value.toSet());
                 setState(() {});
               }),
-          (Platform.isAndroid)
-              ? Builder(
-                  builder: (context) => IconButton(
-                      icon: Icon(Icons.file_download),
-                      onPressed: () => loadingSnackbar(
-                          context,
-                          (post) => downloadDialog(context, post),
-                          Duration(milliseconds: 100))))
-              : Container(),
+          Builder(
+              builder: (context) => IconButton(
+                  icon: Icon(Icons.file_download),
+                  onPressed: () => loadingSnackbar(
+                      context,
+                      (post) => downloadDialog(context, post),
+                      Duration(milliseconds: 100)))),
           Builder(
             builder: (context) {
               return Padding(

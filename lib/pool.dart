@@ -173,7 +173,8 @@ class _FollowButtonState extends State<_FollowButton> {
 
 Widget poolInfo(BuildContext context, Pool pool) {
   DateFormat dateFormat = DateFormat('dd.MM.yy HH:mm');
-  Color textColor = Colors.grey[600];
+  Color textColor =
+      Theme.of(context).textTheme.bodyText1.color.withOpacity(0.35);
   return AlertDialog(
     title: Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
