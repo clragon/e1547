@@ -1,5 +1,6 @@
 import 'dart:async' show Future;
 import 'dart:convert' show json;
+import 'dart:io';
 
 import 'package:e1547/comment.dart' show Comment;
 import 'package:e1547/http.dart';
@@ -81,7 +82,7 @@ class Client {
     }
   }
 
-  Future<bool> hasLogin() async {
+  Future<bool> get hasLogin async {
     await initialized;
     return (await credentials != null);
   }
@@ -101,7 +102,7 @@ class Client {
       }).then((response) => response.body);
 
       List<Post> posts = [];
-      bool loggedIn = await this.hasLogin();
+      bool loggedIn = await this.hasLogin;
       bool hasPosts = false;
       for (Map rawPost in json.decode(body)['posts']) {
         hasPosts = true;
@@ -119,13 +120,13 @@ class Client {
         return client.posts(tags, page + 1, attempt: attempt + 1);
       }
       return posts;
-    } catch (SocketException) {
+    } on SocketException {
       return [];
     }
   }
 
   Future<bool> addFavorite(int post) async {
-    if (!await hasLogin()) {
+    if (!await hasLogin) {
       return false;
     }
 
@@ -135,7 +136,7 @@ class Client {
   }
 
   Future<bool> removeFavorite(int post) async {
-    if (!await hasLogin()) {
+    if (!await hasLogin) {
       return false;
     }
 
@@ -147,7 +148,7 @@ class Client {
   }
 
   Future<bool> votePost(int post, bool upvote, bool replace) async {
-    if (!await hasLogin()) {
+    if (!await hasLogin) {
       return false;
     }
 
@@ -303,7 +304,7 @@ class Client {
       }
 
       return pools;
-    } catch (SocketException) {
+    } on SocketException {
       return [];
     }
   }
@@ -317,20 +318,25 @@ class Client {
   }
 
   Future<List<Post>> follows(int page) async {
-    List<List<String>> tags = [];
     List<Post> posts = [];
-
-    int length = (await following).length;
+    List<String> tags = List.from(await following);
+    // remove pools, they cannot be used with the ~ operator.
+    tags.removeWhere((tag) => tag.startsWith('pool:'));
+    int length = tags.length;
     int max = 40;
-
+    double approx = length / max;
+    if (approx % 1 != 0) {
+      approx += 1;
+    }
+    if (approx != 0) {
+      max = length ~/ approx.toInt();
+    }
     for (int i = 0; i < length; i += max) {
       int end = (length > i + max) ? i + max : length;
-      tags.add((await following).sublist(i, end));
+      List<String> tagSet = tags.sublist(i, end);
+      posts.addAll(await client.posts('~${tagSet.join(' ~')}', page));
     }
-
-    for (List<String> tag in tags) {
-      posts.addAll(await client.posts('~${tag.join(' ~')}', page));
-    }
+    posts.sort((one, two) => two.id.compareTo(one.id));
     return posts;
   }
 
@@ -343,17 +349,17 @@ class Client {
           .then((response) => response.body);
 
       Post post = Post.fromRaw(json.decode(body)['post']);
-      post.isLoggedIn = await hasLogin();
+      post.isLoggedIn = await hasLogin;
       post.isBlacklisted = await isBlacklisted(post, await db.denylist.value);
       return post;
-    } catch (SocketException) {
+    } on SocketException {
       return null;
     }
   }
 
   Future<Map> updatePost(Post update, Post old, {String editReason}) async {
     await initialized;
-    if (!await hasLogin()) {
+    if (!await hasLogin) {
       return null;
     }
     Map<String, String> body = {};
@@ -456,11 +462,11 @@ class Client {
     try {
       String body = await http.get(await host, 'wiki_pages.json', query: {
         'search[title]': search,
-        'page': page + 1,
+        'page': page,
       }).then((response) => response.body);
 
       return json.decode(body);
-    } catch (SocketException) {
+    } on SocketException {
       return null;
     }
   }
@@ -517,7 +523,7 @@ class Client {
 
   Future<Map> postComment(String text, Post post, {Comment comment}) async {
     await initialized;
-    if (!await hasLogin()) {
+    if (!await hasLogin) {
       return null;
     }
     Map<String, String> query = {};
@@ -542,7 +548,7 @@ class Client {
 
   Future<List<Thread>> threads(int page) async {
     String body = await http.get(await host, '/forum_topics.json', query: {
-      'page': page + 1,
+      'page': page,
     }).then((response) => response.body);
 
     List<Thread> threads = [];

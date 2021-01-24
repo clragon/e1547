@@ -211,9 +211,20 @@ Widget wikiBody(BuildContext context, String tag) {
               physics: BouncingScrollPhysics(),
             );
           } else {
-            return Text(
-              'no wiki entry',
-              style: TextStyle(fontStyle: FontStyle.italic),
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'no wiki entry',
+                  style: TextStyle(
+                      color: Theme.of(context)
+                          .textTheme
+                          .bodyText1
+                          .color
+                          .withOpacity(0.5),
+                      fontStyle: FontStyle.italic),
+                )
+              ],
             );
           }
         }(),
@@ -236,6 +247,6 @@ Widget wikiBody(BuildContext context, String tag) {
             ),
           ],
         )),
-    future: client.wiki(tag, 0),
+    future: client.wiki(tag, 1),
   );
 }

@@ -19,10 +19,7 @@ class AboutPage extends StatelessWidget {
         actions: <Widget>[
           FutureBuilder(
             builder: (context, snapshot) {
-              if (snapshot.hasData && snapshot.data.length != 0) {
-                int latest = int.tryParse(
-                    snapshot.data[0]['version'].replaceAll('.', '') ?? 0);
-                int current = int.parse(appVersion.replaceAll('.', '') ?? 0);
+              if (snapshot.hasData) {
                 return Stack(
                   children: <Widget>[
                     IconButton(
@@ -31,7 +28,7 @@ class AboutPage extends StatelessWidget {
                         Widget msg;
                         FlatButton b1;
                         FlatButton b2;
-                        if (latest <= current) {
+                        if (snapshot.data.length == 0) {
                           msg =
                               Text("You have the newest version ($appVersion)");
                           b1 = FlatButton(
@@ -55,32 +52,30 @@ class AboutPage extends StatelessWidget {
                               releases.add(Text(
                                 'A newer version is available: ',
                                 style: TextStyle(
-                                  color: Colors.grey[500],
+                                  color: Theme.of(context)
+                                      .textTheme
+                                      .bodyText1
+                                      .color
+                                      .withOpacity(0.5),
                                 ),
                               ));
                               for (Map release in snapshot.data) {
-                                if ((int.tryParse(release['version']
-                                            .replaceAll('.', '')) ??
-                                        0) >
-                                    current) {
-                                  releases.addAll([
-                                    Padding(
-                                      padding:
-                                          EdgeInsets.only(top: 8, bottom: 8),
-                                      child: Text(
-                                        release['title'] +
-                                            ' (${release['version']}) ',
-                                        style: TextStyle(
-                                          fontSize: 22,
-                                        ),
+                                releases.addAll([
+                                  Padding(
+                                    padding: EdgeInsets.only(top: 8, bottom: 8),
+                                    child: Text(
+                                      release['title'] +
+                                          ' (${release['version']}) ',
+                                      style: TextStyle(
+                                        fontSize: 22,
                                       ),
                                     ),
-                                    Flexible(
-                                      child: Text(release['description']
-                                          .replaceAll('-', '•')),
-                                    )
-                                  ]);
-                                }
+                                  ),
+                                  Flexible(
+                                    child: Text(release['description']
+                                        .replaceAll('-', '•')),
+                                  )
+                                ]);
                               }
                               return releases;
                             }(),
@@ -114,7 +109,7 @@ class AboutPage extends StatelessWidget {
                       },
                     ),
                     () {
-                      if (latest > current) {
+                      if (snapshot.data.length != 0) {
                         return Positioned(
                           bottom: 20,
                           left: 12,
@@ -141,7 +136,7 @@ class AboutPage extends StatelessWidget {
                 );
               }
             },
-            future: getVersions(),
+            future: getNewVersions(),
           )
         ],
       );
@@ -188,6 +183,14 @@ class AboutPage extends StatelessWidget {
       body: body(),
     );
   }
+}
+
+Future<List<Map>> getNewVersions() async {
+  List<Map> releases = await getVersions();
+  int current = int.parse(appVersion.replaceAll('.', '') ?? 0);
+
+  return releases.where((release) =>
+      (int.tryParse(release['version'].replaceAll('.', '')) ?? 0) > current);
 }
 
 List<Map> githubData = [];

@@ -7,6 +7,7 @@ import 'package:e1547/posts_page.dart';
 import 'package:e1547/settings.dart';
 import 'package:e1547/tag.dart';
 import 'package:expandable/expandable.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -16,6 +17,30 @@ import 'package:url_launcher/url_launcher.dart' as url;
 
 import 'http.dart';
 
+enum TextState {
+  bold,
+  italic,
+  strikeout,
+  underline,
+  overline,
+  header,
+  link,
+}
+
+enum LinkWord {
+  post,
+  forum,
+  comment,
+  blip,
+  pool,
+  set,
+  takedown,
+  record,
+  ticket,
+  category,
+  thumb,
+}
+
 Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
   Widget toWidget(TextSpan span) {
     return RichText(
@@ -23,111 +48,112 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
     );
   }
 
-  // parse string recursively
-  TextSpan resolve(String msg, Map<String, bool> states) {
-    // wrapper widget for quotes
-    Widget quoteWrap(Widget child) {
-      return Card(
-        color: Theme.of(context).canvasColor,
-        child: Padding(
-          padding: EdgeInsets.all(8),
-          child: Row(children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [child],
-              ),
+  // wrapper widget for quotes
+  Widget quoteWrap(Widget child) {
+    return Card(
+      color: Theme.of(context).canvasColor,
+      child: Padding(
+        padding: EdgeInsets.all(8),
+        child: Row(children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [child],
             ),
-          ]),
-        ),
-      );
-    }
+          ),
+        ]),
+      ),
+    );
+  }
 
-    // wrapper widget for sections
-    Widget sectionWrap(Widget child, String title, {bool expanded = false}) {
-      return Card(
-          color: Theme.of(context).canvasColor,
-          child: ExpandableNotifier(
-            initialExpanded: expanded,
-            child: ExpandableTheme(
-              data: ExpandableThemeData(
-                iconColor: Theme.of(context).iconTheme.color,
-              ),
-              child: ExpandablePanel(
-                header: Padding(
-                  padding: EdgeInsets.only(left: 8, top: 10),
-                  child: Text(
-                    title,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: 16,
-                    ),
+  // wrapper widget for sections
+  Widget sectionWrap(Widget child, String title, {bool expanded = false}) {
+    return Card(
+        color: Theme.of(context).canvasColor,
+        child: ExpandableNotifier(
+          initialExpanded: expanded,
+          child: ExpandableTheme(
+            data: ExpandableThemeData(
+              iconColor: Theme.of(context).iconTheme.color,
+            ),
+            child: ExpandablePanel(
+              header: Padding(
+                padding: EdgeInsets.only(left: 8, top: 10),
+                child: Text(
+                  title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 16,
                   ),
                 ),
-                collapsed: Container(),
-                expanded: Padding(
-                  padding: EdgeInsets.only(left: 8, right: 8, bottom: 10),
+              ),
+              collapsed: Container(),
+              expanded: Padding(
+                padding: EdgeInsets.only(left: 8, right: 8, bottom: 10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [child],
+                ),
+              ),
+            ),
+          ),
+        ));
+  }
+
+  Widget spoilerWrap(Widget child) {
+    ValueNotifier<bool> isShown = ValueNotifier(false);
+    return Card(
+        child: InkWell(
+      child: Stack(
+        children: <Widget>[
+          Padding(
+            padding: EdgeInsets.all(8),
+            child: Row(
+              children: <Widget>[
+                Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [child],
                   ),
                 ),
-              ),
+              ],
             ),
-          ));
-    }
-
-    Widget spoilerWrap(Widget child) {
-      ValueNotifier<bool> isShown = ValueNotifier(false);
-      return Card(
-          child: InkWell(
-        child: Stack(
-          children: <Widget>[
-            Padding(
-              padding: EdgeInsets.all(8),
-              child: Row(
-                children: <Widget>[
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [child],
+          ),
+          Positioned.fill(
+            child: ValueListenableBuilder(
+              valueListenable: isShown,
+              builder: (context, value, child) {
+                return AnimatedOpacity(
+                  opacity: value ? 0 : 1,
+                  duration: Duration(milliseconds: 200),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.black,
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    child: Center(
+                      child: Text('SPOILER',
+                          style: TextStyle(
+                            color: Colors.white,
+                          )),
                     ),
                   ),
-                ],
-              ),
+                );
+              },
             ),
-            Positioned.fill(
-              child: ValueListenableBuilder(
-                valueListenable: isShown,
-                builder: (context, value, child) {
-                  return AnimatedOpacity(
-                    opacity: value ? 0 : 1,
-                    duration: Duration(milliseconds: 200),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.black,
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                      child: Center(
-                        child: Text('SPOILER',
-                            style: TextStyle(
-                              color: Colors.white,
-                            )),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            )
-          ],
-        ),
-        onTap: () => isShown.value = !isShown.value,
-      ));
-    }
+          )
+        ],
+      ),
+      onTap: () => isShown.value = !isShown.value,
+    ));
+  }
 
+  // parse string recursively
+  TextSpan resolve(String msg, Map<TextState, bool> state) {
     // get string in plain text. no parsing.
-    TextSpan getText(String msg, Map<String, bool> states, {Function() onTap}) {
+    TextSpan getText(String msg, Map<TextState, bool> states,
+        {Function() onTap}) {
       msg = msg.replaceAll('\\[', '[');
       msg = msg.replaceAll('\\]', ']');
 
@@ -137,18 +163,25 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
         text: msg,
         recognizer: TapGestureRecognizer()..onTap = onTap,
         style: TextStyle(
-          color: states['link']
+          color: states[TextState.link]
               ? Colors.blue[400]
-              : states['dark']
-                  ? Colors.grey[600]
-                  : Theme.of(context).textTheme.bodyText2.color,
-          fontWeight: states['bold'] ? FontWeight.bold : FontWeight.normal,
-          fontStyle: states['italic'] ? FontStyle.italic : FontStyle.normal,
-          fontSize: states['headline'] ? 18 : null,
+              : darkText
+                  ? Theme.of(context).textTheme.bodyText1.color.withOpacity(0.5)
+                  : Theme.of(context).textTheme.bodyText1.color,
+          fontWeight:
+              states[TextState.bold] ? FontWeight.bold : FontWeight.normal,
+          fontStyle:
+              states[TextState.italic] ? FontStyle.italic : FontStyle.normal,
+          fontSize: states[TextState.header] ? 18 : null,
           decoration: TextDecoration.combine([
-            states['strike'] ? TextDecoration.lineThrough : TextDecoration.none,
-            states['underline']
+            states[TextState.strikeout]
+                ? TextDecoration.lineThrough
+                : TextDecoration.none,
+            states[TextState.underline]
                 ? TextDecoration.underline
+                : TextDecoration.none,
+            states[TextState.overline]
+                ? TextDecoration.overline
                 : TextDecoration.none,
           ]),
         ),
@@ -233,44 +266,39 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
         after = msg.substring(end + 1, msg.length);
 
         if (tag.isNotEmpty) {
-          // whether tag is starting or ending
-          bool active;
-          // the actual tag
+          // the key of the tag
           String key;
+          // whether tag is starting or ending
+          bool active = true;
           // whether section tag is expanded
           bool expanded = false;
 
-          // check if tag is starting or ending
-          if (tag[0] == '/') {
-            key = tag.split('=')[0].substring(1);
+          key = tag.split('=').first.toLowerCase();
+
+          // check if tag is opening or closing
+          if (key[0] == '/') {
+            key = key.substring(1);
             active = false;
-          } else {
-            key = tag.split('=')[0];
-            active = true;
           }
 
-          // check for comma in tag
-          // this seems to be ONLY used in sections.
-          if (key.contains(',')) {
-            if (key.split(',')[1].toLowerCase() == 'expanded') {
-              expanded = true;
-            }
-            key = key.split(',')[0];
+          // check if tag is expanded section
+          if (key.contains(',') && key.split(',')[1] == 'expanded') {
+            key = key.split(',').first;
+            expanded = true;
           }
 
+          // check if tag is named section
           String value = '';
           if (tag.contains('=')) {
-            // use index of in case of multiple equals
-            int equal = tag.indexOf('=');
-            value = tag.substring(equal + 1);
+            value = tag.substring(tag.indexOf('=') + 1);
           }
 
           if (isFat) {
             if (before.isNotEmpty) {
-              spans.add(resolve(before, states));
+              spans.add(resolve(before, state));
             }
 
-            states['link'] = true;
+            state[TextState.link] = true;
 
             Function onTap;
             bool sameSite = false;
@@ -283,7 +311,7 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
             }
 
             String display = key;
-            String search = key;
+            String search = key.replaceAll(' ', '_');
 
             if (key.contains('|')) {
               search = key.split('|')[0];
@@ -297,12 +325,12 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
                   }));
             }
 
-            spans.add(getText(display, states, onTap: onTap));
+            spans.add(getText(display, state, onTap: onTap));
 
-            states['link'] = false;
+            state[TextState.link] = false;
 
             if (after.isNotEmpty) {
-              spans.add(resolve(after, states));
+              spans.add(resolve(after, state));
             }
           } else {
             // block tag check.
@@ -310,16 +338,16 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
             // so spaces can be removed
 
             Widget blocked;
-            RegExp blankLess = RegExp(r'(^[\r\n]*)|([\r\n]*$)');
+            RegExp blankless = RegExp(r'(^[\r\n]*)|([\r\n]*$)');
 
             if ([
                   'spoiler',
                   'code',
                   'section',
                   'quote',
-                ].any((block) => block == key.toLowerCase()) &&
+                ].any((block) => block == key) &&
                 active) {
-              String end = '[/${key.toLowerCase()}]';
+              String end = '[/$key]';
               int split;
               for (Match endMatch in end.allMatches(after)) {
                 String container = after.substring(0, endMatch.start);
@@ -333,20 +361,20 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
               if (split != null) {
                 String between = after
                     .substring(0, split)
-                    .replaceAllMapped(blankLess, (match) => '');
-                switch (key.toLowerCase()) {
+                    .replaceAllMapped(blankless, (match) => '');
+                switch (key) {
                   case 'spoiler':
-                    blocked = spoilerWrap(toWidget(resolve(between, states)));
+                    blocked = spoilerWrap(toWidget(resolve(between, state)));
                     break;
                   case 'code':
-                    blocked = quoteWrap(toWidget(getText(between, states)));
+                    blocked = quoteWrap(toWidget(getText(between, state)));
                     break;
                   case 'quote':
-                    blocked = quoteWrap(toWidget(resolve(between, states)));
+                    blocked = quoteWrap(toWidget(resolve(between, state)));
                     break;
                   case 'section':
                     blocked = sectionWrap(
-                        toWidget(resolve(between, states)), value,
+                        toWidget(resolve(between, state)), value,
                         expanded: expanded);
                     break;
                 }
@@ -365,62 +393,62 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
               }
 
               if (before.isNotEmpty) {
-                spans.add(resolve(before, states));
+                spans.add(resolve(before, state));
               }
 
               // add block
               spans.add(WidgetSpan(child: blocked));
 
               if (after.isNotEmpty) {
-                spans.add(resolve(after, states));
+                spans.add(resolve(after, state));
               }
             } else {
-              Map<String, bool> oldStates = Map.from(states);
-              bool triggered = false;
+              Map<TextState, bool> newState = Map.from(state);
+              bool triggered = true;
 
               // add textStyle
-              switch (key.toLowerCase()) {
+              switch (key) {
                 case 'b':
-                  states['bold'] = active;
-                  triggered = true;
+                  newState[TextState.bold] = active;
                   break;
                 case 'i':
-                  states['italic'] = active;
-                  triggered = true;
+                  newState[TextState.italic] = active;
                   break;
                 case 'u':
-                  states['underline'] = active;
-                  triggered = true;
+                  newState[TextState.underline] = active;
+                  break;
+                case 'o':
+                  // not supported on the site.
+                  // newState[TextState.overline] = active;
                   break;
                 case 's':
-                  states['strike'] = active;
-                  triggered = true;
+                  newState[TextState.strikeout] = active;
                   break;
                 case 'color':
                   // ignore color tags
                   // they're insanely hard to implement.
-                  triggered = true;
                   break;
                 case 'sup':
                   // I have no idea how to implement this.
-                  triggered = true;
                   break;
                 case 'sub':
                   // I have no idea how to implement this.
-                  triggered = true;
+                  break;
+                default:
+                  triggered = false;
                   break;
               }
 
               if (triggered) {
                 if (before.isNotEmpty) {
-                  spans.add(resolve(before, oldStates));
+                  spans.add(resolve(before, state));
                 }
 
                 if (after.isNotEmpty) {
-                  spans.add(resolve(after, states));
+                  spans.add(resolve(after, newState));
                 }
               } else {
-                spans.add(resolve('$before\\[$tag\\]$after', states));
+                spans.add(resolve('$before\\[$tag\\]$after', state));
               }
             }
           }
@@ -432,173 +460,71 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
       }
     }
 
-    List<String> words = [
-      'post',
-      'forum',
-      'comment',
-      'blip',
-      'pool',
-      'set',
-      'takedown',
-      'record',
-      'ticket',
-      'category',
-      'thumb',
-    ];
-
-    for (String word in words) {
-      RegExp rex = RegExp('$word #[0-9]{1,9}', caseSensitive: false);
-      if (rex.hasMatch(msg)) {
-        for (Match wordMatch in rex.allMatches(msg)) {
-          String before = msg.substring(0, wordMatch.start);
-          String match = msg.substring(wordMatch.start, wordMatch.end);
-          String after = msg.substring(wordMatch.end, msg.length);
-
-          if (before.isNotEmpty) {
-            spans.add(resolve(before, states));
-          }
-
-          states['link'] = true;
-
-          Function onTap;
-
-          switch (word) {
-            case 'thumb':
-            // add actual pictures here some day.
-            case 'post':
-              onTap = () async {
-                Post p = await client.post(int.parse(match.split('#')[1]));
-                Navigator.of(context)
-                    .push(MaterialPageRoute<Null>(builder: (context) {
-                  return PostWidget(post: p);
-                }));
-              };
-              break;
-            case 'pool':
-              onTap = () async {
-                Pool p = await client.pool(int.parse(match.split('#')[1]));
-                Navigator.of(context)
-                    .push(MaterialPageRoute<Null>(builder: (context) {
-                  return PoolPage(pool: p);
-                }));
-              };
-              break;
-          }
-
-          spans.add(getText(match, states, onTap: onTap));
-
-          states['link'] = false;
-
-          if (after.isNotEmpty) {
-            spans.add(resolve(after, states));
-          }
-          return TextSpan(
-            children: spans,
-          );
-        }
-      }
-    }
-
     void parseLink(String match, {bool insite = false}) {
-      if (match.endsWith('/')) {
-        match = match.substring(0, match.length - 1);
-      }
-
       String display = match;
       String search = match;
-      if (match[0] == '"') {
-        int end = match.substring(1).indexOf('"') + 1;
-        display = match.substring(1, end);
-        search = match.substring(end + 2);
+
+      Match name = RegExp(r'"[^"]+?":').firstMatch(match);
+      if (name != null) {
+        display = match.substring(name.start + 1, name.end - 2);
+        search = match.substring(name.end);
       }
 
-      states['link'] = true;
+      state[TextState.link] = true;
 
-      Function onTap;
+      String siteMatch = r'(e621\.net|e926\.net)';
+      Function onTap = () => url.launch(search);
+      int id = int.tryParse(search.split('/').last.split('?').first);
 
-      if (!insite) {
-        onTap = () async {
-          url.launch(search);
-        };
-        try {
-          if (RegExp(r'(e621\.net|e926\.net)/posts/[0-9]{1,9}')
-              .hasMatch(search)) {
-            int id = int.parse(search.split('/').last.split('?').first);
-            onTap = () async {
-              Post p = await client.post(id);
-              Navigator.of(context)
-                  .push(MaterialPageRoute<Null>(builder: (context) {
-                return PostWidget(post: p);
-              }));
-            };
-          }
-          if (RegExp(r'(e621\.net|e926\.net)/pool(s|/show)/[0-9]{1,9}')
-              .hasMatch(search)) {
-            int id = int.parse(search.split('/').last);
-            onTap = () async {
-              Pool p = await client.pool(id);
-              Navigator.of(context)
-                  .push(MaterialPageRoute<Null>(builder: (context) {
-                return PoolPage(pool: p);
-              }));
-            };
-          }
-        } catch (Exception) {
-          // this shouldnt be triggered. but I am not sure.
+      if (insite) {
+        siteMatch = r'';
+        onTap = () async => url.launch('https://${await db.host.value}$search');
+      }
+
+      if (id != null) {
+        if (RegExp(siteMatch + r'/posts/\d+').hasMatch(search)) {
+          onTap = () async {
+            Post p = await client.post(id);
+            Navigator.of(context)
+                .push(MaterialPageRoute<Null>(builder: (context) {
+              return PostDetail(post: p);
+            }));
+          };
         }
-      } else {
-        onTap = () async {
-          url.launch('https://${await db.host.value}$search');
-        };
-        try {
-          if (search.startsWith('/posts/')) {
-            int id = int.parse(search.split('/').last);
-            onTap = () async {
-              Post p = await client.post(id);
-              Navigator.of(context)
-                  .push(MaterialPageRoute<Null>(builder: (context) {
-                return PostWidget(post: p);
-              }));
-            };
-          }
-          if (search.startsWith('/pools/')) {
-            int id = int.parse(search.split('/').last);
-            onTap = () async {
-              Pool p = await client.pool(id);
-              Navigator.of(context)
-                  .push(MaterialPageRoute<Null>(builder: (context) {
-                return PoolPage(pool: p);
-              }));
-            };
-          }
-        } catch (Exception) {
-          // uh oh
+        if (RegExp(siteMatch + r'/pool(s|/show)/\d+').hasMatch(search)) {
+          onTap = () async {
+            Pool p = await client.pool(id);
+            Navigator.of(context)
+                .push(MaterialPageRoute<Null>(builder: (context) {
+              return PoolPage(pool: p);
+            }));
+          };
         }
       }
 
-      spans.add(getText(display, states, onTap: onTap));
+      spans.add(getText(display, state, onTap: onTap));
 
-      states['link'] = false;
+      state[TextState.link] = false;
     }
 
-    void parseWord(String match, String word) {
-      states['link'] = true;
+    void parseWord(String match, LinkWord word) {
+      state[TextState.link] = true;
 
       Function onTap;
 
       switch (word) {
-        case 'thumb':
+        case LinkWord.thumb:
         // add actual pictures here some day.
-        case 'post':
+        case LinkWord.post:
           onTap = () async {
             Post p = await client.post(int.parse(match.split('#')[1]));
             Navigator.of(context)
                 .push(MaterialPageRoute<Null>(builder: (context) {
-              return PostWidget(post: p);
+              return PostDetail(post: p);
             }));
           };
           break;
-        case 'pool':
+        case LinkWord.pool:
           onTap = () async {
             Pool p = await client.pool(int.parse(match.split('#')[1]));
             Navigator.of(context)
@@ -607,68 +533,55 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
             }));
           };
           break;
+        default:
+          break;
       }
 
-      spans.add(getText(match, states, onTap: onTap));
+      spans.add(getText(match, state, onTap: onTap));
 
-      states['link'] = false;
+      state[TextState.link] = false;
     }
 
-    Map<RegExp, Function(String match)> regexes = {
+    Map<RegExp, void Function(String match)> regexes = {
       RegExp(r'{{.*?}}'): (match) {
         // remove the brackets
-        match = match.substring(2);
-        match = match.substring(0, match.length - 2);
+        match = match.substring(2, match.length - 2);
 
-        states['link'] = true;
+        state[TextState.link] = true;
 
         Function onTap = () {
           Navigator.of(context)
               .push(MaterialPageRoute<Null>(builder: (context) {
             // split of display text after |
             // and replace spaces with _ to produce a valid tag
-            return SearchPage(tags: match.split('|')[0].replaceAll(' ', '_'));
+            return SearchPage(
+                tags: match.split('|').first.replaceAll(' ', '_'));
           }));
         };
 
-        spans.add(getText(match, states, onTap: onTap));
+        spans.add(getText(match, state, onTap: onTap));
 
-        states['link'] = false;
+        state[TextState.link] = false;
       },
-      RegExp(r'(^|\n)\*+ '): (match) {
-        spans.add(resolve(
-            '\n' + '  ' * ('*'.allMatches(match).length - 1) + '• ', states));
-      },
-      RegExp(r'h[1-6]\..*', caseSensitive: false): (match) {
-        states['headline'] = true;
-
-        String blocked = match.substring(3);
-        if (blocked.isNotEmpty && blocked[0] == ' ') {
-          blocked = blocked.substring(1);
-        }
-
-        spans.add(resolve(blocked, states));
-
-        states['headline'] = false;
+      RegExp(r'(^|\n)\*+ '): (match) => spans.add(resolve(
+          '\n' + '  ' * ('*'.allMatches(match).length - 1) + '• ', state)),
+      RegExp(r'h[1-6]\.\s?.*', caseSensitive: false): (match) {
+        state[TextState.header] = true;
+        String blocked = match.substring(3).trim();
+        spans.add(resolve(blocked, state));
+        state[TextState.header] = false;
       },
       RegExp(r'("[^"]+?":)?(http(s)?)?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)([^.,!?:"\s]+)'):
           parseLink,
       RegExp(r'("[^"]+?":)([-a-zA-Z0-9()@:%_\+.~#?&//=]*)([^.,!?:"\s]+)'):
-          (match) {
-        parseLink(match, insite: true);
-      },
+          (match) => parseLink(match, insite: true),
     };
 
-    List<MapEntry<RegExp, Function(String match)>> links = [];
-
-    for (String word in words) {
-      RegExp rex = RegExp('$word #[0-9]{1,9}');
-      links.add(MapEntry(rex, (match) {
-        parseWord(match, word);
-      }));
-    }
-
-    regexes.addEntries(links);
+    regexes.addEntries(LinkWord.values.map((word) {
+      return MapEntry(
+          RegExp(describeEnum(word) + r' #\d+', caseSensitive: false),
+          (String match) => parseWord(match, word));
+    }));
 
     for (MapEntry<RegExp, Function(String match)> entry in regexes.entries) {
       if (entry.key.hasMatch(msg)) {
@@ -678,13 +591,13 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
           String after = msg.substring(wordMatch.end, msg.length);
 
           if (before.isNotEmpty) {
-            spans.add(resolve(before, states));
+            spans.add(resolve(before, state));
           }
 
           entry.value(match);
 
           if (after.isNotEmpty) {
-            spans.add(resolve(after, states));
+            spans.add(resolve(after, state));
           }
           return TextSpan(
             children: spans,
@@ -694,21 +607,21 @@ Widget dTextField(BuildContext context, String msg, {bool darkText = false}) {
     }
 
     // no matching brackets, return normal text
-    return getText(msg, states);
+    return getText(msg, state);
   }
 
   // Map to keep track of textStyle
-  Map<String, bool> states = {
-    'bold': false,
-    'italic': false,
-    'strike': false,
-    'underline': false,
-    'headline': false,
-    'link': false,
-    'dark': darkText,
+  Map<TextState, bool> state = {
+    TextState.bold: false,
+    TextState.italic: false,
+    TextState.strikeout: false,
+    TextState.underline: false,
+    TextState.overline: false,
+    TextState.header: false,
+    TextState.link: false,
   };
 
-  return toWidget(resolve(msg, states));
+  return toWidget(resolve(msg, state));
 }
 
 class LowercaseTextInputFormatter extends TextInputFormatter {
@@ -991,7 +904,12 @@ class _TextEditorState extends State<TextEditor> with TickerProviderStateMixin {
                 ? dTextField(context, textController.text.trim())
                 : Text('your text here',
                     style: TextStyle(
-                        color: Colors.grey[600], fontStyle: FontStyle.italic)),
+                        color: Theme.of(context)
+                            .textTheme
+                            .bodyText1
+                            .color
+                            .withOpacity(0.35),
+                        fontStyle: FontStyle.italic)),
           ),
         ),
       );
@@ -1392,7 +1310,7 @@ class DataProvider<T> {
       isLoading = true;
       List<T> nextPage = [];
 
-      int page = reset ? 0 : pages.value.length + 1;
+      int page = reset ? 1 : pages.value.length + 1;
 
       if (extendedProvider != null) {
         nextPage.addAll(await extendedProvider(search.value, pages.value));

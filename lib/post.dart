@@ -1,11 +1,11 @@
 import 'dart:async' show Future, Timer;
-import 'dart:collection';
 import 'dart:core';
-import 'dart:io' show Directory, File, Platform;
+import 'dart:io' show File, Platform;
 import 'dart:math';
 import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:copy_to_gallery/copy_to_gallery.dart';
 import 'package:e1547/appInfo.dart';
 import 'package:e1547/client.dart' show client;
 import 'package:e1547/comment.dart';
@@ -32,16 +32,14 @@ import 'package:wakelock/wakelock.dart';
 
 import 'main.dart';
 
-List<Post> loadedVideos = [];
-
 enum ImageType { Image, Video, Unsupported }
 
-class _Image {
+class PostImage {
   Map file;
   Map preview;
   Map sample;
 
-  _Image.fromRaw(Map raw) {
+  PostImage.fromRaw(Map raw) {
     file = raw['file'] as Map;
     preview = raw['preview'] as Map;
     sample = raw['sample'] as Map;
@@ -64,9 +62,9 @@ class Post {
   bool isLoggedIn = false;
   bool isBlacklisted = false;
 
-  ValueNotifier<_Image> image = ValueNotifier(null);
+  ValueNotifier<PostImage> image = ValueNotifier(null);
 
-  ValueNotifier<Map> tags = ValueNotifier({});
+  ValueNotifier<Map<String, List<String>>> tags = ValueNotifier({});
 
   ValueNotifier<int> comments = ValueNotifier(null);
   ValueNotifier<int> score = ValueNotifier(null);
@@ -82,11 +80,26 @@ class Post {
   ValueNotifier<bool> isEditing = ValueNotifier(false);
   ValueNotifier<bool> showUnsafe = ValueNotifier(false);
 
+  bool get isVisible =>
+      (isFavorite.value || showUnsafe.value || !isBlacklisted);
+
   ValueNotifier<VoteStatus> voteStatus = ValueNotifier(VoteStatus.unknown);
+
+  static List<Post> loadedVideos = [];
 
   VideoPlayerController controller;
 
   ImageType type;
+
+  List<String> get artists {
+    return tags.value['artist']
+      ..removeWhere((artist) => [
+            'epilepsy_warning',
+            'conditional_dnp',
+            'sound_warning',
+            'avoid_posting',
+          ].contains(artist));
+  }
 
   Post.fromRaw(this.raw) {
     id = raw['id'] as int;
@@ -107,18 +120,18 @@ class Post {
     comments.value = (raw['comment_count'] as int);
 
     // remove occasional duplicate data
-    pools.addAll(LinkedHashSet<int>.from(raw['pools'].cast<int>()).toList());
+    pools.addAll(raw['pools'].cast<int>().toSet().toList());
 
     sources.value.addAll(raw['sources'].cast<String>());
 
-    (raw['tags'] as Map).forEach((k, v) {
-      tags.value[k] = List.from(v);
+    (raw['tags'] as Map).forEach((category, strings) {
+      tags.value[category] = List.from(strings);
     });
 
     score = ValueNotifier(raw['score']['total'] as int);
     uploader = (raw['uploader_id'] as int).toString();
 
-    image.value = _Image.fromRaw(raw);
+    image.value = PostImage.fromRaw(raw);
 
     switch (image.value.file['ext'].toLowerCase()) {
       case 'webm':
@@ -164,9 +177,6 @@ class Post {
     loadedVideos.add(this);
     await this.controller.initialize();
   }
-
-  bool get isVisible =>
-      (isFavorite.value || showUnsafe.value || !isBlacklisted);
 
   void dispose() {
     tags.dispose();
@@ -261,33 +271,45 @@ class PostPreview extends StatelessWidget {
   }
 }
 
-class PostSwipe extends StatelessWidget {
+class PostDetailGallery extends StatefulWidget {
   final PostProvider provider;
   final int initialPage;
 
-  PostSwipe({@required this.provider, this.initialPage = 0});
+  const PostDetailGallery({@required this.provider, this.initialPage = 0});
+
+  @override
+  _PostDetailGalleryState createState() => _PostDetailGalleryState();
+}
+
+class _PostDetailGalleryState extends State<PostDetailGallery> {
+  int lastIndex;
+  PageController controller;
+
+  @override
+  void initState() {
+    super.initState();
+    lastIndex = widget.initialPage;
+    controller = PageController(
+        initialPage: widget.initialPage, viewportFraction: 1.000000000001);
+  }
 
   @override
   Widget build(BuildContext context) {
-    int lastIndex = initialPage;
-    PageController controller = PageController(
-        initialPage: initialPage, viewportFraction: 1.000000000001);
-
     Widget _pageBuilder(BuildContext context, int index) {
-      if (index == provider.posts.value.length - 1) {
-        provider.loadNextPage();
+      if (index == widget.provider.posts.value.length - 1) {
+        widget.provider.loadNextPage();
       }
-      return index < provider.posts.value.length
-          ? PostWidget(
-              post: provider.posts.value[index],
-              provider: provider,
+      return index < widget.provider.posts.value.length
+          ? PostDetail(
+              post: widget.provider.posts.value[index],
+              provider: widget.provider,
               controller: controller,
             )
           : null;
     }
 
     return ValueListenableBuilder(
-      valueListenable: provider.pages,
+      valueListenable: widget.provider.pages,
       builder: (context, value, child) {
         return PageView.builder(
           controller: controller,
@@ -296,9 +318,9 @@ class PostSwipe extends StatelessWidget {
             int reach = 2;
             for (int i = -(reach + 1); i < reach; i++) {
               int target = index + 1 + i;
-              if (0 < target && target < provider.posts.value.length) {
-                String url =
-                    provider.posts.value[target].image.value.sample['url'];
+              if (0 < target && target < widget.provider.posts.value.length) {
+                String url = widget
+                    .provider.posts.value[target].image.value.sample['url'];
                 if (url != null) {
                   precacheImage(
                     CachedNetworkImageProvider(url),
@@ -307,9 +329,9 @@ class PostSwipe extends StatelessWidget {
                 }
               }
             }
-            if (provider.posts.value.length != 0) {
-              if (provider.posts.value[lastIndex].isEditing.value) {
-                resetPost(provider.posts.value[lastIndex]);
+            if (widget.provider.posts.value.length != 0) {
+              if (widget.provider.posts.value[lastIndex].isEditing.value) {
+                resetPost(widget.provider.posts.value[lastIndex]);
               }
             }
             lastIndex = index;
@@ -320,20 +342,20 @@ class PostSwipe extends StatelessWidget {
   }
 }
 
-class PostWidget extends StatefulWidget {
+class PostDetail extends StatefulWidget {
   final Post post;
   final PostProvider provider;
   final PageController controller;
 
-  PostWidget({@required this.post, this.provider, this.controller});
+  PostDetail({@required this.post, this.provider, this.controller});
 
   @override
   State<StatefulWidget> createState() {
-    return _PostWidgetState();
+    return _PostDetailState();
   }
 }
 
-class _PostWidgetState extends State<PostWidget> with RouteAware {
+class _PostDetailState extends State<PostDetail> with RouteAware {
   TextEditingController textController = TextEditingController();
   ValueNotifier<Future<bool> Function()> doEdit = ValueNotifier(null);
   PersistentBottomSheetController bottomSheetController;
@@ -346,12 +368,12 @@ class _PostWidgetState extends State<PostWidget> with RouteAware {
       replacement.isBlacklisted = widget.post.isBlacklisted;
       if (ModalRoute.of(context).isCurrent) {
         Navigator.of(context).pushReplacement(MaterialPageRoute<Null>(
-            builder: (context) => PostWidget(post: replacement)));
+            builder: (context) => PostDetail(post: replacement)));
       } else {
         Navigator.of(context).replace(
             oldRoute: ModalRoute.of(context),
             newRoute: MaterialPageRoute<Null>(
-                builder: (context) => PostWidget(post: replacement)));
+                builder: (context) => PostDetail(post: replacement)));
       }
     }
   }
@@ -412,6 +434,9 @@ class _PostWidgetState extends State<PostWidget> with RouteAware {
     widget.provider?.pages?.removeListener(updateWidget);
     widget.post.isEditing.removeListener(closeBottomSheet);
     widget.post.controller?.pause();
+    if (widget.provider == null) {
+      widget.post.dispose();
+    }
   }
 
   @override
@@ -430,7 +455,7 @@ class _PostWidgetState extends State<PostWidget> with RouteAware {
       keepPlaying = true;
       Navigator.of(context).push(MaterialPageRoute<Null>(builder: (context) {
         Widget gallery(List<Post> posts) {
-          return ImageGallery(
+          return PostImageGallery(
             index: posts.indexOf(widget.post),
             posts: posts,
             controller: widget.controller,
@@ -571,7 +596,7 @@ class _PostWidgetState extends State<PostWidget> with RouteAware {
                         widget.post.image.value = urls.image.value;
                       } else {
                         widget.post.image.value =
-                            _Image.fromRaw(widget.post.raw);
+                            PostImage.fromRaw(widget.post.raw);
                       }
                     }
                   },
@@ -669,35 +694,25 @@ class _PostWidgetState extends State<PostWidget> with RouteAware {
                 TextSpan(children: () {
                   List<InlineSpan> spans = [];
                   int count = 0;
-                  for (String artist in widget.post.tags.value['artist']) {
-                    switch (artist) {
-                      case 'epilepsy_warning':
-                      case 'conditional_dnp':
-                      case 'sound_warning':
-                      case 'avoid_posting':
-                        break;
-                      default:
-                        count++;
-                        if (count > 1) {
-                          spans.add(TextSpan(text: ', '));
-                        }
-                        spans.add(WidgetSpan(
-                            child: InkWell(
-                          child: Text(
-                            artist,
-                            style: TextStyle(
-                              fontSize: 14.0,
-                            ),
-                          ),
-                          onTap: () => Navigator.of(context).push(
-                              MaterialPageRoute<Null>(
-                                  builder: (context) =>
-                                      SearchPage(tags: artist))),
-                          onLongPress: () =>
-                              wikiDialog(context, artist, actions: true),
-                        )));
-                        break;
+                  for (String artist in widget.post.artists) {
+                    count++;
+                    if (count > 1) {
+                      spans.add(TextSpan(text: ', '));
                     }
+                    spans.add(WidgetSpan(
+                        child: InkWell(
+                      child: Text(
+                        artist,
+                        style: TextStyle(
+                          fontSize: 14.0,
+                        ),
+                      ),
+                      onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute<Null>(
+                              builder: (context) => SearchPage(tags: artist))),
+                      onLongPress: () =>
+                          wikiDialog(context, artist, actions: true),
+                    )));
                   }
                   return spans;
                 }()),
@@ -826,7 +841,11 @@ class _PostWidgetState extends State<PostWidget> with RouteAware {
                                 ? dTextField(context, value)
                                 : Text('no description',
                                     style: TextStyle(
-                                        color: Colors.grey[600],
+                                        color: Theme.of(context)
+                                            .textTheme
+                                            .bodyText1
+                                            .color
+                                            .withOpacity(0.35),
                                         fontStyle: FontStyle.italic)),
                           ),
                         ),
@@ -1140,7 +1159,7 @@ class _PostWidgetState extends State<PostWidget> with RouteAware {
                               if (post != null) {
                                 Navigator.of(context).push(
                                     MaterialPageRoute<Null>(builder: (context) {
-                                  return PostWidget(post: post);
+                                  return PostDetail(post: post);
                                 }));
                               } else {
                                 Scaffold.of(context).showSnackBar(SnackBar(
@@ -1189,7 +1208,7 @@ class _PostWidgetState extends State<PostWidget> with RouteAware {
                                   await Navigator.of(context).push(
                                       MaterialPageRoute<Null>(
                                           builder: (context) {
-                                    return PostWidget(post: post);
+                                    return PostDetail(post: post);
                                   }));
                                 } else {
                                   Scaffold.of(context).showSnackBar(SnackBar(
@@ -1321,9 +1340,7 @@ class _PostWidgetState extends State<PostWidget> with RouteAware {
                     textController.text = '';
                     bottomSheetController =
                         Scaffold.of(context).showBottomSheet(
-                      (context) {
-                        return tagInput();
-                      },
+                      (context) => tagInput(),
                     );
                     doEdit.value = () async {
                       isLoading.value = true;
@@ -1333,7 +1350,7 @@ class _PostWidgetState extends State<PostWidget> with RouteAware {
                       }
                       List<String> tags = textController.text.trim().split(' ');
                       widget.post.tags.value[tagSet].addAll(tags);
-                      widget.post.tags.value[tagSet].sort();
+                      widget.post.tags.value[tagSet].toSet().toList().sort();
                       widget.post.tags.value = Map.from(widget.post.tags.value);
                       if (tagSet != 'general') {
                         () async {
@@ -1342,15 +1359,18 @@ class _PostWidgetState extends State<PostWidget> with RouteAware {
                             String category;
                             if (validator.length == 0) {
                               category = 'general';
-                            } else if (categories[tagSet] !=
-                                validator[0]['category']) {
+                            } else if (validator[0]['category'] !=
+                                categories[tagSet]) {
                               category = categories.keys.firstWhere((k) =>
-                                  categories[k] == validator[0]['category']);
+                                  validator[0]['category'] == categories[k]);
                             }
                             if (category != null) {
                               widget.post.tags.value[tagSet].remove(tag);
                               widget.post.tags.value[category].add(tag);
-                              widget.post.tags.value[category].sort();
+                              widget.post.tags.value[category]
+                                  .toSet()
+                                  .toList()
+                                  .sort();
                               widget.post.tags.value =
                                   Map.from(widget.post.tags.value);
                               Scaffold.of(context).showSnackBar(SnackBar(
@@ -1382,67 +1402,49 @@ class _PostWidgetState extends State<PostWidget> with RouteAware {
           builder: (context, value, child) {
             return Column(
               mainAxisSize: MainAxisSize.min,
-              children: () {
-                List<Widget> columns = [];
-                List<String> tagSets = [
-                  'general',
-                  'species',
-                  'character',
-                  'copyright',
-                  'meta',
-                  'lore',
-                  'artist',
-                  'invalid',
-                ];
-                for (String tagSet in tagSets) {
-                  if (value[tagSet].length != 0 ||
-                      (widget.post.isEditing.value && tagSet != 'invalid')) {
-                    columns.add(Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Padding(
-                          padding: EdgeInsets.only(
-                            right: 4,
-                            left: 4,
-                            top: 2,
-                            bottom: 2,
-                          ),
-                          child: Text(
-                            '${tagSet[0].toUpperCase()}${tagSet.substring(1)}',
-                            style: TextStyle(
-                              fontSize: 16,
+              children: categories.keys
+                  .where((tagSet) =>
+                      value[tagSet].length != 0 ||
+                      (widget.post.isEditing.value && tagSet != 'invalid'))
+                  .map((tagSet) => Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 4, vertical: 2),
+                            child: Text(
+                              '${tagSet[0].toUpperCase()}${tagSet.substring(1)}',
+                              style: TextStyle(
+                                fontSize: 16,
+                              ),
                             ),
                           ),
-                        ),
-                        Row(
-                          children: <Widget>[
-                            Expanded(
-                              child: Wrap(
-                                direction: Axis.horizontal,
-                                children: () {
-                                  List<Widget> tags = [];
-                                  for (String tag in value[tagSet]) {
-                                    tags.add(
-                                      tagCard(tag, tagSet),
-                                    );
-                                  }
-                                  tags.add(crossFade(
-                                    showChild: widget.post.isEditing.value,
-                                    child: tagCreator(tagSet),
-                                  ));
-                                  return tags;
-                                }(),
-                              ),
-                            )
-                          ],
-                        ),
-                        Divider(),
-                      ],
-                    ));
-                  }
-                }
-                return columns;
-              }(),
+                          Row(
+                            children: <Widget>[
+                              Expanded(
+                                child: Wrap(
+                                  direction: Axis.horizontal,
+                                  children: () {
+                                    List<Widget> tags = [];
+                                    for (String tag in value[tagSet]) {
+                                      tags.add(
+                                        tagCard(tag, tagSet),
+                                      );
+                                    }
+                                    tags.add(crossFade(
+                                      showChild: widget.post.isEditing.value,
+                                      child: tagCreator(tagSet),
+                                    ));
+                                    return tags;
+                                  }(),
+                                ),
+                              )
+                            ],
+                          ),
+                          Divider(),
+                        ],
+                      ))
+                  .toList(),
             );
           },
         );
@@ -1557,12 +1559,7 @@ class _PostWidgetState extends State<PostWidget> with RouteAware {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Padding(
-              padding: EdgeInsets.only(
-                right: 4,
-                left: 4,
-                top: 2,
-                bottom: 2,
-              ),
+              padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
               child: Text(
                 'File',
                 style: TextStyle(
@@ -1571,12 +1568,7 @@ class _PostWidgetState extends State<PostWidget> with RouteAware {
               ),
             ),
             Padding(
-              padding: EdgeInsets.only(
-                right: 4,
-                left: 4,
-                top: 2,
-                bottom: 2,
-              ),
+              padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
@@ -1587,12 +1579,7 @@ class _PostWidgetState extends State<PostWidget> with RouteAware {
               ),
             ),
             Padding(
-              padding: EdgeInsets.only(
-                right: 4,
-                left: 4,
-                top: 2,
-                bottom: 2,
-              ),
+              padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
@@ -1603,12 +1590,7 @@ class _PostWidgetState extends State<PostWidget> with RouteAware {
               ),
             ),
             Padding(
-              padding: EdgeInsets.only(
-                right: 4,
-                left: 4,
-                top: 2,
-                bottom: 2,
-              ),
+              padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
@@ -1644,12 +1626,7 @@ class _PostWidgetState extends State<PostWidget> with RouteAware {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     Padding(
-                      padding: EdgeInsets.only(
-                        right: 4,
-                        left: 4,
-                        top: 2,
-                        bottom: 2,
-                      ),
+                      padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
                       child: Text(
                         'Sources',
                         style: TextStyle(
@@ -1681,19 +1658,18 @@ class _PostWidgetState extends State<PostWidget> with RouteAware {
                   ],
                 ),
                 Padding(
-                  padding: EdgeInsets.only(
-                    right: 4,
-                    left: 4,
-                    top: 2,
-                    bottom: 2,
-                  ),
+                  padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
                   child: value.join('\n').trim().isNotEmpty
                       ? dTextField(context, value.join('\n'))
                       : Padding(
                           padding: EdgeInsets.all(4),
                           child: Text('no sources',
                               style: TextStyle(
-                                  color: Colors.grey[600],
+                                  color: Theme.of(context)
+                                      .textTheme
+                                      .bodyText1
+                                      .color
+                                      .withOpacity(0.35),
                                   fontStyle: FontStyle.italic)),
                         ),
                 ),
@@ -1920,18 +1896,19 @@ enum LoadingState {
   full,
 }
 
-class ImageGallery extends StatefulWidget {
+class PostImageGallery extends StatefulWidget {
   final int index;
   final List<Post> posts;
   final PageController controller;
 
-  const ImageGallery({this.index = 0, @required this.posts, this.controller});
+  const PostImageGallery(
+      {this.index = 0, @required this.posts, this.controller});
 
   @override
-  _ImageGalleryState createState() => _ImageGalleryState();
+  _PostImageGalleryState createState() => _PostImageGalleryState();
 }
 
-class _ImageGalleryState extends State<ImageGallery> {
+class _PostImageGalleryState extends State<PostImageGallery> {
   ValueNotifier<bool> showFrame = ValueNotifier(false);
   ValueNotifier<int> current = ValueNotifier(null);
 
@@ -1971,7 +1948,12 @@ class _ImageGalleryState extends State<ImageGallery> {
                   showChild: visible,
                   child: child,
                 ),
-                child: postAppBar(context, widget.posts[value], canEdit: false),
+                child: Builder(
+                  builder: (context) {
+                    return postAppBar(context, widget.posts[value],
+                        canEdit: false);
+                  },
+                ),
               ),
             ),
             body: VideoFrame(
@@ -2106,11 +2088,11 @@ class _FullscreenImageState extends State<FullscreenImage> {
               childSize: () {
                 double width;
                 double height;
-                _Image image = widget.post.image.value;
+                PostImage image = widget.post.image.value;
                 switch (loadingState) {
                   case LoadingState.none:
                   // this is unecessary, because no image is shown
-                  // I commented it out to prevent possible size flickering
+                  // disabled to prevent possible size flickering
                   /*
                     width = MediaQuery.of(context).size.width;
                     height = MediaQuery.of(context).size.height;
@@ -2164,6 +2146,7 @@ class _FullscreenImageState extends State<FullscreenImage> {
                             minHeight: widget.post.image.value.sample['height']
                                     .toDouble() /
                                 100,
+                            backgroundColor: Colors.transparent,
                           ),
                           showChild: loadingState == LoadingState.sample,
                         ),
@@ -2459,9 +2442,8 @@ Widget postAppBar(BuildContext context, Post post, {bool canEdit = true}) {
         actions: post.isEditing.value
             ? null
             : <Widget>[
-                ValueListenableBuilder(
-                  valueListenable: post.comments,
-                  builder: (BuildContext context, value, Widget child) {
+                Builder(
+                  builder: (context) {
                     return PopupMenuButton<String>(
                       icon: IconShadowWidget(
                         Icon(
@@ -2476,8 +2458,7 @@ Widget postAppBar(BuildContext context, Post post, {bool canEdit = true}) {
                           value: 'share',
                           child: popMenuListTile('Share', Icons.share),
                         ),
-                        post.image.value.file['url'] != null &&
-                                (Platform.isAndroid)
+                        post.image.value.file['url'] != null
                             ? PopupMenuItem(
                                 value: 'download',
                                 child: popMenuListTile(
@@ -2495,7 +2476,7 @@ Widget postAppBar(BuildContext context, Post post, {bool canEdit = true}) {
                                 child: popMenuListTile('Edit', Icons.edit),
                               )
                             : null,
-                        post.isLoggedIn && value == 0
+                        post.isLoggedIn
                             ? PopupMenuItem(
                                 value: 'comment',
                                 child:
@@ -2512,8 +2493,7 @@ Widget postAppBar(BuildContext context, Post post, {bool canEdit = true}) {
                           case 'download':
                             String message;
                             if (await downloadDialog(context, post)) {
-                              message =
-                                  'Saved to ${post.id}.${post.image.value.file['ext']}';
+                              message = 'Saved image #${post.id} to gallery';
                             } else {
                               message = 'Failed to download post ${post.id}';
                             }
@@ -2545,30 +2525,17 @@ Widget postAppBar(BuildContext context, Post post, {bool canEdit = true}) {
   );
 }
 
-Future<File> download(Post post) async {
-  if (!Platform.isAndroid) {
-    throw ('platform is unsupported');
+Future<bool> download(Post post) async {
+  String filename =
+      '${post.artists.join(', ')} - ${post.id}.${post.image.value.file['ext']}';
+  File file =
+      await DefaultCacheManager().getSingleFile(post.image.value.file['url']);
+  try {
+    await CopyToGallery.copyNamedPictures(appName, {file.path: filename});
+    return true;
+  } catch (Exception) {
+    return false;
   }
-  String downloadFolder =
-      '${Platform.environment['EXTERNAL_STORAGE']}/Pictures/$appName';
-  Directory(downloadFolder).createSync();
-
-  String filename = '${post.tags.value['artist'].where((tag) => ![
-        'conditional_dnp',
-        'sound_warning',
-        'epilepsy_warning',
-        'avoid_posting',
-      ].contains(tag)).join(', ')} - ${post.id}.${post.image.value.file['ext']}';
-  String filepath = '$downloadFolder/$filename';
-
-  File file = File(filepath);
-  if (file.existsSync()) {
-    return file;
-  }
-
-  DefaultCacheManager cacheManager = DefaultCacheManager();
-  return (await cacheManager.getSingleFile(post.image.value.file['url']))
-      .copySync(filepath);
 }
 
 Future<bool> downloadDialog(BuildContext context, Post post) async {
@@ -2595,9 +2562,7 @@ Future<bool> downloadDialog(BuildContext context, Post post) async {
     return success;
   }
 
-  await download(post)
-      .then((value) => success = true, onError: (error) => success = false);
-  return success;
+  return await download(post);
 }
 
 Widget loadingListTile(
@@ -2769,8 +2734,8 @@ Map<String, int> categories = {
   'species': 5,
   'character': 4,
   'copyright': 3,
+  'meta': 7,
+  'lore': 8,
   'artist': 1,
   'invalid': 6,
-  'lore': 8,
-  'meta': 7,
 };

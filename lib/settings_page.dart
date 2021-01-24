@@ -25,64 +25,39 @@ class _SettingsPageState extends State<SettingsPage> {
 
   bool resetApp = false;
 
+  void linkSetting<T>(ValueNotifier<Future<T>> setting,
+      Future<void> Function(T value) assignment) async {
+    Future<void> setValue() async {
+      var value = await setting.value;
+      await assignment(value);
+      if (mounted) {
+        setState(() {});
+      }
+    }
+
+    setting.addListener(setValue);
+    await setValue();
+  }
+
   @override
   void initState() {
     super.initState();
-    db.host.value.then((a) async {
-      currentHost = a;
-      useCustomHost = currentHost == await db.customHost.value;
-      if (mounted) {
-        setState(() {});
-      }
-    });
-    db.host.addListener(() async {
-      currentHost = await db.host.value;
-      useCustomHost = currentHost == await db.customHost.value;
-      if (mounted) {
-        setState(() {});
-      }
-    });
-    db.customHost.value.then((a) => setState(() => customHost = a));
-    db.customHost.addListener(() async {
-      customHost = await db.customHost.value;
-      if (mounted) {
-        setState(() {});
-      }
-    });
-    db.credentials.value.then((a) => setState(() => username = a?.username));
-    db.credentials.addListener(() async {
-      username = (await db.credentials.value)?.username;
-      if (mounted) {
-        setState(() {});
-      }
-    });
-    db.theme.value.then((a) => setState(() => theme = a));
-    db.theme.addListener(() async {
-      theme = await db.theme.value;
-      if (mounted) {
-        setState(() {});
-      }
-    });
-    db.hideGallery.value.then((a) => setState(() => hideGallery = a));
-    db.hideGallery.addListener(() async {
-      hideGallery = await db.hideGallery.value;
-      if (mounted) {
-        setState(() {});
-      }
-    });
-    db.tileSize.value.then((a) => setState(() => tileSize = a));
-    db.tileSize.addListener(() async {
-      tileSize = await db.tileSize.value;
-      if (mounted) {
-        setState(() {});
-      }
-    });
-    db.staggered.value.then((a) => setState(() => staggered = a));
-    db.staggered.addListener(() async {
-      staggered = await db.staggered.value;
-      if (mounted) {
-        setState(() {});
-      }
+
+    Map<ValueNotifier, Future<void> Function(dynamic value)> links = {
+      db.host: (value) async {
+        currentHost = value;
+        useCustomHost = value == await db.customHost.value;
+      },
+      db.customHost: (value) async => customHost = value,
+      db.credentials: (value) async => username = value?.username,
+      db.theme: (value) async => theme = value,
+      db.hideGallery: (value) async => hideGallery = value,
+      db.tileSize: (value) async => tileSize = value,
+      db.staggered: (value) async => staggered = value,
+    };
+
+    links.forEach((setting, func) {
+      linkSetting(setting, func);
     });
   }
 
@@ -290,7 +265,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   );
                 }
               },
-              future: client.hasLogin(),
+              future: client.hasLogin,
             ),
           ],
         ),
@@ -309,9 +284,7 @@ class _SettingsPageState extends State<SettingsPage> {
       child: Scaffold(
         appBar: AppBar(
           title: Text('Settings'),
-          leading: IconButton(
-              icon: Icon(Icons.arrow_back),
-              onPressed: Navigator.of(context).maybePop),
+          leading: CloseButton(),
         ),
         body: Builder(builder: bodyWidgetBuilder),
       ),
