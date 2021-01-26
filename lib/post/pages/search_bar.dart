@@ -1,0 +1,187 @@
+import 'package:e1547/interface.dart';
+import 'package:e1547/post.dart';
+import 'package:e1547/post/detail/display/rating.dart';
+import 'package:flutter/material.dart';
+
+class PostSearchBar extends StatelessWidget {
+  final TextEditingController controller;
+  final Function onSubmit;
+
+  PostSearchBar({
+    @required this.controller,
+    @required this.onSubmit,
+  });
+
+  void _withTags(Future<Tagset> Function(Tagset tags) editor) async {
+    controller.text = (await editor(Tagset.parse(controller.text))).toString();
+    setFocusToEnd(controller);
+  }
+
+  List<PopupMenuEntry<String>> Function(BuildContext)
+      _popupMenuButtonItemBuilder(List<String> text) {
+    return (context) {
+      List<PopupMenuEntry<String>> items = List(text.length);
+      for (int i = 0; i < items.length; i++) {
+        String t = text[i];
+        items[i] = PopupMenuItem(child: Text(t), value: t);
+      }
+      return items;
+    };
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    Widget filterByWidget() {
+      return PopupMenuButton<String>(
+          icon: Icon(Icons.filter_list),
+          tooltip: 'Filter by',
+          itemBuilder: _popupMenuButtonItemBuilder(
+            ['Score', 'Favorites'],
+          ),
+          onSelected: (selection) {
+            String filterType = {
+              'Score': 'score',
+              'Favorites': 'favcount',
+            }[selection];
+
+            _withTags((tags) async {
+              String valueString = tags[filterType];
+              int value =
+                  valueString == null ? 0 : int.parse(valueString.substring(2));
+
+              int min = await showDialog<int>(
+                  context: context,
+                  builder: (context) {
+                    return RangeDialog(
+                      title: Text('Minimum $filterType'),
+                      value: value,
+                      division: 10,
+                      max: 100,
+                    );
+                  });
+
+              if (min == null) {
+                return tags;
+              }
+
+              if (min == 0) {
+                tags.remove(filterType);
+              } else {
+                tags[filterType] = '>=$min';
+              }
+              return tags;
+            });
+          });
+    }
+
+    Widget sortByWidget() {
+      Map<String, String> orders = {
+        'New': 'new',
+        'Score': 'score',
+        'Favorites': 'favcount',
+        'Rank': 'rank'
+      };
+
+      return PopupMenuButton<String>(
+        icon: Icon(Icons.sort),
+        tooltip: 'Sort by',
+        itemBuilder: _popupMenuButtonItemBuilder(
+          orders.keys.toList(),
+        ),
+        onSelected: (String selection) {
+          String orderType = orders[selection];
+
+          _withTags((tags) async {
+            if (orderType == 'new') {
+              tags.remove('order');
+            } else {
+              tags['order'] = orderType;
+            }
+
+            return tags;
+          });
+        },
+      );
+    }
+
+    Widget statusWidget() {
+      Map<String, String> status = {
+        'Rating': 'rating',
+        'Deleted': 'deleted',
+        'Pool': 'pool',
+      };
+
+      return PopupMenuButton<String>(
+          icon: Icon(Icons.playlist_add_check),
+          tooltip: 'Conditions',
+          itemBuilder: _popupMenuButtonItemBuilder(
+            status.keys.toList(),
+          ),
+          onSelected: (selection) async {
+            String key;
+            String value;
+
+            switch (status[selection]) {
+              case 'rating':
+                await showDialog(
+                    context: context,
+                    child: RatingDialog(onTap: (rating) {
+                      key = 'rating';
+                      value = rating;
+                    }));
+                break;
+              case 'deleted':
+                key = 'status';
+                value = 'deleted';
+                break;
+              case 'favorited':
+                // unimplemented
+                break;
+              case 'type':
+                // unimplemented
+                break;
+              case 'pool':
+                key = 'inpool';
+                value = 'true';
+                break;
+            }
+
+            _withTags((tags) async {
+              if (key == null) {
+                return tags;
+              }
+              if (key == 'status' && tags.contains('status')) {
+                tags.remove('status');
+                return tags;
+              }
+              if (key == 'inpool' && tags.contains('inpool')) {
+                tags.remove('inpool');
+                return tags;
+              }
+              tags[key] = value;
+              return tags;
+            });
+          });
+    }
+
+    return Container(
+      padding: EdgeInsets.only(left: 10.0, right: 10.0, top: 20.0),
+      child: Column(mainAxisSize: MainAxisSize.min, children: [
+        TagInput(
+          controller: controller,
+          labelText: 'Tags',
+          onSubmit: onSubmit,
+        ),
+        Padding(
+          padding: EdgeInsets.symmetric(vertical: 10.0),
+          child:
+              Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
+            statusWidget(),
+            filterByWidget(),
+            sortByWidget(),
+          ]),
+        ),
+      ]),
+    );
+  }
+}

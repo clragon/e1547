@@ -1,0 +1,254 @@
+import 'package:e1547/client.dart';
+import 'package:e1547/interface.dart';
+import 'package:e1547/post.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
+class ParentDisplay extends StatefulWidget {
+  final Post post;
+  final Function() onEditorClose;
+  final Function(Future<bool> Function() submit) builder;
+
+  const ParentDisplay({@required this.post, this.onEditorClose, this.builder});
+
+  @override
+  _ParentDisplayState createState() => _ParentDisplayState();
+}
+
+class _ParentDisplayState extends State<ParentDisplay> {
+  PersistentBottomSheetController sheetController;
+
+  @override
+  void initState() {
+    super.initState();
+    widget.post.parent.addListener(() => setState(() {}));
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    widget.post.parent.removeListener(() => setState(() {}));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      CrossFade(
+        showChild:
+            widget.post.parent.value != null || widget.post.isEditing.value,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+              child: Text(
+                'Parent',
+                style: TextStyle(
+                  fontSize: 16,
+                ),
+              ),
+            ),
+            LoadingTile(
+              leading: Icon(Icons.supervisor_account),
+              title: Text(widget.post.parent.value?.toString() ?? 'none'),
+              trailing: widget.post.isEditing.value
+                  ? Builder(
+                      builder: (BuildContext context) {
+                        return IconButton(
+                          icon: Icon(Icons.edit),
+                          onPressed: () {
+                            sheetController =
+                                Scaffold.of(context).showBottomSheet(
+                              (context) {
+                                return ParentEditor(
+                                  post: widget.post,
+                                  onSubmit: () {
+                                    sheetController?.close();
+                                  },
+                                  builder: widget.builder,
+                                );
+                              },
+                            );
+                            sheetController.closed.then((_) {
+                              widget.onEditorClose();
+                            });
+                          },
+                        );
+                      },
+                    )
+                  : null,
+              onTap: () async {
+                if (widget.post.parent.value != null) {
+                  Post post = await client.post(widget.post.parent.value);
+                  if (post != null) {
+                    Navigator.of(context)
+                        .push(MaterialPageRoute<Null>(builder: (context) {
+                      return PostDetail(post: post);
+                    }));
+                  } else {
+                    Scaffold.of(context).showSnackBar(SnackBar(
+                      duration: Duration(seconds: 1),
+                      content: Text(
+                          'Coulnd\'t retrieve Post #${widget.post.parent.value}'),
+                    ));
+                  }
+                }
+              },
+            ),
+            Divider(),
+          ],
+        ),
+      ),
+      CrossFade(
+        showChild:
+            widget.post.children.length != 0 && !widget.post.isEditing.value,
+        child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: () {
+              List<Widget> items = [];
+              items.add(
+                Padding(
+                  padding: EdgeInsets.only(
+                    right: 4,
+                    left: 4,
+                    top: 2,
+                    bottom: 2,
+                  ),
+                  child: Text(
+                    'Children',
+                    style: TextStyle(
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+              );
+              for (int child in widget.post.children) {
+                items.add(LoadingTile(
+                  leading: Icon(Icons.supervised_user_circle),
+                  title: Text(child.toString()),
+                  onTap: () async {
+                    Post post = await client.post(child);
+                    if (post != null) {
+                      await Navigator.of(context)
+                          .push(MaterialPageRoute<Null>(builder: (context) {
+                        return PostDetail(post: post);
+                      }));
+                    } else {
+                      Scaffold.of(context).showSnackBar(SnackBar(
+                        duration: Duration(seconds: 1),
+                        content: Text(
+                            'Coulnd\'t retrieve Post #${child.toString()}'),
+                      ));
+                    }
+                  },
+                ));
+              }
+              items.add(Divider());
+              if (items.length == 0) {
+                items.add(Container());
+              }
+              return items;
+            }()),
+      ),
+    ]);
+  }
+}
+
+class ParentEditor extends StatefulWidget {
+  final Post post;
+  final Function() onSubmit;
+  final Function(Future<bool> Function() submit) builder;
+
+  const ParentEditor({
+    @required this.post,
+    this.onSubmit,
+    this.builder,
+  });
+
+  @override
+  _ParentEditorState createState() => _ParentEditorState();
+}
+
+class _ParentEditorState extends State<ParentEditor> {
+  ValueNotifier<bool> isLoading = ValueNotifier(false);
+  TextEditingController textController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    textController.text = widget.post.parent.value?.toString() ?? ' ';
+    setFocusToEnd(textController);
+    widget.builder?.call(submit);
+  }
+
+  Future<bool> submit() async {
+    isLoading.value = true;
+    if (textController.text.trim().isEmpty) {
+      widget.post.parent.value = null;
+      isLoading.value = false;
+      widget.onSubmit?.call();
+      return true;
+    }
+    if (int.tryParse(textController.text) != null) {
+      Post parent = await client.post(int.tryParse(textController.text));
+      if (parent != null) {
+        widget.post.parent.value = parent.id;
+        widget.onSubmit?.call();
+        return true;
+      }
+    }
+    Scaffold.of(context).showSnackBar(SnackBar(
+      duration: Duration(seconds: 1),
+      content: Text('Invalid parent post'),
+      behavior: SnackBarBehavior.floating,
+    ));
+    isLoading.value = false;
+    return false;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+        padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10),
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          Row(
+            children: <Widget>[
+              ValueListenableBuilder(
+                valueListenable: isLoading,
+                builder: (context, value, child) {
+                  return CrossFade(
+                    showChild: value,
+                    child: child,
+                  );
+                },
+                child: Center(
+                    child: Padding(
+                  padding: EdgeInsets.only(right: 10),
+                  child: Container(
+                      height: 20,
+                      width: 20,
+                      child: Padding(
+                        padding: EdgeInsets.all(2),
+                        child: CircularProgressIndicator(),
+                      )),
+                )),
+              ),
+              Expanded(
+                child: TextField(
+                  controller: textController,
+                  autofocus: true,
+                  maxLines: 1,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(RegExp(r'^ ?\d*')),
+                  ],
+                  decoration: InputDecoration(
+                      labelText: 'Parent ID', border: UnderlineInputBorder()),
+                  onSubmitted: (_) => submit(),
+                ),
+              ),
+            ],
+          )
+        ]));
+  }
+}
