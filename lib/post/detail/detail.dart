@@ -229,78 +229,86 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
         Widget imageToggle() {
           return ValueListenableBuilder(
             valueListenable: widget.post.showUnsafe,
-            builder: (context, value, child) => CrossFade(
-              showChild: !widget.post.isDeleted &&
-                  (widget.post.file.value.url == null ||
+            builder: (context, value, child) {
+              if (!widget.post.isDeleted) {
+                return CrossFade(
+                  showChild: (widget.post.file.value.url == null ||
                       !widget.post.isVisible ||
                       widget.post.showUnsafe.value),
-              duration: Duration(milliseconds: 200),
-              child: Card(
-                color: value ? Colors.black12 : Colors.transparent,
-                elevation: 0,
-                child: InkWell(
-                  child: Padding(
-                    padding: EdgeInsets.all(8),
-                    child: Row(
-                      children: <Widget>[
-                        Icon(
-                          value ? Icons.visibility_off : Icons.visibility,
-                          size: 16,
+                  duration: Duration(milliseconds: 200),
+                  child: Card(
+                    color: value ? Colors.black12 : Colors.transparent,
+                    elevation: 0,
+                    child: InkWell(
+                      child: Padding(
+                        padding: EdgeInsets.all(8),
+                        child: Row(
+                          children: <Widget>[
+                            Icon(
+                              value ? Icons.visibility_off : Icons.visibility,
+                              size: 16,
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(right: 5, left: 5),
+                              child: value ? Text('hide') : Text('show'),
+                            )
+                          ],
                         ),
-                        Padding(
-                          padding: EdgeInsets.only(right: 5, left: 5),
-                          child: value ? Text('hide') : Text('show'),
-                        )
-                      ],
+                      ),
+                      onTap: () async {
+                        if (await db.customHost.value == null) {
+                          await setCustomHost(context);
+                        }
+                        if (await db.customHost.value != null) {
+                          Post replacement;
+                          if (widget.post.file.value.url == null) {
+                            replacement =
+                                await client.post(widget.post.id, unsafe: true);
+                          } else {
+                            replacement = Post.fromMap(widget.post.raw);
+                          }
+                          widget.post.file.value = replacement.file.value;
+                          widget.post.preview.value = replacement.preview.value;
+                          widget.post.sample.value = replacement.sample.value;
+                          widget.post.showUnsafe.value =
+                              !widget.post.showUnsafe.value;
+                        }
+                      },
                     ),
                   ),
-                  onTap: () async {
-                    if (await db.customHost.value == null) {
-                      await setCustomHost(context);
-                    }
-                    if (await db.customHost.value != null) {
-                      Post replacement;
-                      if (widget.post.file.value.url == null) {
-                        replacement =
-                            await client.post(widget.post.id, unsafe: true);
-                      } else {
-                        replacement = Post.fromMap(widget.post.raw);
-                      }
-                      widget.post.file.value = replacement.file.value;
-                      widget.post.preview.value = replacement.preview.value;
-                      widget.post.sample.value = replacement.sample.value;
-                      widget.post.showUnsafe.value =
-                          !widget.post.showUnsafe.value;
-                    }
-                  },
-                ),
-              ),
-            ),
+                );
+              } else {
+                return Container();
+              }
+            },
           );
         }
 
         Widget fullscreenButton() {
-          return CrossFade(
-            showChild: widget.post.file.value.url != null &&
-                widget.post.isVisible &&
-                widget.post.type == ImageType.Video,
-            duration: Duration(milliseconds: 200),
-            child: Card(
-              elevation: 0,
-              color: Colors.black12,
-              child: InkWell(
-                child: Padding(
-                  padding: EdgeInsets.all(4),
-                  child: Icon(
-                    Icons.fullscreen,
-                    size: 24,
-                    color: Theme.of(context).iconTheme.color,
+          if (widget.post.type == ImageType.Video) {
+            return CrossFade(
+              showChild:
+                  widget.post.file.value.url != null && widget.post.isVisible,
+              duration: Duration(milliseconds: 200),
+              child: Card(
+                elevation: 0,
+                color: Colors.black12,
+                child: InkWell(
+                  child: Padding(
+                    padding: EdgeInsets.all(4),
+                    child: Icon(
+                      Icons.fullscreen,
+                      size: 24,
+                      color: Theme.of(context).iconTheme.color,
+                    ),
                   ),
+                  onTap: () => onTapImage(context),
                 ),
-                onTap: () => onTapImage(context),
               ),
-            ),
-          );
+            );
+          } else {
+            return Container();
+          }
         }
 
         Widget imageOverlay() {
@@ -354,51 +362,6 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
         builder: (context, value, child) {
           return imageContainer();
         },
-      );
-    }
-
-    Widget postMetadataWidget() {
-      Widget editorDependant({@required Widget child, @required bool shown}) {
-        return CrossFade(
-          showChild: shown == widget.post.isEditing.value,
-          child: child,
-        );
-      }
-
-      return Padding(
-        padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-        child: Column(
-          children: [
-            ArtistDisplay(post: widget.post),
-            DescriptionDisplay(post: widget.post),
-            editorDependant(
-                child: LikeDisplay(post: widget.post), shown: false),
-            editorDependant(
-                child: CommentDisplay(post: widget.post), shown: false),
-            Builder(
-                builder: (context) => ParentDisplay(
-                      post: widget.post,
-                      builder: (submit) => doEdit.value = submit,
-                      onEditorClose: () => doEdit.value = null,
-                    )),
-            editorDependant(
-                child: PoolDisplay(post: widget.post), shown: false),
-            Builder(
-                builder: (context) => TagDisplay(
-                      post: widget.post,
-                      builder: (submit) => doEdit.value = submit,
-                      onEditorClose: () => doEdit.value = null,
-                    )),
-            editorDependant(
-                child: FileDisplay(post: widget.post), shown: false),
-            editorDependant(
-                child: RatingDisplay(
-                  post: widget.post,
-                ),
-                shown: true),
-            SourceDisplay(post: widget.post),
-          ],
-        ),
       );
     }
 
@@ -547,6 +510,55 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
     return ValueListenableBuilder(
       valueListenable: widget.post.isEditing,
       builder: (context, value, child) {
+        Widget editorDependant({@required Widget child, @required bool shown}) {
+          return CrossFade(
+            showChild: shown == widget.post.isEditing.value,
+            child: child,
+          );
+        }
+
+        List<Widget> details = <Widget>[
+          ArtistDisplay(post: widget.post),
+          DescriptionDisplay(post: widget.post),
+          editorDependant(child: LikeDisplay(post: widget.post), shown: false),
+          editorDependant(
+              child: CommentDisplay(post: widget.post), shown: false),
+          Builder(
+              builder: (context) => ParentDisplay(
+                    post: widget.post,
+                    builder: (submit) => doEdit.value = submit,
+                    onEditorClose: () => doEdit.value = null,
+                  )),
+          editorDependant(child: PoolDisplay(post: widget.post), shown: false),
+          Builder(
+              builder: (context) => TagDisplay(
+                    post: widget.post,
+                    builder: (submit) => doEdit.value = submit,
+                    onEditorClose: () => doEdit.value = null,
+                  )),
+          editorDependant(child: FileDisplay(post: widget.post), shown: false),
+          editorDependant(
+              child: RatingDisplay(
+                post: widget.post,
+              ),
+              shown: true),
+          SourceDisplay(post: widget.post),
+        ];
+
+        details = details
+            .map<Widget>((child) => Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20.0),
+                  child: child,
+                ))
+            .toList();
+
+        details.insert(
+            0,
+            Padding(
+              padding: EdgeInsets.only(bottom: 10.0),
+              child: postImageWidget(),
+            ));
+
         return WillPopScope(
           onWillPop: () async {
             if (doEdit.value != null) {
@@ -565,11 +577,10 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
             body: MediaQuery.removeViewInsets(
                 context: context,
                 removeTop: true,
-                child: ListView(
-                  children: <Widget>[
-                    postImageWidget(),
-                    postMetadataWidget(),
-                  ],
+                child: ListView.builder(
+                  itemCount: details.length,
+                  itemBuilder: (BuildContext context, int index) =>
+                      details[index],
                   physics: BouncingScrollPhysics(),
                 )),
             floatingActionButton: widget.post.isLoggedIn

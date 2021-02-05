@@ -41,7 +41,7 @@ class _SettingsPageState extends State<SettingsPage> {
   void initState() {
     super.initState();
 
-    Map<ValueNotifier, Future<void> Function(dynamic value)> links = {
+    Map<ValueNotifier<Future>, Future<void> Function(dynamic value)> links = {
       db.host: (value) async {
         currentHost = value;
         useCustomHost = value == await db.customHost.value;
@@ -54,9 +54,7 @@ class _SettingsPageState extends State<SettingsPage> {
       db.staggered: (value) async => staggered = value,
     };
 
-    links.forEach((setting, func) {
-      linkSetting(setting, func);
-    });
+    links.forEach(linkSetting);
   }
 
   Function() _onTapSignOut(BuildContext context) {
