@@ -33,7 +33,8 @@ class AboutPage extends StatelessWidget {
                               Text("You have the newest version ($appVersion)");
                           b1 = FlatButton(
                             child: Text("GITHUB"),
-                            onPressed: () => launch('https://github.com/' + github),
+                            onPressed: () =>
+                                launch('https://github.com/' + github),
                           );
                           b2 = FlatButton(
                             child: Text("OK"),
@@ -86,10 +87,9 @@ class AboutPage extends StatelessWidget {
                           );
                           b2 = FlatButton(
                             child: Text("DOWNLOAD"),
-                            onPressed: () =>
-                              launch('https://github.com/' +
-                                  github +
-                                  '/releases/latest'),
+                            onPressed: () => launch('https://github.com/' +
+                                github +
+                                '/releases/latest'),
                           );
                         }
                         showDialog(

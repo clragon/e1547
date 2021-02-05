@@ -4,64 +4,54 @@ import 'package:e1547/wiki.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-class ArtistDisplay extends StatefulWidget {
+class ArtistDisplay extends StatelessWidget {
   final Post post;
 
   const ArtistDisplay({@required this.post});
 
   @override
-  _ArtistDisplayState createState() => _ArtistDisplayState();
-}
-
-class _ArtistDisplayState extends State<ArtistDisplay> {
-  @override
-  void initState() {
-    super.initState();
-    widget.post.tags.addListener(() => setState(() {}));
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    widget.post.tags.removeListener(() => setState(() {}));
-  }
-
-  @override
   Widget build(BuildContext context) {
     Widget artists() {
-      if (widget.post.tags.value['artist'].length != 0) {
-        return Text.rich(
-          TextSpan(children: () {
-            List<InlineSpan> spans = [];
-            int count = 0;
-            for (String artist in widget.post.artists) {
-              count++;
-              if (count > 1) {
-                spans.add(TextSpan(text: ', '));
-              }
-              spans.add(WidgetSpan(
-                  child: InkWell(
-                child: Text(
-                  artist,
-                  style: TextStyle(
-                    fontSize: 14.0,
-                  ),
-                ),
-                onTap: () => Navigator.of(context).push(MaterialPageRoute<Null>(
-                    builder: (context) => SearchPage(tags: artist))),
-                onLongPress: () => wikiDialog(context, artist, actions: true),
-              )));
-            }
-            return spans;
-          }()),
-          overflow: TextOverflow.fade,
-        );
-      } else {
-        return Text('no artist',
-            style: TextStyle(
-                color: Theme.of(context).textTheme.subtitle2.color,
-                fontStyle: FontStyle.italic));
-      }
+      return ValueListenableBuilder(
+        valueListenable: post.tags,
+        builder: (BuildContext context, value, Widget child) {
+          if (value['artist'].length != 0) {
+            return Text.rich(
+              TextSpan(children: () {
+                List<InlineSpan> spans = [];
+                int count = 0;
+                for (String artist in post.artists) {
+                  count++;
+                  if (count > 1) {
+                    spans.add(TextSpan(text: ', '));
+                  }
+                  spans.add(WidgetSpan(
+                      child: InkWell(
+                    child: Text(
+                      artist,
+                      style: TextStyle(
+                        fontSize: 14.0,
+                      ),
+                    ),
+                    onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute<Null>(
+                            builder: (context) => SearchPage(tags: artist))),
+                    onLongPress: () =>
+                        wikiDialog(context, artist, actions: true),
+                  )));
+                }
+                return spans;
+              }()),
+              overflow: TextOverflow.fade,
+            );
+          } else {
+            return Text('no artist',
+                style: TextStyle(
+                    color: Theme.of(context).textTheme.subtitle2.color,
+                    fontStyle: FontStyle.italic));
+          }
+        },
+      );
     }
 
     return Column(
@@ -88,14 +78,14 @@ class _ArtistDisplayState extends State<ArtistDisplay> {
                 Builder(
                   builder: (BuildContext context) {
                     return InkWell(
-                      child: Text('#${widget.post.id}'),
+                      child: Text('#${post.id}'),
                       onLongPress: () {
                         Clipboard.setData(ClipboardData(
-                          text: widget.post.id.toString(),
+                          text: post.id.toString(),
                         ));
                         Scaffold.of(context).showSnackBar(SnackBar(
                           duration: Duration(seconds: 1),
-                          content: Text('Copied post ID #${widget.post.id}'),
+                          content: Text('Copied post ID #${post.id}'),
                         ));
                       },
                     );
@@ -106,12 +96,12 @@ class _ArtistDisplayState extends State<ArtistDisplay> {
                     Icon(Icons.person, size: 14.0),
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 4),
-                      child: Text(widget.post.uploader.toString()),
+                      child: Text(post.uploader.toString()),
                     ),
                   ]),
                   onTap: () async {
-                    String uploader = (await client
-                        .user(widget.post.uploader.toString()))['name'];
+                    String uploader =
+                        (await client.user(post.uploader.toString()))['name'];
                     Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) =>
                             SearchPage(tags: 'user:$uploader')));

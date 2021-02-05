@@ -20,62 +20,50 @@ Map<String, String> ratings = {
   'e': 'Explicit',
 };
 
-class RatingDisplay extends StatefulWidget {
+class RatingDisplay extends StatelessWidget {
   final Post post;
 
-  const RatingDisplay({@required this.post});
-
-  @override
-  _RatingDisplayState createState() => _RatingDisplayState();
-}
-
-class _RatingDisplayState extends State<RatingDisplay> {
-  @override
-  void initState() {
-    super.initState();
-    widget.post.rating.addListener(() => setState(() {}));
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    widget.post.rating.removeListener(() => setState(() {}));
-  }
+  RatingDisplay({@required this.post});
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Padding(
-          padding: EdgeInsets.only(
-            right: 4,
-            left: 4,
-            top: 2,
-            bottom: 2,
-          ),
-          child: Text(
-            'Rating',
-            style: TextStyle(
-              fontSize: 16,
+    return ValueListenableBuilder(
+      valueListenable: post.rating,
+      builder: (BuildContext context, String value, Widget child) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Padding(
+              padding: EdgeInsets.only(
+                right: 4,
+                left: 4,
+                top: 2,
+                bottom: 2,
+              ),
+              child: Text(
+                'Rating',
+                style: TextStyle(
+                  fontSize: 16,
+                ),
+              ),
             ),
-          ),
-        ),
-        ListTile(
-          title: Text(ratings[widget.post.rating.value]),
-          leading: Icon(!widget.post.raw['flags']['rating_locked']
-              ? getIcon(widget.post.rating.value)
-              : Icons.lock),
-          onTap: !widget.post.raw['flags']['rating_locked']
-              ? () => showDialog(
-                  context: context,
-                  child: RatingDialog(onTap: (rating) {
-                    widget.post.rating.value = rating;
-                  }))
-              : () {},
-        ),
-        Divider(),
-      ],
+            ListTile(
+              title: Text(ratings[value]),
+              leading: Icon(!post.raw['flags']['rating_locked']
+                  ? getIcon(value)
+                  : Icons.lock),
+              onTap: !post.raw['flags']['rating_locked']
+                  ? () => showDialog(
+                      context: context,
+                      child: RatingDialog(onTap: (rating) {
+                        post.rating.value = rating;
+                      }))
+                  : () {},
+            ),
+            Divider(),
+          ],
+        );
+      },
     );
   }
 }
