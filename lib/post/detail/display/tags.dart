@@ -19,18 +19,6 @@ class _TagDisplayState extends State<TagDisplay> {
   PersistentBottomSheetController sheetController;
 
   @override
-  void initState() {
-    super.initState();
-    widget.post.tags.addListener(() => setState(() {}));
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    widget.post.parent.removeListener(() => setState(() {}));
-  }
-
-  @override
   Widget build(BuildContext context) {
     Widget tagPlus(String category) {
       return Card(
@@ -62,62 +50,67 @@ class _TagDisplayState extends State<TagDisplay> {
       );
     }
 
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: categories.keys
-          .where((tagSet) =>
-              widget.post.tags.value[tagSet].length != 0 ||
-              (widget.post.isEditing.value && tagSet != 'invalid'))
-          .map((category) => Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                    child: Text(
-                      '${category[0].toUpperCase()}${category.substring(1)}',
-                      style: TextStyle(
-                        fontSize: 16,
-                      ),
-                    ),
-                  ),
-                  Row(
+    return ValueListenableBuilder(
+      valueListenable: widget.post.tags,
+      builder: (BuildContext context, value, Widget child) {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: categories.keys
+              .where((tagSet) =>
+                  value[tagSet].length != 0 ||
+                  (widget.post.isEditing.value && tagSet != 'invalid'))
+              .map((category) => Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Expanded(
-                        child: Wrap(
-                          direction: Axis.horizontal,
-                          children: () {
-                            List<Widget> tags = [];
-                            for (String tag
-                                in widget.post.tags.value[category]) {
-                              tags.add(
-                                TagCard(
-                                  tag: tag,
-                                  category: category,
-                                  onRemove: widget.post.isEditing.value
-                                      ? () {
-                                          widget.post.tags.value[category]
-                                              .remove(tag);
-                                          widget.post.tags.value =
-                                              Map.from(widget.post.tags.value);
-                                        }
-                                      : null,
-                                ),
-                              );
-                            }
-                            tags.add(CrossFade(
-                              showChild: widget.post.isEditing.value,
-                              child: tagPlus(category),
-                            ));
-                            return tags;
-                          }(),
+                      Padding(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                        child: Text(
+                          '${category[0].toUpperCase()}${category.substring(1)}',
+                          style: TextStyle(
+                            fontSize: 16,
+                          ),
                         ),
-                      )
+                      ),
+                      Row(
+                        children: <Widget>[
+                          Expanded(
+                            child: Wrap(
+                              direction: Axis.horizontal,
+                              children: () {
+                                List<Widget> tags = [];
+                                for (String tag in value[category]) {
+                                  tags.add(
+                                    TagCard(
+                                      tag: tag,
+                                      category: category,
+                                      onRemove: widget.post.isEditing.value
+                                          ? () {
+                                              widget.post.tags.value[category]
+                                                  .remove(tag);
+                                              widget.post.tags.value =
+                                                  Map.from(value);
+                                            }
+                                          : null,
+                                    ),
+                                  );
+                                }
+                                tags.add(CrossFade(
+                                  showChild: widget.post.isEditing.value,
+                                  child: tagPlus(category),
+                                ));
+                                return tags;
+                              }(),
+                            ),
+                          )
+                        ],
+                      ),
+                      Divider(),
                     ],
-                  ),
-                  Divider(),
-                ],
-              ))
-          .toList(),
+                  ))
+              .toList(),
+        );
+      },
     );
   }
 }

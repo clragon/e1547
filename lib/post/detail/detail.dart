@@ -52,11 +52,7 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
   void closeBottomSheet() {
     if (!widget.post.isEditing.value) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        try {
-          bottomSheetController?.close?.call();
-        } on NoSuchMethodError {
-          // this error is thrown when hot reloading in debug mode
-        }
+        bottomSheetController?.close?.call();
       });
     }
   }
@@ -64,8 +60,8 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
   @override
   void initState() {
     super.initState();
-    widget.post.isEditing.addListener(closeBottomSheet);
     widget.provider?.posts?.addListener(updateWidget);
+    widget.post.isEditing.addListener(closeBottomSheet);
     if (!(widget.post.controller?.value?.initialized ?? true)) {
       widget.post.initVideo();
     }
@@ -74,7 +70,10 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    routeObserver.unsubscribe(this);
     routeObserver.subscribe(this, ModalRoute.of(context));
+    widget.post.isEditing.removeListener(closeBottomSheet);
+    widget.post.isEditing.addListener(closeBottomSheet);
     if (widget.post.file.value.url != null) {
       if (widget.post.type == ImageType.Image) {
         precacheImage(

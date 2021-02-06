@@ -7,7 +7,7 @@ import 'package:flutter/services.dart';
 class ArtistDisplay extends StatelessWidget {
   final Post post;
 
-  const ArtistDisplay({@required this.post});
+  ArtistDisplay({@required this.post});
 
   @override
   Widget build(BuildContext context) {
