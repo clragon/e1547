@@ -182,7 +182,7 @@ packages:
       name: flutter_staggered_grid_view
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.3.4"
+    version: "0.3.3"
   flutter_statusbarcolor:
     dependency: "direct main"
     description:

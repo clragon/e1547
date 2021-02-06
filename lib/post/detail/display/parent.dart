@@ -19,85 +19,78 @@ class _ParentDisplayState extends State<ParentDisplay> {
   PersistentBottomSheetController sheetController;
 
   @override
-  void initState() {
-    super.initState();
-    widget.post.parent.addListener(() => setState(() {}));
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    widget.post.parent.removeListener(() => setState(() {}));
-  }
-
-  @override
   Widget build(BuildContext context) {
+    PersistentBottomSheetController sheetController;
+
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      CrossFade(
-        showChild:
-            widget.post.parent.value != null || widget.post.isEditing.value,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-              child: Text(
-                'Parent',
-                style: TextStyle(
-                  fontSize: 16,
+      ValueListenableBuilder(
+        valueListenable: widget.post.parent,
+        builder: (BuildContext context, value, Widget child) {
+          return CrossFade(
+            showChild: value != null || widget.post.isEditing.value,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                  child: Text(
+                    'Parent',
+                    style: TextStyle(
+                      fontSize: 16,
+                    ),
+                  ),
                 ),
-              ),
-            ),
-            LoadingTile(
-              leading: Icon(Icons.supervisor_account),
-              title: Text(widget.post.parent.value?.toString() ?? 'none'),
-              trailing: widget.post.isEditing.value
-                  ? Builder(
-                      builder: (BuildContext context) {
-                        return IconButton(
-                          icon: Icon(Icons.edit),
-                          onPressed: () {
-                            sheetController =
-                                Scaffold.of(context).showBottomSheet(
-                              (context) {
-                                return ParentEditor(
-                                  post: widget.post,
-                                  onSubmit: () {
-                                    sheetController?.close();
+                LoadingTile(
+                  leading: Icon(Icons.supervisor_account),
+                  title: Text(value?.toString() ?? 'none'),
+                  trailing: widget.post.isEditing.value
+                      ? Builder(
+                          builder: (BuildContext context) {
+                            return IconButton(
+                              icon: Icon(Icons.edit),
+                              onPressed: () {
+                                sheetController =
+                                    Scaffold.of(context).showBottomSheet(
+                                  (context) {
+                                    return ParentEditor(
+                                      post: widget.post,
+                                      onSubmit: () {
+                                        sheetController?.close();
+                                      },
+                                      builder: widget.builder,
+                                    );
                                   },
-                                  builder: widget.builder,
                                 );
+                                sheetController.closed.then((_) {
+                                  widget.onEditorClose();
+                                });
                               },
                             );
-                            sheetController.closed.then((_) {
-                              widget.onEditorClose();
-                            });
                           },
-                        );
-                      },
-                    )
-                  : null,
-              onTap: () async {
-                if (widget.post.parent.value != null) {
-                  Post post = await client.post(widget.post.parent.value);
-                  if (post != null) {
-                    Navigator.of(context)
-                        .push(MaterialPageRoute<Null>(builder: (context) {
-                      return PostDetail(post: post);
-                    }));
-                  } else {
-                    Scaffold.of(context).showSnackBar(SnackBar(
-                      duration: Duration(seconds: 1),
-                      content: Text(
-                          'Coulnd\'t retrieve Post #${widget.post.parent.value}'),
-                    ));
-                  }
-                }
-              },
+                        )
+                      : null,
+                  onTap: () async {
+                    if (value != null) {
+                      Post post = await client.post(value);
+                      if (post != null) {
+                        Navigator.of(context)
+                            .push(MaterialPageRoute<Null>(builder: (context) {
+                          return PostDetail(post: post);
+                        }));
+                      } else {
+                        Scaffold.of(context).showSnackBar(SnackBar(
+                          duration: Duration(seconds: 1),
+                          content: Text('Coulnd\'t retrieve Post #$value'),
+                        ));
+                      }
+                    }
+                  },
+                ),
+                Divider(),
+              ],
             ),
-            Divider(),
-          ],
-        ),
+          );
+        },
       ),
       CrossFade(
         showChild:
