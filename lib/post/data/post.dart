@@ -90,11 +90,10 @@ class Post {
 
     switch (file.value.ext) {
       case 'webm':
-        if (!Platform.isIOS) {
-          type = ImageType.Video;
-        } else {
-          type = ImageType.Unsupported;
+        if (Platform.isIOS) {
+          file.value.url.replaceAll('webm', 'mp4');
         }
+        type = ImageType.Video;
         break;
       case 'swf':
         type = ImageType.Unsupported;

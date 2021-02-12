@@ -23,13 +23,17 @@ class _DenyListPageState extends State<DenyListPage> {
     super.initState();
     db.denylist.addListener(() async {
       denylist = await db.denylist.value;
-      setState(() {});
+      if (mounted) {
+        setState(() {});
+      }
     });
-    db.denylist.value.then((list) => setState(() => denylist = list));
+    db.denylist.value
+        .then((list) => mounted ? setState(() => denylist = list) : () {});
   }
 
-  Function() _addTags(BuildContext context, {int edit}) {
-    return () async {
+  @override
+  Widget build(BuildContext context) {
+    Future<void> addTags(BuildContext context, {int edit}) async {
       setFocusToEnd(controller);
       if (isSearching) {
         if (editing != null) {
@@ -54,17 +58,18 @@ class _DenyListPageState extends State<DenyListPage> {
         } else {
           controller.text = '';
         }
-        bottomSheetController =
-            Scaffold.of(context).showBottomSheet((context) => Container(
-                  padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10),
-                  child: Column(mainAxisSize: MainAxisSize.min, children: [
-                    TagInput(
-                      controller: controller,
-                      labelText: 'Add to blacklist',
-                      onSubmit: _addTags(context),
-                    ),
-                  ]),
-                ));
+        bottomSheetController = Scaffold.of(context).showBottomSheet((context) {
+          return Container(
+            padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10),
+            child: Column(mainAxisSize: MainAxisSize.min, children: [
+              TagInput(
+                controller: controller,
+                labelText: 'Add to blacklist',
+                onSubmit: (_) => addTags(context),
+              ),
+            ]),
+          );
+        });
         setState(() {
           isSearching = true;
         });
@@ -75,11 +80,8 @@ class _DenyListPageState extends State<DenyListPage> {
           });
         });
       }
-    };
-  }
+    }
 
-  @override
-  Widget build(BuildContext context) {
     Widget cardWidget(String tag) {
       return Card(
           child: InkWell(
@@ -187,7 +189,7 @@ class _DenyListPageState extends State<DenyListPage> {
                           onSelected: (value) async {
                             switch (value) {
                               case 'edit':
-                                _addTags(context, edit: index)();
+                                addTags(context, edit: index);
                                 break;
                               case 'delete':
                                 setState(() {
@@ -214,7 +216,7 @@ class _DenyListPageState extends State<DenyListPage> {
     Widget floatingActionButton(BuildContext context) {
       return FloatingActionButton(
         child: isSearching ? Icon(Icons.check) : Icon(Icons.add),
-        onPressed: _addTags(context),
+        onPressed: () => addTags(context),
       );
     }
 

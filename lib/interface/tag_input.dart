@@ -7,7 +7,7 @@ import 'package:flutter_typeahead/flutter_typeahead.dart';
 
 class TagInput extends StatelessWidget {
   final String labelText;
-  final Function onSubmit;
+  final Function(String result) onSubmit;
   final TextEditingController controller;
   final bool multiInput;
   final int category;
@@ -15,15 +15,15 @@ class TagInput extends StatelessWidget {
   TagInput({
     @required this.labelText,
     @required this.onSubmit,
-    @required this.controller,
+    this.controller,
     this.category,
     this.multiInput = true,
   }) {
-    setFocusToEnd(controller);
     controller.text = sortTags(controller.text);
     if (controller.text != '') {
       controller.text = controller.text + ' ';
     }
+    setFocusToEnd(controller);
   }
 
   @override
@@ -34,22 +34,19 @@ class TagInput extends StatelessWidget {
       hideOnError: true,
       keepSuggestionsOnSuggestionSelected: true,
       textFieldConfiguration: TextFieldConfiguration(
-          controller: controller,
-          autofocus: true,
-          maxLines: 1,
-          inputFormatters: !multiInput
-              ? [
-                  LowercaseTextInputFormatter(),
-                  FilteringTextInputFormatter.deny(' ')
-                ]
-              : [LowercaseTextInputFormatter()],
-          decoration: InputDecoration(
-              labelText: labelText, border: UnderlineInputBorder()),
-          onSubmitted: (_) {
-            if (onSubmit != null) {
-              onSubmit();
-            }
-          }),
+        controller: controller,
+        autofocus: true,
+        maxLines: 1,
+        inputFormatters: !multiInput
+            ? [
+                LowercaseTextInputFormatter(),
+                FilteringTextInputFormatter.deny(' ')
+              ]
+            : [LowercaseTextInputFormatter()],
+        decoration: InputDecoration(
+            labelText: labelText, border: UnderlineInputBorder()),
+        onSubmitted: onSubmit,
+      ),
       onSuggestionSelected: (suggestion) {
         List<String> tags = sortTags(controller.text).split(' ');
         List<String> before = [];

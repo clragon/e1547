@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 
 class PostSearchBar extends StatelessWidget {
   final TextEditingController controller;
-  final Function onSubmit;
+  final Function(String result) onSubmit;
 
   PostSearchBar({
     @required this.controller,
@@ -17,8 +17,8 @@ class PostSearchBar extends StatelessWidget {
     setFocusToEnd(controller);
   }
 
-  List<PopupMenuEntry<String>> Function(BuildContext)
-      _popupMenuButtonItemBuilder(List<String> text) {
+  List<PopupMenuEntry<String>> Function(BuildContext) menuEntryBuilder(
+      List<String> text) {
     return (context) {
       List<PopupMenuEntry<String>> items = List(text.length);
       for (int i = 0; i < items.length; i++) {
@@ -35,7 +35,7 @@ class PostSearchBar extends StatelessWidget {
       return PopupMenuButton<String>(
           icon: Icon(Icons.filter_list),
           tooltip: 'Filter by',
-          itemBuilder: _popupMenuButtonItemBuilder(
+          itemBuilder: menuEntryBuilder(
             ['Score', 'Favorites'],
           ),
           onSelected: (selection) {
@@ -85,7 +85,7 @@ class PostSearchBar extends StatelessWidget {
       return PopupMenuButton<String>(
         icon: Icon(Icons.sort),
         tooltip: 'Sort by',
-        itemBuilder: _popupMenuButtonItemBuilder(
+        itemBuilder: menuEntryBuilder(
           orders.keys.toList(),
         ),
         onSelected: (String selection) {
@@ -114,7 +114,7 @@ class PostSearchBar extends StatelessWidget {
       return PopupMenuButton<String>(
           icon: Icon(Icons.playlist_add_check),
           tooltip: 'Conditions',
-          itemBuilder: _popupMenuButtonItemBuilder(
+          itemBuilder: menuEntryBuilder(
             status.keys.toList(),
           ),
           onSelected: (selection) async {

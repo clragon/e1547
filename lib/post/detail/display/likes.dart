@@ -47,13 +47,9 @@ class _LikeDisplayState extends State<LikeDisplay> {
                   },
                   onTap: (isLiked) async {
                     if (widget.post.isLoggedIn) {
-                      if (isLiked) {
-                        tryVote(context, widget.post, true, false);
-                        return false;
-                      } else {
-                        tryVote(context, widget.post, true, true);
-                        return true;
-                      }
+                      widget.post.tryVote(
+                          context: context, upvote: true, replace: !isLiked);
+                      return !isLiked;
                     } else {
                       return false;
                     }
@@ -85,13 +81,9 @@ class _LikeDisplayState extends State<LikeDisplay> {
                   },
                   onTap: (isLiked) async {
                     if (widget.post.isLoggedIn) {
-                      if (isLiked) {
-                        tryVote(context, widget.post, false, false);
-                        return false;
-                      } else {
-                        tryVote(context, widget.post, false, true);
-                        return true;
-                      }
+                      widget.post.tryVote(
+                          context: context, upvote: false, replace: !isLiked);
+                      return !isLiked;
                     } else {
                       return false;
                     }

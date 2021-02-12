@@ -99,7 +99,7 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
     super.dispose();
     routeObserver.unsubscribe(this);
     if (widget.post.isEditing.value) {
-      resetPost(widget.post);
+      widget.post.resetPost();
     }
     widget.provider?.pages?.removeListener(updateWidget);
     widget.post.isEditing.removeListener(closeBottomSheet);
@@ -404,10 +404,10 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
                         },
                         onTap: (isLiked) async {
                           if (isLiked) {
-                            tryRemoveFav(context, widget.post);
+                            widget.post.tryRemoveFav(context);
                             return false;
                           } else {
-                            tryAddFav(context, widget.post);
+                            widget.post.tryAddFav(context);
                             return true;
                           }
                         },
@@ -489,7 +489,7 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
                 if (response == null || response['code'] == 200) {
                   isLoading.value = false;
                   widget.post.isEditing.value = false;
-                  await resetPost(widget.post, online: true);
+                  await widget.post.resetPost(online: true);
                 } else {
                   Scaffold.of(context).showSnackBar(SnackBar(
                     duration: Duration(seconds: 1),
@@ -552,11 +552,12 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
             .toList();
 
         details.insert(
-            0,
-            Padding(
-              padding: EdgeInsets.only(bottom: 10.0),
-              child: postImageWidget(),
-            ));
+          0,
+          Padding(
+            padding: EdgeInsets.only(bottom: 10.0),
+            child: postImageWidget(),
+          ),
+        );
 
         return WillPopScope(
           onWillPop: () async {
@@ -564,7 +565,7 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
               return true;
             }
             if (value) {
-              resetPost(widget.post);
+              widget.post.resetPost();
               return false;
             } else {
               return true;
@@ -584,9 +585,7 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
                 )),
             floatingActionButton: widget.post.isLoggedIn
                 ? Builder(
-                    builder: (context) {
-                      return fab(context);
-                    },
+                    builder: fab,
                   )
                 : null,
           ),
