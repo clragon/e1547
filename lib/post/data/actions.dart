@@ -10,164 +10,279 @@ import 'package:permission_handler/permission_handler.dart';
 
 import 'post.dart';
 
-Future<bool> download(Post post) async {
-  String filename =
-      '${post.artists.join(', ')} - ${post.id}.${post.file.value.ext}';
-  File file = await DefaultCacheManager().getSingleFile(post.file.value.url);
-  try {
-    await CopyToGallery.copyNamedPictures(appName, {file.path: filename});
-    return true;
-  } catch (Exception) {
-    return false;
-  }
-}
+extension denying on Post {
+  Future<bool> isDeniedBy(List<String> denylist) async =>
+      await deniedBy(denylist) != null;
 
-Future<bool> downloadDialog(BuildContext context, Post post) async {
-  bool success = false;
-  if (!await Permission.storage.request().isGranted) {
-    showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            content: Text(
-                'You need to grant write permission in order to download files.'),
-            actions: [
-              RaisedButton(
-                child: Text('TRY AGAIN'),
-                onPressed: () async {
-                  Navigator.of(context).pop();
-                  success = await downloadDialog(
-                      context, post); // recursively re-execute
-                },
-              ),
-            ],
-          );
+  Future<String> deniedBy(List<String> denylist) async {
+    if (denylist.length > 0) {
+      List<String> tags = [];
+      this.tags.value.forEach((k, v) {
+        tags.addAll(v.cast<String>());
+      });
+
+      for (String line in denylist) {
+        List<String> deny = [];
+        List<String> allow = [];
+        line.split(' ').forEach((tag) {
+          if (tag.isNotEmpty) {
+            if (tag[0] == '-') {
+              allow.add(tag.substring(1));
+            } else {
+              deny.add(tag);
+            }
+          }
         });
-    return success;
-  }
 
-  return await download(post);
-}
+        bool containtsTag(String tag, List<String> tags) {
+          if (tag.contains(':')) {
+            String identifier = tag.split(':')[0];
+            String value = tag.split(':')[1];
+            switch (identifier) {
+              case 'rating':
+                if (this.rating.value.toLowerCase() == value.toLowerCase()) {
+                  return true;
+                }
+                break;
+              case 'id':
+                if (this.id == int.tryParse(value)) {
+                  return true;
+                }
+                break;
+              case 'type':
+                if (this.file.value.ext == value) {
+                  return true;
+                }
+                break;
+              case 'pool':
+                if (this.pools.contains(value)) {
+                  return true;
+                }
+                break;
+              case 'user':
+                if (this.uploader.toString() == value) {
+                  return true;
+                }
+                break;
+              case 'score':
+                bool greater = value.contains('>');
+                bool smaller = value.contains('<');
+                bool equal = value.contains('=');
+                int score = int.tryParse(value.replaceAll(r'[<>=]', ''));
+                if (greater) {
+                  if (equal) {
+                    if (this.score.value >= score) {
+                      return true;
+                    }
+                  } else {
+                    if (this.score.value > score) {
+                      return true;
+                    }
+                  }
+                }
+                if (smaller) {
+                  if (equal) {
+                    if (this.score.value <= score) {
+                      return true;
+                    }
+                  } else {
+                    if (this.score.value < score) {
+                      return true;
+                    }
+                  }
+                }
+                if ((!greater && !smaller) && this.score.value == score) {
+                  return true;
+                }
+                break;
+            }
+          }
 
-Future<bool> tryRemoveFav(BuildContext context, Post post) async {
-  if (await client.removeFavorite(post.id)) {
-    post.isFavorite.value = false;
-    post.favorites.value -= 1;
-    return true;
-  } else {
-    post.isFavorite.value = true;
-    Scaffold.of(context).showSnackBar(SnackBar(
-      duration: Duration(seconds: 1),
-      content: Text('Failed to remove Post #${post.id} from favorites'),
-    ));
-    return false;
-  }
-}
-
-Future<bool> tryAddFav(BuildContext context, Post post) async {
-  Future<void> cooldown = Future.delayed(const Duration(milliseconds: 1000));
-  if (await client.addFavorite(post.id)) {
-    () async {
-      // cooldown ensures no interference with like animation
-      await cooldown;
-      post.isFavorite.value = true;
-    }();
-    post.favorites.value += 1;
-    return true;
-  } else {
-    Scaffold.of(context).showSnackBar(SnackBar(
-      duration: Duration(seconds: 1),
-      content: Text('Failed to add Post #${post.id} to favorites'),
-    ));
-    return false;
-  }
-}
-
-Future<void> tryVote(
-    BuildContext context, Post post, bool upvote, bool replace) async {
-  if (await client.votePost(post.id, upvote, replace)) {
-    if (post.voteStatus.value == VoteStatus.unknown) {
-      if (upvote) {
-        post.score.value += 1;
-        post.voteStatus.value = VoteStatus.upvoted;
-      } else {
-        post.score.value -= 1;
-        post.voteStatus.value = VoteStatus.downvoted;
-      }
-    } else {
-      if (upvote) {
-        if (post.voteStatus.value == VoteStatus.upvoted) {
-          post.score.value -= 1;
-          post.voteStatus.value = VoteStatus.unknown;
-        } else {
-          post.score.value += 2;
-          post.voteStatus.value = VoteStatus.upvoted;
+          if (tags.contains(tag)) {
+            return true;
+          } else {
+            return false;
+          }
         }
-      } else {
-        if (post.voteStatus.value == VoteStatus.upvoted) {
-          post.score.value -= 2;
-          post.voteStatus.value = VoteStatus.downvoted;
+
+        bool denied = true;
+        bool allowed = true;
+
+        for (String tag in deny) {
+          if (!containtsTag(tag, tags)) {
+            denied = false;
+            break;
+          }
+        }
+        for (String tag in allow) {
+          if (!containtsTag(tag, tags)) {
+            allowed = false;
+            break;
+          }
+        }
+
+        if (deny.isNotEmpty && allow.isNotEmpty) {
+          if (denied) {
+            if (!allowed) {
+              return line;
+            }
+          }
         } else {
-          post.score.value += 1;
-          post.voteStatus.value = VoteStatus.unknown;
+          if (deny.isNotEmpty) {
+            if (denied) {
+              return line;
+            }
+          } else {
+            if (!allowed) {
+              return line;
+            }
+          }
         }
       }
     }
-  } else {
-    Scaffold.of(context).showSnackBar(SnackBar(
-      duration: Duration(seconds: 1),
-      content: Text('Failed to vote on Post #${post.id}'),
-    ));
+    return null;
   }
 }
 
-Future<void> resetPost(Post post, {bool online = false}) async {
-  Post reset;
-  if (!online) {
-    reset = Post.fromMap(post.raw);
-  } else {
-    reset = await client.post(post.id);
-    post.raw = reset.raw;
+extension downloading on Post {
+  Future<bool> download() async {
+    if (!await Permission.storage.request().isGranted) {
+      return false;
+    }
+    String filename =
+        '${this.artists.join(', ')} - ${this.id}.${this.file.value.ext}';
+    File file = await DefaultCacheManager().getSingleFile(this.file.value.url);
+    try {
+      await CopyToGallery.copyNamedPictures(appName, {file.path: filename});
+      return true;
+    } catch (Exception) {
+      return false;
+    }
   }
 
-  post.favorites.value = reset.favorites.value;
-  post.score.value = reset.score.value;
-  post.tags.value = reset.tags.value;
-  post.description.value = reset.description.value;
-  post.sources.value = reset.sources.value;
-  post.rating.value = reset.rating.value;
-  post.parent.value = reset.parent.value;
-  post.isEditing.value = false;
-}
+  Future<bool> downloadDialog(BuildContext context) async {
+    bool success = false;
+    if (!await Permission.storage.request().isGranted) {
+      showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              content: Text(
+                  'You need to grant write permission in order to download files.'),
+              actions: [
+                RaisedButton(
+                  child: Text('TRY AGAIN'),
+                  onPressed: () async {
+                    Navigator.of(context).pop();
+                    success =
+                        await downloadDialog(context); // recursively re-execute
+                  },
+                ),
+              ],
+            );
+          });
+      return success;
+    }
 
-Color getCategoryColor(String category) {
-  switch (category) {
-    case 'general':
-      return Colors.indigo[300];
-    case 'species':
-      return Colors.teal[300];
-    case 'character':
-      return Colors.lightGreen[300];
-    case 'copyright':
-      return Colors.yellow[300];
-    case 'meta':
-      return Colors.deepOrange[300];
-    case 'lore':
-      return Colors.pink[300];
-    case 'artist':
-      return Colors.deepPurple[300];
-    default:
-      return Colors.grey[300];
+    return await this.download();
   }
 }
 
-Map<String, int> categories = {
-  'general': 0,
-  'species': 5,
-  'character': 4,
-  'copyright': 3,
-  'meta': 7,
-  'lore': 8,
-  'artist': 1,
-  'invalid': 6,
-};
+extension favoriting on Post {
+  Future<bool> tryRemoveFav(BuildContext context) async {
+    if (await client.removeFavorite(this.id)) {
+      this.isFavorite.value = false;
+      this.favorites.value -= 1;
+      return true;
+    } else {
+      this.isFavorite.value = true;
+      Scaffold.of(context).showSnackBar(SnackBar(
+        duration: Duration(seconds: 1),
+        content: Text('Failed to remove Post #${this.id} from favorites'),
+      ));
+      return false;
+    }
+  }
+
+  Future<bool> tryAddFav(BuildContext context) async {
+    Future<void> cooldown = Future.delayed(const Duration(milliseconds: 1000));
+    if (await client.addFavorite(this.id)) {
+      () async {
+        // cooldown ensures no interference with like animation
+        await cooldown;
+        this.isFavorite.value = true;
+      }();
+      this.favorites.value += 1;
+      return true;
+    } else {
+      Scaffold.of(context).showSnackBar(SnackBar(
+        duration: Duration(seconds: 1),
+        content: Text('Failed to add Post #${this.id} to favorites'),
+      ));
+      return false;
+    }
+  }
+}
+
+extension voting on Post {
+  Future<void> tryVote(
+      {@required BuildContext context,
+      @required bool upvote,
+      @required bool replace}) async {
+    if (await client.votePost(this.id, upvote, replace)) {
+      if (this.voteStatus.value == VoteStatus.unknown) {
+        if (upvote) {
+          this.score.value += 1;
+          this.voteStatus.value = VoteStatus.upvoted;
+        } else {
+          this.score.value -= 1;
+          this.voteStatus.value = VoteStatus.downvoted;
+        }
+      } else {
+        if (upvote) {
+          if (this.voteStatus.value == VoteStatus.upvoted) {
+            this.score.value -= 1;
+            this.voteStatus.value = VoteStatus.unknown;
+          } else {
+            this.score.value += 2;
+            this.voteStatus.value = VoteStatus.upvoted;
+          }
+        } else {
+          if (this.voteStatus.value == VoteStatus.upvoted) {
+            this.score.value -= 2;
+            this.voteStatus.value = VoteStatus.downvoted;
+          } else {
+            this.score.value += 1;
+            this.voteStatus.value = VoteStatus.unknown;
+          }
+        }
+      }
+    } else {
+      Scaffold.of(context).showSnackBar(SnackBar(
+        duration: Duration(seconds: 1),
+        content: Text('Failed to vote on Post #${this.id}'),
+      ));
+    }
+  }
+}
+
+extension editing on Post {
+  Future<void> resetPost({bool online = false}) async {
+    Post reset;
+    if (!online) {
+      reset = Post.fromMap(this.raw);
+    } else {
+      reset = await client.post(this.id);
+      this.raw = reset.raw;
+    }
+
+    this.favorites.value = reset.favorites.value;
+    this.score.value = reset.score.value;
+    this.tags.value = reset.tags.value;
+    this.description.value = reset.description.value;
+    this.sources.value = reset.sources.value;
+    this.rating.value = reset.rating.value;
+    this.parent.value = reset.parent.value;
+    this.isEditing.value = false;
+  }
+}

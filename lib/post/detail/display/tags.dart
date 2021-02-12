@@ -134,23 +134,23 @@ class TagEditor extends StatefulWidget {
 
 class _TagEditorState extends State<TagEditor> {
   ValueNotifier isLoading = ValueNotifier(false);
-  TextEditingController textController = TextEditingController();
+  TextEditingController controller = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    setFocusToEnd(textController);
-    widget.builder?.call(submit);
+    widget.builder?.call(() => submit(controller.text));
   }
 
-  Future<bool> submit() async {
+  Future<bool> submit(String result) async {
     isLoading.value = true;
-    if (textController.text.trim().isEmpty) {
+    result = result.trim();
+    if (result.isEmpty) {
       isLoading.value = false;
       widget.onSubmit?.call();
       return true;
     }
-    List<String> tags = textController.text.trim().split(' ');
+    List<String> tags = result.split(' ');
     widget.post.tags.value[widget.category].addAll(tags);
     widget.post.tags.value[widget.category].toSet().toList().sort();
     widget.post.tags.value = Map.from(widget.post.tags.value);
@@ -214,7 +214,7 @@ class _TagEditorState extends State<TagEditor> {
                 child: TagInput(
                     labelText: widget.category,
                     onSubmit: submit,
-                    controller: textController,
+                    controller: controller,
                     category: categories[widget.category]),
               ),
             ],

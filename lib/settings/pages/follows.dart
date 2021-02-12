@@ -151,17 +151,17 @@ class _FollowingPageState extends State<FollowingPage> {
     }
 
     Widget floatingActionButton(BuildContext context) {
-      TextEditingController controller = TextEditingController();
       PersistentBottomSheetController<String> sheetController;
       ValueNotifier<bool> isSearching = ValueNotifier(false);
 
       return ValueListenableBuilder(
         valueListenable: isSearching,
         builder: (context, value, child) {
-          void submit() {
-            if (controller.text.trim().isNotEmpty) {
+          void submit(String result) {
+            result = result.trim();
+            if (result.isNotEmpty) {
               db.follows.value =
-                  Future.value(follows..add(controller.text.trim()));
+                  Future.value(follows..add(result));
               sheetController?.close();
             }
           }
@@ -169,9 +169,10 @@ class _FollowingPageState extends State<FollowingPage> {
           return FloatingActionButton(
             child: isSearching.value ? Icon(Icons.check) : Icon(Icons.add),
             onPressed: () async {
+              TextEditingController controller = TextEditingController();
               setFocusToEnd(controller);
               if (isSearching.value) {
-                submit();
+                submit(controller.text);
               } else {
                 controller.text = '';
                 sheetController =

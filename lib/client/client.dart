@@ -160,135 +160,6 @@ class Client {
     });
   }
 
-  Future<bool> isBlacklisted(Post post, List<String> denylist) async {
-    if (denylist.length > 0) {
-      List<String> tags = [];
-      post.tags.value.forEach((k, v) {
-        tags.addAll(v.cast<String>());
-      });
-
-      for (String line in denylist) {
-        List<String> deny = [];
-        List<String> allow = [];
-        line.split(' ').forEach((tag) {
-          if (tag.isNotEmpty) {
-            if (tag[0] == '-') {
-              allow.add(tag.substring(1));
-            } else {
-              deny.add(tag);
-            }
-          }
-        });
-
-        bool checkTags(List<String> tags, String tag) {
-          if (tag.contains(':')) {
-            String identifier = tag.split(':')[0];
-            String value = tag.split(':')[1];
-            switch (identifier) {
-              case 'rating':
-                if (post.rating.value.toLowerCase() == value.toLowerCase()) {
-                  return true;
-                }
-                break;
-              case 'id':
-                if (post.id == int.tryParse(value)) {
-                  return true;
-                }
-                break;
-              case 'type':
-                if (post.file.value.ext == value) {
-                  return true;
-                }
-                break;
-              case 'pool':
-                if (post.pools.contains(value)) {
-                  return true;
-                }
-                break;
-              case 'user':
-                if (post.uploader.toString() == value) {
-                  return true;
-                }
-                break;
-              case 'score':
-                bool greater = value.contains('>');
-                bool smaller = value.contains('<');
-                bool equal = value.contains('=');
-                int score = int.tryParse(value.replaceAll(r'[<>=]', ''));
-                if (greater) {
-                  if (equal) {
-                    if (post.score.value >= score) {
-                      return true;
-                    }
-                  } else {
-                    if (post.score.value > score) {
-                      return true;
-                    }
-                  }
-                }
-                if (smaller) {
-                  if (equal) {
-                    if (post.score.value <= score) {
-                      return true;
-                    }
-                  } else {
-                    if (post.score.value < score) {
-                      return true;
-                    }
-                  }
-                }
-                if ((!greater && !smaller) && post.score.value == score) {
-                  return true;
-                }
-                break;
-            }
-          }
-
-          if (tags.contains(tag)) {
-            return true;
-          } else {
-            return false;
-          }
-        }
-
-        bool denied = true;
-        bool allowed = true;
-
-        for (String tag in deny) {
-          if (!checkTags(tags, tag)) {
-            denied = false;
-            break;
-          }
-        }
-        for (String tag in allow) {
-          if (!checkTags(tags, tag)) {
-            allowed = false;
-            break;
-          }
-        }
-
-        if (deny.length > 0 && allow.length > 0) {
-          if (denied) {
-            if (!allowed) {
-              return true;
-            }
-          }
-        } else {
-          if (deny.length > 0) {
-            if (denied) {
-              return true;
-            }
-          } else {
-            if (!allowed) {
-              return true;
-            }
-          }
-        }
-      }
-    }
-    return false;
-  }
-
   Future<List<Pool>> pools(String title, int page) async {
     try {
       String body = await http.get(await host, '/pools.json', query: {
@@ -353,7 +224,7 @@ class Client {
 
       Post post = Post.fromMap(json.decode(body)['post']);
       post.isLoggedIn = await hasLogin;
-      post.isBlacklisted = await isBlacklisted(post, await db.denylist.value);
+      post.isBlacklisted = await post.isDeniedBy(await db.denylist.value);
       return post;
     } on SocketException {
       return null;

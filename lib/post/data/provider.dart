@@ -7,6 +7,7 @@ import 'post.dart';
 import 'tag.dart';
 
 class PostProvider extends DataProvider<Post> {
+  ValueNotifier<Map<String, List<Post>>> deniedMap = ValueNotifier({});
   ValueNotifier<List<String>> allowlist = ValueNotifier([]);
   ValueNotifier<List<Post>> denied = ValueNotifier([]);
   ValueNotifier<List<Post>> posts = ValueNotifier([]);
@@ -37,11 +38,21 @@ class PostProvider extends DataProvider<Post> {
         return !allowlist.value.contains(line);
       }).toList();
     }
+    deniedMap.value = {};
     for (Post item in items) {
-      item.isBlacklisted = await client.isBlacklisted(item, denylist);
+      String denier = await item.deniedBy(denylist);
+      if (denier != null) {
+        if (deniedMap.value[denier] == null) {
+          deniedMap.value[denier] = [];
+        }
+        deniedMap.value[denier].add(item);
+      }
+      item.isBlacklisted = denier != null;
     }
-    posts.value = items.where((item) => !item.isBlacklisted).toList();
-    denied.value = items.where((item) => item.isBlacklisted).toList();
+    denied.value = deniedMap.value.values.expand((element) => element).toList();
+    posts.value = List<Post>.from(items)
+        .where((element) => !element.isBlacklisted)
+        .toList();
   }
 
   void dispose() {
