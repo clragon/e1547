@@ -191,26 +191,58 @@ class Client {
     }
   }
 
-  Future<List<Post>> follows(int page) async {
+  Future<List<Post>> follows(int page, {int attempt = 0}) async {
     List<Post> posts = [];
     List<String> tags = List.from(await following);
     // remove pools, they cannot be used with the ~ operator.
     tags.removeWhere((tag) => tag.startsWith('pool:'));
-    int length = tags.length;
+    // how many requests per requested page.
+    int batches = 2;
+    // distribute tags over requests evenly.
     int max = 40;
-    double approx = length / max;
-    if (approx % 1 != 0) {
-      approx += 1;
+    int length = tags.length;
+    int approx = (length / max).ceil();
+    if (batches > approx) {
+      batches = approx;
+    }
+    if (approx > batches) {
+      int counter = 1;
+      while (true) {
+        counter++;
+        if (approx < batches * counter) {
+          approx = batches * counter;
+          break;
+        }
+      }
     }
     if (approx != 0) {
-      max = length ~/ approx.toInt();
+      max = (length / approx).ceil();
     }
-    for (int i = 0; i < length; i += max) {
-      int end = (length > i + max) ? i + max : length;
-      List<String> tagSet = tags.sublist(i, end);
-      posts.addAll(await client.posts('~${tagSet.join(' ~')}', page));
+
+    int getTagPage(int page) {
+      if (page % approx == 0) {
+        return approx;
+      } else {
+        return page % approx;
+      }
+    }
+
+    int getSitePage(int page) => (page / approx).ceil();
+
+    int position = (page * batches) + 1;
+    for (int i = position - batches; i < position; i++) {
+      int tagPage = getTagPage(i);
+      int sitePage = getSitePage(i);
+
+      int end = (length > tagPage * max) ? tagPage * max : length;
+      List<String> tagSet = tags.sublist((tagPage - 1) * max, end);
+
+      posts.addAll(await client.posts('~${tagSet.join(' ~')}', sitePage));
     }
     posts.sort((one, two) => two.id.compareTo(one.id));
+    if (posts.length == 0 && attempt < (approx / batches) - 1) {
+      posts.addAll(await follows(page + 1, attempt: attempt + 1));
+    }
     return posts;
   }
 
@@ -232,7 +264,6 @@ class Client {
   }
 
   Future<Map> updatePost(Post update, Post old, {String editReason}) async {
-    await initialized;
     if (!await hasLogin) {
       return null;
     }
@@ -404,7 +435,6 @@ class Client {
   }
 
   Future<Map> postComment(String text, Post post, {Comment comment}) async {
-    await initialized;
     if (!await hasLogin) {
       return null;
     }

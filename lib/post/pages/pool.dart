@@ -22,20 +22,15 @@ class PoolPage extends StatelessWidget {
             IconButton(
               icon: Icon(Icons.info_outline),
               tooltip: 'Info',
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (context) => poolInfo(context, pool),
-                );
-              },
+              onPressed: () => poolSheet(context, pool),
             )
           ],
         );
       },
       provider: PostProvider(
           provider: (tags, page) =>
-              client.posts('pool:${pool.id} order:id', page)),
-      canSearch: false,
+              client.posts('pool:${pool.id} order:id', page),
+          canSearch: false),
     );
   }
 }

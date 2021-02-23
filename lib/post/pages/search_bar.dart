@@ -13,7 +13,8 @@ class PostSearchBar extends StatelessWidget {
   });
 
   void _withTags(Future<Tagset> Function(Tagset tags) editor) async {
-    controller.text = (await editor(Tagset.parse(controller.text))).toString();
+    controller.text =
+        (await editor(Tagset.parse(controller.text))).toString() + ' ';
     setFocusToEnd(controller);
   }
 

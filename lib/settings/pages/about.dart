@@ -19,6 +19,7 @@ class AboutPage extends StatelessWidget {
         ),
         actions: <Widget>[
           FutureBuilder(
+            future: getNewVersions(),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 return Stack(
@@ -27,7 +28,7 @@ class AboutPage extends StatelessWidget {
                       icon: Icon(Icons.update),
                       onPressed: () {
                         Widget msg;
-                        List<Widget> actions;
+                        List<Widget> actions = [];
                         if (snapshot.data.length == 0) {
                           msg =
                               Text("You have the newest version ($appVersion)");
@@ -126,7 +127,6 @@ class AboutPage extends StatelessWidget {
                 );
               }
             },
-            future: getNewVersions(),
           )
         ],
       );
@@ -204,9 +204,10 @@ class AboutPage extends StatelessWidget {
 Future<List<Map>> getNewVersions() async {
   List<Map> releases = await getVersions();
   int current = int.parse(appVersion.replaceAll('.', '') ?? 0);
-
-  return releases.where((release) =>
-      (int.tryParse(release['version'].replaceAll('.', '')) ?? 0) > current);
+  return releases
+      .where((release) =>
+          (int.tryParse(release['version'].replaceAll('.', '')) ?? 0) > current)
+      .toList();
 }
 
 List<Map> githubData = [];
@@ -214,19 +215,18 @@ List<Map> githubData = [];
 Future<List<Map>> getVersions() async {
   if (kReleaseMode) {
     if (githubData.length == 0) {
-      await HttpHelper().get('api.github.com', '/repos/$github/releases',
-          query: {}).then((response) {
-        for (Map release in json.decode(response.body)) {
-          githubData.add({
-            'version': release['tag_name'],
-            'title': release['name'],
-            'description': release['body'],
-          });
-        }
-      });
+      await HttpHelper().get('api.github.com', '/repos/$github/releases').then(
+        (response) {
+          for (Map release in json.decode(response.body)) {
+            githubData.add({
+              'version': release['tag_name'],
+              'title': release['name'],
+              'description': release['body'],
+            });
+          }
+        },
+      );
     }
-    return githubData;
-  } else {
-    return [];
   }
+  return githubData;
 }

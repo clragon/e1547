@@ -1,15 +1,24 @@
+import 'package:async/async.dart';
 import 'package:e1547/client.dart';
 import 'package:e1547/interface.dart';
 import 'package:flutter/material.dart';
 
-class WikiBody extends StatelessWidget {
+class WikiBody extends StatefulWidget {
   final String tag;
 
-  const WikiBody({@required this.tag});
+  WikiBody({@required this.tag});
+
+  @override
+  _WikiBodyState createState() => _WikiBodyState();
+}
+
+class _WikiBodyState extends State<WikiBody> {
+  final AsyncMemoizer memoizer = AsyncMemoizer();
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
+      future: memoizer.runOnce(() => client.wiki(widget.tag, 1)),
       builder: (context, snapshot) => CrossFade(
           duration: Duration(milliseconds: 200),
           showChild: snapshot.connectionState == ConnectionState.done,
@@ -61,7 +70,6 @@ class WikiBody extends StatelessWidget {
               ),
             ],
           )),
-      future: client.wiki(tag, 1),
     );
   }
 }

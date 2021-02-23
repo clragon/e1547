@@ -87,7 +87,7 @@ class _CommentsPageState extends State<CommentsPage> {
 
   Widget commentWidget(Comment comment) {
     return Padding(
-      padding: EdgeInsets.only(right: 8, left: 8),
+      padding: EdgeInsets.symmetric(horizontal: 8),
       child: Column(
         children: <Widget>[
           GestureDetector(

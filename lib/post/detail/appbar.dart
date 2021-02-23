@@ -14,6 +14,9 @@ class PostAppBar extends StatelessWidget implements PreferredSizeWidget {
   const PostAppBar({@required this.post, this.canEdit = true});
 
   @override
+  Size get preferredSize => Size.fromHeight(kToolbarHeight);
+
+  @override
   Widget build(BuildContext context) {
     return Hero(
       tag: 'appbar',
@@ -116,7 +119,4 @@ class PostAppBar extends StatelessWidget implements PreferredSizeWidget {
       ),
     );
   }
-
-  @override
-  Size get preferredSize => Size.fromHeight(kToolbarHeight);
 }

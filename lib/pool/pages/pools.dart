@@ -4,6 +4,8 @@ import 'package:e1547/post.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
+import 'preview.dart';
+
 class PoolsPage extends StatefulWidget {
   PoolsPage();
 

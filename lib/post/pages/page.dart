@@ -1,5 +1,4 @@
-import 'package:e1547/interface/navigation.dart';
-import 'package:e1547/interface/page_loader.dart';
+import 'package:e1547/interface.dart';
 import 'package:e1547/post.dart';
 import 'package:e1547/post/pages/search_drawer.dart';
 import 'package:e1547/settings.dart';
@@ -9,28 +8,16 @@ import 'package:like_button/like_button.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import 'search_bar.dart';
+import 'snackbar.dart';
 import 'tile.dart';
 
-AppBar Function(BuildContext context) appBarWidget(String title) {
-  return (context) {
-    return AppBar(
-      title: Text(title),
-      actions: [Container()],
-    );
-  };
-}
-
 class PostsPage extends StatefulWidget {
-  final bool canSearch;
   final bool canSelect;
-  final bool canDeny;
   final AppBar Function(BuildContext) appBarBuilder;
   final PostProvider provider;
 
   PostsPage({
-    this.canSearch = true,
     this.canSelect = true,
-    this.canDeny = true,
     @required this.provider,
     @required this.appBarBuilder,
   });
@@ -40,19 +27,19 @@ class PostsPage extends StatefulWidget {
 }
 
 class _PostsPageState extends State<PostsPage> {
-  TextEditingController controller = TextEditingController();
   ValueNotifier<bool> isSearching = ValueNotifier(false);
-  PersistentBottomSheetController<Tagset> bottomSheetController;
+  TextEditingController textController = TextEditingController();
+  PersistentBottomSheetController<Tagset> sheetController;
+  RefreshController refreshController =
+      RefreshController(initialRefresh: false);
+  ScrollController scrollController = ScrollController();
 
   Set<Post> selections = Set();
   bool loading = true;
   bool staggered;
   int tileSize;
 
-  RefreshController refreshController =
-      RefreshController(initialRefresh: false);
-
-  void updateLoading() {
+  void updatePage() {
     if (this.mounted) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         setState(() {
@@ -72,9 +59,9 @@ class _PostsPageState extends State<PostsPage> {
   void initState() {
     super.initState();
     // tileSize is not linked because updating it will break the grid
-    db.staggered.addListener(updateLoading);
-    widget.provider.pages.addListener(updateLoading);
-    widget.provider.posts.addListener(updateLoading);
+    db.staggered.addListener(updatePage);
+    widget.provider.pages.addListener(updatePage);
+    widget.provider.posts.addListener(updatePage);
   }
 
   @override
@@ -82,11 +69,11 @@ class _PostsPageState extends State<PostsPage> {
     super.didChangeDependencies();
     db.tileSize.value.then((value) {
       tileSize = value;
-      updateLoading();
+      updatePage();
     });
     db.staggered.value.then((value) {
       staggered = value;
-      updateLoading();
+      updatePage();
     });
   }
 
@@ -95,19 +82,20 @@ class _PostsPageState extends State<PostsPage> {
     super.didUpdateWidget(oldWidget);
     selections.clear();
     loading = true;
-    widget.provider.pages.removeListener(updateLoading);
-    widget.provider.posts.removeListener(updateLoading);
-    widget.provider.pages.addListener(updateLoading);
-    widget.provider.posts.addListener(updateLoading);
+    // hot reload shenanigans
+    widget.provider.pages.removeListener(updatePage);
+    widget.provider.pages.addListener(updatePage);
+    widget.provider.posts.removeListener(updatePage);
+    widget.provider.posts.addListener(updatePage);
   }
 
   @override
   void dispose() {
     super.dispose();
     widget.provider.dispose();
-    db.staggered.removeListener(updateLoading);
-    widget.provider.pages.removeListener(updateLoading);
-    widget.provider.posts.removeListener(updateLoading);
+    db.staggered.removeListener(updatePage);
+    widget.provider.pages.removeListener(updatePage);
+    widget.provider.posts.removeListener(updatePage);
   }
 
   int notZero(int value) => value == 0 ? 1 : value;
@@ -208,6 +196,8 @@ class _PostsPageState extends State<PostsPage> {
         isEmpty: (!loading && widget.provider.posts.value.length == 0),
         child: tileSize != null && staggered != null
             ? SmartRefresher(
+                primary: false,
+                scrollController: scrollController,
                 controller: refreshController,
                 header: ClassicHeader(
                   refreshingText: 'Refreshing...',
@@ -233,14 +223,13 @@ class _PostsPageState extends State<PostsPage> {
 
     Widget floatingActionButtonWidget() {
       return Builder(builder: (context) {
-        if (widget.canSearch) {
+        if (widget.provider.canSearch) {
           return ValueListenableBuilder(
             valueListenable: isSearching,
             builder: (BuildContext context, value, Widget child) {
               void submit(String result) {
                 widget.provider.search.value = result;
-                widget.provider.resetPages();
-                bottomSheetController?.close();
+                sheetController?.close();
               }
 
               return FloatingActionButton(
@@ -249,19 +238,18 @@ class _PostsPageState extends State<PostsPage> {
                 onPressed: () async {
                   selections.clear();
                   if (isSearching.value) {
-                    submit(controller.text);
+                    submit(textController.text);
                   } else {
-                    controller.text = widget.provider.search.value + ' ';
+                    textController.text = widget.provider.search.value + ' ';
                     isSearching.value = true;
-                    bottomSheetController =
-                        Scaffold.of(context).showBottomSheet(
+                    sheetController = Scaffold.of(context).showBottomSheet(
                       (context) => PostSearchBar(
-                        controller: controller,
+                        controller: textController,
                         onSubmit: submit,
                       ),
                     );
                     isSearching.value = true;
-                    bottomSheetController.closed.then((a) {
+                    sheetController.closed.then((a) {
                       isSearching.value = false;
                     });
                   }
@@ -273,82 +261,6 @@ class _PostsPageState extends State<PostsPage> {
           return Container();
         }
       }).build(context);
-    }
-
-    Future<void> loadingSnackbar(BuildContext context,
-        Future<bool> Function(Post post) process, Duration timeout) async {
-      bool cancel = false;
-      bool failure = false;
-      List<Post> processing = List.from(selections);
-      selections.clear();
-      ValueNotifier<int> progress = ValueNotifier<int>(0);
-      ScaffoldFeatureController controller =
-          Scaffold.of(context).showSnackBar(SnackBar(
-        content: ValueListenableBuilder(
-            valueListenable: progress,
-            builder: (BuildContext context, int value, Widget child) {
-              return Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Row(
-                    children: [
-                      Text(
-                        value == processing.length
-                            ? failure
-                                ? 'Failure'
-                                : 'Done'
-                            : 'Post #${widget.provider.posts.value[value].id} ($value/${processing.length})',
-                        overflow: TextOverflow.visible,
-                      ),
-                      Flexible(
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 8),
-                          child: TweenAnimationBuilder(
-                            duration: timeout,
-                            builder:
-                                (BuildContext context, value, Widget child) {
-                              return LinearProgressIndicator(
-                                value: (1 / processing.length) * value,
-                              );
-                            },
-                            tween:
-                                Tween<double>(begin: 0, end: value.toDouble()),
-                          ),
-                        ),
-                      ),
-                      value == processing.length || failure
-                          ? Container()
-                          : InkWell(
-                              child: Text('CANCEL'),
-                              onTap: () {
-                                cancel = true;
-                              },
-                            ),
-                    ],
-                  )
-                ],
-              );
-            }),
-        duration: Duration(days: 1),
-      ));
-      for (Post post in processing) {
-        if (await process(post)) {
-          await Future.delayed(timeout);
-          progress.value++;
-          setState(() {});
-        } else {
-          failure = true;
-          progress.value = processing.length;
-          break;
-        }
-        if (cancel) {
-          break;
-        }
-      }
-      await Future.delayed(const Duration(milliseconds: 400));
-      controller.close();
-      setState(() {});
-      return;
     }
 
     Widget selectionAppBar() {
@@ -368,16 +280,21 @@ class _PostsPageState extends State<PostsPage> {
           Builder(
               builder: (context) => IconButton(
                   icon: Icon(Icons.file_download),
-                  onPressed: () => loadingSnackbar(
-                      context,
-                      (post) => post.downloadDialog(context),
-                      Duration(milliseconds: 100)))),
+                  onPressed: () {
+                    loadingSnackbar(
+                        context: context,
+                        items: Set.from(selections),
+                        process: (post) => post.downloadDialog(context),
+                        timeout: Duration(milliseconds: 100));
+                    setState(() => selections.clear());
+                  })),
           Builder(
             builder: (context) {
               return Padding(
                 padding: EdgeInsets.symmetric(horizontal: 4),
                 child: LikeButton(
-                  isLiked: selections.every((post) => post.isFavorite.value),
+                  isLiked: selections.length > 0 &&
+                      selections.every((post) => post.isFavorite.value),
                   circleColor: CircleColor(start: Colors.pink, end: Colors.red),
                   bubblesColor: BubblesColor(
                       dotPrimaryColor: Colors.pink,
@@ -392,22 +309,32 @@ class _PostsPageState extends State<PostsPage> {
                   },
                   onTap: (isLiked) async {
                     if (isLiked) {
-                      loadingSnackbar(context, (post) async {
-                        if (post.isFavorite.value) {
-                          return post.tryRemoveFav(context);
-                        } else {
-                          return true;
-                        }
-                      }, Duration(milliseconds: 800));
+                      loadingSnackbar(
+                          context: context,
+                          items: Set.from(selections),
+                          process: (post) async {
+                            if (post.isFavorite.value) {
+                              return post.tryRemoveFav(context);
+                            } else {
+                              return true;
+                            }
+                          },
+                          timeout: Duration(milliseconds: 800));
+                      setState(() => selections.clear());
                       return false;
                     } else {
-                      loadingSnackbar(context, (post) async {
-                        if (!post.isFavorite.value) {
-                          return post.tryAddFav(context);
-                        } else {
-                          return true;
-                        }
-                      }, Duration(milliseconds: 800));
+                      loadingSnackbar(
+                          context: context,
+                          items: Set.from(selections),
+                          process: (post) async {
+                            if (!post.isFavorite.value) {
+                              return post.tryAddFav(context);
+                            } else {
+                              return true;
+                            }
+                          },
+                          timeout: Duration(milliseconds: 800));
+                      setState(() => selections.clear());
                       return true;
                     }
                   },
@@ -422,23 +349,72 @@ class _PostsPageState extends State<PostsPage> {
     return WillPopScope(
       onWillPop: () async {
         if (selections.length > 0) {
-          selections.clear();
-          setState(() {});
+          setState(() => selections.clear());
           return false;
         } else {
           return true;
         }
       },
       child: Scaffold(
-        appBar: selections.length == 0
-            ? widget.appBarBuilder(context)
-            : selectionAppBar(),
+        appBar: PageAppBar(
+          appbar: widget.appBarBuilder(context),
+          editor: selectionAppBar(),
+          isEditing: selections.length == 0,
+          controller: scrollController,
+        ),
         body: bodyWidget(),
         drawer: NavigationDrawer(),
-        endDrawer:
-            widget.canDeny ? SearchDrawer(provider: widget.provider) : null,
+        endDrawer: widget.provider.canDeny
+            ? SearchDrawer(provider: widget.provider)
+            : null,
         floatingActionButton: floatingActionButtonWidget(),
       ),
     );
   }
+}
+
+class PageAppBar extends StatelessWidget implements PreferredSizeWidget {
+  final Widget appbar;
+  final Widget editor;
+  final bool isEditing;
+  final ScrollController controller;
+
+  const PageAppBar({
+    @required this.appbar,
+    @required this.editor,
+    this.isEditing = false,
+    this.controller,
+  });
+
+  @override
+  Size get preferredSize => Size.fromHeight(kToolbarHeight);
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      elevation: Theme.of(context).appBarTheme.elevation ?? 4,
+      child: CrossFade(
+        showChild: isEditing,
+        child: GestureDetector(
+          onDoubleTap: controller != null
+              ? () => controller.animateTo(controller.position.minScrollExtent,
+                  duration: Duration(milliseconds: 500),
+                  curve: Curves.fastOutSlowIn)
+              : null,
+          behavior: HitTestBehavior.translucent,
+          child: appbar,
+        ),
+        secondChild: editor,
+      ),
+    );
+  }
+}
+
+AppBar Function(BuildContext context) appBarWidget(String title) {
+  return (context) {
+    return AppBar(
+      title: Text(title),
+      actions: [Container()],
+    );
+  };
 }

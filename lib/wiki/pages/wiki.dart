@@ -7,7 +7,7 @@ class WikiPage extends StatelessWidget {
   final String tag;
   final bool actions;
 
-  const WikiPage(this.tag, this.actions);
+  const WikiPage({@required this.tag, @required this.actions});
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +20,7 @@ class WikiPage extends StatelessWidget {
           ),
         ),
         actions: [
-          actions ? TagActions(tag) : Container(),
+          actions ? TagListActions(tag: tag) : Container(),
         ],
       ),
       body: WikiBody(tag: tag),
