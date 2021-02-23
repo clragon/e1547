@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 class SearchDrawer extends StatefulWidget {
   final PostProvider provider;
 
-  const SearchDrawer({this.provider});
+  SearchDrawer({this.provider});
 
   @override
   _SearchDrawerState createState() => _SearchDrawerState();

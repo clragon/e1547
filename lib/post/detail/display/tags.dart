@@ -1,7 +1,7 @@
 import 'package:e1547/client.dart';
 import 'package:e1547/interface.dart';
 import 'package:e1547/post.dart';
-import 'package:e1547/wiki/pages/sheet.dart';
+import 'package:e1547/wiki.dart';
 import 'package:flutter/material.dart';
 
 class TagDisplay extends StatefulWidget {
@@ -10,10 +10,10 @@ class TagDisplay extends StatefulWidget {
   final Function() onEditorClose;
   final Function(Future<bool> Function() submit) builder;
 
-  const TagDisplay(
+  TagDisplay(
       {@required this.post,
-      this.onEditorClose,
       @required this.provider,
+      this.onEditorClose,
       this.builder});
 
   @override
@@ -126,7 +126,7 @@ class TagEditor extends StatefulWidget {
   final Function() onSubmit;
   final Function(Future<bool> Function() submit) builder;
 
-  const TagEditor({
+  TagEditor({
     @required this.post,
     @required this.category,
     this.onSubmit,
@@ -241,7 +241,7 @@ class TagCard extends StatelessWidget {
   final Function() onRemove;
   final PostProvider provider;
 
-  const TagCard({
+  TagCard({
     @required this.tag,
     @required this.category,
     @required this.provider,
@@ -252,7 +252,7 @@ class TagCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: InkWell(
-        onTap: () => Navigator.of(context).push(MaterialPageRoute<Null>(
+        onTap: () => Navigator.of(context).push(MaterialPageRoute(
           builder: (context) => SearchPage(tags: tag),
         )),
         onLongPress: () =>

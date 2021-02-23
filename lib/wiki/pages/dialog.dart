@@ -15,7 +15,7 @@ void wikiDialog({@required BuildContext context, @required String tag}) {
 class WikiDialog extends StatelessWidget {
   final String tag;
 
-  const WikiDialog({@required this.tag});
+  WikiDialog({@required this.tag});
 
   @override
   Widget build(BuildContext context) {

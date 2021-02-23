@@ -28,7 +28,7 @@ class _PoolsPageState extends State<PoolsPage> {
   Widget _itemBuilder(BuildContext context, int item) {
     Widget preview(Pool pool, PoolProvider provider) {
       return PoolPreview(pool, onPressed: () {
-        Navigator.of(context).push(MaterialPageRoute<Null>(
+        Navigator.of(context).push(MaterialPageRoute(
           builder: (context) => PoolPage(pool: pool),
         ));
       });

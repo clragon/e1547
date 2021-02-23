@@ -137,7 +137,7 @@ class TagSearchActions extends StatefulWidget {
   final String tag;
   final PostProvider provider;
 
-  const TagSearchActions({@required this.tag, @required this.provider});
+  TagSearchActions({@required this.tag, @required this.provider});
 
   @override
   _TagSearchActionsState createState() => _TagSearchActionsState();

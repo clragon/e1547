@@ -38,12 +38,12 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
       replacement.isLoggedIn = widget.post.isLoggedIn;
       replacement.isBlacklisted = widget.post.isBlacklisted;
       if (ModalRoute.of(context).isCurrent) {
-        Navigator.of(context).pushReplacement(MaterialPageRoute<Null>(
+        Navigator.of(context).pushReplacement(MaterialPageRoute(
             builder: (context) => PostDetail(post: replacement)));
       } else {
         Navigator.of(context).replace(
             oldRoute: ModalRoute.of(context),
-            newRoute: MaterialPageRoute<Null>(
+            newRoute: MaterialPageRoute(
                 builder: (context) => PostDetail(post: replacement)));
       }
     }
@@ -123,7 +123,7 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
         return;
       }
       keepPlaying = true;
-      Navigator.of(context).push(MaterialPageRoute<Null>(builder: (context) {
+      Navigator.of(context).push(MaterialPageRoute(builder: (context) {
         Widget gallery(List<Post> posts) {
           return PostPhotoGallery(
             index: posts.indexOf(widget.post),

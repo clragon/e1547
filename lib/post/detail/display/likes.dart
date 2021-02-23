@@ -5,7 +5,7 @@ import 'package:like_button/like_button.dart';
 class LikeDisplay extends StatefulWidget {
   final Post post;
 
-  const LikeDisplay({@required this.post});
+  LikeDisplay({@required this.post});
 
   @override
   _LikeDisplayState createState() => _LikeDisplayState();

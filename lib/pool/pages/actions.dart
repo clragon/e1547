@@ -35,18 +35,14 @@ class FollowButtonState extends State<FollowButton> {
               IconButton(
                 onPressed: () {
                   if (following) {
-                    follows.removeAt(follows.indexOf(tag));
-                    db.follows.value = Future.value(follows);
-                    setState(() {
-                      following = false;
-                    });
+                    follows.remove(tag);
                   } else {
                     follows.add(tag);
-                    db.follows.value = Future.value(follows);
-                    setState(() {
-                      following = true;
-                    });
                   }
+                  db.follows.value = Future.value(follows);
+                  setState(() {
+                    following = false;
+                  });
                 },
                 icon: CrossFade(
                   duration: Duration(milliseconds: 200),

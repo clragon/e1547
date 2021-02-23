@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    AppBar Function(BuildContext) appbar = appBarWidget('Home');
+    AppBar Function(BuildContext) appbar = defaultAppBar('Home');
     return FutureBuilder(
       future: db.homeTags.value,
       builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {

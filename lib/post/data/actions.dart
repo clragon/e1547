@@ -205,7 +205,7 @@ extension favoriting on Post {
   }
 
   Future<bool> tryAddFav(BuildContext context) async {
-    Future<void> cooldown = Future.delayed(const Duration(milliseconds: 1000));
+    Future<void> cooldown = Future.delayed(Duration(milliseconds: 1000));
     if (await client.addFavorite(this.id)) {
       () async {
         // cooldown ensures no interference with like animation

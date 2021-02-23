@@ -4,7 +4,7 @@ class PopTile extends StatelessWidget {
   final IconData icon;
   final String title;
 
-  const PopTile({@required this.icon, @required this.title});
+  PopTile({@required this.icon, @required this.title});
 
   @override
   Widget build(BuildContext context) {

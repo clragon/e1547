@@ -5,7 +5,7 @@ class HotPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PostsPage(
-      appBarBuilder: appBarWidget('Hot'),
+      appBarBuilder: defaultAppBar('Hot'),
       provider: PostProvider(search: "order:rank"),
     );
   }

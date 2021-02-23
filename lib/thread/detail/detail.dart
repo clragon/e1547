@@ -181,8 +181,8 @@ class _ThreadDetailState extends State<ThreadDetail> {
                                 ),
                               ),
                               onTap: () {
-                                Navigator.of(context).push(
-                                    MaterialPageRoute<Null>(builder: (context) {
+                                Navigator.of(context)
+                                    .push(MaterialPageRoute(builder: (context) {
                                   return SearchPage(
                                       tags:
                                           'user:${reply.creatorID.toString()}');

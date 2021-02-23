@@ -39,7 +39,7 @@ class WikiSheet extends StatelessWidget {
   final String tag;
   final PostProvider provider;
 
-  const WikiSheet({@required this.tag, this.provider});
+  WikiSheet({@required this.tag, this.provider});
 
   @override
   Widget build(BuildContext context) {
@@ -56,8 +56,7 @@ class WikiSheet extends StatelessWidget {
                   child: Padding(
                     padding: EdgeInsets.symmetric(horizontal: 8),
                     child: InkWell(
-                      onTap: () =>
-                          Navigator.of(context).push(MaterialPageRoute<Null>(
+                      onTap: () => Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) => SearchPage(tags: tag),
                       )),
                       child: Text(

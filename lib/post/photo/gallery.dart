@@ -14,8 +14,7 @@ class PostPhotoGallery extends StatefulWidget {
   final List<Post> posts;
   final PageController controller;
 
-  const PostPhotoGallery(
-      {this.index = 0, @required this.posts, this.controller});
+  PostPhotoGallery({this.index = 0, @required this.posts, this.controller});
 
   @override
   _PostPhotoGalleryState createState() => _PostPhotoGalleryState();
@@ -98,7 +97,7 @@ class _PostPhotoGalleryState extends State<PostPhotoGallery> {
                     child: Container(
                   height: 26,
                   width: 26,
-                  child: const CircularProgressIndicator(),
+                  child: CircularProgressIndicator(),
                 )),
                 errorWidget: (context, url, error) =>
                     Center(child: Icon(Icons.error_outline)),

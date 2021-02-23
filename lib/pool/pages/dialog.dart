@@ -19,12 +19,40 @@ void poolDialog({@required BuildContext context, @required Pool pool}) {
 class PoolDialog extends StatelessWidget {
   final Pool pool;
 
-  const PoolDialog({@required this.pool});
+  PoolDialog({@required this.pool});
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Row(
+    Widget body() {
+      return ConstrainedBox(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.5,
+        ),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              pool.description.isNotEmpty
+                  ? DTextField(msg: pool.description)
+                  : Text(
+                      'no description',
+                      style: TextStyle(fontStyle: FontStyle.italic),
+                    ),
+              Padding(
+                padding: EdgeInsets.only(top: 16, bottom: 8),
+                child: Divider(),
+              ),
+              PoolInfo(pool: pool),
+            ],
+          ),
+          physics: BouncingScrollPhysics(),
+        ),
+      );
+    }
+
+    Widget title() {
+      return Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           Flexible(
@@ -35,31 +63,12 @@ class PoolDialog extends StatelessWidget {
           ),
           FollowButton(pool),
         ],
-      ),
-      content: ConstrainedBox(
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                pool.description.isNotEmpty
-                    ? DTextField(msg: pool.description)
-                    : Text(
-                        'no description',
-                        style: TextStyle(fontStyle: FontStyle.italic),
-                      ),
-                Padding(
-                  padding: EdgeInsets.only(top: 16, bottom: 8),
-                  child: Divider(),
-                ),
-                PoolInfo(pool: pool),
-              ],
-            ),
-            physics: BouncingScrollPhysics(),
-          ),
-          constraints: BoxConstraints(
-            maxHeight: 400.0,
-          )),
+      );
+    }
+
+    return AlertDialog(
+      title: title(),
+      content: body(),
       actions: [
         FlatButton(
           child: Text('SHARE'),

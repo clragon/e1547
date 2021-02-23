@@ -7,7 +7,7 @@ import 'package:photo_view/photo_view.dart';
 class PostPhoto extends StatefulWidget {
   final Post post;
 
-  const PostPhoto(this.post);
+  PostPhoto(this.post);
 
   @override
   _PostPhotoState createState() => _PostPhotoState();
