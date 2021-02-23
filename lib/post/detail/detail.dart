@@ -248,7 +248,7 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
                               size: 16,
                             ),
                             Padding(
-                              padding: EdgeInsets.only(right: 5, left: 5),
+                              padding: EdgeInsets.symmetric(horizontal: 5),
                               child: value ? Text('hide') : Text('show'),
                             )
                           ],
@@ -487,7 +487,6 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
                     editReason: textController.text);
                 isLoading.value = false;
                 if (response == null || response['code'] == 200) {
-                  isLoading.value = false;
                   widget.post.isEditing.value = false;
                   await widget.post.resetPost(online: true);
                 } else {
@@ -517,7 +516,10 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
         }
 
         List<Widget> details = <Widget>[
-          ArtistDisplay(post: widget.post),
+          ArtistDisplay(
+            post: widget.post,
+            provider: widget.provider,
+          ),
           DescriptionDisplay(post: widget.post),
           editorDependant(child: LikeDisplay(post: widget.post), shown: false),
           editorDependant(
@@ -534,6 +536,7 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
                     post: widget.post,
                     builder: (submit) => doEdit.value = submit,
                     onEditorClose: () => doEdit.value = null,
+                    provider: widget.provider,
                   )),
           editorDependant(child: FileDisplay(post: widget.post), shown: false),
           editorDependant(
@@ -546,15 +549,22 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
 
         details = details
             .map<Widget>((child) => Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20.0),
+                  padding: EdgeInsets.symmetric(horizontal: 20),
                   child: child,
                 ))
             .toList();
 
+        Widget bottom = details.last;
+        details.remove(bottom);
+        details.add(Padding(
+          padding: EdgeInsets.only(bottom: 24),
+          child: bottom,
+        ));
+
         details.insert(
           0,
           Padding(
-            padding: EdgeInsets.only(bottom: 10.0),
+            padding: EdgeInsets.only(bottom: 10),
             child: postImageWidget(),
           ),
         );

@@ -13,13 +13,12 @@ class FavPage extends StatelessWidget {
             snapshot.data != null) {
           return PostsPage(
               appBarBuilder: appBarWidget('Favorites'),
-              canDeny: false,
               provider: PostProvider(
                 provider: (tags, page) {
                   return client.posts(tags, page);
                 },
                 search: 'fav:${snapshot.data.username}',
-                denying: false,
+                canDeny: false,
               ));
         } else {
           return Scaffold(

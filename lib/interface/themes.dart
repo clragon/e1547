@@ -8,6 +8,7 @@ void setUIColors(ThemeData theme) {
       theme.brightness == Brightness.dark);
   FlutterStatusbarcolor.setStatusBarWhiteForeground(
       theme.brightness == Brightness.dark);
+  FlutterStatusbarcolor.setStatusBarColor(Colors.transparent);
 }
 
 final Map<String, ThemeData> themeMap = {

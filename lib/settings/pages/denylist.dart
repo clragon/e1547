@@ -85,9 +85,8 @@ class _DenyListPageState extends State<DenyListPage> {
     Widget cardWidget(String tag) {
       return Card(
           child: InkWell(
-              onTap: () => wikiDialog(context, noDash(tag), actions: true),
-              onLongPress: () =>
-                  wikiDialog(context, noDash(tag), actions: true),
+              onTap: () => wikiSheet(context: context, tag: noDash(tag)),
+              onLongPress: () => wikiSheet(context: context, tag: noDash(tag)),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
@@ -230,7 +229,8 @@ class _DenyListPageState extends State<DenyListPage> {
             Text('Blacklist'),
             IconButton(
               icon: Icon(Icons.help_outline),
-              onPressed: () => wikiDialog(context, 'e621:blacklist'),
+              onPressed: () =>
+                  wikiSheet(context: context, tag: 'e621:blacklist'),
             )
           ],
         ),

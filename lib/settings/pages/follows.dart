@@ -22,7 +22,9 @@ class _FollowingPageState extends State<FollowingPage> {
     super.initState();
     db.follows.addListener(() async {
       List<String> tags = await db.follows.value;
-      setState(() => follows = tags);
+      if (mounted) {
+        setState(() => follows = tags);
+      }
     });
     db.follows.value.then((a) async => setState(() => follows = a));
   }
@@ -46,7 +48,7 @@ class _FollowingPageState extends State<FollowingPage> {
                   }));
                 }
               },
-              onLongPress: () => wikiDialog(context, tag, actions: true),
+              onLongPress: () => wikiSheet(context: context, tag: tag),
               child: Padding(
                 padding: EdgeInsets.all(8),
                 child: Text(tag),
@@ -160,8 +162,7 @@ class _FollowingPageState extends State<FollowingPage> {
           void submit(String result) {
             result = result.trim();
             if (result.isNotEmpty) {
-              db.follows.value =
-                  Future.value(follows..add(result));
+              db.follows.value = Future.value(follows..add(result));
               sheetController?.close();
             }
           }

@@ -12,18 +12,25 @@ class PostProvider extends DataProvider<Post> {
   ValueNotifier<List<Post>> denied = ValueNotifier([]);
   ValueNotifier<List<Post>> posts = ValueNotifier([]);
   ValueNotifier<bool> denying = ValueNotifier(true);
+  bool canSearch;
+  bool canDeny;
 
-  PostProvider(
-      {String search,
-      Future<List<Post>> Function(String search, int page) provider,
-      bool denying = true})
-      : super(
+  PostProvider({
+    String search,
+    Future<List<Post>> Function(String search, int page) provider,
+    bool denying = true,
+    this.canSearch = true,
+    this.canDeny = true,
+  }) : super(
             search: sortTags(search ?? ''),
             provider: provider ?? client.posts) {
     this.denying.value = denying;
     this.denying.addListener(refresh);
     pages.addListener(refresh);
     allowlist.addListener(refresh);
+    super
+        .search
+        .addListener(() => super.search.value = sortTags(super.search.value));
   }
 
   Future<void> resetPages() async {
@@ -33,7 +40,7 @@ class PostProvider extends DataProvider<Post> {
 
   void refresh() async {
     List<String> denylist = [];
-    if (denying.value) {
+    if (denying.value && canDeny) {
       denylist = (await db.denylist.value).where((line) {
         return !allowlist.value.contains(line);
       }).toList();

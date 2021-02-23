@@ -135,7 +135,7 @@ class Post {
     loadedVideos.remove(this);
   }
 
-  void dispose() {
+  Future<void> dispose() async {
     tags.dispose();
     comments.dispose();
     parent.dispose();

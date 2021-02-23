@@ -1,13 +1,14 @@
 import 'package:e1547/client.dart';
 import 'package:e1547/post.dart';
-import 'package:e1547/wiki.dart';
+import 'package:e1547/wiki/pages/sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class ArtistDisplay extends StatelessWidget {
   final Post post;
+  final PostProvider provider;
 
-  ArtistDisplay({@required this.post});
+  ArtistDisplay({@required this.post, @required this.provider});
 
   @override
   Widget build(BuildContext context) {
@@ -36,8 +37,11 @@ class ArtistDisplay extends StatelessWidget {
                     onTap: () => Navigator.of(context).push(
                         MaterialPageRoute<Null>(
                             builder: (context) => SearchPage(tags: artist))),
-                    onLongPress: () =>
-                        wikiDialog(context, artist, actions: true),
+                    onLongPress: () => wikiSheet(
+                      context: context,
+                      tag: artist,
+                      provider: provider,
+                    ),
                   )));
                 }
                 return spans;

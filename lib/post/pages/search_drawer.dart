@@ -1,7 +1,7 @@
 import 'package:e1547/interface.dart';
 import 'package:e1547/post.dart';
 import 'package:e1547/settings.dart';
-import 'package:e1547/wiki/pages/dialog.dart';
+import 'package:e1547/wiki.dart';
 import 'package:flutter/material.dart';
 
 class SearchDrawer extends StatefulWidget {
@@ -38,9 +38,8 @@ class _SearchDrawerState extends State<SearchDrawer> {
     Widget cardWidget(String tag) {
       return Card(
           child: InkWell(
-              onTap: () => wikiDialog(context, noDash(tag), actions: true),
-              onLongPress: () =>
-                  wikiDialog(context, noDash(tag), actions: true),
+              onTap: () => wikiSheet(context: context, tag: noDash(tag)),
+              onLongPress: () => wikiSheet(context: context, tag: noDash(tag)),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
@@ -146,13 +145,15 @@ class _SearchDrawerState extends State<SearchDrawer> {
                   widget.provider.allowlist.value.isNotEmpty,
               child: Column(
                 children: () {
+                  List<MapEntry<String, List<Post>>> entries = [];
+                  entries.addAll(widget.provider.deniedMap.value.entries);
+                  entries.addAll(widget.provider.allowlist.value
+                      .map((e) => MapEntry(e, List<Post>())));
+                  entries.sort((a, b) => a.key.compareTo(b.key));
+
                   List<Widget> children = [];
                   children.add(Divider());
-                  children.addAll(
-                      widget.provider.deniedMap.value.entries.map(listEntry));
-                  children.addAll(widget.provider.allowlist.value
-                      .map((e) => MapEntry(e, List<Post>()))
-                      .map(listEntry));
+                  children.addAll(entries.map(listEntry));
                   return children;
                 }(),
               )),
@@ -197,13 +198,18 @@ class _SearchDrawerState extends State<SearchDrawer> {
 
     return Drawer(
       child: Scaffold(
-        appBar: AppBar(title: Text('Search')),
+        appBar: AppBar(
+          title: Text('Search'),
+          leading: BackButton(),
+        ),
         body: ListView(
           physics: BouncingScrollPhysics(),
           children: [
-            Builder(builder: (context) {
-              return blacklistSwitch();
-            })
+            Builder(
+              builder: (context) {
+                return blacklistSwitch();
+              },
+            )
           ],
         ),
       ),

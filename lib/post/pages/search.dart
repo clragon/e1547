@@ -33,7 +33,7 @@ class SearchPage extends StatelessWidget {
                 if (Tagset.parse(value).length == 1) {
                   return IconButton(
                     icon: Icon(Icons.info_outline),
-                    onPressed: () => wikiDialog(context, value, actions: true),
+                    onPressed: () => wikiSheet(context: context, tag: value),
                   );
                 } else {
                   return Container();

@@ -22,9 +22,10 @@ class FollowsPage extends StatelessWidget {
               ],
             );
           },
-          canSearch: false,
-          provider:
-              PostProvider(provider: (tags, page) => client.follows(page)),
+          provider: PostProvider(
+            provider: (tags, page) => client.follows(page),
+            canSearch: false,
+          ),
         );
       },
     );
