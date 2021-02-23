@@ -27,7 +27,7 @@ class _ThreadsPageState extends State<ThreadsPage> {
   Widget _itemBuilder(BuildContext context, int item) {
     Widget preview(Thread thread, ThreadProvider provider) {
       return ThreadPreview(thread, onPressed: () {
-        Navigator.of(context).push(MaterialPageRoute<Null>(
+        Navigator.of(context).push(MaterialPageRoute(
           builder: (context) => ThreadDetail(thread),
         ));
       });

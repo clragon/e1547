@@ -6,7 +6,7 @@ class CrossFade extends StatelessWidget {
   final Widget secondChild;
   final Duration duration;
 
-  const CrossFade({
+  CrossFade({
     @required this.showChild,
     @required this.child,
     this.secondChild,

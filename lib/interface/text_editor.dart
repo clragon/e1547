@@ -8,7 +8,7 @@ class TextEditor extends StatefulWidget {
   final bool richEditor;
   final Future<bool> Function(BuildContext context, String text) validator;
 
-  const TextEditor({
+  TextEditor({
     @required this.title,
     this.content,
     @required this.validator,
@@ -203,7 +203,7 @@ class _TextEditorState extends State<TextEditor> with TickerProviderStateMixin {
 class EditorBar extends StatefulWidget {
   final TextEditingController controller;
 
-  const EditorBar({@required this.controller});
+  EditorBar({@required this.controller});
 
   @override
   _EditorBarState createState() => _EditorBarState();

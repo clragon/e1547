@@ -71,7 +71,7 @@ class RatingDisplay extends StatelessWidget {
 class RatingDialog extends StatelessWidget {
   final Function(String rating) onTap;
 
-  const RatingDialog({@required this.onTap});
+  RatingDialog({@required this.onTap});
 
   @override
   Widget build(BuildContext context) {

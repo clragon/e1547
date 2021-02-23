@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 Future<bool> sendReply(BuildContext context, Thread thread,
     {String text, Reply reply}) async {
   bool sent = false;
-  await Navigator.of(context).push(MaterialPageRoute<Null>(builder: (context) {
+  await Navigator.of(context).push(MaterialPageRoute(builder: (context) {
     return TextEditor(
       title: 'reply to ${thread.title}',
       content: text ?? (reply != null ? reply.body : null),

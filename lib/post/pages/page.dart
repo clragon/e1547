@@ -120,7 +120,7 @@ class _PostsPageState extends State<PostsPage> {
             child: PostTile(
                 post: post,
                 onPressed: () {
-                  Navigator.of(context).push(MaterialPageRoute<Null>(
+                  Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => PostDetailGallery(
                       provider: provider,
                       initialPage: provider.posts.value.indexOf(post),
@@ -141,10 +141,10 @@ class _PostsPageState extends State<PostsPage> {
                     padding: EdgeInsets.all(4),
                     child: Container(
                       color: Colors.black38,
-                      child: Icon(
-                        Icons.check_circle_outline,
-                        size: 54,
-                      ),
+                      child: LayoutBuilder(builder: (context, constraint) {
+                        return Icon(Icons.check_circle_outline,
+                            size: constraint.maxHeight * 0.4);
+                      }),
                     ),
                   ),
                 ),
@@ -356,11 +356,25 @@ class _PostsPageState extends State<PostsPage> {
         }
       },
       child: Scaffold(
-        appBar: PageAppBar(
-          appbar: widget.appBarBuilder(context),
-          editor: selectionAppBar(),
-          isEditing: selections.length == 0,
-          controller: scrollController,
+        appBar: PreferredSize(
+          child: Material(
+            elevation: Theme.of(context).appBarTheme.elevation ?? 4,
+            child: CrossFade(
+              showChild: selections.length == 0,
+              child: GestureDetector(
+                onDoubleTap: scrollController != null
+                    ? () => scrollController.animateTo(
+                        scrollController.position.minScrollExtent,
+                        duration: Duration(milliseconds: 500),
+                        curve: Curves.fastOutSlowIn)
+                    : null,
+                behavior: HitTestBehavior.translucent,
+                child: widget.appBarBuilder(context),
+              ),
+              secondChild: selectionAppBar(),
+            ),
+          ),
+          preferredSize: Size.fromHeight(kToolbarHeight),
         ),
         body: bodyWidget(),
         drawer: NavigationDrawer(),
@@ -373,44 +387,7 @@ class _PostsPageState extends State<PostsPage> {
   }
 }
 
-class PageAppBar extends StatelessWidget implements PreferredSizeWidget {
-  final Widget appbar;
-  final Widget editor;
-  final bool isEditing;
-  final ScrollController controller;
-
-  const PageAppBar({
-    @required this.appbar,
-    @required this.editor,
-    this.isEditing = false,
-    this.controller,
-  });
-
-  @override
-  Size get preferredSize => Size.fromHeight(kToolbarHeight);
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      elevation: Theme.of(context).appBarTheme.elevation ?? 4,
-      child: CrossFade(
-        showChild: isEditing,
-        child: GestureDetector(
-          onDoubleTap: controller != null
-              ? () => controller.animateTo(controller.position.minScrollExtent,
-                  duration: Duration(milliseconds: 500),
-                  curve: Curves.fastOutSlowIn)
-              : null,
-          behavior: HitTestBehavior.translucent,
-          child: appbar,
-        ),
-        secondChild: editor,
-      ),
-    );
-  }
-}
-
-AppBar Function(BuildContext context) appBarWidget(String title) {
+AppBar Function(BuildContext context) defaultAppBar(String title) {
   return (context) {
     return AppBar(
       title: Text(title),

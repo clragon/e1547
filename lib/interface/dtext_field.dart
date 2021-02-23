@@ -292,7 +292,7 @@ class DTextField extends StatelessWidget {
 
               if (!sameSite) {
                 onTap = () => Navigator.of(context)
-                        .push(MaterialPageRoute<Null>(builder: (context) {
+                        .push(MaterialPageRoute(builder: (context) {
                       return SearchPage(tags: search);
                     }));
               }
@@ -466,8 +466,7 @@ class DTextField extends StatelessWidget {
           if (RegExp(siteMatch + r'/posts/\d+').hasMatch(search)) {
             onTap = () async {
               Post p = await client.post(id);
-              Navigator.of(context)
-                  .push(MaterialPageRoute<Null>(builder: (context) {
+              Navigator.of(context).push(MaterialPageRoute(builder: (context) {
                 return PostDetail(post: p);
               }));
             };
@@ -475,8 +474,7 @@ class DTextField extends StatelessWidget {
           if (RegExp(siteMatch + r'/pool(s|/show)/\d+').hasMatch(search)) {
             onTap = () async {
               Pool p = await client.pool(id);
-              Navigator.of(context)
-                  .push(MaterialPageRoute<Null>(builder: (context) {
+              Navigator.of(context).push(MaterialPageRoute(builder: (context) {
                 return PoolPage(pool: p);
               }));
             };
@@ -499,8 +497,7 @@ class DTextField extends StatelessWidget {
           case LinkWord.post:
             onTap = () async {
               Post p = await client.post(int.parse(match.split('#')[1]));
-              Navigator.of(context)
-                  .push(MaterialPageRoute<Null>(builder: (context) {
+              Navigator.of(context).push(MaterialPageRoute(builder: (context) {
                 return PostDetail(post: p);
               }));
             };
@@ -508,8 +505,7 @@ class DTextField extends StatelessWidget {
           case LinkWord.pool:
             onTap = () async {
               Pool p = await client.pool(int.parse(match.split('#')[1]));
-              Navigator.of(context)
-                  .push(MaterialPageRoute<Null>(builder: (context) {
+              Navigator.of(context).push(MaterialPageRoute(builder: (context) {
                 return PoolPage(pool: p);
               }));
             };
@@ -531,8 +527,7 @@ class DTextField extends StatelessWidget {
           state[TextState.link] = true;
 
           Function onTap = () {
-            Navigator.of(context)
-                .push(MaterialPageRoute<Null>(builder: (context) {
+            Navigator.of(context).push(MaterialPageRoute(builder: (context) {
               // split of display text after |
               // and replace spaces with _ to produce a valid tag
               return SearchPage(

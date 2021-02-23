@@ -14,10 +14,7 @@ class PoolPage extends StatelessWidget {
       appBarBuilder: (context) {
         return AppBar(
           title: Text(pool.name.replaceAll('_', ' ')),
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back),
-            onPressed: () => Navigator.pop(context),
-          ),
+          leading: BackButton(),
           actions: <Widget>[
             IconButton(
               icon: Icon(Icons.info_outline),

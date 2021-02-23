@@ -28,7 +28,7 @@ class LoadingSnackbar extends StatefulWidget {
   final Function onDone;
   final Future<bool> Function(Post post) process;
 
-  const LoadingSnackbar(
+  LoadingSnackbar(
       {@required this.items,
       @required this.process,
       this.timeout,
@@ -59,7 +59,7 @@ class _LoadingSnackbarState extends State<LoadingSnackbar> {
         break;
       }
     }
-    await Future.delayed(const Duration(milliseconds: 600));
+    await Future.delayed(Duration(milliseconds: 600));
     widget.onDone();
     setState(() {});
     return;

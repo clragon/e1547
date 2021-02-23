@@ -12,7 +12,7 @@ class FavPage extends StatelessWidget {
         if (snapshot.connectionState == ConnectionState.done &&
             snapshot.data != null) {
           return PostsPage(
-              appBarBuilder: appBarWidget('Favorites'),
+              appBarBuilder: defaultAppBar('Favorites'),
               provider: PostProvider(
                 provider: (tags, page) {
                   return client.posts(tags, page);
@@ -22,7 +22,7 @@ class FavPage extends StatelessWidget {
               ));
         } else {
           return Scaffold(
-            appBar: appBarWidget('Favorites')(context),
+            appBar: defaultAppBar('Favorites')(context),
             body: Center(
               child: Container(
                 height: 28,

@@ -6,7 +6,7 @@ class PostOverlay extends StatelessWidget {
   final Post post;
   final Widget Function(Post post) builder;
 
-  const PostOverlay({@required this.post, @required this.builder});
+  PostOverlay({@required this.post, @required this.builder});
 
   @override
   Widget build(BuildContext context) {

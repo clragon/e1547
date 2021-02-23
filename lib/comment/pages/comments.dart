@@ -118,8 +118,8 @@ class _CommentsPageState extends State<CommentsPage> {
                                 ),
                               ),
                               onTap: () {
-                                Navigator.of(context).push(
-                                    MaterialPageRoute<Null>(builder: (context) {
+                                Navigator.of(context)
+                                    .push(MaterialPageRoute(builder: (context) {
                                   return SearchPage(
                                       tags: 'user:${comment.creator}');
                                 }));

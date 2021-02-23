@@ -38,7 +38,7 @@ void poolSheet(BuildContext context, Pool pool) {
 class PoolSheet extends StatelessWidget {
   final Pool pool;
 
-  const PoolSheet({@required this.pool});
+  PoolSheet({@required this.pool});
 
   @override
   Widget build(BuildContext context) {

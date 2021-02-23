@@ -38,12 +38,12 @@ class _FollowingPageState extends State<FollowingPage> {
                 if (tag.startsWith('pool:')) {
                   Pool p = await client.pool(int.parse(tag.split(':')[1]));
                   Navigator.of(context)
-                      .push(MaterialPageRoute<Null>(builder: (context) {
+                      .push(MaterialPageRoute(builder: (context) {
                     return PoolPage(pool: p);
                   }));
                 } else {
                   Navigator.of(context)
-                      .push(MaterialPageRoute<Null>(builder: (context) {
+                      .push(MaterialPageRoute(builder: (context) {
                     return SearchPage(tags: tag);
                   }));
                 }
@@ -120,14 +120,12 @@ class _FollowingPageState extends State<FollowingPage> {
                                   Pool p = await client.pool(
                                       int.parse(follows[index].split(':')[1]));
                                   Navigator.of(context).push(
-                                      MaterialPageRoute<Null>(
-                                          builder: (context) {
+                                      MaterialPageRoute(builder: (context) {
                                     return PoolPage(pool: p);
                                   }));
                                 } else {
                                   Navigator.of(context).push(
-                                      MaterialPageRoute<Null>(
-                                          builder: (context) {
+                                      MaterialPageRoute(builder: (context) {
                                     return SearchPage(tags: follows[index]);
                                   }));
                                 }

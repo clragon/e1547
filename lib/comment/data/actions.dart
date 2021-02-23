@@ -8,7 +8,7 @@ import 'comment.dart';
 Future<bool> sendComment(BuildContext context, Post post,
     {String text, Comment comment}) async {
   bool sent = false;
-  await Navigator.of(context).push(MaterialPageRoute<Null>(builder: (context) {
+  await Navigator.of(context).push(MaterialPageRoute(builder: (context) {
     return TextEditor(
       title: '#${post.id} comment',
       content: text ?? (comment != null ? comment.body : null),

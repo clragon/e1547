@@ -6,7 +6,7 @@ class PostDetailGallery extends StatefulWidget {
   final PostProvider provider;
   final int initialPage;
 
-  const PostDetailGallery({@required this.provider, this.initialPage = 0});
+  PostDetailGallery({@required this.provider, this.initialPage = 0});
 
   @override
   _PostDetailGalleryState createState() => _PostDetailGalleryState();

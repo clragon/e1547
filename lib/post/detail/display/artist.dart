@@ -1,6 +1,6 @@
 import 'package:e1547/client.dart';
 import 'package:e1547/post.dart';
-import 'package:e1547/wiki/pages/sheet.dart';
+import 'package:e1547/wiki.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -35,7 +35,7 @@ class ArtistDisplay extends StatelessWidget {
                       ),
                     ),
                     onTap: () => Navigator.of(context).push(
-                        MaterialPageRoute<Null>(
+                        MaterialPageRoute(
                             builder: (context) => SearchPage(tags: artist))),
                     onLongPress: () => wikiSheet(
                       context: context,

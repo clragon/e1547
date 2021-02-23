@@ -9,7 +9,7 @@ class ParentDisplay extends StatefulWidget {
   final Function() onEditorClose;
   final Function(Future<bool> Function() submit) builder;
 
-  const ParentDisplay({@required this.post, this.onEditorClose, this.builder});
+  ParentDisplay({@required this.post, this.onEditorClose, this.builder});
 
   @override
   _ParentDisplayState createState() => _ParentDisplayState();
@@ -74,7 +74,7 @@ class _ParentDisplayState extends State<ParentDisplay> {
                       Post post = await client.post(value);
                       if (post != null) {
                         Navigator.of(context)
-                            .push(MaterialPageRoute<Null>(builder: (context) {
+                            .push(MaterialPageRoute(builder: (context) {
                           return PostDetail(post: post);
                         }));
                       } else {
@@ -123,7 +123,7 @@ class _ParentDisplayState extends State<ParentDisplay> {
                     Post post = await client.post(child);
                     if (post != null) {
                       await Navigator.of(context)
-                          .push(MaterialPageRoute<Null>(builder: (context) {
+                          .push(MaterialPageRoute(builder: (context) {
                         return PostDetail(post: post);
                       }));
                     } else {
@@ -152,7 +152,7 @@ class ParentEditor extends StatefulWidget {
   final Function() onSubmit;
   final Function(Future<bool> Function() submit) builder;
 
-  const ParentEditor({
+  ParentEditor({
     @required this.post,
     this.onSubmit,
     this.builder,

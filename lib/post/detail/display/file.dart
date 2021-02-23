@@ -56,8 +56,7 @@ class FileDisplay extends StatelessWidget {
                   : Container(),
               InkWell(
                   child: Text(post.file.value.ext),
-                  onTap: () =>
-                      Navigator.of(context).push(MaterialPageRoute<Null>(
+                  onTap: () => Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) =>
                             SearchPage(tags: 'type:${post.file.value.ext}'),
                       ))),

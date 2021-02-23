@@ -38,7 +38,7 @@ class PoolDisplay extends StatelessWidget {
                 Pool p = await client.pool(pool);
                 if (p != null) {
                   Navigator.of(context)
-                      .push(MaterialPageRoute<Null>(builder: (context) {
+                      .push(MaterialPageRoute(builder: (context) {
                     return PoolPage(pool: p);
                   }));
                 } else {
