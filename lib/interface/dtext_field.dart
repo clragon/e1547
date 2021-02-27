@@ -42,11 +42,12 @@ class DTextField extends StatelessWidget {
             initialExpanded: expanded,
             child: ExpandableTheme(
               data: ExpandableThemeData(
+                headerAlignment: ExpandablePanelHeaderAlignment.center,
                 iconColor: Theme.of(context).iconTheme.color,
               ),
               child: ExpandablePanel(
                 header: Padding(
-                  padding: EdgeInsets.only(left: 8, top: 10),
+                  padding: EdgeInsets.all(8),
                   child: Text(
                     title,
                     maxLines: 1,
@@ -56,9 +57,8 @@ class DTextField extends StatelessWidget {
                     ),
                   ),
                 ),
-                collapsed: Container(),
                 expanded: Padding(
-                  padding: EdgeInsets.only(left: 8, right: 8, bottom: 10),
+                  padding: EdgeInsets.all(8),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [child],
@@ -139,11 +139,9 @@ class DTextField extends StatelessWidget {
                         .bodyText1
                         .color
                         .withOpacity(0.5)
-                    : Theme.of(context).textTheme.bodyText1.color,
-            fontWeight:
-                states[TextState.bold] ? FontWeight.bold : FontWeight.normal,
-            fontStyle:
-                states[TextState.italic] ? FontStyle.italic : FontStyle.normal,
+                    : null,
+            fontWeight: states[TextState.bold] ? FontWeight.bold : null,
+            fontStyle: states[TextState.italic] ? FontStyle.italic : null,
             fontSize: states[TextState.header] ? 18 : null,
             decoration: TextDecoration.combine([
               states[TextState.strikeout]
@@ -320,47 +318,51 @@ class DTextField extends StatelessWidget {
                   ].any((block) => block == key) &&
                   active) {
                 String end = '[/$key]';
-                int split;
+                int splitStart;
+                int splitEnd;
                 for (Match endMatch in end.allMatches(after)) {
                   String container = after.substring(0, endMatch.start);
                   if ('[$key'.allMatches(container).length !=
                       end.allMatches(container).length) {
                     continue;
                   }
-                  split = endMatch.start;
+                  splitStart = endMatch.start;
+                  splitEnd = endMatch.end;
                   break;
                 }
-                if (split != null) {
-                  String between = after
-                      .substring(0, split)
-                      .replaceAllMapped(blankless, (match) => '');
-                  switch (key) {
-                    case 'spoiler':
-                      blocked = spoilerWrap(RichText(
-                        text: resolve(between, state),
-                      ));
-                      break;
-                    case 'code':
-                      blocked = quoteWrap(RichText(
-                        text: getText(between, state),
-                      ));
-                      break;
-                    case 'quote':
-                      blocked = quoteWrap(RichText(
-                        text: resolve(between, state),
-                      ));
-                      break;
-                    case 'section':
-                      blocked = sectionWrap(
-                          RichText(
-                            text: resolve(between, state),
-                          ),
-                          value,
-                          expanded: expanded);
-                      break;
-                  }
-                  after = after.substring(split + end.length);
+                if (splitStart == null) {
+                  splitStart = after.length;
+                  splitEnd = after.length;
                 }
+                String between = after
+                    .substring(0, splitStart)
+                    .replaceAllMapped(blankless, (match) => '');
+                switch (key) {
+                  case 'spoiler':
+                    blocked = spoilerWrap(RichText(
+                      text: resolve(between, state),
+                    ));
+                    break;
+                  case 'code':
+                    blocked = quoteWrap(RichText(
+                      text: getText(between, state),
+                    ));
+                    break;
+                  case 'quote':
+                    blocked = quoteWrap(RichText(
+                      text: resolve(between, state),
+                    ));
+                    break;
+                  case 'section':
+                    blocked = sectionWrap(
+                        RichText(
+                          text: resolve(between, state),
+                        ),
+                        value,
+                        expanded: expanded);
+                    break;
+                }
+                after = after.substring(splitEnd);
               }
 
               if (blocked != null) {
