@@ -4,6 +4,7 @@ import 'dart:io' show Platform;
 import 'package:e1547/client.dart';
 import 'package:e1547/interface.dart';
 import 'package:e1547/settings.dart' show db;
+import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -176,44 +177,64 @@ class _SettingsPageState extends State<SettingsPage> {
                     });
               },
             ),
-            ListTile(
-              title: Text('Post tile size'),
-              subtitle: Text(tileSize.toString()),
-              leading: Icon(Icons.crop),
-              onTap: () async {
-                int size = await showDialog<int>(
-                    context: context,
-                    builder: (context) {
-                      return RangeDialog(
-                        title: Text('Tile size'),
-                        value: tileSize,
-                        division: (300 / 50).round(),
-                        min: 100,
-                        max: 400,
-                      );
-                    });
-                if (size == null) {
-                  return;
-                }
-                if (size == 0) {
-                  return;
-                }
-                resetApp = true;
-                db.tileSize.value = Future.value(size);
-              },
+            ExpandableNotifier(
+              initialExpanded: false,
+              child: ExpandableTheme(
+                data: ExpandableThemeData(
+                  headerAlignment: ExpandablePanelHeaderAlignment.center,
+                  iconColor: Theme.of(context).iconTheme.color,
+                ),
+                child: ExpandablePanel(
+                  header: ListTile(
+                    leading: Icon(Icons.grid_view),
+                    title: Text('Grid'),
+                  ),
+                  expanded: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ListTile(
+                        title: Text('Post tile size'),
+                        subtitle: Text(tileSize.toString()),
+                        leading: Icon(Icons.crop),
+                        onTap: () async {
+                          int size = await showDialog<int>(
+                              context: context,
+                              builder: (context) {
+                                return RangeDialog(
+                                  title: Text('Tile size'),
+                                  value: tileSize,
+                                  division: (300 / 50).round(),
+                                  min: 100,
+                                  max: 400,
+                                );
+                              });
+                          if (size == null) {
+                            return;
+                          }
+                          if (size == 0) {
+                            return;
+                          }
+                          resetApp = true;
+                          db.tileSize.value = Future.value(size);
+                        },
+                      ),
+                      SwitchListTile(
+                          title: Text('Staggered'),
+                          subtitle: Text(staggered
+                              ? 'tiles adapt their size'
+                              : 'tiles are quadratic'),
+                          secondary: Icon(
+                              staggered ? Icons.view_quilt : Icons.view_module),
+                          value: staggered,
+                          onChanged: (value) {
+                            db.staggered.value = Future.value(value);
+                            setState(() {});
+                          }),
+                    ],
+                  ),
+                ),
+              ),
             ),
-            SwitchListTile(
-                title: Text('Staggered grid'),
-                subtitle: Text(staggered
-                    ? 'post tiles adapt their size'
-                    : 'post tiles are quadratic'),
-                secondary:
-                    Icon(staggered ? Icons.view_quilt : Icons.view_module),
-                value: staggered,
-                onChanged: (value) {
-                  db.staggered.value = Future.value(value);
-                  setState(() {});
-                }),
             Divider(),
             settingsHeader('Listing'),
             ListTile(
