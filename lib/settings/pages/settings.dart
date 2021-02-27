@@ -188,6 +188,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   header: ListTile(
                     leading: Icon(Icons.grid_view),
                     title: Text('Grid'),
+                    subtitle: Text('post grid settings'),
                   ),
                   expanded: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
