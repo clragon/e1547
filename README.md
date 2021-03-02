@@ -29,7 +29,7 @@
 - View tag wiki entries by long-pressing 
 - Local blacklist
 - DText parsing
-- Webm support (android only)
+- Video support
 - Automatic update check
 - Multiple App Themes
  
@@ -97,9 +97,9 @@ This will create a release build IPA file for you, as well as reduce the file si
 ## Contact
 The app is currently under development.  
 
-If you have questions/comments/suggestions, you can join the [discord server](https://discord.gg/knyhWmz)  
-or you can open a github Issue.  
-You can also post in the [e926 forum thread](https://e926.net/forum_topics/25854).  
+If you have questions/comments/suggestions, you can join the [discord server](https://discord.gg/knyhWmz),  
+visit the form thread [e926 forum thread](https://e926.net/forum_topics/25854) or  
+open a github issue.  
 
 ## Credit
 - iOS build script is provided by [Kritanta](https://github.com/KritantaDev).
