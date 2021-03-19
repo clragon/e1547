@@ -226,13 +226,16 @@ class _DetailImageDisplayState extends State<DetailImageDisplay> {
                   constraints: BoxConstraints(
                     minHeight: (MediaQuery.of(context).size.height / 2),
                   ),
-                  child: Hero(
-                    tag: 'image_${widget.post.id}',
-                    child: ImageOverlay(
-                      post: widget.post,
-                      builder: (context) => widget.post.type == ImageType.Video
-                          ? DetailVideo(post: widget.post)
-                          : DetailImage(post: widget.post),
+                  child: Center(
+                    child: Hero(
+                      tag: 'image_${widget.post.id}',
+                      child: ImageOverlay(
+                        post: widget.post,
+                        builder: (context) =>
+                            widget.post.type == ImageType.Video
+                                ? DetailVideo(post: widget.post)
+                                : DetailImage(post: widget.post),
+                      ),
                     ),
                   ),
                 ),
