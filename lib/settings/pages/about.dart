@@ -5,7 +5,6 @@ import 'package:e1547/settings.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:markdown_widget/markdown_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AboutPage extends StatelessWidget {
@@ -40,42 +39,51 @@ class AboutPage extends StatelessWidget {
                               onPressed: Navigator.of(context).maybePop,
                             ));
                           } else {
-                            msg = Column(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: () {
-                                List<Widget> releases = [
-                                  Text(
-                                    'A newer version is available: ',
-                                    style: TextStyle(
-                                      color: Theme.of(context)
-                                          .textTheme
-                                          .bodyText1
-                                          .color
-                                          .withOpacity(0.5),
-                                    ),
-                                  ),
-                                ];
-                                for (Map release in snapshot.data) {
-                                  releases.addAll(
-                                    [
-                                      Padding(
-                                        padding:
-                                            EdgeInsets.only(top: 8, bottom: 8),
-                                        child: Text(
-                                          '${release['title']} (${release['version']})',
-                                          style: Theme.of(context)
+                            msg = ConstrainedBox(
+                              constraints: BoxConstraints(
+                                maxHeight:
+                                    MediaQuery.of(context).size.height * 0.5,
+                              ),
+                              child: SingleChildScrollView(
+                                physics: BouncingScrollPhysics(),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: () {
+                                    List<Widget> releases = [];
+                                    releases.add(
+                                      Text(
+                                        'A newer version is available: ',
+                                        style: TextStyle(
+                                          color: Theme.of(context)
                                               .textTheme
-                                              .subtitle2,
+                                              .bodyText1
+                                              .color
+                                              .withOpacity(0.5),
                                         ),
                                       ),
-                                      MarkdownWidget(
-                                          data: release['description']),
-                                    ],
-                                  );
-                                }
-                                return releases;
-                              }(),
+                                    );
+                                    for (AppVersion release in snapshot.data) {
+                                      releases.addAll(
+                                        [
+                                          Padding(
+                                            padding: EdgeInsets.only(
+                                                top: 8, bottom: 8),
+                                            child: Text(
+                                              '${release.name} (${release.version})',
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .headline6,
+                                            ),
+                                          ),
+                                          Text(release.description),
+                                        ],
+                                      );
+                                    }
+                                    return releases;
+                                  }(),
+                                ),
+                              ),
                             );
                             actions.addAll([
                               TextButton(
@@ -94,18 +102,19 @@ class AboutPage extends StatelessWidget {
                           }
                           showDialog(
                             context: context,
-                            builder: (context) => AlertDialog(
-                              title: Text(appName),
-                              content: msg,
-                              actions: actions,
-                            ),
+                            builder: (context) {
+                              return AlertDialog(
+                                title: Text(appName),
+                                content: msg,
+                                actions: actions,
+                              );
+                            },
                           );
                         },
                       ),
-                      CrossFade(
-                        showChild: snapshot.data.length != 0,
-                        child: Positioned(
-                          bottom: 20,
+                      if (snapshot.data.length != 0)
+                        Positioned(
+                          bottom: 12,
                           left: 12,
                           child: Container(
                             height: 10,
@@ -115,8 +124,7 @@ class AboutPage extends StatelessWidget {
                               color: Colors.red,
                             ),
                           ),
-                        ),
-                      ),
+                        )
                     ],
                   );
                 },
@@ -211,7 +219,7 @@ Future<List<AppVersion>> getNewVersions() async {
 List<AppVersion> githubData = [];
 
 Future<List<AppVersion>> getVersions() async {
-  if (!kReleaseMode) {
+  if (kReleaseMode) {
     if (githubData.length == 0) {
       Dio dio = Dio(BaseOptions(
         baseUrl: 'https://api.github.com/',
@@ -247,9 +255,10 @@ class AppVersion extends Comparable<AppVersion> {
 
   String name;
   String description;
+  String version;
 
   AppVersion({
-    @required String version,
+    @required this.version,
     this.name,
     this.description,
   }) {

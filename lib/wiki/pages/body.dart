@@ -29,7 +29,6 @@ class _WikiBodyState extends State<WikiBody> {
             }
             if (snapshot.data.length != 0) {
               return SingleChildScrollView(
-                scrollDirection: Axis.vertical,
                 child: DTextField(msg: snapshot.data[0]['body']),
                 physics: BouncingScrollPhysics(),
               );

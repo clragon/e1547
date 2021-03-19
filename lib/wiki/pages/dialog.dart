@@ -23,10 +23,11 @@ class WikiDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     Widget body() {
       return ConstrainedBox(
-          child: WikiBody(tag: tag),
-          constraints: BoxConstraints(
-            maxHeight: MediaQuery.of(context).size.height * 0.5,
-          ));
+        child: WikiBody(tag: tag),
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.5,
+        ),
+      );
     }
 
     Widget title() {
