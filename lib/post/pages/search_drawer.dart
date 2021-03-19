@@ -148,7 +148,7 @@ class _SearchDrawerState extends State<SearchDrawer> {
                   List<MapEntry<String, List<Post>>> entries = [];
                   entries.addAll(widget.provider.deniedMap.value.entries);
                   entries.addAll(widget.provider.allowlist.value
-                      .map((e) => MapEntry(e, List<Post>())));
+                      .map((e) => MapEntry(e, <Post>[])));
                   entries.sort((a, b) => a.key.compareTo(b.key));
 
                   List<Widget> children = [];

@@ -45,7 +45,6 @@ class FollowButtonState extends State<FollowButton> {
                   });
                 },
                 icon: CrossFade(
-                  duration: Duration(milliseconds: 200),
                   showChild: following,
                   child: Icon(Icons.turned_in),
                   secondChild: Icon(Icons.turned_in_not),

@@ -1,9 +1,12 @@
 import 'dart:async' show Future;
 import 'dart:io' show Platform;
 
+import 'package:dio/dio.dart';
 import 'package:e1547/client.dart';
 import 'package:e1547/interface.dart';
 import 'package:e1547/settings.dart' show db;
+import 'package:e1547/settings.dart';
+import 'package:e1547/settings/pages/grid.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 
@@ -19,8 +22,9 @@ class _SettingsPageState extends State<SettingsPage> {
   String theme;
   bool useCustomHost = false;
   bool hideGallery = false;
-  bool staggered = false;
+  bool fitted = false;
   int tileSize = 0;
+  GridState stagger;
 
   bool resetApp = false;
 
@@ -52,7 +56,7 @@ class _SettingsPageState extends State<SettingsPage> {
       db.theme: (value) async => theme = value,
       db.hideGallery: (value) async => hideGallery = value,
       db.tileSize: (value) async => tileSize = value,
-      db.staggered: (value) async => staggered = value,
+      db.stagger: (value) async => stagger = value,
     };
 
     links.forEach(linkSetting);
@@ -68,7 +72,7 @@ class _SettingsPageState extends State<SettingsPage> {
         msg = msg + ' for $name';
       }
 
-      Scaffold.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         duration: Duration(seconds: 1),
         content: Text(msg),
       ));
@@ -142,7 +146,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     builder: (context) {
                       return SimpleDialog(
                         title: Text('Theme'),
-                        children: <Widget>[
+                        children: [
                           Column(
                             mainAxisSize: MainAxisSize.min,
                             children: () {
@@ -156,7 +160,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                     decoration: BoxDecoration(
                                       borderRadius:
                                           BorderRadius.all(Radius.circular(5)),
-                                      color: themeMap[theme].canvasColor,
+                                      color: themeMap[theme].cardColor,
                                       border: Border.all(
                                         color:
                                             Theme.of(context).iconTheme.color,
@@ -219,18 +223,13 @@ class _SettingsPageState extends State<SettingsPage> {
                           db.tileSize.value = Future.value(size);
                         },
                       ),
-                      SwitchListTile(
-                          title: Text('Staggered'),
-                          subtitle: Text(staggered
-                              ? 'tiles adapt their size'
-                              : 'tiles are quadratic'),
-                          secondary: Icon(
-                              staggered ? Icons.view_quilt : Icons.view_module),
-                          value: staggered,
-                          onChanged: (value) {
-                            db.staggered.value = Future.value(value);
-                            setState(() {});
-                          }),
+                      GridSettingsTile(
+                        state: stagger,
+                        onChange: (state) {
+                          db.stagger.value = Future.value(state);
+                          setState(() {});
+                        },
+                      ),
                     ],
                   ),
                 ),
@@ -323,7 +322,11 @@ Future<bool> setCustomHost(BuildContext context) async {
     host = host.replaceAll(RegExp(r'^http(s)?://'), '');
     host = host.replaceAll(RegExp(r'^(www.)?'), '');
     host = host.replaceAll(RegExp(r'/$'), '');
-    HttpHelper http = HttpHelper();
+    Dio dio = Dio(BaseOptions(
+      sendTimeout: 30000,
+      connectTimeout: 30000,
+    ));
+
     if (host.isEmpty) {
       success = false;
       error.value = null;
@@ -331,28 +334,23 @@ Future<bool> setCustomHost(BuildContext context) async {
     } else {
       await Future.delayed(Duration(seconds: 1));
       try {
-        if ((await http
-            .get(host, '/')
-            .then((response) => response.statusCode != 200))) {
-          error.value = 'Cannot reach host';
-        } else {
-          switch (host) {
-            case 'e621.net':
-              db.customHost.value = Future.value(host);
-              error.value = null;
-              success = true;
-              break;
-            case 'e926.net':
-              error.value = 'default host cannot be custom host';
-              success = false;
-              break;
-            default:
-              error.value = 'Host API incompatible';
-              success = false;
-              break;
-          }
+        await dio.get('https://$host');
+        switch (host) {
+          case 'e621.net':
+            db.customHost.value = Future.value(host);
+            error.value = null;
+            success = true;
+            break;
+          case 'e926.net':
+            error.value = 'default host cannot be custom host';
+            success = false;
+            break;
+          default:
+            error.value = 'Host API incompatible';
+            success = false;
+            break;
         }
-      } catch (SocketException) {
+      } on DioError {
         error.value = 'Cannot reach host';
       }
     }
@@ -362,8 +360,9 @@ Future<bool> setCustomHost(BuildContext context) async {
   }
 
   await showDialog(
-      context: context,
-      child: AlertDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
         title: Text('Custom Host'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -449,11 +448,11 @@ Future<bool> setCustomHost(BuildContext context) async {
           ],
         ),
         actions: [
-          FlatButton(
+          TextButton(
             child: Text('CANCEL'),
             onPressed: Navigator.of(context).pop,
           ),
-          FlatButton(
+          TextButton(
             child: Text('OK'),
             onPressed: () async {
               if (await submit(controller.text)) {
@@ -462,6 +461,8 @@ Future<bool> setCustomHost(BuildContext context) async {
             },
           ),
         ],
-      ));
+      );
+    },
+  );
   return success;
 }

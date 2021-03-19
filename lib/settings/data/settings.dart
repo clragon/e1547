@@ -2,6 +2,8 @@ import 'dart:async' show Future;
 import 'dart:io' show File, Platform;
 
 import 'package:e1547/client.dart';
+import 'package:e1547/interface.dart';
+import 'package:e1547/settings/data/grid.dart';
 import 'package:flutter/foundation.dart' show ValueNotifier;
 import 'package:shared_preferences/shared_preferences.dart'
     show SharedPreferences;
@@ -20,7 +22,7 @@ class Persistence {
   ValueNotifier<Future<List<String>>> denylist;
   ValueNotifier<Future<List<String>>> follows;
   ValueNotifier<Future<int>> tileSize;
-  ValueNotifier<Future<bool>> staggered;
+  ValueNotifier<Future<GridState>> stagger;
 
   Persistence() {
     host = createSetting<String>('currentHost', initial: 'e926.net');
@@ -51,11 +53,25 @@ class Persistence {
         prefs.setString(key, value.toJson());
       }
     });
-    theme = createSetting<String>('theme', initial: 'dark');
+    theme = createSetting<String>('theme', initial: themeMap.keys.elementAt(1));
     denylist = createSetting<List<String>>('blacklist', initial: []);
     follows = createSetting<List<String>>('follows', initial: []);
     tileSize = createSetting('tileSize', initial: 200);
-    staggered = createSetting('staggered', initial: false);
+    stagger = createSetting(
+      'stagger',
+      initial: GridState.square,
+      getSetting: (prefs, key) async {
+        String value = prefs.getString(key);
+        if (value != null) {
+          return GridState.values
+              .singleWhere((element) => element.toString() == value);
+        }
+        return null;
+      },
+      setSetting: (prefs, key, value) {
+        prefs.setString(key, value.toString());
+      },
+    );
   }
 
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();

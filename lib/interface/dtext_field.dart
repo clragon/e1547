@@ -139,7 +139,7 @@ class DTextField extends StatelessWidget {
                         .bodyText1
                         .color
                         .withOpacity(0.5)
-                    : null,
+                    : Theme.of(context).textTheme.bodyText1.color,
             fontWeight: states[TextState.bold] ? FontWeight.bold : null,
             fontStyle: states[TextState.italic] ? FontStyle.italic : null,
             fontSize: states[TextState.header] ? 18 : null,

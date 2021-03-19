@@ -215,13 +215,13 @@ class _FollowingPageState extends State<FollowingPage> {
           maxLines: null,
         ),
         actions: <Widget>[
-          FlatButton(
+          TextButton(
             child: Text('CANCEL'),
             onPressed: () {
               Navigator.of(context).pop();
             },
           ),
-          FlatButton(
+          TextButton(
             child: Text('OK'),
             onPressed: () {
               List<String> tags = controller.text.split('\n');

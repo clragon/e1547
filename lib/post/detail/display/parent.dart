@@ -78,7 +78,7 @@ class _ParentDisplayState extends State<ParentDisplay> {
                           return PostDetail(post: post);
                         }));
                       } else {
-                        Scaffold.of(context).showSnackBar(SnackBar(
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                           duration: Duration(seconds: 1),
                           content: Text('Coulnd\'t retrieve Post #$value'),
                         ));
@@ -127,7 +127,7 @@ class _ParentDisplayState extends State<ParentDisplay> {
                         return PostDetail(post: post);
                       }));
                     } else {
-                      Scaffold.of(context).showSnackBar(SnackBar(
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                         duration: Duration(seconds: 1),
                         content: Text(
                             'Coulnd\'t retrieve Post #${child.toString()}'),
@@ -190,7 +190,7 @@ class _ParentEditorState extends State<ParentEditor> {
         return true;
       }
     }
-    Scaffold.of(context).showSnackBar(SnackBar(
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       duration: Duration(seconds: 1),
       content: Text('Invalid parent post'),
       behavior: SnackBarBehavior.floating,
@@ -211,20 +211,20 @@ class _ParentEditorState extends State<ParentEditor> {
                 builder: (context, value, child) {
                   return CrossFade(
                     showChild: value,
-                    child: child,
+                    child: Center(
+                      child: Padding(
+                        padding: EdgeInsets.only(right: 10),
+                        child: Padding(
+                          padding: EdgeInsets.all(4),
+                          child: Container(
+                              height: 16,
+                              width: 16,
+                              child: CircularProgressIndicator()),
+                        ),
+                      ),
+                    ),
                   );
                 },
-                child: Center(
-                    child: Padding(
-                  padding: EdgeInsets.only(right: 10),
-                  child: Container(
-                      height: 20,
-                      width: 20,
-                      child: Padding(
-                        padding: EdgeInsets.all(2),
-                        child: CircularProgressIndicator(),
-                      )),
-                )),
               ),
               Expanded(
                 child: TextField(

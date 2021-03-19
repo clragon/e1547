@@ -2,11 +2,11 @@ import 'package:e1547/post.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class PostOverlay extends StatelessWidget {
+class ImageOverlay extends StatelessWidget {
   final Post post;
   final Widget Function(Post post) builder;
 
-  PostOverlay({@required this.post, @required this.builder});
+  ImageOverlay({@required this.post, @required this.builder});
 
   @override
   Widget build(BuildContext context) {

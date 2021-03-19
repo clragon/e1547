@@ -39,7 +39,7 @@ class LoginPage extends StatelessWidget {
               child: Column(children: [
             stepWidget(
                 1,
-                FlatButton(
+                TextButton(
                   onPressed: () async {
                     launch('https://${await db.host.value}/session/new');
                   },
@@ -148,7 +148,7 @@ class _LoginFormFieldsState extends State<_LoginFormFields> {
         } else {
           _authDidJustFail = true;
           form.validate();
-          Scaffold.of(context).showSnackBar(SnackBar(
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
               duration: Duration(seconds: 10),
               content: Text('Failed to login. '
                   'Check your network connection and login details')));
@@ -205,7 +205,7 @@ class _LoginFormFieldsState extends State<_LoginFormFields> {
             onPressed: () async {
               var data = await Clipboard.getData('text/plain');
               if (data == null || data.text.trim().isEmpty) {
-                Scaffold.of(context).showSnackBar(
+                ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('Clipboard is empty')));
                 return;
               }
@@ -235,8 +235,12 @@ class _LoginFormFieldsState extends State<_LoginFormFields> {
     Widget saveAndTestWidget() {
       return Padding(
         padding: EdgeInsets.only(top: 26.0),
-        child: RaisedButton(
-          color: Theme.of(context).accentColor,
+        child: ElevatedButton(
+          style: ButtonStyle(
+            backgroundColor: MaterialStateProperty.all(
+              Theme.of(context).accentColor,
+            ),
+          ),
           child: Text(
             'LOGIN',
             style: Theme.of(context).accentTextTheme.button,

@@ -21,12 +21,14 @@ Future<bool> sendReply(BuildContext context, Thread thread,
             sent = true;
             return true;
           } else {
-            Scaffold.of(context).showSnackBar(SnackBar(
-              duration: Duration(seconds: 1),
-              content: Text(
-                  'Failed to send reply: ${response['code']} : ${response['reason']}'),
-              behavior: SnackBarBehavior.floating,
-            ));
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                duration: Duration(seconds: 1),
+                content: Text(
+                    'Failed to send reply: ${response['code']} : ${response['reason']}'),
+                behavior: SnackBarBehavior.floating,
+              ),
+            );
           }
         }
         return false;

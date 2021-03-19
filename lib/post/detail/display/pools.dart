@@ -42,7 +42,7 @@ class PoolDisplay extends StatelessWidget {
                     return PoolPage(pool: p);
                   }));
                 } else {
-                  Scaffold.of(context).showSnackBar(SnackBar(
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     duration: Duration(seconds: 1),
                     content: Text('Coulnd\'t retrieve Pool #${p.id}'),
                   ));

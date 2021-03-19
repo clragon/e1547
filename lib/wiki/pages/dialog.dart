@@ -6,9 +6,11 @@ import 'body.dart';
 void wikiDialog({@required BuildContext context, @required String tag}) {
   showDialog(
     context: context,
-    child: WikiDialog(
-      tag: tag,
-    ),
+    builder: (BuildContext context) {
+      return WikiDialog(
+        tag: tag,
+      );
+    },
   );
 }
 
@@ -46,9 +48,9 @@ class WikiDialog extends StatelessWidget {
       title: title(),
       content: body(),
       actions: [
-        FlatButton(
+        TextButton(
           child: Text('OK'),
-          onPressed: Navigator.of(context).pop,
+          onPressed: Navigator.of(context).maybePop,
         ),
       ],
     );

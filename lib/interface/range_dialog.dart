@@ -70,11 +70,11 @@ class _RangeDialogState extends State<RangeDialog> {
         ],
       ),
       actions: <Widget>[
-        FlatButton(
+        TextButton(
           child: Text('cancel'),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        FlatButton(
+        TextButton(
           child: Text('save'),
           onPressed: () {
             int textValue = int.parse(_controller.text);

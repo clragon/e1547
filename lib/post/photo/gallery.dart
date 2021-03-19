@@ -1,13 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:e1547/interface/cross_fade.dart';
+import 'package:e1547/interface.dart';
 import 'package:e1547/post.dart';
-import 'package:e1547/post/detail/appbar.dart';
-import 'package:e1547/post/detail/overlay.dart';
+import 'package:e1547/post/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:video_player/video_player.dart';
-
-import 'video_frame.dart';
 
 class PostPhotoGallery extends StatefulWidget {
   final int index;
@@ -20,7 +17,7 @@ class PostPhotoGallery extends StatefulWidget {
   _PostPhotoGalleryState createState() => _PostPhotoGalleryState();
 }
 
-class _PostPhotoGalleryState extends State<PostPhotoGallery> {
+class _PostPhotoGalleryState extends State<PostPhotoGallery> with RouteAware {
   ValueNotifier<bool> showFrame = ValueNotifier(false);
   ValueNotifier<int> current = ValueNotifier(null);
 
@@ -28,6 +25,7 @@ class _PostPhotoGalleryState extends State<PostPhotoGallery> {
     showFrame.value = shown ?? !showFrame.value;
     SystemChrome.setEnabledSystemUIOverlays(
         showFrame.value ? SystemUiOverlay.values : []);
+    setUIColors(Theme.of(context));
   }
 
   @override
@@ -38,9 +36,21 @@ class _PostPhotoGalleryState extends State<PostPhotoGallery> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    routeObserver.subscribe(this, ModalRoute.of(context));
+  }
+
+  @override
+  void didPop() {
+    SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
+    setUIColors(Theme.of(context));
+  }
+
+  @override
   void dispose() {
     super.dispose();
-    SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
+    routeObserver.unsubscribe(this);
   }
 
   @override
@@ -71,7 +81,7 @@ class _PostPhotoGalleryState extends State<PostPhotoGallery> {
             body: VideoFrame(
               child: child,
               post: widget.posts[value],
-              onFrameToggle: (shown) => toggleFrame(shown: shown),
+              onToggle: (shown) => toggleFrame(shown: shown),
             ),
           );
         },
@@ -114,7 +124,7 @@ class _PostPhotoGalleryState extends State<PostPhotoGallery> {
         controller: PageController(initialPage: widget.index),
         physics: BouncingScrollPhysics(),
         itemBuilder: (BuildContext context, int index) {
-          return PostOverlay(
+          return ImageOverlay(
               post: widget.posts[index],
               builder: (post) {
                 switch (widget.posts[index].type) {

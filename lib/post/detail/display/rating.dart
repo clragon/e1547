@@ -54,10 +54,13 @@ class RatingDisplay extends StatelessWidget {
                   : Icons.lock),
               onTap: !post.raw['flags']['rating_locked']
                   ? () => showDialog(
-                      context: context,
-                      child: RatingDialog(onTap: (rating) {
-                        post.rating.value = rating;
-                      }))
+                        context: context,
+                        builder: (BuildContext context) {
+                          return RatingDialog(onTap: (rating) {
+                            post.rating.value = rating;
+                          });
+                        },
+                      )
                   : () {},
             ),
             Divider(),

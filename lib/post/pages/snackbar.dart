@@ -8,7 +8,7 @@ Future<void> loadingSnackbar({
   Duration timeout,
 }) async {
   ScaffoldFeatureController controller;
-  controller = Scaffold.of(context).showSnackBar(
+  controller = ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
       content: LoadingSnackbar(
         items: items,
@@ -97,7 +97,7 @@ class _LoadingSnackbarState extends State<LoadingSnackbar> {
                         builder: (BuildContext context, value, Widget child) {
                           return LinearProgressIndicator(
                             value: (1 / widget.items.length > 0
-                                    ? widget.items.length
+                                    ? 1 / widget.items.length
                                     : 1) *
                                 value,
                           );

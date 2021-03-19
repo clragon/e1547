@@ -42,31 +42,28 @@ class PoolPreview extends StatelessWidget {
     }
 
     return Card(
-        child: InkWell(
-            onTap: this.onPressed,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Container(
-                  height: 42,
-                  child: Center(child: title()),
+      child: InkWell(
+        onTap: this.onPressed,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Container(
+              height: 42,
+              child: Center(child: title()),
+            ),
+            if (pool.description.isNotEmpty)
+              Padding(
+                padding: EdgeInsets.only(
+                  left: 16,
+                  right: 16,
+                  top: 0,
+                  bottom: 8,
                 ),
-                () {
-                  if (pool.description.isNotEmpty) {
-                    return Padding(
-                      padding: EdgeInsets.only(
-                        left: 16,
-                        right: 16,
-                        top: 0,
-                        bottom: 8,
-                      ),
-                      child: DTextField(msg: pool.description, darkText: true),
-                    );
-                  } else {
-                    return Container();
-                  }
-                }(),
-              ],
-            )));
+                child: DTextField(msg: pool.description, darkText: true),
+              ),
+          ],
+        ),
+      ),
+    );
   }
 }

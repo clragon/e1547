@@ -198,7 +198,7 @@ class _ProfileHeaderState extends State<ProfileHeader> {
                         msg = msg + ' for $value';
                       }
 
-                      Scaffold.of(context).showSnackBar(SnackBar(
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                         duration: Duration(seconds: 5),
                         content: Text(msg),
                       ));
@@ -209,7 +209,7 @@ class _ProfileHeaderState extends State<ProfileHeader> {
           } else {
             return Padding(
               padding: EdgeInsets.symmetric(horizontal: 20),
-              child: OutlineButton(
+              child: OutlinedButton(
                 child: Text('LOGIN'),
                 onPressed: () => Navigator.popAndPushNamed(context, '/login'),
               ),

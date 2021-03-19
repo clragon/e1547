@@ -36,7 +36,7 @@ class _PostsPageState extends State<PostsPage> {
 
   Set<Post> selections = Set();
   bool loading = true;
-  bool staggered;
+  GridState stagger;
   int tileSize;
 
   void updatePage() {
@@ -45,7 +45,7 @@ class _PostsPageState extends State<PostsPage> {
         setState(() {
           if (widget.provider.pages.value.length == 0 ||
               tileSize == null ||
-              staggered == null) {
+              stagger == null) {
             loading = true;
           } else {
             loading = false;
@@ -55,11 +55,25 @@ class _PostsPageState extends State<PostsPage> {
     }
   }
 
+  void updateStagger() {
+    db.stagger.value.then((value) {
+      stagger = value;
+      updatePage();
+    });
+  }
+
+  void updateTileSize() {
+    db.tileSize.value.then((value) {
+      tileSize = value;
+      updatePage();
+    });
+  }
+
   @override
   void initState() {
     super.initState();
     // tileSize is not linked because updating it will break the grid
-    db.staggered.addListener(updatePage);
+    db.stagger.addListener(updateStagger);
     widget.provider.pages.addListener(updatePage);
     widget.provider.posts.addListener(updatePage);
   }
@@ -67,14 +81,8 @@ class _PostsPageState extends State<PostsPage> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    db.tileSize.value.then((value) {
-      tileSize = value;
-      updatePage();
-    });
-    db.staggered.value.then((value) {
-      staggered = value;
-      updatePage();
-    });
+    updateTileSize();
+    updateStagger();
   }
 
   @override
@@ -93,12 +101,12 @@ class _PostsPageState extends State<PostsPage> {
   void dispose() {
     super.dispose();
     widget.provider.dispose();
-    db.staggered.removeListener(updatePage);
+    db.stagger.removeListener(updateStagger);
     widget.provider.pages.removeListener(updatePage);
     widget.provider.posts.removeListener(updatePage);
   }
 
-  int notZero(int value) => value == 0 ? 1 : value;
+  int notZero(double value) => value.round() == 0 ? 1 : value.round();
 
   Widget _itemBuilder(BuildContext context, int item) {
     Widget preview(Post post, PostProvider provider) {
@@ -165,21 +173,28 @@ class _PostsPageState extends State<PostsPage> {
   }
 
   StaggeredTile Function(int) _staggeredTileBuilder() {
+    double extra = 0.2;
     return (item) {
       if (item < widget.provider.posts.value.length) {
-        if (staggered) {
-          PostImage sample = widget.provider.posts.value[item].sample.value;
-          double heightRatio = (sample.height / sample.width);
-          double widthRatio = (sample.width / sample.height);
-          if (notZero((MediaQuery.of(context).size.width / tileSize).round()) ==
-              1) {
+        switch (stagger) {
+          case GridState.square:
+            return StaggeredTile.count(1, 1 + extra);
+          case GridState.vertical:
+            PostImage sample = widget.provider.posts.value[item].sample.value;
+            double heightRatio = (sample.height / sample.width);
             return StaggeredTile.count(1, heightRatio);
-          } else {
-            return StaggeredTile.count(
-                notZero(widthRatio.round()), notZero(heightRatio.round()));
-          }
-        } else {
-          return StaggeredTile.count(1, 1.2);
+            break;
+          case GridState.omni:
+            PostImage sample = widget.provider.posts.value[item].sample.value;
+            double heightRatio = (sample.height / sample.width);
+            double widthRatio = (sample.width / sample.height);
+            if (notZero(MediaQuery.of(context).size.width / tileSize) == 1) {
+              return StaggeredTile.count(1, heightRatio);
+            } else {
+              return StaggeredTile.count(notZero(widthRatio),
+                  notZero(heightRatio) + (notZero(heightRatio) * extra));
+            }
+            break;
         }
       }
       return null;
@@ -194,7 +209,7 @@ class _PostsPageState extends State<PostsPage> {
         onEmpty: Text('No posts'),
         isLoading: loading,
         isEmpty: (!loading && widget.provider.posts.value.length == 0),
-        child: tileSize != null && staggered != null
+        child: tileSize != null && stagger != null
             ? SmartRefresher(
                 primary: false,
                 scrollController: scrollController,
@@ -210,8 +225,8 @@ class _PostsPageState extends State<PostsPage> {
                 },
                 physics: BouncingScrollPhysics(),
                 child: StaggeredGridView.countBuilder(
-                  crossAxisCount: notZero(
-                      (MediaQuery.of(context).size.width / tileSize).round()),
+                  crossAxisCount:
+                      notZero(MediaQuery.of(context).size.width / tileSize),
                   itemCount: widget.provider.posts.value.length,
                   itemBuilder: _itemBuilder,
                   staggeredTileBuilder: _staggeredTileBuilder(),

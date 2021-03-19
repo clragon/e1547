@@ -21,10 +21,10 @@ class PostSearchBar extends StatelessWidget {
   List<PopupMenuEntry<String>> Function(BuildContext) menuEntryBuilder(
       List<String> text) {
     return (context) {
-      List<PopupMenuEntry<String>> items = List(text.length);
-      for (int i = 0; i < items.length; i++) {
+      List<PopupMenuEntry<String>> items;
+      for (int i = 0; i < text.length; i++) {
         String t = text[i];
-        items[i] = PopupMenuItem(child: Text(t), value: t);
+        items.add(PopupMenuItem(child: Text(t), value: t));
       }
       return items;
     };
@@ -125,11 +125,14 @@ class PostSearchBar extends StatelessWidget {
             switch (status[selection]) {
               case 'rating':
                 await showDialog(
-                    context: context,
-                    child: RatingDialog(onTap: (rating) {
+                  context: context,
+                  builder: (BuildContext context) {
+                    return RatingDialog(onTap: (rating) {
                       key = 'rating';
                       value = rating;
-                    }));
+                    });
+                  },
+                );
                 break;
               case 'deleted':
                 key = 'status';

@@ -170,7 +170,7 @@ extension downloading on Post {
               content: Text(
                   'You need to grant write permission in order to download files.'),
               actions: [
-                RaisedButton(
+                ElevatedButton(
                   child: Text('TRY AGAIN'),
                   onPressed: () async {
                     Navigator.of(context).pop();
@@ -196,7 +196,7 @@ extension favoriting on Post {
       return true;
     } else {
       this.isFavorite.value = true;
-      Scaffold.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         duration: Duration(seconds: 1),
         content: Text('Failed to remove Post #${this.id} from favorites'),
       ));
@@ -215,7 +215,7 @@ extension favoriting on Post {
       this.favorites.value += 1;
       return true;
     } else {
-      Scaffold.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         duration: Duration(seconds: 1),
         content: Text('Failed to add Post #${this.id} to favorites'),
       ));
@@ -258,7 +258,7 @@ extension voting on Post {
         }
       }
     } else {
-      Scaffold.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         duration: Duration(seconds: 1),
         content: Text('Failed to vote on Post #${this.id}'),
       ));

@@ -1,4 +1,4 @@
-import 'package:e1547/interface/cross_fade.dart';
+import 'package:e1547/interface.dart';
 import 'package:e1547/interface/dtext_field.dart';
 import 'package:flutter/material.dart';
 

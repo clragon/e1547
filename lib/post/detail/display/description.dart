@@ -1,4 +1,4 @@
-import 'package:e1547/interface/cross_fade.dart';
+import 'package:e1547/interface.dart';
 import 'package:e1547/interface/dtext_field.dart';
 import 'package:e1547/interface/text_editor.dart';
 import 'package:e1547/post.dart';

@@ -94,7 +94,7 @@ class PostAppBar extends StatelessWidget implements PreferredSizeWidget {
                             } else {
                               message = 'Failed to download post ${post.id}';
                             }
-                            Scaffold.of(context).showSnackBar(SnackBar(
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                               duration: Duration(seconds: 1),
                               content: Text(message),
                             ));

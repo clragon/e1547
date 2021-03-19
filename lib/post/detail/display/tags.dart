@@ -177,7 +177,7 @@ class _TagEditorState extends State<TagEditor> {
             widget.post.tags.value[origin].add(tag);
             widget.post.tags.value[origin].toSet().toList().sort();
             widget.post.tags.value = Map.from(widget.post.tags.value);
-            Scaffold.of(context).showSnackBar(SnackBar(
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
               duration: Duration(seconds: 1),
               content: Text('Moved $tag to $origin tags'),
               behavior: SnackBarBehavior.floating,
@@ -204,20 +204,22 @@ class _TagEditorState extends State<TagEditor> {
               ValueListenableBuilder(
                 valueListenable: isLoading,
                 builder: (context, value, child) {
-                  if (value) {
-                    return child;
-                  } else {
-                    return Container();
-                  }
+                  return CrossFade(
+                    showChild: value,
+                    child: Center(
+                      child: Padding(
+                        padding: EdgeInsets.only(right: 10),
+                        child: Padding(
+                          padding: EdgeInsets.all(4),
+                          child: Container(
+                              height: 16,
+                              width: 16,
+                              child: CircularProgressIndicator()),
+                        ),
+                      ),
+                    ),
+                  );
                 },
-                child: Center(
-                    child: Padding(
-                  padding: EdgeInsets.only(right: 10),
-                  child: Container(
-                      height: 16,
-                      width: 16,
-                      child: CircularProgressIndicator()),
-                )),
               ),
               Expanded(
                 child: TagInput(

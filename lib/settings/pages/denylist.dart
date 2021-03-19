@@ -240,13 +240,13 @@ class _DenyListPageState extends State<DenyListPage> {
           maxLines: null,
         ),
         actions: <Widget>[
-          FlatButton(
+          TextButton(
             child: Text('CANCEL'),
             onPressed: () {
               Navigator.of(context).pop();
             },
           ),
-          FlatButton(
+          TextButton(
             child: Text('OK'),
             onPressed: () {
               setState(() {

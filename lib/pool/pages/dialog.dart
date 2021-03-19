@@ -10,9 +10,11 @@ import 'actions.dart';
 void poolDialog({@required BuildContext context, @required Pool pool}) {
   showDialog(
     context: context,
-    child: PoolDialog(
-      pool: pool,
-    ),
+    builder: (BuildContext context) {
+      return PoolDialog(
+        pool: pool,
+      );
+    },
   );
 }
 
@@ -70,12 +72,12 @@ class PoolDialog extends StatelessWidget {
       title: title(),
       content: body(),
       actions: [
-        FlatButton(
+        TextButton(
           child: Text('SHARE'),
           onPressed: () async =>
               Share.share(pool.url(await db.host.value).toString()),
         ),
-        FlatButton(
+        TextButton(
           child: Text('OK'),
           onPressed: () => Navigator.of(context).pop(),
         ),

@@ -24,7 +24,7 @@ Future<bool> sendComment(BuildContext context, Post post,
             sent = true;
             return true;
           } else {
-            Scaffold.of(context).showSnackBar(SnackBar(
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
               duration: Duration(seconds: 1),
               content: Text(
                   'Failed to send comment: ${response['code']} : ${response['reason']}'),

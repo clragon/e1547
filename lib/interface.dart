@@ -1,4 +1,4 @@
-export 'interface/cross_fade.dart';
+export 'interface/animation.dart';
 export 'interface/data_provider.dart';
 export 'interface/dtext_field.dart';
 export 'interface/loading_tile.dart';

@@ -2,16 +2,13 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e1547/client.dart';
 import 'package:e1547/interface.dart';
 import 'package:e1547/post.dart';
-import 'package:e1547/settings.dart';
+import 'package:e1547/post/widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:icon_shadow/icon_shadow.dart';
 import 'package:like_button/like_button.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:video_player/video_player.dart';
 
-import 'appbar.dart';
 import 'display.dart';
-import 'overlay.dart';
+import 'image.dart';
 
 class PostDetail extends StatefulWidget {
   final Post post;
@@ -111,259 +108,6 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
 
   @override
   Widget build(BuildContext context) {
-    void onTapImage(BuildContext context) {
-      if (widget.post.file.value.url == null) {
-        return;
-      }
-      if (!widget.post.isVisible) {
-        return;
-      }
-      if (widget.post.type == ImageType.Unsupported) {
-        launch(widget.post.file.value.url);
-        return;
-      }
-      keepPlaying = true;
-      Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-        Widget gallery(List<Post> posts) {
-          return PostPhotoGallery(
-            index: posts.indexOf(widget.post),
-            posts: posts,
-            controller: widget.controller,
-          );
-        }
-
-        List<Post> posts;
-        if (widget.post.isEditing.value) {
-          posts = [widget.post];
-        } else {
-          posts = widget.provider?.posts?.value ?? [widget.post];
-        }
-
-        if (widget.provider != null) {
-          return ValueListenableBuilder(
-            valueListenable: widget.provider.pages,
-            builder: (context, value, child) {
-              return gallery(posts);
-            },
-          );
-        } else {
-          return gallery(posts);
-        }
-      }));
-    }
-
-    Widget postImageWidget() {
-      Widget imageContainer() {
-        Widget image(Post post) {
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Flexible(
-                child: CachedNetworkImage(
-                  imageUrl: widget.post.sample.value.url,
-                  fit: BoxFit.contain,
-                  placeholder: (context, url) => Center(
-                      child: Container(
-                    height: 26,
-                    width: 26,
-                    child: CircularProgressIndicator(),
-                  )),
-                  errorWidget: (context, url, error) =>
-                      Center(child: Icon(Icons.error_outline)),
-                ),
-              ),
-              // postInfoWidget(),
-            ],
-          );
-        }
-
-        Widget video(Post post) {
-          return ValueListenableBuilder(
-            valueListenable: widget.post.controller,
-            builder: (context, value, child) => GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTap: () => value.isPlaying
-                  ? widget.post.controller.pause()
-                  : widget.post.controller.play(),
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  value.initialized
-                      ? AspectRatio(
-                          aspectRatio: value.aspectRatio,
-                          child: VideoPlayer(widget.post.controller),
-                        )
-                      : image(post),
-                  CrossFade(
-                      showChild: value.isPlaying &&
-                          (!value.initialized || value.isBuffering),
-                      child: Container(
-                        height: 30,
-                        width: 30,
-                        child: Padding(
-                          padding: EdgeInsets.all(4),
-                          child: CircularProgressIndicator(),
-                        ),
-                      ),
-                      secondChild: AnimatedOpacity(
-                        duration: Duration(milliseconds: 300),
-                        opacity: value.isPlaying ? 0 : 1,
-                        child: IconShadowWidget(
-                          Icon(
-                            value.isPlaying ? Icons.pause : Icons.play_arrow,
-                            size: 54,
-                            color: Theme.of(context).iconTheme.color,
-                          ),
-                          shadowColor: Colors.black,
-                        ),
-                      )),
-                ],
-              ),
-            ),
-          );
-        }
-
-        Widget imageToggle() {
-          return ValueListenableBuilder(
-            valueListenable: widget.post.showUnsafe,
-            builder: (context, value, child) {
-              if (!widget.post.isDeleted) {
-                return CrossFade(
-                  showChild: (widget.post.file.value.url == null ||
-                      !widget.post.isVisible ||
-                      widget.post.showUnsafe.value),
-                  duration: Duration(milliseconds: 200),
-                  child: Card(
-                    color: value ? Colors.black12 : Colors.transparent,
-                    elevation: 0,
-                    child: InkWell(
-                      child: Padding(
-                        padding: EdgeInsets.all(8),
-                        child: Row(
-                          children: <Widget>[
-                            Icon(
-                              value ? Icons.visibility_off : Icons.visibility,
-                              size: 16,
-                            ),
-                            Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 5),
-                              child: value ? Text('hide') : Text('show'),
-                            )
-                          ],
-                        ),
-                      ),
-                      onTap: () async {
-                        if (await db.customHost.value == null) {
-                          await setCustomHost(context);
-                        }
-                        if (await db.customHost.value != null) {
-                          Post replacement;
-                          if (widget.post.file.value.url == null) {
-                            replacement =
-                                await client.post(widget.post.id, unsafe: true);
-                          } else {
-                            replacement = Post.fromMap(widget.post.raw);
-                          }
-                          widget.post.file.value = replacement.file.value;
-                          widget.post.preview.value = replacement.preview.value;
-                          widget.post.sample.value = replacement.sample.value;
-                          widget.post.showUnsafe.value =
-                              !widget.post.showUnsafe.value;
-                        }
-                      },
-                    ),
-                  ),
-                );
-              } else {
-                return Container();
-              }
-            },
-          );
-        }
-
-        Widget fullscreenButton() {
-          if (widget.post.type == ImageType.Video) {
-            return CrossFade(
-              showChild:
-                  widget.post.file.value.url != null && widget.post.isVisible,
-              duration: Duration(milliseconds: 200),
-              child: Card(
-                elevation: 0,
-                color: Colors.black12,
-                child: InkWell(
-                  child: Padding(
-                    padding: EdgeInsets.all(4),
-                    child: Icon(
-                      Icons.fullscreen,
-                      size: 24,
-                      color: Theme.of(context).iconTheme.color,
-                    ),
-                  ),
-                  onTap: () => onTapImage(context),
-                ),
-              ),
-            );
-          } else {
-            return Container();
-          }
-        }
-
-        Widget imageOverlay() {
-          return ValueListenableBuilder(
-            valueListenable: widget.post.file,
-            builder: (BuildContext context, value, Widget child) {
-              return Stack(
-                children: <Widget>[
-                  InkWell(
-                    onTap: () => onTapImage(context),
-                    child: Container(
-                      constraints: BoxConstraints(
-                        minHeight: (MediaQuery.of(context).size.height / 2),
-                      ),
-                      child: Center(
-                        child: Hero(
-                          tag: 'image_${widget.post.id}',
-                          child: PostOverlay(
-                            post: widget.post,
-                            builder: widget.post.type == ImageType.Video
-                                ? video
-                                : image,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        fullscreenButton(),
-                        imageToggle(),
-                      ],
-                    ),
-                    bottom: 0,
-                    right: 5,
-                  )
-                ],
-              );
-            },
-          );
-        }
-
-        return imageOverlay();
-      }
-
-      return ValueListenableBuilder(
-        valueListenable: widget.post.showUnsafe,
-        builder: (context, value, child) {
-          return imageContainer();
-        },
-      );
-    }
-
     Widget fab(BuildContext context) {
       Widget fabIcon() {
         if (widget.post.isEditing.value) {
@@ -429,18 +173,21 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
                   ValueListenableBuilder(
                     valueListenable: isLoading,
                     builder: (context, value, child) {
-                      if (value) {
-                        return Center(
+                      return CrossFade(
+                        showChild: value,
+                        child: Center(
+                          child: Padding(
+                            padding: EdgeInsets.only(right: 10),
                             child: Padding(
-                          padding: EdgeInsets.only(right: 10),
-                          child: Container(
-                              height: 16,
-                              width: 16,
-                              child: CircularProgressIndicator()),
-                        ));
-                      } else {
-                        return Container();
-                      }
+                              padding: EdgeInsets.all(4),
+                              child: Container(
+                                  height: 16,
+                                  width: 16,
+                                  child: CircularProgressIndicator()),
+                            ),
+                          ),
+                        ),
+                      );
                     },
                   ),
                   Expanded(
@@ -450,8 +197,9 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
                       maxLines: 1,
                       keyboardType: TextInputType.text,
                       decoration: InputDecoration(
-                          labelText: 'Edit reason',
-                          border: UnderlineInputBorder()),
+                        labelText: 'Edit reason',
+                        border: UnderlineInputBorder(),
+                      ),
                     ),
                   ),
                 ],
@@ -490,7 +238,7 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
                   widget.post.isEditing.value = false;
                   await widget.post.resetPost(online: true);
                 } else {
-                  Scaffold.of(context).showSnackBar(SnackBar(
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     duration: Duration(seconds: 1),
                     content: Text(
                         'Failed to send post: ${response['code']} : ${response['reason']}'),
@@ -565,7 +313,50 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
           0,
           Padding(
             padding: EdgeInsets.only(bottom: 10),
-            child: postImageWidget(),
+            child: DetailImageDisplay(
+              post: widget.post,
+              onTap: () {
+                if (widget.post.file.value.url == null) {
+                  return;
+                }
+                if (!widget.post.isVisible) {
+                  return;
+                }
+                if (widget.post.type == ImageType.Unsupported) {
+                  launch(widget.post.file.value.url);
+                  return;
+                }
+                keepPlaying = true;
+                Navigator.of(context)
+                    .push(MaterialPageRoute(builder: (context) {
+                  Widget gallery(List<Post> posts) {
+                    return PostPhotoGallery(
+                      index: posts.indexOf(widget.post),
+                      posts: posts,
+                      controller: widget.controller,
+                    );
+                  }
+
+                  List<Post> posts;
+                  if (widget.post.isEditing.value) {
+                    posts = [widget.post];
+                  } else {
+                    posts = widget.provider?.posts?.value ?? [widget.post];
+                  }
+
+                  if (widget.provider != null) {
+                    return ValueListenableBuilder(
+                      valueListenable: widget.provider.pages,
+                      builder: (context, value, child) {
+                        return gallery(posts);
+                      },
+                    );
+                  } else {
+                    return gallery(posts);
+                  }
+                }));
+              },
+            ),
           ),
         );
 

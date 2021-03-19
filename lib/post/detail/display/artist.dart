@@ -34,9 +34,8 @@ class ArtistDisplay extends StatelessWidget {
                         fontSize: 14.0,
                       ),
                     ),
-                    onTap: () => Navigator.of(context).push(
-                        MaterialPageRoute(
-                            builder: (context) => SearchPage(tags: artist))),
+                    onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => SearchPage(tags: artist))),
                     onLongPress: () => wikiSheet(
                       context: context,
                       tag: artist,
@@ -87,7 +86,7 @@ class ArtistDisplay extends StatelessWidget {
                         Clipboard.setData(ClipboardData(
                           text: post.id.toString(),
                         ));
-                        Scaffold.of(context).showSnackBar(SnackBar(
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                           duration: Duration(seconds: 1),
                           content: Text('Copied post ID #${post.id}'),
                         ));
