@@ -204,7 +204,7 @@ class _VideoBarState extends State<VideoBar> {
     return SafeCrossFade(
       showChild: shown,
       child: (context) => IgnorePointer(
-        ignoring: shown,
+        ignoring: !shown,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [

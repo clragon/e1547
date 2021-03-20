@@ -17,7 +17,6 @@ final Map<String, ThemeData> themeMap = {
     appBarTheme: AppBarTheme(
       color: Colors.white,
     ),
-    cardColor: Colors.white,
     dialogBackgroundColor: Colors.white,
     primaryColorBrightness: Brightness.light,
     brightness: Brightness.light,

@@ -13,10 +13,7 @@ class AboutPage extends StatelessWidget {
     AppBar appBarWidget() {
       return AppBar(
         title: Text('About'),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
+        leading: BackButton(),
         actions: <Widget>[
           FutureBuilder(
             future: getNewVersions(),
