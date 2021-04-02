@@ -30,7 +30,12 @@ class FileDisplay extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              Text(ratings[post.rating.value]),
+              InkWell(
+                  child: Text(ratings[post.rating.value]),
+                  onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) =>
+                            SearchPage(tags: 'rating:${post.rating.value}'),
+                      ))),
               Text('${post.file.value.width} x ${post.file.value.height}'),
             ],
           ),

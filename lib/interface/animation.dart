@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-final Duration defaultDuration = Duration(milliseconds: 200);
+final Duration defaultAnimationDuration = Duration(milliseconds: 200);
 
 class SafeBuilder extends StatelessWidget {
   final bool showChild;
@@ -40,7 +40,7 @@ class CrossFade extends StatelessWidget {
         secondChild: secondChild ?? Container(),
         crossFadeState:
             showChild ? CrossFadeState.showFirst : CrossFadeState.showSecond,
-        duration: duration ?? defaultDuration);
+        duration: duration ?? defaultAnimationDuration);
   }
 }
 
@@ -93,15 +93,21 @@ class OpacitySwitcher extends StatelessWidget {
     return Stack(
       alignment: Alignment.center,
       children: [
-        AnimatedOpacity(
-          opacity: showChild ? 1 : 0,
-          duration: duration ?? defaultDuration,
-          child: child,
+        IgnorePointer(
+          ignoring: !showChild,
+          child: AnimatedOpacity(
+            opacity: showChild ? 1 : 0,
+            duration: duration ?? defaultAnimationDuration,
+            child: child,
+          ),
         ),
-        AnimatedOpacity(
-          opacity: showChild ? 0 : 1,
-          duration: duration ?? defaultDuration,
-          child: secondChild,
+        IgnorePointer(
+          ignoring: showChild,
+          child: AnimatedOpacity(
+            opacity: showChild ? 0 : 1,
+            duration: duration ?? defaultAnimationDuration,
+            child: secondChild,
+          ),
         ),
       ],
     );

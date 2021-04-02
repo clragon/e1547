@@ -106,7 +106,7 @@ class _SettingsPageState extends State<SettingsPage> {
               onLongPress: () => setCustomHost(context),
               child: SwitchListTile(
                 title: Text('Custom host'),
-                subtitle: Text(currentHost ?? ' '),
+                subtitle: Text(currentHost ?? ''),
                 secondary: Icon(useCustomHost ? Icons.warning : Icons.security),
                 value: useCustomHost,
                 onChanged: (value) async {
@@ -120,25 +120,27 @@ class _SettingsPageState extends State<SettingsPage> {
                 },
               ),
             ),
-            Platform.isAndroid
-                ? SwitchListTile(
-                    title: Text('Hide from gallery'),
-                    subtitle: hideGallery
-                        ? Text('Downloads are hidden')
-                        : Text('Downloads are shown'),
-                    secondary: Icon(
-                        hideGallery ? Icons.image_not_supported : Icons.image),
-                    value: hideGallery,
-                    onChanged: (hide) {
-                      db.hideGallery.value = Future.value(hide);
-                      setState(() {});
-                    })
-                : Container(),
+            if (Platform.isAndroid)
+              SwitchListTile(
+                  title: Text('Hide from gallery'),
+                  subtitle: hideGallery
+                      ? Text('Downloads are hidden')
+                      : Text('Downloads are shown'),
+                  secondary: CrossFade(
+                    showChild: hideGallery,
+                    child: Icon(Icons.image_not_supported),
+                    secondChild: Icon(Icons.image),
+                  ),
+                  value: hideGallery,
+                  onChanged: (hide) {
+                    db.hideGallery.value = Future.value(hide);
+                    setState(() {});
+                  }),
             Divider(),
             settingsHeader('Display'),
             ListTile(
               title: Text('Theme'),
-              subtitle: Text(theme ?? ' '),
+              subtitle: Text(theme ?? ''),
               leading: Icon(Icons.brightness_6),
               onTap: () {
                 showDialog(
@@ -257,7 +259,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       showChild: snapshot.data,
                       child: ListTile(
                         title: Text('Sign out'),
-                        subtitle: Text(username ?? ' '),
+                        subtitle: Text(username ?? ''),
                         leading: Icon(Icons.exit_to_app),
                         onTap: _onTapSignOut(context),
                       ),

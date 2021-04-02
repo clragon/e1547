@@ -80,7 +80,7 @@ class _VideoPlayButtonState extends State<VideoPlayButton>
   void initState() {
     super.initState();
     animationController =
-        AnimationController(vsync: this, duration: defaultDuration);
+        AnimationController(vsync: this, duration: defaultAnimationDuration);
     animationController.addListener(update);
     widget.videoController.addListener(videoUpdate);
     widget.frameController?.addListener(update);

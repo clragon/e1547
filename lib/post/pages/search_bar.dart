@@ -21,7 +21,7 @@ class PostSearchBar extends StatelessWidget {
   List<PopupMenuEntry<String>> Function(BuildContext) menuEntryBuilder(
       List<String> text) {
     return (context) {
-      List<PopupMenuEntry<String>> items;
+      List<PopupMenuEntry<String>> items = [];
       for (int i = 0; i < text.length; i++) {
         String t = text[i];
         items.add(PopupMenuItem(child: Text(t), value: t));

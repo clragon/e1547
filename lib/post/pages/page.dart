@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:e1547/interface.dart';
 import 'package:e1547/post.dart';
 import 'package:e1547/post/pages/search_drawer.dart';
@@ -151,7 +153,9 @@ class _PostsPageState extends State<PostsPage> {
                       color: Colors.black38,
                       child: LayoutBuilder(builder: (context, constraint) {
                         return Icon(Icons.check_circle_outline,
-                            size: constraint.maxHeight * 0.4);
+                            size:
+                                min(constraint.maxHeight, constraint.maxWidth) *
+                                    0.4);
                       }),
                     ),
                   ),

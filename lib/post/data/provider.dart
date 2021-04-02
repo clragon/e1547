@@ -16,14 +16,12 @@ class PostProvider extends DataProvider<Post> {
   bool canDeny;
 
   PostProvider({
-    String search,
     Future<List<Post>> Function(String search, int page) provider,
+    String search = '',
     bool denying = true,
     this.canSearch = true,
     this.canDeny = true,
-  }) : super(
-            search: sortTags(search ?? ''),
-            provider: provider ?? client.posts) {
+  }) : super(search: sortTags(search), provider: provider ?? client.posts) {
     this.denying.value = denying;
     this.denying.addListener(refresh);
     pages.addListener(refresh);
@@ -63,8 +61,6 @@ class PostProvider extends DataProvider<Post> {
   }
 
   void dispose() {
-    for (Post post in items) {
-      post.dispose();
-    }
+    items.forEach((post) => post.dispose());
   }
 }
