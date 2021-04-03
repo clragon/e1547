@@ -1,62 +1,78 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class RangeDialog extends StatefulWidget {
-  RangeDialog({this.title, this.value, this.max, this.min, this.division});
-
   final Widget title;
   final int value;
   final int max;
   final int min;
   final int division;
+  final bool strict;
+  final Function(int value) onSubmit;
+
+  RangeDialog({
+    @required this.title,
+    @required this.onSubmit,
+    this.min = 0,
+    this.value = 0,
+    this.max,
+    this.division,
+    this.strict = false,
+  });
 
   @override
   _RangeDialogState createState() => _RangeDialogState();
 }
 
 class _RangeDialogState extends State<RangeDialog> {
-  final TextEditingController _controller = TextEditingController();
-  int _value;
+  final TextEditingController controller = TextEditingController();
+  int value;
 
   @override
   void initState() {
     super.initState();
-    _value = widget.value;
+    value = widget.value;
+    controller.addListener(() {
+      value = int.tryParse(controller.text) ?? value;
+    });
+  }
+
+  void submit(String output) {
+    widget.onSubmit(int.tryParse(output));
+    Navigator.of(context).maybePop();
   }
 
   @override
   Widget build(BuildContext context) {
     Widget numberWidget() {
-      _controller.text = _value.toString();
-      FocusScope.of(context)
-          .requestFocus(FocusNode()); // Clear text entry focus, if any.
+      controller.text = value.toString();
+      FocusScope.of(context).requestFocus(FocusNode());
 
-      Widget number = TextField(
-        keyboardType: TextInputType.number,
-        style: TextStyle(fontSize: 48.0),
-        textAlign: TextAlign.center,
-        decoration: InputDecoration(border: InputBorder.none),
-        controller: _controller,
-        onSubmitted: (v) => Navigator.of(context).pop(int.parse(v)),
-      );
-
-      return Container(
-        padding: EdgeInsets.only(bottom: 20.0),
-        child: number,
+      return Padding(
+        padding: EdgeInsets.only(bottom: 20),
+        child: TextField(
+          keyboardType: TextInputType.number,
+          style: TextStyle(fontSize: 48),
+          textAlign: TextAlign.center,
+          decoration: InputDecoration(border: InputBorder.none),
+          controller: controller,
+          onSubmitted: submit,
+          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+        ),
       );
     }
 
     Widget sliderWidget() {
       return Slider(
-          min: min(widget.min != null ? widget.min.toDouble() : 0.0,
-              _value.toDouble()),
-          max: max(widget.max.toDouble(), _value.toDouble()),
+          min: min(widget.min, value).toDouble(),
+          max: max(widget.max, value).toDouble(),
           divisions: widget.division,
-          value: _value.toDouble(),
+          value: value.toDouble(),
           activeColor: Theme.of(context).accentColor,
-          onChanged: (v) {
-            setState(() => _value = v.toInt());
+          onChanged: (output) {
+            setState(() => value = output.toInt());
           });
     }
 
@@ -76,10 +92,7 @@ class _RangeDialogState extends State<RangeDialog> {
         ),
         TextButton(
           child: Text('save'),
-          onPressed: () {
-            int textValue = int.parse(_controller.text);
-            Navigator.of(context).pop(textValue ?? _value);
-          },
+          onPressed: () => submit(controller.text),
         ),
       ],
     );

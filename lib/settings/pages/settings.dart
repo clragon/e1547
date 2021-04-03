@@ -26,8 +26,6 @@ class _SettingsPageState extends State<SettingsPage> {
   int tileSize = 0;
   GridState stagger;
 
-  bool resetApp = false;
-
   void linkSetting<T>(ValueNotifier<Future<T>> setting,
       Future<void> Function(T value) assignment) async {
     Future<void> setValue() async {
@@ -203,27 +201,22 @@ class _SettingsPageState extends State<SettingsPage> {
                         title: Text('Post tile size'),
                         subtitle: Text(tileSize.toString()),
                         leading: Icon(Icons.crop),
-                        onTap: () async {
-                          int size = await showDialog<int>(
-                              context: context,
-                              builder: (context) {
-                                return RangeDialog(
-                                  title: Text('Tile size'),
-                                  value: tileSize,
-                                  division: (300 / 50).round(),
-                                  min: 100,
-                                  max: 400,
-                                );
-                              });
-                          if (size == null) {
-                            return;
-                          }
-                          if (size == 0) {
-                            return;
-                          }
-                          resetApp = true;
-                          db.tileSize.value = Future.value(size);
-                        },
+                        onTap: () => showDialog(
+                          context: context,
+                          builder: (context) => RangeDialog(
+                            title: Text('Tile size'),
+                            value: tileSize,
+                            division: (300 / 50).round(),
+                            min: 100,
+                            max: 400,
+                            onSubmit: (int value) {
+                              if (value == null || value <= 0) {
+                                return;
+                              }
+                              db.tileSize.value = Future.value(value);
+                            },
+                          ),
+                        ),
                       ),
                       GridSettingsTile(
                         state: stagger,
@@ -291,22 +284,12 @@ class _SettingsPageState extends State<SettingsPage> {
       );
     }
 
-    return WillPopScope(
-      onWillPop: () async {
-        if (resetApp) {
-          Navigator.of(context).pushNamedAndRemoveUntil('/', (_) => false);
-          return false;
-        } else {
-          return true;
-        }
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text('Settings'),
-          leading: BackButton(),
-        ),
-        body: Builder(builder: bodyWidgetBuilder),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Settings'),
+        leading: BackButton(),
       ),
+      body: Builder(builder: bodyWidgetBuilder),
     );
   }
 }

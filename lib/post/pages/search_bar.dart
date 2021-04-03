@@ -50,16 +50,17 @@ class PostSearchBar extends StatelessWidget {
               int value =
                   valueString == null ? 0 : int.parse(valueString.substring(2));
 
-              int min = await showDialog<int>(
-                  context: context,
-                  builder: (context) {
-                    return RangeDialog(
-                      title: Text('Minimum $filterType'),
-                      value: value,
-                      division: 10,
-                      max: 100,
-                    );
-                  });
+              int min;
+              await showDialog(
+                context: context,
+                builder: (context) => RangeDialog(
+                  title: Text('Minimum $filterType'),
+                  value: value,
+                  division: 10,
+                  max: 100,
+                  onSubmit: (int value) => min = value,
+                ),
+              );
 
               if (min == null) {
                 return tags;

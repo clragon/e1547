@@ -74,7 +74,7 @@ class _PostsPageState extends State<PostsPage> {
   @override
   void initState() {
     super.initState();
-    // tileSize is not linked because updating it will break the grid
+    db.tileSize.addListener(updateTileSize);
     db.stagger.addListener(updateStagger);
     widget.provider.pages.addListener(updatePage);
     widget.provider.posts.addListener(updatePage);
@@ -93,6 +93,10 @@ class _PostsPageState extends State<PostsPage> {
     selections.clear();
     loading = true;
     // hot reload shenanigans
+    db.tileSize.removeListener(updateTileSize);
+    db.stagger.removeListener(updateStagger);
+    db.tileSize.addListener(updateTileSize);
+    db.stagger.addListener(updateStagger);
     widget.provider.pages.removeListener(updatePage);
     widget.provider.pages.addListener(updatePage);
     widget.provider.posts.removeListener(updatePage);
@@ -103,14 +107,20 @@ class _PostsPageState extends State<PostsPage> {
   void dispose() {
     super.dispose();
     widget.provider.dispose();
+    db.tileSize.removeListener(updateTileSize);
     db.stagger.removeListener(updateStagger);
     widget.provider.pages.removeListener(updatePage);
     widget.provider.posts.removeListener(updatePage);
   }
 
-  int notZero(double value) => value.round() == 0 ? 1 : value.round();
+  double notZero(double value) => value < 1 ? 1 : value;
+  int roundedNotZero(double value) => value.round() == 0 ? 1 : value.round();
 
-  Widget _itemBuilder(BuildContext context, int item) {
+  int get crossAxisCount {
+    return notZero(MediaQuery.of(context).size.width / tileSize).round();
+  }
+
+  Widget itemBuilder(BuildContext context, int item) {
     Widget preview(Post post, PostProvider provider) {
       void select() {
         if (widget.canSelect) {
@@ -176,33 +186,32 @@ class _PostsPageState extends State<PostsPage> {
     return null;
   }
 
-  StaggeredTile Function(int) _staggeredTileBuilder() {
-    double extra = 0.2;
-    return (item) {
-      if (item < widget.provider.posts.value.length) {
-        switch (stagger) {
-          case GridState.square:
-            return StaggeredTile.count(1, 1 + extra);
-          case GridState.vertical:
-            PostImage sample = widget.provider.posts.value[item].sample.value;
-            double heightRatio = (sample.height / sample.width);
+  StaggeredTile tileBuilder(int item) {
+    if (item < widget.provider.posts.value.length) {
+      double extra = 0.2;
+      PostImage sample = widget.provider.posts.value[item].sample.value;
+      double heightRatio = notZero(sample.height / sample.width);
+      double widthRatio = notZero(sample.width / sample.height);
+
+      switch (stagger) {
+        case GridState.square:
+          return StaggeredTile.count(1, 1 + extra);
+        case GridState.vertical:
+          return StaggeredTile.count(1, heightRatio);
+          break;
+        case GridState.omni:
+          if (crossAxisCount == 1) {
             return StaggeredTile.count(1, heightRatio);
-            break;
-          case GridState.omni:
-            PostImage sample = widget.provider.posts.value[item].sample.value;
-            double heightRatio = (sample.height / sample.width);
-            double widthRatio = (sample.width / sample.height);
-            if (notZero(MediaQuery.of(context).size.width / tileSize) == 1) {
-              return StaggeredTile.count(1, heightRatio);
-            } else {
-              return StaggeredTile.count(notZero(widthRatio),
-                  notZero(heightRatio) + (notZero(heightRatio) * extra));
-            }
-            break;
-        }
+          } else {
+            return StaggeredTile.count(
+                roundedNotZero(widthRatio),
+                roundedNotZero(heightRatio) +
+                    roundedNotZero(heightRatio) * extra);
+          }
+          break;
       }
-      return null;
-    };
+    }
+    return null;
   }
 
   @override
@@ -213,30 +222,33 @@ class _PostsPageState extends State<PostsPage> {
         onEmpty: Text('No posts'),
         isLoading: loading,
         isEmpty: (!loading && widget.provider.posts.value.length == 0),
-        child: tileSize != null && stagger != null
-            ? SmartRefresher(
-                primary: false,
-                scrollController: scrollController,
-                controller: refreshController,
-                header: ClassicHeader(
-                  refreshingText: 'Refreshing...',
-                  completeText: 'Refreshed posts!',
-                ),
-                onRefresh: () async {
-                  await widget.provider.loadNextPage(reset: true);
-                  refreshController.refreshCompleted();
-                  selections.clear();
-                },
-                physics: BouncingScrollPhysics(),
-                child: StaggeredGridView.countBuilder(
-                  crossAxisCount:
-                      notZero(MediaQuery.of(context).size.width / tileSize),
-                  itemCount: widget.provider.posts.value.length,
-                  itemBuilder: _itemBuilder,
-                  staggeredTileBuilder: _staggeredTileBuilder(),
-                  physics: BouncingScrollPhysics(),
-                ))
-            : Container(),
+        child: SafeBuilder(
+          showChild: tileSize != null && stagger != null,
+          child: (context) => SmartRefresher(
+            primary: false,
+            scrollController: scrollController,
+            controller: refreshController,
+            header: ClassicHeader(
+              refreshingText: 'Refreshing...',
+              completeText: 'Refreshed posts!',
+            ),
+            onRefresh: () async {
+              await widget.provider.loadNextPage(reset: true);
+              refreshController.refreshCompleted();
+              selections.clear();
+            },
+            physics: BouncingScrollPhysics(),
+            child: StaggeredGridView.countBuilder(
+              key: Key('grid_${crossAxisCount}_${stagger}_key'),
+              restorationId: 'grid',
+              crossAxisCount: crossAxisCount,
+              itemCount: widget.provider.posts.value.length,
+              itemBuilder: itemBuilder,
+              staggeredTileBuilder: tileBuilder,
+              physics: BouncingScrollPhysics(),
+            ),
+          ),
+        ),
       );
     }
 
