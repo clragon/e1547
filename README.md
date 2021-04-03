@@ -81,6 +81,7 @@ Compiling the app for yourself should be possible for both platforms, iOS and An
 
 1. Install [Flutter](https://flutter.dev/docs/get-started/install)
 2. Clone the e1547 GitHub Repository
+3. Run `flutter pub get` to install the dependencies
 
 ### Android
 
@@ -94,17 +95,23 @@ Compiling the app for yourself should be possible for both platforms, iOS and An
 
 This will create a release build IPA file for you, as well as reduce the file size by removing unecessary Flutter artifacts.
 
-## Contact
-The app is currently under development.  
+## Status
+Is the app currently under development?  
+<a href="https://github.com/clragon/e1547/commits/master"><img src="https://badgen.net/github/last-commit/clragon/e1547"></a>
 
-If you have questions/comments/suggestions, you can join the [discord server](https://discord.gg/knyhWmz),  
-visit the form thread [e926 forum thread](https://e926.net/forum_topics/25854) or  
-open a github issue.  
+If you want to participate in development decisions, you can join the [discord server](https://discord.gg/knyhWmz).  
+You can also post on the [e926 forum thread](https://e926.net/forum_topics/25854).  
+If you notice something not working, feel free to open a github issue.
+
+if you feel like supporting the development, you can donate a couple of monies.  
+I spend alot of time trying to build this app, so all support is welcome. 
+
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/Q5Q22W6FW)
 
 ## Credit
-- iOS build script is provided by [Kritanta](https://github.com/KritantaDev).
+- Code is written by me, [clragon](https://github.com/clragon).
 
-- iOS releases for this app are compiled by [CamperGuy](https://github.com/camperguy).
+- iOS builds and testing is done by [Kritanta](https://github.com/KritantaDev) and [CamperGuy](https://github.com/camperguy).
 
 - This app is a continuation of a project by [Perlatus](https://github.com/perlatus).
 
