@@ -14,9 +14,8 @@ class PoolDisplay extends StatelessWidget {
     if (post.pools.length != 0) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: () {
-          List<Widget> items = [];
-          items.add(Padding(
+        children: [
+          Padding(
             padding: EdgeInsets.only(
               right: 4,
               left: 4,
@@ -29,18 +28,16 @@ class PoolDisplay extends StatelessWidget {
                 fontSize: 16,
               ),
             ),
-          ));
-          for (int pool in post.pools) {
-            items.add(LoadingTile(
+          ),
+          ...post.pools.map(
+            (pool) => LoadingTile(
               leading: Icon(Icons.group),
               title: Text(pool.toString()),
               onTap: () async {
                 Pool p = await client.pool(pool);
                 if (p != null) {
-                  Navigator.of(context)
-                      .push(MaterialPageRoute(builder: (context) {
-                    return PoolPage(pool: p);
-                  }));
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => PoolPage(pool: p)));
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     duration: Duration(seconds: 1),
@@ -48,11 +45,10 @@ class PoolDisplay extends StatelessWidget {
                   ));
                 }
               },
-            ));
-          }
-          items.add(Divider());
-          return items;
-        }(),
+            ),
+          ),
+          Divider(),
+        ],
       );
     } else {
       return Container();

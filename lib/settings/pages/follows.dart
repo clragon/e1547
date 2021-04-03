@@ -87,9 +87,7 @@ class _FollowingPageState extends State<FollowingPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisSize: MainAxisSize.max,
-                        children: () {
-                          return [cardWidget(follows[index])];
-                        }(),
+                        children: [cardWidget(follows[index])],
                       ),
                     ),
                     Row(

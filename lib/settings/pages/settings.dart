@@ -142,17 +142,16 @@ class _SettingsPageState extends State<SettingsPage> {
               leading: Icon(Icons.brightness_6),
               onTap: () {
                 showDialog(
-                    context: context,
-                    builder: (context) {
-                      return SimpleDialog(
-                        title: Text('Theme'),
-                        children: [
-                          Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: () {
-                              List<Widget> themeList = [];
-                              for (String theme in themeMap.keys) {
-                                themeList.add(ListTile(
+                  context: context,
+                  builder: (context) {
+                    return SimpleDialog(
+                      title: Text('Theme'),
+                      children: [
+                        Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: themeMap.keys
+                              .map(
+                                (theme) => ListTile(
                                   title: Text(theme),
                                   trailing: Container(
                                     height: 36,
@@ -171,14 +170,14 @@ class _SettingsPageState extends State<SettingsPage> {
                                     db.theme.value = Future.value(theme);
                                     Navigator.of(context).pop();
                                   },
-                                ));
-                              }
-                              return themeList;
-                            }(),
-                          )
-                        ],
-                      );
-                    });
+                                ),
+                              )
+                              .toList(),
+                        )
+                      ],
+                    );
+                  },
+                );
               },
             ),
             ExpandableNotifier(

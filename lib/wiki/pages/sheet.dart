@@ -60,18 +60,17 @@ class WikiSheet extends StatelessWidget {
                         builder: (context) => SearchPage(tags: tag),
                       )),
                       child: Text(
-                        tag.replaceAll('_', ' '),
+                        noScore(tag),
                         style: Theme.of(context).textTheme.headline6,
                       ),
                     ),
                   ),
                 ),
-                provider != null
-                    ? TagSearchActions(
-                        tag: tag,
-                        provider: provider,
-                      )
-                    : Container(),
+                if (provider != null)
+                  TagSearchActions(
+                    tag: tag,
+                    provider: provider,
+                  ),
                 TagListActions(
                   tag: tag,
                 ),

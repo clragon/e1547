@@ -95,53 +95,42 @@ class _ParentDisplayState extends State<ParentDisplay> {
       CrossFade(
         showChild:
             widget.post.children.length != 0 && !widget.post.isEditing.value,
-        child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: () {
-              List<Widget> items = [];
-              items.add(
-                Padding(
-                  padding: EdgeInsets.only(
-                    right: 4,
-                    left: 4,
-                    top: 2,
-                    bottom: 2,
-                  ),
-                  child: Text(
-                    'Children',
-                    style: TextStyle(
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
-              );
-              for (int child in widget.post.children) {
-                items.add(LoadingTile(
-                  leading: Icon(Icons.supervised_user_circle),
-                  title: Text(child.toString()),
-                  onTap: () async {
-                    Post post = await client.post(child);
-                    if (post != null) {
-                      await Navigator.of(context)
-                          .push(MaterialPageRoute(builder: (context) {
-                        return PostDetail(post: post);
-                      }));
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        duration: Duration(seconds: 1),
-                        content: Text(
-                            'Coulnd\'t retrieve Post #${child.toString()}'),
-                      ));
-                    }
-                  },
-                ));
-              }
-              items.add(Divider());
-              if (items.length == 0) {
-                items.add(Container());
-              }
-              return items;
-            }()),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Padding(
+            padding: EdgeInsets.only(
+              right: 4,
+              left: 4,
+              top: 2,
+              bottom: 2,
+            ),
+            child: Text(
+              'Children',
+              style: TextStyle(
+                fontSize: 16,
+              ),
+            ),
+          ),
+          ...widget.post.children.map(
+            (child) => LoadingTile(
+              leading: Icon(Icons.supervised_user_circle),
+              title: Text(child.toString()),
+              onTap: () async {
+                Post post = await client.post(child);
+                if (post != null) {
+                  await Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => PostDetail(post: post)));
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    duration: Duration(seconds: 1),
+                    content:
+                        Text('Coulnd\'t retrieve Post #${child.toString()}'),
+                  ));
+                }
+              },
+            ),
+          ),
+          Divider(),
+        ]),
       ),
     ]);
   }

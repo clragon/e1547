@@ -17,7 +17,7 @@ class AboutPage extends StatelessWidget {
         actions: <Widget>[
           FutureBuilder(
             future: getNewVersions(),
-            builder: (context, snapshot) {
+            builder: (context, AsyncSnapshot<List<AppVersion>> snapshot) {
               return SafeCrossFade(
                 showChild: snapshot.hasData,
                 child: (BuildContext context) {
@@ -46,39 +46,35 @@ class AboutPage extends StatelessWidget {
                                 child: Column(
                                   mainAxisSize: MainAxisSize.min,
                                   crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: () {
-                                    List<Widget> releases = [];
-                                    releases.add(
-                                      Text(
-                                        'A newer version is available: ',
-                                        style: TextStyle(
-                                          color: Theme.of(context)
-                                              .textTheme
-                                              .bodyText1
-                                              .color
-                                              .withOpacity(0.5),
-                                        ),
+                                  children: [
+                                    Text(
+                                      'A newer version is available: ',
+                                      style: TextStyle(
+                                        color: Theme.of(context)
+                                            .textTheme
+                                            .bodyText1
+                                            .color
+                                            .withOpacity(0.5),
                                       ),
-                                    );
-                                    for (AppVersion release in snapshot.data) {
-                                      releases.addAll(
-                                        [
-                                          Padding(
-                                            padding: EdgeInsets.only(
-                                                top: 8, bottom: 8),
-                                            child: Text(
-                                              '${release.name} (${release.version})',
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .headline6,
+                                    ),
+                                    ...snapshot.data
+                                        .map(
+                                          (release) => [
+                                            Padding(
+                                              padding: EdgeInsets.only(
+                                                  top: 8, bottom: 8),
+                                              child: Text(
+                                                '${release.name} (${release.version})',
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .headline6,
+                                              ),
                                             ),
-                                          ),
-                                          Text(release.description),
-                                        ],
-                                      );
-                                    }
-                                    return releases;
-                                  }(),
+                                            Text(release.description),
+                                          ],
+                                        )
+                                        .reduce((a, b) => [...a, ...b]),
+                                  ],
                                 ),
                               ),
                             );

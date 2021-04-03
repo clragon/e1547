@@ -147,21 +147,8 @@ class _DenyListPageState extends State<DenyListPage> {
                     Expanded(
                       child: Wrap(
                         direction: Axis.horizontal,
-                        children: () {
-                          List<Widget> rows = [];
-                          if (denylist.length > 0) {
-                            List<String> tags = denylist[index].split(' ');
-                            for (String tag in tags) {
-                              if (tag.isEmpty) {
-                                continue;
-                              }
-                              rows.add(cardWidget(tag));
-                            }
-                            return rows;
-                          } else {
-                            return [Container()];
-                          }
-                        }(),
+                        children: Tagset.parse(denylist.elementAt(index))
+                            .map((tag) => cardWidget(tag.toString())),
                       ),
                     ),
                     Column(

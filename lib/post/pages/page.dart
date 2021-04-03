@@ -240,7 +240,6 @@ class _PostsPageState extends State<PostsPage> {
             physics: BouncingScrollPhysics(),
             child: StaggeredGridView.countBuilder(
               key: Key('grid_${crossAxisCount}_${stagger}_key'),
-              restorationId: 'grid',
               crossAxisCount: crossAxisCount,
               itemCount: widget.provider.posts.value.length,
               itemBuilder: itemBuilder,

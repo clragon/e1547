@@ -1,6 +1,6 @@
 import 'package:e1547/client.dart';
 import 'package:e1547/post.dart';
-import 'package:e1547/wiki.dart';
+import 'package:e1547/post/detail/display.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -18,33 +18,31 @@ class ArtistDisplay extends StatelessWidget {
         builder: (BuildContext context, value, Widget child) {
           if (value['artist'].length != 0) {
             return Text.rich(
-              TextSpan(children: () {
-                List<InlineSpan> spans = [];
-                int count = 0;
-                for (String artist in post.artists) {
-                  count++;
-                  if (count > 1) {
-                    spans.add(TextSpan(text: ', '));
-                  }
-                  spans.add(WidgetSpan(
-                      child: InkWell(
-                    child: Text(
-                      artist,
-                      style: TextStyle(
-                        fontSize: 14.0,
-                      ),
+              TextSpan(
+                children: post.artists
+                    .map<List<InlineSpan>>(
+                      (artist) => [
+                        if (artist != post.artists.first &&
+                            artist != post.artists.last)
+                          TextSpan(text: ', '),
+                        WidgetSpan(
+                          child: TagGesture(
+                            tag: artist,
+                            provider: provider,
+                            child: Text(
+                              artist,
+                              style: TextStyle(
+                                fontSize: 14.0,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    )
+                    .reduce(
+                      (value, element) => [...value, ...element],
                     ),
-                    onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => SearchPage(tags: artist))),
-                    onLongPress: () => wikiSheet(
-                      context: context,
-                      tag: artist,
-                      provider: provider,
-                    ),
-                  )));
-                }
-                return spans;
-              }()),
+              ),
               overflow: TextOverflow.fade,
             );
           } else {

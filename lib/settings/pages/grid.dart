@@ -48,20 +48,16 @@ class GridSettingsTile extends StatelessWidget {
                 children: [
                   Column(
                     mainAxisSize: MainAxisSize.min,
-                    children: () {
-                      List<Widget> stateList = [];
-                      for (GridState state in GridState.values) {
-                        stateList.add(ListTile(
-                          trailing: Icon(getIcon(state)),
-                          title: Text(getDescription(state)),
-                          onTap: () {
-                            onChange(state);
-                            Navigator.of(context).maybePop();
-                          },
-                        ));
-                      }
-                      return stateList;
-                    }(),
+                    children: GridState.values
+                        .map((state) => ListTile(
+                              trailing: Icon(getIcon(state)),
+                              title: Text(getDescription(state)),
+                              onTap: () {
+                                onChange(state);
+                                Navigator.of(context).maybePop();
+                              },
+                            ))
+                        .toList(),
                   )
                 ],
               );

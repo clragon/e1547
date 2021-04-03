@@ -1,3 +1,4 @@
+import 'package:e1547/post.dart';
 import 'package:flutter/material.dart';
 
 import 'actions.dart';
@@ -36,7 +37,7 @@ class WikiDialog extends StatelessWidget {
         children: <Widget>[
           Flexible(
             child: Text(
-              tag.replaceAll('_', ' '),
+              noScore(tag),
               softWrap: true,
             ),
           ),

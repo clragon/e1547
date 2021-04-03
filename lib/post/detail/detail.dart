@@ -263,7 +263,7 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
           );
         }
 
-        List<Widget> details = <Widget>[
+        List<Widget> details = [
           ArtistDisplay(
             post: widget.post,
             provider: widget.provider,
@@ -286,7 +286,12 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
                     onEditorClose: () => doEdit.value = null,
                     provider: widget.provider,
                   )),
-          editorDependant(child: FileDisplay(post: widget.post), shown: false),
+          editorDependant(
+              child: FileDisplay(
+                post: widget.post,
+                provider: widget.provider,
+              ),
+              shown: false),
           editorDependant(
               child: RatingDisplay(
                 post: widget.post,
@@ -296,18 +301,11 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
         ];
 
         details = details
-            .map<Widget>((child) => Padding(
+            .map((child) => Padding(
                   padding: EdgeInsets.symmetric(horizontal: 20),
                   child: child,
                 ))
             .toList();
-
-        Widget bottom = details.last;
-        details.remove(bottom);
-        details.add(Padding(
-          padding: EdgeInsets.only(bottom: 24),
-          child: bottom,
-        ));
 
         details.insert(
           0,
@@ -379,6 +377,7 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
                 context: context,
                 removeTop: true,
                 child: ListView.builder(
+                  padding: EdgeInsets.only(bottom: 24),
                   itemCount: details.length,
                   itemBuilder: (BuildContext context, int index) =>
                       details[index],

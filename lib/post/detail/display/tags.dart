@@ -1,6 +1,7 @@
 import 'package:e1547/client.dart';
 import 'package:e1547/interface.dart';
 import 'package:e1547/post.dart';
+import 'package:e1547/settings.dart';
 import 'package:e1547/wiki.dart';
 import 'package:flutter/material.dart';
 
@@ -80,31 +81,27 @@ class _TagDisplayState extends State<TagDisplay> {
                         Expanded(
                           child: Wrap(
                             direction: Axis.horizontal,
-                            children: () {
-                              List<Widget> tags = [];
-                              for (String tag in value[category]) {
-                                tags.add(
-                                  TagCard(
-                                    tag: tag,
-                                    category: category,
-                                    provider: widget.provider,
-                                    onRemove: widget.post.isEditing.value
-                                        ? () {
-                                            widget.post.tags.value[category]
-                                                .remove(tag);
-                                            widget.post.tags.value =
-                                                Map.from(value);
-                                          }
-                                        : null,
-                                  ),
-                                );
-                              }
-                              tags.add(CrossFade(
+                            children: [
+                              ...value[category].map(
+                                (tag) => TagCard(
+                                  tag: tag,
+                                  category: category,
+                                  provider: widget.provider,
+                                  onRemove: widget.post.isEditing.value
+                                      ? () {
+                                          widget.post.tags.value[category]
+                                              .remove(tag);
+                                          widget.post.tags.value =
+                                              Map.from(value);
+                                        }
+                                      : null,
+                                ),
+                              ),
+                              CrossFade(
                                 showChild: widget.post.isEditing.value,
                                 child: tagPlus(category),
-                              ));
-                              return tags;
-                            }(),
+                              ),
+                            ],
                           ),
                         )
                       ],
@@ -165,21 +162,21 @@ class _TagEditorState extends State<TagEditor> {
       () async {
         for (String tag in tags) {
           List validator = await client.autocomplete(tag);
-          String origin;
+          String target;
           if (validator.length == 0) {
-            origin = 'general';
+            target = 'general';
           } else if (validator[0]['category'] != categories[widget.category]) {
-            origin = categories.keys
+            target = categories.keys
                 .firstWhere((k) => validator[0]['category'] == categories[k]);
           }
-          if (origin != null) {
+          if (target != null) {
             widget.post.tags.value[widget.category].remove(tag);
-            widget.post.tags.value[origin].add(tag);
-            widget.post.tags.value[origin].toSet().toList().sort();
+            widget.post.tags.value[target].add(tag);
+            widget.post.tags.value[target].toSet().toList().sort();
             widget.post.tags.value = Map.from(widget.post.tags.value);
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
               duration: Duration(seconds: 1),
-              content: Text('Moved $tag to $origin tags'),
+              content: Text('Moved $tag to $target tags'),
               behavior: SnackBarBehavior.floating,
             ));
           }
@@ -253,12 +250,9 @@ class TagCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      child: InkWell(
-        onTap: () => Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => SearchPage(tags: tag),
-        )),
-        onLongPress: () =>
-            wikiSheet(context: context, tag: tag, provider: provider),
+      child: TagGesture(
+        tag: tag,
+        provider: provider,
         child: Row(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
@@ -294,7 +288,7 @@ class TagCard extends StatelessWidget {
               child: Padding(
                 padding: EdgeInsets.only(top: 4, bottom: 4, right: 8, left: 6),
                 child: Text(
-                  tag.replaceAll('_', ' '),
+                  noScore(tag),
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
@@ -302,6 +296,39 @@ class TagCard extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class TagGesture extends StatelessWidget {
+  final bool safe;
+  final String tag;
+  final Widget child;
+  final PostProvider provider;
+
+  const TagGesture(
+      {@required this.child,
+      @required this.tag,
+      this.provider,
+      this.safe = false});
+
+  @override
+  Widget build(BuildContext context) {
+    Function wiki =
+        () => wikiSheet(context: context, tag: tag, provider: provider);
+
+    return InkWell(
+      onTap: () async {
+        if (safe && (await db.denylist.value).contains(tag)) {
+          wiki();
+        } else {
+          Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => SearchPage(tags: tag),
+          ));
+        }
+      },
+      onLongPress: wiki,
+      child: child,
     );
   }
 }

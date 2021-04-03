@@ -1,7 +1,7 @@
 import 'package:e1547/interface.dart';
 import 'package:e1547/post.dart';
+import 'package:e1547/post/detail/display.dart';
 import 'package:e1547/settings.dart';
-import 'package:e1547/wiki.dart';
 import 'package:flutter/material.dart';
 
 class SearchDrawer extends StatefulWidget {
@@ -37,35 +37,30 @@ class _SearchDrawerState extends State<SearchDrawer> {
   Widget build(BuildContext context) {
     Widget cardWidget(String tag) {
       return Card(
-          child: InkWell(
-              onTap: () => wikiSheet(context: context, tag: noDash(tag)),
-              onLongPress: () => wikiSheet(context: context, tag: noDash(tag)),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Container(
-                    height: 24,
-                    width: 5,
-                    decoration: BoxDecoration(
-                      color: () {
-                        if ('${tag[0]}' == '-') {
-                          return Colors.green[300];
-                        } else {
-                          return Colors.red[300];
-                        }
-                      }(),
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(5),
-                          bottomLeft: Radius.circular(5)),
-                    ),
-                  ),
-                  Padding(
-                    padding:
-                        EdgeInsets.only(top: 4, bottom: 4, right: 8, left: 6),
-                    child: Text(noDash(tag.replaceAll('_', ' '))),
-                  ),
-                ],
-              )));
+        child: TagGesture(
+          safe: true,
+          tag: noDash(tag),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Container(
+                height: 24,
+                width: 5,
+                decoration: BoxDecoration(
+                  color: (tag[0] == '-') ? Colors.green[300] : Colors.red[300],
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(5),
+                      bottomLeft: Radius.circular(5)),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.only(top: 4, bottom: 4, right: 8, left: 6),
+                child: Text(noScore(tag)),
+              ),
+            ],
+          ),
+        ),
+      );
     }
 
     Widget listEntry(MapEntry<String, List<Post>> entry) {
@@ -85,17 +80,11 @@ class _SearchDrawerState extends State<SearchDrawer> {
             Expanded(
               child: Wrap(
                 direction: Axis.horizontal,
-                children: () {
-                  List<Widget> rows = [];
-                  List<String> tags = entry.key.split(' ');
-                  for (String tag in tags) {
-                    if (tag.isEmpty) {
-                      continue;
-                    }
-                    rows.add(cardWidget(tag));
-                  }
-                  return rows;
-                }(),
+                children: entry.key
+                    .split(' ')
+                    .where((tag) => tag.isNotEmpty)
+                    .map((tag) => cardWidget(tag))
+                    .toList(),
               ),
             ),
           ],
@@ -144,18 +133,15 @@ class _SearchDrawerState extends State<SearchDrawer> {
               showChild: widget.provider.denied.value.isNotEmpty ||
                   widget.provider.allowlist.value.isNotEmpty,
               child: Column(
-                children: () {
-                  List<MapEntry<String, List<Post>>> entries = [];
-                  entries.addAll(widget.provider.deniedMap.value.entries);
-                  entries.addAll(widget.provider.allowlist.value
-                      .map((e) => MapEntry(e, <Post>[])));
-                  entries.sort((a, b) => a.key.compareTo(b.key));
-
-                  List<Widget> children = [];
-                  children.add(Divider());
-                  children.addAll(entries.map(listEntry));
-                  return children;
-                }(),
+                children: [
+                  Divider(),
+                  ...([
+                    ...widget.provider.deniedMap.value.entries,
+                    ...widget.provider.allowlist.value
+                        .map((e) => MapEntry(e, <Post>[])),
+                  ]..sort((a, b) => a.key.compareTo(b.key)))
+                      .map(listEntry),
+                ],
               )),
           Divider(),
           Row(
@@ -206,9 +192,7 @@ class _SearchDrawerState extends State<SearchDrawer> {
           physics: BouncingScrollPhysics(),
           children: [
             Builder(
-              builder: (context) {
-                return blacklistSwitch();
-              },
+              builder: (context) => blacklistSwitch(),
             )
           ],
         ),

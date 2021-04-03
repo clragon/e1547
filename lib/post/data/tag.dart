@@ -115,16 +115,18 @@ String sortTags(String tags) {
   return Tagset.parse(tags).toString();
 }
 
-String noDash(String s) {
-  if (s.isNotEmpty) {
-    if (s[0] == '-' || s[0] == '~') {
-      return s.substring(1);
+String noDash(String tag) {
+  if (tag.isNotEmpty) {
+    if (tag[0] == '-' || tag[0] == '~') {
+      return tag.substring(1);
     } else {
-      return s;
+      return tag;
     }
   }
   return '';
 }
+
+String noScore(String tag) => noDash(tag.replaceAll('_', ' '));
 
 Color getCategoryColor(String category) {
   switch (category) {
