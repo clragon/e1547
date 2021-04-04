@@ -97,6 +97,7 @@ This will create a release build IPA file for you, as well as reduce the file si
 
 ## Status
 Is the app currently under development?  
+  
 <a href="https://github.com/clragon/e1547/commits/master"><img src="https://badgen.net/github/last-commit/clragon/e1547"></a>
 
 If you want to participate in development decisions, you can join the [discord server](https://discord.gg/knyhWmz).  
