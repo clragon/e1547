@@ -19,7 +19,7 @@ class AboutPage extends StatelessWidget {
             builder: (context, AsyncSnapshot<List<AppVersion>> snapshot) {
               return SafeCrossFade(
                 showChild: snapshot.hasData,
-                child: (BuildContext context) {
+                builder: (BuildContext context) {
                   return Stack(
                     children: <Widget>[
                       IconButton(

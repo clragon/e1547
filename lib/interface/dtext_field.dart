@@ -64,6 +64,7 @@ class DTextField extends StatelessWidget {
                     children: [child],
                   ),
                 ),
+                collapsed: SizedBox.shrink(),
               ),
             ),
           ));

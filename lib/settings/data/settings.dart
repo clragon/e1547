@@ -40,7 +40,7 @@ class Persistence {
                 : nomedia.delete()
             : () {});
     credentials = createSetting('credentials', getSetting: (prefs, key) async {
-      String value = await prefs.get(key);
+      String value = prefs.getString(key);
       if (value != null) {
         return Credentials.fromJson(value);
       } else {

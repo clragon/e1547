@@ -4,16 +4,16 @@ final Duration defaultAnimationDuration = Duration(milliseconds: 200);
 
 class SafeBuilder extends StatelessWidget {
   final bool showChild;
-  final Widget Function(BuildContext context) child;
+  final Widget Function(BuildContext context) builder;
 
-  const SafeBuilder({@required this.showChild, @required this.child});
+  const SafeBuilder({@required this.showChild, @required this.builder});
 
   @override
   Widget build(BuildContext context) {
     if (showChild) {
-      return child(context);
+      return builder(context);
     } else {
-      return Container();
+      return SizedBox.shrink();
     }
   }
 }
@@ -37,7 +37,7 @@ class CrossFade extends StatelessWidget {
   Widget build(BuildContext context) {
     return AnimatedCrossFade(
         firstChild: child,
-        secondChild: secondChild ?? Container(),
+        secondChild: secondChild ?? SizedBox.shrink(),
         crossFadeState:
             showChild ? CrossFadeState.showFirst : CrossFadeState.showSecond,
         duration: duration ?? defaultAnimationDuration);
@@ -45,7 +45,7 @@ class CrossFade extends StatelessWidget {
 }
 
 class SafeCrossFade extends StatelessWidget {
-  final Widget Function(BuildContext context) child;
+  final Widget Function(BuildContext context) builder;
 
   final Widget secondChild;
   final Duration duration;
@@ -54,7 +54,7 @@ class SafeCrossFade extends StatelessWidget {
 
   const SafeCrossFade({
     @required this.showChild,
-    @required this.child,
+    @required this.builder,
     this.secondChild,
     this.duration,
   });
@@ -64,7 +64,7 @@ class SafeCrossFade extends StatelessWidget {
     return CrossFade(
       showChild: showChild,
       child: SafeBuilder(
-        child: child,
+        builder: builder,
         showChild: showChild,
       ),
       secondChild: secondChild,

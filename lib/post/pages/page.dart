@@ -224,7 +224,7 @@ class _PostsPageState extends State<PostsPage> {
         isEmpty: (!loading && widget.provider.posts.value.length == 0),
         child: SafeBuilder(
           showChild: tileSize != null && stagger != null,
-          child: (context) => SmartRefresher(
+          builder: (context) => SmartRefresher(
             primary: false,
             scrollController: scrollController,
             controller: refreshController,

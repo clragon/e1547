@@ -226,6 +226,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       ),
                     ],
                   ),
+                  collapsed: SizedBox.shrink(),
                 ),
               ),
             ),
