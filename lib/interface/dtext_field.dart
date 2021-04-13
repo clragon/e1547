@@ -37,7 +37,7 @@ class DTextField extends StatelessWidget {
     // wrapper widget for sections
     Widget sectionWrap(
         {@required Widget child, String title, bool expanded = false}) {
-      title = title.replaceAllMapped(RegExp(r'\n'), (_) => '');
+      title = title?.replaceAllMapped(RegExp(r'\n'), (_) => '') ?? '';
       return Card(
           color: Theme.of(context).canvasColor,
           child: ExpandableNotifier(
@@ -51,7 +51,7 @@ class DTextField extends StatelessWidget {
                 header: Padding(
                   padding: EdgeInsets.all(8),
                   child: Text(
-                    title ?? '',
+                    title,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
@@ -510,9 +510,27 @@ class DTextField extends StatelessWidget {
 
     String result = msg.replaceAllMapped(RegExp(r'\r\n'), (_) => '\n');
 
-    return RichText(
-      text: resolve(result, state),
-    );
+    try {
+      return RichText(
+        text: resolve(result, state),
+      );
+    } catch (e) {
+      print(e);
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 4),
+            child: Icon(
+              Icons.warning_amber_outlined,
+              color: Colors.red,
+              size: 20,
+            ),
+          ),
+          Text('DText parsing has failed', style: TextStyle(color: Colors.red)),
+        ],
+      );
+    }
   }
 }
 
