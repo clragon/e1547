@@ -44,12 +44,13 @@ class SearchPageAppBar extends StatefulWidget with PreferredSizeWidget {
 }
 
 class _SearchPageAppBarState extends State<SearchPageAppBar> {
-  String title = '';
+  String title = '...';
   Pool pool;
 
   void updateTitle() {
     bool matched = false;
-    if (!widget.provider.search.value.contains(' ')) {
+    if (widget.provider.search.value.isNotEmpty &&
+        !widget.provider.search.value.contains(' ')) {
       Map<RegExp, Function(RegExpMatch match)> specials = {
         RegExp(r'^pool:(?<id>\d+)$'): (match) {
           if (pool == null) {
