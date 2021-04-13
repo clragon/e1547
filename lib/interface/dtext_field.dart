@@ -35,7 +35,9 @@ class DTextField extends StatelessWidget {
     }
 
     // wrapper widget for sections
-    Widget sectionWrap(Widget child, String title, {bool expanded = false}) {
+    Widget sectionWrap(
+        {@required Widget child, String title, bool expanded = false}) {
+      title = title.replaceAllMapped(RegExp(r'\n'), (_) => '');
       return Card(
           color: Theme.of(context).canvasColor,
           child: ExpandableNotifier(
@@ -49,7 +51,7 @@ class DTextField extends StatelessWidget {
                 header: Padding(
                   padding: EdgeInsets.all(8),
                   child: Text(
-                    title,
+                    title ?? '',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
@@ -57,6 +59,7 @@ class DTextField extends StatelessWidget {
                     ),
                   ),
                 ),
+                collapsed: Container(),
                 expanded: Padding(
                   padding: EdgeInsets.all(8),
                   child: Column(
@@ -64,7 +67,6 @@ class DTextField extends StatelessWidget {
                     children: [child],
                   ),
                 ),
-                collapsed: SizedBox.shrink(),
               ),
             ),
           ));
@@ -119,14 +121,12 @@ class DTextField extends StatelessWidget {
     }
 
     // parse string recursively
-    TextSpan resolve(String msg, Map<TextState, bool> state) {
+    TextSpan resolve(String source, Map<TextState, bool> state) {
       // get string in plain text. no parsing.
       TextSpan getText(String msg, Map<TextState, bool> states,
           {Function() onTap}) {
         msg = msg.replaceAll('\\[', '[');
-        msg = msg.replaceAll('\\]', ']');
-
-        msg = msg.replaceAllMapped(RegExp(r'(\r\n){4,}'), (lines) => '\n');
+        msg = msg.replaceAllMapped(RegExp(r'\n{4,}'), (_) => '\n');
 
         return TextSpan(
           text: msg,
@@ -163,324 +163,215 @@ class DTextField extends StatelessWidget {
       List<InlineSpan> spans = [];
 
       // test for brackets
-      if (msg.contains('[')) {
+      RegExp bracketRex = RegExp([
+        r'(?<!\[)', // prevent double brackets
+        r'(?<!\\)', // prevent escaped brackets
+        r'\[', // opening backet
+        r'(?<closing>\/)?', // read closing
+        r'(?<tag>[\w\d]+?)', // read tag
+        r'(?<expanded>,expanded)?', // read expanded
+        r'(=(?<value>(.|\n)*?))?', // read value
+        r'\]', // closing bracket
+        r'(?!\])', // prevent double brackets
+      ].join());
+
+      RegExpMatch bracketMatch = bracketRex.firstMatch(source);
+      if (bracketMatch != null) {
         // string before bracket
-        String before = '';
+        String before = source.substring(0, bracketMatch.start);
         // string inside bracket
-        String tag = '';
+        String tag = source.substring(bracketMatch.start, bracketMatch.end);
         // string after bracket
-        String after = '';
+        String after = source.substring(bracketMatch.end);
 
-        // if double bracket
-        bool isFat = false;
-        // index of starting bracket
-        int start;
-        // index of ending bracket
-        int end;
+        // the key of the tag
+        String key = bracketMatch.namedGroup('tag');
+        // whether the tag is closing
+        bool active = bracketMatch.namedGroup('closing') == null;
+        // whether section tag is expanded
+        bool expanded = bracketMatch.namedGroup('expanded') != null;
+        // the value of the tag
+        String value = bracketMatch.namedGroup('value');
 
-        // iterate through all brackets
-        // apply conditions to prevent using irrelevant brackets
-        // only use the first matching one, pass on others
-        for (Match startMatch in '['.allMatches(msg)) {
-          // discard escaped brackets
-          if (startMatch.start != 0 && msg[startMatch.start - 1] == '\\') {
-            continue;
-          }
+        // block tag check.
+        // prepare block beforehand,
+        // so spaces can be removed
 
-          // check if stray ending bracket
-          for (Match endMatch in ']'.allMatches(msg)) {
-            // check is end before start (invalid)
-            if (endMatch.start < startMatch.start) {
+        Widget blocked;
+        RegExp blankless = RegExp(r'(^\n*)|(\n*$)');
+
+        if ([
+              'spoiler',
+              'code',
+              'section',
+              'quote',
+            ].contains(key) &&
+            active) {
+          String end = '[/$key]';
+          int splitStart;
+          int splitEnd;
+          for (Match endMatch in end.allMatches(after)) {
+            String container = after.substring(0, endMatch.start);
+            if ('[$key'.allMatches(container).length !=
+                end.allMatches(container).length) {
               continue;
             }
-            // check if escaped ending bracket
-            if (endMatch.start != 0 && msg[endMatch.start - 1] == '\\') {
-              continue;
-            }
-            // return ending bracket
-            end = endMatch.start;
+            splitStart = endMatch.start;
+            splitEnd = endMatch.end;
             break;
           }
-          // discard if no matching ending bracket
-          if (end == null) {
-            continue;
+          if (splitStart == null) {
+            splitStart = after.length;
+            splitEnd = after.length;
           }
-
-          // check for double brackets
-          int double = msg.indexOf('[[');
-          if (double == startMatch.start) {
-            start = startMatch.start;
-            if (msg.indexOf(']]') != -1) {
-              end = msg.indexOf(']]') + 1;
-              isFat = true;
-            } else {
-              continue;
-            }
-            break;
+          String between = after
+              .substring(0, splitStart)
+              .replaceAllMapped(blankless, (_) => '');
+          switch (key) {
+            case 'spoiler':
+              blocked = spoilerWrap(RichText(
+                text: resolve(between, state),
+              ));
+              break;
+            case 'code':
+              blocked = quoteWrap(RichText(
+                text: getText(between, state),
+              ));
+              break;
+            case 'quote':
+              blocked = quoteWrap(RichText(
+                text: resolve(between, state),
+              ));
+              break;
+            case 'section':
+              blocked = sectionWrap(
+                  child: RichText(
+                    text: resolve(between, state),
+                  ),
+                  title: value,
+                  expanded: expanded);
+              break;
           }
-          // check if stray starting bracket
-          int second = msg.substring(startMatch.start + 1).indexOf('[');
-          if (second != -1) {
-            if ((startMatch.start + second) < end) {
-              continue;
-            }
-          }
-          // return matching starting bracket
-          start = startMatch.start;
-          break;
+          after = after.substring(splitEnd);
         }
 
-        // parse valid brackets
-        if (start != null) {
-          before = msg.substring(0, start);
-          tag = msg.substring(start + 1, end);
-          after = msg.substring(end + 1, msg.length);
-
-          if (tag.isNotEmpty) {
-            // the key of the tag
-            String key;
-            // whether tag is starting or ending
-            bool active = true;
-            // whether section tag is expanded
-            bool expanded = false;
-
-            key = tag.split('=').first.toLowerCase();
-
-            // check if tag is opening or closing
-            if (key[0] == '/') {
-              key = key.substring(1);
-              active = false;
-            }
-
-            // check if tag is expanded section
-            if (key.contains(',') && key.split(',')[1] == 'expanded') {
-              key = key.split(',').first;
-              expanded = true;
-            }
-
-            // check if tag is named section
-            String value = '';
-            if (tag.contains('=')) {
-              value = tag.substring(tag.indexOf('=') + 1);
-            }
-
-            if (isFat) {
-              if (before.isNotEmpty) {
-                spans.add(resolve(before, state));
-              }
-
-              state[TextState.link] = true;
-
-              Function onTap;
-              bool sameSite = false;
-
-              key = key.substring(1, key.length - 1);
-
-              if (key[0] == '#') {
-                key = key.substring(1);
-                sameSite = true;
-              }
-
-              String display = key;
-              String search = key.replaceAll(' ', '_');
-
-              if (key.contains('|')) {
-                search = key.split('|')[0];
-                display = key.split('|')[1];
-              }
-
-              if (!sameSite) {
-                onTap = () => Navigator.of(context)
-                        .push(MaterialPageRoute(builder: (context) {
-                      return SearchPage(tags: search);
-                    }));
-              }
-
-              spans.add(getText(display, state, onTap: onTap));
-
-              state[TextState.link] = false;
-
-              if (after.isNotEmpty) {
-                spans.add(resolve(after, state));
-              }
-            } else {
-              // block tag check.
-              // prepare block beforehand,
-              // so spaces can be removed
-
-              Widget blocked;
-              RegExp blankless = RegExp(r'(^[\r\n]*)|([\r\n]*$)');
-
-              if ([
-                    'spoiler',
-                    'code',
-                    'section',
-                    'quote',
-                  ].any((block) => block == key) &&
-                  active) {
-                String end = '[/$key]';
-                int splitStart;
-                int splitEnd;
-                for (Match endMatch in end.allMatches(after)) {
-                  String container = after.substring(0, endMatch.start);
-                  if ('[$key'.allMatches(container).length !=
-                      end.allMatches(container).length) {
-                    continue;
-                  }
-                  splitStart = endMatch.start;
-                  splitEnd = endMatch.end;
-                  break;
-                }
-                if (splitStart == null) {
-                  splitStart = after.length;
-                  splitEnd = after.length;
-                }
-                String between = after
-                    .substring(0, splitStart)
-                    .replaceAllMapped(blankless, (match) => '');
-                switch (key) {
-                  case 'spoiler':
-                    blocked = spoilerWrap(RichText(
-                      text: resolve(between, state),
-                    ));
-                    break;
-                  case 'code':
-                    blocked = quoteWrap(RichText(
-                      text: getText(between, state),
-                    ));
-                    break;
-                  case 'quote':
-                    blocked = quoteWrap(RichText(
-                      text: resolve(between, state),
-                    ));
-                    break;
-                  case 'section':
-                    blocked = sectionWrap(
-                        RichText(
-                          text: resolve(between, state),
-                        ),
-                        value,
-                        expanded: expanded);
-                    break;
-                }
-                after = after.substring(splitEnd);
-              }
-
-              if (blocked != null) {
-                // remove all the spaces around blocks
-                before =
-                    before.replaceAllMapped(RegExp(r'[\r\n]*$'), (match) => '');
-                after =
-                    after.replaceAllMapped(RegExp(r'^[ \r\n]*'), (match) => '');
-                if (after.isNotEmpty) {
-                  // after = '\n' + after;
-                }
-
-                if (before.isNotEmpty) {
-                  spans.add(resolve(before, state));
-                }
-
-                // add block
-                spans.add(WidgetSpan(child: blocked));
-
-                if (after.isNotEmpty) {
-                  spans.add(resolve(after, state));
-                }
-              } else {
-                Map<TextState, bool> newState = Map.from(state);
-                bool triggered = true;
-
-                // add textStyle
-                switch (key) {
-                  case 'b':
-                    newState[TextState.bold] = active;
-                    break;
-                  case 'i':
-                    newState[TextState.italic] = active;
-                    break;
-                  case 'u':
-                    newState[TextState.underline] = active;
-                    break;
-                  case 'o':
-                    // not supported on the site.
-                    // newState[TextState.overline] = active;
-                    break;
-                  case 's':
-                    newState[TextState.strikeout] = active;
-                    break;
-                  case 'color':
-                    // ignore color tags
-                    // they're insanely hard to implement.
-                    break;
-                  case 'sup':
-                    // I have no idea how to implement this.
-                    break;
-                  case 'sub':
-                    // I have no idea how to implement this.
-                    break;
-                  default:
-                    triggered = false;
-                    break;
-                }
-
-                if (triggered) {
-                  if (before.isNotEmpty) {
-                    spans.add(resolve(before, state));
-                  }
-
-                  if (after.isNotEmpty) {
-                    spans.add(resolve(after, newState));
-                  }
-                } else {
-                  spans.add(resolve('$before\\[$tag\\]$after', state));
-                }
-              }
-            }
+        if (blocked != null) {
+          // remove all the spaces around blocks
+          before = before.replaceAllMapped(RegExp(r'[ \n]*$'), (_) => '');
+          after = after.replaceAllMapped(RegExp(r'^[ \n]*'), (_) => '');
+          if (after.isNotEmpty) {
+            // after = '\n' + after;
           }
 
-          return TextSpan(
-            children: spans,
-          );
+          if (before.isNotEmpty) {
+            spans.add(resolve(before, state));
+          }
+
+          // add block
+          spans.add(WidgetSpan(child: blocked));
+
+          if (after.isNotEmpty) {
+            spans.add(resolve(after, state));
+          }
+        } else {
+          Map<TextState, bool> newState = Map.from(state);
+          bool triggered = true;
+
+          // add textStyle
+          switch (key) {
+            case 'b':
+              newState[TextState.bold] = active;
+              break;
+            case 'i':
+              newState[TextState.italic] = active;
+              break;
+            case 'u':
+              newState[TextState.underline] = active;
+              break;
+            case 'o':
+              // not supported on the site.
+              // newState[TextState.overline] = active;
+              break;
+            case 's':
+              newState[TextState.strikeout] = active;
+              break;
+            case 'color':
+              // ignore color tags
+              // they're insanely hard to implement.
+              break;
+            case 'sup':
+              // I have no idea how to implement this.
+              break;
+            case 'sub':
+              // I have no idea how to implement this.
+              break;
+            default:
+              triggered = false;
+              break;
+          }
+
+          if (triggered) {
+            if (before.isNotEmpty) {
+              spans.add(resolve(before, state));
+            }
+
+            if (after.isNotEmpty) {
+              spans.add(resolve(after, newState));
+            }
+          } else {
+            spans.add(resolve('$before\\$tag$after', state));
+          }
         }
+
+        return TextSpan(
+          children: spans,
+        );
       }
 
-      void parseLink(String match, {bool insite = false}) {
-        String display = match;
-        String search = match;
-
-        Match name = RegExp(r'"[^"]+?":').firstMatch(match);
-        if (name != null) {
-          display = match.substring(name.start + 1, name.end - 2);
-          search = match.substring(name.end);
-        }
-
+      void parseLink(RegExpMatch match, String result, [bool insite = false]) {
         state[TextState.link] = true;
 
-        String siteMatch = r'(e621\.net|e926\.net)';
+        String display = match.namedGroup('name');
+        String search = match.namedGroup('link');
+        String siteMatch = r'(e621\.net|e926\.net)?';
         Function onTap = () => launch(search);
         int id = int.tryParse(search.split('/').last.split('?').first);
 
+        if (display == null) {
+          display = match.namedGroup('link');
+          display = display.replaceFirst('https://', '');
+          display = display.replaceFirst('www.', '');
+        }
+
         if (insite) {
-          siteMatch = r'';
           onTap = () async => launch('https://${await db.host.value}$search');
         }
 
-        if (id != null) {
-          if (RegExp(siteMatch + r'/posts/\d+').hasMatch(search)) {
+        Map<RegExp, Function(RegExpMatch match)> links = {
+          RegExp(siteMatch + r'/posts/\d+'): (match) {
             onTap = () async {
               Post p = await client.post(id);
               Navigator.of(context).push(MaterialPageRoute(builder: (context) {
                 return PostDetail(post: p);
               }));
             };
-          }
-          if (RegExp(siteMatch + r'/pool(s|/show)/\d+').hasMatch(search)) {
+          },
+          RegExp(siteMatch + r'/pool(s|/show)/\d+'): (match) {
             onTap = () async {
               Pool p = await client.pool(id);
               Navigator.of(context).push(MaterialPageRoute(builder: (context) {
                 return PoolPage(pool: p);
               }));
             };
+          },
+        };
+
+        for (MapEntry<RegExp, Function(RegExpMatch match)> entry
+            in links.entries) {
+          RegExpMatch match = entry.key.firstMatch(result);
+          if (match != null) {
+            entry.value(match);
+            break;
           }
         }
 
@@ -522,71 +413,88 @@ class DTextField extends StatelessWidget {
         state[TextState.link] = false;
       }
 
-      Map<RegExp, void Function(String match)> regexes = {
-        RegExp(r'{{.*?}}'): (match) {
-          // remove the brackets
-          match = match.substring(2, match.length - 2);
-
+      Map<RegExp, void Function(RegExpMatch match, String result)> regexes = {
+        RegExp(r'\[\[(?<anchor>#)?(?<tags>.*?)(\|(?<name>.*?))?\]\]'):
+            (match, result) {
           state[TextState.link] = true;
 
-          Function onTap = () {
-            Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-              // split of display text after |
-              // and replace spaces with _ to produce a valid tag
-              return SearchPage(
-                  tags: match.split('|').first.replaceAll(' ', '_'));
-            }));
-          };
+          bool anchor = match.namedGroup('anchor') != null;
+          String name = match.namedGroup('name');
+          String tags = match.namedGroup('tags');
+          name ??= tags;
 
-          spans.add(getText(match, state, onTap: onTap));
+          Function onTap;
+
+          if (!anchor) {
+            onTap = () => Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => SearchPage(tags: tags)));
+          }
+
+          spans.add(getText(name, state, onTap: onTap));
 
           state[TextState.link] = false;
         },
-        RegExp(r'(^|\n)\*+ '): (match) => spans.add(resolve(
-            '\n' + '  ' * ('*'.allMatches(match).length - 1) + '• ', state)),
-        RegExp(r'h[1-6]\.\s?.*', caseSensitive: false): (match) {
+        RegExp(r'{{(?<tags>.*?)(\|(?<name>.*?))?}}'): (match, result) {
+          state[TextState.link] = true;
+
+          String name = match.namedGroup('name');
+          String tags = match.namedGroup('tags');
+          name ??= tags;
+
+          Function onTap = () {
+            Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => SearchPage(tags: tags)));
+          };
+
+          spans.add(getText(name, state, onTap: onTap));
+
+          state[TextState.link] = false;
+        },
+        RegExp(r'(^|\n)\*+ '): (match, result) => spans.add(resolve(
+            '\n' + '  ' * ('*'.allMatches(result).length - 1) + '• ', state)),
+        RegExp(r'h[1-6]\.\s?(?<name>.*)', caseSensitive: false):
+            (match, result) {
           state[TextState.header] = true;
-          String blocked = match.substring(3).trim();
-          spans.add(resolve(blocked, state));
+          String name = match.namedGroup('name');
+          spans.add(resolve(name, state));
           state[TextState.header] = false;
         },
-        RegExp(r'("[^"]+?":)?(http(s)?)?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)([^.,!?:"\s]+)'):
+        RegExp(r'("(?<name>[^"]+?)":)?(?<link>(http(s)?)?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)([^.,!?:"\s]+))'):
             parseLink,
-        RegExp(r'("[^"]+?":)([-a-zA-Z0-9()@:%_\+.~#?&//=]*)([^.,!?:"\s]+)'):
-            (match) => parseLink(match, insite: true),
+        RegExp(r'("(?<name>[^"]+?)":)(?<link>[-a-zA-Z0-9()@:%_\+.~#?&//=]*)([^.,!?:"\s]+)'):
+            (match, result) => parseLink(match, result, true),
       };
 
       regexes.addEntries(LinkWord.values.map((word) {
         return MapEntry(
             RegExp(describeEnum(word) + r' #\d+', caseSensitive: false),
-            (String match) => parseWord(match, word));
+            (match, result) => parseWord(result, word));
       }));
 
-      for (MapEntry<RegExp, Function(String match)> entry in regexes.entries) {
-        if (entry.key.hasMatch(msg)) {
-          for (Match wordMatch in entry.key.allMatches(msg)) {
-            String before = msg.substring(0, wordMatch.start);
-            String match = msg.substring(wordMatch.start, wordMatch.end);
-            String after = msg.substring(wordMatch.end, msg.length);
+      for (MapEntry<RegExp, Function(RegExpMatch match, String result)> entry
+          in regexes.entries) {
+        for (RegExpMatch otherMatch in entry.key.allMatches(source)) {
+          String before = source.substring(0, otherMatch.start);
+          String result = source.substring(otherMatch.start, otherMatch.end);
+          String after = source.substring(otherMatch.end, source.length);
 
-            if (before.isNotEmpty) {
-              spans.add(resolve(before, state));
-            }
-
-            entry.value(match);
-
-            if (after.isNotEmpty) {
-              spans.add(resolve(after, state));
-            }
-            return TextSpan(
-              children: spans,
-            );
+          if (before.isNotEmpty) {
+            spans.add(resolve(before, state));
           }
+
+          entry.value(otherMatch, result);
+
+          if (after.isNotEmpty) {
+            spans.add(resolve(after, state));
+          }
+          return TextSpan(
+            children: spans,
+          );
         }
       }
 
       // no matching brackets, return normal text
-      return getText(msg, state);
+      return getText(source, state);
     }
 
     // Map to keep track of textStyle
@@ -600,8 +508,10 @@ class DTextField extends StatelessWidget {
       TextState.link: false,
     };
 
+    String result = msg.replaceAllMapped(RegExp(r'\r\n'), (_) => '\n');
+
     return RichText(
-      text: resolve(msg, state),
+      text: resolve(result, state),
     );
   }
 }
