@@ -92,6 +92,7 @@ class _SearchPageAppBarState extends State<SearchPageAppBar> {
   @override
   void initState() {
     super.initState();
+    updateTitle();
     widget.provider.search.addListener(updateTitle);
   }
 
