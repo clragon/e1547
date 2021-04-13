@@ -64,6 +64,8 @@ class _PoolsPageState extends State<PoolsPage> {
             provider.pages.value.length == 1 &&
             provider.pages.value[0].length == 0),
         child: SmartRefresher(
+          primary: false,
+          scrollController: scrollController,
           controller: refreshController,
           header: ClassicHeader(
             completeText: 'Refreshed pools!',
