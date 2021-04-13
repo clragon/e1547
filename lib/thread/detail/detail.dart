@@ -79,8 +79,10 @@ class _ThreadDetailState extends State<ThreadDetail> {
     }
 
     return Scaffold(
-      appBar: ScrollingAppbar(
-        child: Text(widget.thread.title),
+      appBar: ScrollingAppbarFrame(
+        child: AppBar(
+          title: Text(widget.thread.title),
+        ),
         controller: scrollController,
       ),
       body: body(),

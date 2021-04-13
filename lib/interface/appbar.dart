@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-class ScrollingAppbar extends StatelessWidget with PreferredSizeWidget {
+class ScrollingAppbarFrame extends StatelessWidget with PreferredSizeWidget {
   final ScrollController controller;
   final Widget child;
 
-  const ScrollingAppbar({@required this.child, this.controller});
+  const ScrollingAppbarFrame({@required this.child, this.controller});
 
   @override
   Widget build(BuildContext context) {

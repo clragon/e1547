@@ -133,8 +133,10 @@ class _ThreadsPageState extends State<ThreadsPage> {
     }
 
     return Scaffold(
-      appBar: ScrollingAppbar(
-        child: Text('Forum'),
+      appBar: ScrollingAppbarFrame(
+        child: AppBar(
+          title: Text('Forum'),
+        ),
         controller: scrollController,
       ),
       body: bodyWidget(),

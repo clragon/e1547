@@ -78,8 +78,11 @@ class _CommentsPageState extends State<CommentsPage> {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('#${widget.post.id} comments'),
+      appBar: ScrollingAppbarFrame(
+        child: AppBar(
+          title: Text('#${widget.post.id} comments'),
+        ),
+        controller: scrollController,
       ),
       body: body(),
       floatingActionButton: widget.post.isLoggedIn ? fab() : null,

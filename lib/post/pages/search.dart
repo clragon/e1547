@@ -77,10 +77,10 @@ class _SearchPageAppBarState extends State<SearchPageAppBar> {
 
     title = () {
       if (pool != null) {
-        return pool.name;
+        return noScore(pool.name);
       }
       if (Tagset.parse(widget.provider.search.value).length == 1) {
-        return widget.provider.search.value.replaceAll('_', ' ');
+        return noScore(widget.provider.search.value);
       }
       return 'Search';
     }();

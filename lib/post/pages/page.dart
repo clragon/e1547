@@ -384,7 +384,7 @@ class _PostsPageState extends State<PostsPage> {
         }
       },
       child: Scaffold(
-        appBar: ScrollingAppbar(
+        appBar: ScrollingAppbarFrame(
           child: CrossFade(
             showChild: selections.length == 0,
             child: widget.appBarBuilder(context),

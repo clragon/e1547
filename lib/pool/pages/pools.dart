@@ -129,8 +129,10 @@ class _PoolsPageState extends State<PoolsPage> {
     }
 
     return Scaffold(
-      appBar: ScrollingAppbar(
-        child: Text('Pools'),
+      appBar: ScrollingAppbarFrame(
+        child: AppBar(
+          title: Text('Pools'),
+        ),
         controller: scrollController,
       ),
       body: bodyWidget(),
