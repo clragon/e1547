@@ -3,7 +3,6 @@ import 'dart:convert' show base64Encode, json, utf8;
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:dio_flutter_transformer/dio_flutter_transformer.dart';
 import 'package:e1547/comment.dart';
 import 'package:e1547/pool.dart';
 import 'package:e1547/post.dart';
@@ -46,7 +45,6 @@ class Client {
           connectTimeout: 30000,
         ),
       );
-      dio.transformer = FlutterTransformer();
       if (credentials != null &&
           !dio.options.headers.containsKey(HttpHeaders.authorizationHeader)) {
         dio.options.headers.addEntries(

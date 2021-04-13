@@ -86,7 +86,7 @@ class _DetailVideoState extends State<DetailVideo> {
             alignment: Alignment.center,
             children: [
               SafeCrossFade(
-                showChild: value.initialized,
+                showChild: value.isInitialized,
                 child: (context) => AspectRatio(
                   aspectRatio: value.aspectRatio,
                   child: VideoPlayer(widget.post.controller),

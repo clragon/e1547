@@ -4,6 +4,7 @@ import 'package:e1547/post.dart';
 import 'package:e1547/post/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:video_player/video_player.dart';
 
 class PostPhotoGallery extends StatefulWidget {
@@ -96,7 +97,7 @@ class _PostPhotoGalleryState extends State<PostPhotoGallery> with RouteAware {
           alignment: Alignment.center,
           children: [
             CrossFade(
-              showChild: post.controller.value.initialized,
+              showChild: post.controller.value.isInitialized,
               child: AspectRatio(
                 aspectRatio: post.controller.value.aspectRatio,
                 child: VideoPlayer(post.controller),
@@ -148,10 +149,7 @@ class _PostPhotoGalleryState extends State<PostPhotoGallery> with RouteAware {
             if (0 < target && target < widget.posts.length) {
               String url = widget.posts[target].file.value.url;
               if (url != null) {
-                precacheImage(
-                  CachedNetworkImageProvider(url),
-                  context,
-                );
+                DefaultCacheManager().downloadFile(url);
               }
             }
           }

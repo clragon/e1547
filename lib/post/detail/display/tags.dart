@@ -24,36 +24,36 @@ class TagDisplay extends StatefulWidget {
 class _TagDisplayState extends State<TagDisplay> {
   PersistentBottomSheetController sheetController;
 
+  Widget tagPlus(String category) {
+    return Card(
+      child: Builder(
+        builder: (BuildContext context) {
+          return InkWell(
+            child: Padding(
+              padding: EdgeInsets.all(4),
+              child: Icon(Icons.add, size: 16),
+            ),
+            onTap: () async {
+              sheetController = Scaffold.of(context).showBottomSheet(
+                (context) => TagEditor(
+                  post: widget.post,
+                  category: category,
+                  onSubmit: sheetController?.close,
+                  builder: widget.builder,
+                ),
+              );
+              sheetController.closed.then((_) {
+                widget.onEditorClose();
+              });
+            },
+          );
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    Widget tagPlus(String category) {
-      return Card(
-        child: Builder(
-          builder: (BuildContext context) {
-            return InkWell(
-              child: Padding(
-                padding: EdgeInsets.all(4),
-                child: Icon(Icons.add, size: 16),
-              ),
-              onTap: () async {
-                sheetController = Scaffold.of(context).showBottomSheet(
-                  (context) => TagEditor(
-                    post: widget.post,
-                    category: category,
-                    onSubmit: sheetController?.close,
-                    builder: widget.builder,
-                  ),
-                );
-                sheetController.closed.then((_) {
-                  widget.onEditorClose();
-                });
-              },
-            );
-          },
-        ),
-      );
-    }
-
     return ValueListenableBuilder(
       valueListenable: widget.post.tags,
       builder: (BuildContext context, value, Widget child) {

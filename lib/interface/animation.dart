@@ -73,7 +73,7 @@ class SafeCrossFade extends StatelessWidget {
   }
 }
 
-class OpacitySwitcher extends StatelessWidget {
+class Replacer extends StatelessWidget {
   final Widget child;
 
   final Widget secondChild;
@@ -81,7 +81,7 @@ class OpacitySwitcher extends StatelessWidget {
 
   final bool showChild;
 
-  const OpacitySwitcher({
+  const Replacer({
     @required this.showChild,
     @required this.child,
     @required this.secondChild,

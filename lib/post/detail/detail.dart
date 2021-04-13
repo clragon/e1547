@@ -1,9 +1,9 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e1547/client.dart';
 import 'package:e1547/interface.dart';
 import 'package:e1547/post.dart';
 import 'package:e1547/post/widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:like_button/like_button.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -59,7 +59,7 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
     super.initState();
     widget.provider?.posts?.addListener(updateWidget);
     widget.post.isEditing.addListener(closeBottomSheet);
-    if (!(widget.post.controller?.value?.initialized ?? true)) {
+    if (!(widget.post.controller?.value?.isInitialized ?? true)) {
       widget.post.initVideo();
     }
   }
@@ -73,10 +73,7 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
     widget.post.isEditing.addListener(closeBottomSheet);
     if (widget.post.file.value.url != null) {
       if (widget.post.type == ImageType.Image) {
-        precacheImage(
-          CachedNetworkImageProvider(widget.post.file.value.url),
-          context,
-        );
+        DefaultCacheManager().downloadFile(widget.post.file.value.url);
       }
     }
   }

@@ -155,7 +155,7 @@ class _PostsPageState extends State<PostsPage> {
               onLongPress: select,
               child: IgnorePointer(
                 child: AnimatedOpacity(
-                  duration: Duration(milliseconds: 200),
+                  duration: defaultAnimationDuration,
                   opacity: selections.contains(post) ? 1 : 0,
                   child: Padding(
                     padding: EdgeInsets.all(4),

@@ -1,6 +1,6 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e1547/post.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
 class PostDetailGallery extends StatefulWidget {
   final PostProvider provider;
@@ -53,10 +53,7 @@ class _PostDetailGalleryState extends State<PostDetailGallery> {
                 String url =
                     widget.provider.posts.value[target].sample.value.url;
                 if (url != null) {
-                  precacheImage(
-                    CachedNetworkImageProvider(url),
-                    context,
-                  );
+                  DefaultCacheManager().downloadFile(url);
                 }
               }
             }

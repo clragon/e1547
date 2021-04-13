@@ -97,7 +97,7 @@ class _VideoPlayButtonState extends State<VideoPlayButton>
 
   @override
   Widget build(BuildContext context) {
-    bool loading = !widget.videoController.value.initialized ||
+    bool loading = !widget.videoController.value.isInitialized ||
         widget.videoController.value.isBuffering;
 
     Widget button() {
@@ -116,7 +116,7 @@ class _VideoPlayButtonState extends State<VideoPlayButton>
             child: IconButton(
               iconSize: widget.size,
               icon: Center(
-                child: OpacitySwitcher(
+                child: Replacer(
                   duration: Duration(milliseconds: 100),
                   showChild:
                       !widget.videoController.value.isPlaying || !loading,
@@ -199,7 +199,7 @@ class _VideoBarState extends State<VideoBar> {
   @override
   Widget build(BuildContext context) {
     bool shown = widget.frameController.visible &&
-        widget.videoController.value.initialized;
+        widget.videoController.value.isInitialized;
 
     return SafeCrossFade(
       showChild: shown,

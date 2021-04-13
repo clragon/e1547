@@ -5,6 +5,7 @@ import 'package:e1547/post.dart';
 import 'package:e1547/settings.dart';
 import 'package:e1547/thread.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
 final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
 
@@ -261,7 +262,7 @@ void initUser({BuildContext context}) {
       client.avatar.then((avatar) {
         userAvatar.value = avatar;
         if (avatar != null && context != null) {
-          precacheImage(CachedNetworkImageProvider(avatar), context);
+          DefaultCacheManager().downloadFile(avatar);
         }
       });
     } else {

@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:dio_flutter_transformer/dio_flutter_transformer.dart';
 import 'package:e1547/interface.dart';
 import 'package:e1547/settings.dart';
 import 'package:flutter/foundation.dart';
@@ -219,7 +218,6 @@ Future<List<AppVersion>> getVersions() async {
         sendTimeout: 30000,
         connectTimeout: 30000,
       ));
-      dio.transformer = FlutterTransformer();
       try {
         dio.get('repos/$github/releases').then(
           (response) {
