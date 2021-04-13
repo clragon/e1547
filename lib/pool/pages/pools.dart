@@ -7,8 +7,6 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'preview.dart';
 
 class PoolsPage extends StatefulWidget {
-  PoolsPage();
-
   @override
   State<StatefulWidget> createState() {
     return _PoolsPageState();
@@ -16,14 +14,13 @@ class PoolsPage extends StatefulWidget {
 }
 
 class _PoolsPageState extends State<PoolsPage> {
-  bool _loading = true;
+  bool loading = true;
   PoolProvider provider = PoolProvider();
-  TextEditingController _tagController = TextEditingController();
+  TextEditingController textController = TextEditingController();
   ValueNotifier<bool> isSearching = ValueNotifier(false);
-  PersistentBottomSheetController<String> _bottomSheetController;
-
-  RefreshController _refreshController =
-      RefreshController(initialRefresh: false);
+  PersistentBottomSheetController<String> sheetController;
+  ScrollController scrollController = ScrollController();
+  RefreshController refreshController = RefreshController();
 
   Widget _itemBuilder(BuildContext context, int item) {
     Widget preview(Pool pool, PoolProvider provider) {
@@ -50,9 +47,9 @@ class _PoolsPageState extends State<PoolsPage> {
       if (this.mounted) {
         setState(() {
           if (provider.pages.value.length == 0) {
-            _loading = true;
+            loading = true;
           } else {
-            _loading = false;
+            loading = false;
           }
         });
       }
@@ -62,19 +59,18 @@ class _PoolsPageState extends State<PoolsPage> {
       return PageLoader(
         onLoading: Text('Loading pools'),
         onEmpty: Text('No pools'),
-        isLoading: _loading,
-        isEmpty: (!_loading &&
+        isLoading: loading,
+        isEmpty: (!loading &&
             provider.pages.value.length == 1 &&
             provider.pages.value[0].length == 0),
         child: SmartRefresher(
-          controller: _refreshController,
+          controller: refreshController,
           header: ClassicHeader(
-            refreshingText: 'Refreshing...',
             completeText: 'Refreshed pools!',
           ),
           onRefresh: () async {
             await provider.loadNextPage(reset: true);
-            _refreshController.refreshCompleted();
+            refreshController.refreshCompleted();
           },
           physics: BouncingScrollPhysics(),
           child: ListView.builder(
@@ -91,51 +87,51 @@ class _PoolsPageState extends State<PoolsPage> {
         return ValueListenableBuilder(
           valueListenable: isSearching,
           builder: (context, value, child) {
+            void submit(String result) {
+              provider.search.value = result;
+              sheetController?.close();
+            }
+
             return FloatingActionButton(
               child: value ? Icon(Icons.check) : Icon(Icons.search),
               onPressed: () async {
-                setFocusToEnd(_tagController);
+                setFocusToEnd(textController);
                 if (value) {
-                  provider.search.value = _tagController.text;
-                  _bottomSheetController?.close();
-                  provider.resetPages();
+                  submit(textController.text);
                 } else {
-                  _tagController.text = provider.search.value;
-                  _bottomSheetController = Scaffold.of(context)
-                      .showBottomSheet((context) => Container(
-                            padding: EdgeInsets.only(
-                                left: 10.0, right: 10.0, bottom: 10),
-                            child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  TextField(
-                                    controller: _tagController,
-                                    autofocus: true,
-                                    maxLines: 1,
-                                    inputFormatters: [
-                                      LowercaseTextInputFormatter()
-                                    ],
-                                    decoration: InputDecoration(
-                                      labelText: 'Title',
-                                    ),
-                                  ),
-                                ]),
-                          ));
+                  textController.text = provider.search.value;
+                  sheetController = Scaffold.of(context).showBottomSheet(
+                    (context) => Padding(
+                      padding:
+                          EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10),
+                      child: TextField(
+                        controller: textController,
+                        autofocus: true,
+                        maxLines: 1,
+                        inputFormatters: [LowercaseTextInputFormatter()],
+                        decoration: InputDecoration(
+                          labelText: 'Title',
+                        ),
+                        onSubmitted: submit,
+                      ),
+                    ),
+                  );
                   isSearching.value = true;
-                  _bottomSheetController.closed.then((a) {
+                  sheetController.closed.then((a) {
                     isSearching.value = false;
                   });
                 }
               },
-            ).build(context);
+            );
           },
         );
       });
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Pools'),
+      appBar: ScrollingAppbar(
+        child: Text('Pools'),
+        controller: scrollController,
       ),
       body: bodyWidget(),
       drawer: NavigationDrawer(),

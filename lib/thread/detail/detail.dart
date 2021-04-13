@@ -16,10 +16,10 @@ class ThreadDetail extends StatefulWidget {
 }
 
 class _ThreadDetailState extends State<ThreadDetail> {
-  bool _loading = true;
+  bool loading = true;
   ReplyProvider provider;
-  RefreshController _refreshController =
-      RefreshController(initialRefresh: false);
+  RefreshController refreshController = RefreshController();
+  ScrollController scrollController = ScrollController();
 
   @override
   void initState() {
@@ -33,9 +33,9 @@ class _ThreadDetailState extends State<ThreadDetail> {
       if (this.mounted) {
         setState(() {
           if (provider.pages.value.length == 0) {
-            _loading = true;
+            loading = true;
           } else {
-            _loading = false;
+            loading = false;
           }
         });
       }
@@ -45,17 +45,18 @@ class _ThreadDetailState extends State<ThreadDetail> {
       return PageLoader(
         onLoading: Text('Loading thread'),
         onEmpty: Text('Failed to load!'),
-        isLoading: _loading,
-        isEmpty: (!_loading && provider.replies.length == 0),
+        isLoading: loading,
+        isEmpty: (!loading && provider.replies.length == 0),
         child: SmartRefresher(
-          controller: _refreshController,
+          primary: false,
+          scrollController: scrollController,
+          controller: refreshController,
           header: ClassicHeader(
-            refreshingText: 'Refreshing...',
             completeText: 'Refreshed thread!',
           ),
           onRefresh: () async {
             await provider.loadNextPage(reset: true);
-            _refreshController.refreshCompleted();
+            refreshController.refreshCompleted();
           },
           physics: BouncingScrollPhysics(),
           child: ListView.builder(
@@ -78,8 +79,9 @@ class _ThreadDetailState extends State<ThreadDetail> {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.thread.title),
+      appBar: ScrollingAppbar(
+        child: Text(widget.thread.title),
+        controller: scrollController,
       ),
       body: body(),
       floatingActionButton: FutureBuilder(

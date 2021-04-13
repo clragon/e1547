@@ -109,38 +109,55 @@ class Client {
     return _avatar;
   }
 
-  Future<List<Post>> posts(String tags, int page, {int attempt = 0}) async {
+  Future<List<Post>> posts(String tags, int page,
+      {int limit, bool faithful = false, int attempt = 0}) async {
     await initialized;
-    try {
-      Map body = await dio.get(
-        'posts.json',
-        queryParameters: {
-          'tags': sortTags(tags),
-          'page': page,
-        },
-      ).then((response) => response.data);
 
-      List<Post> posts = [];
-      bool loggedIn = await this.hasLogin;
-      bool hasPosts = false;
-      for (Map raw in body['posts']) {
-        hasPosts = true;
-        Post post = Post.fromMap(raw);
-        post.isLoggedIn = loggedIn;
-        if (post.file.value.url == null && !post.isDeleted) {
-          continue;
+    Future<List<Post>> getPosts() async {
+      try {
+        Map body = await dio.get(
+          'posts.json',
+          queryParameters: {
+            'tags': sortTags(tags),
+            'page': page,
+            'limit': limit,
+          },
+        ).then((response) => response.data);
+
+        List<Post> posts = [];
+        bool loggedIn = await this.hasLogin;
+        bool hasPosts = false;
+        for (Map raw in body['posts']) {
+          hasPosts = true;
+          Post post = Post.fromMap(raw);
+          post.isLoggedIn = loggedIn;
+          if (post.file.value.url == null && !post.isDeleted) {
+            continue;
+          }
+          if (post.file.value.ext == 'swf') {
+            continue;
+          }
+          posts.add(post);
         }
-        if (post.file.value.ext == 'swf') {
-          continue;
+        if (hasPosts && posts.length == 0 && attempt < 3) {
+          return client.posts(tags, page + 1,
+              faithful: faithful, attempt: attempt + 1);
         }
-        posts.add(post);
+        return posts;
+      } on DioError {
+        return [];
       }
-      if (hasPosts && posts.length == 0 && attempt < 3) {
-        return client.posts(tags, page + 1, attempt: attempt + 1);
+    }
+
+    if (faithful) {
+      return getPosts();
+    } else {
+      RegExpMatch match = RegExp(r'^pool:(?<id>\d+)$').firstMatch(tags);
+      if (match != null) {
+        return client.posts('pool:${match.namedGroup('id')} order:id', page,
+            faithful: true);
       }
-      return posts;
-    } on DioError {
-      return [];
+      return getPosts();
     }
   }
 
@@ -206,10 +223,10 @@ class Client {
     }
   }
 
-  Future<Pool> pool(int poolID) async {
+  Future<Pool> pool(int poolId) async {
     try {
       Map body = await dio
-          .get('pools/${poolID.toString()}.json')
+          .get('pools/${poolId.toString()}.json')
           .then((response) => response.data);
 
       return Pool.fromRaw(body);
@@ -223,6 +240,8 @@ class Client {
     List<String> tags = List.from(await following);
     // remove pools, they cannot be used with the ~ operator.
     tags.removeWhere((tag) => tag.startsWith('pool:'));
+    // ignore multitag searches
+    tags.removeWhere((tag) => tag.contains(' '));
     // how many requests per requested page.
     int batches = 2;
     // distribute tags over requests evenly.
@@ -259,12 +278,9 @@ class Client {
     int position = (page * batches) + 1;
     for (int i = position - batches; i < position; i++) {
       int tagPage = getTagPage(i);
-      int sitePage = getSitePage(i);
-
       int end = (length > tagPage * max) ? tagPage * max : length;
       List<String> tagSet = tags.sublist((tagPage - 1) * max, end);
-
-      posts.addAll(await client.posts('~${tagSet.join(' ~')}', sitePage));
+      posts.addAll(await client.posts('~${tagSet.join(' ~')}', getSitePage(i)));
     }
     posts.sort((one, two) => two.id.compareTo(one.id));
     if (posts.length == 0 && attempt < (approx / batches) - 1) {

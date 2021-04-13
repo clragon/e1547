@@ -15,7 +15,7 @@ import 'tile.dart';
 
 class PostsPage extends StatefulWidget {
   final bool canSelect;
-  final AppBar Function(BuildContext) appBarBuilder;
+  final PreferredSizeWidget Function(BuildContext) appBarBuilder;
   final PostProvider provider;
 
   PostsPage({
@@ -32,8 +32,7 @@ class _PostsPageState extends State<PostsPage> {
   ValueNotifier<bool> isSearching = ValueNotifier(false);
   TextEditingController textController = TextEditingController();
   PersistentBottomSheetController<Tagset> sheetController;
-  RefreshController refreshController =
-      RefreshController(initialRefresh: false);
+  RefreshController refreshController = RefreshController();
   ScrollController scrollController = ScrollController();
 
   Set<Post> selections = Set();
@@ -229,7 +228,6 @@ class _PostsPageState extends State<PostsPage> {
             scrollController: scrollController,
             controller: refreshController,
             header: ClassicHeader(
-              refreshingText: 'Refreshing...',
               completeText: 'Refreshed posts!',
             ),
             onRefresh: () async {
@@ -386,25 +384,13 @@ class _PostsPageState extends State<PostsPage> {
         }
       },
       child: Scaffold(
-        appBar: PreferredSize(
-          child: Material(
-            elevation: Theme.of(context).appBarTheme.elevation ?? 4,
-            child: CrossFade(
-              showChild: selections.length == 0,
-              child: GestureDetector(
-                onDoubleTap: scrollController != null
-                    ? () => scrollController.animateTo(
-                        scrollController.position.minScrollExtent,
-                        duration: Duration(milliseconds: 500),
-                        curve: Curves.fastOutSlowIn)
-                    : null,
-                behavior: HitTestBehavior.translucent,
-                child: widget.appBarBuilder(context),
-              ),
-              secondChild: selectionAppBar(),
-            ),
+        appBar: ScrollingAppbar(
+          child: CrossFade(
+            showChild: selections.length == 0,
+            child: widget.appBarBuilder(context),
+            secondChild: selectionAppBar(),
           ),
-          preferredSize: Size.fromHeight(kToolbarHeight),
+          controller: selections.length == 0 ? scrollController : null,
         ),
         body: bodyWidget(),
         drawer: NavigationDrawer(),

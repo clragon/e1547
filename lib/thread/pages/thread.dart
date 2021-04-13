@@ -15,14 +15,13 @@ class ThreadsPage extends StatefulWidget {
 }
 
 class _ThreadsPageState extends State<ThreadsPage> {
-  bool _loading = true;
+  bool loading = true;
   ThreadProvider provider = ThreadProvider();
-  TextEditingController _tagController = TextEditingController();
+  TextEditingController textController = TextEditingController();
   ValueNotifier<bool> isSearching = ValueNotifier(false);
-  PersistentBottomSheetController<String> _bottomSheetController;
-
-  RefreshController _refreshController =
-      RefreshController(initialRefresh: false);
+  PersistentBottomSheetController<String> sheetController;
+  ScrollController scrollController = ScrollController();
+  RefreshController refreshController = RefreshController();
 
   Widget _itemBuilder(BuildContext context, int item) {
     Widget preview(Thread thread, ThreadProvider provider) {
@@ -49,9 +48,9 @@ class _ThreadsPageState extends State<ThreadsPage> {
       if (this.mounted) {
         setState(() {
           if (provider.pages.value.length == 0) {
-            _loading = true;
+            loading = true;
           } else {
-            _loading = false;
+            loading = false;
           }
         });
       }
@@ -61,19 +60,20 @@ class _ThreadsPageState extends State<ThreadsPage> {
       return PageLoader(
         onLoading: Text('Loading threads'),
         onEmpty: Text('No threads'),
-        isLoading: _loading,
-        isEmpty: (!_loading &&
+        isLoading: loading,
+        isEmpty: (!loading &&
             provider.pages.value.length == 1 &&
             provider.pages.value[0].length == 0),
         child: SmartRefresher(
-          controller: _refreshController,
+          primary: false,
+          scrollController: scrollController,
+          controller: refreshController,
           header: ClassicHeader(
-            refreshingText: 'Refreshing...',
             completeText: 'Refreshed threads!',
           ),
           onRefresh: () async {
             await provider.loadNextPage(reset: true);
-            _refreshController.refreshCompleted();
+            refreshController.refreshCompleted();
           },
           physics: BouncingScrollPhysics(),
           child: ListView.builder(
@@ -93,14 +93,14 @@ class _ThreadsPageState extends State<ThreadsPage> {
             return FloatingActionButton(
               child: value ? Icon(Icons.check) : Icon(Icons.search),
               onPressed: () async {
-                setFocusToEnd(_tagController);
+                setFocusToEnd(textController);
                 if (value) {
-                  provider.search.value = _tagController.text;
-                  _bottomSheetController?.close();
+                  provider.search.value = textController.text;
+                  sheetController?.close();
                   provider.resetPages();
                 } else {
-                  _tagController.text = provider.search.value;
-                  _bottomSheetController = Scaffold.of(context)
+                  textController.text = provider.search.value;
+                  sheetController = Scaffold.of(context)
                       .showBottomSheet((context) => Container(
                             padding: EdgeInsets.only(
                                 left: 10.0, right: 10.0, bottom: 10),
@@ -108,7 +108,7 @@ class _ThreadsPageState extends State<ThreadsPage> {
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   TextField(
-                                    controller: _tagController,
+                                    controller: textController,
                                     autofocus: true,
                                     maxLines: 1,
                                     inputFormatters: [
@@ -121,7 +121,7 @@ class _ThreadsPageState extends State<ThreadsPage> {
                                 ]),
                           ));
                   isSearching.value = true;
-                  _bottomSheetController.closed.then((a) {
+                  sheetController.closed.then((a) {
                     isSearching.value = false;
                   });
                 }
@@ -133,8 +133,9 @@ class _ThreadsPageState extends State<ThreadsPage> {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Forum'),
+      appBar: ScrollingAppbar(
+        child: Text('Forum'),
+        controller: scrollController,
       ),
       body: bodyWidget(),
       drawer: NavigationDrawer(),
