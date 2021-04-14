@@ -120,6 +120,7 @@ class _FollowingPageState extends State<FollowingPage> {
       }
 
       return ListView.builder(
+        padding: EdgeInsets.only(bottom: 30),
         itemCount: follows.length,
         itemBuilder: (BuildContext context, int index) {
           return Padding(

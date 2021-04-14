@@ -139,6 +139,7 @@ class _DenyListPageState extends State<DenyListPage> {
       }
 
       return ListView.builder(
+        padding: EdgeInsets.only(bottom: 30),
         itemCount: denylist.length,
         itemBuilder: (BuildContext context, int index) {
           return Padding(
