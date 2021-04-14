@@ -61,7 +61,7 @@ class _TagDisplayState extends State<TagDisplay> {
           mainAxisSize: MainAxisSize.min,
           children: categories.keys
               .where((tagSet) =>
-                  value[tagSet].length != 0 ||
+                  value[tagSet].isNotEmpty ||
                   (widget.post.isEditing.value && tagSet != 'invalid'))
               .map(
                 (category) => Column(
@@ -163,7 +163,7 @@ class _TagEditorState extends State<TagEditor> {
         for (String tag in tags) {
           List validator = await client.autocomplete(tag);
           String target;
-          if (validator.length == 0) {
+          if (validator.isEmpty) {
             target = 'general';
           } else if (validator[0]['category'] != categories[widget.category]) {
             target = categories.keys

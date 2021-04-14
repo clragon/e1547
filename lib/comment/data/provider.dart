@@ -11,7 +11,7 @@ class CommentProvider extends DataProvider<Comment> {
   CommentProvider({@required this.postID})
       : super.extended(extendedProvider: ((search, pages) async {
           String cursor;
-          if (pages.length == 0) {
+          if (pages.isEmpty) {
             cursor = 'a0';
           } else {
             cursor =

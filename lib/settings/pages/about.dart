@@ -27,7 +27,7 @@ class AboutPage extends StatelessWidget {
                         onPressed: () {
                           Widget msg;
                           List<Widget> actions = [];
-                          if (snapshot.data.length == 0) {
+                          if (snapshot.data.isEmpty) {
                             msg = Text(
                                 "You have the newest version ($appVersion)");
                             actions.add(TextButton(
@@ -104,7 +104,7 @@ class AboutPage extends StatelessWidget {
                           );
                         },
                       ),
-                      if (snapshot.data.length != 0)
+                      if (snapshot.data.isNotEmpty)
                         Positioned(
                           bottom: 12,
                           left: 12,
@@ -212,7 +212,7 @@ List<AppVersion> githubData = [];
 
 Future<List<AppVersion>> getVersions() async {
   if (kReleaseMode) {
-    if (githubData.length == 0) {
+    if (githubData.isEmpty) {
       Dio dio = Dio(BaseOptions(
         baseUrl: 'https://api.github.com/',
         sendTimeout: 30000,

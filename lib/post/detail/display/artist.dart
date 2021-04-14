@@ -16,7 +16,7 @@ class ArtistDisplay extends StatelessWidget {
       return ValueListenableBuilder(
         valueListenable: post.tags,
         builder: (BuildContext context, value, Widget child) {
-          if (value['artist'].length != 0) {
+          if (value['artist'].isNotEmpty) {
             return Text.rich(
               TextSpan(
                 children: post.artists

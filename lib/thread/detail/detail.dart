@@ -4,7 +4,6 @@ import 'package:e1547/post.dart';
 import 'package:e1547/settings.dart';
 import 'package:e1547/thread.dart';
 import 'package:flutter/material.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class ThreadDetail extends StatefulWidget {
   final Thread thread;
@@ -16,87 +15,17 @@ class ThreadDetail extends StatefulWidget {
 }
 
 class _ThreadDetailState extends State<ThreadDetail> {
-  bool loading = true;
   ReplyProvider provider;
-  RefreshController refreshController = RefreshController();
-  ScrollController scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
     provider = ReplyProvider(thread: widget.thread);
-  }
-
-  @override
-  Widget build(BuildContext context) {
     provider.pages.addListener(() {
       if (this.mounted) {
-        setState(() {
-          if (provider.pages.value.length == 0) {
-            loading = true;
-          } else {
-            loading = false;
-          }
-        });
+        setState(() {});
       }
     });
-
-    Widget body() {
-      return PageLoader(
-        onLoading: Text('Loading thread'),
-        onEmpty: Text('Failed to load!'),
-        isLoading: loading,
-        isEmpty: (!loading && provider.replies.length == 0),
-        child: SmartRefresher(
-          primary: false,
-          scrollController: scrollController,
-          controller: refreshController,
-          header: ClassicHeader(
-            completeText: 'Refreshed thread!',
-          ),
-          onRefresh: () async {
-            await provider.loadNextPage(reset: true);
-            refreshController.refreshCompleted();
-          },
-          physics: BouncingScrollPhysics(),
-          child: ListView.builder(
-            itemBuilder: _itemBuilder,
-            itemCount: provider.replies.length,
-            padding: EdgeInsets.all(10.0),
-            physics: BouncingScrollPhysics(),
-          ),
-        ),
-      );
-    }
-
-    Widget fab() {
-      return FloatingActionButton(
-        heroTag: 'float',
-        backgroundColor: Theme.of(context).cardColor,
-        child: Icon(Icons.comment, color: Theme.of(context).iconTheme.color),
-        onPressed: () => sendReply(context, widget.thread),
-      );
-    }
-
-    return Scaffold(
-      appBar: ScrollingAppbarFrame(
-        child: AppBar(
-          title: Text(widget.thread.title),
-        ),
-        controller: scrollController,
-      ),
-      body: body(),
-      floatingActionButton: FutureBuilder(
-        future: client.hasLogin,
-        builder: (context, snapshot) {
-          if (snapshot.hasData && snapshot.data) {
-            return fab();
-          } else {
-            return Container();
-          }
-        },
-      ),
-    );
   }
 
   Widget replyWidget(Reply reply) {
@@ -285,5 +214,44 @@ class _ThreadDetailState extends State<ThreadDetail> {
       return replyWidget(provider.replies[item]);
     }
     return null;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    Widget fab() {
+      return FloatingActionButton(
+        heroTag: 'float',
+        backgroundColor: Theme.of(context).cardColor,
+        child: Icon(Icons.comment, color: Theme.of(context).iconTheme.color),
+        onPressed: () => sendReply(context, widget.thread),
+      );
+    }
+
+    return RefreshablePage(
+      refresh: () async => await provider.loadNextPage(reset: true),
+      child: ListView.builder(
+        itemBuilder: _itemBuilder,
+        itemCount: provider.replies.length,
+        padding: EdgeInsets.all(10.0),
+        physics: BouncingScrollPhysics(),
+      ),
+      appBar: AppBar(
+        title: Text(widget.thread.title),
+      ),
+      isLoading: provider.pages.value.isEmpty,
+      isEmpty: provider.items.isEmpty,
+      onLoading: Text('Loading thread'),
+      onEmpty: Text('Failed to load!'),
+      floatingActionButton: FutureBuilder(
+        future: client.hasLogin,
+        builder: (context, snapshot) {
+          if (snapshot.hasData && snapshot.data) {
+            return fab();
+          } else {
+            return Container();
+          }
+        },
+      ),
+    );
   }
 }

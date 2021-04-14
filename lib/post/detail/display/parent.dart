@@ -94,7 +94,7 @@ class _ParentDisplayState extends State<ParentDisplay> {
       ),
       CrossFade(
         showChild:
-            widget.post.children.length != 0 && !widget.post.isEditing.value,
+            widget.post.children.isNotEmpty && !widget.post.isEditing.value,
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Padding(
             padding: EdgeInsets.only(

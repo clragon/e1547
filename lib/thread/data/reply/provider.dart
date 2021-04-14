@@ -10,7 +10,7 @@ class ReplyProvider extends DataProvider<Reply> {
   ReplyProvider({@required this.thread})
       : super.extended(extendedProvider: (search, pages) async {
           String cursor;
-          pages.length == 0
+          pages.isEmpty
               ? cursor = 'a0'
               : cursor =
                   'a${pages.last.reduce((value, element) => (value.id > element.id) ? value : element).id.toString()}';

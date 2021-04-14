@@ -374,7 +374,8 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
                 context: context,
                 removeTop: true,
                 child: ListView.builder(
-                  padding: EdgeInsets.only(bottom: 24),
+                  padding: EdgeInsets.only(
+                      top: MediaQuery.of(context).padding.top, bottom: 24),
                   itemCount: details.length,
                   itemBuilder: (BuildContext context, int index) =>
                       details[index],

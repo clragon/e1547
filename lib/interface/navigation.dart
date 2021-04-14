@@ -122,7 +122,7 @@ class NavigationDrawer extends StatelessWidget {
         ListTile(
           leading: FutureBuilder(
             builder: (context, snapshot) {
-              if (snapshot.hasData && snapshot.data.length != 0) {
+              if (snapshot.hasData && snapshot.data.isNotEmpty) {
                 return Stack(
                   children: <Widget>[
                     Icon(Icons.update),

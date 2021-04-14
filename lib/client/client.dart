@@ -139,7 +139,7 @@ class Client {
           }
           posts.add(post);
         }
-        if (hasPosts && posts.length == 0 && attempt < 3) {
+        if (hasPosts && posts.isEmpty && attempt < 3) {
           return client.posts(tags, page + 1,
               faithful: faithful, attempt: attempt + 1);
         }
@@ -283,7 +283,7 @@ class Client {
       posts.addAll(await client.posts('~${tagSet.join(' ~')}', getSitePage(i)));
     }
     posts.sort((one, two) => two.id.compareTo(one.id));
-    if (posts.length == 0 && attempt < (approx / batches) - 1) {
+    if (posts.isEmpty && attempt < (approx / batches) - 1) {
       posts.addAll(await follows(page + 1, attempt: attempt + 1));
     }
     return posts;
@@ -332,7 +332,7 @@ class Client {
     tagDiff.addAll(removedTags);
     tagDiff.addAll(addedTags);
 
-    if (tagDiff.length != 0) {
+    if (tagDiff.isNotEmpty) {
       body.addEntries([
         MapEntry(
           'post[tag_string_diff]',
@@ -352,7 +352,7 @@ class Client {
     sourceDiff.addAll(removedSource);
     sourceDiff.addAll(addedSource);
 
-    if (sourceDiff.length != 0) {
+    if (sourceDiff.isNotEmpty) {
       body.addEntries([
         MapEntry(
           'post[source_diff]',

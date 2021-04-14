@@ -7,7 +7,6 @@ import 'package:e1547/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:like_button/like_button.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import 'search_bar.dart';
 import 'snackbar.dart';
@@ -32,8 +31,6 @@ class _PostsPageState extends State<PostsPage> {
   ValueNotifier<bool> isSearching = ValueNotifier(false);
   TextEditingController textController = TextEditingController();
   PersistentBottomSheetController<Tagset> sheetController;
-  RefreshController refreshController = RefreshController();
-  ScrollController scrollController = ScrollController();
 
   Set<Post> selections = Set();
   bool loading = true;
@@ -44,7 +41,7 @@ class _PostsPageState extends State<PostsPage> {
     if (this.mounted) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         setState(() {
-          if (widget.provider.pages.value.length == 0 ||
+          if (widget.provider.pages.value.isEmpty ||
               tileSize == null ||
               stagger == null) {
             loading = true;
@@ -215,41 +212,7 @@ class _PostsPageState extends State<PostsPage> {
 
   @override
   Widget build(BuildContext context) {
-    Widget bodyWidget() {
-      return PageLoader(
-        onLoading: Text('Loading posts'),
-        onEmpty: Text('No posts'),
-        isLoading: loading,
-        isEmpty: (!loading && widget.provider.posts.value.length == 0),
-        child: SafeBuilder(
-          showChild: tileSize != null && stagger != null,
-          builder: (context) => SmartRefresher(
-            primary: false,
-            scrollController: scrollController,
-            controller: refreshController,
-            header: ClassicHeader(
-              completeText: 'Refreshed posts!',
-            ),
-            onRefresh: () async {
-              await widget.provider.loadNextPage(reset: true);
-              refreshController.refreshCompleted();
-              selections.clear();
-            },
-            physics: BouncingScrollPhysics(),
-            child: StaggeredGridView.countBuilder(
-              key: Key('grid_${crossAxisCount}_${stagger}_key'),
-              crossAxisCount: crossAxisCount,
-              itemCount: widget.provider.posts.value.length,
-              itemBuilder: itemBuilder,
-              staggeredTileBuilder: tileBuilder,
-              physics: BouncingScrollPhysics(),
-            ),
-          ),
-        ),
-      );
-    }
-
-    Widget floatingActionButtonWidget() {
+    Widget floatingActionButton() {
       return Builder(builder: (context) {
         if (widget.provider.canSearch) {
           return ValueListenableBuilder(
@@ -374,30 +337,59 @@ class _PostsPageState extends State<PostsPage> {
       );
     }
 
+    Widget body() {
+      if (tileSize != null && stagger != null) {
+        return StaggeredGridView.countBuilder(
+          key: Key('grid_${crossAxisCount}_${stagger}_key'),
+          crossAxisCount: crossAxisCount,
+          itemCount: widget.provider.posts.value.length,
+          itemBuilder: itemBuilder,
+          staggeredTileBuilder: tileBuilder,
+          physics: BouncingScrollPhysics(),
+        );
+      } else {
+        return SizedBox.shrink();
+      }
+    }
+
     return WillPopScope(
       onWillPop: () async {
-        if (selections.length > 0) {
+        if (selections.isNotEmpty) {
           setState(() => selections.clear());
           return false;
         } else {
           return true;
         }
       },
-      child: Scaffold(
-        appBar: ScrollingAppbarFrame(
-          child: CrossFade(
-            showChild: selections.length == 0,
-            child: widget.appBarBuilder(context),
-            secondChild: selectionAppBar(),
+      child: RefreshablePage.builder(
+        builder: (context, child, scrollController) => Scaffold(
+          appBar: ScrollingAppbarFrame(
+            child: Material(
+              elevation: Theme.of(context).appBarTheme.elevation ?? 4,
+              child: CrossFade(
+                showChild: selections.isEmpty,
+                child: widget.appBarBuilder(context),
+                secondChild: selectionAppBar(),
+              ),
+            ),
+            controller: selections.isEmpty ? scrollController : null,
           ),
-          controller: selections.length == 0 ? scrollController : null,
+          body: child,
+          drawer: NavigationDrawer(),
+          endDrawer: widget.provider.canDeny
+              ? SearchDrawer(provider: widget.provider)
+              : null,
+          floatingActionButton: floatingActionButton(),
         ),
-        body: bodyWidget(),
-        drawer: NavigationDrawer(),
-        endDrawer: widget.provider.canDeny
-            ? SearchDrawer(provider: widget.provider)
-            : null,
-        floatingActionButton: floatingActionButtonWidget(),
+        child: body(),
+        refresh: () async {
+          await widget.provider.loadNextPage(reset: true);
+          selections.clear();
+        },
+        isLoading: loading,
+        isEmpty: widget.provider.posts.value.isEmpty,
+        onLoading: Text('Loading posts'),
+        onEmpty: Text('No posts'),
       ),
     );
   }
@@ -407,7 +399,7 @@ AppBar Function(BuildContext context) defaultAppBar(String title) {
   return (context) {
     return AppBar(
       title: Text(title),
-      actions: [Container()],
+      actions: [SizedBox.shrink()],
     );
   };
 }

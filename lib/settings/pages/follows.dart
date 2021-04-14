@@ -56,7 +56,7 @@ class _FollowingPageState extends State<FollowingPage> {
     }
 
     Widget body() {
-      if (follows.length == 0) {
+      if (follows.isEmpty) {
         return Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,

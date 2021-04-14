@@ -34,7 +34,7 @@ class DataProvider<T> {
 
   Future<void> resetPages() async {
     pages.value = [];
-    if (pages.value.length == 0) {
+    if (pages.value.isEmpty) {
       if (isLoading) {
         willLoad = true;
       } else {
@@ -56,7 +56,7 @@ class DataProvider<T> {
         nextPage.addAll(await provider(search.value, page));
       }
 
-      if (nextPage.length != 0 || pages.value.length == 0) {
+      if (nextPage.isNotEmpty || pages.value.isEmpty) {
         if (reset) {
           pages.value = [nextPage];
         } else {

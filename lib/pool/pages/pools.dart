@@ -2,7 +2,6 @@ import 'package:e1547/interface.dart';
 import 'package:e1547/pool.dart';
 import 'package:e1547/post.dart';
 import 'package:flutter/material.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import 'preview.dart';
 
@@ -14,15 +13,22 @@ class PoolsPage extends StatefulWidget {
 }
 
 class _PoolsPageState extends State<PoolsPage> {
-  bool loading = true;
   PoolProvider provider = PoolProvider();
   TextEditingController textController = TextEditingController();
   ValueNotifier<bool> isSearching = ValueNotifier(false);
   PersistentBottomSheetController<String> sheetController;
-  ScrollController scrollController = ScrollController();
-  RefreshController refreshController = RefreshController();
 
-  Widget _itemBuilder(BuildContext context, int item) {
+  @override
+  void initState() {
+    super.initState();
+    provider.pages.addListener(() {
+      if (this.mounted) {
+        setState(() {});
+      }
+    });
+  }
+
+  Widget itemBuilder(BuildContext context, int item) {
     Widget preview(Pool pool, PoolProvider provider) {
       return PoolPreview(pool, onPressed: () {
         Navigator.of(context).push(MaterialPageRoute(
@@ -43,47 +49,6 @@ class _PoolsPageState extends State<PoolsPage> {
 
   @override
   Widget build(BuildContext context) {
-    provider.pages.addListener(() {
-      if (this.mounted) {
-        setState(() {
-          if (provider.pages.value.length == 0) {
-            loading = true;
-          } else {
-            loading = false;
-          }
-        });
-      }
-    });
-
-    Widget bodyWidget() {
-      return PageLoader(
-        onLoading: Text('Loading pools'),
-        onEmpty: Text('No pools'),
-        isLoading: loading,
-        isEmpty: (!loading &&
-            provider.pages.value.length == 1 &&
-            provider.pages.value[0].length == 0),
-        child: SmartRefresher(
-          primary: false,
-          scrollController: scrollController,
-          controller: refreshController,
-          header: ClassicHeader(
-            completeText: 'Refreshed pools!',
-          ),
-          onRefresh: () async {
-            await provider.loadNextPage(reset: true);
-            refreshController.refreshCompleted();
-          },
-          physics: BouncingScrollPhysics(),
-          child: ListView.builder(
-            itemCount: provider.pools.length,
-            itemBuilder: _itemBuilder,
-            physics: BouncingScrollPhysics(),
-          ),
-        ),
-      );
-    }
-
     Widget floatingActionButtonWidget() {
       return Builder(builder: (context) {
         return ValueListenableBuilder(
@@ -130,14 +95,20 @@ class _PoolsPageState extends State<PoolsPage> {
       });
     }
 
-    return Scaffold(
-      appBar: ScrollingAppbarFrame(
-        child: AppBar(
-          title: Text('Pools'),
-        ),
-        controller: scrollController,
+    return RefreshablePage(
+      refresh: () async => await provider.loadNextPage(reset: true),
+      child: ListView.builder(
+        itemCount: provider.pools.length,
+        itemBuilder: itemBuilder,
+        physics: BouncingScrollPhysics(),
       ),
-      body: bodyWidget(),
+      appBar: AppBar(
+        title: Text('Pools'),
+      ),
+      isLoading: provider.pages.value.isEmpty,
+      isEmpty: provider.items.isEmpty,
+      onLoading: Text('Loading pools'),
+      onEmpty: Text('No pools'),
       drawer: NavigationDrawer(),
       floatingActionButton: floatingActionButtonWidget(),
     );

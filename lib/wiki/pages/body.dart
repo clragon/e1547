@@ -27,7 +27,7 @@ class _WikiBodyState extends State<WikiBody> {
               return Text('unable to retrieve wiki entry',
                   style: TextStyle(fontStyle: FontStyle.italic));
             }
-            if (snapshot.data.length != 0) {
+            if (snapshot.data.isNotEmpty) {
               return SingleChildScrollView(
                 child: DTextField(msg: snapshot.data[0]['body']),
                 physics: BouncingScrollPhysics(),

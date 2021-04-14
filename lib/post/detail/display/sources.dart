@@ -13,7 +13,7 @@ class SourceDisplay extends StatelessWidget {
       valueListenable: post.sources,
       builder: (BuildContext context, value, Widget child) {
         return CrossFade(
-          showChild: value.length != 0 || post.isEditing.value,
+          showChild: value.isNotEmpty || post.isEditing.value,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[

@@ -1,7 +1,6 @@
 import 'package:e1547/interface.dart';
 import 'package:e1547/thread.dart';
 import 'package:flutter/material.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import 'preview.dart';
 
@@ -15,15 +14,22 @@ class ThreadsPage extends StatefulWidget {
 }
 
 class _ThreadsPageState extends State<ThreadsPage> {
-  bool loading = true;
   ThreadProvider provider = ThreadProvider();
   TextEditingController textController = TextEditingController();
   ValueNotifier<bool> isSearching = ValueNotifier(false);
   PersistentBottomSheetController<String> sheetController;
-  ScrollController scrollController = ScrollController();
-  RefreshController refreshController = RefreshController();
 
-  Widget _itemBuilder(BuildContext context, int item) {
+  @override
+  void initState() {
+    super.initState();
+    provider.pages.addListener(() {
+      if (this.mounted) {
+        setState(() {});
+      }
+    });
+  }
+
+  Widget itemBuilder(BuildContext context, int item) {
     Widget preview(Thread thread, ThreadProvider provider) {
       return ThreadPreview(thread, onPressed: () {
         Navigator.of(context).push(MaterialPageRoute(
@@ -44,47 +50,6 @@ class _ThreadsPageState extends State<ThreadsPage> {
 
   @override
   Widget build(BuildContext context) {
-    provider.pages.addListener(() {
-      if (this.mounted) {
-        setState(() {
-          if (provider.pages.value.length == 0) {
-            loading = true;
-          } else {
-            loading = false;
-          }
-        });
-      }
-    });
-
-    Widget bodyWidget() {
-      return PageLoader(
-        onLoading: Text('Loading threads'),
-        onEmpty: Text('No threads'),
-        isLoading: loading,
-        isEmpty: (!loading &&
-            provider.pages.value.length == 1 &&
-            provider.pages.value[0].length == 0),
-        child: SmartRefresher(
-          primary: false,
-          scrollController: scrollController,
-          controller: refreshController,
-          header: ClassicHeader(
-            completeText: 'Refreshed threads!',
-          ),
-          onRefresh: () async {
-            await provider.loadNextPage(reset: true);
-            refreshController.refreshCompleted();
-          },
-          physics: BouncingScrollPhysics(),
-          child: ListView.builder(
-            itemCount: provider.threads.length,
-            itemBuilder: _itemBuilder,
-            physics: BouncingScrollPhysics(),
-          ),
-        ),
-      );
-    }
-
     Widget floatingActionButtonWidget() {
       return Builder(builder: (context) {
         return ValueListenableBuilder(
@@ -132,14 +97,20 @@ class _ThreadsPageState extends State<ThreadsPage> {
       });
     }
 
-    return Scaffold(
-      appBar: ScrollingAppbarFrame(
-        child: AppBar(
-          title: Text('Forum'),
-        ),
-        controller: scrollController,
+    return RefreshablePage(
+      refresh: () async => await provider.loadNextPage(reset: true),
+      child: ListView.builder(
+        itemCount: provider.threads.length,
+        itemBuilder: itemBuilder,
+        physics: BouncingScrollPhysics(),
       ),
-      body: bodyWidget(),
+      appBar: AppBar(
+        title: Text('Forum'),
+      ),
+      isLoading: provider.pages.value.isEmpty,
+      isEmpty: provider.items.isEmpty,
+      onLoading: Text('Loading threads'),
+      onEmpty: Text('No threads'),
       drawer: NavigationDrawer(),
       floatingActionButton: floatingActionButtonWidget(),
     );

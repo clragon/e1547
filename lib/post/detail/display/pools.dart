@@ -11,7 +11,7 @@ class PoolDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (post.pools.length != 0) {
+    if (post.pools.isNotEmpty) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

@@ -116,7 +116,7 @@ class _DenyListPageState extends State<DenyListPage> {
     }
 
     Widget body() {
-      if (denylist.length == 0) {
+      if (denylist.isEmpty) {
         return Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,

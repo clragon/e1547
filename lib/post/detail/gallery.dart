@@ -57,7 +57,7 @@ class _PostDetailGalleryState extends State<PostDetailGallery> {
                 }
               }
             }
-            if (widget.provider.posts.value.length != 0) {
+            if (widget.provider.posts.value.isNotEmpty) {
               if (widget.provider.posts.value[lastIndex].isEditing.value) {
                 widget.provider.posts.value[lastIndex].resetPost();
               }

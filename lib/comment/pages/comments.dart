@@ -3,7 +3,6 @@ import 'package:e1547/interface.dart';
 import 'package:e1547/post.dart';
 import 'package:e1547/settings.dart';
 import 'package:flutter/material.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class CommentsPage extends StatefulWidget {
   final Post post;
@@ -15,78 +14,17 @@ class CommentsPage extends StatefulWidget {
 }
 
 class _CommentsPageState extends State<CommentsPage> {
-  bool loading = true;
   CommentProvider provider;
-  RefreshController refreshController = RefreshController();
-  ScrollController scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
     provider = CommentProvider(postID: widget.post.id);
-  }
-
-  @override
-  Widget build(BuildContext context) {
     provider.pages.addListener(() {
       if (this.mounted) {
-        setState(() {
-          if (provider.pages.value.length == 0) {
-            loading = true;
-          } else {
-            loading = false;
-          }
-        });
+        setState(() {});
       }
     });
-
-    Widget body() {
-      return PageLoader(
-        onLoading: Text('Loading comments'),
-        onEmpty: Text('No comments'),
-        isLoading: loading,
-        isEmpty: (!loading && provider.comments.length == 0),
-        child: SmartRefresher(
-          primary: false,
-          scrollController: scrollController,
-          controller: refreshController,
-          header: ClassicHeader(
-            completeText: 'Refreshed comments!',
-          ),
-          onRefresh: () async {
-            await provider.loadNextPage(reset: true);
-            refreshController.refreshCompleted();
-          },
-          physics: BouncingScrollPhysics(),
-          child: ListView.builder(
-            itemBuilder: _itemBuilder,
-            itemCount: provider.comments.length,
-            padding: EdgeInsets.all(10.0),
-            physics: BouncingScrollPhysics(),
-          ),
-        ),
-      );
-    }
-
-    Widget fab() {
-      return FloatingActionButton(
-        heroTag: 'float',
-        backgroundColor: Theme.of(context).cardColor,
-        child: Icon(Icons.comment, color: Theme.of(context).iconTheme.color),
-        onPressed: () => sendComment(context, widget.post),
-      );
-    }
-
-    return Scaffold(
-      appBar: ScrollingAppbarFrame(
-        child: AppBar(
-          title: Text('#${widget.post.id} comments'),
-        ),
-        controller: scrollController,
-      ),
-      body: body(),
-      floatingActionButton: widget.post.isLoggedIn ? fab() : null,
-    );
   }
 
   Widget commentWidget(Comment comment) {
@@ -211,7 +149,7 @@ class _CommentsPageState extends State<CommentsPage> {
     );
   }
 
-  Widget _itemBuilder(BuildContext context, int item) {
+  Widget itemBuilder(BuildContext context, int item) {
     if (item == provider.comments.length - 1) {
       provider.loadNextPage();
     }
@@ -220,5 +158,35 @@ class _CommentsPageState extends State<CommentsPage> {
       return commentWidget(provider.comments[item]);
     }
     return null;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    Widget fab() {
+      return FloatingActionButton(
+        heroTag: 'float',
+        backgroundColor: Theme.of(context).cardColor,
+        child: Icon(Icons.comment, color: Theme.of(context).iconTheme.color),
+        onPressed: () => sendComment(context, widget.post),
+      );
+    }
+
+    return RefreshablePage(
+      refresh: () async => await provider.loadNextPage(reset: true),
+      child: ListView.builder(
+        itemBuilder: itemBuilder,
+        itemCount: provider.comments.length,
+        padding: EdgeInsets.all(10.0),
+        physics: BouncingScrollPhysics(),
+      ),
+      appBar: AppBar(
+        title: Text('#${widget.post.id} comments'),
+      ),
+      isLoading: provider.pages.value.isEmpty,
+      isEmpty: provider.comments.isEmpty,
+      onLoading: Text('Loading comments'),
+      onEmpty: Text('No comments'),
+      floatingActionButton: widget.post.isLoggedIn ? fab() : null,
+    );
   }
 }
