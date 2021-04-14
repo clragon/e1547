@@ -17,6 +17,7 @@ class ReplyProvider extends DataProvider<Reply> {
           List<Reply> replies = await client.replies(thread, cursor);
           replies.sort((one, two) => DateTime.parse(one.creation)
               .compareTo(DateTime.parse(two.creation)));
+          replies.removeWhere((element) => element.topicId != thread.id);
           return replies;
         });
 }

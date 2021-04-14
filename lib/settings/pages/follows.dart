@@ -1,6 +1,4 @@
-import 'package:e1547/client.dart';
 import 'package:e1547/interface.dart';
-import 'package:e1547/pool.dart';
 import 'package:e1547/post.dart';
 import 'package:e1547/settings.dart';
 import 'package:e1547/wiki.dart';
@@ -15,7 +13,11 @@ class FollowingPage extends StatefulWidget {
 }
 
 class _FollowingPageState extends State<FollowingPage> {
+  int editing;
+  bool isSearching = false;
   List<String> follows = [];
+  TextEditingController textController = TextEditingController();
+  PersistentBottomSheetController<String> sheetController;
 
   @override
   void initState() {
@@ -31,28 +33,71 @@ class _FollowingPageState extends State<FollowingPage> {
 
   @override
   Widget build(BuildContext context) {
+    Future<void> addTags(BuildContext context, {int edit}) async {
+      setFocusToEnd(textController);
+      if (isSearching) {
+        if (editing != null) {
+          if (textController.text.trim().isNotEmpty) {
+            follows[editing] = textController.text.trim();
+          } else {
+            follows.removeAt(editing);
+          }
+          db.follows.value = Future.value(follows);
+          sheetController?.close();
+        } else {
+          if (textController.text.trim().isNotEmpty) {
+            follows.add(textController.text.trim());
+            db.follows.value = Future.value(follows);
+            sheetController?.close();
+          }
+        }
+      } else {
+        if (edit != null) {
+          editing = edit;
+          textController.text = follows[editing];
+        } else {
+          textController.text = '';
+        }
+        sheetController = Scaffold.of(context).showBottomSheet((context) {
+          return Container(
+            padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10),
+            child: Column(mainAxisSize: MainAxisSize.min, children: [
+              TagInput(
+                controller: textController,
+                labelText: 'Add to follows',
+                onSubmit: (_) => addTags(context),
+              ),
+            ]),
+          );
+        });
+        setState(() {
+          isSearching = true;
+        });
+        sheetController.closed.then((a) {
+          setState(() {
+            isSearching = false;
+            editing = null;
+          });
+        });
+      }
+    }
+
     Widget cardWidget(String tag) {
       return Card(
-          child: InkWell(
-              onTap: () async {
-                if (tag.startsWith('pool:')) {
-                  Pool p = await client.pool(int.parse(tag.split(':')[1]));
-                  Navigator.of(context)
-                      .push(MaterialPageRoute(builder: (context) {
-                    return PoolPage(pool: p);
-                  }));
-                } else {
-                  Navigator.of(context)
-                      .push(MaterialPageRoute(builder: (context) {
-                    return SearchPage(tags: tag);
-                  }));
-                }
-              },
-              onLongPress: () => wikiSheet(context: context, tag: tag),
-              child: Padding(
-                padding: EdgeInsets.all(8),
-                child: Text(tag),
-              )));
+        child: InkWell(
+          onTap: () => wikiSheet(context: context, tag: noDash(tag)),
+          onLongPress: () => wikiSheet(context: context, tag: noDash(tag)),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                child: Text(noScore(tag)),
+              ),
+            ],
+          ),
+        ),
+      );
     }
 
     Widget body() {
@@ -84,10 +129,12 @@ class _FollowingPageState extends State<FollowingPage> {
                 Row(
                   children: <Widget>[
                     Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.max,
-                        children: [cardWidget(follows[index])],
+                      child: Wrap(
+                        direction: Axis.horizontal,
+                        children: follows[index]
+                            .split(' ')
+                            .map((tag) => cardWidget(tag))
+                            .toList(),
                       ),
                     ),
                     Row(
@@ -106,6 +153,15 @@ class _FollowingPageState extends State<FollowingPage> {
                                   PopTile(title: 'Search', icon: Icons.search),
                             ),
                             PopupMenuItem(
+                              value: 'wiki',
+                              child: PopTile(
+                                  title: 'Wiki', icon: Icons.info_outline),
+                            ),
+                            PopupMenuItem(
+                              value: 'edit',
+                              child: PopTile(title: 'Edit', icon: Icons.edit),
+                            ),
+                            PopupMenuItem(
                               value: 'delete',
                               child:
                                   PopTile(title: 'Delete', icon: Icons.delete),
@@ -114,19 +170,18 @@ class _FollowingPageState extends State<FollowingPage> {
                           onSelected: (value) async {
                             switch (value) {
                               case 'search':
-                                if (follows[index].startsWith('pool:')) {
-                                  Pool p = await client.pool(
-                                      int.parse(follows[index].split(':')[1]));
-                                  Navigator.of(context).push(
-                                      MaterialPageRoute(builder: (context) {
-                                    return PoolPage(pool: p);
-                                  }));
-                                } else {
-                                  Navigator.of(context).push(
-                                      MaterialPageRoute(builder: (context) {
-                                    return SearchPage(tags: follows[index]);
-                                  }));
-                                }
+                                Navigator.of(context)
+                                    .push(MaterialPageRoute(builder: (context) {
+                                  return SearchPage(tags: follows[index]);
+                                }));
+                                break;
+                              case 'wiki':
+                                wikiSheet(
+                                    context: context,
+                                    tag: noDash(follows[index]));
+                                break;
+                              case 'edit':
+                                addTags(context, edit: index);
                                 break;
                               case 'delete':
                                 db.follows.value =
@@ -149,50 +204,9 @@ class _FollowingPageState extends State<FollowingPage> {
     }
 
     Widget floatingActionButton(BuildContext context) {
-      PersistentBottomSheetController<String> sheetController;
-      ValueNotifier<bool> isSearching = ValueNotifier(false);
-
-      return ValueListenableBuilder(
-        valueListenable: isSearching,
-        builder: (context, value, child) {
-          void submit(String result) {
-            result = result.trim();
-            if (result.isNotEmpty) {
-              db.follows.value = Future.value(follows..add(result));
-              sheetController?.close();
-            }
-          }
-
-          return FloatingActionButton(
-            child: isSearching.value ? Icon(Icons.check) : Icon(Icons.add),
-            onPressed: () async {
-              TextEditingController controller = TextEditingController();
-              setFocusToEnd(controller);
-              if (isSearching.value) {
-                submit(controller.text);
-              } else {
-                controller.text = '';
-                sheetController =
-                    Scaffold.of(context).showBottomSheet((context) => Container(
-                          padding: EdgeInsets.only(
-                              left: 10.0, right: 10.0, bottom: 10),
-                          child:
-                              Column(mainAxisSize: MainAxisSize.min, children: [
-                            TagInput(
-                                labelText: 'Follow Tag',
-                                onSubmit: submit,
-                                controller: controller,
-                                multiInput: false),
-                          ]),
-                        ));
-                isSearching.value = true;
-                sheetController.closed.then((a) {
-                  isSearching.value = false;
-                });
-              }
-            },
-          );
-        },
+      return FloatingActionButton(
+        child: isSearching ? Icon(Icons.check) : Icon(Icons.add),
+        onPressed: () => addTags(context),
       );
     }
 
@@ -209,15 +223,12 @@ class _FollowingPageState extends State<FollowingPage> {
         content: TextField(
           controller: controller,
           keyboardType: TextInputType.multiline,
-          inputFormatters: [FilteringTextInputFormatter.deny(' ')],
           maxLines: null,
         ),
         actions: <Widget>[
           TextButton(
             child: Text('CANCEL'),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
+            onPressed: Navigator.of(context).pop,
           ),
           TextButton(
             child: Text('OK'),
@@ -239,13 +250,12 @@ class _FollowingPageState extends State<FollowingPage> {
         title: Text('Following'),
         actions: <Widget>[
           IconButton(
-              icon: Icon(Icons.edit),
-              onPressed: () async {
-                showDialog(
-                  context: context,
-                  builder: (context) => editor(),
-                );
-              }),
+            icon: Icon(Icons.edit),
+            onPressed: () async => showDialog(
+              context: context,
+              builder: (context) => editor(),
+            ),
+          ),
         ],
       ),
       body: body(),

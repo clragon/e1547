@@ -8,6 +8,7 @@ import 'package:e1547/pool.dart';
 import 'package:e1547/post.dart';
 import 'package:e1547/settings.dart';
 import 'package:e1547/thread.dart';
+import 'package:e1547/wiki.dart';
 import 'package:meta/meta.dart';
 
 export 'package:dio/dio.dart' show DioError;
@@ -154,8 +155,7 @@ class Client {
     } else {
       RegExpMatch match = RegExp(r'^pool:(?<id>\d+)$').firstMatch(tags);
       if (match != null) {
-        return client.posts('pool:${match.namedGroup('id')} order:id', page,
-            faithful: true);
+        return poolPosts(int.tryParse(match.namedGroup('id')), page);
       }
       return getPosts();
     }
@@ -233,6 +233,10 @@ class Client {
     } on DioError {
       return null;
     }
+  }
+
+  Future<List<Post>> poolPosts(int poolId, int page) async {
+    return client.posts('pool:$poolId order:id', page, faithful: true);
   }
 
   Future<List<Post>> follows(int page, {int attempt = 0}) async {
@@ -407,14 +411,14 @@ class Client {
     return null;
   }
 
-  Future<List> wiki(String search, int page) async {
+  Future<List<Wiki>> wiki(String search, int page) async {
     try {
       List body = await dio.get('wiki_pages.json', queryParameters: {
         'search[title]': search,
         'page': page,
       }).then((response) => response.data);
 
-      return body;
+      return body.map((entry) => Wiki.fromMap(entry)).toList();
     } on DioError {
       return null;
     }

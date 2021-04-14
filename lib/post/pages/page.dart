@@ -87,7 +87,7 @@ class _PostsPageState extends State<PostsPage> {
   void didUpdateWidget(PostsPage oldWidget) {
     super.didUpdateWidget(oldWidget);
     selections.clear();
-    loading = true;
+    updatePage();
     // hot reload shenanigans
     db.tileSize.removeListener(updateTileSize);
     db.stagger.removeListener(updateStagger);

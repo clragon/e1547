@@ -104,7 +104,7 @@ class _ThreadDetailState extends State<ThreadDetail> {
                             padding: EdgeInsets.only(top: 4, bottom: 4),
                             child: InkWell(
                               child: Text(
-                                reply.creatorID.toString(),
+                                reply.creatorId.toString(),
                                 style: TextStyle(
                                   color: Theme.of(context)
                                       .textTheme
@@ -118,7 +118,7 @@ class _ThreadDetailState extends State<ThreadDetail> {
                                     .push(MaterialPageRoute(builder: (context) {
                                   return SearchPage(
                                       tags:
-                                          'user:${reply.creatorID.toString()}');
+                                          'user:${reply.creatorId.toString()}');
                                 }));
                               },
                             ),
@@ -157,7 +157,7 @@ class _ThreadDetailState extends State<ThreadDetail> {
                             builder: (context, snapshot) {
                               if (snapshot.hasData &&
                                   snapshot.data.username ==
-                                      reply.creatorID.toString()) {
+                                      reply.creatorId.toString()) {
                                 return Padding(
                                   padding: EdgeInsets.only(left: 8),
                                   child: InkWell(
@@ -194,7 +194,7 @@ class _ThreadDetailState extends State<ThreadDetail> {
                         (match) => '')
                     .trim();
                 body =
-                    '[quote]"${reply.creatorID.toString()}":/users/${reply.creatorID} said:\n$body[/quote]\n';
+                    '[quote]"${reply.creatorId.toString()}":/users/${reply.creatorId} said:\n$body[/quote]\n';
                 sendReply(context, widget.thread, text: body);
               }
             },

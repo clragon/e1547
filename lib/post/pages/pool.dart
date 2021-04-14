@@ -25,8 +25,7 @@ class PoolPage extends StatelessWidget {
         );
       },
       provider: PostProvider(
-          provider: (tags, page) =>
-              client.posts('pool:${pool.id} order:id', page),
+          provider: (tags, page) => client.poolPosts(pool.id, page),
           canSearch: false),
     );
   }

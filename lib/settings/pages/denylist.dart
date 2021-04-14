@@ -15,8 +15,8 @@ class _DenyListPageState extends State<DenyListPage> {
   int editing;
   bool isSearching = false;
   List<String> denylist = [];
-  TextEditingController controller = TextEditingController();
-  PersistentBottomSheetController<String> bottomSheetController;
+  TextEditingController textController = TextEditingController();
+  PersistentBottomSheetController<String> sheetController;
 
   @override
   void initState() {
@@ -27,43 +27,46 @@ class _DenyListPageState extends State<DenyListPage> {
         setState(() {});
       }
     });
-    db.denylist.value
-        .then((list) => mounted ? setState(() => denylist = list) : () {});
+    db.denylist.value.then((list) {
+      if (mounted) {
+        setState(() => denylist = list);
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     Future<void> addTags(BuildContext context, {int edit}) async {
-      setFocusToEnd(controller);
+      setFocusToEnd(textController);
       if (isSearching) {
         if (editing != null) {
-          if (controller.text.trim().isNotEmpty) {
-            denylist[editing] = controller.text.trim();
+          if (textController.text.trim().isNotEmpty) {
+            denylist[editing] = textController.text.trim();
           } else {
             denylist.removeAt(editing);
           }
           db.denylist.value = Future.value(denylist);
-          bottomSheetController?.close();
+          sheetController?.close();
         } else {
-          if (controller.text.trim().isNotEmpty) {
-            denylist.add(controller.text.trim());
+          if (textController.text.trim().isNotEmpty) {
+            denylist.add(textController.text.trim());
             db.denylist.value = Future.value(denylist);
-            bottomSheetController?.close();
+            sheetController?.close();
           }
         }
       } else {
         if (edit != null) {
           editing = edit;
-          controller.text = denylist[editing];
+          textController.text = denylist[editing];
         } else {
-          controller.text = '';
+          textController.text = '';
         }
-        bottomSheetController = Scaffold.of(context).showBottomSheet((context) {
+        sheetController = Scaffold.of(context).showBottomSheet((context) {
           return Container(
             padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10),
             child: Column(mainAxisSize: MainAxisSize.min, children: [
               TagInput(
-                controller: controller,
+                controller: textController,
                 labelText: 'Add to blacklist',
                 onSubmit: (_) => addTags(context),
               ),
@@ -73,7 +76,7 @@ class _DenyListPageState extends State<DenyListPage> {
         setState(() {
           isSearching = true;
         });
-        bottomSheetController.closed.then((a) {
+        sheetController.closed.then((a) {
           setState(() {
             isSearching = false;
             editing = null;
@@ -84,35 +87,36 @@ class _DenyListPageState extends State<DenyListPage> {
 
     Widget cardWidget(String tag) {
       return Card(
-          child: InkWell(
-              onTap: () => wikiSheet(context: context, tag: noDash(tag)),
-              onLongPress: () => wikiSheet(context: context, tag: noDash(tag)),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Container(
-                    height: 24,
-                    width: 5,
-                    decoration: BoxDecoration(
-                      color: () {
-                        if ('${tag[0]}' == '-') {
-                          return Colors.green[300];
-                        } else {
-                          return Colors.red[300];
-                        }
-                      }(),
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(5),
-                          bottomLeft: Radius.circular(5)),
-                    ),
-                  ),
-                  Padding(
-                    padding:
-                        EdgeInsets.only(top: 4, bottom: 4, right: 8, left: 6),
-                    child: Text(noDash(tag.replaceAll('_', ' '))),
-                  ),
-                ],
-              )));
+        child: InkWell(
+          onTap: () => wikiSheet(context: context, tag: noDash(tag)),
+          onLongPress: () => wikiSheet(context: context, tag: noDash(tag)),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Container(
+                height: 24,
+                width: 5,
+                decoration: BoxDecoration(
+                  color: () {
+                    if ('${tag[0]}' == '-') {
+                      return Colors.green[300];
+                    } else {
+                      return Colors.red[300];
+                    }
+                  }(),
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(5),
+                      bottomLeft: Radius.circular(5)),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.only(top: 4, bottom: 4, right: 8, left: 6),
+                child: Text(noScore(tag)),
+              ),
+            ],
+          ),
+        ),
+      );
     }
 
     Widget body() {
@@ -148,7 +152,8 @@ class _DenyListPageState extends State<DenyListPage> {
                       child: Wrap(
                         direction: Axis.horizontal,
                         children: Tagset.parse(denylist.elementAt(index))
-                            .map((tag) => cardWidget(tag.toString())),
+                            .map((tag) => cardWidget(tag.toString()))
+                            .toList(),
                       ),
                     ),
                     Column(
@@ -163,6 +168,11 @@ class _DenyListPageState extends State<DenyListPage> {
                           itemBuilder: (BuildContext context) =>
                               <PopupMenuEntry<String>>[
                             PopupMenuItem(
+                              value: 'wiki',
+                              child: PopTile(
+                                  title: 'Wiki', icon: Icons.info_outline),
+                            ),
+                            PopupMenuItem(
                               value: 'edit',
                               child: PopTile(title: 'Edit', icon: Icons.edit),
                             ),
@@ -174,6 +184,11 @@ class _DenyListPageState extends State<DenyListPage> {
                           ],
                           onSelected: (value) async {
                             switch (value) {
+                              case 'wiki':
+                                wikiSheet(
+                                    context: context,
+                                    tag: noDash(denylist[index]));
+                                break;
                               case 'edit':
                                 addTags(context, edit: index);
                                 break;
@@ -229,9 +244,7 @@ class _DenyListPageState extends State<DenyListPage> {
         actions: <Widget>[
           TextButton(
             child: Text('CANCEL'),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
+            onPressed: Navigator.of(context).pop,
           ),
           TextButton(
             child: Text('OK'),

@@ -163,17 +163,20 @@ class DTextField extends StatelessWidget {
       List<InlineSpan> spans = [];
 
       // test for brackets
-      RegExp bracketRex = RegExp([
-        r'(?<!\[)', // prevent double brackets
-        r'(?<!\\)', // prevent escaped brackets
-        r'\[', // opening backet
-        r'(?<closing>\/)?', // read closing
-        r'(?<tag>[\w\d]+?)', // read tag
-        r'(?<expanded>,expanded)?', // read expanded
-        r'(=(?<value>(.|\n)*?))?', // read value
-        r'\]', // closing bracket
-        r'(?!\])', // prevent double brackets
-      ].join());
+      RegExp bracketRex = RegExp(
+        [
+          r'(?<!\[)', // prevent double brackets
+          r'(?<!\\)', // prevent escaped brackets
+          r'\[', // opening backet
+          r'(?<closing>\/)?', // read closing
+          r'(?<tag>[\w\d]+?)', // read tag
+          r'(?<expanded>,expanded)?', // read expanded
+          r'(=(?<value>(.|\n)*?))?', // read value
+          r'\]', // closing bracket
+          r'(?!\])', // prevent double brackets
+        ].join(),
+        caseSensitive: false,
+      );
 
       RegExpMatch bracketMatch = bracketRex.firstMatch(source);
       if (bracketMatch != null) {
