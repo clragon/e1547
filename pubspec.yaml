@@ -31,11 +31,8 @@ dependencies:
   async: ^2.4.2
   permission_handler: ^6.1.1
   shared_preferences: ^2.0.5
-  flutter_statusbarcolor: ^0.2.3
   dio: ^4.0.0
-  copy_to_gallery:
-    git:
-      url: git://github.com/clragon/copy_to_gallery.git
+  image_gallery_saver: ^1.6.9
 
   flutter:
     sdk: flutter

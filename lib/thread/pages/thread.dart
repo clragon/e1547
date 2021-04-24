@@ -62,7 +62,6 @@ class _ThreadsPageState extends State<ThreadsPage> {
                 if (value) {
                   provider.search.value = textController.text;
                   sheetController?.close();
-                  provider.resetPages();
                 } else {
                   textController.text = provider.search.value;
                   sheetController = Scaffold.of(context)

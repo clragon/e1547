@@ -78,10 +78,10 @@ class _SearchPageAppBarState extends State<SearchPageAppBar> {
 
     title = () {
       if (pool != null) {
-        return noScore(pool.name);
+        return tagToTitle(pool.name);
       }
       if (Tagset.parse(widget.provider.search.value).length == 1) {
-        return noScore(widget.provider.search.value);
+        return tagToTitle(widget.provider.search.value);
       }
       return 'Search';
     }();
@@ -113,18 +113,25 @@ class _SearchPageAppBarState extends State<SearchPageAppBar> {
       ),
       leading: BackButton(),
       actions: [
-        CrossFade(
-          showChild: Tagset.parse(widget.provider.search.value).length > 0,
-          child: IconButton(
-            icon: Icon(Icons.info_outline),
-            onPressed: () {
-              if (pool != null) {
-                return poolSheet(context, pool);
-              }
-              return wikiSheet(
-                  context: context, tag: widget.provider.search.value);
-            },
-          ),
+        Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CrossFade(
+              showChild: Tagset.parse(widget.provider.search.value).length > 0,
+              child: IconButton(
+                icon: Icon(Icons.info_outline),
+                onPressed: () {
+                  if (pool != null) {
+                    return poolSheet(context, pool);
+                  }
+                  return wikiSheet(
+                      context: context,
+                      tag: widget.provider.search.value,
+                      provider: widget.provider);
+                },
+              ),
+            ),
+          ],
         ),
       ],
     );

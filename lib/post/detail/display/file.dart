@@ -56,10 +56,8 @@ class FileDisplay extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              post.updated != null
-                  ? Text(
-                      dateFormat.format(DateTime.parse(post.updated).toLocal()))
-                  : Container(),
+              if (post.updated != null)
+                Text(dateFormat.format(DateTime.parse(post.updated).toLocal())),
               TagGesture(
                 child: Text(post.file.value.ext),
                 tag: 'type:${post.file.value.ext}',

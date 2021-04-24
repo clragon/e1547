@@ -60,7 +60,7 @@ class WikiSheet extends StatelessWidget {
                         builder: (context) => SearchPage(tags: tag),
                       )),
                       child: Text(
-                        noScore(tag),
+                        tagToTitle(tag),
                         style: Theme.of(context).textTheme.headline6,
                       ),
                     ),
@@ -78,7 +78,10 @@ class WikiSheet extends StatelessWidget {
             ),
             Padding(
               padding: EdgeInsets.all(16),
-              child: WikiBody(tag: tag),
+              child: WikiBody(
+                tag: tag,
+                provider: provider,
+              ),
             ),
           ],
         ),

@@ -75,7 +75,6 @@ class _PoolsPageState extends State<PoolsPage> {
                         controller: textController,
                         autofocus: true,
                         maxLines: 1,
-                        inputFormatters: [LowercaseTextInputFormatter()],
                         decoration: InputDecoration(
                           labelText: 'Title',
                         ),

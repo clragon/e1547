@@ -39,7 +39,7 @@ class _SearchDrawerState extends State<SearchDrawer> {
       return Card(
         child: TagGesture(
           safe: true,
-          tag: noDash(tag),
+          tag: tagToName(tag),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
@@ -55,7 +55,7 @@ class _SearchDrawerState extends State<SearchDrawer> {
               ),
               Padding(
                 padding: EdgeInsets.only(top: 4, bottom: 4, right: 8, left: 6),
-                child: Text(noScore(tag)),
+                child: Text(tagToCard(tag)),
               ),
             ],
           ),

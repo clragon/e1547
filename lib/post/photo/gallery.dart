@@ -4,7 +4,6 @@ import 'package:e1547/post.dart';
 import 'package:e1547/post/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:video_player/video_player.dart';
 
 class PostPhotoGallery extends StatefulWidget {
@@ -26,7 +25,6 @@ class _PostPhotoGalleryState extends State<PostPhotoGallery> with RouteAware {
     showFrame.value = shown ?? !showFrame.value;
     SystemChrome.setEnabledSystemUIOverlays(
         showFrame.value ? SystemUiOverlay.values : []);
-    setUIColors(Theme.of(context));
   }
 
   @override
@@ -45,7 +43,6 @@ class _PostPhotoGalleryState extends State<PostPhotoGallery> with RouteAware {
   @override
   void didPop() {
     SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
-    setUIColors(Theme.of(context));
   }
 
   @override
@@ -138,7 +135,7 @@ class _PostPhotoGalleryState extends State<PostPhotoGallery> with RouteAware {
                     );
                   case ImageType.Unsupported:
                   default:
-                    return Container();
+                    return SizedBox.shrink();
                 }
               });
         },
@@ -149,7 +146,10 @@ class _PostPhotoGalleryState extends State<PostPhotoGallery> with RouteAware {
             if (0 < target && target < widget.posts.length) {
               String url = widget.posts[target].file.value.url;
               if (url != null) {
-                DefaultCacheManager().downloadFile(url);
+                precacheImage(
+                  CachedNetworkImageProvider(url),
+                  context,
+                );
               }
             }
           }

@@ -41,18 +41,20 @@ class LoadingSnackbar extends StatefulWidget {
 class _LoadingSnackbarState extends State<LoadingSnackbar> {
   bool cancel = false;
   bool failure = false;
-  ValueNotifier<int> progress = ValueNotifier<int>(0);
+  int progress = 0;
 
   Future<void> run() async {
     for (Post post in widget.items) {
       if (await widget.process(post)) {
         await Future.delayed(widget.timeout ?? Duration(milliseconds: 200));
-        progress.value++;
-        setState(() {});
+        setState(() {
+          progress++;
+        });
       } else {
-        failure = true;
-        progress.value = widget.items.length;
-        setState(() {});
+        setState(() {
+          failure = true;
+          progress = widget.items.length;
+        });
         break;
       }
       if (cancel) {
@@ -61,7 +63,6 @@ class _LoadingSnackbarState extends State<LoadingSnackbar> {
     }
     await Future.delayed(Duration(milliseconds: 600));
     widget.onDone();
-    setState(() {});
     return;
   }
 
@@ -73,51 +74,44 @@ class _LoadingSnackbarState extends State<LoadingSnackbar> {
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder(
-        valueListenable: progress,
-        builder: (BuildContext context, int value, Widget child) {
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Row(
-                children: [
-                  Text(
-                    value == widget.items.length
-                        ? failure
-                            ? 'Failure'
-                            : 'Done'
-                        : 'Post #${widget.items.elementAt(value).id} ($value/${widget.items.length})',
-                    overflow: TextOverflow.visible,
-                  ),
-                  Flexible(
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 8),
-                      child: TweenAnimationBuilder(
-                        duration: widget.timeout ?? Duration(milliseconds: 200),
-                        builder: (BuildContext context, value, Widget child) {
-                          return LinearProgressIndicator(
-                            value: (1 / widget.items.length > 0
-                                    ? 1 / widget.items.length
-                                    : 1) *
-                                value,
-                          );
-                        },
-                        tween: Tween<double>(begin: 0, end: value.toDouble()),
-                      ),
-                    ),
-                  ),
-                  value == widget.items.length || failure
-                      ? Container()
-                      : InkWell(
-                          child: Text('CANCEL'),
-                          onTap: () {
-                            cancel = true;
-                          },
-                        ),
-                ],
-              )
-            ],
-          );
-        });
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Row(
+          children: [
+            Text(
+              progress == widget.items.length
+                  ? failure
+                      ? 'Failure'
+                      : 'Done'
+                  : 'Post #${widget.items.elementAt(progress).id} ($progress/${widget.items.length})',
+              overflow: TextOverflow.visible,
+            ),
+            Flexible(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 8),
+                child: TweenAnimationBuilder(
+                  duration: widget.timeout ?? Duration(milliseconds: 200),
+                  builder: (BuildContext context, value, Widget child) {
+                    return LinearProgressIndicator(
+                      value: (1 / widget.items.length > 0
+                              ? 1 / widget.items.length
+                              : 1) *
+                          value,
+                    );
+                  },
+                  tween: Tween<double>(begin: 0, end: progress.toDouble()),
+                ),
+              ),
+            ),
+            if (progress < widget.items.length && !failure)
+              InkWell(
+                child: Text('CANCEL'),
+                onTap: () => cancel = true,
+              ),
+          ],
+        )
+      ],
+    );
   }
 }

@@ -1,23 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
-
-Future<void> setUIColors(ThemeData theme) async {
-  await FlutterStatusbarcolor.setStatusBarColor(theme.canvasColor);
-  await FlutterStatusbarcolor.setNavigationBarColor(theme.canvasColor);
-  await FlutterStatusbarcolor.setNavigationBarWhiteForeground(
-      theme.brightness == Brightness.dark);
-  await FlutterStatusbarcolor.setStatusBarWhiteForeground(
-      theme.brightness == Brightness.dark);
-  await FlutterStatusbarcolor.setStatusBarColor(Colors.transparent);
-}
 
 final Map<String, ThemeData> themeMap = {
   'light': ThemeData(
-    canvasColor: Colors.white,
+    canvasColor: Colors.grey[50],
     appBarTheme: AppBarTheme(
-      color: Colors.white,
+      color: Colors.grey[50],
     ),
-    dialogBackgroundColor: Colors.white,
+    dialogBackgroundColor: Colors.grey[50],
     primaryColorBrightness: Brightness.light,
     brightness: Brightness.light,
   ),

@@ -127,9 +127,9 @@ class TagInput extends StatelessWidget {
             break;
           }
         }
-        if (noDash(tags[selection].trim()).isNotEmpty &&
+        if (tagToName(tags[selection].trim()).isNotEmpty &&
             !tags[selection].contains(':')) {
-          return (await client.autocomplete(noDash(tags[selection]),
+          return (await client.autocomplete(tagToName(tags[selection]),
               category: category));
         } else {
           return [];

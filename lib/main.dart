@@ -1,6 +1,7 @@
 import 'package:e1547/interface.dart';
 import 'package:e1547/settings.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 ValueNotifier<ThemeData> _theme = ValueNotifier(themeMap['dark']);
 
@@ -19,15 +20,24 @@ class Main extends StatelessWidget {
     initUser(context: context);
     return ValueListenableBuilder(
       valueListenable: _theme,
-      builder: (context, value, child) {
-        setUIColors(value);
-        return MaterialApp(
+      builder: (context, value, child) => AnnotatedRegion<SystemUiOverlayStyle>(
+        value: SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          statusBarBrightness: Brightness.dark,
+          statusBarIconBrightness: Brightness.light,
+          systemNavigationBarColor: value.canvasColor,
+          systemNavigationBarIconBrightness:
+              value.brightness == Brightness.light
+                  ? Brightness.dark
+                  : Brightness.light,
+        ),
+        child: MaterialApp(
           title: appName,
           theme: value,
           navigatorObservers: [routeObserver],
           routes: routes,
-        );
-      },
+        ),
+      ),
     );
   }
 }

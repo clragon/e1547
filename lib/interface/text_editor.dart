@@ -41,15 +41,13 @@ class _TextEditorState extends State<TextEditor> with TickerProviderStateMixin {
           showBar = true;
         });
       } else {
+        FocusScope.of(context).unfocus();
         setState(() {
-          FocusScope.of(context).unfocus();
           showBar = false;
         });
       }
     });
-    textController.addListener(() {
-      setState(() {});
-    });
+    textController.addListener(() => setState(() {}));
   }
 
   @override

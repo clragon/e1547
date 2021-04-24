@@ -219,10 +219,8 @@ class _SettingsPageState extends State<SettingsPage> {
                       ),
                       GridSettingsTile(
                         state: stagger,
-                        onChange: (state) {
-                          db.stagger.value = Future.value(state);
-                          setState(() {});
-                        },
+                        onChange: (state) => setState(
+                            () => db.stagger.value = Future.value(state)),
                       ),
                     ],
                   ),
@@ -426,7 +424,6 @@ Future<bool> setCustomHost(BuildContext context) async {
                       ],
                     ),
                   ),
-                  secondChild: Container(),
                 );
               },
             ),
