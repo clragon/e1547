@@ -19,9 +19,7 @@ class WikiPage extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
           ),
         ),
-        actions: [
-          actions ? TagListActions(tag: tag) : Container(),
-        ],
+        actions: actions ? [TagListActions(tag: tag)] : null,
       ),
       body: WikiBody(tag: tag),
     );

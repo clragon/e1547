@@ -120,12 +120,13 @@ class _PostsPageState extends State<PostsPage> {
     Widget preview(Post post, PostProvider provider) {
       void select() {
         if (widget.canSelect) {
-          if (selections.contains(post)) {
-            selections.remove(post);
-          } else {
-            selections.add(post);
-          }
-          setState(() {});
+          setState(() {
+            if (selections.contains(post)) {
+              selections.remove(post);
+            } else {
+              selections.add(post);
+            }
+          });
         }
       }
 
@@ -249,7 +250,7 @@ class _PostsPageState extends State<PostsPage> {
             },
           );
         } else {
-          return Container();
+          return SizedBox.shrink();
         }
       }).build(context);
     }
@@ -264,10 +265,8 @@ class _PostsPageState extends State<PostsPage> {
         actions: [
           IconButton(
               icon: Icon(Icons.select_all),
-              onPressed: () {
-                selections.addAll(widget.provider.posts.value.toSet());
-                setState(() {});
-              }),
+              onPressed: () => setState(() =>
+                  selections.addAll(widget.provider.posts.value.toSet()))),
           Builder(
               builder: (context) => IconButton(
                   icon: Icon(Icons.file_download),

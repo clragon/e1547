@@ -1,6 +1,6 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e1547/post.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
 class PostDetailGallery extends StatefulWidget {
   final PostProvider provider;
@@ -25,26 +25,31 @@ class _PostDetailGalleryState extends State<PostDetailGallery> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    Widget _pageBuilder(BuildContext context, int index) {
-      if (index == widget.provider.posts.value.length - 1) {
-        widget.provider.loadNextPage();
-      }
-      return index < widget.provider.posts.value.length
-          ? PostDetail(
-              post: widget.provider.posts.value[index],
-              provider: widget.provider,
-              controller: controller,
-            )
-          : null;
-    }
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return ValueListenableBuilder(
-      valueListenable: widget.provider.pages,
+      valueListenable: widget.provider.posts,
       builder: (context, value, child) {
+        Widget pageBuilder(BuildContext context, int index) {
+          if (index == widget.provider.posts.value.length - 1) {
+            widget.provider.loadNextPage();
+          }
+          return PostDetail(
+            post: widget.provider.posts.value[index],
+            provider: widget.provider,
+            controller: controller,
+          );
+        }
+
         return PageView.builder(
           controller: controller,
-          itemBuilder: _pageBuilder,
+          itemBuilder: pageBuilder,
+          itemCount: widget.provider.items.length,
           onPageChanged: (index) {
             int reach = 2;
             for (int i = -(reach + 1); i < reach; i++) {
@@ -53,7 +58,10 @@ class _PostDetailGalleryState extends State<PostDetailGallery> {
                 String url =
                     widget.provider.posts.value[target].sample.value.url;
                 if (url != null) {
-                  DefaultCacheManager().downloadFile(url);
+                  precacheImage(
+                    CachedNetworkImageProvider(url),
+                    context,
+                  );
                 }
               }
             }

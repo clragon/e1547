@@ -57,18 +57,25 @@ class PostTile extends StatelessWidget {
           child: Icon(Icons.play_arrow),
         );
       }
-      return Container();
+      return SizedBox.shrink();
     }
 
-    return Card(
-      child: InkWell(
-          onTap: onPressed,
-          child: Stack(
-            children: <Widget>[
-              image(),
-              Positioned(top: 0, right: 0, child: overlay()),
-            ],
-          )),
+    return Padding(
+      padding: EdgeInsets.all(4),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Theme.of(context).cardColor,
+          borderRadius: BorderRadius.all(Radius.circular(4)),
+        ),
+        child: GestureDetector(
+            onTap: onPressed,
+            child: Stack(
+              children: <Widget>[
+                image(),
+                Positioned(top: 0, right: 0, child: overlay()),
+              ],
+            )),
+      ),
     );
   }
 }

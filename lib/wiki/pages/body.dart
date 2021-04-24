@@ -7,8 +7,9 @@ import 'package:flutter/material.dart';
 
 class WikiBody extends StatefulWidget {
   final String tag;
+  final PostProvider provider;
 
-  WikiBody({@required this.tag});
+  WikiBody({@required this.tag, this.provider});
 
   @override
   _WikiBodyState createState() => _WikiBodyState();
@@ -23,38 +24,58 @@ class _WikiBodyState extends State<WikiBody> {
         children: tags
             .map(
               (tag) => Padding(
-                padding: EdgeInsets.symmetric(vertical: 8),
-                child: ExpandableNotifier(
-                  initialExpanded: false,
-                  child: ExpandableTheme(
-                    data: ExpandableThemeData(
-                      headerAlignment: ExpandablePanelHeaderAlignment.center,
-                      iconColor: Theme.of(context).iconTheme.color,
-                    ),
-                    child: ExpandablePanel(
-                      header: Padding(
-                        padding: EdgeInsets.symmetric(vertical: 4),
-                        child: Text(
-                          noScore(tag.toString()),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 16,
+                  padding: EdgeInsets.symmetric(vertical: 8),
+                  child: ExpandableNotifier(
+                    initialExpanded: false,
+                    child: ExpandableTheme(
+                      data: ExpandableThemeData(
+                        headerAlignment: ExpandablePanelHeaderAlignment.center,
+                        iconColor: Theme.of(context).iconTheme.color,
+                      ),
+                      child: ExpandablePanel(
+                        header: Padding(
+                          padding: EdgeInsets.symmetric(vertical: 4),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  tagToTitle(tag.toString()),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ),
+                              if (widget.provider != null)
+                                IconButton(
+                                  icon: Icon(Icons.search_off),
+                                  tooltip: 'Remove from search',
+                                  onPressed: () {
+                                    widget.provider.search.value = widget
+                                        .provider.search.value
+                                        ?.replaceFirst(
+                                            RegExp(r'(?<!\S)-?' +
+                                                tag.toString() +
+                                                r'(?!\S)'),
+                                            '');
+                                    Navigator.of(context).maybePop();
+                                  },
+                                ),
+                            ],
+                          ),
+                        ),
+                        collapsed: SizedBox.shrink(),
+                        expanded: Padding(
+                          padding: EdgeInsets.all(8),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [WikiTagDisplay(tag: tag.toString())],
                           ),
                         ),
                       ),
-                      collapsed: Container(),
-                      expanded: Padding(
-                        padding: EdgeInsets.all(8),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [WikiTagDisplay(tag: tag.toString())],
-                        ),
-                      ),
                     ),
-                  ),
-                ),
-              ),
+                  )),
             )
             .toList(),
       );
@@ -82,7 +103,7 @@ class _WikiTagDisplayState extends State<WikiTagDisplay> {
   void initState() {
     super.initState();
     loading = true;
-    client.wiki(widget.tag, 1).then((list) {
+    client.wiki(tagToName(widget.tag), 1).then((list) {
       if (list.isNotEmpty) {
         wiki = list.first;
       }

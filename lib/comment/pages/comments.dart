@@ -116,7 +116,7 @@ class _CommentsPageState extends State<CommentsPage> {
                                   ),
                                 );
                               } else {
-                                return Container();
+                                return SizedBox.shrink();
                               }
                             },
                           ),

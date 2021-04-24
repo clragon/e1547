@@ -5,6 +5,100 @@ import 'package:e1547/settings.dart';
 import 'package:e1547/wiki.dart';
 import 'package:flutter/material.dart';
 
+class TagCard extends StatelessWidget {
+  final String tag;
+  final String category;
+  final Function() onRemove;
+  final PostProvider provider;
+
+  TagCard({
+    @required this.tag,
+    @required this.category,
+    @required this.provider,
+    this.onRemove,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    // card widget tanks performance
+    // but we cannot have ripple without material
+    return Card(
+      child: TagGesture(
+        tag: tag,
+        provider: provider,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Container(
+              height: 24,
+              decoration: BoxDecoration(
+                color: getCategoryColor(category),
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(4),
+                    bottomLeft: Radius.circular(4)),
+              ),
+              child: CrossFade(
+                showChild: onRemove != null,
+                child: InkWell(
+                  child: Padding(
+                    padding: EdgeInsets.all(4),
+                    child: Icon(Icons.clear, size: 16),
+                  ),
+                  onTap: onRemove,
+                ),
+                secondChild: Container(width: 5),
+              ),
+            ),
+            Flexible(
+              child: Padding(
+                padding: EdgeInsets.only(top: 4, bottom: 4, right: 8, left: 6),
+                child: Text(
+                  tagToCard(tag),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class TagGesture extends StatelessWidget {
+  final bool safe;
+  final String tag;
+  final Widget child;
+  final PostProvider provider;
+
+  const TagGesture(
+      {@required this.child,
+      @required this.tag,
+      this.provider,
+      this.safe = false});
+
+  @override
+  Widget build(BuildContext context) {
+    Function wiki =
+        () => wikiSheet(context: context, tag: tag, provider: provider);
+
+    return InkWell(
+      onTap: () async {
+        if (safe && (await db.denylist.value).contains(tag)) {
+          wiki();
+        } else {
+          Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => SearchPage(tags: tag),
+          ));
+        }
+      },
+      onLongPress: wiki,
+      child: child,
+    );
+  }
+}
+
 class TagDisplay extends StatefulWidget {
   final Post post;
   final PostProvider provider;
@@ -54,65 +148,68 @@ class _TagDisplayState extends State<TagDisplay> {
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder(
-      valueListenable: widget.post.tags,
-      builder: (BuildContext context, value, Widget child) {
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: categories.keys
-              .where((tagSet) =>
-                  value[tagSet].isNotEmpty ||
-                  (widget.post.isEditing.value && tagSet != 'invalid'))
-              .map(
-                (category) => Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                      child: Text(
-                        '${category[0].toUpperCase()}${category.substring(1)}',
-                        style: TextStyle(
-                          fontSize: 16,
+    return ExcludeSemantics(
+      child: ValueListenableBuilder(
+        valueListenable: widget.post.tags,
+        builder: (BuildContext context, value, Widget child) {
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: categories.keys
+                .where((tagSet) =>
+                    value[tagSet].isNotEmpty ||
+                    (widget.post.isEditing.value && tagSet != 'invalid'))
+                .map(
+                  (category) => Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Padding(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                        child: Text(
+                          '${category[0].toUpperCase()}${category.substring(1)}',
+                          style: TextStyle(
+                            fontSize: 16,
+                          ),
                         ),
                       ),
-                    ),
-                    Row(
-                      children: <Widget>[
-                        Expanded(
-                          child: Wrap(
-                            direction: Axis.horizontal,
-                            children: [
-                              ...value[category].map(
-                                (tag) => TagCard(
-                                  tag: tag,
-                                  category: category,
-                                  provider: widget.provider,
-                                  onRemove: widget.post.isEditing.value
-                                      ? () {
-                                          widget.post.tags.value[category]
-                                              .remove(tag);
-                                          widget.post.tags.value =
-                                              Map.from(value);
-                                        }
-                                      : null,
+                      Row(
+                        children: <Widget>[
+                          Expanded(
+                            child: Wrap(
+                              direction: Axis.horizontal,
+                              children: [
+                                ...value[category].map(
+                                  (tag) => TagCard(
+                                    tag: tag,
+                                    category: category,
+                                    provider: widget.provider,
+                                    onRemove: widget.post.isEditing.value
+                                        ? () {
+                                            widget.post.tags.value[category]
+                                                .remove(tag);
+                                            widget.post.tags.value =
+                                                Map.from(value);
+                                          }
+                                        : null,
+                                  ),
                                 ),
-                              ),
-                              CrossFade(
-                                showChild: widget.post.isEditing.value,
-                                child: tagPlus(category),
-                              ),
-                            ],
-                          ),
-                        )
-                      ],
-                    ),
-                    Divider(),
-                  ],
-                ),
-              )
-              .toList(),
-        );
-      },
+                                CrossFade(
+                                  showChild: widget.post.isEditing.value,
+                                  child: tagPlus(category),
+                                ),
+                              ],
+                            ),
+                          )
+                        ],
+                      ),
+                      Divider(),
+                    ],
+                  ),
+                )
+                .toList(),
+          );
+        },
+      ),
     );
   }
 }
@@ -230,105 +327,6 @@ class _TagEditorState extends State<TagEditor> {
           )
         ],
       ),
-    );
-  }
-}
-
-class TagCard extends StatelessWidget {
-  final String tag;
-  final String category;
-  final Function() onRemove;
-  final PostProvider provider;
-
-  TagCard({
-    @required this.tag,
-    @required this.category,
-    @required this.provider,
-    this.onRemove,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: TagGesture(
-        tag: tag,
-        provider: provider,
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Flexible(
-                  child: Container(
-                    height: 24,
-                    decoration: BoxDecoration(
-                      color: getCategoryColor(category),
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(5),
-                          bottomLeft: Radius.circular(5)),
-                    ),
-                    child: CrossFade(
-                      showChild: onRemove != null,
-                      child: InkWell(
-                        child: Padding(
-                          padding: EdgeInsets.all(4),
-                          child: Icon(Icons.clear, size: 16),
-                        ),
-                        onTap: onRemove,
-                      ),
-                      secondChild: Container(width: 5),
-                    ),
-                  ),
-                )
-              ],
-            ),
-            Flexible(
-              child: Padding(
-                padding: EdgeInsets.only(top: 4, bottom: 4, right: 8, left: 6),
-                child: Text(
-                  noScore(tag),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class TagGesture extends StatelessWidget {
-  final bool safe;
-  final String tag;
-  final Widget child;
-  final PostProvider provider;
-
-  const TagGesture(
-      {@required this.child,
-      @required this.tag,
-      this.provider,
-      this.safe = false});
-
-  @override
-  Widget build(BuildContext context) {
-    Function wiki =
-        () => wikiSheet(context: context, tag: tag, provider: provider);
-
-    return InkWell(
-      onTap: () async {
-        if (safe && (await db.denylist.value).contains(tag)) {
-          wiki();
-        } else {
-          Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => SearchPage(tags: tag),
-          ));
-        }
-      },
-      onLongPress: wiki,
-      child: child,
     );
   }
 }

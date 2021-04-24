@@ -85,14 +85,15 @@ class _FollowingPageState extends State<FollowingPage> {
     Widget cardWidget(String tag) {
       return Card(
         child: InkWell(
-          onTap: () => wikiSheet(context: context, tag: noDash(tag)),
-          onLongPress: () => wikiSheet(context: context, tag: noDash(tag)),
+          onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => SearchPage(tags: tag))),
+          onLongPress: () => wikiSheet(context: context, tag: tagToName(tag)),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               Padding(
                 padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-                child: Text(noScore(tag)),
+                child: Text(tagToTitle(tag)),
               ),
             ],
           ),
@@ -179,7 +180,7 @@ class _FollowingPageState extends State<FollowingPage> {
                               case 'wiki':
                                 wikiSheet(
                                     context: context,
-                                    tag: noDash(follows[index]));
+                                    tag: tagToName(follows[index]));
                                 break;
                               case 'edit':
                                 addTags(context, edit: index);

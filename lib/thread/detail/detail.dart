@@ -119,7 +119,7 @@ class _ThreadDetailState extends State<ThreadDetail> {
                                   ),
                                 );
                               } else {
-                                return Container();
+                                return SizedBox.shrink();
                               }
                             },
                           ),
@@ -195,7 +195,7 @@ class _ThreadDetailState extends State<ThreadDetail> {
           if (snapshot.hasData && snapshot.data) {
             return fab();
           } else {
-            return Container();
+            return SizedBox.shrink();
           }
         },
       ),

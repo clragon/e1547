@@ -59,7 +59,7 @@ class DTextField extends StatelessWidget {
                     ),
                   ),
                 ),
-                collapsed: Container(),
+                collapsed: SizedBox.shrink(),
                 expanded: Padding(
                   padding: EdgeInsets.all(8),
                   child: Column(

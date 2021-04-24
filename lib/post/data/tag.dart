@@ -115,14 +115,16 @@ String sortTags(String tags) {
   return Tagset.parse(tags).toString();
 }
 
-String noDash(String tags) => tags
+String tagToName(String tags) => tags
+    .trim()
     .split(' ')
-    .where((tag) => tag.isNotEmpty)
     .map((tag) => tag.replaceAllMapped(RegExp(r'^[-~]'), (_) => ''))
     .join(' ');
 
-String noScore(String tags) =>
-    noDash(tags.trim()).split(' ').join(', ').replaceAll('_', ' ');
+String tagToTitle(String tags) =>
+    tags.trim().split(' ').join(', ').replaceAll('_', ' ');
+
+String tagToCard(String tags) => tagToTitle(tagToName(tags));
 
 Color getCategoryColor(String category) {
   switch (category) {

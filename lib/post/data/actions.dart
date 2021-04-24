@@ -1,11 +1,11 @@
 import 'dart:io';
 
-import 'package:copy_to_gallery/copy_to_gallery.dart';
 import 'package:e1547/client.dart';
-import 'package:e1547/settings.dart';
+import 'package:e1547/settings/data/app_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart'
     show DefaultCacheManager;
+import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import 'post.dart';
@@ -149,13 +149,23 @@ extension downloading on Post {
     if (!await Permission.storage.request().isGranted) {
       return false;
     }
-    String filename =
-        '${this.artists.join(', ')} - ${this.id}.${this.file.value.ext}';
     File file = await DefaultCacheManager().getSingleFile(this.file.value.url);
     try {
-      await CopyToGallery.copyNamedPictures(appName, {file.path: filename});
+      await ImageGallerySaver.saveFile(file.path).then((result) {
+        if (result['filePath'] != null) {
+          String filename =
+              '${this.artists.join(', ')} - ${this.id}.${this.file.value.ext}';
+          String filepath = result['filePath'].replaceFirst('file://', '');
+          File saved = File(filepath);
+          filepath = filepath.substring(0, filepath.lastIndexOf('/'));
+          filepath = [filepath, appName].join('/');
+          Directory(filepath).createSync();
+          filepath = [filepath, filename].join('/');
+          saved.renameSync(filepath);
+        }
+      });
       return true;
-    } catch (Exception) {
+    } catch (_) {
       return false;
     }
   }

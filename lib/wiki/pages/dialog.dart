@@ -37,7 +37,7 @@ class WikiDialog extends StatelessWidget {
         children: <Widget>[
           Flexible(
             child: Text(
-              noScore(tag),
+              tagToTitle(tag),
               softWrap: true,
             ),
           ),

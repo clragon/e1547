@@ -10,15 +10,11 @@ class DataProvider<T> {
   Future<List<T>> Function(String search, List<List<T>> pages) extendedProvider;
 
   List<T> get items {
-    return pages.value
-        .fold<Iterable<T>>(Iterable.empty(), (a, b) => a.followedBy(b))
-        .toList();
+    return pages.value.expand((element) => element).toList();
   }
 
   void _init(String search) {
     this.search.value = search ?? '';
-    // this should probably include db.denylist,
-    // but it will break wiki dialogues
     [db.host, db.credentials, this.search]
         .forEach((notifier) => notifier.addListener(resetPages));
     loadNextPage();
@@ -34,12 +30,10 @@ class DataProvider<T> {
 
   Future<void> resetPages() async {
     pages.value = [];
-    if (pages.value.isEmpty) {
-      if (isLoading) {
-        willLoad = true;
-      } else {
-        loadNextPage(reset: true);
-      }
+    if (isLoading) {
+      willLoad = true;
+    } else {
+      loadNextPage(reset: true);
     }
   }
 
@@ -57,12 +51,10 @@ class DataProvider<T> {
       }
 
       if (nextPage.isNotEmpty || pages.value.isEmpty) {
-        if (reset) {
-          pages.value = [nextPage];
-        } else {
-          pages.value = List.from(pages.value..add(nextPage));
-        }
+        pages.value = List.from(reset ? [nextPage] : pages.value
+          ..add(nextPage));
       }
+
       isLoading = false;
       if (willLoad) {
         willLoad = false;

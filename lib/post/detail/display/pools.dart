@@ -51,7 +51,7 @@ class PoolDisplay extends StatelessWidget {
         ],
       );
     } else {
-      return Container();
+      return SizedBox.shrink();
     }
   }
 }

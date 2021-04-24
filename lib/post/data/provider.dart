@@ -28,14 +28,17 @@ class PostProvider extends DataProvider<Post> {
     this.denying.addListener(refresh);
     pages.addListener(refresh);
     allowlist.addListener(refresh);
+    db.denylist.addListener(refresh);
     super
         .search
         .addListener(() => super.search.value = sortTags(super.search.value));
   }
 
+  @override
   Future<void> resetPages() async {
-    super.resetPages();
-    dispose();
+    List<Post> disposable = List.from(items);
+    await super.resetPages();
+    disposable.forEach((element) => element.dispose());
   }
 
   void refresh() async {

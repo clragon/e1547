@@ -63,56 +63,62 @@ class _TagListActionsState extends State<TagListActions> {
   @override
   Widget build(BuildContext context) {
     if (widget.tag.contains(':')) {
-      return Container();
+      return SizedBox.shrink();
     }
 
     if (follows != null && denylist != null) {
       return Row(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          IconButton(
-            onPressed: () {
-              if (following) {
-                follows.remove(widget.tag);
-                db.follows.value = Future.value(follows);
-              } else {
-                follows.add(widget.tag);
-                db.follows.value = Future.value(follows);
-                if (denied) {
-                  denylist.remove(widget.tag);
-                  db.denylist.value = Future.value(denylist);
-                }
-              }
-            },
-            icon: CrossFade(
-              duration: Duration(milliseconds: 200),
-              showChild: following,
-              child: Icon(Icons.turned_in),
-              secondChild: Icon(Icons.turned_in_not),
-            ),
-            tooltip: following ? 'unfollow tag' : 'follow tag',
-          ),
-          IconButton(
-            onPressed: () {
-              if (denied) {
-                denylist.remove(widget.tag);
-                db.denylist.value = Future.value(denylist);
-              } else {
-                denylist.add(widget.tag);
-                db.denylist.value = Future.value(denylist);
+          CrossFade(
+            showChild: !denied,
+            child: IconButton(
+              onPressed: () {
                 if (following) {
                   follows.remove(widget.tag);
                   db.follows.value = Future.value(follows);
+                } else {
+                  follows.add(widget.tag);
+                  db.follows.value = Future.value(follows);
+                  if (denied) {
+                    denylist.remove(widget.tag);
+                    db.denylist.value = Future.value(denylist);
+                  }
                 }
-              }
-            },
-            icon: CrossFade(
-              duration: Duration(milliseconds: 200),
-              showChild: denied,
-              child: Icon(Icons.check),
-              secondChild: Icon(Icons.block),
+              },
+              icon: CrossFade(
+                duration: Duration(milliseconds: 200),
+                showChild: following,
+                child: Icon(Icons.turned_in),
+                secondChild: Icon(Icons.turned_in_not),
+              ),
+              tooltip: following ? 'unfollow tag' : 'follow tag',
             ),
-            tooltip: denied ? 'unblock tag' : 'block tag',
+          ),
+          CrossFade(
+            showChild: !following,
+            child: IconButton(
+              onPressed: () {
+                if (denied) {
+                  denylist.remove(widget.tag);
+                  db.denylist.value = Future.value(denylist);
+                } else {
+                  denylist.add(widget.tag);
+                  db.denylist.value = Future.value(denylist);
+                  if (following) {
+                    follows.remove(widget.tag);
+                    db.follows.value = Future.value(follows);
+                  }
+                }
+              },
+              icon: CrossFade(
+                duration: Duration(milliseconds: 200),
+                showChild: denied,
+                child: Icon(Icons.check),
+                secondChild: Icon(Icons.block),
+              ),
+              tooltip: denied ? 'unblock tag' : 'block tag',
+            ),
           ),
         ],
       );
@@ -156,58 +162,56 @@ class _TagSearchActionsState extends State<TagSearchActions> {
 
   @override
   Widget build(BuildContext context) {
-    if (!widget.provider.canSearch) {
-      return Container();
+    if (!widget.provider.canSearch || widget.tag.contains(' ')) {
+      return SizedBox.shrink();
     }
 
-    Widget searchButton({
-      @required IconData icon,
-      @required String tag,
-      @required String tooltip,
-      bool subtract = false,
-    }) {
-      if (subtract) {
-        tag = '-$tag';
-      }
-      String opposite = subtract ? noDash(tag) : '-$tag';
-      bool isSearched = !widget.provider.search.value
-          .split(' ')
-          .any((element) => element == tag);
+    bool isSearched = widget.provider.search.value
+        .split(' ')
+        .any((element) => tagToName(element) == widget.tag);
+
+    if (isSearched) {
       return IconButton(
-        icon: isSearched ? Icon(icon) : Icon(Icons.search_off),
-        tooltip: isSearched ? tooltip : 'Remove from search',
+        icon: Icon(Icons.search_off),
+        tooltip: 'Remove from search',
         onPressed: () {
-          if (isSearched) {
-            if (widget.provider.search.value.contains(opposite)) {
-              widget.provider.search.value =
-                  widget.provider.search.value.replaceAll(opposite, '') +
-                      ' $tag';
-            } else {
-              widget.provider.search.value =
-                  widget.provider.search.value + ' $tag';
-            }
-          } else {
-            widget.provider.search.value =
-                widget.provider.search.value.replaceAll(tag, '');
-          }
+          Navigator.of(context).maybePop();
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            widget.provider.search.value = widget.provider.search.value
+                .replaceFirst(
+                    RegExp(
+                        r'(?<!\S)-?' + RegExp.escape(widget.tag) + r'(?!\S)'),
+                    '');
+          });
         },
       );
+    } else {
+      return Row(
+        children: [
+          IconButton(
+            icon: Icon(Icons.zoom_in),
+            tooltip: 'Add to search',
+            onPressed: () {
+              Navigator.of(context).maybePop();
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                widget.provider.search.value =
+                    widget.provider.search.value + ' ${widget.tag}';
+              });
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.zoom_out),
+            tooltip: 'Subtract from search',
+            onPressed: () {
+              Navigator.of(context).maybePop();
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                widget.provider.search.value =
+                    widget.provider.search.value + ' -${widget.tag}';
+              });
+            },
+          ),
+        ],
+      );
     }
-
-    return Row(
-      children: [
-        searchButton(
-          icon: Icons.zoom_in,
-          tooltip: 'Add to search',
-          tag: widget.tag,
-        ),
-        searchButton(
-          icon: Icons.zoom_out,
-          tooltip: 'Subtract from search',
-          tag: widget.tag,
-          subtract: true,
-        ),
-      ],
-    );
   }
 }

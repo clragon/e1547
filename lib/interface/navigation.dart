@@ -1,11 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e1547/client.dart';
+import 'package:e1547/interface.dart';
 import 'package:e1547/pool.dart';
 import 'package:e1547/post.dart';
 import 'package:e1547/settings.dart';
 import 'package:e1547/thread.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
 final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
 
@@ -62,17 +62,19 @@ class NavigationDrawer extends StatelessWidget {
       child: ListView(physics: BouncingScrollPhysics(), children: [
         header,
         ListTile(
-            selected: drawerSelection == DrawerSelection.home,
-            leading: Icon(Icons.home),
-            title: Text('Home'),
-            onTap: () => Navigator.of(context)
-                .pushNamedAndRemoveUntil('/', (_) => false)),
+          selected: drawerSelection == DrawerSelection.home,
+          leading: Icon(Icons.home),
+          title: Text('Home'),
+          onTap: () =>
+              Navigator.of(context).pushNamedAndRemoveUntil('/', (_) => false),
+        ),
         ListTile(
-            selected: drawerSelection == DrawerSelection.hot,
-            leading: Icon(Icons.whatshot),
-            title: Text('Hot'),
-            onTap: () => Navigator.of(context)
-                .pushNamedAndRemoveUntil('/hot', (_) => false)),
+          selected: drawerSelection == DrawerSelection.hot,
+          leading: Icon(Icons.whatshot),
+          title: Text('Hot'),
+          onTap: () => Navigator.of(context)
+              .pushNamedAndRemoveUntil('/hot', (_) => false),
+        ),
         ListTile(
           leading: Icon(Icons.search),
           title: Text("Search"),
@@ -80,17 +82,18 @@ class NavigationDrawer extends StatelessWidget {
         ),
         Divider(),
         ListTile(
-            selected: drawerSelection == DrawerSelection.favorites,
-            leading: Icon(Icons.favorite),
-            title: Text('Favorites'),
-            onTap: () async {
-              if (await client.hasLogin) {
-                Navigator.of(context)
-                    .pushNamedAndRemoveUntil('/fav', (_) => false);
-              } else {
-                Navigator.popAndPushNamed(context, '/login');
-              }
-            }),
+          selected: drawerSelection == DrawerSelection.favorites,
+          leading: Icon(Icons.favorite),
+          title: Text('Favorites'),
+          onTap: () async {
+            if (await client.hasLogin) {
+              Navigator.of(context)
+                  .pushNamedAndRemoveUntil('/fav', (_) => false);
+            } else {
+              Navigator.popAndPushNamed(context, '/login');
+            }
+          },
+        ),
         ListTile(
           selected: drawerSelection == DrawerSelection.follows,
           leading: Icon(Icons.turned_in),
@@ -100,18 +103,20 @@ class NavigationDrawer extends StatelessWidget {
         ),
         // Divider(),
         ListTile(
-            selected: drawerSelection == DrawerSelection.pools,
-            leading: Icon(Icons.collections),
-            title: Text('Pools'),
-            onTap: () => Navigator.of(context)
-                .pushNamedAndRemoveUntil('/pools', (_) => false)),
+          selected: drawerSelection == DrawerSelection.pools,
+          leading: Icon(Icons.collections),
+          title: Text('Pools'),
+          onTap: () => Navigator.of(context)
+              .pushNamedAndRemoveUntil('/pools', (_) => false),
+        ),
         /*
         ListTile(
-            selected: drawerSelection == DrawerSelection.forum,
-            leading: Icon(Icons.group),
-            title: Text('Forum'),
-            onTap: () => Navigator.of(context)
-                .pushNamedAndRemoveUntil('/forum', (_) => false)),
+          selected: drawerSelection == DrawerSelection.forum,
+          leading: Icon(Icons.group),
+          title: Text('Forum'),
+          onTap: () => Navigator.of(context)
+              .pushNamedAndRemoveUntil('/forum', (_) => false),
+        ),
          */
         Divider(),
         ListTile(
@@ -181,41 +186,41 @@ class _ProfileHeaderState extends State<ProfileHeader> {
       return ValueListenableBuilder(
         valueListenable: userName,
         builder: (context, value, child) {
-          if (value != null) {
-            return Row(
+          return CrossFade(
+            showChild: value != null,
+            child: Row(
               children: <Widget>[
                 Expanded(
-                    child: Text(
-                  value,
-                  style: TextStyle(fontSize: 16.0),
-                  overflow: TextOverflow.ellipsis,
-                )),
+                  child: Text(
+                    value,
+                    style: TextStyle(fontSize: 16),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
                 IconButton(
-                    icon: Icon(Icons.exit_to_app),
-                    onPressed: () {
-                      client.logout();
-                      String msg = 'Forgot login details';
-                      if (value != null) {
-                        msg = msg + ' for $value';
-                      }
-
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        duration: Duration(seconds: 5),
+                  icon: Icon(Icons.exit_to_app),
+                  onPressed: () {
+                    String msg = 'Forgot login details for $value';
+                    client.logout();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        duration: Duration(seconds: 2),
                         content: Text(msg),
-                      ));
-                      Navigator.of(context).pop();
-                    })
+                      ),
+                    );
+                    Navigator.of(context).pop();
+                  },
+                )
               ],
-            );
-          } else {
-            return Padding(
+            ),
+            secondChild: Padding(
               padding: EdgeInsets.symmetric(horizontal: 20),
               child: OutlinedButton(
                 child: Text('LOGIN'),
                 onPressed: () => Navigator.popAndPushNamed(context, '/login'),
               ),
-            );
-          }
+            ),
+          );
         },
       );
     }
@@ -228,16 +233,16 @@ class _ProfileHeaderState extends State<ProfileHeader> {
             backgroundImage: value == null
                 ? AssetImage('assets/icon/app/paw.png')
                 : CachedNetworkImageProvider(value),
-            radius: 36.0,
+            radius: 36,
           );
         },
       );
     }
 
     return Container(
-        height: 140,
-        child: DrawerHeader(
-            child: Row(
+      height: 140,
+      child: DrawerHeader(
+        child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             userAvatarWidget(),
@@ -248,7 +253,9 @@ class _ProfileHeaderState extends State<ProfileHeader> {
               ),
             ),
           ],
-        )));
+        ),
+      ),
+    );
   }
 }
 
@@ -256,17 +263,24 @@ final ValueNotifier<String> userName = ValueNotifier(null);
 final ValueNotifier<String> userAvatar = ValueNotifier(null);
 
 void initUser({BuildContext context}) {
-  db.credentials.value.then((credentials) {
-    userName.value = credentials?.username;
-    if (userName.value != null) {
-      client.avatar.then((avatar) {
-        userAvatar.value = avatar;
-        if (avatar != null && context != null) {
-          DefaultCacheManager().downloadFile(avatar);
-        }
-      });
-    } else {
-      userAvatar.value = null;
-    }
-  });
+  db.credentials.value.then(
+    (credentials) {
+      userName.value = credentials?.username;
+      if (userName.value != null) {
+        client.avatar.then(
+          (avatar) {
+            userAvatar.value = avatar;
+            if (avatar != null && context != null) {
+              precacheImage(
+                CachedNetworkImageProvider(avatar),
+                context,
+              );
+            }
+          },
+        );
+      } else {
+        userAvatar.value = null;
+      }
+    },
+  );
 }

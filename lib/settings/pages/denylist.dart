@@ -88,8 +88,8 @@ class _DenyListPageState extends State<DenyListPage> {
     Widget cardWidget(String tag) {
       return Card(
         child: InkWell(
-          onTap: () => wikiSheet(context: context, tag: noDash(tag)),
-          onLongPress: () => wikiSheet(context: context, tag: noDash(tag)),
+          onTap: () => wikiSheet(context: context, tag: tagToName(tag)),
+          onLongPress: () => wikiSheet(context: context, tag: tagToName(tag)),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
@@ -111,7 +111,7 @@ class _DenyListPageState extends State<DenyListPage> {
               ),
               Padding(
                 padding: EdgeInsets.only(top: 4, bottom: 4, right: 8, left: 6),
-                child: Text(noScore(tag)),
+                child: Text(tagToCard(tag)),
               ),
             ],
           ),
@@ -188,7 +188,7 @@ class _DenyListPageState extends State<DenyListPage> {
                               case 'wiki':
                                 wikiSheet(
                                     context: context,
-                                    tag: noDash(denylist[index]));
+                                    tag: tagToName(denylist[index]));
                                 break;
                               case 'edit':
                                 addTags(context, edit: index);
