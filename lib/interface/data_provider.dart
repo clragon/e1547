@@ -51,8 +51,9 @@ class DataProvider<T> {
       }
 
       if (nextPage.isNotEmpty || pages.value.isEmpty) {
-        pages.value = List.from(reset ? [nextPage] : pages.value
-          ..add(nextPage));
+        pages.value = reset
+            ? [nextPage]
+            : pages.value = List.from(pages.value..add(nextPage));
       }
 
       isLoading = false;

@@ -14,6 +14,23 @@ class DTextField extends StatelessWidget {
 
   DTextField({@required this.msg, this.darkText = false});
 
+  String singleBrackets(String wrapped) => [
+        r'(?<!\[)', // prevent double brackets
+        r'(?<!\\)', // prevent escaped brackets
+        r'\[', // opening backet
+        wrapped,
+        r'\]', // closing bracket
+        r'(?!\])', // prevent double brackets
+      ].join();
+
+  String blockTag(String wrapped) => singleBrackets(
+        [
+          wrapped,
+          r'(?<expanded>,expanded)?', // read expanded
+          r'(=(?<value>(.|\n)*?))?', // read value
+        ].join(),
+      );
+
   @override
   Widget build(BuildContext context) {
     // wrapper widget for quotes
@@ -164,17 +181,12 @@ class DTextField extends StatelessWidget {
 
       // test for brackets
       RegExp bracketRex = RegExp(
-        [
-          r'(?<!\[)', // prevent double brackets
-          r'(?<!\\)', // prevent escaped brackets
-          r'\[', // opening backet
-          r'(?<closing>\/)?', // read closing
-          r'(?<tag>[\w\d]+?)', // read tag
-          r'(?<expanded>,expanded)?', // read expanded
-          r'(=(?<value>(.|\n)*?))?', // read value
-          r'\]', // closing bracket
-          r'(?!\])', // prevent double brackets
-        ].join(),
+        blockTag(
+          [
+            r'(?<closing>\/)?', // read closing
+            r'(?<tag>[\w\d]+?)', // read tag
+          ].join(),
+        ),
         caseSensitive: false,
       );
 
@@ -188,7 +200,7 @@ class DTextField extends StatelessWidget {
         String after = source.substring(bracketMatch.end);
 
         // the key of the tag
-        String key = bracketMatch.namedGroup('tag');
+        String key = bracketMatch.namedGroup('tag').toLowerCase();
         // whether the tag is closing
         bool active = bracketMatch.namedGroup('closing') == null;
         // whether section tag is expanded
@@ -210,12 +222,26 @@ class DTextField extends StatelessWidget {
               'quote',
             ].contains(key) &&
             active) {
-          String end = '[/$key]';
+          RegExp start = RegExp(
+            blockTag([
+              RegExp.escape(key),
+            ].join()),
+            caseSensitive: false,
+          );
+
+          RegExp end = RegExp(
+            singleBrackets([
+              r'\/',
+              RegExp.escape(key),
+            ].join()),
+            caseSensitive: false,
+          );
+
           int splitStart;
           int splitEnd;
           for (Match endMatch in end.allMatches(after)) {
             String container = after.substring(0, endMatch.start);
-            if ('[$key'.allMatches(container).length !=
+            if (start.allMatches(container).length !=
                 end.allMatches(container).length) {
               continue;
             }
@@ -470,7 +496,8 @@ class DTextField extends StatelessWidget {
 
       regexes.addEntries(LinkWord.values.map((word) {
         return MapEntry(
-            RegExp(describeEnum(word) + r' #\d+', caseSensitive: false),
+            RegExp(RegExp.escape(describeEnum(word)) + r' #\d+',
+                caseSensitive: false),
             (match, result) => parseWord(result, word));
       }));
 
@@ -517,8 +544,7 @@ class DTextField extends StatelessWidget {
       return RichText(
         text: resolve(result, state),
       );
-    } catch (e) {
-      print(e);
+    } catch (_) {
       return Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -550,6 +576,7 @@ enum TextState {
 enum LinkWord {
   post,
   forum,
+  topic,
   comment,
   blip,
   pool,

@@ -25,28 +25,24 @@ class PostProvider extends DataProvider<Post> {
             search: sortTags(search ?? ''),
             provider: provider ?? client.posts) {
     this.denying.value = denying;
-    this.denying.addListener(refresh);
     pages.addListener(refresh);
     allowlist.addListener(refresh);
     db.denylist.addListener(refresh);
-    super
-        .search
-        .addListener(() => super.search.value = sortTags(super.search.value));
+    this.denying.addListener(refresh);
   }
 
   @override
   Future<void> resetPages() async {
-    List<Post> disposable = List.from(items);
-    await super.resetPages();
-    disposable.forEach((element) => element.dispose());
+    dispose();
+    super.resetPages();
   }
 
   void refresh() async {
     List<String> denylist = [];
     if (denying.value && canDeny) {
-      denylist = (await db.denylist.value).where((line) {
-        return !allowlist.value.contains(line);
-      }).toList();
+      denylist = (await db.denylist.value)
+          .where((line) => !allowlist.value.contains(line))
+          .toList();
     }
     deniedMap.value = {};
     for (Post item in items) {

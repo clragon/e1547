@@ -33,8 +33,10 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
   ModalRoute route;
 
   Future<void> onPageChange() async {
-    if (mounted) {
-      navigator.removeRoute(route);
+    if (this.mounted && !widget.provider.posts.value.contains(widget.post)) {
+      if (mounted && route.isActive) {
+        navigator.removeRoute(route);
+      }
     }
   }
 
@@ -70,7 +72,7 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
     routeObserver.subscribe(this, ModalRoute.of(context));
     widget.post.isEditing.removeListener(closeSheet);
     widget.post.isEditing.addListener(closeSheet);
-    widget.provider?.pages?.removeListener(onPageChange);
+    widget.provider?.posts?.removeListener(onPageChange);
     widget.provider?.posts?.addListener(onPageChange);
     if (widget.post.file.value.url != null) {
       if (widget.post.type == ImageType.Image) {

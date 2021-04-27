@@ -158,12 +158,13 @@ class _PostsPageState extends State<PostsPage> {
                     padding: EdgeInsets.all(4),
                     child: Container(
                       color: Colors.black38,
-                      child: LayoutBuilder(builder: (context, constraint) {
-                        return Icon(Icons.check_circle_outline,
+                      child: LayoutBuilder(
+                        builder: (context, constraint) => Icon(
+                            Icons.check_circle_outline,
                             size:
                                 min(constraint.maxHeight, constraint.maxWidth) *
-                                    0.4);
-                      }),
+                                    0.4),
+                      ),
                     ),
                   ),
                 ),
