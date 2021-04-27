@@ -12,7 +12,7 @@ class PostSearchBar extends StatelessWidget {
     @required this.onSubmit,
   });
 
-  void _withTags(Future<Tagset> Function(Tagset tags) editor) async {
+  void withTags(Future<Tagset> Function(Tagset tags) editor) async {
     controller.text =
         (await editor(Tagset.parse(controller.text))).toString() + ' ';
     setFocusToEnd(controller);
@@ -45,7 +45,7 @@ class PostSearchBar extends StatelessWidget {
               'Favorites': 'favcount',
             }[selection];
 
-            _withTags((tags) async {
+            withTags((tags) async {
               String valueString = tags[filterType];
               int value =
                   valueString == null ? 0 : int.parse(valueString.substring(2));
@@ -93,7 +93,7 @@ class PostSearchBar extends StatelessWidget {
         onSelected: (String selection) {
           String orderType = orders[selection];
 
-          _withTags((tags) async {
+          withTags((tags) async {
             if (orderType == 'new') {
               tags.remove('order');
             } else {
@@ -151,7 +151,7 @@ class PostSearchBar extends StatelessWidget {
                 break;
             }
 
-            _withTags((tags) async {
+            withTags((tags) async {
               if (key == null) {
                 return tags;
               }

@@ -45,7 +45,7 @@ class TagInput extends StatelessWidget {
             : [LowercaseTextInputFormatter()],
         decoration: InputDecoration(
             labelText: labelText, border: UnderlineInputBorder()),
-        onSubmitted: onSubmit,
+        onSubmitted: (result) => onSubmit(sortTags(result)),
       ),
       onSuggestionSelected: (suggestion) {
         List<String> tags = sortTags(controller.text).split(' ');

@@ -139,79 +139,65 @@ class _TagListActionsState extends State<TagListActions> {
   }
 }
 
-class TagSearchActions extends StatefulWidget {
+class TagSearchActions extends StatelessWidget {
   final String tag;
   final PostProvider provider;
 
   TagSearchActions({@required this.tag, @required this.provider});
 
   @override
-  _TagSearchActionsState createState() => _TagSearchActionsState();
-}
-
-class _TagSearchActionsState extends State<TagSearchActions> {
-  @override
-  void initState() {
-    super.initState();
-    widget.provider.search.addListener(() {
-      if (mounted) {
-        setState(() {});
-      }
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
-    if (!widget.provider.canSearch || widget.tag.contains(' ')) {
-      return SizedBox.shrink();
-    }
+    return ValueListenableBuilder(
+      valueListenable: provider.search,
+      builder: (context, value, child) {
+        if (!provider.canSearch || tag.contains(' ')) {
+          return SizedBox.shrink();
+        }
 
-    bool isSearched = widget.provider.search.value
-        .split(' ')
-        .any((element) => tagToName(element) == widget.tag);
+        bool isSearched = provider.search.value
+            .split(' ')
+            .any((element) => tagToName(element) == tag);
 
-    if (isSearched) {
-      return IconButton(
-        icon: Icon(Icons.search_off),
-        tooltip: 'Remove from search',
-        onPressed: () {
-          Navigator.of(context).maybePop();
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            widget.provider.search.value = widget.provider.search.value
-                .replaceFirst(
-                    RegExp(
-                        r'(?<!\S)-?' + RegExp.escape(widget.tag) + r'(?!\S)'),
-                    '');
-          });
-        },
-      );
-    } else {
-      return Row(
-        children: [
-          IconButton(
-            icon: Icon(Icons.zoom_in),
-            tooltip: 'Add to search',
+        if (isSearched) {
+          return IconButton(
+            icon: Icon(Icons.search_off),
+            tooltip: 'Remove from search',
             onPressed: () {
               Navigator.of(context).maybePop();
               WidgetsBinding.instance.addPostFrameCallback((_) {
-                widget.provider.search.value =
-                    widget.provider.search.value + ' ${widget.tag}';
+                provider.search.value = (provider.search.value.split(' ')
+                      ..removeWhere((element) => tagToName(element) == tag))
+                    .join(' ');
               });
             },
-          ),
-          IconButton(
-            icon: Icon(Icons.zoom_out),
-            tooltip: 'Subtract from search',
-            onPressed: () {
-              Navigator.of(context).maybePop();
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                widget.provider.search.value =
-                    widget.provider.search.value + ' -${widget.tag}';
-              });
-            },
-          ),
-        ],
-      );
-    }
+          );
+        } else {
+          return Row(
+            children: [
+              IconButton(
+                icon: Icon(Icons.zoom_in),
+                tooltip: 'Add to search',
+                onPressed: () {
+                  Navigator.of(context).maybePop();
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    provider.search.value = provider.search.value + ' $tag';
+                  });
+                },
+              ),
+              IconButton(
+                icon: Icon(Icons.zoom_out),
+                tooltip: 'Subtract from search',
+                onPressed: () {
+                  Navigator.of(context).maybePop();
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    provider.search.value = provider.search.value + ' -$tag';
+                  });
+                },
+              ),
+            ],
+          );
+        }
+      },
+    );
   }
 }
