@@ -3,21 +3,21 @@ import 'package:e1547/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-ValueNotifier<ThemeData> theme = ValueNotifier(themeMap['dark']);
+ValueNotifier<ThemeData> theme = ValueNotifier(appThemeMap[AppTheme.dark]);
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   WidgetsBinding.instance.renderView.automaticSystemUiAdjustment = false;
-  theme.value = themeMap[await db.theme.value];
+  theme.value = appThemeMap[await db.theme.value];
   db.theme
-      .addListener(() async => theme.value = themeMap[await db.theme.value]);
+      .addListener(() async => theme.value = appThemeMap[await db.theme.value]);
   runApp(Main());
 }
 
 class Main extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    initUser(context: context);
+    initAvatar(context);
     return ValueListenableBuilder(
       valueListenable: theme,
       builder: (context, value, child) => AnnotatedRegion<SystemUiOverlayStyle>(
@@ -31,11 +31,13 @@ class Main extends StatelessWidget {
                   ? Brightness.dark
                   : Brightness.light,
         ),
-        child: MaterialApp(
-          title: appName,
-          theme: value,
-          navigatorObservers: [routeObserver],
-          routes: routes,
+        child: ExcludeSemantics(
+          child: MaterialApp(
+            title: appName,
+            theme: value,
+            navigatorObservers: [routeObserver],
+            routes: routes,
+          ),
         ),
       ),
     );

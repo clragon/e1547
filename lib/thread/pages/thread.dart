@@ -88,27 +88,21 @@ class _ThreadsPageState extends State<ThreadsPage> {
       );
     }
 
-    return ValueListenableBuilder(
-      valueListenable: provider.pages,
-      builder: (context, value, child) {
-        return RefreshablePage(
-          refresh: () async => await provider.loadNextPage(reset: true),
-          child: ListView.builder(
-            itemCount: provider.threads.length,
-            itemBuilder: itemBuilder,
-            physics: BouncingScrollPhysics(),
-          ),
-          appBar: AppBar(
-            title: Text('Forum'),
-          ),
-          isLoading: provider.pages.value.isEmpty,
-          isEmpty: provider.items.isEmpty,
-          onLoading: Text('Loading threads'),
-          onEmpty: Text('No threads'),
-          drawer: NavigationDrawer(),
-          floatingActionButton: floatingActionButtonWidget(),
-        );
-      },
+    return RefreshableProviderPage(
+      child: ListView.builder(
+        itemCount: provider.threads.length,
+        itemBuilder: itemBuilder,
+        physics: BouncingScrollPhysics(),
+      ),
+      appBar: AppBar(
+        title: Text('Forum'),
+      ),
+      provider: provider,
+      onLoading: Text('Loading threads'),
+      onEmpty: Text('No threads'),
+      onError: Text('Failed to load threads'),
+      drawer: NavigationDrawer(),
+      floatingActionButton: floatingActionButtonWidget(),
     );
   }
 }

@@ -9,9 +9,9 @@ import 'package:video_player/video_player.dart';
 class PostPhotoGallery extends StatefulWidget {
   final int index;
   final List<Post> posts;
-  final PageController controller;
+  final Function(int index) onPageChanged;
 
-  PostPhotoGallery({this.index = 0, @required this.posts, this.controller});
+  PostPhotoGallery({this.index = 0, @required this.posts, this.onPageChanged});
 
   @override
   _PostPhotoGalleryState createState() => _PostPhotoGalleryState();
@@ -140,23 +140,14 @@ class _PostPhotoGalleryState extends State<PostPhotoGallery> with RouteAware {
               });
         },
         onPageChanged: (index) {
-          int reach = 2;
-          for (int i = -(reach + 1); i < reach; i++) {
-            int target = index + 1 + i;
-            if (0 < target && target < widget.posts.length) {
-              String url = widget.posts[target].file.value.url;
-              if (url != null) {
-                precacheImage(
-                  CachedNetworkImageProvider(url),
-                  context,
-                );
-              }
-            }
-          }
-          if (widget.controller != null) {
-            widget.controller.jumpToPage(index);
-          }
           current.value = index;
+          widget.onPageChanged(index);
+          preloadImages(
+            context: context,
+            index: index,
+            posts: widget.posts,
+            size: ImageSize.file,
+          );
         },
       );
     }

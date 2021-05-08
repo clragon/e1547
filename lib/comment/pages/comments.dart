@@ -171,8 +171,7 @@ class _CommentsPageState extends State<CommentsPage> {
       );
     }
 
-    return RefreshablePage(
-      refresh: () async => await provider.loadNextPage(reset: true),
+    return RefreshableProviderPage(
       child: ListView.builder(
         itemBuilder: itemBuilder,
         itemCount: provider.comments.length,
@@ -182,10 +181,10 @@ class _CommentsPageState extends State<CommentsPage> {
       appBar: AppBar(
         title: Text('#${widget.post.id} comments'),
       ),
-      isLoading: provider.pages.value.isEmpty,
-      isEmpty: provider.comments.isEmpty,
+      provider: provider,
       onLoading: Text('Loading comments'),
       onEmpty: Text('No comments'),
+      onError: Text('Failed to load comments'),
       floatingActionButton: widget.post.isLoggedIn ? fab() : null,
     );
   }

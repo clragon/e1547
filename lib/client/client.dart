@@ -67,16 +67,15 @@ class Client {
   }
 
   Future<bool> tryLogin(String username, String password) async {
-    try {
-      await dio.get('favorites.json',
-          options: Options(headers: {
-            HttpHeaders.authorizationHeader:
-                Credentials(username: username, password: password).toAuth(),
-          }));
-      return true;
-    } on DioError {
-      return false;
-    }
+    return validateCall(
+      () => dio.get(
+        'favorites.json',
+        options: Options(headers: {
+          HttpHeaders.authorizationHeader:
+              Credentials(username: username, password: password).toAuth(),
+        }),
+      ),
+    );
   }
 
   Future<bool> saveLogin(String username, String password) async {
@@ -115,39 +114,35 @@ class Client {
     await initialized;
 
     Future<List<Post>> getPosts() async {
-      try {
-        Map body = await dio.get(
-          'posts.json',
-          queryParameters: {
-            'tags': sortTags(tags),
-            'page': page,
-            'limit': limit,
-          },
-        ).then((response) => response.data);
+      Map body = await dio.get(
+        'posts.json',
+        queryParameters: {
+          'tags': sortTags(tags),
+          'page': page,
+          'limit': limit,
+        },
+      ).then((response) => response.data);
 
-        List<Post> posts = [];
-        bool loggedIn = await this.hasLogin;
-        bool hasPosts = false;
-        for (Map raw in body['posts']) {
-          hasPosts = true;
-          Post post = Post.fromMap(raw);
-          post.isLoggedIn = loggedIn;
-          if (post.file.value.url == null && !post.isDeleted) {
-            continue;
-          }
-          if (post.file.value.ext == 'swf') {
-            continue;
-          }
-          posts.add(post);
+      List<Post> posts = [];
+      bool loggedIn = await this.hasLogin;
+      bool hasPosts = false;
+      for (Map raw in body['posts']) {
+        hasPosts = true;
+        Post post = Post.fromMap(raw);
+        post.isLoggedIn = loggedIn;
+        if (post.file.value.url == null && !post.isDeleted) {
+          continue;
         }
-        if (hasPosts && posts.isEmpty && attempt < 3) {
-          return client.posts(tags, page + 1,
-              faithful: faithful, attempt: attempt + 1);
+        if (post.file.value.ext == 'swf') {
+          continue;
         }
-        return posts;
-      } on DioError {
-        return [];
+        posts.add(post);
       }
+      if (hasPosts && posts.isEmpty && attempt < 3) {
+        return client.posts(tags, page + 1,
+            faithful: faithful, attempt: attempt + 1);
+      }
+      return posts;
     }
 
     if (faithful) {
@@ -165,14 +160,11 @@ class Client {
     if (!await hasLogin) {
       return false;
     }
-    try {
-      await dio.post('favorites.json', queryParameters: {
+    return validateCall(
+      () => dio.post('favorites.json', queryParameters: {
         'post_id': post,
-      });
-      return true;
-    } on DioError {
-      return false;
-    }
+      }),
+    );
   }
 
   Future<bool> removeFavorite(int post) async {
@@ -180,12 +172,9 @@ class Client {
       return false;
     }
 
-    try {
-      await dio.delete('favorites/${post.toString()}.json');
-      return true;
-    } on DioError {
-      return false;
-    }
+    return validateCall(
+      () => dio.delete('favorites/${post.toString()}.json'),
+    );
   }
 
   Future<bool> votePost(int post, bool upvote, bool replace) async {
@@ -193,46 +182,34 @@ class Client {
       return false;
     }
 
-    try {
-      await dio.post('posts/${post.toString()}/votes.json', queryParameters: {
+    return validateCall(
+      () => dio.post('posts/${post.toString()}/votes.json', queryParameters: {
         'score': upvote ? 1 : -1,
         'no_unvote': replace,
-      });
-      return true;
-    } on DioError {
-      return false;
-    }
+      }),
+    );
   }
 
   Future<List<Pool>> pools(String title, int page) async {
-    try {
-      List body = await dio.get('pools.json', queryParameters: {
-        'search[name_matches]': title,
-        'page': page,
-      }).then((response) => response.data);
+    List body = await dio.get('pools.json', queryParameters: {
+      'search[name_matches]': title,
+      'page': page,
+    }).then((response) => response.data);
 
-      List<Pool> pools = [];
-      for (Map rawPool in body) {
-        Pool pool = Pool.fromRaw(rawPool);
-        pools.add(pool);
-      }
-
-      return pools;
-    } on DioError {
-      return [];
+    List<Pool> pools = [];
+    for (Map rawPool in body) {
+      Pool pool = Pool.fromRaw(rawPool);
+      pools.add(pool);
     }
+
+    return pools;
   }
 
   Future<Pool> pool(int poolId) async {
-    try {
-      Map body = await dio
-          .get('pools/${poolId.toString()}.json')
-          .then((response) => response.data);
+    Map body =
+        await dio.get('pools/$poolId.json').then((response) => response.data);
 
-      return Pool.fromRaw(body);
-    } on DioError {
-      return null;
-    }
+    return Pool.fromRaw(body);
   }
 
   Future<List<Post>> poolPosts(int poolId, int page) async {
@@ -242,8 +219,8 @@ class Client {
   Future<List<Post>> follows(int page, {int attempt = 0}) async {
     List<Post> posts = [];
     List<String> tags = List.from(await following);
-    // remove pools, they cannot be used with the ~ operator.
-    tags.removeWhere((tag) => tag.startsWith('pool:'));
+    // ignore meta tags
+    tags.removeWhere((tag) => tag.contains(':'));
     // ignore multitag searches
     tags.removeWhere((tag) => tag.contains(' '));
     // how many requests per requested page.
@@ -295,23 +272,19 @@ class Client {
 
   Future<Post> post(int postID, {bool unsafe = false}) async {
     await initialized;
-    try {
-      Map body = await dio
-          .get(
-              'https://${(unsafe ? await db.customHost.value : await host)}/posts/${postID.toString()}.json',
-              options: Options())
-          .then((response) => response.data);
+    Map body = await dio
+        .get(
+            'https://${(unsafe ? await db.customHost.value : await host)}/posts/${postID.toString()}.json',
+            options: Options())
+        .then((response) => response.data);
 
-      Post post = Post.fromMap(body['post']);
-      post.isLoggedIn = await hasLogin;
-      post.isBlacklisted = await post.isDeniedBy(await db.denylist.value);
-      return post;
-    } on DioError {
-      return null;
-    }
+    Post post = Post.fromMap(body['post']);
+    post.isLoggedIn = await hasLogin;
+    post.isBlacklisted = await post.isDeniedBy(await db.denylist.value);
+    return post;
   }
 
-  Future<Map> updatePost(Post update, Post old, {String editReason}) async {
+  Future<void> updatePost(Post update, Post old, {String editReason}) async {
     if (!await hasLogin) {
       return null;
     }
@@ -392,7 +365,7 @@ class Client {
       ]);
     }
 
-    if (body.length > 0) {
+    if (body.isNotEmpty) {
       if (editReason.trim().isNotEmpty) {
         body.addEntries([
           MapEntry(
@@ -402,38 +375,25 @@ class Client {
         ]);
       }
 
-      Map response = await dio
-          .patch('posts/${update.id}.json', data: body)
-          .then((response) =>
-              {'code': response.statusCode, 'reason': response.statusMessage});
-      return response;
+      await dio.patch('posts/${update.id}.json', data: body);
     }
-    return null;
   }
 
   Future<List<Wiki>> wiki(String search, int page) async {
-    try {
-      List body = await dio.get('wiki_pages.json', queryParameters: {
-        'search[title]': search,
-        'page': page,
-      }).then((response) => response.data);
+    List body = await dio.get('wiki_pages.json', queryParameters: {
+      'search[title]': search,
+      'page': page,
+    }).then((response) => response.data);
 
-      return body.map((entry) => Wiki.fromMap(entry)).toList();
-    } on DioError {
-      return null;
-    }
+    return body.map((entry) => Wiki.fromMap(entry)).toList();
   }
 
   Future<Map> user(String name) async {
-    try {
-      await initialized;
-      Map body =
-          await dio.get('users/$name.json').then((response) => response.data);
+    await initialized;
+    Map body =
+        await dio.get('users/$name.json').then((response) => response.data);
 
-      return body;
-    } on DioError {
-      return null;
-    }
+    return body;
   }
 
   Future<List> autocomplete(String search, {int category}) async {
@@ -459,24 +419,20 @@ class Client {
   }
 
   Future<List<Comment>> comments(int postID, String page) async {
-    try {
-      var body = await dio.get('comments.json', queryParameters: {
-        'group_by': 'comment',
-        'search[post_id]': '$postID',
-        'page': page,
-      }).then((response) => response.data);
+    var body = await dio.get('comments.json', queryParameters: {
+      'group_by': 'comment',
+      'search[post_id]': '$postID',
+      'page': page,
+    }).then((response) => response.data);
 
-      List<Comment> comments = [];
-      if (body is List) {
-        for (Map rawComment in body) {
-          comments.add(Comment.fromRaw(rawComment));
-        }
+    List<Comment> comments = [];
+    if (body is List) {
+      for (Map rawComment in body) {
+        comments.add(Comment.fromRaw(rawComment));
       }
-
-      return comments;
-    } on DioError {
-      return [];
     }
+
+    return comments;
   }
 
   Future<Map> postComment(String text, Post post, {Comment comment}) async {
@@ -573,5 +529,14 @@ class Credentials {
   String toAuth() {
     String auth = base64Encode(utf8.encode('$username:$password'));
     return 'Basic $auth';
+  }
+}
+
+Future<bool> validateCall(Future Function() call) async {
+  try {
+    await call();
+    return true;
+  } on DioError {
+    return false;
   }
 }

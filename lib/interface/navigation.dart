@@ -170,14 +170,14 @@ class _ProfileHeaderState extends State<ProfileHeader> {
   @override
   void initState() {
     super.initState();
-    db.credentials.addListener(initUser);
-    initUser();
+    db.credentials.addListener(initAvatar);
+    initAvatar();
   }
 
   @override
   void dispose() {
     super.dispose();
-    db.credentials.removeListener(initUser);
+    db.credentials.removeListener(initAvatar);
   }
 
   @override
@@ -192,7 +192,7 @@ class _ProfileHeaderState extends State<ProfileHeader> {
               children: <Widget>[
                 Expanded(
                   child: Text(
-                    value,
+                    value ?? '...',
                     style: TextStyle(fontSize: 16),
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -262,7 +262,7 @@ class _ProfileHeaderState extends State<ProfileHeader> {
 final ValueNotifier<String> userName = ValueNotifier(null);
 final ValueNotifier<String> userAvatar = ValueNotifier(null);
 
-void initUser({BuildContext context}) {
+void initAvatar([BuildContext context]) {
   db.credentials.value.then(
     (credentials) {
       userName.value = credentials?.username;

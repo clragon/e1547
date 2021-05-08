@@ -174,8 +174,7 @@ class _ThreadDetailState extends State<ThreadDetail> {
       );
     }
 
-    return RefreshablePage(
-      refresh: () async => await provider.loadNextPage(reset: true),
+    return RefreshableProviderPage(
       child: ListView.builder(
         itemBuilder: _itemBuilder,
         itemCount: provider.replies.length,
@@ -185,10 +184,10 @@ class _ThreadDetailState extends State<ThreadDetail> {
       appBar: AppBar(
         title: Text(widget.thread.title),
       ),
-      isLoading: provider.pages.value.isEmpty,
-      isEmpty: provider.items.isEmpty,
+      provider: provider,
       onLoading: Text('Loading replies'),
       onEmpty: Text('No replies'),
+      onError: Text('Failed to load replies'),
       floatingActionButton: FutureBuilder(
         future: client.hasLogin,
         builder: (context, snapshot) {

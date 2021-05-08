@@ -25,7 +25,6 @@ class PostProvider extends DataProvider<Post> {
             search: sortTags(search ?? ''),
             provider: provider ?? client.posts) {
     this.denying.value = denying;
-    pages.addListener(refresh);
     allowlist.addListener(refresh);
     db.denylist.addListener(refresh);
     this.denying.addListener(refresh);
@@ -34,10 +33,17 @@ class PostProvider extends DataProvider<Post> {
   @override
   Future<void> resetPages() async {
     dispose();
+    posts.value = [];
     super.resetPages();
   }
 
-  void refresh() async {
+  @override
+  Future<void> loadNextPage({bool reset = false}) async {
+    await super.loadNextPage(reset: reset);
+    await refresh();
+  }
+
+  Future<void> refresh() async {
     List<String> denylist = [];
     if (denying.value && canDeny) {
       denylist = (await db.denylist.value)
@@ -61,7 +67,7 @@ class PostProvider extends DataProvider<Post> {
         .toList();
   }
 
-  void dispose() {
+  Future<void> dispose() async {
     items.forEach((post) => post.dispose());
   }
 }

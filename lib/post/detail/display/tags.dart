@@ -99,7 +99,63 @@ class TagGesture extends StatelessWidget {
   }
 }
 
-class TagDisplay extends StatefulWidget {
+class TagAddCard extends StatefulWidget {
+  final Post post;
+  final String category;
+  final PostProvider provider;
+  final Function() onEditorClose;
+  final Function(Future<bool> Function() submit) builder;
+
+  TagAddCard({
+    @required this.post,
+    @required this.provider,
+    this.category,
+    this.onEditorClose,
+    this.builder,
+  });
+
+  @override
+  _TagAddCardState createState() => _TagAddCardState();
+}
+
+class _TagAddCardState extends State<TagAddCard> {
+  PersistentBottomSheetController sheetController;
+
+  @override
+  void dispose() {
+    super.dispose();
+    sheetController?.close();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Builder(
+        builder: (BuildContext context) {
+          return InkWell(
+            child: Padding(
+              padding: EdgeInsets.all(6),
+              child: Icon(Icons.add, size: 16),
+            ),
+            onTap: () async {
+              sheetController = Scaffold.of(context).showBottomSheet(
+                (context) => TagEditor(
+                  post: widget.post,
+                  category: widget.category,
+                  onSubmit: sheetController?.close,
+                  builder: widget.builder,
+                ),
+              );
+              sheetController.closed.then((_) => widget.onEditorClose());
+            },
+          );
+        },
+      ),
+    );
+  }
+}
+
+class TagDisplay extends StatelessWidget {
   final Post post;
   final PostProvider provider;
   final Function() onEditorClose;
@@ -112,104 +168,70 @@ class TagDisplay extends StatefulWidget {
       this.builder});
 
   @override
-  _TagDisplayState createState() => _TagDisplayState();
-}
-
-class _TagDisplayState extends State<TagDisplay> {
-  PersistentBottomSheetController sheetController;
-
-  Widget tagPlus(String category) {
-    return Card(
-      child: Builder(
-        builder: (BuildContext context) {
-          return InkWell(
-            child: Padding(
-              padding: EdgeInsets.all(4),
-              child: Icon(Icons.add, size: 16),
-            ),
-            onTap: () async {
-              sheetController = Scaffold.of(context).showBottomSheet(
-                (context) => TagEditor(
-                  post: widget.post,
-                  category: category,
-                  onSubmit: sheetController?.close,
-                  builder: widget.builder,
-                ),
-              );
-              sheetController.closed.then((_) {
-                widget.onEditorClose();
-              });
-            },
-          );
-        },
-      ),
-    );
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return ExcludeSemantics(
-      child: ValueListenableBuilder(
-        valueListenable: widget.post.tags,
-        builder: (BuildContext context, value, Widget child) {
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            children: categories.keys
-                .where((tagSet) =>
-                    value[tagSet].isNotEmpty ||
-                    (widget.post.isEditing.value && tagSet != 'invalid'))
-                .map(
-                  (category) => Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Padding(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                        child: Text(
-                          '${category[0].toUpperCase()}${category.substring(1)}',
-                          style: TextStyle(
-                            fontSize: 16,
-                          ),
+    return ValueListenableBuilder(
+      valueListenable: post.tags,
+      builder: (BuildContext context, value, Widget child) {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: categories.keys
+              .where((tagSet) =>
+                  value[tagSet].isNotEmpty ||
+                  (post.isEditing.value && tagSet != 'invalid'))
+              .map(
+                (category) => Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                      child: Text(
+                        '${category[0].toUpperCase()}${category.substring(1)}',
+                        style: TextStyle(
+                          fontSize: 16,
                         ),
                       ),
-                      Row(
-                        children: <Widget>[
-                          Expanded(
-                            child: Wrap(
-                              direction: Axis.horizontal,
-                              children: [
-                                ...value[category].map(
-                                  (tag) => TagCard(
-                                    tag: tag,
-                                    category: category,
-                                    provider: widget.provider,
-                                    onRemove: widget.post.isEditing.value
-                                        ? () {
-                                            widget.post.tags.value[category]
-                                                .remove(tag);
-                                            widget.post.tags.value =
-                                                Map.from(value);
-                                          }
-                                        : null,
-                                  ),
+                    ),
+                    Row(
+                      children: <Widget>[
+                        Expanded(
+                          child: Wrap(
+                            direction: Axis.horizontal,
+                            children: [
+                              ...value[category].map(
+                                (tag) => TagCard(
+                                  tag: tag,
+                                  category: category,
+                                  provider: provider,
+                                  onRemove: post.isEditing.value
+                                      ? () {
+                                          post.tags.value[category].remove(tag);
+                                          post.tags.value = Map.from(value);
+                                        }
+                                      : null,
                                 ),
-                                CrossFade(
-                                  showChild: widget.post.isEditing.value,
-                                  child: tagPlus(category),
+                              ),
+                              CrossFade(
+                                showChild: post.isEditing.value,
+                                child: TagAddCard(
+                                  post: post,
+                                  provider: provider,
+                                  category: category,
+                                  builder: builder,
+                                  onEditorClose: onEditorClose,
                                 ),
-                              ],
-                            ),
-                          )
-                        ],
-                      ),
-                      Divider(),
-                    ],
-                  ),
-                )
-                .toList(),
-          );
-        },
-      ),
+                              ),
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
+                    Divider(),
+                  ],
+                ),
+              )
+              .toList(),
+        );
+      },
     );
   }
 }
