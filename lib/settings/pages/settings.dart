@@ -19,7 +19,7 @@ class _SettingsPageState extends State<SettingsPage> {
   String currentHost;
   String customHost;
   String username;
-  String theme;
+  AppTheme theme;
   bool useCustomHost = false;
   bool hideGallery = false;
   bool fitted = false;
@@ -138,7 +138,7 @@ class _SettingsPageState extends State<SettingsPage> {
             settingsHeader('Display'),
             ListTile(
               title: Text('Theme'),
-              subtitle: Text(theme ?? ''),
+              subtitle: Text(theme.toString().split('.').last ?? ''),
               leading: Icon(Icons.brightness_6),
               onTap: () {
                 showDialog(
@@ -149,17 +149,17 @@ class _SettingsPageState extends State<SettingsPage> {
                       children: [
                         Column(
                           mainAxisSize: MainAxisSize.min,
-                          children: themeMap.keys
+                          children: appThemeMap.keys
                               .map(
                                 (theme) => ListTile(
-                                  title: Text(theme),
+                                  title: Text(theme.toString().split('.').last),
                                   trailing: Container(
                                     height: 36,
                                     width: 36,
                                     decoration: BoxDecoration(
                                       borderRadius:
                                           BorderRadius.all(Radius.circular(5)),
-                                      color: themeMap[theme].cardColor,
+                                      color: appThemeMap[theme].cardColor,
                                       border: Border.all(
                                         color:
                                             Theme.of(context).iconTheme.color,

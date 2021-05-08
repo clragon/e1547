@@ -1,19 +1,107 @@
+import 'package:e1547/interface.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+
+export 'package:e1547/client.dart' show validateCall;
+
+class RefreshableProviderPage extends StatefulWidget {
+  final Widget child;
+  final DataProvider provider;
+  final String refreshedText;
+  final Widget onEmpty;
+  final Widget onLoading;
+  final Widget onError;
+  final Widget drawer;
+  final Widget floatingActionButton;
+  final PreferredSizeWidget appBar;
+  final ScrollController scrollController;
+  final Scaffold Function(
+          BuildContext context, Widget child, ScrollController scrollController)
+      builder;
+
+  const RefreshableProviderPage({
+    @required this.child,
+    @required this.appBar,
+    @required this.provider,
+    this.scrollController,
+    this.refreshedText,
+    this.onLoading,
+    this.onEmpty,
+    this.onError,
+    this.drawer,
+    this.floatingActionButton,
+  }) : this.builder = null;
+
+  @override
+  _RefreshableProviderPageState createState() =>
+      _RefreshableProviderPageState();
+}
+
+class _RefreshableProviderPageState extends State<RefreshableProviderPage> {
+  bool isLoading;
+  bool isEmpty;
+  bool isError;
+
+  void update() {
+    if (mounted) {
+      setState(() {
+        isLoading = widget.provider.isLoading;
+        isEmpty = !isLoading && widget.provider.items.isEmpty;
+        isError = !isLoading && widget.provider.pages.value.isEmpty;
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    update();
+    widget.provider.pages.addListener(update);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    widget.provider.pages.removeListener(update);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return RefreshablePage(
+      refresh: () =>
+          validateCall(() => widget.provider.loadNextPage(reset: true)),
+      child: widget.child,
+      appBar: widget.appBar,
+      isLoading: isLoading,
+      isEmpty: isEmpty,
+      isError: isError,
+      scrollController: widget.scrollController,
+      refreshedText: widget.refreshedText,
+      onLoading: widget.onLoading,
+      onEmpty: widget.onEmpty,
+      onError: widget.onError,
+      floatingActionButton: widget.floatingActionButton,
+      drawer: widget.drawer,
+      initial: false,
+    );
+  }
+}
 
 class RefreshablePage extends StatefulWidget {
   final Widget child;
   final bool isLoading;
   final bool isEmpty;
+  final bool isError;
   final bool initial;
   final String refreshedText;
   final Widget onEmpty;
   final Widget onLoading;
+  final Widget onError;
   final Widget drawer;
   final Widget floatingActionButton;
   final PreferredSizeWidget appBar;
   final ScrollController scrollController;
-  final Future<void> Function() refresh;
+  final Future<bool> Function() refresh;
   final Scaffold Function(
           BuildContext context, Widget child, ScrollController scrollController)
       builder;
@@ -24,11 +112,13 @@ class RefreshablePage extends StatefulWidget {
     @required this.appBar,
     @required this.isLoading,
     @required this.isEmpty,
+    @required this.isError,
     this.scrollController,
     this.refreshedText,
     this.initial,
     this.onLoading,
     this.onEmpty,
+    this.onError,
     this.drawer,
     this.floatingActionButton,
   }) : this.builder = null;
@@ -38,12 +128,14 @@ class RefreshablePage extends StatefulWidget {
     @required this.refresh,
     @required this.isLoading,
     @required this.isEmpty,
+    @required this.isError,
     this.child,
     this.scrollController,
     this.refreshedText,
     this.initial,
     this.onLoading,
     this.onEmpty,
+    this.onError,
   })  : this.appBar = null,
         this.drawer = null,
         this.floatingActionButton = null;
@@ -71,8 +163,10 @@ class _RefreshablePageState extends State<RefreshablePage> {
       return PageLoader(
         onLoading: widget.onLoading,
         onEmpty: widget.onEmpty,
+        onError: widget.onError,
         isLoading: widget.isLoading,
-        isEmpty: !widget.isLoading && widget.isEmpty,
+        isEmpty: widget.isEmpty,
+        isError: widget.isError,
         child: SmartRefresher(
           primary: false,
           scrollController: scrollController,
@@ -81,10 +175,12 @@ class _RefreshablePageState extends State<RefreshablePage> {
             completeText: widget.refreshedText,
           ),
           onRefresh: () async {
-            widget
-                .refresh()
-                .then((_) => refreshController.refreshCompleted())
-                .catchError((_) => refreshController.refreshFailed);
+            bool result = await widget.refresh();
+            if (result) {
+              refreshController.refreshCompleted();
+            } else {
+              refreshController.refreshFailed();
+            }
           },
           physics: BouncingScrollPhysics(),
           child: widget.child,
@@ -116,15 +212,19 @@ class PageLoader extends StatelessWidget {
   final Widget child;
   final Widget onLoading;
   final Widget onEmpty;
+  final Widget onError;
   final bool isLoading;
   final bool isEmpty;
+  final bool isError;
 
   PageLoader({
     @required this.child,
     @required this.isLoading,
     @required this.isEmpty,
+    @required this.isError,
     this.onLoading,
     this.onEmpty,
+    this.onError,
   });
 
   @override
@@ -143,7 +243,7 @@ class PageLoader extends StatelessWidget {
               ),
               Padding(
                 padding: EdgeInsets.all(20),
-                child: onLoading ?? Text('loading...'),
+                child: onLoading ?? Text('Loading...'),
               ),
             ],
           ),
@@ -151,18 +251,36 @@ class PageLoader extends StatelessWidget {
       ),
       child,
       Visibility(
-        visible: (isEmpty),
+        visible: (!isLoading && isError),
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
-                Icons.error_outline,
+                Icons.warning_amber_outlined,
                 size: 32,
               ),
               Padding(
                 padding: EdgeInsets.all(20),
-                child: onEmpty ?? Text('no items'),
+                child: onError ?? Text('Failed to load items'),
+              ),
+            ],
+          ),
+        ),
+      ),
+      Visibility(
+        visible: (!isLoading && !isError && isEmpty),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.clear,
+                size: 32,
+              ),
+              Padding(
+                padding: EdgeInsets.all(20),
+                child: onEmpty ?? Text('No items'),
               ),
             ],
           ),

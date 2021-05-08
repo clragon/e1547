@@ -1,4 +1,4 @@
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:e1547/interface.dart';
 import 'package:e1547/post.dart';
 import 'package:flutter/material.dart';
 
@@ -42,7 +42,10 @@ class _PostDetailGalleryState extends State<PostDetailGallery> {
           return PostDetail(
             post: widget.provider.posts.value[index],
             provider: widget.provider,
-            controller: controller,
+            changePage: (index) => ModalRoute.of(context).isCurrent
+                ? controller?.animateToPage(index,
+                    duration: defaultAnimationDuration, curve: Curves.easeInOut)
+                : controller?.jumpToPage(index),
           );
         }
 
@@ -51,26 +54,19 @@ class _PostDetailGalleryState extends State<PostDetailGallery> {
           itemBuilder: pageBuilder,
           itemCount: widget.provider.items.length,
           onPageChanged: (index) {
-            int reach = 2;
-            for (int i = -(reach + 1); i < reach; i++) {
-              int target = index + 1 + i;
-              if (0 < target && target < widget.provider.posts.value.length) {
-                String url =
-                    widget.provider.posts.value[target].sample.value.url;
-                if (url != null) {
-                  precacheImage(
-                    CachedNetworkImageProvider(url),
-                    context,
-                  );
-                }
-              }
-            }
+            lastIndex = index;
+            preloadImages(
+              context: context,
+              index: index,
+              posts: widget.provider.posts.value,
+              size: ImageSize.sample,
+            );
+            // this could potentially be removed
             if (widget.provider.posts.value.isNotEmpty) {
               if (widget.provider.posts.value[lastIndex].isEditing.value) {
                 widget.provider.posts.value[lastIndex].resetPost();
               }
             }
-            lastIndex = index;
           },
         );
       },

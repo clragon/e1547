@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
 
-final Map<String, ThemeData> themeMap = {
-  'light': ThemeData(
+enum AppTheme {
+  light,
+  dark,
+  amoled,
+  blue,
+}
+
+final Map<AppTheme, ThemeData> appThemeMap = {
+  AppTheme.light: ThemeData(
     canvasColor: Colors.grey[50],
     appBarTheme: AppBarTheme(
       color: Colors.grey[50],
@@ -10,7 +17,7 @@ final Map<String, ThemeData> themeMap = {
     primaryColorBrightness: Brightness.light,
     brightness: Brightness.light,
   ),
-  'dark': ThemeData(
+  AppTheme.dark: ThemeData(
     canvasColor: Colors.grey[900],
     cardColor: Colors.grey[850],
     dialogBackgroundColor: Colors.grey[850],
@@ -21,7 +28,7 @@ final Map<String, ThemeData> themeMap = {
       brightness: Brightness.dark,
     ),
   ),
-  'amoled': ThemeData(
+  AppTheme.amoled: ThemeData(
     canvasColor: Colors.black,
     cardColor: Color.fromARGB(255, 20, 20, 20),
     dialogBackgroundColor: Colors.black,
@@ -59,7 +66,7 @@ final Map<String, ThemeData> themeMap = {
       brightness: Brightness.dark,
     ),
   ),
-  'blue': () {
+  AppTheme.blue: () {
     Color blueBG = Color.fromARGB(255, 2, 15, 35);
     Color blueFG = Color.fromARGB(255, 21, 47, 86);
     return ThemeData(

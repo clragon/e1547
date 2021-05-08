@@ -18,7 +18,7 @@ class Persistence {
   ValueNotifier<Future<String>> homeTags;
   ValueNotifier<Future<bool>> hideGallery;
   ValueNotifier<Future<Credentials>> credentials;
-  ValueNotifier<Future<String>> theme;
+  ValueNotifier<Future<AppTheme>> theme;
   ValueNotifier<Future<List<String>>> denylist;
   ValueNotifier<Future<List<String>>> follows;
   ValueNotifier<Future<int>> tileSize;
@@ -53,24 +53,15 @@ class Persistence {
         prefs.setString(key, value.toJson());
       }
     });
-    theme = createSetting<String>('theme', initial: themeMap.keys.elementAt(1));
+    theme = createStringSetting<AppTheme>('theme',
+        initial: appThemeMap.keys.elementAt(1), values: AppTheme.values);
     denylist = createSetting<List<String>>('blacklist', initial: []);
     follows = createSetting<List<String>>('follows', initial: []);
     tileSize = createSetting('tileSize', initial: 200);
-    stagger = createSetting(
+    stagger = createStringSetting(
       'stagger',
       initial: GridState.square,
-      getSetting: (prefs, key) async {
-        String value = prefs.getString(key);
-        if (value != null) {
-          return GridState.values
-              .singleWhere((element) => element.toString() == value);
-        }
-        return null;
-      },
-      setSetting: (prefs, key, value) {
-        prefs.setString(key, value.toString());
-      },
+      values: GridState.values,
     );
   }
 
@@ -135,4 +126,22 @@ class Persistence {
 
     return setting;
   }
+
+  ValueNotifier<Future<T>> createStringSetting<T>(
+    String key, {
+    T initial,
+    List<T> values,
+  }) =>
+      createSetting(
+        key,
+        initial: initial,
+        getSetting: (prefs, key) async {
+          String value = prefs.getString(key);
+          return values.singleWhere((element) => element.toString() == value,
+              orElse: () => null);
+        },
+        setSetting: (prefs, key, value) {
+          prefs.setString(key, value.toString());
+        },
+      );
 }

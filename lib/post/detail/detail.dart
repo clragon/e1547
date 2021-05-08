@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dio/dio.dart';
 import 'package:e1547/client.dart';
 import 'package:e1547/interface.dart';
 import 'package:e1547/post.dart';
@@ -13,9 +14,9 @@ import 'image.dart';
 class PostDetail extends StatefulWidget {
   final Post post;
   final PostProvider provider;
-  final PageController controller;
+  final Function(int index) changePage;
 
-  PostDetail({@required this.post, this.provider, this.controller});
+  PostDetail({@required this.post, this.provider, this.changePage});
 
   @override
   State<StatefulWidget> createState() {
@@ -229,21 +230,21 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
               });
               doEdit.value = () async {
                 isLoading.value = true;
-                Map response = await client.updatePost(
-                    widget.post, Post.fromMap(widget.post.raw),
-                    editReason: textController.text);
-                isLoading.value = false;
-                if (response == null || response['code'] == 200) {
+                try {
+                  await client.updatePost(
+                      widget.post, Post.fromMap(widget.post.raw),
+                      editReason: textController.text);
                   widget.post.isEditing.value = false;
                   await widget.post.resetPost(online: true);
-                } else {
+                } on DioError catch (e) {
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     duration: Duration(seconds: 1),
                     content: Text(
-                        'Failed to send post: ${response['code']} : ${response['reason']}'),
+                        '${e.response.statusCode} : ${e.response.statusMessage}'),
                     behavior: SnackBarBehavior.floating,
                   ));
                 }
+                isLoading.value = false;
                 return true;
               };
             }
@@ -257,7 +258,7 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
         return PostPhotoGallery(
           index: posts.indexOf(widget.post),
           posts: posts,
-          controller: widget.controller,
+          onPageChanged: widget.changePage,
         );
       }
 

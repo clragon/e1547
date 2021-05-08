@@ -94,20 +94,19 @@ class _PoolsPageState extends State<PoolsPage> {
       });
     }
 
-    return RefreshablePage(
-      refresh: () async => await provider.loadNextPage(reset: true),
+    return RefreshableProviderPage(
+      provider: provider,
+      appBar: AppBar(
+        title: Text('Pools'),
+      ),
       child: ListView.builder(
         itemCount: provider.pools.length,
         itemBuilder: itemBuilder,
         physics: BouncingScrollPhysics(),
       ),
-      appBar: AppBar(
-        title: Text('Pools'),
-      ),
-      isLoading: provider.pages.value.isEmpty,
-      isEmpty: provider.items.isEmpty,
       onLoading: Text('Loading pools'),
       onEmpty: Text('No pools'),
+      onError: Text('Failed to load pools'),
       drawer: NavigationDrawer(),
       floatingActionButton: floatingActionButtonWidget(),
     );

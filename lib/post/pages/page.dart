@@ -21,7 +21,7 @@ class PostsPage extends StatefulWidget {
     this.canSelect = true,
     @required this.provider,
     @required this.appBarBuilder,
-  });
+  }) : super(key: ObjectKey(provider));
 
   @override
   State<StatefulWidget> createState() => _PostsPageState();
@@ -33,7 +33,6 @@ class _PostsPageState extends State<PostsPage> {
   PersistentBottomSheetController<Tagset> sheetController;
 
   Set<Post> selections = Set();
-  bool loading = true;
   GridState stagger;
   int tileSize;
 
@@ -41,12 +40,8 @@ class _PostsPageState extends State<PostsPage> {
     if (this.mounted) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         setState(() {
-          if (widget.provider.pages.value.isEmpty ||
-              tileSize == null ||
-              stagger == null) {
-            loading = true;
-          } else {
-            loading = false;
+          if (widget.provider.posts.value.isEmpty) {
+            selections.clear();
           }
         });
       });
@@ -55,15 +50,17 @@ class _PostsPageState extends State<PostsPage> {
 
   void updateStagger() {
     db.stagger.value.then((value) {
-      stagger = value;
-      updatePage();
+      setState(() {
+        stagger = value;
+      });
     });
   }
 
   void updateTileSize() {
     db.tileSize.value.then((value) {
-      tileSize = value;
-      updatePage();
+      setState(() {
+        tileSize = value;
+      });
     });
   }
 
@@ -72,7 +69,6 @@ class _PostsPageState extends State<PostsPage> {
     super.initState();
     db.tileSize.addListener(updateTileSize);
     db.stagger.addListener(updateStagger);
-    widget.provider.pages.addListener(updatePage);
     widget.provider.posts.addListener(updatePage);
   }
 
@@ -84,17 +80,13 @@ class _PostsPageState extends State<PostsPage> {
   }
 
   @override
-  void didUpdateWidget(PostsPage oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    selections.clear();
-    updatePage();
+  void reassemble() {
+    super.reassemble();
     // hot reload shenanigans
     db.tileSize.removeListener(updateTileSize);
     db.stagger.removeListener(updateStagger);
     db.tileSize.addListener(updateTileSize);
     db.stagger.addListener(updateStagger);
-    widget.provider.pages.removeListener(updatePage);
-    widget.provider.pages.addListener(updatePage);
     widget.provider.posts.removeListener(updatePage);
     widget.provider.posts.addListener(updatePage);
   }
@@ -105,7 +97,6 @@ class _PostsPageState extends State<PostsPage> {
     widget.provider.dispose();
     db.tileSize.removeListener(updateTileSize);
     db.stagger.removeListener(updateStagger);
-    widget.provider.pages.removeListener(updatePage);
     widget.provider.posts.removeListener(updatePage);
   }
 
@@ -381,15 +372,17 @@ class _PostsPageState extends State<PostsPage> {
               : null,
           floatingActionButton: floatingActionButton(),
         ),
+        refresh: () =>
+            validateCall(() => widget.provider.loadNextPage(reset: true)),
         child: body(),
-        refresh: () async {
-          await widget.provider.loadNextPage(reset: true);
-          selections.clear();
-        },
-        isLoading: loading,
+        isLoading: widget.provider.pages.value.isEmpty ||
+            tileSize == null ||
+            stagger == null,
         isEmpty: widget.provider.posts.value.isEmpty,
-        onLoading: Text('Loading posts'),
+        isError: widget.provider.pages.value.isEmpty,
         onEmpty: Text('No posts'),
+        onLoading: Text('Loading posts'),
+        onError: Text('Failed to load posts'),
       ),
     );
   }

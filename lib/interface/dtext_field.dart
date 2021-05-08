@@ -39,14 +39,16 @@ class DTextField extends StatelessWidget {
         color: Theme.of(context).canvasColor,
         child: Padding(
           padding: EdgeInsets.all(8),
-          child: Row(children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [child],
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [child],
+                ),
               ),
-            ),
-          ]),
+            ],
+          ),
         ),
       );
     }
@@ -56,43 +58,43 @@ class DTextField extends StatelessWidget {
         {@required Widget child, String title, bool expanded = false}) {
       title = title?.replaceAllMapped(RegExp(r'\n'), (_) => '') ?? '';
       return Card(
-          color: Theme.of(context).canvasColor,
-          child: ExpandableNotifier(
-            initialExpanded: expanded,
-            child: ExpandableTheme(
-              data: ExpandableThemeData(
-                headerAlignment: ExpandablePanelHeaderAlignment.center,
-                iconColor: Theme.of(context).iconTheme.color,
-              ),
-              child: ExpandablePanel(
-                header: Padding(
-                  padding: EdgeInsets.all(8),
-                  child: Text(
-                    title,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: 16,
-                    ),
+        color: Theme.of(context).canvasColor,
+        child: ExpandableNotifier(
+          initialExpanded: expanded,
+          child: ExpandableTheme(
+            data: ExpandableThemeData(
+              headerAlignment: ExpandablePanelHeaderAlignment.center,
+              iconColor: Theme.of(context).iconTheme.color,
+            ),
+            child: ExpandablePanel(
+              header: Padding(
+                padding: EdgeInsets.all(8),
+                child: Text(
+                  title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 16,
                   ),
                 ),
-                collapsed: SizedBox.shrink(),
-                expanded: Padding(
-                  padding: EdgeInsets.all(8),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [child],
-                  ),
+              ),
+              collapsed: SizedBox.shrink(),
+              expanded: Padding(
+                padding: EdgeInsets.all(8),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [child],
                 ),
               ),
             ),
-          ));
+          ),
+        ),
+      );
     }
 
     Widget spoilerWrap(Widget child) {
       ValueNotifier<bool> isShown = ValueNotifier(false);
       return Card(
-          child: InkWell(
         child: Stack(
           children: <Widget>[
             Padding(
@@ -108,33 +110,32 @@ class DTextField extends StatelessWidget {
                 ],
               ),
             ),
-            Positioned.fill(
-              child: ValueListenableBuilder(
-                valueListenable: isShown,
-                builder: (context, value, child) {
-                  return AnimatedOpacity(
+            InkWell(
+              child: Positioned.fill(
+                child: ValueListenableBuilder(
+                  valueListenable: isShown,
+                  builder: (context, value, child) => AnimatedOpacity(
                     opacity: value ? 0 : 1,
                     duration: Duration(milliseconds: 200),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.black,
-                        borderRadius: BorderRadius.circular(5),
-                      ),
+                    child: Card(
+                      color: Colors.black,
                       child: Center(
-                        child: Text('SPOILER',
-                            style: TextStyle(
-                              color: Colors.white,
-                            )),
+                        child: Text(
+                          'SPOILER',
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
+                        ),
                       ),
                     ),
-                  );
-                },
+                  ),
+                ),
               ),
-            )
+              onTap: () => isShown.value = !isShown.value,
+            ),
           ],
         ),
-        onTap: () => isShown.value = !isShown.value,
-      ));
+      );
     }
 
     // parse string recursively
