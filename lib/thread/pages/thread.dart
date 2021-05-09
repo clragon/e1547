@@ -28,12 +28,12 @@ class _ThreadsPageState extends State<ThreadsPage> {
       });
     }
 
-    if (item == provider.threads.length - 1) {
+    if (item == provider.items.length - 1) {
       provider.loadNextPage();
     }
 
-    if (item < provider.threads.length) {
-      return preview(provider.threads[item], provider);
+    if (item < provider.items.length) {
+      return preview(provider.items[item], provider);
     }
     return null;
   }
@@ -90,7 +90,7 @@ class _ThreadsPageState extends State<ThreadsPage> {
 
     return RefreshableProviderPage(
       child: ListView.builder(
-        itemCount: provider.threads.length,
+        itemCount: provider.items.length,
         itemBuilder: itemBuilder,
         physics: BouncingScrollPhysics(),
       ),

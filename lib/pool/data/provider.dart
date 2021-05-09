@@ -7,5 +7,8 @@ class PoolProvider extends DataProvider<Pool> {
 
   PoolProvider({
     String search,
-  }) : super(search: search, provider: client.pools);
+  }) : super(search: search);
+
+  @override
+  Future<List<Pool>> provide(int page) => client.pools(search.value, page);
 }
