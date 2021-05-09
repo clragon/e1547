@@ -8,7 +8,6 @@ import 'comment.dart';
 
 class CommentProvider extends DataProvider<Comment> {
   final int postID;
-  List<Comment> get comments => super.items;
 
   CommentProvider({@required this.postID});
 
@@ -18,7 +17,7 @@ class CommentProvider extends DataProvider<Comment> {
     pages.value.isEmpty
         ? cursor = 'a0'
         : cursor =
-            'a${pages.value.last.reduce((a, b) => max(a.id, b.id)).id.toString()}';
+            'a${pages.value.last.map((e) => e.id).reduce(max).toString()}';
 
     List<Comment> comments = await client.comments(postID, cursor);
     comments.sort((a, b) =>

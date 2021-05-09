@@ -62,6 +62,7 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    routeObserver.subscribe(this, ModalRoute.of(context));
     navigator = Navigator.of(context);
     route = ModalRoute.of(context);
   }
@@ -88,10 +89,10 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
   @override
   void didPushNext() {
     super.didPushNext();
-    if (!keepPlaying) {
-      widget.post.controller?.pause();
-    } else {
+    if (keepPlaying) {
       keepPlaying = false;
+    } else {
+      widget.post.controller?.pause();
     }
   }
 
