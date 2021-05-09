@@ -16,7 +16,7 @@ class ReplyProvider extends DataProvider<Reply> {
     pages.value.isEmpty
         ? cursor = 'a0'
         : cursor =
-            'a${pages.value.last.reduce((a, b) => max(a.id, b.id)).id.toString()}';
+            'a${pages.value.last.map((e) => e.id).reduce(max).toString()}';
     List<Reply> replies = await client.replies(thread, cursor);
     replies.sort((one, two) =>
         DateTime.parse(one.creation).compareTo(DateTime.parse(two.creation)));

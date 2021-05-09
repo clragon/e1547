@@ -150,12 +150,12 @@ class _CommentsPageState extends State<CommentsPage> {
   }
 
   Widget itemBuilder(BuildContext context, int item) {
-    if (item == provider.comments.length - 1) {
+    if (item == provider.items.length - 1) {
       provider.loadNextPage();
     }
 
-    if (item < provider.comments.length) {
-      return commentWidget(provider.comments[item]);
+    if (item < provider.items.length) {
+      return commentWidget(provider.items[item]);
     }
     return null;
   }
@@ -174,7 +174,7 @@ class _CommentsPageState extends State<CommentsPage> {
     return RefreshableProviderPage(
       child: ListView.builder(
         itemBuilder: itemBuilder,
-        itemCount: provider.comments.length,
+        itemCount: provider.items.length,
         padding: EdgeInsets.all(10.0),
         physics: BouncingScrollPhysics(),
       ),

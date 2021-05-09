@@ -124,77 +124,81 @@ class _FollowingPageState extends State<FollowingPage> {
         padding: EdgeInsets.only(bottom: 30),
         itemCount: follows.length,
         itemBuilder: (BuildContext context, int index) {
+          Widget contextMenu() {
+            return Row(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                PopupMenuButton<String>(
+                  icon: Icon(
+                    Icons.more_vert,
+                    color: Theme.of(context).iconTheme.color,
+                  ),
+                  itemBuilder: (BuildContext context) =>
+                      <PopupMenuEntry<String>>[
+                    PopupMenuItem(
+                      value: 'search',
+                      child: PopTile(title: 'Search', icon: Icons.search),
+                    ),
+                    PopupMenuItem(
+                      value: 'wiki',
+                      child: PopTile(title: 'Wiki', icon: Icons.info_outline),
+                    ),
+                    PopupMenuItem(
+                      value: 'edit',
+                      child: PopTile(title: 'Edit', icon: Icons.edit),
+                    ),
+                    PopupMenuItem(
+                      value: 'delete',
+                      child: PopTile(title: 'Delete', icon: Icons.delete),
+                    ),
+                  ],
+                  onSelected: (value) async {
+                    switch (value) {
+                      case 'search':
+                        Navigator.of(context)
+                            .push(MaterialPageRoute(builder: (context) {
+                          return SearchPage(tags: follows[index]);
+                        }));
+                        break;
+                      case 'wiki':
+                        wikiSheet(
+                            context: context, tag: tagToName(follows[index]));
+                        break;
+                      case 'edit':
+                        addTags(context, edit: index);
+                        break;
+                      case 'delete':
+                        db.follows.value =
+                            Future.value(follows..removeAt(index));
+                        break;
+                    }
+                  },
+                ),
+              ],
+            );
+          }
+
           return Padding(
             padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
             child: Column(
               children: <Widget>[
-                Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: Wrap(
-                        direction: Axis.horizontal,
-                        children: follows[index]
-                            .split(' ')
-                            .map((tag) => cardWidget(tag))
-                            .toList(),
-                      ),
-                    ),
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        PopupMenuButton<String>(
-                          icon: Icon(
-                            Icons.more_vert,
-                            color: Theme.of(context).iconTheme.color,
-                          ),
-                          itemBuilder: (BuildContext context) =>
-                              <PopupMenuEntry<String>>[
-                            PopupMenuItem(
-                              value: 'search',
-                              child:
-                                  PopTile(title: 'Search', icon: Icons.search),
-                            ),
-                            PopupMenuItem(
-                              value: 'wiki',
-                              child: PopTile(
-                                  title: 'Wiki', icon: Icons.info_outline),
-                            ),
-                            PopupMenuItem(
-                              value: 'edit',
-                              child: PopTile(title: 'Edit', icon: Icons.edit),
-                            ),
-                            PopupMenuItem(
-                              value: 'delete',
-                              child:
-                                  PopTile(title: 'Delete', icon: Icons.delete),
-                            ),
-                          ],
-                          onSelected: (value) async {
-                            switch (value) {
-                              case 'search':
-                                Navigator.of(context)
-                                    .push(MaterialPageRoute(builder: (context) {
-                                  return SearchPage(tags: follows[index]);
-                                }));
-                                break;
-                              case 'wiki':
-                                wikiSheet(
-                                    context: context,
-                                    tag: tagToName(follows[index]));
-                                break;
-                              case 'edit':
-                                addTags(context, edit: index);
-                                break;
-                              case 'delete':
-                                db.follows.value =
-                                    Future.value(follows..removeAt(index));
-                                break;
-                            }
-                          },
+                InkWell(
+                  onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => SearchPage(tags: follows[index]))),
+                  child: Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: Wrap(
+                          direction: Axis.horizontal,
+                          children: follows[index]
+                              .split(' ')
+                              .map((tag) => cardWidget(tag))
+                              .toList(),
                         ),
-                      ],
-                    ),
-                  ],
+                      ),
+                      contextMenu(),
+                    ],
+                  ),
                 ),
                 Divider()
               ],
@@ -237,9 +241,7 @@ class _FollowingPageState extends State<FollowingPage> {
             onPressed: () {
               List<String> tags = controller.text.split('\n');
               tags.removeWhere((tag) => tag.trim().isEmpty);
-              setState(() {
-                db.follows.value = Future.value(tags);
-              });
+              db.follows.value = Future.value(tags);
               Navigator.of(context).pop();
             },
           ),
