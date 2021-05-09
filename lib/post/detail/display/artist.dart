@@ -23,7 +23,7 @@ class ArtistDisplay extends StatelessWidget {
                     .map<List<InlineSpan>>(
                       (artist) => [
                         if (artist != post.artists.first &&
-                            post.artists.length != 1)
+                            post.artists.length > 1)
                           TextSpan(text: ', '),
                         WidgetSpan(
                           child: TagGesture(
