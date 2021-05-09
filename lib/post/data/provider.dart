@@ -87,9 +87,11 @@ class PostProvider extends DataProvider<Post> {
   }
 
   @override
-  Future<List<Post>> transform(List<Post> next) async {
-    await refresh(items: [...items, ...next]);
-    return super.transform(next);
+  Future<List<Post>> transform(
+      List<Post> next, List<List<Post>> current) async {
+    await refresh(
+        items: (current..add(next)).expand((element) => element).toList());
+    return super.transform(next, current);
   }
 
   @override

@@ -34,7 +34,7 @@ abstract class DataProvider<T> extends ChangeNotifier {
 
   Future<List<T>> provide(int page);
 
-  Future<List<T>> transform(List<T> next) async => next;
+  Future<List<T>> transform(List<T> next, List<List<T>> current) async => next;
 
   Future<List<T>> catchError(Future<List<T>> Function() callback) async {
     isError = false;
@@ -52,9 +52,9 @@ abstract class DataProvider<T> extends ChangeNotifier {
   @nonVirtual
   Future<void> addPage(List<T> next, {bool reset = false}) async {
     if (next.isNotEmpty || pages.value.isEmpty) {
-      next = await transform(next);
-      pages.value =
-          reset ? [next] : pages.value = List.from(pages.value..add(next));
+      List<List<T>> current = reset ? [] : pages.value = List.from(pages.value);
+      next = await transform(next, current);
+      pages.value = current..add(next);
     }
   }
 
@@ -65,7 +65,7 @@ abstract class DataProvider<T> extends ChangeNotifier {
       notifyListeners();
       int page = reset ? 1 : pages.value.length + 1;
 
-      await addPage(await loadPage(page));
+      await addPage(await loadPage(page), reset: reset);
 
       isLoading = false;
       notifyListeners();
