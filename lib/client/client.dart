@@ -50,11 +50,13 @@ class Client {
           !dio.options.headers.containsKey(HttpHeaders.authorizationHeader)) {
         dio.options.headers.addEntries(
             [MapEntry(HttpHeaders.authorizationHeader, credentials.toAuth())]);
-        tryLogin(credentials.username, credentials.password).then((authed) {
-          if (!authed) {
+        try {
+          await tryLogin(credentials.username, credentials.password);
+        } on DioError catch (e) {
+          if (e.type != DioErrorType.other) {
             logout();
           }
-        });
+        }
         return true;
       } else {
         _avatar = null;
@@ -66,20 +68,18 @@ class Client {
     return await initialized;
   }
 
-  Future<bool> tryLogin(String username, String password) async {
-    return validateCall(
-      () => dio.get(
-        'favorites.json',
-        options: Options(headers: {
-          HttpHeaders.authorizationHeader:
-              Credentials(username: username, password: password).toAuth(),
-        }),
-      ),
+  Future<void> tryLogin(String username, String password) async {
+    await dio.get(
+      'favorites.json',
+      options: Options(headers: {
+        HttpHeaders.authorizationHeader:
+            Credentials(username: username, password: password).toAuth(),
+      }),
     );
   }
 
   Future<bool> saveLogin(String username, String password) async {
-    if (await tryLogin(username, password)) {
+    if (await validateCall(() => tryLogin(username, password))) {
       db.credentials.value =
           Future.value(Credentials(username: username, password: password));
       return true;

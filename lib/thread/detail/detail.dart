@@ -153,12 +153,12 @@ class _ThreadDetailState extends State<ThreadDetail> {
   }
 
   Widget _itemBuilder(BuildContext context, int item) {
-    if (item == provider.replies.length - 1) {
+    if (item == provider.items.length - 1) {
       provider.loadNextPage();
     }
 
-    if (item < provider.replies.length) {
-      return replyWidget(provider.replies[item]);
+    if (item < provider.items.length) {
+      return replyWidget(provider.items[item]);
     }
     return null;
   }
@@ -177,7 +177,7 @@ class _ThreadDetailState extends State<ThreadDetail> {
     return RefreshableProviderPage(
       child: ListView.builder(
         itemBuilder: _itemBuilder,
-        itemCount: provider.replies.length,
+        itemCount: provider.items.length,
         padding: EdgeInsets.all(10.0),
         physics: BouncingScrollPhysics(),
       ),

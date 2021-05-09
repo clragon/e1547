@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:e1547/client.dart';
 import 'package:e1547/interface.dart';
 import 'package:meta/meta.dart';
@@ -8,18 +10,19 @@ class CommentProvider extends DataProvider<Comment> {
   final int postID;
   List<Comment> get comments => super.items;
 
-  CommentProvider({@required this.postID})
-      : super.extended(extendedProvider: ((search, pages) async {
-          String cursor;
-          if (pages.isEmpty) {
-            cursor = 'a0';
-          } else {
-            cursor =
-                'a${pages.last.reduce((value, element) => (value.id > element.id) ? value : element).id.toString()}';
-          }
-          List<Comment> comments = await client.comments(postID, cursor);
-          comments.sort((one, two) => DateTime.parse(one.creation)
-              .compareTo(DateTime.parse(two.creation)));
-          return comments;
-        }));
+  CommentProvider({@required this.postID});
+
+  @override
+  Future<List<Comment>> provide(int page) async {
+    String cursor;
+    pages.value.isEmpty
+        ? cursor = 'a0'
+        : cursor =
+            'a${pages.value.last.reduce((a, b) => max(a.id, b.id)).id.toString()}';
+
+    List<Comment> comments = await client.comments(postID, cursor);
+    comments.sort((a, b) =>
+        DateTime.parse(a.creation).compareTo(DateTime.parse(b.creation)));
+    return comments;
+  }
 }

@@ -94,10 +94,10 @@ class _PostsPageState extends State<PostsPage> {
   @override
   void dispose() {
     super.dispose();
-    widget.provider.dispose();
     db.tileSize.removeListener(updateTileSize);
     db.stagger.removeListener(updateStagger);
     widget.provider.posts.removeListener(updatePage);
+    widget.provider.dispose();
   }
 
   double notZero(double value) => value < 1 ? 1 : value;
@@ -372,14 +372,15 @@ class _PostsPageState extends State<PostsPage> {
               : null,
           floatingActionButton: floatingActionButton(),
         ),
-        refresh: () =>
-            validateCall(() => widget.provider.loadNextPage(reset: true)),
+        refresh: () async {
+          await widget.provider.loadNextPage(reset: true);
+          return !widget.provider.isError;
+        },
         child: body(),
-        isLoading: widget.provider.pages.value.isEmpty ||
-            tileSize == null ||
-            stagger == null,
+        isLoading:
+            widget.provider.isLoading || tileSize == null || stagger == null,
         isEmpty: widget.provider.posts.value.isEmpty,
-        isError: widget.provider.pages.value.isEmpty,
+        isError: widget.provider.isError,
         onEmpty: Text('No posts'),
         onLoading: Text('Loading posts'),
         onError: Text('Failed to load posts'),

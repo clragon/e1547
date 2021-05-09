@@ -7,6 +7,7 @@ import 'post.dart';
 import 'tag.dart';
 
 class PostProvider extends DataProvider<Post> {
+  Future<List<Post>> Function(String search, int page) provider;
   ValueNotifier<Map<String, List<Post>>> deniedMap = ValueNotifier({});
   ValueNotifier<List<String>> allowlist = ValueNotifier([]);
   ValueNotifier<List<Post>> denied = ValueNotifier([]);
@@ -16,40 +17,30 @@ class PostProvider extends DataProvider<Post> {
   bool canDeny;
 
   PostProvider({
-    Future<List<Post>> Function(String search, int page) provider,
+    this.provider,
     String search,
     bool denying = true,
     this.canSearch = true,
     this.canDeny = true,
   }) : super(
-            search: sortTags(search ?? ''),
-            provider: provider ?? client.posts) {
+          search: sortTags(search ?? ''),
+        ) {
     this.denying.value = denying;
     allowlist.addListener(refresh);
     db.denylist.addListener(refresh);
     this.denying.addListener(refresh);
   }
 
-  @override
-  Future<void> resetPages() async {
-    dispose();
-    posts.value = [];
-    super.resetPages();
-  }
+  Future<void> refresh({List<Post> items}) async {
+    items ??= this.items;
 
-  @override
-  Future<void> loadNextPage({bool reset = false}) async {
-    await super.loadNextPage(reset: reset);
-    await refresh();
-  }
-
-  Future<void> refresh() async {
     List<String> denylist = [];
     if (denying.value && canDeny) {
       denylist = (await db.denylist.value)
           .where((line) => !allowlist.value.contains(line))
           .toList();
     }
+
     deniedMap.value = {};
     for (Post item in items) {
       String denier = await item.deniedBy(denylist);
@@ -61,13 +52,56 @@ class PostProvider extends DataProvider<Post> {
       }
       item.isBlacklisted = denier != null;
     }
-    denied.value = deniedMap.value.values.expand((element) => element).toList();
-    posts.value = List<Post>.from(items)
-        .where((element) => !element.isBlacklisted)
-        .toList();
+
+    List<Post> newPosts = [];
+    List<Post> newDenied = [];
+
+    items.forEach((element) =>
+        (element.isBlacklisted ? newDenied : newPosts).add(element));
+
+    posts.value = newPosts;
+    denied.value = newDenied;
+    notifyListeners();
   }
 
-  Future<void> dispose() async {
+  Future<void> disposePosts() async {
     items.forEach((post) => post.dispose());
+  }
+
+  @override
+  Future<void> resetPages() async {
+    disposePosts();
+    posts.value = [];
+    denied.value = [];
+    deniedMap.value = {};
+    super.resetPages();
+  }
+
+  @override
+  Future<List<Post>> provide(int page) async {
+    if (provider != null) {
+      return provider(search.value, page);
+    } else {
+      return client.posts(search.value, page);
+    }
+  }
+
+  @override
+  Future<List<Post>> transform(List<Post> next) async {
+    await refresh(items: [...items, ...next]);
+    return super.transform(next);
+  }
+
+  @override
+  void dispose() {
+    disposePosts();
+    [
+      deniedMap,
+      allowlist,
+      denied,
+      posts,
+      denying,
+    ].forEach((element) => element.dispose());
+    super.dispose();
   }
 }

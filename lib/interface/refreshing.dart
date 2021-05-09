@@ -38,17 +38,9 @@ class RefreshableProviderPage extends StatefulWidget {
 }
 
 class _RefreshableProviderPageState extends State<RefreshableProviderPage> {
-  bool isLoading;
-  bool isEmpty;
-  bool isError;
-
   void update() {
     if (mounted) {
-      setState(() {
-        isLoading = widget.provider.isLoading;
-        isEmpty = !isLoading && widget.provider.items.isEmpty;
-        isError = !isLoading && widget.provider.pages.value.isEmpty;
-      });
+      setState(() {});
     }
   }
 
@@ -68,13 +60,15 @@ class _RefreshableProviderPageState extends State<RefreshableProviderPage> {
   @override
   Widget build(BuildContext context) {
     return RefreshablePage(
-      refresh: () =>
-          validateCall(() => widget.provider.loadNextPage(reset: true)),
+      refresh: () async {
+        await widget.provider.loadNextPage(reset: true);
+        return !widget.provider.isError;
+      },
       child: widget.child,
       appBar: widget.appBar,
-      isLoading: isLoading,
-      isEmpty: isEmpty,
-      isError: isError,
+      isLoading: widget.provider.isLoading,
+      isEmpty: widget.provider.items.isEmpty,
+      isError: widget.provider.isError,
       scrollController: widget.scrollController,
       refreshedText: widget.refreshedText,
       onLoading: widget.onLoading,
@@ -251,7 +245,7 @@ class PageLoader extends StatelessWidget {
       ),
       child,
       Visibility(
-        visible: (!isLoading && isError),
+        visible: (!isLoading && isEmpty && isError),
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
