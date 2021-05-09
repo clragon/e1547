@@ -53,7 +53,7 @@ abstract class DataProvider<T> extends ChangeNotifier {
   Future<void> addPage(List<T> next, {bool reset = false}) async {
     if (next.isNotEmpty || pages.value.isEmpty) {
       List<List<T>> current = reset ? [] : pages.value = List.from(pages.value);
-      next = await transform(next, current);
+      next = await transform(next, List.from(current));
       pages.value = current..add(next);
     }
   }
