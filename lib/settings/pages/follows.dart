@@ -1,3 +1,4 @@
+import 'package:e1547/follow.dart';
 import 'package:e1547/interface.dart';
 import 'package:e1547/post.dart';
 import 'package:e1547/settings.dart';
@@ -14,21 +15,30 @@ class FollowingPage extends StatefulWidget {
 
 class _FollowingPageState extends State<FollowingPage> {
   int editing;
+  FollowList follows;
   bool isSearching = false;
-  List<String> follows = [];
   TextEditingController textController = TextEditingController();
   PersistentBottomSheetController<String> sheetController;
+
+  Future<void> update() async {
+    await db.follows.value.then((value) {
+      if (mounted) {
+        setState(() => follows = value);
+      }
+    });
+  }
 
   @override
   void initState() {
     super.initState();
-    db.follows.addListener(() async {
-      List<String> tags = await db.follows.value;
-      if (mounted) {
-        setState(() => follows = tags);
-      }
-    });
-    db.follows.value.then((a) async => setState(() => follows = a));
+    db.follows.addListener(update);
+    update();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    db.follows.removeListener(update);
   }
 
   @override
@@ -42,12 +52,10 @@ class _FollowingPageState extends State<FollowingPage> {
           } else {
             follows.removeAt(editing);
           }
-          db.follows.value = Future.value(follows);
           sheetController?.close();
         } else {
           if (textController.text.trim().isNotEmpty) {
             follows.add(textController.text.trim());
-            db.follows.value = Future.value(follows);
             sheetController?.close();
           }
         }
@@ -102,7 +110,7 @@ class _FollowingPageState extends State<FollowingPage> {
     }
 
     Widget body() {
-      if (follows.isEmpty) {
+      if (follows?.isEmpty ?? true) {
         return Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -185,6 +193,8 @@ class _FollowingPageState extends State<FollowingPage> {
                 InkWell(
                   onTap: () => Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) => SearchPage(tags: follows[index]))),
+                  onLongPress: () => wikiSheet(
+                      context: context, tag: tagToName(follows[index])),
                   child: Row(
                     children: <Widget>[
                       Expanded(
@@ -217,8 +227,8 @@ class _FollowingPageState extends State<FollowingPage> {
     }
 
     Widget editor() {
-      TextEditingController controller = TextEditingController();
-      controller.text = follows.join('\n');
+      TextEditingController controller =
+          TextEditingController(text: follows.join('\n'));
       return AlertDialog(
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -241,7 +251,7 @@ class _FollowingPageState extends State<FollowingPage> {
             onPressed: () {
               List<String> tags = controller.text.split('\n');
               tags.removeWhere((tag) => tag.trim().isEmpty);
-              db.follows.value = Future.value(tags);
+              follows.edit(tags);
               Navigator.of(context).pop();
             },
           ),

@@ -3,7 +3,7 @@ import 'package:e1547/post.dart';
 import 'package:e1547/settings.dart';
 import 'package:flutter/material.dart';
 
-class FollowsPage extends StatelessWidget {
+class MixedFollowsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder(
