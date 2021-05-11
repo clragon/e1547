@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e1547/client.dart';
+import 'package:e1547/post.dart';
 import 'package:e1547/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart'
@@ -17,30 +18,31 @@ extension denying on Post {
 
   Future<String> deniedBy(List<String> denylist) async {
     if (denylist.length > 0) {
-      List<String> tags = [];
-      this.tags.value.forEach((k, v) {
-        tags.addAll(v.cast<String>());
-      });
+      List<String> tags = this.tags.value.values.expand((tags) => tags);
 
       for (String line in denylist) {
         List<String> deny = [];
         List<String> any = [];
         List<String> allow = [];
-        line.split(' ').forEach((tag) {
-          if (tag.isNotEmpty) {
-            String prefix = tag[0];
 
-            switch (prefix) {
-              case '-':
-                allow.add(tag.substring(1));
-                break;
-              case '~':
-                any.add(tag.substring(1));
-                break;
-              default:
-                deny.add(tag);
-                break;
-            }
+        line
+            .split(' ')
+            .where(
+              (tag) => tagToName(tag).trim().isNotEmpty,
+            )
+            .forEach((tag) {
+          String prefix = tag[0];
+
+          switch (prefix) {
+            case '-':
+              allow.add(tag.substring(1));
+              break;
+            case '~':
+              any.add(tag.substring(1));
+              break;
+            default:
+              deny.add(tag);
+              break;
           }
         });
 
@@ -60,7 +62,7 @@ extension denying on Post {
                 }
                 break;
               case 'type':
-                if (this.file.value.ext == value) {
+                if (this.file.value.ext.toLowerCase() == value.toLowerCase()) {
                   return true;
                 }
                 break;
@@ -69,6 +71,8 @@ extension denying on Post {
                   return true;
                 }
                 break;
+              case 'uploader':
+              case 'userid':
               case 'user':
                 if (this.uploader.toString() == value) {
                   return true;
@@ -108,16 +112,13 @@ extension denying on Post {
             }
           }
 
-          if (tags.contains(tag)) {
-            return true;
-          } else {
-            return false;
-          }
+          return tags.contains(tag.toLowerCase());
         }
 
         bool denied = deny.every((tag) => containtsTag(tag, tags));
         bool allowed = allow.any((tag) => containtsTag(tag, tags));
-        bool optional = any.any((tag) => containtsTag(tag, tags));
+        bool optional =
+            any.isEmpty || any.any((tag) => containtsTag(tag, tags));
 
         if (denied && optional && !allowed) {
           return line;
