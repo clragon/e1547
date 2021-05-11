@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:e1547/comment.dart';
+import 'package:e1547/follow.dart';
 import 'package:e1547/pool.dart';
 import 'package:e1547/post.dart';
 import 'package:e1547/settings.dart';
@@ -23,7 +24,7 @@ class Client {
 
   Future<String> host = db.host.value;
   Future<List<String>> denylist = db.denylist.value;
-  Future<List<String>> following = db.follows.value;
+  Future<FollowList> following = db.follows.value;
   Future<Credentials> credentials = db.credentials.value;
 
   Client() {
@@ -36,6 +37,9 @@ class Client {
     db.credentials.addListener(initialize);
     initialize();
   }
+
+  Future<bool> get isSafe async =>
+      (await db.host.value) != (await db.customHost.value);
 
   Future<bool> initialize() async {
     Future<bool> init() async {

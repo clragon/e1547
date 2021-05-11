@@ -1,3 +1,4 @@
+import 'package:e1547/follow.dart';
 import 'package:e1547/interface.dart';
 import 'package:e1547/post.dart';
 import 'package:e1547/settings.dart';
@@ -19,23 +20,13 @@ class _TagListActionsState extends State<TagListActions> {
   bool denied = false;
   bool following = false;
   List<String> denylist;
-  List<String> follows;
+  FollowList follows;
 
   Future<void> updateLists() async {
     denylist = await db.denylist.value;
-    denied = false;
-    denylist.forEach((tag) {
-      if (tag == widget.tag) {
-        denied = true;
-      }
-    });
-    following = false;
+    denied = denylist.contains(widget.tag);
     follows = await db.follows.value;
-    follows.forEach((tag) {
-      if (tag == widget.tag) {
-        following = true;
-      }
-    });
+    following = follows.contains(widget.tag);
     if (mounted) {
       setState(() {});
     }
@@ -73,10 +64,8 @@ class _TagListActionsState extends State<TagListActions> {
               onPressed: () {
                 if (following) {
                   follows.remove(widget.tag);
-                  db.follows.value = Future.value(follows);
                 } else {
                   follows.add(widget.tag);
-                  db.follows.value = Future.value(follows);
                   if (denied) {
                     denylist.remove(widget.tag);
                     db.denylist.value = Future.value(denylist);

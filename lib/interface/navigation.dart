@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e1547/client.dart';
+import 'package:e1547/follow.dart';
 import 'package:e1547/interface.dart';
 import 'package:e1547/pool.dart';
 import 'package:e1547/post.dart';
