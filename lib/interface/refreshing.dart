@@ -202,6 +202,13 @@ class _RefreshablePageState extends State<RefreshablePage> {
   }
 }
 
+enum PageLoaderState {
+  loading,
+  empty,
+  error,
+  none,
+}
+
 class PageLoader extends StatelessWidget {
   final Widget child;
   final Widget onLoading;
@@ -223,9 +230,20 @@ class PageLoader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    PageLoaderState state = PageLoaderState.none;
+    if (isEmpty) {
+      if (isLoading) {
+        state = PageLoaderState.loading;
+      } else if (isError) {
+        state = PageLoaderState.error;
+      } else {
+        state = PageLoaderState.empty;
+      }
+    }
+
     return Stack(children: [
       Visibility(
-        visible: isLoading,
+        visible: state == PageLoaderState.loading,
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -245,7 +263,7 @@ class PageLoader extends StatelessWidget {
       ),
       child,
       Visibility(
-        visible: (!isLoading && isEmpty && isError),
+        visible: state == PageLoaderState.error,
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -263,7 +281,7 @@ class PageLoader extends StatelessWidget {
         ),
       ),
       Visibility(
-        visible: (!isLoading && !isError && isEmpty),
+        visible: state == PageLoaderState.empty,
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,

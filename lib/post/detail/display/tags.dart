@@ -134,7 +134,7 @@ class _TagAddCardState extends State<TagAddCard> {
         builder: (BuildContext context) {
           return InkWell(
             child: Padding(
-              padding: EdgeInsets.all(6),
+              padding: EdgeInsets.all(5),
               child: Icon(Icons.add, size: 16),
             ),
             onTap: () async {
