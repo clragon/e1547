@@ -18,7 +18,8 @@ extension denying on Post {
 
   Future<String> deniedBy(List<String> denylist) async {
     if (denylist.length > 0) {
-      List<String> tags = this.tags.value.values.expand((tags) => tags);
+      List<String> tags =
+          this.tags.value.values.expand((tags) => tags).toList();
 
       for (String line in denylist) {
         List<String> deny = [];

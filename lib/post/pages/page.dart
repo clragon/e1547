@@ -341,8 +341,6 @@ class _PostsPageState extends State<PostsPage> {
       }
     }
 
-    print(widget.provider.isLoading || tileSize == null || stagger == null);
-
     return WillPopScope(
       onWillPop: () async {
         if (selections.isNotEmpty) {
