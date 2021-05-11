@@ -2,6 +2,7 @@ import 'dart:async' show Future;
 import 'dart:io' show File, Platform;
 
 import 'package:e1547/client.dart';
+import 'package:e1547/follow.dart';
 import 'package:e1547/interface.dart';
 import 'package:e1547/settings/data/grid.dart';
 import 'package:flutter/foundation.dart' show ValueNotifier;
@@ -20,7 +21,8 @@ class Persistence {
   ValueNotifier<Future<Credentials>> credentials;
   ValueNotifier<Future<AppTheme>> theme;
   ValueNotifier<Future<List<String>>> denylist;
-  ValueNotifier<Future<List<String>>> follows;
+  ValueNotifier<Future<FollowList>> follows;
+  ValueNotifier<Future<bool>> followsSplit;
   ValueNotifier<Future<int>> tileSize;
   ValueNotifier<Future<GridState>> stagger;
 
@@ -56,7 +58,22 @@ class Persistence {
     theme = createStringSetting<AppTheme>('theme',
         initial: appThemeMap.keys.elementAt(1), values: AppTheme.values);
     denylist = createSetting<List<String>>('blacklist', initial: []);
-    follows = createSetting<List<String>>('follows', initial: []);
+    follows = createSetting<FollowList>('follows', initial: FollowList(),
+        getSetting: (prefs, key) async {
+      try {
+        String value = prefs.getString(key);
+        if (value != null) {
+          return FollowList.fromJson(value);
+        } else {
+          return null;
+        }
+      } on TypeError {
+        return FollowList.fromStrings(prefs.getStringList(key));
+      }
+    }, setSetting: (prefs, key, value) async {
+      await prefs.setString(key, value.toJson());
+    });
+    followsSplit = createSetting<bool>('followsSplit', initial: true);
     tileSize = createSetting('tileSize', initial: 200);
     stagger = createStringSetting(
       'stagger',

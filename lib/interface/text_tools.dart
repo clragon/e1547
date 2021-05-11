@@ -76,3 +76,72 @@ String getAge(String date) {
   }
   return '$ago $measurement ago';
 }
+
+List<Shadow> textShadow = [
+  ...[
+    Shadow(
+      offset: Offset(1, 1),
+      blurRadius: 3.0,
+      color: Colors.black38,
+    ),
+    Shadow(
+      offset: Offset(-1, 1),
+      blurRadius: 3.0,
+      color: Colors.black38,
+    ),
+    Shadow(
+      offset: Offset(-1, -1),
+      blurRadius: 3.0,
+      color: Colors.black38,
+    ),
+    Shadow(
+      offset: Offset(1, -1),
+      blurRadius: 3.0,
+      color: Colors.black38,
+    ),
+  ],
+  ...[
+    Shadow(
+      offset: Offset(2, 2),
+      blurRadius: 3.0,
+      color: Colors.black26,
+    ),
+    Shadow(
+      offset: Offset(-2, 2),
+      blurRadius: 3.0,
+      color: Colors.black26,
+    ),
+    Shadow(
+      offset: Offset(-2, -2),
+      blurRadius: 3.0,
+      color: Colors.black26,
+    ),
+    Shadow(
+      offset: Offset(2, -2),
+      blurRadius: 3.0,
+      color: Colors.black26,
+    ),
+  ],
+  ...[
+    Shadow(
+      offset: Offset(3, 3),
+      blurRadius: 3.0,
+      color: Colors.black12,
+    ),
+    Shadow(
+      offset: Offset(-3, 3),
+      blurRadius: 3.0,
+      color: Colors.black12,
+    ),
+    Shadow(
+      offset: Offset(-3, -3),
+      blurRadius: 3.0,
+      color: Colors.black12,
+    ),
+    Shadow(
+      offset: Offset(3, -3),
+      blurRadius: 3.0,
+      color: Colors.black12,
+    ),
+  ],
+];

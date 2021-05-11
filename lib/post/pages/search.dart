@@ -1,7 +1,9 @@
 import 'package:e1547/client.dart';
+import 'package:e1547/follow.dart';
 import 'package:e1547/interface.dart';
 import 'package:e1547/pool.dart';
 import 'package:e1547/post.dart';
+import 'package:e1547/settings.dart';
 import 'package:e1547/tag.dart';
 import 'package:e1547/wiki.dart';
 import 'package:flutter/material.dart';
@@ -46,7 +48,13 @@ class SearchPageAppBar extends StatefulWidget with PreferredSizeWidget {
 
 class _SearchPageAppBarState extends State<SearchPageAppBar> {
   String title = '...';
+  FollowList follows;
   Pool pool;
+
+  void updateFollows() async {
+    await db.follows.value.then((value) => follows = value);
+    updateTitle();
+  }
 
   void updateTitle() {
     bool matched = false;
@@ -78,6 +86,17 @@ class _SearchPageAppBarState extends State<SearchPageAppBar> {
     }
 
     title = () {
+      if (follows != null && follows.contains(widget.provider.search.value)) {
+        Follow follow = follows.data.singleWhere(
+            (follow) => follow.tags == widget.provider.search.value);
+        if (widget.provider.posts.value.isNotEmpty) {
+          follow.updateLatest(widget.provider.posts.value.first);
+        }
+        if (pool != null) {
+          follow.updatePoolName(pool);
+        }
+        return follow.title;
+      }
       if (pool != null) {
         return tagToTitle(pool.name);
       }
@@ -96,12 +115,17 @@ class _SearchPageAppBarState extends State<SearchPageAppBar> {
     super.initState();
     updateTitle();
     widget.provider.search.addListener(updateTitle);
+    widget.provider.posts.addListener(updateTitle);
+    updateFollows();
+    db.follows.addListener(updateFollows);
   }
 
   @override
   void dispose() {
     super.dispose();
     widget.provider.search.removeListener(updateTitle);
+    widget.provider.posts.removeListener(updateTitle);
+    db.follows.removeListener(updateFollows);
   }
 
   @override
