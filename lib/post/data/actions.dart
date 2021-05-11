@@ -27,23 +27,20 @@ extension denying on Post {
         List<String> any = [];
         List<String> allow = [];
         line.split(' ').forEach((tag) {
-          String prefix = tag[0];
-
-          switch (prefix) {
-            case '-':
-              allow.add(tag.substring(1));
-              break;
-            case '~':
-              any.add(tag.substring(1));
-              break;
-            default:
-              deny.add(tag);
-              break;
-          }
-
           if (tag.isNotEmpty) {
-            if (tag[0] == '-') {
-            } else {}
+            String prefix = tag[0];
+
+            switch (prefix) {
+              case '-':
+                allow.add(tag.substring(1));
+                break;
+              case '~':
+                any.add(tag.substring(1));
+                break;
+              default:
+                deny.add(tag);
+                break;
+            }
           }
         });
 
