@@ -82,10 +82,9 @@ class _PostsPageState extends State<PostsPage> {
   @override
   void reassemble() {
     super.reassemble();
-    // hot reload shenanigans
     db.tileSize.removeListener(updateTileSize);
-    db.stagger.removeListener(updateStagger);
     db.tileSize.addListener(updateTileSize);
+    db.stagger.removeListener(updateStagger);
     db.stagger.addListener(updateStagger);
     widget.provider.posts.removeListener(updatePage);
     widget.provider.posts.addListener(updatePage);
@@ -330,7 +329,7 @@ class _PostsPageState extends State<PostsPage> {
     Widget body() {
       if (tileSize != null && stagger != null) {
         return StaggeredGridView.countBuilder(
-          key: Key('grid_${crossAxisCount}_${stagger}_key'),
+          key: Key('grid_${tileSize}_${stagger}_key'),
           crossAxisCount: crossAxisCount,
           itemCount: widget.provider.posts.value.length,
           itemBuilder: itemBuilder,
