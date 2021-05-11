@@ -169,74 +169,76 @@ class VideoBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: Listenable.merge([
-        videoController,
-        frameController,
-      ]),
-      builder: (context, child) {
-        bool shown =
-            frameController.visible && videoController.value.isInitialized;
+    return SafeArea(
+      child: AnimatedBuilder(
+        animation: Listenable.merge([
+          videoController,
+          frameController,
+        ]),
+        builder: (context, child) {
+          bool shown =
+              frameController.visible && videoController.value.isInitialized;
 
-        return SafeCrossFade(
-          showChild: shown,
-          builder: (context) => IgnorePointer(
-            ignoring: !shown,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(videoController.value.position
-                          .toString()
-                          .substring(2, 7)),
-                      Flexible(
-                          child: Slider(
-                        min: 0,
-                        max: videoController.value.duration.inMilliseconds
-                            .toDouble(),
-                        value: videoController.value.position.inMilliseconds
-                            .toDouble(),
-                        onChangeStart: (double value) {
-                          frameController.cancel();
-                        },
-                        onChanged: (double value) {
-                          videoController
-                              .seekTo(Duration(milliseconds: value.toInt()));
-                        },
-                        onChangeEnd: (double value) {
-                          if (videoController.value.isPlaying) {
-                            frameController.hideFrame(
-                                duration: Duration(seconds: 2));
-                          }
-                        },
-                      )),
-                      Text(videoController.value.duration
-                          .toString()
-                          .substring(2, 7)),
-                      InkWell(
-                        child: Padding(
-                          padding: EdgeInsets.all(4),
-                          child: Icon(
-                            Icons.fullscreen_exit,
-                            size: 24,
-                            color: Theme.of(context).iconTheme.color,
+          return SafeCrossFade(
+            showChild: shown,
+            builder: (context) => IgnorePointer(
+              ignoring: !shown,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(videoController.value.position
+                            .toString()
+                            .substring(2, 7)),
+                        Flexible(
+                            child: Slider(
+                          min: 0,
+                          max: videoController.value.duration.inMilliseconds
+                              .toDouble(),
+                          value: videoController.value.position.inMilliseconds
+                              .toDouble(),
+                          onChangeStart: (double value) {
+                            frameController.cancel();
+                          },
+                          onChanged: (double value) {
+                            videoController
+                                .seekTo(Duration(milliseconds: value.toInt()));
+                          },
+                          onChangeEnd: (double value) {
+                            if (videoController.value.isPlaying) {
+                              frameController.hideFrame(
+                                  duration: Duration(seconds: 2));
+                            }
+                          },
+                        )),
+                        Text(videoController.value.duration
+                            .toString()
+                            .substring(2, 7)),
+                        InkWell(
+                          child: Padding(
+                            padding: EdgeInsets.all(4),
+                            child: Icon(
+                              Icons.fullscreen_exit,
+                              size: 24,
+                              color: Theme.of(context).iconTheme.color,
+                            ),
                           ),
+                          onTap: Navigator.of(context).maybePop,
                         ),
-                        onTap: Navigator.of(context).maybePop,
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 }

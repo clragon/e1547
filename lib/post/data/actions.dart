@@ -106,38 +106,11 @@ extension denying on Post {
           }
         }
 
-        bool denied = true;
-        bool allowed = true;
+        bool denied = deny.every((tag) => containtsTag(tag, tags));
+        bool allowed = allow.any((tag) => containtsTag(tag, tags));
 
-        for (String tag in deny) {
-          if (!containtsTag(tag, tags)) {
-            denied = false;
-            break;
-          }
-        }
-        for (String tag in allow) {
-          if (!containtsTag(tag, tags)) {
-            allowed = false;
-            break;
-          }
-        }
-
-        if (deny.isNotEmpty && allow.isNotEmpty) {
-          if (denied) {
-            if (!allowed) {
-              return line;
-            }
-          }
-        } else {
-          if (deny.isNotEmpty) {
-            if (denied) {
-              return line;
-            }
-          } else {
-            if (!allowed) {
-              return line;
-            }
-          }
+        if (denied && !allowed) {
+          return line;
         }
       }
     }

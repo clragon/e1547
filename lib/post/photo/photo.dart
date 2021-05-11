@@ -38,29 +38,8 @@ class _PostPhotoState extends State<PostPhoto> {
               backgroundDecoration: BoxDecoration(
                 color: Colors.transparent,
               ),
-              childSize: () {
-                double width;
-                double height;
-                switch (loadingState) {
-                  case LoadingState.none:
-                  // this is unecessary, because no image is shown
-                  // disabled to prevent possible size flickering
-                  /*
-                    width = MediaQuery.of(context).size.width;
-                    height = MediaQuery.of(context).size.height;
-                    break;
-                    */
-                  case LoadingState.sample:
-                    width = widget.post.sample.value.width.toDouble();
-                    height = widget.post.sample.value.height.toDouble();
-                    break;
-                  case LoadingState.full:
-                    width = widget.post.file.value.width.toDouble();
-                    height = widget.post.file.value.height.toDouble();
-                    break;
-                }
-                return Size(width, height);
-              }(),
+              childSize: Size(widget.post.file.value.width.toDouble(),
+                  widget.post.file.value.height.toDouble()),
               child: CachedNetworkImage(
                 fadeInDuration: Duration(milliseconds: 0),
                 fadeOutDuration: Duration(milliseconds: 0),
@@ -71,26 +50,34 @@ class _PostPhotoState extends State<PostPhoto> {
                       loadingState = LoadingState.full;
                     });
                   });
-                  return Image(image: provider);
+                  return Image(
+                    image: provider,
+                    fit: BoxFit.contain,
+                  );
                 },
                 placeholder: (context, chunk) {
                   return Stack(
                     alignment: Alignment.center,
                     children: [
-                      CachedNetworkImage(
-                        imageUrl: widget.post.sample.value.url,
-                        imageBuilder: (context, provider) {
-                          WidgetsBinding.instance.addPostFrameCallback((_) {
-                            setState(() {
-                              if (loadingState == LoadingState.none) {
-                                loadingState = LoadingState.sample;
-                              }
+                      Positioned.fill(
+                        child: CachedNetworkImage(
+                          imageUrl: widget.post.sample.value.url,
+                          imageBuilder: (context, provider) {
+                            WidgetsBinding.instance.addPostFrameCallback((_) {
+                              setState(() {
+                                if (loadingState == LoadingState.none) {
+                                  loadingState = LoadingState.sample;
+                                }
+                              });
                             });
-                          });
-                          return Image(image: provider);
-                        },
-                        errorWidget: (context, url, error) =>
-                            Center(child: Icon(Icons.error_outline)),
+                            return Image(
+                              image: provider,
+                              fit: BoxFit.contain,
+                            );
+                          },
+                          errorWidget: (context, url, error) =>
+                              Center(child: Icon(Icons.error_outline)),
+                        ),
                       ),
                       Positioned(
                         child: CrossFade(

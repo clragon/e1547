@@ -11,7 +11,7 @@ dependencies:
   # widgets
   expandable: ^5.0.1
   flutter_typeahead: ^3.1.1
-  pull_to_refresh: 1.6.4
+  pull_to_refresh: ^2.0.0
   icon_shadow: ^1.0.1
   like_button: ^2.0.2
   # grid 0.3.4 is fucking broken

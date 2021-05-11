@@ -37,15 +37,15 @@ class _PostsPageState extends State<PostsPage> {
   int tileSize;
 
   void updatePage() {
-    if (this.mounted) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (this.mounted) {
         setState(() {
           if (widget.provider.posts.value.isEmpty) {
             selections.clear();
           }
         });
-      });
-    }
+      }
+    });
   }
 
   void updateStagger() {
@@ -124,17 +124,16 @@ class _PostsPageState extends State<PostsPage> {
       return Stack(
         alignment: Alignment.center,
         children: [
-          Container(
-            child: PostTile(
-                post: post,
-                onPressed: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => PostDetailGallery(
-                      provider: provider,
-                      initialPage: provider.posts.value.indexOf(post),
-                    ),
-                  ));
-                }),
+          PostTile(
+            post: post,
+            onPressed: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => PostDetailGallery(
+                  provider: provider,
+                  initialPage: provider.posts.value.indexOf(post),
+                ),
+              ));
+            },
           ),
           Positioned.fill(
             child: GestureDetector(
