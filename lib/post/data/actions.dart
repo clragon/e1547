@@ -24,14 +24,26 @@ extension denying on Post {
 
       for (String line in denylist) {
         List<String> deny = [];
+        List<String> any = [];
         List<String> allow = [];
         line.split(' ').forEach((tag) {
+          String prefix = tag[0];
+
+          switch (prefix) {
+            case '-':
+              allow.add(tag.substring(1));
+              break;
+            case '~':
+              any.add(tag.substring(1));
+              break;
+            default:
+              deny.add(tag);
+              break;
+          }
+
           if (tag.isNotEmpty) {
             if (tag[0] == '-') {
-              allow.add(tag.substring(1));
-            } else {
-              deny.add(tag);
-            }
+            } else {}
           }
         });
 
@@ -108,8 +120,9 @@ extension denying on Post {
 
         bool denied = deny.every((tag) => containtsTag(tag, tags));
         bool allowed = allow.any((tag) => containtsTag(tag, tags));
+        bool optional = any.any((tag) => containtsTag(tag, tags));
 
-        if (denied && !allowed) {
+        if (denied && optional && !allowed) {
           return line;
         }
       }
