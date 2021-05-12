@@ -196,6 +196,7 @@ class _RefreshablePageState extends State<RefreshablePage> {
         ),
         body: body(),
         drawer: widget.drawer,
+        drawerEdgeDragWidth: defaultDrawerEdge(context),
         floatingActionButton: widget.floatingActionButton,
       );
     }

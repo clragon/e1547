@@ -55,6 +55,9 @@ Map<String, WidgetBuilder> routes = <String, WidgetBuilder>{
 
 ProfileHeader header = ProfileHeader();
 
+double defaultDrawerEdge(BuildContext context) =>
+    MediaQuery.of(context).size.width * 0.6;
+
 class NavigationDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -125,6 +128,7 @@ class NavigationDrawer extends StatelessWidget {
           onTap: () => Navigator.popAndPushNamed(context, '/settings'),
         ),
         ListTile(
+          // this would be better solved with a seperate stateful widget.
           leading: FutureBuilder(
             builder: (context, snapshot) {
               if (snapshot.hasData && snapshot.data.isNotEmpty) {

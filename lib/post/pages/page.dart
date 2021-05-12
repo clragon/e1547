@@ -365,6 +365,7 @@ class _PostsPageState extends State<PostsPage> {
           ),
           body: child,
           drawer: NavigationDrawer(),
+          drawerEdgeDragWidth: defaultDrawerEdge(context),
           endDrawer: widget.provider.canDeny
               ? SearchDrawer(provider: widget.provider)
               : null,

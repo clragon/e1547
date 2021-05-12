@@ -21,12 +21,10 @@ class _PostPhotoState extends State<PostPhoto> {
     return Stack(
       alignment: Alignment.center,
       children: [
-        AnimatedOpacity(
-          duration: Duration(milliseconds: 200),
-          opacity: loadingState == LoadingState.none ? 1 : 0,
-          child: Container(
-            height: 24,
-            width: 24,
+        CrossFade(
+          showChild: loadingState == LoadingState.none,
+          child: Padding(
+            padding: EdgeInsets.all(8),
             child: CircularProgressIndicator(),
           ),
         ),
@@ -83,13 +81,12 @@ class _PostPhotoState extends State<PostPhoto> {
                         child: CrossFade(
                           child: LinearProgressIndicator(
                             minHeight:
-                                widget.post.sample.value.height.toDouble() /
-                                    100,
+                                widget.post.file.value.height.toDouble() / 100,
                             backgroundColor: Colors.transparent,
                           ),
                           showChild: loadingState == LoadingState.sample,
                         ),
-                        bottom: 0,
+                        top: 0,
                         right: 0,
                         left: 0,
                       ),
