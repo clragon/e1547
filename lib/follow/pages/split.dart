@@ -99,30 +99,94 @@ class _FollowsSplitPageState extends State<FollowsSplitPage> {
         future: follow.status,
         builder: (context, AsyncSnapshot<FollowStatus> snapshot) {
           if (snapshot.hasData) {
+            Widget image() {
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  snapshot.data.thumbnail != null
+                      ? Expanded(
+                          child: Hero(
+                              tag: 'image_${snapshot.data.latest}',
+                              child: CachedNetworkImage(
+                                imageUrl: snapshot.data.thumbnail,
+                                errorWidget: (context, url, error) =>
+                                    Icon(Icons.error),
+                                fit: BoxFit.cover,
+                              )),
+                        )
+                      : Text('no image'),
+                ],
+              );
+            }
+
+            Widget info() {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      if (follow.notification)
+                        Padding(
+                          padding: EdgeInsets.only(right: 4),
+                          child: IconShadowWidget(
+                            Icon(
+                              Icons.notifications_active,
+                              size: 16,
+                              color: Theme.of(context).iconTheme.color,
+                            ),
+                            shadowColor: Colors.black,
+                          ),
+                        ),
+                      if (snapshot.data.unseen != null &&
+                          snapshot.data.unseen > 0)
+                        Expanded(
+                          child: Text(
+                            () {
+                              String text = snapshot.data.unseen.toString();
+                              if (snapshot.data.unseen == follows.checkAmount) {
+                                text += '+';
+                              }
+                              text += ' new post';
+                              if (snapshot.data.unseen > 1) {
+                                text += 's';
+                              }
+                              return text;
+                            }(),
+                            style: TextStyle(shadows: textShadow),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      Spacer(),
+                      if (follow.tags.split(' ').length > 2)
+                        Text(
+                          '${follow.tags.split(' ').length} tags',
+                          style: TextStyle(shadows: textShadow),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                    ],
+                  ),
+                  Text(
+                    follow.title,
+                    style: Theme.of(context)
+                        .textTheme
+                        .headline6
+                        .copyWith(shadows: textShadow),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                    softWrap: true,
+                  ),
+                ],
+              );
+            }
+
             return Stack(
               children: [
                 SafeCrossFade(
                   showChild: snapshot.data.latest != null,
                   builder: (context) => Stack(
                     children: [
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          snapshot.data.thumbnail != null
-                              ? Expanded(
-                                  child: Hero(
-                                      tag: 'image_${snapshot.data.latest}',
-                                      child: CachedNetworkImage(
-                                        imageUrl: snapshot.data.thumbnail,
-                                        errorWidget: (context, url, error) =>
-                                            Icon(Icons.error),
-                                        fit: BoxFit.cover,
-                                      )),
-                                )
-                              : Text('no image'),
-                        ],
-                      ),
+                      image(),
                       Column(
                         mainAxisSize: MainAxisSize.max,
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -145,67 +209,7 @@ class _FollowsSplitPageState extends State<FollowsSplitPage> {
                                   )),
                                   child: Padding(
                                     padding: EdgeInsets.all(4),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            if (follow.notification)
-                                              Padding(
-                                                padding:
-                                                    EdgeInsets.only(right: 4),
-                                                child: IconShadowWidget(
-                                                  Icon(
-                                                    Icons.notifications_active,
-                                                    size: 16,
-                                                    color: Theme.of(context)
-                                                        .iconTheme
-                                                        .color,
-                                                  ),
-                                                  shadowColor: Colors.black,
-                                                ),
-                                              ),
-                                            if (snapshot.data.unseen != null &&
-                                                snapshot.data.unseen > 0)
-                                              Text(() {
-                                                String text = snapshot
-                                                    .data.unseen
-                                                    .toString();
-                                                if (snapshot.data.unseen ==
-                                                    follows.checkAmount) {
-                                                  text += '+';
-                                                }
-                                                text += ' new post';
-                                                if (snapshot.data.unseen > 1) {
-                                                  text += 's';
-                                                }
-                                                return text;
-                                              }(),
-                                                  style: TextStyle(
-                                                      shadows: textShadow)),
-                                            Spacer(),
-                                            if (follow.tags.split(' ').length >
-                                                3)
-                                              Text(
-                                                '${follow.tags.split(' ').length} tags',
-                                                style: TextStyle(
-                                                    shadows: textShadow),
-                                              ),
-                                          ],
-                                        ),
-                                        Text(
-                                          follow.title,
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .headline6
-                                              .copyWith(shadows: textShadow),
-                                          overflow: TextOverflow.ellipsis,
-                                          maxLines: 1,
-                                          softWrap: true,
-                                        ),
-                                      ],
-                                    ),
+                                    child: info(),
                                   ),
                                 )),
                           ),
@@ -251,7 +255,22 @@ class _FollowsSplitPageState extends State<FollowsSplitPage> {
 
   @override
   Widget build(BuildContext context) {
-    Widget bodyWidget() {
+    Widget body() {
+      if (tileSize != null && follows != null) {
+        return StaggeredGridView.countBuilder(
+          key: Key('grid_${crossAxisCount}_key'),
+          crossAxisCount: crossAxisCount,
+          itemCount: follows.length,
+          itemBuilder: itemBuilder,
+          staggeredTileBuilder: tileBuilder,
+          physics: BouncingScrollPhysics(),
+        );
+      } else {
+        return SizedBox.shrink();
+      }
+    }
+
+    Widget page() {
       return PageLoader(
         onEmpty: Text('No posts'),
         onLoading: Text('Loading posts'),
@@ -277,17 +296,7 @@ class _FollowsSplitPageState extends State<FollowsSplitPage> {
             }
           },
           physics: BouncingScrollPhysics(),
-          child: SafeBuilder(
-            showChild: tileSize != null && follows != null,
-            builder: (context) => StaggeredGridView.countBuilder(
-              key: Key('grid_${crossAxisCount}_key'),
-              crossAxisCount: crossAxisCount,
-              itemCount: follows.length,
-              itemBuilder: itemBuilder,
-              staggeredTileBuilder: tileBuilder,
-              physics: BouncingScrollPhysics(),
-            ),
-          ),
+          child: body(),
         ),
       );
     }
@@ -299,7 +308,7 @@ class _FollowsSplitPageState extends State<FollowsSplitPage> {
           title: Text('Following'),
           actions: [
             IconButton(
-              icon: Icon(Icons.view_comfy),
+              icon: Icon(Icons.view_compact),
               tooltip: 'Combine',
               onPressed: () => db.followsSplit.value = Future.value(false),
             ),
@@ -312,7 +321,7 @@ class _FollowsSplitPageState extends State<FollowsSplitPage> {
         ),
         controller: scrollController,
       ),
-      body: bodyWidget(),
+      body: page(),
     );
   }
 }

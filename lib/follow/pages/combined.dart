@@ -15,7 +15,7 @@ class FollowsCombinedPage extends StatelessWidget {
               title: Text('Following'),
               actions: <Widget>[
                 IconButton(
-                  icon: Icon(Icons.view_compact),
+                  icon: Icon(Icons.view_comfy),
                   tooltip: 'Split',
                   onPressed: () => db.followsSplit.value = Future.value(true),
                 ),
