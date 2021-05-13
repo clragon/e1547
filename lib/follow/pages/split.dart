@@ -6,6 +6,7 @@ import 'package:e1547/follow.dart';
 import 'package:e1547/interface.dart';
 import 'package:e1547/post.dart';
 import 'package:e1547/settings.dart';
+import 'package:e1547/wiki.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:icon_shadow/icon_shadow.dart';
@@ -88,8 +89,8 @@ class _FollowsSplitPageState extends State<FollowsSplitPage> {
   void dispose() {
     super.dispose();
     db.follows.removeListener(updateFollows);
-    db.tileSize.removeListener(updateTileSize);
     db.host.removeListener(updateFollows);
+    db.tileSize.removeListener(updateTileSize);
   }
 
   Widget itemBuilder(BuildContext context, int item) {
@@ -233,16 +234,17 @@ class _FollowsSplitPageState extends State<FollowsSplitPage> {
                   child: Material(
                     color: Colors.transparent,
                     child: InkWell(
-                        onTap: () => Navigator.of(context).push(
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    SearchPage(tags: follow.tags)))),
+                      onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => SearchPage(tags: follow.tags))),
+                      onLongPress: () => wikiSheet(
+                          context: context, tag: tagToName(follow.tags)),
+                    ),
                   ),
                 ),
               ],
             );
           }
-          return Container();
+          return SizedBox.shrink();
         },
       ),
     );
@@ -272,9 +274,9 @@ class _FollowsSplitPageState extends State<FollowsSplitPage> {
 
     Widget page() {
       return PageLoader(
-        onEmpty: Text('No posts'),
-        onLoading: Text('Loading posts'),
-        onError: Text('Failed to load posts'),
+        onEmpty: Text('No follows'),
+        onLoading: Text('Loading follows'),
+        onError: Text('Failed to load follows'),
         isError: false,
         isLoading: loading,
         isEmpty: follows?.length == 0,

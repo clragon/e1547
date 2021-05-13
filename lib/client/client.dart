@@ -37,6 +37,9 @@ class Client {
     initialize();
   }
 
+  Future<bool> get isSafe async =>
+      (await db.host.value) != (await db.customHost.value);
+
   Future<bool> initialize() async {
     Future<bool> init() async {
       Credentials credentials = await db.credentials.value;

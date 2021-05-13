@@ -107,14 +107,18 @@ class _WikiTagDisplayState extends State<WikiTagDisplay> {
       if (list.isNotEmpty) {
         wiki = list.first;
       }
-      setState(() {
-        loading = false;
-      });
+      if (mounted) {
+        setState(() {
+          loading = false;
+        });
+      }
     }).catchError((_) {
-      setState(() {
-        error = true;
-        loading = false;
-      });
+      if (mounted) {
+        setState(() {
+          error = true;
+          loading = false;
+        });
+      }
     });
   }
 

@@ -1,7 +1,6 @@
 import 'package:e1547/client.dart';
 import 'package:e1547/follow/data.dart';
 import 'package:e1547/post.dart';
-import 'package:e1547/settings.dart';
 
 extension Updating on FollowList {
   int get checkAmount => 5;
@@ -16,8 +15,11 @@ extension Updating on FollowList {
       onProgress(progress, follows.length);
 
       Future<void> refresh() async {
-        List<Post> posts = await client.posts(follow.tags, 1,
-            limit: checkAmount, faithful: true);
+        List<Post> posts = [];
+        try {
+          posts = await client.posts(follow.tags, 1,
+              limit: checkAmount, faithful: true);
+        } on DioError {}
         posts.removeWhere((element) => element.isBlacklisted);
         await updateUnseen(follows.indexOf(follow), posts);
         if (!follow.tags.contains(' ') && follow.alias == null) {
@@ -41,10 +43,11 @@ extension Updating on FollowList {
       }
     }
 
-    bool isSafe = (await db.host.value) != (await db.customHost.value);
+    bool isSafe = await client.isSafe;
     follows.sort((a, b) {
       int first;
       int second;
+      int result;
       if (isSafe) {
         first = b.safe.unseen;
         second = a.safe.unseen;
@@ -53,16 +56,22 @@ extension Updating on FollowList {
         second = a.unsafe.unseen;
       }
       if (first == null && second == null) {
-        return 0;
+        result = 0;
       } else {
         if (first == null) {
-          return -1;
+          result = -1;
         }
         if (second == null) {
-          return 1;
+          result = 1;
         }
       }
-      return first.compareTo(second);
+      if (result == 0) {
+        result = first.compareTo(second);
+      }
+      if (result == 0) {
+        result = a.title.compareTo(b.title);
+      }
+      return result;
     });
     write();
   }

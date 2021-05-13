@@ -32,12 +32,14 @@ class _FollowsPageState extends State<FollowsPage> {
   @override
   Widget build(BuildContext context) {
     return PageLoader(
-        child: Builder(
-            builder: (BuildContext context) => isSplit == null
-                ? SizedBox.shrink()
-                : isSplit
-                    ? FollowsSplitPage()
-                    : FollowsCombinedPage()),
+        child: AnimatedSwitcher(
+          duration: defaultAnimationDuration,
+          child: isSplit == null
+              ? SizedBox.shrink()
+              : isSplit
+                  ? FollowsSplitPage()
+                  : FollowsCombinedPage(),
+        ),
         isLoading: isSplit == null,
         isEmpty: false,
         isError: false);

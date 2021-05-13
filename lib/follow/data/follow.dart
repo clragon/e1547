@@ -1,6 +1,7 @@
 import 'dart:collection';
 import 'dart:convert';
 
+import 'package:e1547/client.dart';
 import 'package:e1547/pool.dart';
 import 'package:e1547/post.dart';
 import 'package:e1547/settings.dart';
@@ -160,15 +161,11 @@ class Follow {
     unsafe ??= FollowStatus();
   }
 
-  Future<FollowStatus> get status async =>
-      (await db.host.value) != (await db.customHost.value) ? safe : unsafe;
+  Future<FollowStatus> get status async => await client.isSafe ? safe : unsafe;
 
   Future<DateTime> get updated async => (await status).updated;
 
-  Future<String> get thumbnail async =>
-      (await db.host.value) != (await db.customHost.value)
-          ? safe.thumbnail
-          : unsafe.thumbnail ?? safe.thumbnail;
+  Future<String> get thumbnail async => (await status).thumbnail;
 
   Future<int> get latest async => (await status).latest;
 
@@ -211,7 +208,7 @@ class Follow {
       FollowStatus status;
       FollowStatus other;
 
-      if ((await db.host.value) != (await db.customHost.value)) {
+      if (await client.isSafe) {
         status = safe;
         other = unsafe;
       } else {
@@ -250,7 +247,7 @@ class Follow {
       FollowStatus status;
       FollowStatus other;
 
-      if ((await db.host.value) != (await db.customHost.value)) {
+      if (await client.isSafe) {
         status = safe;
         other = unsafe;
       } else {

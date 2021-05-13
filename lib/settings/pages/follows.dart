@@ -1,3 +1,6 @@
+import 'dart:ui';
+
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e1547/follow.dart';
 import 'package:e1547/interface.dart';
 import 'package:e1547/post.dart';
@@ -5,6 +8,7 @@ import 'package:e1547/settings.dart';
 import 'package:e1547/wiki.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:icon_shadow/icon_shadow.dart';
 
 class FollowingPage extends StatefulWidget {
   @override
@@ -19,6 +23,7 @@ class _FollowingPageState extends State<FollowingPage> {
   bool isSearching = false;
   TextEditingController textController = TextEditingController();
   PersistentBottomSheetController<String> sheetController;
+  ScrollController scrollController = ScrollController();
 
   Future<void> update() async {
     await db.follows.value.then((value) {
@@ -90,25 +95,6 @@ class _FollowingPageState extends State<FollowingPage> {
       }
     }
 
-    Widget cardWidget(String tag) {
-      return Card(
-        child: InkWell(
-          onTap: () => Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => SearchPage(tags: tag))),
-          onLongPress: () => wikiSheet(context: context, tag: tagToName(tag)),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-                child: Text(tagToTitle(tag)),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-
     Widget body() {
       if (follows?.isEmpty ?? true) {
         return Center(
@@ -129,74 +115,16 @@ class _FollowingPageState extends State<FollowingPage> {
       }
 
       return ListView.builder(
-        padding: EdgeInsets.only(bottom: 30),
+        controller: scrollController,
+        padding: EdgeInsets.only(top: 8, bottom: 30),
         itemCount: follows.length,
-        itemBuilder: (BuildContext context, int index) {
-          Widget contextMenu() {
-            return Row(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                PopupMenuButton<String>(
-                  icon: Icon(
-                    Icons.more_vert,
-                    color: Theme.of(context).iconTheme.color,
-                  ),
-                  itemBuilder: (BuildContext context) =>
-                      <PopupMenuEntry<String>>[
-                    PopupMenuItem(
-                      value: 'edit',
-                      child: PopTile(title: 'Edit', icon: Icons.edit),
-                    ),
-                    PopupMenuItem(
-                      value: 'delete',
-                      child: PopTile(title: 'Delete', icon: Icons.delete),
-                    ),
-                  ],
-                  onSelected: (value) async {
-                    switch (value) {
-                      case 'edit':
-                        addTags(context, edit: index);
-                        break;
-                      case 'delete':
-                        db.follows.value =
-                            Future.value(follows..removeAt(index));
-                        break;
-                    }
-                  },
-                ),
-              ],
-            );
-          }
-
-          return Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-            child: Column(
-              children: <Widget>[
-                InkWell(
-                  onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => SearchPage(tags: follows[index]))),
-                  onLongPress: () => wikiSheet(
-                      context: context, tag: tagToName(follows[index])),
-                  child: Row(
-                    children: <Widget>[
-                      Expanded(
-                        child: Wrap(
-                          direction: Axis.horizontal,
-                          children: follows[index]
-                              .split(' ')
-                              .map((tag) => cardWidget(tag))
-                              .toList(),
-                        ),
-                      ),
-                      contextMenu(),
-                    ],
-                  ),
-                ),
-                Divider()
-              ],
-            ),
-          );
-        },
+        itemBuilder: (BuildContext context, int index) => FollowListTile(
+          follow: follows.follows[index],
+          onRename: () => follows.updateAlias(index, 'yeet'),
+          onEdit: () => addTags(context, edit: index),
+          onDelete: () =>
+              db.follows.value = Future.value(follows..removeAt(index)),
+        ),
         physics: BouncingScrollPhysics(),
       );
     }
@@ -242,23 +170,188 @@ class _FollowingPageState extends State<FollowingPage> {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Following'),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.edit),
-            onPressed: () async => showDialog(
-              context: context,
-              builder: (context) => editor(),
+      appBar: ScrollingAppbarFrame(
+        child: AppBar(
+          title: Text('Following'),
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.edit),
+              onPressed: () async => showDialog(
+                context: context,
+                builder: (context) => editor(),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
+        controller: scrollController,
       ),
       body: body(),
       floatingActionButton: Builder(
         builder: (context) {
           return floatingActionButton(context);
         },
+      ),
+    );
+  }
+}
+
+class FollowListTile extends StatefulWidget {
+  final Function onEdit;
+  final Function onDelete;
+  final Function onRename;
+  final Follow follow;
+
+  const FollowListTile({
+    @required this.follow,
+    @required this.onEdit,
+    @required this.onDelete,
+    @required this.onRename,
+  });
+
+  @override
+  _FollowListTileState createState() => _FollowListTileState();
+}
+
+class _FollowListTileState extends State<FollowListTile> {
+  @override
+  Widget build(BuildContext context) {
+    Widget cardWidget(String tag) {
+      return Card(
+        child: InkWell(
+          onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => SearchPage(tags: tag))),
+          onLongPress: () => wikiSheet(context: context, tag: tagToName(tag)),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                child: Text(tagToTitle(tag)),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    Widget contextMenu() {
+      return PopupMenuButton<String>(
+        icon: IconShadowWidget(
+          Icon(
+            Icons.more_vert,
+            color: Theme.of(context).iconTheme.color,
+          ),
+          shadowColor: Theme.of(context).shadowColor,
+        ),
+        itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+          if (widget.follow.tags.split(' ').length > 1)
+            PopupMenuItem(
+              value: 'rename',
+              child: PopTile(title: 'Rename', icon: Icons.label),
+            ),
+          PopupMenuItem(
+            value: 'edit',
+            child: PopTile(title: 'Edit', icon: Icons.edit),
+          ),
+          PopupMenuItem(
+            value: 'delete',
+            child: PopTile(title: 'Delete', icon: Icons.delete),
+          ),
+        ],
+        onSelected: (value) async {
+          switch (value) {
+            case 'rename':
+              widget.onRename();
+              break;
+            case 'edit':
+              widget.onEdit();
+              break;
+            case 'delete':
+              widget.onDelete();
+              break;
+          }
+        },
+      );
+    }
+
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        children: <Widget>[
+          Stack(
+            children: [
+              Positioned.fill(
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Positioned(
+                      left: 0,
+                      right: 0,
+                      child: FutureBuilder(
+                          future: widget.follow.thumbnail,
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData) {
+                              return CachedNetworkImage(
+                                imageUrl: snapshot.data,
+                                errorWidget: (context, url, error) =>
+                                    Icon(Icons.error),
+                                fit: BoxFit.cover,
+                              );
+                            } else {
+                              return SizedBox.shrink();
+                            }
+                          }),
+                    ),
+                  ],
+                ),
+              ),
+              Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) =>
+                          SearchPage(tags: widget.follow.tags))),
+                  onLongPress: () => wikiSheet(
+                      context: context, tag: tagToName(widget.follow.tags)),
+                  child: ClipRect(
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 1, sigmaY: 1),
+                      child: ListTile(
+                        title: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.all(8.0),
+                              child: Text(
+                                widget.follow.title,
+                                style: TextStyle(shadows: textShadow),
+                              ),
+                            ),
+                          ],
+                        ),
+                        subtitle: (widget.follow.tags.split(' ').length > 1)
+                            ? Row(children: <Widget>[
+                                Expanded(
+                                  child: Wrap(
+                                    direction: Axis.horizontal,
+                                    children: widget.follow.tags
+                                        .split(' ')
+                                        .map((tag) => cardWidget(tag))
+                                        .toList(),
+                                  ),
+                                ),
+                              ])
+                            : null,
+                        trailing: contextMenu(),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Divider()
+        ],
       ),
     );
   }
