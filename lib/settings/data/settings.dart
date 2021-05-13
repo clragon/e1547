@@ -22,6 +22,7 @@ class Persistence {
   ValueNotifier<Future<AppTheme>> theme;
   ValueNotifier<Future<List<String>>> denylist;
   ValueNotifier<Future<FollowList>> follows;
+  ValueNotifier<Future<bool>> followsSplit;
   ValueNotifier<Future<int>> tileSize;
   ValueNotifier<Future<GridState>> stagger;
 
@@ -67,6 +68,7 @@ class Persistence {
     }, setSetting: (prefs, key, value) async {
       await prefs.setString(key, value.toJson());
     });
+    followsSplit = createSetting<bool>('followsSplit', initial: true);
     tileSize = createSetting('tileSize', initial: 200);
     stagger = createStringSetting(
       'stagger',

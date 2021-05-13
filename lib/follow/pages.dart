@@ -1,2 +1,3 @@
-export 'pages/follows.dart';
-export 'pages/mixed.dart';
+export 'pages/combined.dart';
+export 'pages/split.dart';
+export 'pages/switcher.dart';

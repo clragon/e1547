@@ -81,7 +81,7 @@ class _FollowingPageState extends State<FollowingPage> {
         setState(() {
           isSearching = true;
         });
-        sheetController.closed.then((a) {
+        sheetController.closed.then((_) {
           setState(() {
             isSearching = false;
             editing = null;
@@ -144,14 +144,6 @@ class _FollowingPageState extends State<FollowingPage> {
                   itemBuilder: (BuildContext context) =>
                       <PopupMenuEntry<String>>[
                     PopupMenuItem(
-                      value: 'search',
-                      child: PopTile(title: 'Search', icon: Icons.search),
-                    ),
-                    PopupMenuItem(
-                      value: 'wiki',
-                      child: PopTile(title: 'Wiki', icon: Icons.info_outline),
-                    ),
-                    PopupMenuItem(
                       value: 'edit',
                       child: PopTile(title: 'Edit', icon: Icons.edit),
                     ),
@@ -162,16 +154,6 @@ class _FollowingPageState extends State<FollowingPage> {
                   ],
                   onSelected: (value) async {
                     switch (value) {
-                      case 'search':
-                        Navigator.of(context)
-                            .push(MaterialPageRoute(builder: (context) {
-                          return SearchPage(tags: follows[index]);
-                        }));
-                        break;
-                      case 'wiki':
-                        wikiSheet(
-                            context: context, tag: tagToName(follows[index]));
-                        break;
                       case 'edit':
                         addTags(context, edit: index);
                         break;

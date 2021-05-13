@@ -190,6 +190,21 @@ class Follow {
     return false;
   }
 
+  Future<bool> updateTimestamp(FollowStatus status) async {
+    bool updated = false;
+    if (status.updated == null ||
+        DateTime.now().difference(status.updated).inHours > 1) {
+      status.updated = DateTime.now();
+      updated = true;
+    }
+    return updated;
+  }
+
+  Future<bool> ensureCooldown() async {
+    FollowStatus status = await this.status;
+    return updateTimestamp(status);
+  }
+
   Future<bool> updateLatest(Post post, {bool foreground = true}) async {
     bool updated = false;
     if (post != null) {
@@ -213,9 +228,7 @@ class Follow {
           updated = true;
         }
       }
-      if (status.updated == null ||
-          DateTime.now().difference(status.updated).inHours > 1) {
-        status.updated = DateTime.now();
+      if (await updateTimestamp(status)) {
         updated = true;
       }
       if (foreground && status.unseen != 0) {
@@ -225,6 +238,8 @@ class Follow {
         }
         updated = true;
       }
+    } else {
+      ensureCooldown();
     }
     return updated;
   }
@@ -255,6 +270,8 @@ class Follow {
         status.unseen = length;
         updated = true;
       }
+    } else {
+      ensureCooldown();
     }
     return updated;
   }

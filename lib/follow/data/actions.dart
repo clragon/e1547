@@ -10,7 +10,6 @@ extension Updating on FollowList {
     Function(int progress, int max) onProgress,
     bool force = false,
   }) async {
-    bool sort = false;
     int progress = 0;
     for (Follow follow in follows) {
       progress++;
@@ -20,9 +19,7 @@ extension Updating on FollowList {
         List<Post> posts = await client.posts(follow.tags, 1,
             limit: checkAmount, faithful: true);
         posts.removeWhere((element) => element.isBlacklisted);
-        if (await updateUnseen(follows.indexOf(follow), posts)) {
-          sort = true;
-        }
+        await updateUnseen(follows.indexOf(follow), posts);
         if (!follow.tags.contains(' ') && follow.alias == null) {
           RegExpMatch match =
               RegExp(r'^pool:(?<id>\d+)$').firstMatch(follow.tags);
@@ -44,31 +41,29 @@ extension Updating on FollowList {
       }
     }
 
-    if (sort) {
-      bool isSafe = (await db.host.value) != (await db.customHost.value);
-      follows.sort((a, b) {
-        int first;
-        int second;
-        if (isSafe) {
-          first = b.safe.unseen;
-          second = a.safe.unseen;
-        } else {
-          first = b.unsafe.unseen;
-          second = a.unsafe.unseen;
+    bool isSafe = (await db.host.value) != (await db.customHost.value);
+    follows.sort((a, b) {
+      int first;
+      int second;
+      if (isSafe) {
+        first = b.safe.unseen;
+        second = a.safe.unseen;
+      } else {
+        first = b.unsafe.unseen;
+        second = a.unsafe.unseen;
+      }
+      if (first == null && second == null) {
+        return 0;
+      } else {
+        if (first == null) {
+          return -1;
         }
-        if (first == null && second == null) {
-          return 0;
-        } else {
-          if (first == null) {
-            return -1;
-          }
-          if (second == null) {
-            return 1;
-          }
+        if (second == null) {
+          return 1;
         }
-        return first.compareTo(second);
-      });
-      write();
-    }
+      }
+      return first.compareTo(second);
+    });
+    write();
   }
 }

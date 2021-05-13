@@ -3,7 +3,7 @@ import 'package:e1547/post.dart';
 import 'package:e1547/settings.dart';
 import 'package:flutter/material.dart';
 
-class MixedFollowsPage extends StatelessWidget {
+class FollowsCombinedPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder(
@@ -14,6 +14,11 @@ class MixedFollowsPage extends StatelessWidget {
             return AppBar(
               title: Text('Following'),
               actions: <Widget>[
+                IconButton(
+                  icon: Icon(Icons.view_compact),
+                  tooltip: 'Split',
+                  onPressed: () => db.followsSplit.value = Future.value(true),
+                ),
                 IconButton(
                   icon: Icon(Icons.turned_in),
                   tooltip: 'Settings',

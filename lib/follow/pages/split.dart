@@ -11,12 +11,12 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:icon_shadow/icon_shadow.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-class FollowsPage extends StatefulWidget {
+class FollowsSplitPage extends StatefulWidget {
   @override
-  _FollowsPageState createState() => _FollowsPageState();
+  _FollowsSplitPageState createState() => _FollowsSplitPageState();
 }
 
-class _FollowsPageState extends State<FollowsPage> {
+class _FollowsSplitPageState extends State<FollowsSplitPage> {
   RefreshController refreshController = RefreshController();
   ScrollController scrollController = ScrollController();
   FollowList follows;
@@ -34,14 +34,14 @@ class _FollowsPageState extends State<FollowsPage> {
     });
   }
 
-  void updateTileSize() {
-    db.tileSize.value.then((value) {
+  Future<void> updateTileSize() async {
+    await db.tileSize.value.then((value) {
       tileSize = value;
       update();
     });
   }
 
-  void updateFollows() {
+  Future<void> updateFollows() async {
     db.follows.value.then((value) {
       follows = value;
       update();
@@ -49,8 +49,7 @@ class _FollowsPageState extends State<FollowsPage> {
   }
 
   Future<void> refreshFollows({bool force = false}) async {
-    follows = await db.follows.value;
-    update();
+    await updateFollows();
     await follows.update(
         onProgress: (progress, max) {
           this.progress = progress;
@@ -75,13 +74,13 @@ class _FollowsPageState extends State<FollowsPage> {
     db.host.addListener(updateFollows);
     db.tileSize.addListener(updateTileSize);
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await refreshFollows();
-      /*
-      refreshController.requestRefresh(needCallback: false).then((value) async {
+      refreshController
+          .requestRefresh(
+              needCallback: false, duration: Duration(milliseconds: 100))
+          .then((value) async {
         await refreshFollows();
         refreshController.refreshCompleted();
       });
-       */
     });
   }
 
@@ -260,26 +259,27 @@ class _FollowsPageState extends State<FollowsPage> {
         isError: false,
         isLoading: loading,
         isEmpty: follows?.length == 0,
-        child: SafeBuilder(
-          showChild: tileSize != null && follows != null,
-          builder: (context) => SmartRefresher(
-            primary: false,
-            scrollController: scrollController,
-            controller: refreshController,
-            header: ClassicHeader(
-              refreshingText: 'Refreshing $progress / ${follows.length}...',
-              completeText: 'Refreshed follows!',
-            ),
-            onRefresh: () async {
-              try {
-                await refreshFollows(force: true);
-                refreshController.refreshCompleted();
-              } on DioError {
-                refreshController.refreshFailed();
-              }
-            },
-            physics: BouncingScrollPhysics(),
-            child: StaggeredGridView.countBuilder(
+        child: SmartRefresher(
+          primary: false,
+          scrollController: scrollController,
+          controller: refreshController,
+          header: ClassicHeader(
+            refreshingText:
+                'Refreshing $progress / ${follows?.length ?? '?'}...',
+            completeText: 'Refreshed follows!',
+          ),
+          onRefresh: () async {
+            try {
+              await refreshFollows(force: true);
+              refreshController.refreshCompleted();
+            } on DioError {
+              refreshController.refreshFailed();
+            }
+          },
+          physics: BouncingScrollPhysics(),
+          child: SafeBuilder(
+            showChild: tileSize != null && follows != null,
+            builder: (context) => StaggeredGridView.countBuilder(
               key: Key('grid_${crossAxisCount}_key'),
               crossAxisCount: crossAxisCount,
               itemCount: follows.length,
@@ -298,6 +298,11 @@ class _FollowsPageState extends State<FollowsPage> {
         child: AppBar(
           title: Text('Following'),
           actions: [
+            IconButton(
+              icon: Icon(Icons.view_comfy),
+              tooltip: 'Combine',
+              onPressed: () => db.followsSplit.value = Future.value(false),
+            ),
             IconButton(
               icon: Icon(Icons.turned_in),
               tooltip: 'Settings',
