@@ -1,5 +1,6 @@
 import 'package:e1547/pool.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 class PoolInfo extends StatelessWidget {
@@ -10,70 +11,62 @@ class PoolInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Color textColor =
-        Theme.of(context).textTheme.bodyText1.color.withOpacity(0.35);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: <Widget>[
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Text(
-              'posts',
-              style: TextStyle(color: textColor),
-            ),
-            Text(
-              pool.postIDs.length.toString(),
-              style: TextStyle(color: textColor),
-            ),
-          ],
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Text(
-              'status',
-              style: TextStyle(color: textColor),
-            ),
-            pool.active
-                ? Text(
-                    'active',
-                    style: TextStyle(color: textColor),
-                  )
-                : Text(
-                    'inactive',
-                    style: TextStyle(color: textColor),
-                  ),
-          ],
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Text(
-              'created',
-              style: TextStyle(color: textColor),
-            ),
-            Text(
-              dateFormat.format(DateTime.parse(pool.creation).toLocal()),
-              style: TextStyle(color: textColor),
-            ),
-          ],
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Text(
-              'updated',
-              style: TextStyle(color: textColor),
-            ),
-            Text(
-              dateFormat.format(DateTime.parse(pool.updated).toLocal()),
-              style: TextStyle(color: textColor),
-            ),
-          ],
-        ),
-      ],
+    Widget textInfoRow(String label, String value) {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          Text(
+            label,
+          ),
+          Text(
+            value,
+          ),
+        ],
+      );
+    }
+
+    return DefaultTextStyle(
+      style: TextStyle(
+          color: Theme.of(context).textTheme.bodyText1.color.withOpacity(0.35)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          textInfoRow('posts', pool.postIDs.length.toString()),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Text(
+                'id',
+              ),
+              InkWell(
+                child: Text(
+                  pool.id.toString(),
+                ),
+                onLongPress: () {
+                  Clipboard.setData(ClipboardData(
+                    text: pool.id.toString(),
+                  ));
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    duration: Duration(seconds: 1),
+                    content: Text('Copied pool ID #${pool.id}'),
+                  ));
+                },
+              ),
+            ],
+          ),
+          textInfoRow(
+            'status',
+            pool.active ? 'active' : 'inactive',
+          ),
+          textInfoRow('created',
+              dateFormat.format(DateTime.parse(pool.creation).toLocal())),
+          textInfoRow(
+            'updated',
+            dateFormat.format(DateTime.parse(pool.updated).toLocal()),
+          ),
+        ],
+      ),
     );
   }
 }

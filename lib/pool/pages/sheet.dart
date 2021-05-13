@@ -1,6 +1,7 @@
 import 'package:e1547/interface.dart';
 import 'package:e1547/pool.dart';
 import 'package:e1547/pool/pages/info.dart';
+import 'package:e1547/post.dart';
 import 'package:e1547/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:share/share.dart';
@@ -55,7 +56,7 @@ class PoolSheet extends StatelessWidget {
                   child: Padding(
                     padding: EdgeInsets.symmetric(horizontal: 8),
                     child: Text(
-                      '${pool.name.replaceAll('_', ' ')} (#${pool.id})',
+                      tagToTitle(pool.name),
                       style: Theme.of(context).textTheme.headline6,
                       softWrap: true,
                     ),
