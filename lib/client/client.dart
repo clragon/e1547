@@ -44,6 +44,9 @@ class Client {
           baseUrl: 'https://${await host}/',
           sendTimeout: 30000,
           connectTimeout: 30000,
+          headers: {
+            HttpHeaders.userAgentHeader: '$appName/$appVersion ($developer)',
+          },
         ),
       );
       if (credentials != null &&
