@@ -26,13 +26,11 @@ class _FollowsSplitPageState extends State<FollowsSplitPage> {
   int tileSize;
 
   void update() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (this.mounted) {
-        setState(() {
-          loading = follows == null || tileSize == null;
-        });
-      }
-    });
+    if (this.mounted) {
+      setState(() {
+        loading = follows == null || tileSize == null;
+      });
+    }
   }
 
   Future<void> updateTileSize() async {
@@ -70,19 +68,23 @@ class _FollowsSplitPageState extends State<FollowsSplitPage> {
   @override
   void initState() {
     super.initState();
-    updateTileSize();
+
     db.follows.addListener(updateFollows);
     db.host.addListener(updateFollows);
     db.tileSize.addListener(updateTileSize);
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      refreshController
-          .requestRefresh(
-              needCallback: false, duration: Duration(milliseconds: 100))
-          .then((value) async {
-        await refreshFollows();
-        refreshController.refreshCompleted();
+    () async {
+      await updateTileSize();
+      await updateFollows();
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        refreshController
+            .requestRefresh(
+                needCallback: false, duration: Duration(milliseconds: 100))
+            .then((value) async {
+          await refreshFollows();
+          refreshController.refreshCompleted();
+        });
       });
-    });
+    }();
   }
 
   @override

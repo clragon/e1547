@@ -61,7 +61,12 @@ class Persistence {
     follows = createSetting<FollowList>('follows', initial: FollowList(),
         getSetting: (prefs, key) async {
       try {
-        return FollowList.fromJson(prefs.getString(key));
+        String value = prefs.getString(key);
+        if (value != null) {
+          return FollowList.fromJson(value);
+        } else {
+          return null;
+        }
       } on TypeError {
         return FollowList.fromStrings(prefs.getStringList(key));
       }

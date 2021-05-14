@@ -5,6 +5,30 @@ import 'package:e1547/post.dart';
 extension Updating on FollowList {
   int get checkAmount => 5;
 
+  Future<void> refresh(Follow follow) async {
+    try {
+      List<Post> posts = [];
+
+      posts = await client.posts(follow.tags, 1,
+          limit: checkAmount, faithful: true);
+
+      posts.removeWhere((element) => element.isBlacklisted);
+      await updateUnseen(follows.indexOf(follow), posts);
+
+      if (!follow.tags.contains(' ') && follow.alias == null) {
+        RegExpMatch match =
+            RegExp(r'^pool:(?<id>\d+)$').firstMatch(follow.tags);
+        if (match != null) {
+          client
+              .pool(int.tryParse(match.namedGroup('id')))
+              .then((value) => follow.updatePoolName(value));
+        }
+      }
+    } on DioError {
+      // skip this entry
+    }
+  }
+
   Future<void> update({
     Function(int progress, int max) onProgress,
     bool force = false,
@@ -13,33 +37,13 @@ extension Updating on FollowList {
     for (Follow follow in follows) {
       progress++;
       onProgress(progress, follows.length);
-
-      Future<void> refresh() async {
-        List<Post> posts = [];
-        try {
-          posts = await client.posts(follow.tags, 1,
-              limit: checkAmount, faithful: true);
-        } on DioError {}
-        posts.removeWhere((element) => element.isBlacklisted);
-        await updateUnseen(follows.indexOf(follow), posts);
-        if (!follow.tags.contains(' ') && follow.alias == null) {
-          RegExpMatch match =
-              RegExp(r'^pool:(?<id>\d+)$').firstMatch(follow.tags);
-          if (match != null) {
-            client
-                .pool(int.tryParse(match.namedGroup('id')))
-                .then((value) => follow.updatePoolName(value));
-          }
-        }
-        // api cooldown
-        await Future.delayed(Duration(milliseconds: 500));
-      }
-
       DateTime updated = await follow.updated;
       if (force ||
           updated == null ||
           DateTime.now().difference(updated).inHours > 4) {
-        await refresh();
+        await refresh(follow);
+        // api cooldown
+        await Future.delayed(Duration(milliseconds: 500));
       }
     }
 
