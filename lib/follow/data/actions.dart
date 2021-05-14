@@ -47,7 +47,7 @@ extension Updating on FollowList {
     follows.sort((a, b) {
       int first;
       int second;
-      int result;
+      int result = 0;
       if (isSafe) {
         first = b.safe.unseen;
         second = a.safe.unseen;
@@ -55,18 +55,21 @@ extension Updating on FollowList {
         first = b.unsafe.unseen;
         second = a.unsafe.unseen;
       }
-      if (first == null && second == null) {
-        result = 0;
+      if (first != null && second != null) {
+        if (result == 0) {
+          result = first.compareTo(second);
+        }
       } else {
-        if (first == null) {
-          result = -1;
+        if (first == null && second == null) {
+          result = 0;
+        } else {
+          if (first == null) {
+            result = -1;
+          }
+          if (second == null) {
+            result = 1;
+          }
         }
-        if (second == null) {
-          result = 1;
-        }
-      }
-      if (result == 0) {
-        result = first.compareTo(second);
       }
       if (result == 0) {
         result = a.title.compareTo(b.title);

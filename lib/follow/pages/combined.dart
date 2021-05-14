@@ -4,6 +4,8 @@ import 'package:e1547/settings.dart';
 import 'package:flutter/material.dart';
 
 class FollowsCombinedPage extends StatelessWidget {
+  FollowsCombinedPage({Key key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder(

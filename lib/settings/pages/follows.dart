@@ -120,7 +120,7 @@ class _FollowingPageState extends State<FollowingPage> {
         itemCount: follows.length,
         itemBuilder: (BuildContext context, int index) => FollowListTile(
           follow: follows.follows[index],
-          onRename: () => follows.updateAlias(index, 'yeet'),
+          onRename: () {},
           onEdit: () => addTags(context, edit: index),
           onDelete: () =>
               db.follows.value = Future.value(follows..removeAt(index)),

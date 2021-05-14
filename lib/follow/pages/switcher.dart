@@ -38,7 +38,9 @@ class _FollowsPageState extends State<FollowsPage> {
               ? SizedBox.shrink()
               : isSplit
                   ? FollowsSplitPage()
-                  : FollowsCombinedPage(),
+                  : FollowsCombinedPage(
+                      key: UniqueKey(),
+                    ),
         ),
         isLoading: isSplit == null,
         isEmpty: false,
