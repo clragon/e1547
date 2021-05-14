@@ -122,8 +122,7 @@ class _FollowingPageState extends State<FollowingPage> {
           follow: follows.follows[index],
           onRename: () {},
           onEdit: () => addTags(context, edit: index),
-          onDelete: () =>
-              db.follows.value = Future.value(follows..removeAt(index)),
+          onDelete: () => follows.remove(follows[index]),
         ),
         physics: BouncingScrollPhysics(),
       );
@@ -201,18 +200,33 @@ class FollowListTile extends StatefulWidget {
   final Function onRename;
   final Follow follow;
 
-  const FollowListTile({
+  FollowListTile({
     @required this.follow,
     @required this.onEdit,
     @required this.onDelete,
     @required this.onRename,
-  });
+  }) : super(key: ObjectKey(follow));
 
   @override
   _FollowListTileState createState() => _FollowListTileState();
 }
 
 class _FollowListTileState extends State<FollowListTile> {
+  String thumbnail;
+
+  Future<void> update() async {
+    thumbnail = await widget.follow.thumbnail;
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    update();
+  }
+
   @override
   Widget build(BuildContext context) {
     Widget cardWidget(String tag) {
@@ -279,75 +293,59 @@ class _FollowListTileState extends State<FollowListTile> {
       child: Column(
         children: <Widget>[
           Stack(
+            alignment: Alignment.center,
             children: [
               Positioned.fill(
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    Positioned(
-                      left: 0,
-                      right: 0,
-                      child: FutureBuilder(
-                          future: widget.follow.thumbnail,
-                          builder: (context, snapshot) {
-                            if (snapshot.hasData) {
-                              return CachedNetworkImage(
-                                imageUrl: snapshot.data,
-                                errorWidget: (context, url, error) =>
-                                    Icon(Icons.error),
-                                fit: BoxFit.cover,
-                              );
-                            } else {
-                              return SizedBox.shrink();
-                            }
-                          }),
-                    ),
-                  ],
-                ),
+                child: thumbnail != null
+                    ? Opacity(
+                        opacity: 0.8,
+                        child: CachedNetworkImage(
+                          imageUrl: thumbnail,
+                          errorWidget: (context, url, error) =>
+                              Icon(Icons.error),
+                          fit: BoxFit.cover,
+                        ),
+                      )
+                    : SizedBox.shrink(),
               ),
               Material(
-                color: Colors.transparent,
+                type: MaterialType.transparency,
                 child: InkWell(
                   onTap: () => Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) =>
                           SearchPage(tags: widget.follow.tags))),
                   onLongPress: () => wikiSheet(
                       context: context, tag: tagToName(widget.follow.tags)),
-                  child: ClipRect(
-                    child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 1, sigmaY: 1),
-                      child: ListTile(
-                        title: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Text(
-                                widget.follow.title,
-                                style: TextStyle(shadows: textShadow),
+                  child: ListTile(
+                    title: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Text(
+                            widget.follow.title,
+                            style: TextStyle(shadows: textShadow),
+                          ),
+                        ),
+                      ],
+                    ),
+                    subtitle: (widget.follow.tags.split(' ').length > 1)
+                        ? Row(children: <Widget>[
+                            Expanded(
+                              child: Wrap(
+                                direction: Axis.horizontal,
+                                children: widget.follow.tags
+                                    .split(' ')
+                                    .map((tag) => cardWidget(tag))
+                                    .toList(),
                               ),
                             ),
-                          ],
-                        ),
-                        subtitle: (widget.follow.tags.split(' ').length > 1)
-                            ? Row(children: <Widget>[
-                                Expanded(
-                                  child: Wrap(
-                                    direction: Axis.horizontal,
-                                    children: widget.follow.tags
-                                        .split(' ')
-                                        .map((tag) => cardWidget(tag))
-                                        .toList(),
-                                  ),
-                                ),
-                              ])
-                            : null,
-                        trailing: contextMenu(),
-                      ),
-                    ),
+                          ])
+                        : null,
+                    trailing: contextMenu(),
                   ),
                 ),
-              ),
+              )
             ],
           ),
           Divider()

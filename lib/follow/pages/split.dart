@@ -48,7 +48,6 @@ class _FollowsSplitPageState extends State<FollowsSplitPage> {
   }
 
   Future<void> refreshFollows({bool force = false}) async {
-    await updateFollows();
     await follows.update(
         onProgress: (progress, max) {
           this.progress = progress;
@@ -65,26 +64,27 @@ class _FollowsSplitPageState extends State<FollowsSplitPage> {
     return notZero(MediaQuery.of(context).size.width / tileSize).round();
   }
 
+  Future<void> initialLoad() async {
+    await updateTileSize();
+    await updateFollows();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      refreshController
+          .requestRefresh(
+              needCallback: false, duration: Duration(milliseconds: 100))
+          .then((_) async {
+        await refreshFollows();
+        refreshController.refreshCompleted();
+      });
+    });
+  }
+
   @override
   void initState() {
     super.initState();
-
     db.follows.addListener(updateFollows);
     db.host.addListener(updateFollows);
     db.tileSize.addListener(updateTileSize);
-    () async {
-      await updateTileSize();
-      await updateFollows();
-      WidgetsBinding.instance.addPostFrameCallback((_) async {
-        refreshController
-            .requestRefresh(
-                needCallback: false, duration: Duration(milliseconds: 100))
-            .then((value) async {
-          await refreshFollows();
-          refreshController.refreshCompleted();
-        });
-      });
-    }();
+    initialLoad();
   }
 
   @override
@@ -184,39 +184,32 @@ class _FollowsSplitPageState extends State<FollowsSplitPage> {
             }
 
             return Stack(
+              alignment: Alignment.center,
               children: [
                 SafeCrossFade(
                   showChild: snapshot.data.latest != null,
                   builder: (context) => Stack(
                     children: [
                       image(),
-                      Column(
-                        mainAxisSize: MainAxisSize.max,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Spacer(),
-                          ClipRect(
-                            child: BackdropFilter(
-                                filter: ImageFilter.blur(sigmaX: 1, sigmaY: 1),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                      gradient: LinearGradient(
-                                    colors: [
-                                      Colors.transparent,
-                                      Theme.of(context)
-                                          .cardColor
-                                          .withOpacity(0.6),
-                                    ],
-                                    begin: Alignment.topCenter,
-                                    end: Alignment.bottomCenter,
-                                  )),
-                                  child: Padding(
-                                    padding: EdgeInsets.all(4),
-                                    child: info(),
-                                  ),
-                                )),
+                      Positioned(
+                        right: 0,
+                        left: 0,
+                        bottom: 0,
+                        child: Container(
+                          decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                            colors: [
+                              Colors.transparent,
+                              Theme.of(context).cardColor.withOpacity(0.8),
+                            ],
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                          )),
+                          child: Padding(
+                            padding: EdgeInsets.all(4),
+                            child: info(),
                           ),
-                        ],
+                        ),
                       ),
                     ],
                   ),
@@ -234,7 +227,7 @@ class _FollowsSplitPageState extends State<FollowsSplitPage> {
                 ),
                 Positioned.fill(
                   child: Material(
-                    color: Colors.transparent,
+                    type: MaterialType.transparency,
                     child: InkWell(
                       onTap: () => Navigator.of(context).push(MaterialPageRoute(
                           builder: (context) => SearchPage(tags: follow.tags))),
