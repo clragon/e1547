@@ -1,8 +1,8 @@
 import 'package:e1547/client.dart';
+import 'package:e1547/dtext.dart';
 import 'package:e1547/pool.dart';
 import 'package:e1547/post.dart';
 import 'package:e1547/settings.dart';
-import 'package:expandable/expandable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -14,130 +14,8 @@ class DTextField extends StatelessWidget {
 
   DTextField({@required this.msg, this.darkText = false});
 
-  String singleBrackets(String wrapped) => [
-        r'(?<!\[)', // prevent double brackets
-        r'(?<!\\)', // prevent escaped brackets
-        r'\[', // opening backet
-        wrapped,
-        r'\]', // closing bracket
-        r'(?!\])', // prevent double brackets
-      ].join();
-
-  String blockTag(String wrapped) => singleBrackets(
-        [
-          wrapped,
-          r'(?<expanded>,expanded)?', // read expanded
-          r'(=(?<value>(.|\n)*?))?', // read value
-        ].join(),
-      );
-
   @override
   Widget build(BuildContext context) {
-    // wrapper widget for quotes
-    Widget quoteWrap(Widget child) {
-      return Card(
-        color: Theme.of(context).canvasColor,
-        child: Padding(
-          padding: EdgeInsets.all(8),
-          child: Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [child],
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-
-    // wrapper widget for sections
-    Widget sectionWrap(
-        {@required Widget child, String title, bool expanded = false}) {
-      title = title?.replaceAllMapped(RegExp(r'\n'), (_) => '') ?? '';
-      return Card(
-        color: Theme.of(context).canvasColor,
-        child: ExpandableNotifier(
-          initialExpanded: expanded,
-          child: ExpandableTheme(
-            data: ExpandableThemeData(
-              headerAlignment: ExpandablePanelHeaderAlignment.center,
-              iconColor: Theme.of(context).iconTheme.color,
-            ),
-            child: ExpandablePanel(
-              header: Padding(
-                padding: EdgeInsets.all(8),
-                child: Text(
-                  title,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: 16,
-                  ),
-                ),
-              ),
-              collapsed: SizedBox.shrink(),
-              expanded: Padding(
-                padding: EdgeInsets.all(8),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [child],
-                ),
-              ),
-            ),
-          ),
-        ),
-      );
-    }
-
-    Widget spoilerWrap(Widget child) {
-      ValueNotifier<bool> isShown = ValueNotifier(false);
-      return Card(
-        child: Stack(
-          children: <Widget>[
-            Padding(
-              padding: EdgeInsets.all(8),
-              child: Row(
-                children: <Widget>[
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [child],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            InkWell(
-              child: Positioned.fill(
-                child: ValueListenableBuilder(
-                  valueListenable: isShown,
-                  builder: (context, value, child) => AnimatedOpacity(
-                    opacity: value ? 0 : 1,
-                    duration: Duration(milliseconds: 200),
-                    child: Card(
-                      color: Colors.black,
-                      child: Center(
-                        child: Text(
-                          'SPOILER',
-                          style: TextStyle(
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              onTap: () => isShown.value = !isShown.value,
-            ),
-          ],
-        ),
-      );
-    }
-
     // parse string recursively
     TextSpan resolve(String source, Map<TextState, bool> state) {
       // get string in plain text. no parsing.
@@ -177,21 +55,10 @@ class DTextField extends StatelessWidget {
         );
       }
 
-      // list of widgets that will be returned
+      // list of spans that will be returned
       List<InlineSpan> spans = [];
 
-      // test for brackets
-      RegExp bracketRex = RegExp(
-        blockTag(
-          [
-            r'(?<closing>\/)?', // read closing
-            r'(?<tag>[\w\d]+?)', // read tag
-          ].join(),
-        ),
-        caseSensitive: false,
-      );
-
-      RegExpMatch bracketMatch = bracketRex.firstMatch(source);
+      RegExpMatch bracketMatch = anyBlockTag.firstMatch(source);
       if (bracketMatch != null) {
         // string before bracket
         String before = source.substring(0, bracketMatch.start);
@@ -254,27 +121,32 @@ class DTextField extends StatelessWidget {
             splitStart = after.length;
             splitEnd = after.length;
           }
+
           String between = after
               .substring(0, splitStart)
               .replaceAllMapped(blankless, (_) => '');
+
           switch (key) {
             case 'spoiler':
-              blocked = spoilerWrap(RichText(
+              blocked = SpoilerWrap(
+                  child: RichText(
                 text: resolve(between, state),
               ));
               break;
             case 'code':
-              blocked = quoteWrap(RichText(
+              blocked = QuoteWrap(
+                  child: RichText(
                 text: getText(between, state),
               ));
               break;
             case 'quote':
-              blocked = quoteWrap(RichText(
+              blocked = QuoteWrap(
+                  child: RichText(
                 text: resolve(between, state),
               ));
               break;
             case 'section':
-              blocked = sectionWrap(
+              blocked = SectionWrap(
                   child: RichText(
                     text: resolve(between, state),
                   ),
@@ -562,29 +434,4 @@ class DTextField extends StatelessWidget {
       );
     }
   }
-}
-
-enum TextState {
-  bold,
-  italic,
-  strikeout,
-  underline,
-  overline,
-  header,
-  link,
-}
-
-enum LinkWord {
-  post,
-  forum,
-  topic,
-  comment,
-  blip,
-  pool,
-  set,
-  takedown,
-  record,
-  ticket,
-  category,
-  thumb,
 }

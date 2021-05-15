@@ -1,5 +1,5 @@
 import 'package:e1547/interface.dart';
-import 'package:e1547/interface/dtext_field.dart';
+import 'package:e1547/dtext.dart';
 import 'package:flutter/material.dart';
 
 class TextEditor extends StatefulWidget {

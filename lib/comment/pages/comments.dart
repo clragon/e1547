@@ -1,4 +1,5 @@
 import 'package:e1547/comment.dart';
+import 'package:e1547/dtext.dart';
 import 'package:e1547/interface.dart';
 import 'package:e1547/post.dart';
 import 'package:e1547/settings.dart';
