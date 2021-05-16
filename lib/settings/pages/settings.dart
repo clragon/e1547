@@ -8,6 +8,7 @@ import 'package:e1547/settings.dart' show db;
 import 'package:e1547/settings.dart';
 import 'package:e1547/settings/pages/grid.dart';
 import 'package:expandable/expandable.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -138,7 +139,7 @@ class _SettingsPageState extends State<SettingsPage> {
             settingsHeader('Display'),
             ListTile(
               title: Text('Theme'),
-              subtitle: Text(theme.toString().split('.').last ?? ''),
+              subtitle: Text(describeEnum(theme) ?? ''),
               leading: Icon(Icons.brightness_6),
               onTap: () {
                 showDialog(
@@ -152,7 +153,7 @@ class _SettingsPageState extends State<SettingsPage> {
                           children: appThemeMap.keys
                               .map(
                                 (theme) => ListTile(
-                                  title: Text(theme.toString().split('.').last),
+                                  title: Text(describeEnum(theme)),
                                   trailing: Container(
                                     height: 36,
                                     width: 36,
