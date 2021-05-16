@@ -97,7 +97,7 @@ class _ThreadDetailState extends State<ThreadDetail> {
                           Expanded(
                             child: Padding(
                               padding: EdgeInsets.only(bottom: 8),
-                              child: DTextField(msg: reply.body),
+                              child: DTextField(source: reply.body),
                             ),
                           ),
                           FutureBuilder(

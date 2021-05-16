@@ -4,68 +4,35 @@ import 'package:e1547/pool.dart';
 import 'package:e1547/post.dart';
 import 'package:e1547/settings.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class DTextField extends StatelessWidget {
-  final String msg;
-  final bool darkText;
+  final String source;
+  final bool dark;
 
-  DTextField({@required this.msg, this.darkText = false});
+  DTextField({@required this.source, this.dark = false});
 
   @override
   Widget build(BuildContext context) {
     // parse string recursively
-    TextSpan resolve(String source, Map<TextState, bool> state) {
-      // get string in plain text. no parsing.
-      TextSpan getText(String msg, Map<TextState, bool> states,
-          {Function() onTap}) {
-        msg = msg.replaceAll('\\[', '[');
-        msg = msg.replaceAllMapped(RegExp(r'\n{4,}'), (_) => '\n');
-
-        return TextSpan(
-          text: msg,
-          recognizer: TapGestureRecognizer()..onTap = onTap,
-          style: TextStyle(
-            color: states[TextState.link]
-                ? Colors.blue[400]
-                : darkText
-                    ? Theme.of(context)
-                        .textTheme
-                        .bodyText1
-                        .color
-                        .withOpacity(0.5)
-                    : Theme.of(context).textTheme.bodyText1.color,
-            fontWeight: states[TextState.bold] ? FontWeight.bold : null,
-            fontStyle: states[TextState.italic] ? FontStyle.italic : null,
-            fontSize: states[TextState.header] ? 18 : null,
-            decoration: TextDecoration.combine([
-              states[TextState.strikeout]
-                  ? TextDecoration.lineThrough
-                  : TextDecoration.none,
-              states[TextState.underline]
-                  ? TextDecoration.underline
-                  : TextDecoration.none,
-              states[TextState.overline]
-                  ? TextDecoration.overline
-                  : TextDecoration.none,
-            ]),
-          ),
-        );
-      }
-
+    TextSpan resolve(String text, Map<TextState, bool> state) {
       // list of spans that will be returned
       List<InlineSpan> spans = [];
 
-      RegExpMatch bracketMatch = anyBlockTag.firstMatch(source);
+      // no text, empty span
+      if (text.isEmpty) {
+        return TextSpan();
+      }
+
+      RegExpMatch bracketMatch = anyBlockTag.firstMatch(text);
       if (bracketMatch != null) {
         // string before bracket
-        String before = source.substring(0, bracketMatch.start);
+        String before = text.substring(0, bracketMatch.start);
         // string inside bracket
-        String tag = source.substring(bracketMatch.start, bracketMatch.end);
+        String tag = text.substring(bracketMatch.start, bracketMatch.end);
         // string after bracket
-        String after = source.substring(bracketMatch.end);
+        String after = text.substring(bracketMatch.end);
 
         // the key of the tag
         String key = bracketMatch.namedGroup('tag').toLowerCase();
@@ -77,11 +44,7 @@ class DTextField extends StatelessWidget {
         String value = bracketMatch.namedGroup('value');
 
         // block tag check.
-        // prepare block beforehand,
-        // so spaces can be removed
-
         Widget blocked;
-        RegExp blankless = RegExp(r'(^\n*)|(\n*$)');
 
         if ([
               'spoiler',
@@ -105,19 +68,19 @@ class DTextField extends StatelessWidget {
             caseSensitive: false,
           );
 
+          Match endMatch = end.allMatches(after).firstWhere((match) {
+            String container = after.substring(0, match.start);
+            return start.allMatches(container).length ==
+                end.allMatches(container).length;
+          }, orElse: () => null);
+
           int splitStart;
           int splitEnd;
-          for (Match endMatch in end.allMatches(after)) {
-            String container = after.substring(0, endMatch.start);
-            if (start.allMatches(container).length !=
-                end.allMatches(container).length) {
-              continue;
-            }
+
+          if (endMatch != null) {
             splitStart = endMatch.start;
             splitEnd = endMatch.end;
-            break;
-          }
-          if (splitStart == null) {
+          } else {
             splitStart = after.length;
             splitEnd = after.length;
           }
@@ -126,24 +89,30 @@ class DTextField extends StatelessWidget {
               .substring(0, splitStart)
               .replaceAllMapped(blankless, (_) => '');
 
+          after = after.substring(splitEnd);
+
           switch (key) {
             case 'spoiler':
               blocked = SpoilerWrap(
-                  child: RichText(
-                text: resolve(between, state),
-              ));
+                child: RichText(
+                  text: resolve(between, state),
+                ),
+              );
               break;
             case 'code':
               blocked = QuoteWrap(
-                  child: RichText(
-                text: getText(between, state),
-              ));
+                child: RichText(
+                  text:
+                      plainText(context: context, text: between, state: state),
+                ),
+              );
               break;
             case 'quote':
               blocked = QuoteWrap(
-                  child: RichText(
-                text: resolve(between, state),
-              ));
+                child: RichText(
+                  text: resolve(between, state),
+                ),
+              );
               break;
             case 'section':
               blocked = SectionWrap(
@@ -154,27 +123,18 @@ class DTextField extends StatelessWidget {
                   expanded: expanded);
               break;
           }
-          after = after.substring(splitEnd);
         }
 
         if (blocked != null) {
           // remove all the spaces around blocks
           before = before.replaceAllMapped(RegExp(r'[ \n]*$'), (_) => '');
           after = after.replaceAllMapped(RegExp(r'^[ \n]*'), (_) => '');
-          if (after.isNotEmpty) {
-            // after = '\n' + after;
-          }
 
-          if (before.isNotEmpty) {
-            spans.add(resolve(before, state));
-          }
-
-          // add block
-          spans.add(WidgetSpan(child: blocked));
-
-          if (after.isNotEmpty) {
-            spans.add(resolve(after, state));
-          }
+          spans.addAll([
+            resolve(before, state),
+            WidgetSpan(child: blocked),
+            resolve(after, state),
+          ]);
         } else {
           Map<TextState, bool> newState = Map.from(state);
           bool triggered = true;
@@ -198,8 +158,7 @@ class DTextField extends StatelessWidget {
               newState[TextState.strikeout] = active;
               break;
             case 'color':
-              // ignore color tags
-              // they're insanely hard to implement.
+              // I cannot be bothered.
               break;
             case 'sup':
               // I have no idea how to implement this.
@@ -213,15 +172,12 @@ class DTextField extends StatelessWidget {
           }
 
           if (triggered) {
-            if (before.isNotEmpty) {
-              spans.add(resolve(before, state));
-            }
-
-            if (after.isNotEmpty) {
-              spans.add(resolve(after, newState));
-            }
+            spans.addAll([
+              resolve(before, state),
+              resolve(after, newState),
+            ]);
           } else {
-            spans.add(resolve('$before\\$tag$after', state));
+            spans.add(resolve('$before${escape(tag)}$after', state));
           }
         }
 
@@ -230,12 +186,11 @@ class DTextField extends StatelessWidget {
         );
       }
 
-      void parseLink(RegExpMatch match, String result, [bool insite = false]) {
-        state[TextState.link] = true;
-
+      InlineSpan parseLink(RegExpMatch match, String result,
+          [bool insite = false]) {
         String display = match.namedGroup('name');
         String search = match.namedGroup('link');
-        String siteMatch = r'(e621\.net|e926\.net)?';
+        String siteMatch = r'((e621|e926)\.net)?';
         Function onTap = () => launch(search);
         int id = int.tryParse(search.split('/').last.split('?').first);
 
@@ -249,42 +204,36 @@ class DTextField extends StatelessWidget {
           onTap = () async => launch('https://${await db.host.value}$search');
         }
 
-        Map<RegExp, Function(RegExpMatch match)> links = {
-          RegExp(siteMatch + r'/posts/\d+'): (match) {
-            onTap = () async {
-              Post p = await client.post(id);
-              Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                return PostDetail(post: p);
-              }));
-            };
-          },
-          RegExp(siteMatch + r'/pool(s|/show)/\d+'): (match) {
-            onTap = () async {
-              Pool p = await client.pool(id);
-              Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                return PoolPage(pool: p);
-              }));
-            };
-          },
+        Map<RegExp, Function Function(RegExpMatch match)> links = {
+          RegExp(siteMatch + r'/posts/\d+'): (match) => () async {
+                Post p = await client.post(id);
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => PostDetail(post: p)));
+              },
+          RegExp(siteMatch + r'/pool(s|/show)/\d+'): (match) => () async {
+                Pool p = await client.pool(id);
+                Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => PoolPage(pool: p)));
+              },
         };
 
         for (MapEntry<RegExp, Function(RegExpMatch match)> entry
             in links.entries) {
           RegExpMatch match = entry.key.firstMatch(result);
           if (match != null) {
-            entry.value(match);
+            onTap = entry.value(match);
             break;
           }
         }
 
-        spans.add(getText(display, state, onTap: onTap));
-
-        state[TextState.link] = false;
+        return plainText(
+            context: context,
+            text: display,
+            state: Map.from(state)..[TextState.link] = true,
+            onTap: onTap);
       }
 
-      void parseWord(String match, LinkWord word) {
-        state[TextState.link] = true;
-
+      InlineSpan parseWord(String match, LinkWord word) {
         Function onTap;
 
         switch (word) {
@@ -310,20 +259,20 @@ class DTextField extends StatelessWidget {
             break;
         }
 
-        spans.add(getText(match, state, onTap: onTap));
-
-        state[TextState.link] = false;
+        return plainText(
+            context: context,
+            text: match,
+            state: Map.from(state)..[TextState.link] = true,
+            onTap: onTap);
       }
 
-      Map<RegExp, void Function(RegExpMatch match, String result)> regexes = {
+      Map<RegExp, InlineSpan Function(RegExpMatch match, String result)>
+          regexes = {
         RegExp(r'\[\[(?<anchor>#)?(?<tags>.*?)(\|(?<name>.*?))?\]\]'):
             (match, result) {
-          state[TextState.link] = true;
-
           bool anchor = match.namedGroup('anchor') != null;
-          String name = match.namedGroup('name');
           String tags = match.namedGroup('tags');
-          name ??= tags;
+          String name = match.namedGroup('name') ?? tags;
 
           Function onTap;
 
@@ -332,64 +281,61 @@ class DTextField extends StatelessWidget {
                 builder: (context) => SearchPage(tags: tags)));
           }
 
-          spans.add(getText(name, state, onTap: onTap));
-
-          state[TextState.link] = false;
+          return plainText(
+              context: context,
+              text: name,
+              state: Map.from(state)..[TextState.link] = true,
+              onTap: onTap);
         },
         RegExp(r'{{(?<tags>.*?)(\|(?<name>.*?))?}}'): (match, result) {
-          state[TextState.link] = true;
-
-          String name = match.namedGroup('name');
           String tags = match.namedGroup('tags');
-          name ??= tags;
+          String name = match.namedGroup('name') ?? tags;
 
           Function onTap = () {
             Navigator.of(context).push(MaterialPageRoute(
                 builder: (context) => SearchPage(tags: tags)));
           };
 
-          spans.add(getText(name, state, onTap: onTap));
-
-          state[TextState.link] = false;
+          return plainText(
+              context: context,
+              text: name,
+              state: Map.from(state)..[TextState.link] = true,
+              onTap: onTap);
         },
-        RegExp(r'(^|\n)\*+ '): (match, result) => spans.add(resolve(
-            '\n' + '  ' * ('*'.allMatches(result).length - 1) + '• ', state)),
+        RegExp(r'(^|\n)\*+ '): (match, result) {
+          return resolve(
+              '\n' + '  ' * ('*'.allMatches(result).length - 1) + '• ', state);
+        },
         RegExp(r'h[1-6]\.\s?(?<name>.*)', caseSensitive: false):
             (match, result) {
-          state[TextState.header] = true;
-          String name = match.namedGroup('name');
-          spans.add(resolve(name, state));
-          state[TextState.header] = false;
+          return resolve(
+            match.namedGroup('name'),
+            Map.from(state)..[TextState.header] = true,
+          );
         },
         RegExp(r'("(?<name>[^"]+?)":)?(?<link>(http(s)?)?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)([^.,!?:"\s]+))'):
             parseLink,
         RegExp(r'("(?<name>[^"]+?)":)(?<link>[-a-zA-Z0-9()@:%_\+.~#?&//=]*)([^.,!?:"\s]+)'):
             (match, result) => parseLink(match, result, true),
-      };
-
-      regexes.addEntries(LinkWord.values.map((word) {
-        return MapEntry(
-            RegExp(RegExp.escape(describeEnum(word)) + r' #\d+',
+        ...Map.fromIterable(LinkWord.values,
+            key: (word) => RegExp(RegExp.escape(describeEnum(word)) + r' #\d+',
                 caseSensitive: false),
-            (match, result) => parseWord(result, word));
-      }));
+            value: (word) => (match, result) => parseWord(result, word)),
+      };
 
       for (MapEntry<RegExp, Function(RegExpMatch match, String result)> entry
           in regexes.entries) {
-        for (RegExpMatch otherMatch in entry.key.allMatches(source)) {
-          String before = source.substring(0, otherMatch.start);
-          String result = source.substring(otherMatch.start, otherMatch.end);
-          String after = source.substring(otherMatch.end, source.length);
+        for (RegExpMatch otherMatch in entry.key.allMatches(text)) {
+          String before = text.substring(0, otherMatch.start);
+          String result = text.substring(otherMatch.start, otherMatch.end);
+          String after = text.substring(otherMatch.end, text.length);
 
-          if (before.isNotEmpty) {
-            spans.add(resolve(before, state));
-          }
+          spans.addAll([
+            resolve(before, state),
+            entry.value(otherMatch, result),
+            resolve(after, state),
+          ]);
 
-          entry.value(otherMatch, result);
-
-          if (after.isNotEmpty) {
-            spans.add(resolve(after, state));
-          }
           return TextSpan(
             children: spans,
           );
@@ -397,7 +343,7 @@ class DTextField extends StatelessWidget {
       }
 
       // no matching brackets, return normal text
-      return getText(source, state);
+      return plainText(context: context, text: text, state: state);
     }
 
     // Map to keep track of textStyle
@@ -409,9 +355,10 @@ class DTextField extends StatelessWidget {
       TextState.overline: false,
       TextState.header: false,
       TextState.link: false,
+      TextState.dark: dark,
     };
 
-    String result = msg.replaceAllMapped(RegExp(r'\r\n'), (_) => '\n');
+    String result = source.replaceAllMapped(RegExp(r'\r\n'), (_) => '\n');
 
     try {
       return RichText(

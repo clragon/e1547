@@ -55,7 +55,7 @@ class DescriptionDisplay extends StatelessWidget {
                         child: Padding(
                           padding: EdgeInsets.all(16),
                           child: value.isNotEmpty
-                              ? DTextField(msg: value)
+                              ? DTextField(source: value)
                               : Text('no description',
                                   style: TextStyle(
                                       color: Theme.of(context)

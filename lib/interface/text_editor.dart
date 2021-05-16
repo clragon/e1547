@@ -96,7 +96,7 @@ class _TextEditorState extends State<TextEditor> with TickerProviderStateMixin {
           child: Padding(
             padding: EdgeInsets.all(16),
             child: textController.text.trim().isNotEmpty
-                ? DTextField(msg: textController.text.trim())
+                ? DTextField(source: textController.text.trim())
                 : Text('your text here',
                     style: TextStyle(
                         color: Theme.of(context)

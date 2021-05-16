@@ -24,3 +24,5 @@ RegExp anyBlockTag = RegExp(
   ),
   caseSensitive: false,
 );
+
+RegExp blankless = RegExp(r'(^\n+)|(\n+$)');

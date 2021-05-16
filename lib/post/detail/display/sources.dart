@@ -55,7 +55,7 @@ class SourceDisplay extends StatelessWidget {
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
                 child: value.join('\n').trim().isNotEmpty
-                    ? DTextField(msg: value.join('\n'))
+                    ? DTextField(source: value.join('\n'))
                     : Padding(
                         padding: EdgeInsets.all(4),
                         child: Text('no sources',

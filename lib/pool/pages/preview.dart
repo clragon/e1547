@@ -59,7 +59,7 @@ class PoolPreview extends StatelessWidget {
                   top: 0,
                   bottom: 8,
                 ),
-                child: DTextField(msg: pool.description, darkText: true),
+                child: DTextField(source: pool.description, dark: true),
               ),
           ],
         ),

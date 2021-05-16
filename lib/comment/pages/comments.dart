@@ -95,7 +95,7 @@ class _CommentsPageState extends State<CommentsPage> {
                           Expanded(
                             child: Padding(
                               padding: EdgeInsets.only(bottom: 8),
-                              child: DTextField(msg: comment.body),
+                              child: DTextField(source: comment.body),
                             ),
                           ),
                           FutureBuilder(

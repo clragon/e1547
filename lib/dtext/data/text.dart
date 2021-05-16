@@ -6,4 +6,5 @@ enum TextState {
   overline,
   header,
   link,
+  dark,
 }

@@ -152,7 +152,7 @@ class _WikiTagDisplayState extends State<WikiTagDisplay> {
       secondChild: SafeCrossFade(
         showChild: wiki != null,
         builder: (context) => SingleChildScrollView(
-          child: DTextField(msg: wiki.body),
+          child: DTextField(source: wiki.body),
           physics: BouncingScrollPhysics(),
         ),
         secondChild: message(
