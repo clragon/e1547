@@ -62,10 +62,6 @@ class _TagListActionsState extends State<TagListActions> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.tag.contains(':')) {
-      return SizedBox.shrink();
-    }
-
     if (follows != null && denylist != null) {
       return Row(
         mainAxisSize: MainAxisSize.min,
@@ -127,11 +123,11 @@ class _TagListActionsState extends State<TagListActions> {
         children: <Widget>[
           IconButton(
             icon: Icon(Icons.turned_in_not),
-            onPressed: () {},
+            onPressed: null,
           ),
           IconButton(
             icon: Icon(Icons.block),
-            onPressed: () {},
+            onPressed: null,
           ),
         ],
       );
@@ -167,7 +163,8 @@ class TagSearchActions extends StatelessWidget {
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 provider.search.value = (provider.search.value.split(' ')
                       ..removeWhere((element) => tagToName(element) == tag))
-                    .join(' ');
+                    .join(' ')
+                    .trim();
               });
             },
           );

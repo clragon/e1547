@@ -167,10 +167,7 @@ class _PostsPageState extends State<PostsPage> {
     if (item == widget.provider.posts.value.length - 1) {
       widget.provider.loadNextPage();
     }
-    if (item < widget.provider.posts.value.length) {
-      return preview(widget.provider.posts.value[item], widget.provider);
-    }
-    return null;
+    return preview(widget.provider.posts.value[item], widget.provider);
   }
 
   StaggeredTile tileBuilder(int item) {

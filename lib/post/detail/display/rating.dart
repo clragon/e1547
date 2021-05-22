@@ -61,7 +61,7 @@ class RatingDisplay extends StatelessWidget {
                           });
                         },
                       )
-                  : () {},
+                  : null,
             ),
             Divider(),
           ],
