@@ -34,12 +34,7 @@ class Main extends StatelessWidget {
         child: ExcludeSemantics(
           child: MaterialApp(
             title: appName,
-            theme: value.copyWith(
-              pageTransitionsTheme: PageTransitionsTheme(builders: {
-                TargetPlatform.android: CupertinoPageTransitionsBuilder(),
-                TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
-              }),
-            ),
+            theme: value,
             navigatorObservers: [routeObserver],
             routes: routes,
           ),
