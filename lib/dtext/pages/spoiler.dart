@@ -1,3 +1,4 @@
+import 'package:e1547/interface.dart';
 import 'package:flutter/material.dart';
 
 class SpoilerWrap extends StatefulWidget {
@@ -10,13 +11,14 @@ class SpoilerWrap extends StatefulWidget {
 }
 
 class _SpoilerWrapState extends State<SpoilerWrap> {
+  ValueNotifier<bool> isShown = ValueNotifier(false);
+
   @override
   Widget build(BuildContext context) {
-    ValueNotifier<bool> isShown = ValueNotifier(false);
-    return Card(
-      child: Stack(
-        children: <Widget>[
-          Padding(
+    return Stack(
+      children: <Widget>[
+        Card(
+          child: Padding(
             padding: EdgeInsets.all(8),
             child: Row(
               children: <Widget>[
@@ -29,31 +31,37 @@ class _SpoilerWrapState extends State<SpoilerWrap> {
               ],
             ),
           ),
-          InkWell(
-            child: Positioned.fill(
-              child: ValueListenableBuilder(
-                valueListenable: isShown,
-                builder: (context, value, child) => AnimatedOpacity(
-                  opacity: value ? 0 : 1,
-                  duration: Duration(milliseconds: 200),
-                  child: Card(
-                    color: Colors.black,
-                    child: Center(
-                      child: Text(
-                        'SPOILER',
-                        style: TextStyle(
-                          color: Colors.white,
+        ),
+        Positioned.fill(
+          child: ValueListenableBuilder(
+            valueListenable: isShown,
+            builder: (context, value, child) => TweenAnimationBuilder(
+                tween:
+                    ColorTween(end: value ? Colors.transparent : Colors.black),
+                duration: defaultAnimationDuration,
+                builder: (context, color, child) {
+                  return Card(
+                      elevation: 0,
+                      color: color,
+                      child: InkWell(
+                        child: AnimatedOpacity(
+                          opacity: value ? 0 : 1,
+                          duration: Duration(milliseconds: 200),
+                          child: Center(
+                            child: Text(
+                              'SPOILER',
+                              style: TextStyle(
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            onTap: () => isShown.value = !isShown.value,
+                        onTap: () => isShown.value = !isShown.value,
+                      ));
+                }),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

@@ -139,7 +139,7 @@ class _SettingsPageState extends State<SettingsPage> {
             settingsHeader('Display'),
             ListTile(
               title: Text('Theme'),
-              subtitle: Text(describeEnum(theme) ?? ''),
+              subtitle: Text(theme != null ? describeEnum(theme) : ''),
               leading: Icon(Icons.brightness_6),
               onTap: () {
                 showDialog(
