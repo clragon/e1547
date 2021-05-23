@@ -52,7 +52,7 @@ class _PostDetailGalleryState extends State<PostDetailGallery> {
         return PageView.builder(
           controller: controller,
           itemBuilder: pageBuilder,
-          itemCount: widget.provider.items.length,
+          itemCount: widget.provider.posts.value.length,
           onPageChanged: (index) {
             lastIndex = index;
             preloadImages(
