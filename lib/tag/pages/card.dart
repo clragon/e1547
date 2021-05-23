@@ -74,7 +74,7 @@ class DenyListTagCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: TagGesture(
-        safe: true,
+        wiki: true,
         tag: tag,
         child: Row(
           mainAxisSize: MainAxisSize.min,

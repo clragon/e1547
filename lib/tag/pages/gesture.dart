@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 class TagGesture extends StatelessWidget {
   final bool safe;
+  final bool wiki;
   final String tag;
   final Widget child;
   final PostProvider provider;
@@ -13,24 +14,25 @@ class TagGesture extends StatelessWidget {
       {@required this.child,
       @required this.tag,
       this.provider,
-      this.safe = false});
+      this.safe = true,
+      this.wiki = false});
 
   @override
   Widget build(BuildContext context) {
-    Function wiki =
+    Function sheet =
         () => wikiSheet(context: context, tag: tag, provider: provider);
 
     return InkWell(
       onTap: () async {
-        if (safe && (await db.denylist.value).contains(tag)) {
-          wiki();
+        if (wiki || (safe && (await db.denylist.value).contains(tag))) {
+          sheet();
         } else {
           Navigator.of(context).push(MaterialPageRoute(
             builder: (context) => SearchPage(tags: tag),
           ));
         }
       },
-      onLongPress: wiki,
+      onLongPress: sheet,
       child: child,
     );
   }
