@@ -1,6 +1,7 @@
 import 'package:e1547/interface.dart';
 import 'package:e1547/post.dart';
 import 'package:e1547/settings.dart';
+import 'package:e1547/tag.dart';
 import 'package:e1547/wiki.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -84,10 +85,8 @@ class _FollowingPageState extends State<FollowingPage> {
 
     Widget cardWidget(String tag) {
       return Card(
-        child: InkWell(
-          onTap: () => Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => SearchPage(tags: tag))),
-          onLongPress: () => wikiSheet(context: context, tag: tagToName(tag)),
+        child: TagGesture(
+          tag: tag,
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[

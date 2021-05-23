@@ -1,4 +1,5 @@
 import 'package:e1547/post.dart';
+import 'package:e1547/tag.dart';
 import 'package:e1547/wiki/pages/actions.dart';
 import 'package:e1547/wiki/pages/body.dart';
 import 'package:flutter/material.dart';

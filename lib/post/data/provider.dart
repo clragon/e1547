@@ -1,10 +1,9 @@
 import 'package:e1547/client.dart';
 import 'package:e1547/interface.dart';
+import 'package:e1547/post.dart';
 import 'package:e1547/settings.dart';
+import 'package:e1547/tag.dart';
 import 'package:flutter/material.dart';
-
-import 'post.dart';
-import 'tag.dart';
 
 class PostProvider extends DataProvider<Post> {
   Future<List<Post>> Function(String search, int page) provider;

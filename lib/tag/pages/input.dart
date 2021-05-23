@@ -1,6 +1,6 @@
 import 'package:e1547/client.dart';
 import 'package:e1547/interface.dart';
-import 'package:e1547/post.dart';
+import 'package:e1547/tag.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';

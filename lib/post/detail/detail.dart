@@ -25,7 +25,6 @@ class PostDetail extends StatefulWidget {
 }
 
 class _PostDetailState extends State<PostDetail> with RouteAware {
-  TextEditingController textController = TextEditingController();
   ValueNotifier<Future<bool> Function()> doEdit = ValueNotifier(null);
   PersistentBottomSheetController sheetController;
   bool keepPlaying = false;
@@ -114,22 +113,13 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
   @override
   Widget build(BuildContext context) {
     Widget fab(BuildContext context) {
-      Widget fabIcon() {
-        return CrossFade(
-          showChild: widget.post.isEditing.value,
-          child: ValueListenableBuilder(
-            valueListenable: doEdit,
-            builder: (context, value, child) {
-              if (value == null) {
-                return Icon(Icons.check,
-                    color: Theme.of(context).iconTheme.color);
-              } else {
-                return Icon(Icons.add,
-                    color: Theme.of(context).iconTheme.color);
-              }
-            },
-          ),
-          secondChild: Padding(
+      return CrossFade(
+        showChild: widget.post.isEditing.value,
+        child: FloatingActionButton(
+          heroTag: null,
+          backgroundColor: Theme.of(context).cardColor,
+          onPressed: () {},
+          child: Padding(
             padding: EdgeInsets.only(left: 2),
             child: ValueListenableBuilder(
               valueListenable: widget.post.isFavorite,
@@ -159,98 +149,50 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
               ),
             ),
           ),
-        );
-      }
-
-      ValueNotifier<bool> isLoading = ValueNotifier(false);
-      Widget reasonEditor() {
-        return Padding(
-          padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Row(
-                children: <Widget>[
-                  ValueListenableBuilder(
-                    valueListenable: isLoading,
-                    builder: (context, value, child) => CrossFade(
-                      showChild: value,
-                      child: Center(
-                        child: Padding(
-                          padding: EdgeInsets.only(right: 10),
-                          child: Padding(
-                            padding: EdgeInsets.all(4),
-                            child: Container(
-                                height: 16,
-                                width: 16,
-                                child: CircularProgressIndicator()),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: TextField(
-                      controller: textController,
-                      autofocus: true,
-                      maxLines: 1,
-                      keyboardType: TextInputType.text,
-                      decoration: InputDecoration(
-                        labelText: 'Edit reason',
-                        border: UnderlineInputBorder(),
-                      ),
-                    ),
-                  ),
-                ],
-              )
-            ],
-          ),
-        );
-      }
-
-      return FloatingActionButton(
-        heroTag: null,
-        backgroundColor: Theme.of(context).cardColor,
-        child: fabIcon(),
-        onPressed: () async {
-          if (widget.post.isEditing.value) {
+        ),
+        secondChild: FloatingActionButton(
+          heroTag: null,
+          backgroundColor: Theme.of(context).cardColor,
+          onPressed: () async {
             if (doEdit.value != null) {
               if (await doEdit.value()) {
                 sheetController.close();
               }
             } else {
-              textController.text = '';
               sheetController = Scaffold.of(context).showBottomSheet(
-                (context) {
-                  return reasonEditor();
-                },
+                (context) => EditReasonEditor(
+                  onSubmit: (value) async {
+                    try {
+                      await client.updatePost(
+                          widget.post, Post.fromMap(widget.post.raw),
+                          editReason: value);
+                      widget.post.isEditing.value = false;
+                    } on DioError catch (error) {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        duration: Duration(seconds: 1),
+                        content: Text(
+                            '${error.response.statusCode} : ${error.response.statusMessage}'),
+                        behavior: SnackBarBehavior.floating,
+                      ));
+                    }
+                    await widget.post.resetPost(online: true);
+                    return true;
+                  },
+                  onEditorBuild: (submit) => doEdit.value = submit,
+                ),
               );
               sheetController.closed.then((_) {
                 doEdit.value = null;
-                isLoading.value = false;
               });
-              doEdit.value = () async {
-                isLoading.value = true;
-                try {
-                  await client.updatePost(
-                      widget.post, Post.fromMap(widget.post.raw),
-                      editReason: textController.text);
-                  widget.post.isEditing.value = false;
-                  await widget.post.resetPost(online: true);
-                } on DioError catch (e) {
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    duration: Duration(seconds: 1),
-                    content: Text(
-                        '${e.response.statusCode} : ${e.response.statusMessage}'),
-                    behavior: SnackBarBehavior.floating,
-                  ));
-                }
-                isLoading.value = false;
-                return true;
-              };
             }
-          }
-        },
+          },
+          child: ValueListenableBuilder(
+            valueListenable: doEdit,
+            builder: (context, value, child) => Icon(
+                value == null ? Icons.check : Icons.add,
+                color: Theme.of(context).iconTheme.color),
+          ),
+        ),
       );
     }
 
@@ -354,7 +296,8 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
                           Builder(
                               builder: (context) => ParentDisplay(
                                     post: widget.post,
-                                    builder: (submit) => doEdit.value = submit,
+                                    onEditorBuild: (submit) =>
+                                        doEdit.value = submit,
                                     onEditorClose: () => doEdit.value = null,
                                   )),
                           editorDependant(
@@ -363,9 +306,17 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
                           Builder(
                               builder: (context) => TagDisplay(
                                     post: widget.post,
-                                    builder: (submit) => doEdit.value = submit,
-                                    onEditorClose: () => doEdit.value = null,
                                     provider: widget.provider,
+                                    onEditorSubmit: (value, category) =>
+                                        onPostTagsEdit(
+                                      context,
+                                      widget.post,
+                                      value,
+                                      category,
+                                    ),
+                                    onEditorBuild: (submit) =>
+                                        doEdit.value = submit,
+                                    onEditorClose: () => doEdit.value = null,
                                   )),
                           editorDependant(
                               child: FileDisplay(

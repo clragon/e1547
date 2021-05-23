@@ -7,6 +7,7 @@ import 'package:e1547/comment.dart';
 import 'package:e1547/pool.dart';
 import 'package:e1547/post.dart';
 import 'package:e1547/settings.dart';
+import 'package:e1547/tag.dart';
 import 'package:e1547/thread.dart';
 import 'package:e1547/wiki.dart';
 import 'package:meta/meta.dart';

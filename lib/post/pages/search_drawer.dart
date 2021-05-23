@@ -1,41 +1,13 @@
 import 'package:e1547/interface.dart';
 import 'package:e1547/post.dart';
-import 'package:e1547/post/detail/display.dart';
 import 'package:e1547/settings.dart';
+import 'package:e1547/tag.dart';
 import 'package:flutter/material.dart';
 
 class SearchDrawer extends StatelessWidget {
   final PostProvider provider;
 
   SearchDrawer({this.provider});
-
-  Widget cardWidget(String tag) {
-    return Card(
-      child: TagGesture(
-        safe: true,
-        tag: tagToName(tag),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            Container(
-              height: 24,
-              width: 5,
-              decoration: BoxDecoration(
-                color: (tag[0] == '-') ? Colors.green[300] : Colors.red[300],
-                borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(5),
-                    bottomLeft: Radius.circular(5)),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.only(top: 4, bottom: 4, right: 8, left: 6),
-              child: Text(tagToCard(tag)),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +37,7 @@ class SearchDrawer extends StatelessWidget {
                     children: entry.key
                         .split(' ')
                         .where((tag) => tag.isNotEmpty)
-                        .map((tag) => cardWidget(tag))
+                        .map((tag) => DenyListTagCard(tag))
                         .toList(),
                   ),
                 ),

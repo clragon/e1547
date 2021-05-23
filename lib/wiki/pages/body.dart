@@ -2,6 +2,7 @@ import 'package:e1547/client.dart';
 import 'package:e1547/dtext.dart';
 import 'package:e1547/interface.dart';
 import 'package:e1547/post.dart';
+import 'package:e1547/tag.dart';
 import 'package:e1547/wiki.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';

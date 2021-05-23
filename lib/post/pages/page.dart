@@ -4,6 +4,7 @@ import 'package:e1547/interface.dart';
 import 'package:e1547/post.dart';
 import 'package:e1547/post/pages/search_drawer.dart';
 import 'package:e1547/settings.dart';
+import 'package:e1547/tag.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:like_button/like_button.dart';

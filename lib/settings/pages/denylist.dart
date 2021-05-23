@@ -1,6 +1,6 @@
 import 'package:e1547/interface.dart';
-import 'package:e1547/post.dart';
 import 'package:e1547/settings.dart';
+import 'package:e1547/tag.dart';
 import 'package:e1547/wiki.dart';
 import 'package:flutter/material.dart';
 
@@ -85,40 +85,6 @@ class _DenyListPageState extends State<DenyListPage> {
       }
     }
 
-    Widget cardWidget(String tag) {
-      return Card(
-        child: InkWell(
-          onTap: () => wikiSheet(context: context, tag: tagToName(tag)),
-          onLongPress: () => wikiSheet(context: context, tag: tagToName(tag)),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Container(
-                height: 24,
-                width: 5,
-                decoration: BoxDecoration(
-                  color: () {
-                    if ('${tag[0]}' == '-') {
-                      return Colors.green[300];
-                    } else {
-                      return Colors.red[300];
-                    }
-                  }(),
-                  borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(5),
-                      bottomLeft: Radius.circular(5)),
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(top: 4, bottom: 4, right: 8, left: 6),
-                child: Text(tagToCard(tag)),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-
     Widget body() {
       if (denylist.isEmpty) {
         return Center(
@@ -153,7 +119,7 @@ class _DenyListPageState extends State<DenyListPage> {
                       child: Wrap(
                         direction: Axis.horizontal,
                         children: Tagset.parse(denylist.elementAt(index))
-                            .map((tag) => cardWidget(tag.toString()))
+                            .map((tag) => DenyListTagCard(tag.toString()))
                             .toList(),
                       ),
                     ),

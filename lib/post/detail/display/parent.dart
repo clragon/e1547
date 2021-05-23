@@ -7,9 +7,9 @@ import 'package:flutter/services.dart';
 class ParentDisplay extends StatefulWidget {
   final Post post;
   final Function() onEditorClose;
-  final Function(Future<bool> Function() submit) builder;
+  final Function(Future<bool> Function() submit) onEditorBuild;
 
-  ParentDisplay({@required this.post, this.onEditorClose, this.builder});
+  ParentDisplay({@required this.post, this.onEditorClose, this.onEditorBuild});
 
   @override
   _ParentDisplayState createState() => _ParentDisplayState();
@@ -57,7 +57,7 @@ class _ParentDisplayState extends State<ParentDisplay> {
                                       onSubmit: () {
                                         sheetController?.close();
                                       },
-                                      builder: widget.builder,
+                                      builder: widget.onEditorBuild,
                                     );
                                   },
                                 );

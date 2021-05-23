@@ -1,8 +1,8 @@
 import 'package:e1547/dtext.dart';
 import 'package:e1547/pool.dart';
 import 'package:e1547/pool/pages/info.dart';
-import 'package:e1547/post.dart';
 import 'package:e1547/settings.dart';
+import 'package:e1547/tag.dart';
 import 'package:flutter/material.dart';
 import 'package:share/share.dart';
 import 'package:sliding_sheet/sliding_sheet.dart';

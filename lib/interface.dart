@@ -5,7 +5,7 @@ export 'interface/navigation.dart';
 export 'interface/pop_tile.dart';
 export 'interface/range_dialog.dart';
 export 'interface/refreshing.dart';
-export 'interface/tag_input.dart';
 export 'interface/text_editor.dart';
 export 'interface/text_tools.dart';
 export 'interface/themes.dart';
+export 'tag/pages/input.dart';
