@@ -1,5 +1,5 @@
-import 'package:e1547/interface.dart';
 import 'package:e1547/dtext.dart';
+import 'package:e1547/interface.dart';
 import 'package:flutter/material.dart';
 
 class TextEditor extends StatefulWidget {
@@ -299,13 +299,15 @@ class _EditorBarState extends State<EditorBar> {
       );
     }
 
-    return OrientationBuilder(
-      builder: (BuildContext context, Orientation orientation) {
-        int rowSize = (MediaQuery.of(context).size.width / 40).round();
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        int rowSize = (constraints.maxWidth / 40).round();
         bool showAll = rowSize > 10;
         return Padding(
-            padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10),
-            child: Column(mainAxisSize: MainAxisSize.min, children: [
+          padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
               Row(
                 mainAxisSize: MainAxisSize.max,
                 children: [
@@ -319,7 +321,9 @@ class _EditorBarState extends State<EditorBar> {
                   ),
                 ],
               )
-            ]));
+            ],
+          ),
+        );
       },
     );
   }

@@ -102,10 +102,6 @@ class _PostsPageState extends State<PostsPage> {
   double notZero(double value) => value < 1 ? 1 : value;
   int roundedNotZero(double value) => value.round() == 0 ? 1 : value.round();
 
-  int get crossAxisCount {
-    return notZero(MediaQuery.of(context).size.width / tileSize).round();
-  }
-
   Widget itemBuilder(BuildContext context, int item) {
     Widget preview(Post post, PostProvider provider) {
       void select() {
@@ -168,34 +164,6 @@ class _PostsPageState extends State<PostsPage> {
       widget.provider.loadNextPage();
     }
     return preview(widget.provider.posts.value[item], widget.provider);
-  }
-
-  StaggeredTile tileBuilder(int item) {
-    if (item < widget.provider.posts.value.length) {
-      double extra = 0.2;
-      PostImage sample = widget.provider.posts.value[item].sample.value;
-      double heightRatio = notZero(sample.height / sample.width);
-      double widthRatio = notZero(sample.width / sample.height);
-
-      switch (stagger) {
-        case GridState.square:
-          return StaggeredTile.count(1, 1 + extra);
-        case GridState.vertical:
-          return StaggeredTile.count(1, heightRatio);
-          break;
-        case GridState.omni:
-          if (crossAxisCount == 1) {
-            return StaggeredTile.count(1, heightRatio);
-          } else {
-            return StaggeredTile.count(
-                roundedNotZero(widthRatio),
-                roundedNotZero(heightRatio) +
-                    roundedNotZero(heightRatio) * extra);
-          }
-          break;
-      }
-    }
-    return null;
   }
 
   @override
@@ -323,65 +291,99 @@ class _PostsPageState extends State<PostsPage> {
       );
     }
 
-    Widget body() {
-      if (tileSize != null && stagger != null) {
-        return StaggeredGridView.countBuilder(
-          key: Key('grid_${tileSize}_${stagger}_key'),
-          crossAxisCount: crossAxisCount,
-          itemCount: widget.provider.posts.value.length,
-          itemBuilder: itemBuilder,
-          staggeredTileBuilder: tileBuilder,
-          physics: BouncingScrollPhysics(),
-        );
-      } else {
-        return SizedBox.shrink();
+    return LayoutBuilder(builder: (context, constraints) {
+      int crossAxisCount() {
+        return notZero(constraints.maxWidth / tileSize).round();
       }
-    }
 
-    return WillPopScope(
-      onWillPop: () async {
-        if (selections.isNotEmpty) {
-          setState(() => selections.clear());
-          return false;
-        } else {
-          return true;
+      StaggeredTile tileBuilder(int item) {
+        if (item < widget.provider.posts.value.length) {
+          double extra = 0.2;
+          PostImage sample = widget.provider.posts.value[item].sample.value;
+          double heightRatio = notZero(sample.height / sample.width);
+          double widthRatio = notZero(sample.width / sample.height);
+
+          switch (stagger) {
+            case GridState.square:
+              return StaggeredTile.count(1, 1 + extra);
+            case GridState.vertical:
+              return StaggeredTile.count(1, heightRatio);
+              break;
+            case GridState.omni:
+              if (crossAxisCount() == 1) {
+                return StaggeredTile.count(1, heightRatio);
+              } else {
+                return StaggeredTile.count(
+                    roundedNotZero(widthRatio),
+                    roundedNotZero(heightRatio) +
+                        roundedNotZero(heightRatio) * extra);
+              }
+              break;
+          }
         }
-      },
-      child: RefreshablePage.builder(
-        builder: (context, child, scrollController) => Scaffold(
-          appBar: ScrollingAppbarFrame(
-            child: Material(
-              elevation: Theme.of(context).appBarTheme.elevation ?? 4,
-              child: CrossFade(
-                showChild: selections.isEmpty,
-                child: widget.appBarBuilder(context),
-                secondChild: selectionAppBar(),
-              ),
-            ),
-            controller: selections.isEmpty ? scrollController : null,
-          ),
-          body: child,
-          drawer: NavigationDrawer(),
-          drawerEdgeDragWidth: defaultDrawerEdge(context),
-          endDrawer: widget.provider.canDeny
-              ? SearchDrawer(provider: widget.provider)
-              : null,
-          floatingActionButton: floatingActionButton(),
-        ),
-        refresh: () async {
-          await widget.provider.loadNextPage(reset: true);
-          return !widget.provider.isError;
+        return null;
+      }
+
+      Widget body() {
+        if (tileSize != null && stagger != null) {
+          return StaggeredGridView.countBuilder(
+            key: Key('grid_${tileSize}_${stagger}_key'),
+            crossAxisCount: crossAxisCount(),
+            itemCount: widget.provider.posts.value.length,
+            itemBuilder: itemBuilder,
+            staggeredTileBuilder: tileBuilder,
+            physics: BouncingScrollPhysics(),
+          );
+        } else {
+          return SizedBox.shrink();
+        }
+      }
+
+      return WillPopScope(
+        onWillPop: () async {
+          if (selections.isNotEmpty) {
+            setState(() => selections.clear());
+            return false;
+          } else {
+            return true;
+          }
         },
-        child: body(),
-        isLoading:
-            widget.provider.isLoading || tileSize == null || stagger == null,
-        isEmpty: widget.provider.posts.value.isEmpty,
-        isError: widget.provider.isError,
-        onEmpty: Text('No posts'),
-        onLoading: Text('Loading posts'),
-        onError: Text('Failed to load posts'),
-      ),
-    );
+        child: RefreshablePage.builder(
+          builder: (context, child, scrollController) => Scaffold(
+            appBar: ScrollingAppbarFrame(
+              child: Material(
+                elevation: Theme.of(context).appBarTheme.elevation ?? 4,
+                child: CrossFade(
+                  showChild: selections.isEmpty,
+                  child: widget.appBarBuilder(context),
+                  secondChild: selectionAppBar(),
+                ),
+              ),
+              controller: selections.isEmpty ? scrollController : null,
+            ),
+            body: child,
+            drawer: NavigationDrawer(),
+            drawerEdgeDragWidth: defaultDrawerEdge(constraints.maxWidth),
+            endDrawer: widget.provider.canDeny
+                ? SearchDrawer(provider: widget.provider)
+                : null,
+            floatingActionButton: floatingActionButton(),
+          ),
+          refresh: () async {
+            await widget.provider.loadNextPage(reset: true);
+            return !widget.provider.isError;
+          },
+          child: body(),
+          isLoading:
+              widget.provider.isLoading || tileSize == null || stagger == null,
+          isEmpty: widget.provider.posts.value.isEmpty,
+          isError: widget.provider.isError,
+          onEmpty: Text('No posts'),
+          onLoading: Text('Loading posts'),
+          onError: Text('Failed to load posts'),
+        ),
+      );
+    });
   }
 }
 

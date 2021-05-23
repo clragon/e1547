@@ -189,16 +189,18 @@ class _RefreshablePageState extends State<RefreshablePage> {
         scrollController,
       );
     } else {
-      return Scaffold(
-        appBar: ScrollingAppbarFrame(
-          child: widget.appBar,
-          controller: scrollController,
-        ),
-        body: body(),
-        drawer: widget.drawer,
-        drawerEdgeDragWidth: defaultDrawerEdge(context),
-        floatingActionButton: widget.floatingActionButton,
-      );
+      return LayoutBuilder(builder: (context, constraints) {
+        return Scaffold(
+          appBar: ScrollingAppbarFrame(
+            child: widget.appBar,
+            controller: scrollController,
+          ),
+          body: body(),
+          drawer: widget.drawer,
+          drawerEdgeDragWidth: defaultDrawerEdge(constraints.maxWidth),
+          floatingActionButton: widget.floatingActionButton,
+        );
+      });
     }
   }
 }

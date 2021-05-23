@@ -55,8 +55,7 @@ Map<String, WidgetBuilder> routes = <String, WidgetBuilder>{
 
 ProfileHeader header = ProfileHeader();
 
-double defaultDrawerEdge(BuildContext context) =>
-    MediaQuery.of(context).size.width * 0.1;
+double defaultDrawerEdge(double screenWidth) => screenWidth * 0.1;
 
 class NavigationDrawer extends StatelessWidget {
   @override
