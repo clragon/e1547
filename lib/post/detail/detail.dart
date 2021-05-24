@@ -118,41 +118,6 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
         child: FloatingActionButton(
           heroTag: null,
           backgroundColor: Theme.of(context).cardColor,
-          onPressed: () {},
-          child: Padding(
-            padding: EdgeInsets.only(left: 2),
-            child: ValueListenableBuilder(
-              valueListenable: widget.post.isFavorite,
-              builder: (context, value, child) => Builder(
-                builder: (context) => LikeButton(
-                  isLiked: value,
-                  circleColor: CircleColor(start: Colors.pink, end: Colors.red),
-                  bubblesColor: BubblesColor(
-                      dotPrimaryColor: Colors.pink,
-                      dotSecondaryColor: Colors.red),
-                  likeBuilder: (bool isLiked) => Icon(
-                    Icons.favorite,
-                    color: isLiked
-                        ? Colors.pinkAccent
-                        : Theme.of(context).iconTheme.color,
-                  ),
-                  onTap: (isLiked) async {
-                    if (isLiked) {
-                      widget.post.tryRemoveFav(context);
-                      return false;
-                    } else {
-                      widget.post.tryAddFav(context);
-                      return true;
-                    }
-                  },
-                ),
-              ),
-            ),
-          ),
-        ),
-        secondChild: FloatingActionButton(
-          heroTag: null,
-          backgroundColor: Theme.of(context).cardColor,
           onPressed: () async {
             if (doEdit.value != null) {
               if (await doEdit.value()) {
@@ -160,7 +125,7 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
               }
             } else {
               sheetController = Scaffold.of(context).showBottomSheet(
-                (context) => EditReasonEditor(
+                    (context) => EditReasonEditor(
                   onSubmit: (value) async {
                     try {
                       await client.updatePost(
@@ -191,6 +156,41 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
             builder: (context, value, child) => Icon(
                 value == null ? Icons.check : Icons.add,
                 color: Theme.of(context).iconTheme.color),
+          ),
+        ),
+        secondChild: FloatingActionButton(
+          heroTag: null,
+          backgroundColor: Theme.of(context).cardColor,
+          onPressed: () {},
+          child: Padding(
+            padding: EdgeInsets.only(left: 2),
+            child: ValueListenableBuilder(
+              valueListenable: widget.post.isFavorite,
+              builder: (context, value, child) => Builder(
+                builder: (context) => LikeButton(
+                  isLiked: value,
+                  circleColor: CircleColor(start: Colors.pink, end: Colors.red),
+                  bubblesColor: BubblesColor(
+                      dotPrimaryColor: Colors.pink,
+                      dotSecondaryColor: Colors.red),
+                  likeBuilder: (bool isLiked) => Icon(
+                    Icons.favorite,
+                    color: isLiked
+                        ? Colors.pinkAccent
+                        : Theme.of(context).iconTheme.color,
+                  ),
+                  onTap: (isLiked) async {
+                    if (isLiked) {
+                      widget.post.tryRemoveFav(context);
+                      return false;
+                    } else {
+                      widget.post.tryAddFav(context);
+                      return true;
+                    }
+                  },
+                ),
+              ),
+            ),
           ),
         ),
       );
