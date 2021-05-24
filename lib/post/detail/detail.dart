@@ -41,9 +41,9 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
   }
 
   void closeSheet() {
-    if (!widget.post.isEditing.value) {
+    if (!widget.post.isEditing.value && sheetController != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        sheetController?.close?.call();
+        sheetController.close();
       });
     }
   }
@@ -125,7 +125,7 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
               }
             } else {
               sheetController = Scaffold.of(context).showBottomSheet(
-                    (context) => EditReasonEditor(
+                (context) => EditReasonEditor(
                   onSubmit: (value) async {
                     try {
                       await client.updatePost(
@@ -141,6 +141,7 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
                       ));
                     }
                     await widget.post.resetPost(online: true);
+                    sheetController.close();
                     return true;
                   },
                   onEditorBuild: (submit) => doEdit.value = submit,

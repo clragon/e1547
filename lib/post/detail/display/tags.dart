@@ -70,6 +70,8 @@ class TagDisplay extends StatelessWidget {
                                   category: category,
                                   onEditorSubmit: (value) =>
                                       onEditorSubmit(value, category),
+                                  onEditorBuild: onEditorBuild,
+                                  onEditorClose: onEditorClose,
                                 ),
                               ),
                             ],

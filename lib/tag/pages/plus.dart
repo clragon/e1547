@@ -54,9 +54,10 @@ class _TagAddCardState extends State<TagAddCard> {
                     }
                     return success;
                   },
+                  onBuild: widget.onEditorBuild,
                 ),
               );
-              sheetController.closed.then((_) => widget.onEditorClose());
+              sheetController.closed.then((_) => widget?.onEditorClose());
             },
           );
         },

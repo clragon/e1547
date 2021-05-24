@@ -25,7 +25,9 @@ class _EditReasonEditorState extends State<EditReasonEditor> {
   @override
   void initState() {
     super.initState();
-    widget.onEditorBuild?.call(() => submit(controller.text));
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      widget.onEditorBuild?.call(() => submit(controller.text));
+    });
   }
 
   @override

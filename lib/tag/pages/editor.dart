@@ -7,13 +7,13 @@ class TagEditor extends StatefulWidget {
   final Post post;
   final String category;
   final Future<bool> Function(String text) onSubmit;
-  final Function(Future<bool> Function() submit) builder;
+  final Function(Future<bool> Function() submit) onBuild;
 
   TagEditor({
     @required this.post,
     @required this.category,
     this.onSubmit,
-    this.builder,
+    this.onBuild,
   });
 
   @override
@@ -34,7 +34,9 @@ class _TagEditorState extends State<TagEditor> {
   @override
   void initState() {
     super.initState();
-    widget.builder?.call(() => submit(controller.text));
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      widget.onBuild?.call(() => submit(controller.text));
+    });
   }
 
   @override
