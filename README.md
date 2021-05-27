@@ -10,7 +10,7 @@
     <a href="https://github.com/clragon/e1547/commits/master"><img src="https://badgen.net/github/commits/clragon/e1547"></a>
     <a href="https://github.com/clragon/e1547/commits/master"><img src="https://badgen.net/github/last-commit/clragon/e1547"></a>
     <a href="blob/master/LICENSE"><img src="https://img.shields.io/github/license/clragon/e1547"><a>
-    <a href="https://discord.gg/knyhWmz"><img src="https://img.shields.io/discord/763321712766877727.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2"></a>
+    <a href="https://discord.gg/MRwKGqfmUz"><img src="https://img.shields.io/discord/763321712766877727.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2"></a>
     </td>
     </tr>
 </table>
@@ -101,7 +101,7 @@ Is the app currently under development?
 
 If you want to participate in development decisions, you can join the discord:  
 
-[![Discord](https://img.shields.io/discord/763321712766877727.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/knyhWmz)  
+[![Discord](https://img.shields.io/discord/763321712766877727.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/MRwKGqfmUz)  
 
 You can also post on the [e926 forum thread](https://e926.net/forum_topics/25854).  
 If you notice something not working, feel free to open a github issue.
