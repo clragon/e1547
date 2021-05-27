@@ -10,6 +10,7 @@
     <a href="https://github.com/clragon/e1547/commits/master"><img src="https://badgen.net/github/commits/clragon/e1547"></a>
     <a href="https://github.com/clragon/e1547/commits/master"><img src="https://badgen.net/github/last-commit/clragon/e1547"></a>
     <a href="blob/master/LICENSE"><img src="https://img.shields.io/github/license/clragon/e1547"><a>
+    <a href="https://discord.gg/knyhWmz"><img src="https://img.shields.io/discord/763321712766877727.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2"></a>
     </td>
     </tr>
 </table>
@@ -58,12 +59,10 @@ APK and IPA files can be found over at the [releases](https://github.com/clragon
 
 ### Installing on iOS
 
-#### Without Jailbreak:
 - Follow the instructions on [AltStore](https://altstore.io/)
 
 or 
 
-#### With Jailbreak:
 1. Grab [Cydia Impactor](http://www.cydiaimpactor.com/)
 2. Drag the downloaded .ipa file onto Cydia Impactor after opening it. 
 3. Enter your Apple ID and password. If the password fails, [use an App Specific 2fa Password](https://support.apple.com/en-us/HT204397#sections)
@@ -100,20 +99,30 @@ Is the app currently under development?
   
 <a href="https://github.com/clragon/e1547/commits/master"><img src="https://badgen.net/github/last-commit/clragon/e1547"></a>
 
-If you want to participate in development decisions, you can join the [discord server](https://discord.gg/knyhWmz).  
+If you want to participate in development decisions, you can join the discord:  
+
+[![Discord](https://img.shields.io/discord/763321712766877727.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/knyhWmz)  
+
 You can also post on the [e926 forum thread](https://e926.net/forum_topics/25854).  
 If you notice something not working, feel free to open a github issue.
 
+## Credit
+Code is written by me, [clragon](https://github.com/clragon).
+    
 if you feel like supporting the development, you can donate a couple of monies.  
 I spend alot of time trying to build this app, so all support is welcome. 
-
+    
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/Q5Q22W6FW)
 
-## Credit
-- Code is written by me, [clragon](https://github.com/clragon).
+#### Thanks to:  
+- [Kritanta](https://github.com/KritantaDev) for iOS publishing.
 
-- iOS builds and testing is done by [Kritanta](https://github.com/KritantaDev) and [CamperGuy](https://github.com/camperguy).
+- [CamperGuy](https://github.com/camperguy) for occasional iOS builds.
+    
+- [Miyoyo](https://github.com/miyoyo) for performance optimisations.
+    
+- [bitWolfy](https://github.com/bitWolfy) for code review.
 
-- This app is a continuation of a project by [Perlatus](https://github.com/perlatus).
+- [Perlatus](https://github.com/perlatus) for writing the original code base.
 
-- The e1547 logo and banner uses a [Paw Icon](https://fontawesome.com/icons/paw?style=solid) licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
+- [Font Awesome](https://fontawesome.com/icons/paw?style=solid) for their Paw Icon.
