@@ -15,6 +15,20 @@ String blockTag(String wrapped) => singleBrackets(
       ].join(),
     );
 
+String stopsAtEndChar(String wrapped) => [
+      wrapped,
+      r'(?=([.,!:"\s]|(\? ))?)',
+    ].join();
+
+String startsWithName(String wrapped, [bool needsName]) => [
+      r'("(?<name>[^"]+?)":)',
+      if (!(needsName ?? true)) r'?',
+      wrapped,
+    ].join();
+
+String linkWrap(String wrapped, [bool needsName]) =>
+    startsWithName(stopsAtEndChar(wrapped), needsName);
+
 RegExp anyBlockTag = RegExp(
   blockTag(
     [

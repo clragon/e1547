@@ -60,6 +60,14 @@ class SearchDrawer extends StatelessWidget {
         }
 
         Widget blacklistSwitch() {
+          List<MapEntry<String, List<Post>>> entries = [];
+
+          entries.addAll(provider.deniedMap.value.entries);
+          entries.addAll(
+              provider.allowlist.value.map((e) => MapEntry(e, <Post>[])));
+
+          entries.sort((a, b) => a.key.compareTo(b.key));
+
           return Column(
             children: [
               Padding(
@@ -90,12 +98,7 @@ class SearchDrawer extends StatelessWidget {
                 child: Column(
                   children: [
                     Divider(),
-                    ...([
-                      ...provider.deniedMap.value.entries,
-                      ...provider.allowlist.value
-                          .map((e) => MapEntry(e, <Post>[])),
-                    ]..sort((a, b) => a.key.compareTo(b.key)))
-                        .map(listEntry),
+                    ...entries.map(listEntry),
                   ],
                 ),
               ),

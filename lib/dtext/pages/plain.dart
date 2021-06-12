@@ -22,10 +22,10 @@ TextSpan plainText(
     text: text,
     recognizer: TapGestureRecognizer()..onTap = onTap,
     style: TextStyle(
-      color: state[TextState.link]
-          ? Colors.blue[400]
-          : state[TextState.dark]
-              ? Theme.of(context).textTheme.bodyText1.color.withOpacity(0.5)
+      color: state[TextState.dark]
+          ? Theme.of(context).textTheme.bodyText1.color.withOpacity(0.5)
+          : state[TextState.link]
+              ? Colors.blue[400]
               : Theme.of(context).textTheme.bodyText1.color,
       fontWeight: state[TextState.bold] ? FontWeight.bold : null,
       fontStyle: state[TextState.italic] ? FontStyle.italic : null,

@@ -197,6 +197,7 @@ class DTextField extends StatelessWidget {
         if (display == null) {
           display = match.namedGroup('link');
           display = display.replaceFirst('https://', '');
+          display = display.replaceFirst('http://', '');
           display = display.replaceFirst('www.', '');
         }
 
@@ -233,7 +234,7 @@ class DTextField extends StatelessWidget {
             onTap: onTap);
       }
 
-      InlineSpan parseWord(String match, LinkWord word) {
+      InlineSpan parseWord(LinkWord word, RegExpMatch match, String result) {
         Function onTap;
 
         switch (word) {
@@ -241,7 +242,7 @@ class DTextField extends StatelessWidget {
           // add actual pictures here some day.
           case LinkWord.post:
             onTap = () async {
-              Post p = await client.post(int.parse(match.split('#')[1]));
+              Post p = await client.post(int.parse(match.namedGroup('id')));
               Navigator.of(context).push(MaterialPageRoute(builder: (context) {
                 return PostDetail(post: p);
               }));
@@ -249,7 +250,7 @@ class DTextField extends StatelessWidget {
             break;
           case LinkWord.pool:
             onTap = () async {
-              Pool p = await client.pool(int.parse(match.split('#')[1]));
+              Pool p = await client.pool(int.parse(match.namedGroup('id')));
               Navigator.of(context).push(MaterialPageRoute(builder: (context) {
                 return PoolPage(pool: p);
               }));
@@ -261,7 +262,7 @@ class DTextField extends StatelessWidget {
 
         return plainText(
             context: context,
-            text: match,
+            text: result,
             state: Map.from(state)..[TextState.link] = true,
             onTap: onTap);
       }
@@ -313,14 +314,16 @@ class DTextField extends StatelessWidget {
             Map.from(state)..[TextState.header] = true,
           );
         },
-        RegExp(r'("(?<name>[^"]+?)":)?(?<link>(http(s)?)?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)([^.,!?:"\s]+))'):
-            parseLink,
-        RegExp(r'("(?<name>[^"]+?)":)(?<link>[-a-zA-Z0-9()@:%_\+.~#?&//=]*)([^.,!?:"\s]+)'):
+        RegExp(linkWrap(
+            r'(?<link>(http(s)?)?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*))',
+            false)): parseLink,
+        RegExp(linkWrap(r'(?<link>[-a-zA-Z0-9()@:%_\+.~#?&//=]*)')):
             (match, result) => parseLink(match, result, true),
         ...Map.fromIterable(LinkWord.values,
-            key: (word) => RegExp(RegExp.escape(describeEnum(word)) + r' #\d+',
+            key: (word) => RegExp(
+                RegExp.escape(describeEnum(word)) + r' #(?<id>\d+)',
                 caseSensitive: false),
-            value: (word) => (match, result) => parseWord(result, word)),
+            value: (word) => (match, result) => parseWord(word, match, result)),
       };
 
       for (MapEntry<RegExp, Function(RegExpMatch match, String result)> entry

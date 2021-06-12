@@ -321,3 +321,7 @@ void preloadImages({
     }
   }
 }
+
+String getPostHero(Post post) {
+  return 'image_${post.id}';
+}

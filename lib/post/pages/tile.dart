@@ -31,7 +31,7 @@ class PostTile extends StatelessWidget {
                     return Center(child: Text('unsafe'));
                   }
                   return Hero(
-                    tag: 'image_${post.id}',
+                    tag: getPostHero(post),
                     child: CachedNetworkImage(
                       imageUrl: post.sample.value.url,
                       errorWidget: (context, url, error) => Icon(Icons.error),

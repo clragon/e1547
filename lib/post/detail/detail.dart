@@ -6,7 +6,6 @@ import 'package:e1547/post.dart';
 import 'package:e1547/post/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:like_button/like_button.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import 'display.dart';
 import 'image.dart';
@@ -262,14 +261,6 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
                       child: DetailImageDisplay(
                         post: widget.post,
                         onTap: () {
-                          if (widget.post.file.value.url == null ||
-                              !widget.post.isVisible) {
-                            return;
-                          }
-                          if (widget.post.type == ImageType.Unsupported) {
-                            launch(widget.post.file.value.url);
-                            return;
-                          }
                           keepPlaying = true;
                           Navigator.of(context).push(
                             MaterialPageRoute(

@@ -3,7 +3,6 @@ import 'package:e1547/interface.dart';
 import 'package:e1547/post.dart';
 import 'package:e1547/settings.dart';
 import 'package:flutter/material.dart';
-import 'package:icon_shadow/icon_shadow.dart';
 import 'package:share/share.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -24,14 +23,14 @@ class PostAppBar extends StatelessWidget implements PreferredSizeWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: IconShadowWidget(
-            Icon(
+          icon: IconShadow(
+            icon: Icon(
               post.isEditing.value && this.canEdit
                   ? Icons.clear
                   : Icons.arrow_back,
               color: Theme.of(context).iconTheme.color,
             ),
-            shadowColor: Colors.black,
+            shadowColor: Theme.of(context).canvasColor,
           ),
           onPressed: Navigator.of(context).maybePop,
         ),
@@ -41,8 +40,8 @@ class PostAppBar extends StatelessWidget implements PreferredSizeWidget {
                 Builder(
                   builder: (context) {
                     return PopupMenuButton<String>(
-                      icon: IconShadowWidget(
-                        Icon(
+                      icon: IconShadow(
+                        icon: Icon(
                           Icons.more_vert,
                           color: Theme.of(context).iconTheme.color,
                         ),

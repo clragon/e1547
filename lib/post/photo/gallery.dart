@@ -101,12 +101,13 @@ class _PostPhotoGalleryState extends State<PostPhotoGallery> with RouteAware {
               ),
               secondChild: CachedNetworkImage(
                 imageUrl: post.sample.value.url,
-                placeholder: (context, url) => Center(
-                    child: Container(
-                  height: 26,
-                  width: 26,
-                  child: CircularProgressIndicator(),
-                )),
+                progressIndicatorBuilder: (context, url, progress) => Center(
+                  child: Container(
+                    height: 26,
+                    width: 26,
+                    child: CircularProgressIndicator(value: progress.progress),
+                  ),
+                ),
                 errorWidget: (context, url, error) =>
                     Center(child: Icon(Icons.error_outline)),
               ),
@@ -130,7 +131,7 @@ class _PostPhotoGalleryState extends State<PostPhotoGallery> with RouteAware {
                     return PostPhoto(post);
                   case ImageType.Video:
                     return Hero(
-                      tag: 'image_${widget.posts[index].id}',
+                      tag: getPostHero(widget.posts[index]),
                       child: video(post),
                     );
                   case ImageType.Unsupported:

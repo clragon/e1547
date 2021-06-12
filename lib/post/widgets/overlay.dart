@@ -22,12 +22,13 @@ class ImageOverlay extends StatelessWidget {
     if (post.isDeleted) {
       return centerText('Post was deleted');
     }
-    if (!post.isVisible) {
-      return centerText('Post is blacklisted');
-    }
     if (post.file.value.url == null) {
       return centerText('Image unavailable in safe mode');
     }
+    if (!post.isVisible) {
+      return centerText('Post is blacklisted');
+    }
+
     if (post.type == ImageType.Unsupported) {
       return Row(
         mainAxisAlignment: MainAxisAlignment.center,

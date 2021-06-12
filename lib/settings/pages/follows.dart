@@ -240,6 +240,7 @@ class _FollowingPageState extends State<FollowingPage> {
             onPressed: () {
               List<String> tags = controller.text.split('\n');
               tags.removeWhere((tag) => tag.trim().isEmpty);
+              tags = tags.map((e) => e.trim()).toList();
               db.follows.value = Future.value(tags);
               Navigator.of(context).pop();
             },

@@ -81,7 +81,8 @@ class PostSearchBar extends StatelessWidget {
         'New': 'new',
         'Score': 'score',
         'Favorites': 'favcount',
-        'Rank': 'rank'
+        'Rank': 'rank',
+        'Random': 'random',
       };
 
       return PopupMenuButton<String>(

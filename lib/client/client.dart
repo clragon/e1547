@@ -379,7 +379,7 @@ class Client {
         ]);
       }
 
-      await dio.patch('posts/${update.id}.json', data: body);
+      await dio.put('posts/${update.id}.json', data: FormData.fromMap(body));
     }
   }
 

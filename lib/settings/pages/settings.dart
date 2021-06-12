@@ -23,7 +23,6 @@ class _SettingsPageState extends State<SettingsPage> {
   AppTheme theme;
   bool useCustomHost = false;
   bool hideGallery = false;
-  bool fitted = false;
   int tileSize = 0;
   GridState stagger;
 
@@ -389,7 +388,7 @@ Future<bool> setCustomHost(BuildContext context) async {
                             labelText: 'url', border: UnderlineInputBorder()),
                         onSubmitted: (_) async {
                           if (await submit(controller.text)) {
-                            Navigator.of(context).pop();
+                            Navigator.of(context).maybePop();
                           }
                         },
                       ),
@@ -434,13 +433,13 @@ Future<bool> setCustomHost(BuildContext context) async {
         actions: [
           TextButton(
             child: Text('CANCEL'),
-            onPressed: Navigator.of(context).pop,
+            onPressed: Navigator.of(context).maybePop,
           ),
           TextButton(
             child: Text('OK'),
             onPressed: () async {
               if (await submit(controller.text)) {
-                Navigator.of(context).pop();
+                Navigator.of(context).maybePop();
               }
             },
           ),
