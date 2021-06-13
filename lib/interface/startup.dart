@@ -1,9 +1,11 @@
+import 'package:e1547/follow.dart';
 import 'package:flutter/material.dart';
 
 import 'navigation.dart';
 
 final List<Function(BuildContext context)> actions = [
   initAvatar,
+  (_) => followUpdater.run(),
 ];
 
 class StartupActions extends StatefulWidget {
