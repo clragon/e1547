@@ -38,7 +38,9 @@ class _HomePageState extends State<HomePage> {
   @override
   void dispose() {
     super.dispose();
-    provider?.search?.removeListener(update);
+    // removing this isn't necessary
+    // the provider will be disposed by the child.
+    // provider?.search?.removeListener(update);
   }
 
   @override

@@ -4,6 +4,7 @@ import 'package:e1547/post.dart';
 import 'package:e1547/settings.dart';
 import 'package:e1547/tag.dart';
 import 'package:flutter/material.dart';
+import 'package:mutex/mutex.dart';
 
 class PostProvider extends DataProvider<Post> {
   Future<List<Post>> Function(String search, int page) provider;
@@ -12,6 +13,7 @@ class PostProvider extends DataProvider<Post> {
   ValueNotifier<List<Post>> denied = ValueNotifier([]);
   ValueNotifier<List<Post>> posts = ValueNotifier([]);
   ValueNotifier<bool> denying = ValueNotifier(true);
+  Mutex lock = Mutex();
   bool canSearch;
   bool canDeny;
 
@@ -31,6 +33,7 @@ class PostProvider extends DataProvider<Post> {
   }
 
   Future<void> refresh({List<Post> items}) async {
+    lock.acquire();
     items ??= this.items;
 
     List<String> denylist = [];
@@ -61,6 +64,7 @@ class PostProvider extends DataProvider<Post> {
     posts.value = newPosts;
     denied.value = newDenied;
     notifyListeners();
+    lock.release();
   }
 
   Future<void> disposePosts() async {

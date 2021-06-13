@@ -2,6 +2,7 @@ import 'package:e1547/client.dart';
 import 'package:e1547/settings.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:mutex/mutex.dart';
 
 abstract class DataProvider<T> extends ChangeNotifier {
   bool reload = false;
@@ -9,6 +10,7 @@ abstract class DataProvider<T> extends ChangeNotifier {
   bool isError = false;
   ValueNotifier<String> search = ValueNotifier('');
   ValueNotifier<List<List<T>>> pages = ValueNotifier([]);
+  Mutex lock = Mutex();
 
   List<T> get items {
     return pages.value.expand((element) => element).toList();
@@ -60,6 +62,7 @@ abstract class DataProvider<T> extends ChangeNotifier {
 
   @nonVirtual
   Future<void> loadNextPage({bool reset = false}) async {
+    await lock.acquire();
     if (!isLoading) {
       isLoading = true;
       notifyListeners();
@@ -74,6 +77,7 @@ abstract class DataProvider<T> extends ChangeNotifier {
         resetPages();
       }
     }
+    lock.release();
   }
 
   @override
