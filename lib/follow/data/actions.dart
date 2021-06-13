@@ -61,9 +61,13 @@ class FollowUpdater {
   FollowUpdater(this.source) {
     source.addListener(() async {
       List<String> update = (await source.value).tags;
-      if (!listEquals(tags, update) && !completer.isCompleted) {
+      if (tags == null) {
         tags = update;
-        restart = true;
+      } else {
+        if (!listEquals(tags, update) && !completer.isCompleted) {
+          tags = update;
+          restart = true;
+        }
       }
     });
   }
