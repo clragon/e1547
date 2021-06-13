@@ -16,10 +16,8 @@ class FollowingPage extends StatefulWidget {
 }
 
 class _FollowingPageState extends State<FollowingPage> {
-  int editing;
   List<Follow> follows;
-  bool isSearching = false;
-  TextEditingController textController = TextEditingController();
+  Function fabAction;
   PersistentBottomSheetController<String> sheetController;
   ScrollController scrollController = ScrollController();
 
@@ -44,55 +42,126 @@ class _FollowingPageState extends State<FollowingPage> {
     db.follows.removeListener(update);
   }
 
+  Widget tagEditor({
+    TextEditingController controller,
+    @required Function(String value) onSubmit,
+  }) {
+    controller ??= TextEditingController();
+    setFocusToEnd(controller);
+
+    return Padding(
+      padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10),
+      child: Column(mainAxisSize: MainAxisSize.min, children: [
+        TagInput(
+          controller: controller,
+          labelText: 'Add to follows',
+          onSubmit: onSubmit,
+        ),
+      ]),
+    );
+  }
+
+  Widget aliasEditor({
+    TextEditingController controller,
+    @required Function(String value) onSubmit,
+  }) {
+    controller ??= TextEditingController();
+    setFocusToEnd(controller);
+
+    return Padding(
+      padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10),
+      child: Column(mainAxisSize: MainAxisSize.min, children: [
+        TextField(
+          controller: controller,
+          autofocus: true,
+          maxLines: 1,
+          decoration: InputDecoration(
+            labelText: 'Follow Alias',
+          ),
+          onSubmitted: onSubmit,
+        )
+      ]),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    Future<void> addTags(BuildContext context, {int edit}) async {
-      setFocusToEnd(textController);
-      Follow result = Follow.fromString(textController.text.trim());
-      if (isSearching) {
-        if (editing != null) {
-          if (textController.text.trim().isNotEmpty) {
-            follows[editing] = result;
+    void addTags(BuildContext context, [int edit]) {
+      void submit(String value, {int edit}) {
+        value = value.trim();
+        Follow result = Follow.fromString(value);
+
+        if (edit != null) {
+          if (value.isNotEmpty) {
+            follows[edit] = result;
           } else {
-            follows.removeAt(editing);
+            follows.removeAt(edit);
           }
+          db.follows.value = Future.value(follows);
           sheetController?.close();
         } else {
-          if (textController.text.trim().isNotEmpty) {
+          if (value.isNotEmpty) {
             follows.add(result);
+            db.follows.value = Future.value(follows);
             sheetController?.close();
           }
         }
-        db.follows.value = Future.value(follows);
-      } else {
-        if (edit != null) {
-          editing = edit;
-          textController.text = follows[editing].tags;
-        } else {
-          textController.text = '';
-        }
-        sheetController = Scaffold.of(context).showBottomSheet((context) {
-          return Container(
-            padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10),
-            child: Column(mainAxisSize: MainAxisSize.min, children: [
-              TagInput(
-                controller: textController,
-                labelText: 'Add to follows',
-                onSubmit: (_) => addTags(context),
-              ),
-            ]),
-          );
-        });
-        setState(() {
-          isSearching = true;
-        });
-        sheetController.closed.then((_) {
-          setState(() {
-            isSearching = false;
-            editing = null;
-          });
-        });
       }
+
+      TextEditingController controller =
+          TextEditingController(text: edit != null ? follows[edit].tags : null);
+
+      sheetController = Scaffold.of(context).showBottomSheet((context) {
+        return tagEditor(
+          controller: controller,
+          onSubmit: (value) => submit(value, edit: edit),
+        );
+      });
+
+      setState(() {
+        fabAction = () => submit(controller.text, edit: edit);
+      });
+
+      sheetController.closed.then((_) {
+        setState(() {
+          fabAction = null;
+        });
+      });
+    }
+
+    void editAlias(BuildContext context, int edit) {
+      void submit(String value, int edit) {
+        value = value.trim();
+        if (follows[edit].alias != value) {
+          if (value.isNotEmpty) {
+            follows[edit].alias = value;
+          } else {
+            follows[edit].alias = null;
+          }
+          db.follows.value = Future.value(follows);
+          sheetController?.close();
+        }
+      }
+
+      TextEditingController controller =
+          TextEditingController(text: follows[edit].title);
+
+      sheetController = Scaffold.of(context).showBottomSheet((context) {
+        return aliasEditor(
+          controller: controller,
+          onSubmit: (value) => submit(value, edit),
+        );
+      });
+
+      setState(() {
+        fabAction = () => submit(controller.text, edit);
+      });
+
+      sheetController.closed.then((_) {
+        setState(() {
+          fabAction = null;
+        });
+      });
     }
 
     Widget body() {
@@ -120,9 +189,12 @@ class _FollowingPageState extends State<FollowingPage> {
         itemCount: follows.length,
         itemBuilder: (BuildContext context, int index) => FollowListTile(
           follow: follows[index],
-          onRename: () {},
-          onEdit: () => addTags(context, edit: index),
-          onDelete: () => follows.remove(follows[index]),
+          onRename: () => editAlias(context, index),
+          onEdit: () => addTags(context, index),
+          onDelete: () {
+            follows.removeAt(index);
+            db.follows.value = Future.value(follows);
+          },
         ),
         physics: BouncingScrollPhysics(),
       );
@@ -130,8 +202,8 @@ class _FollowingPageState extends State<FollowingPage> {
 
     Widget floatingActionButton(BuildContext context) {
       return FloatingActionButton(
-        child: isSearching ? Icon(Icons.check) : Icon(Icons.add),
-        onPressed: () => addTags(context),
+        child: fabAction != null ? Icon(Icons.check) : Icon(Icons.add),
+        onPressed: () => fabAction != null ? fabAction() : addTags(context),
       );
     }
 
@@ -323,7 +395,9 @@ class _FollowListTileState extends State<FollowListTile> {
                           padding: EdgeInsets.all(8.0),
                           child: Text(
                             widget.follow.title,
-                            style: TextStyle(shadows: getTextShadows()),
+                            style: thumbnail != null
+                                ? TextStyle(shadows: getTextShadows())
+                                : null,
                           ),
                         ),
                       ],
