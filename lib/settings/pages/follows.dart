@@ -137,7 +137,7 @@ class _FollowingPageState extends State<FollowingPage> {
 
     Widget editor() {
       TextEditingController controller = TextEditingController();
-      controller.text = getFollowTags(follows).join('\n');
+      controller.text = follows.tags.join('\n');
       return AlertDialog(
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -161,7 +161,7 @@ class _FollowingPageState extends State<FollowingPage> {
               List<String> tags = controller.text.split('\n');
               tags.removeWhere((tag) => tag.trim().isEmpty);
               tags = tags.map((e) => e.trim()).toList();
-              db.follows.value = editFollows(follows, tags);
+              db.follows.value = follows.editWith(tags);
               Navigator.of(context).pop();
             },
           ),

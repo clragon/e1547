@@ -50,7 +50,7 @@ class _FollowsSplitPageState extends State<FollowsSplitPage> {
   Future<void> refreshFollows({bool force = false}) async {
     await followUpdater.run(force: force);
     await followUpdater.finish;
-    await sortFollows(follows);
+    await follows.sortByNew();
     update();
   }
 
@@ -64,7 +64,7 @@ class _FollowsSplitPageState extends State<FollowsSplitPage> {
   Future<void> initialLoad() async {
     await updateTileSize();
     await updateFollows();
-    await sortFollows(follows);
+    await follows.sortByNew();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       refreshController
           .requestRefresh(
