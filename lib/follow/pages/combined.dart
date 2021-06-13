@@ -44,7 +44,7 @@ class _FollowsCombinedPageState extends State<FollowsCombinedPage> {
       appBarBuilder: (context) {
         return AppBar(
           title: Text('Following'),
-          actions: <Widget>[
+          actions: [
             IconButton(
               icon: Icon(Icons.view_comfy),
               tooltip: 'Split',

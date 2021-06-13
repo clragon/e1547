@@ -213,7 +213,7 @@ class _FollowingPageState extends State<FollowingPage> {
       return AlertDialog(
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
+          children: [
             Text('Following'),
           ],
         ),
@@ -222,7 +222,7 @@ class _FollowingPageState extends State<FollowingPage> {
           keyboardType: TextInputType.multiline,
           maxLines: null,
         ),
-        actions: <Widget>[
+        actions: [
           TextButton(
             child: Text('CANCEL'),
             onPressed: Navigator.of(context).pop,
@@ -245,7 +245,7 @@ class _FollowingPageState extends State<FollowingPage> {
       appBar: ScrollingAppbarFrame(
         child: AppBar(
           title: Text('Following'),
-          actions: <Widget>[
+          actions: [
             IconButton(
               icon: Icon(Icons.edit),
               onPressed: () async => showDialog(
@@ -308,7 +308,7 @@ class _FollowListTileState extends State<FollowListTile> {
           tag: tag,
           child: Row(
             mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
+            children: [
               Padding(
                 padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
                 child: Text(tagToTitle(tag)),
@@ -362,7 +362,7 @@ class _FollowListTileState extends State<FollowListTile> {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16),
       child: Column(
-        children: <Widget>[
+        children: [
           Stack(
             alignment: Alignment.center,
             children: [
@@ -403,7 +403,7 @@ class _FollowListTileState extends State<FollowListTile> {
                       ],
                     ),
                     subtitle: (widget.follow.tags.split(' ').length > 1)
-                        ? Row(children: <Widget>[
+                        ? Row(children: [
                             Expanded(
                               child: Wrap(
                                 direction: Axis.horizontal,

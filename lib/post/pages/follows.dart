@@ -13,7 +13,7 @@ class FollowsPage extends StatelessWidget {
           appBarBuilder: (context) {
             return AppBar(
               title: Text('Following'),
-              actions: <Widget>[
+              actions: [
                 IconButton(
                   icon: Icon(Icons.turned_in),
                   tooltip: 'Settings',
