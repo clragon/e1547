@@ -19,7 +19,7 @@ class _FollowsCombinedPageState extends State<FollowsCombinedPage> {
   );
 
   Future<void> updateTags() async {
-    List<String> update = getFollowTags((await db.follows.value));
+    List<String> update = (await db.follows.value).tags;
     if (!listEquals(tags, update)) {
       provider.resetPages();
       tags = update;

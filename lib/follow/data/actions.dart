@@ -60,7 +60,7 @@ class FollowUpdater {
 
   FollowUpdater(this.source) {
     source.addListener(() async {
-      List<String> update = getFollowTags(await source.value);
+      List<String> update = (await source.value).tags;
       if (!listEquals(tags, update) && !completer.isCompleted) {
         tags = update;
         restart = true;
@@ -69,61 +69,61 @@ class FollowUpdater {
   }
 }
 
-Future<List<Follow>> editFollows(
-    List<Follow> follows, List<String> update) async {
-  List<Follow> edited = [];
-  for (String tags in update) {
-    Follow match =
-        follows.firstWhere((follow) => follow.tags == tags, orElse: () => null);
-    if (match != null) {
-      edited.add(match);
-    } else {
-      edited.add(Follow.fromString(tags));
-    }
-  }
-  return edited;
-}
+extension utility on List<Follow> {
+  List<String> get tags => this.map((e) => e.tags).toList();
 
-Future<void> sortFollows(List<Follow> follows) async {
-  bool isSafe = await client.isSafe;
-  follows.sort(
-    (a, b) {
-      int first;
-      int second;
-      int result = 0;
-      if (isSafe) {
-        first = b.safe.unseen;
-        second = a.safe.unseen;
-      } else {
-        first = b.unsafe.unseen;
-        second = a.unsafe.unseen;
-      }
-      if (first != null && second != null) {
-        if (result == 0) {
-          result = first.compareTo(second);
-        }
-      } else {
-        if (first == null && second == null) {
-          result = 0;
+  Future<void> sortByNew() async {
+    bool isSafe = await client.isSafe;
+    this.sort(
+      (a, b) {
+        int first;
+        int second;
+        int result = 0;
+        if (isSafe) {
+          first = b.safe.unseen;
+          second = a.safe.unseen;
         } else {
-          if (first == null) {
-            result = -1;
+          first = b.unsafe.unseen;
+          second = a.unsafe.unseen;
+        }
+        if (first != null && second != null) {
+          if (result == 0) {
+            result = first.compareTo(second);
           }
-          if (second == null) {
-            result = 1;
+        } else {
+          if (first == null && second == null) {
+            result = 0;
+          } else {
+            if (first == null) {
+              result = -1;
+            }
+            if (second == null) {
+              result = 1;
+            }
           }
         }
-      }
-      if (result == 0) {
-        result = a.title.toLowerCase().compareTo(b.title.toLowerCase());
-      }
-      return result;
-    },
-  );
-}
+        if (result == 0) {
+          result = a.title.toLowerCase().compareTo(b.title.toLowerCase());
+        }
+        return result;
+      },
+    );
+  }
 
-List<String> getFollowTags(List<Follow> follows) =>
-    follows.map((e) => e.tags).toList();
+  Future<List<Follow>> editWith(List<String> update) async {
+    List<Follow> edited = [];
+    for (String tags in update) {
+      Follow match =
+          this.firstWhere((follow) => follow.tags == tags, orElse: () => null);
+      if (match != null) {
+        edited.add(match);
+      } else {
+        edited.add(Follow.fromString(tags));
+      }
+    }
+    return edited;
+  }
+}
 
 extension Refreshing on Follow {
   int get checkAmount => 5;
@@ -133,6 +133,10 @@ extension Refreshing on Follow {
       List<Post> posts =
           await client.posts(tags, 1, limit: checkAmount, faithful: true);
 
+      List<String> denylist = await db.denylist.value;
+
+      posts.forEach((element) async =>
+          element.isBlacklisted = await element.isDeniedBy(denylist));
       posts.removeWhere((element) => element.isBlacklisted);
       await updateUnseen(posts);
 
