@@ -74,3 +74,41 @@ class IconShadow extends StatelessWidget {
     }
   }
 }
+
+List<Shadow> getTextShadows() {
+  final double blur = 3;
+  final double position1 = 1.0;
+  final double position2 = 2.0;
+  final double position3 = 3.0;
+
+  List<Shadow> getShadows(double offset) {
+    return [
+      Shadow(
+        offset: Offset(offset, offset),
+        blurRadius: blur,
+        color: Colors.black38,
+      ),
+      Shadow(
+        offset: Offset(-offset, offset),
+        blurRadius: blur,
+        color: Colors.black38,
+      ),
+      Shadow(
+        offset: Offset(-offset, -offset),
+        blurRadius: blur,
+        color: Colors.black38,
+      ),
+      Shadow(
+        offset: Offset(offset, -offset),
+        blurRadius: blur,
+        color: Colors.black38,
+      ),
+    ];
+  }
+
+  return [
+    ...getShadows(position3),
+    ...getShadows(position2),
+    ...getShadows(position1),
+  ];
+}

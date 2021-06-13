@@ -48,7 +48,7 @@ class SearchPageAppBar extends StatefulWidget with PreferredSizeWidget {
 
 class _SearchPageAppBarState extends State<SearchPageAppBar> {
   String title = '...';
-  FollowList follows;
+  List<Follow> follows;
   Pool pool;
 
   void updateFollows() async {
@@ -87,7 +87,7 @@ class _SearchPageAppBarState extends State<SearchPageAppBar> {
 
     title = () {
       if (follows != null && follows.contains(widget.provider.search.value)) {
-        Follow follow = follows.data.singleWhere(
+        Follow follow = follows.singleWhere(
             (follow) => follow.tags == widget.provider.search.value);
         if (widget.provider.posts.value.isNotEmpty) {
           follow.updateLatest(widget.provider.posts.value.first);

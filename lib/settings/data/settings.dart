@@ -21,7 +21,7 @@ class Persistence {
   ValueNotifier<Future<Credentials>> credentials;
   ValueNotifier<Future<AppTheme>> theme;
   ValueNotifier<Future<List<String>>> denylist;
-  ValueNotifier<Future<FollowList>> follows;
+  ValueNotifier<Future<List<Follow>>> follows;
   ValueNotifier<Future<bool>> followsSplit;
   ValueNotifier<Future<int>> tileSize;
   ValueNotifier<Future<GridState>> stagger;
@@ -58,20 +58,23 @@ class Persistence {
     theme = createStringSetting<AppTheme>('theme',
         initial: appThemeMap.keys.elementAt(1), values: AppTheme.values);
     denylist = createSetting<List<String>>('blacklist', initial: []);
-    follows = createSetting<FollowList>('follows', initial: FollowList(),
+    follows = createSetting<List<Follow>>('follows', initial: [],
         getSetting: (prefs, key) async {
       try {
-        String value = prefs.getString(key);
+        List<String> value = prefs.getStringList(key);
         if (value != null) {
-          return FollowList.fromJson(value);
+          return value.map((e) => Follow.fromJson(e)).toList();
         } else {
           return null;
         }
       } on TypeError {
-        return FollowList.fromStrings(prefs.getStringList(key));
+        return prefs
+            .getStringList(key)
+            .map((e) => Follow.fromString(e))
+            .toList();
       }
     }, setSetting: (prefs, key, value) async {
-      await prefs.setString(key, value.toJson());
+      await prefs.setStringList(key, value.map((e) => e.toJson()).toList());
     });
     followsSplit = createSetting<bool>('followsSplit', initial: true);
     tileSize = createSetting('tileSize', initial: 200);

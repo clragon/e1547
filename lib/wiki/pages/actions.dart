@@ -20,7 +20,7 @@ class _TagListActionsState extends State<TagListActions> {
   bool denied = false;
   bool following = false;
   List<String> denylist;
-  FollowList follows;
+  List<Follow> follows;
 
   Future<void> updateLists() async {
     denylist = await db.denylist.value;
@@ -63,14 +63,15 @@ class _TagListActionsState extends State<TagListActions> {
             child: IconButton(
               onPressed: () {
                 if (following) {
-                  follows.remove(widget.tag);
+                  follows.removeWhere((element) => element.tags == widget.tag);
                 } else {
-                  follows.add(widget.tag);
+                  follows.add(Follow.fromString(widget.tag));
                   if (denied) {
                     denylist.remove(widget.tag);
                     db.denylist.value = Future.value(denylist);
                   }
                 }
+                db.follows.value = Future.value(follows);
               },
               icon: CrossFade(
                 duration: Duration(milliseconds: 200),
