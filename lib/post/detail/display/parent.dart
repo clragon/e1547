@@ -194,7 +194,7 @@ class _ParentEditorState extends State<ParentEditor> {
         padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10),
         child: Column(mainAxisSize: MainAxisSize.min, children: [
           Row(
-            children: <Widget>[
+            children: [
               ValueListenableBuilder(
                 valueListenable: isLoading,
                 builder: (context, value, child) {

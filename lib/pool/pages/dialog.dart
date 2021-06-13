@@ -34,7 +34,7 @@ class PoolDialog extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
+            children: [
               pool.description.isNotEmpty
                   ? DTextField(source: pool.description)
                   : Text(
@@ -56,7 +56,7 @@ class PoolDialog extends StatelessWidget {
     Widget title() {
       return Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
+        children: [
           Flexible(
             child: Text(
               '${pool.name.replaceAll('_', ' ')} (#${pool.id})',

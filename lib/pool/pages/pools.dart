@@ -18,14 +18,22 @@ class _PoolsPageState extends State<PoolsPage> {
   ValueNotifier<bool> isSearching = ValueNotifier(false);
   PersistentBottomSheetController<String> sheetController;
 
+  void update() {
+    if (this.mounted) {
+      setState(() {});
+    }
+  }
+
   @override
   void initState() {
     super.initState();
-    provider.pages.addListener(() {
-      if (this.mounted) {
-        setState(() {});
-      }
-    });
+    provider.pages.addListener(update);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    provider.pages.removeListener(update);
   }
 
   Widget itemBuilder(BuildContext context, int item) {
@@ -41,10 +49,7 @@ class _PoolsPageState extends State<PoolsPage> {
       provider.loadNextPage();
     }
 
-    if (item < provider.pools.length) {
-      return preview(provider.pools[item], provider);
-    }
-    return null;
+    return preview(provider.pools[item], provider);
   }
 
   @override

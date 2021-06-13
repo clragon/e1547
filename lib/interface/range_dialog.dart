@@ -80,12 +80,12 @@ class _RangeDialogState extends State<RangeDialog> {
       title: widget.title,
       content: Column(
         mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
+        children: [
           numberWidget(),
           sliderWidget(),
         ],
       ),
-      actions: <Widget>[
+      actions: [
         TextButton(
           child: Text('cancel'),
           onPressed: () => Navigator.of(context).pop(),

@@ -30,7 +30,7 @@ class SearchDrawer extends StatelessWidget {
               provider.allowlist.value = List.from(provider.allowlist.value);
             },
             title: Row(
-              children: <Widget>[
+              children: [
                 Expanded(
                   child: Wrap(
                     direction: Axis.horizontal,

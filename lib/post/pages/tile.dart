@@ -68,7 +68,7 @@ class PostTile extends StatelessWidget {
           borderRadius: BorderRadius.all(Radius.circular(4)),
         ),
         child: Stack(
-          children: <Widget>[
+          children: [
             image(),
             Positioned(top: 0, right: 0, child: overlay()),
             Positioned.fill(

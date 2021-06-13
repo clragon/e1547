@@ -18,7 +18,7 @@ class FileDisplay extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
+      children: [
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
           child: Text(
@@ -32,7 +32,7 @@ class FileDisplay extends StatelessWidget {
           padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
+            children: [
               TagGesture(
                 child: Text(ratings[post.rating.value]),
                 tag: 'rating:${post.rating.value}',
@@ -46,7 +46,7 @@ class FileDisplay extends StatelessWidget {
           padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
+            children: [
               Text(dateFormat.format(DateTime.parse(post.creation).toLocal())),
               Text(formatBytes(post.file.value.size, 1)),
             ],
@@ -56,7 +56,7 @@ class FileDisplay extends StatelessWidget {
           padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
+            children: [
               if (post.updated != null)
                 Text(dateFormat.format(DateTime.parse(post.updated).toLocal())),
               TagGesture(

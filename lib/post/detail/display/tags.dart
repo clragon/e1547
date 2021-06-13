@@ -33,7 +33,7 @@ class TagDisplay extends StatelessWidget {
               .map(
                 (category) => Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
+                  children: [
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
                       child: Text(
@@ -44,7 +44,7 @@ class TagDisplay extends StatelessWidget {
                       ),
                     ),
                     Row(
-                      children: <Widget>[
+                      children: [
                         Expanded(
                           child: Wrap(
                             direction: Axis.horizontal,

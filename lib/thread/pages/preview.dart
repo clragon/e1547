@@ -15,7 +15,7 @@ class ThreadPreview extends StatelessWidget {
   Widget build(BuildContext context) {
     Widget title() {
       return Row(
-        children: <Widget>[
+        children: [
           Expanded(
             child: Container(
               padding: EdgeInsets.only(left: 16, top: 8, bottom: 8),
@@ -64,7 +64,7 @@ class ThreadPreview extends StatelessWidget {
             onTap: this.onPressed,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
+              children: [
                 Container(
                   child: Center(child: title()),
                 ),

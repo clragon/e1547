@@ -34,7 +34,7 @@ class WikiDialog extends StatelessWidget {
     Widget title() {
       return Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
+        children: [
           Flexible(
             child: Text(
               tagToTitle(tag),

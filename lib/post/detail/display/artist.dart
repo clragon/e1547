@@ -56,13 +56,13 @@ class ArtistDisplay extends StatelessWidget {
     }
 
     return Column(
-      children: <Widget>[
+      children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Flexible(
               child: Row(
-                children: <Widget>[
+                children: [
                   Padding(
                     padding: EdgeInsets.only(right: 12),
                     child: Icon(Icons.account_circle),

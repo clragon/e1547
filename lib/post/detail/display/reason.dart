@@ -38,7 +38,7 @@ class _EditReasonEditorState extends State<EditReasonEditor> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Row(
-            children: <Widget>[
+            children: [
               ValueListenableBuilder(
                 valueListenable: loading,
                 builder: (context, value, child) => CrossFade(

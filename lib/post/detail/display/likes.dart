@@ -10,14 +10,14 @@ class LikeDisplay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      children: <Widget>[
+      children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
+          children: [
             ValueListenableBuilder(
               valueListenable: post.voteStatus,
               builder: (context, value, child) => Row(
-                children: <Widget>[
+                children: [
                   LikeButton(
                     isLiked: post.voteStatus.value == VoteStatus.upvoted,
                     likeBuilder: (bool isLiked) => Icon(
@@ -75,7 +75,7 @@ class LikeDisplay extends StatelessWidget {
             ValueListenableBuilder(
               valueListenable: post.favorites,
               builder: (context, value, child) => Row(
-                children: <Widget>[
+                children: [
                   Text((post.favorites.value ?? 0).toString()),
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 8),

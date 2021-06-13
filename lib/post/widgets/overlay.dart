@@ -35,7 +35,7 @@ class ImageOverlay extends StatelessWidget {
         children: [
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
+            children: [
               Padding(
                 padding: EdgeInsets.all(8),
                 child: Text(

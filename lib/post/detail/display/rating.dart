@@ -32,7 +32,7 @@ class RatingDisplay extends StatelessWidget {
       builder: (BuildContext context, String value, Widget child) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
+          children: [
             Padding(
               padding: EdgeInsets.only(
                 right: 4,

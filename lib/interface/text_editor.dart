@@ -59,10 +59,10 @@ class _TextEditorState extends State<TextEditor> with TickerProviderStateMixin {
           padding: EdgeInsets.all(8),
           child: Column(
             mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
+            children: [
               Row(
                 mainAxisSize: MainAxisSize.max,
-                children: <Widget>[
+                children: [
                   Expanded(
                     child: child,
                   )
@@ -146,7 +146,7 @@ class _TextEditorState extends State<TextEditor> with TickerProviderStateMixin {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       mainAxisSize: MainAxisSize.max,
-                      children: <Widget>[
+                      children: [
                         Container(
                           width: 20,
                           height: 20,
@@ -163,7 +163,7 @@ class _TextEditorState extends State<TextEditor> with TickerProviderStateMixin {
         }(),
         body: NestedScrollView(
           headerSliverBuilder: (context, innerBoxIsScrolled) {
-            return <Widget>[
+            return [
               SliverAppBar(
                 floating: true,
                 pinned: false,

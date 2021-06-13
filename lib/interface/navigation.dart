@@ -132,7 +132,7 @@ class NavigationDrawer extends StatelessWidget {
             builder: (context, snapshot) {
               if (snapshot.hasData && snapshot.data.isNotEmpty) {
                 return Stack(
-                  children: <Widget>[
+                  children: [
                     Icon(Icons.update),
                     Positioned(
                       bottom: 0,
@@ -192,7 +192,7 @@ class _ProfileHeaderState extends State<ProfileHeader> {
           return CrossFade(
             showChild: value != null,
             child: Row(
-              children: <Widget>[
+              children: [
                 Expanded(
                   child: Text(
                     value ?? '...',

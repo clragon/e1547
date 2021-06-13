@@ -1,5 +1,6 @@
 import 'package:e1547/interface.dart';
 import 'package:e1547/settings.dart';
+import 'package:e1547/settings/pages/input.dart';
 import 'package:e1547/tag.dart';
 import 'package:e1547/wiki.dart';
 import 'package:flutter/material.dart';
@@ -12,77 +13,76 @@ class DenyListPage extends StatefulWidget {
 }
 
 class _DenyListPageState extends State<DenyListPage> {
-  int editing;
-  bool isSearching = false;
+  Function fabAction;
   List<String> denylist = [];
   TextEditingController textController = TextEditingController();
   PersistentBottomSheetController<String> sheetController;
 
+  void updateDenylist() {
+    db.denylist.addListener(() async {
+      denylist = await db.denylist.value;
+    });
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
   @override
   void initState() {
     super.initState();
-    db.denylist.addListener(() async {
-      denylist = await db.denylist.value;
-      if (mounted) {
-        setState(() {});
-      }
-    });
-    db.denylist.value.then((list) {
-      if (mounted) {
-        setState(() => denylist = list);
-      }
-    });
+    db.denylist.addListener(updateDenylist);
+    updateDenylist();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    db.denylist.removeListener(updateDenylist);
   }
 
   @override
   Widget build(BuildContext context) {
-    Future<void> addTags(BuildContext context, {int edit}) async {
-      setFocusToEnd(textController);
-      if (isSearching) {
-        if (editing != null) {
-          if (textController.text.trim().isNotEmpty) {
-            denylist[editing] = textController.text.trim();
+    void addTags(BuildContext context, [int edit]) {
+      void submit(String value, [int edit]) {
+        value = value.trim();
+
+        if (edit != null) {
+          if (value.isNotEmpty) {
+            denylist[edit] = value;
           } else {
-            denylist.removeAt(editing);
+            denylist.removeAt(edit);
           }
           db.denylist.value = Future.value(denylist);
           sheetController?.close();
         } else {
-          if (textController.text.trim().isNotEmpty) {
-            denylist.add(textController.text.trim());
+          if (value.isNotEmpty) {
+            denylist.add(value);
             db.denylist.value = Future.value(denylist);
             sheetController?.close();
           }
         }
-      } else {
-        if (edit != null) {
-          editing = edit;
-          textController.text = denylist[editing];
-        } else {
-          textController.text = '';
-        }
-        sheetController = Scaffold.of(context).showBottomSheet((context) {
-          return Container(
-            padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10),
-            child: Column(mainAxisSize: MainAxisSize.min, children: [
-              TagInput(
-                controller: textController,
-                labelText: 'Add to blacklist',
-                onSubmit: (_) => addTags(context),
-              ),
-            ]),
-          );
-        });
-        setState(() {
-          isSearching = true;
-        });
-        sheetController.closed.then((a) {
-          setState(() {
-            isSearching = false;
-            editing = null;
-          });
-        });
       }
+
+      TextEditingController controller =
+          TextEditingController(text: edit != null ? denylist[edit] : null);
+
+      sheetController = Scaffold.of(context).showBottomSheet((context) {
+        return ListTagEditor(
+          controller: controller,
+          onSubmit: (value) => submit(value, edit),
+          prompt: 'Add to blacklist',
+        );
+      });
+
+      setState(() {
+        fabAction = () => submit(controller.text, edit);
+      });
+
+      sheetController.closed.then((_) {
+        setState(() {
+          fabAction = null;
+        });
+      });
     }
 
     Widget body() {
@@ -112,9 +112,9 @@ class _DenyListPageState extends State<DenyListPage> {
             padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
+              children: [
                 Row(
-                  children: <Widget>[
+                  children: [
                     Expanded(
                       child: Wrap(
                         direction: Axis.horizontal,
@@ -126,7 +126,7 @@ class _DenyListPageState extends State<DenyListPage> {
                     Column(
                       mainAxisSize: MainAxisSize.min,
                       mainAxisAlignment: MainAxisAlignment.start,
-                      children: <Widget>[
+                      children: [
                         PopupMenuButton<String>(
                           icon: Icon(
                             Icons.more_vert,
@@ -157,13 +157,11 @@ class _DenyListPageState extends State<DenyListPage> {
                                     tag: tagToName(denylist[index]));
                                 break;
                               case 'edit':
-                                addTags(context, edit: index);
+                                addTags(context, index);
                                 break;
                               case 'delete':
-                                setState(() {
-                                  denylist.removeAt(index);
-                                  db.denylist.value = Future.value(denylist);
-                                });
+                                denylist.removeAt(index);
+                                db.denylist.value = Future.value(denylist);
                                 break;
                             }
                           },
@@ -183,8 +181,8 @@ class _DenyListPageState extends State<DenyListPage> {
 
     Widget floatingActionButton(BuildContext context) {
       return FloatingActionButton(
-        child: isSearching ? Icon(Icons.check) : Icon(Icons.add),
-        onPressed: () => addTags(context),
+        child: fabAction != null ? Icon(Icons.check) : Icon(Icons.add),
+        onPressed: () => fabAction != null ? fabAction : addTags(context),
       );
     }
 
@@ -194,7 +192,7 @@ class _DenyListPageState extends State<DenyListPage> {
       return AlertDialog(
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
+          children: [
             Text('Blacklist'),
             IconButton(
               icon: Icon(Icons.help_outline),
@@ -208,7 +206,7 @@ class _DenyListPageState extends State<DenyListPage> {
           keyboardType: TextInputType.multiline,
           maxLines: null,
         ),
-        actions: <Widget>[
+        actions: [
           TextButton(
             child: Text('CANCEL'),
             onPressed: Navigator.of(context).pop,
@@ -216,17 +214,10 @@ class _DenyListPageState extends State<DenyListPage> {
           TextButton(
             child: Text('OK'),
             onPressed: () {
-              setState(() {
-                denylist = controller.text.split('\n');
-                List<String> newList = [];
-                for (String line in denylist) {
-                  if (line.trim().isNotEmpty) {
-                    newList.add(line.trim());
-                  }
-                }
-                denylist = newList;
-                db.denylist.value = Future.value(denylist);
-              });
+              List<String> tags = controller.text.split('\n');
+              tags = tags.map((e) => e.trim()).toList();
+              tags.removeWhere((tag) => tag.isEmpty);
+              db.denylist.value = Future.value(tags);
               Navigator.of(context).pop();
             },
           ),
@@ -237,7 +228,7 @@ class _DenyListPageState extends State<DenyListPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Blacklist'),
-        actions: <Widget>[
+        actions: [
           IconButton(
               icon: Icon(Icons.edit),
               onPressed: () async {

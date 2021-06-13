@@ -28,7 +28,7 @@ class TagCard extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
+          children: [
             Container(
               height: 24,
               decoration: BoxDecoration(
@@ -78,7 +78,7 @@ class DenyListTagCard extends StatelessWidget {
         tag: tag,
         child: Row(
           mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
+          children: [
             Container(
               height: 24,
               width: 5,

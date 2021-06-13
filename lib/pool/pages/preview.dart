@@ -15,7 +15,7 @@ class PoolPreview extends StatelessWidget {
   Widget build(BuildContext context) {
     Widget title() {
       return Row(
-        children: <Widget>[
+        children: [
           Expanded(
             child: Container(
               padding: EdgeInsets.only(left: 16, top: 8, bottom: 8),
@@ -46,7 +46,7 @@ class PoolPreview extends StatelessWidget {
         onTap: this.onPressed,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
+          children: [
             Container(
               height: 42,
               child: Center(child: title()),

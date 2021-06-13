@@ -17,9 +17,9 @@ class CommentDisplay extends StatelessWidget {
         return CrossFade(
           showChild: count > 0,
           child: Column(
-            children: <Widget>[
+            children: [
               Row(
-                children: <Widget>[
+                children: [
                   Expanded(
                     child: OutlinedButton(
                       child: Text('COMMENTS ($count)'),

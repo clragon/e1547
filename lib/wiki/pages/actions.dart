@@ -66,7 +66,7 @@ class _TagListActionsState extends State<TagListActions> {
     if (follows != null && denylist != null) {
       return Row(
         mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
+        children: [
           CrossFade(
             showChild: !denied,
             child: IconButton(
@@ -121,7 +121,7 @@ class _TagListActionsState extends State<TagListActions> {
       );
     } else {
       return Row(
-        children: <Widget>[
+        children: [
           IconButton(
             icon: Icon(Icons.turned_in_not),
             onPressed: null,

@@ -18,12 +18,12 @@ class DescriptionDisplay extends StatelessWidget {
             showChild: value.isNotEmpty || post.isEditing.value,
             child: Column(
               mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
+              children: [
                 CrossFade(
                   showChild: post.isEditing.value,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
+                    children: [
                       Text(
                         'Description',
                         style: TextStyle(fontSize: 16),
@@ -49,7 +49,7 @@ class DescriptionDisplay extends StatelessWidget {
                 ),
                 Row(
                   mainAxisSize: MainAxisSize.max,
-                  children: <Widget>[
+                  children: [
                     Expanded(
                       child: Card(
                         child: Padding(

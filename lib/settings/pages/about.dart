@@ -11,7 +11,7 @@ class AboutPage extends StatelessWidget {
       return AppBar(
         title: Text('About'),
         leading: BackButton(),
-        actions: <Widget>[
+        actions: [
           VersionButton(),
         ],
       );
@@ -29,7 +29,7 @@ class AboutPage extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
+                  children: [
                     CircleAvatar(
                       backgroundImage: AssetImage('assets/icon/paw.png'),
                       radius: 44.0,
@@ -108,7 +108,7 @@ class _VersionButtonState extends State<VersionButton> {
       showChild: newVersions != null,
       builder: (BuildContext context) {
         return Stack(
-          children: <Widget>[
+          children: [
             IconButton(
               icon: Icon(Icons.update),
               onPressed: () {

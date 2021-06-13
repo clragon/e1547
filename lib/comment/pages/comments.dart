@@ -45,7 +45,7 @@ class _CommentsPageState extends State<CommentsPage> {
 
   Widget title(Comment comment) {
     return Row(
-      children: <Widget>[
+      children: [
         Padding(
           padding: EdgeInsets.only(top: 4, bottom: 4),
           child: InkWell(
@@ -88,7 +88,7 @@ class _CommentsPageState extends State<CommentsPage> {
   Widget body(Comment comment) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
+      children: [
         Expanded(
           child: Padding(
             padding: EdgeInsets.only(bottom: 8),
@@ -124,16 +124,16 @@ class _CommentsPageState extends State<CommentsPage> {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 8),
       child: Column(
-        children: <Widget>[
+        children: [
           GestureDetector(
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
+              children: [
                 picture(comment),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
+                    children: [
                       title(comment),
                       body(comment),
                     ],

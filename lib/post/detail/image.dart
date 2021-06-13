@@ -113,7 +113,7 @@ class _DetailImageToggleState extends State<DetailImageToggle> {
             child: Padding(
               padding: EdgeInsets.all(8),
               child: Row(
-                children: <Widget>[
+                children: [
                   Icon(
                     widget.post.showUnsafe.value
                         ? Icons.visibility_off

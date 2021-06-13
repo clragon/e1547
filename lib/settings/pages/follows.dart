@@ -89,7 +89,7 @@ class _FollowingPageState extends State<FollowingPage> {
           tag: tag,
           child: Row(
             mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
+            children: [
               Padding(
                 padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
                 child: Text(tagToTitle(tag)),
@@ -126,7 +126,7 @@ class _FollowingPageState extends State<FollowingPage> {
           Widget contextMenu() {
             return Row(
               mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
+              children: [
                 PopupMenuButton<String>(
                   icon: Icon(
                     Icons.more_vert,
@@ -180,12 +180,12 @@ class _FollowingPageState extends State<FollowingPage> {
           return Padding(
             padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
             child: Column(
-              children: <Widget>[
+              children: [
                 InkWell(
                   onTap: () => Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) => SearchPage(tags: follows[index]))),
                   child: Row(
-                    children: <Widget>[
+                    children: [
                       Expanded(
                         child: Wrap(
                           direction: Axis.horizontal,
@@ -221,7 +221,7 @@ class _FollowingPageState extends State<FollowingPage> {
       return AlertDialog(
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
+          children: [
             Text('Following'),
           ],
         ),
@@ -230,7 +230,7 @@ class _FollowingPageState extends State<FollowingPage> {
           keyboardType: TextInputType.multiline,
           maxLines: null,
         ),
-        actions: <Widget>[
+        actions: [
           TextButton(
             child: Text('CANCEL'),
             onPressed: Navigator.of(context).pop,
@@ -252,7 +252,7 @@ class _FollowingPageState extends State<FollowingPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Following'),
-        actions: <Widget>[
+        actions: [
           IconButton(
             icon: Icon(Icons.edit),
             onPressed: () async => showDialog(

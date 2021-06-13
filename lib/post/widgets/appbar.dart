@@ -36,7 +36,7 @@ class PostAppBar extends StatelessWidget implements PreferredSizeWidget {
         ),
         actions: post.isEditing.value
             ? null
-            : <Widget>[
+            : [
                 Builder(
                   builder: (context) {
                     return PopupMenuButton<String>(

@@ -33,11 +33,11 @@ class _ThreadDetailState extends State<ThreadDetail> {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 8),
       child: Column(
-        children: <Widget>[
+        children: [
           GestureDetector(
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
+              children: [
                 Padding(
                   padding: EdgeInsets.only(right: 8, top: 4),
                   child: Icon(Icons.person),
@@ -45,9 +45,9 @@ class _ThreadDetailState extends State<ThreadDetail> {
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
+                    children: [
                       Row(
-                        children: <Widget>[
+                        children: [
                           Padding(
                             padding: EdgeInsets.only(top: 4, bottom: 4),
                             child: InkWell(
@@ -93,7 +93,7 @@ class _ThreadDetailState extends State<ThreadDetail> {
                       ),
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
+                        children: [
                           Expanded(
                             child: Padding(
                               padding: EdgeInsets.only(bottom: 8),

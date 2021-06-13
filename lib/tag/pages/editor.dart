@@ -48,7 +48,7 @@ class _TagEditorState extends State<TagEditor> {
         children: [
           Row(
             mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
+            children: [
               ValueListenableBuilder(
                 valueListenable: loading,
                 builder: (context, value, child) {

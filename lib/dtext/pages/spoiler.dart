@@ -16,12 +16,12 @@ class _SpoilerWrapState extends State<SpoilerWrap> {
   @override
   Widget build(BuildContext context) {
     return Stack(
-      children: <Widget>[
+      children: [
         Card(
           child: Padding(
             padding: EdgeInsets.all(8),
             child: Row(
-              children: <Widget>[
+              children: [
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
