@@ -45,14 +45,14 @@ class _FollowsSplitPageState extends State<FollowsSplitPage> {
   }
 
   Future<void> updateProgress() async {
-    setState(() {
-      progress = followUpdater.progress.value;
-    });
+    progress = followUpdater.progress.value;
+    update();
   }
 
   Future<void> refreshFollows({bool force = false}) async {
     await followUpdater.run(force: force);
     await followUpdater.finish;
+    await follows.sortByNew();
     update();
   }
 
