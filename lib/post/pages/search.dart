@@ -90,12 +90,18 @@ class _SearchPageAppBarState extends State<SearchPageAppBar> {
         Follow follow = follows.singleWhere(
             (follow) => follow.tags == widget.provider.search.value);
         if (widget.provider.posts.value.isNotEmpty) {
-          follow.updateLatest(widget.provider.posts.value.first);
-          db.follows.value = Future.value(follows);
+          follow
+              .updateLatest(widget.provider.posts.value.first)
+              .then((updated) {
+            if (updated) {
+              db.follows.value = Future.value(follows);
+            }
+          });
         }
         if (pool != null) {
-          follow.updatePoolName(pool);
-          db.follows.value = Future.value(follows);
+          if (follow.updatePoolName(pool)) {
+            db.follows.value = Future.value(follows);
+          }
         }
         return follow.title;
       }
