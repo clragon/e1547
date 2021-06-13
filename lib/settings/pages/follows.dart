@@ -8,6 +8,8 @@ import 'package:e1547/wiki.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'input.dart';
+
 class FollowingPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
@@ -40,25 +42,6 @@ class _FollowingPageState extends State<FollowingPage> {
   void dispose() {
     super.dispose();
     db.follows.removeListener(update);
-  }
-
-  Widget tagEditor({
-    TextEditingController controller,
-    @required Function(String value) onSubmit,
-  }) {
-    controller ??= TextEditingController();
-    setFocusToEnd(controller);
-
-    return Padding(
-      padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10),
-      child: Column(mainAxisSize: MainAxisSize.min, children: [
-        TagInput(
-          controller: controller,
-          labelText: 'Add to follows',
-          onSubmit: onSubmit,
-        ),
-      ]),
-    );
   }
 
   Widget aliasEditor({
@@ -112,9 +95,10 @@ class _FollowingPageState extends State<FollowingPage> {
           TextEditingController(text: edit != null ? follows[edit].tags : null);
 
       sheetController = Scaffold.of(context).showBottomSheet((context) {
-        return tagEditor(
+        return ListTagEditor(
           controller: controller,
           onSubmit: (value) => submit(value, edit: edit),
+          prompt: 'Add to follows',
         );
       });
 
