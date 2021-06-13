@@ -46,7 +46,7 @@ class FollowButtonState extends State<FollowButton> {
     if (follows != null) {
       return Row(
         mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
+        children: [
           IconButton(
             onPressed: () {
               if (following) {
@@ -67,7 +67,7 @@ class FollowButtonState extends State<FollowButton> {
       );
     } else {
       return Row(
-        children: <Widget>[
+        children: [
           IconButton(
             icon: Icon(Icons.turned_in_not),
             onPressed: null,
