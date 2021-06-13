@@ -105,7 +105,7 @@ class PostAppBar extends StatelessWidget implements PreferredSizeWidget {
                             post.isEditing.value = true;
                             break;
                           case 'comment':
-                            if (await sendComment(context, post)) {
+                            if (await writeComment(context, post)) {
                               post.comments.value++;
                             }
                             break;

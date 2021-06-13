@@ -17,15 +17,107 @@ class CommentsPage extends StatefulWidget {
 class _CommentsPageState extends State<CommentsPage> {
   CommentProvider provider;
 
+  void update() {
+    if (this.mounted) {
+      setState(() {});
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     provider = CommentProvider(postID: widget.post.id);
-    provider.pages.addListener(() {
-      if (this.mounted) {
-        setState(() {});
-      }
-    });
+    provider.pages.addListener(update);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    provider.pages.addListener(update);
+  }
+
+  Widget picture(Comment comment) {
+    return Padding(
+      padding: EdgeInsets.only(right: 8, top: 4),
+      child: Icon(Icons.person),
+    );
+  }
+
+  Widget title(Comment comment) {
+    return Row(
+      children: <Widget>[
+        Padding(
+          padding: EdgeInsets.only(top: 4, bottom: 4),
+          child: InkWell(
+            child: Text(
+              comment.creator,
+              style: TextStyle(
+                color: Theme.of(context)
+                    .textTheme
+                    .bodyText1
+                    .color
+                    .withOpacity(0.35),
+              ),
+            ),
+            onTap: () {
+              Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                return SearchPage(tags: 'user:${comment.creator}');
+              }));
+            },
+          ),
+        ),
+        Text(
+          () {
+            String time = ' • ${getAge(comment.creation)}';
+            if (DateTime.parse(comment.creation) !=
+                DateTime.parse(comment.update)) {
+              time += ' (edited)';
+            }
+            return time;
+          }(),
+          style: TextStyle(
+            color:
+                Theme.of(context).textTheme.bodyText1.color.withOpacity(0.35),
+            fontSize: 12,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget body(Comment comment) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Expanded(
+          child: Padding(
+            padding: EdgeInsets.only(bottom: 8),
+            child: DTextField(source: comment.body),
+          ),
+        ),
+        FutureBuilder(
+          future: db.credentials.value,
+          builder: (context, snapshot) {
+            if (snapshot.hasData && snapshot.data.username == comment.creator) {
+              return Padding(
+                padding: EdgeInsets.only(left: 8),
+                child: InkWell(
+                  customBorder: CircleBorder(),
+                  child: Icon(
+                    Icons.edit,
+                    size: 18,
+                  ),
+                  onTap: () =>
+                      writeComment(context, widget.post, comment: comment),
+                ),
+              );
+            } else {
+              return SizedBox.shrink();
+            }
+          },
+        ),
+      ],
+    );
   }
 
   Widget commentWidget(Comment comment) {
@@ -37,92 +129,13 @@ class _CommentsPageState extends State<CommentsPage> {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Padding(
-                  padding: EdgeInsets.only(right: 8, top: 4),
-                  child: Icon(Icons.person),
-                ),
+                picture(comment),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Row(
-                        children: <Widget>[
-                          Padding(
-                            padding: EdgeInsets.only(top: 4, bottom: 4),
-                            child: InkWell(
-                              child: Text(
-                                comment.creator,
-                                style: TextStyle(
-                                  color: Theme.of(context)
-                                      .textTheme
-                                      .bodyText1
-                                      .color
-                                      .withOpacity(0.35),
-                                ),
-                              ),
-                              onTap: () {
-                                Navigator.of(context)
-                                    .push(MaterialPageRoute(builder: (context) {
-                                  return SearchPage(
-                                      tags: 'user:${comment.creator}');
-                                }));
-                              },
-                            ),
-                          ),
-                          Text(
-                            () {
-                              String time = ' • ${getAge(comment.creation)}';
-                              if (DateTime.parse(comment.creation) !=
-                                  DateTime.parse(comment.update)) {
-                                time += ' (edited)';
-                              }
-                              return time;
-                            }(),
-                            style: TextStyle(
-                              color: Theme.of(context)
-                                  .textTheme
-                                  .bodyText1
-                                  .color
-                                  .withOpacity(0.35),
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Expanded(
-                            child: Padding(
-                              padding: EdgeInsets.only(bottom: 8),
-                              child: DTextField(source: comment.body),
-                            ),
-                          ),
-                          FutureBuilder(
-                            future: db.credentials.value,
-                            builder: (context, snapshot) {
-                              if (snapshot.hasData &&
-                                  snapshot.data.username == comment.creator) {
-                                return Padding(
-                                  padding: EdgeInsets.only(left: 8),
-                                  child: InkWell(
-                                    customBorder: CircleBorder(),
-                                    child: Icon(
-                                      Icons.edit,
-                                      size: 18,
-                                    ),
-                                    onTap: () => sendComment(
-                                        context, widget.post,
-                                        comment: comment),
-                                  ),
-                                );
-                              } else {
-                                return SizedBox.shrink();
-                              }
-                            },
-                          ),
-                        ],
-                      )
+                      title(comment),
+                      body(comment),
                     ],
                   ),
                 ),
@@ -140,7 +153,7 @@ class _CommentsPageState extends State<CommentsPage> {
                     .trim();
                 body =
                     '[quote]"${comment.creator}":/users/${comment.creatorID} said:\n$body[/quote]\n';
-                sendComment(context, widget.post, text: body);
+                writeComment(context, widget.post, text: body);
               }
             },
           ),
@@ -155,10 +168,7 @@ class _CommentsPageState extends State<CommentsPage> {
       provider.loadNextPage();
     }
 
-    if (item < provider.items.length) {
-      return commentWidget(provider.items[item]);
-    }
-    return null;
+    return commentWidget(provider.items[item]);
   }
 
   @override
@@ -168,7 +178,7 @@ class _CommentsPageState extends State<CommentsPage> {
         heroTag: 'float',
         backgroundColor: Theme.of(context).cardColor,
         child: Icon(Icons.comment, color: Theme.of(context).iconTheme.color),
-        onPressed: () => sendComment(context, widget.post),
+        onPressed: () => writeComment(context, widget.post),
       );
     }
 

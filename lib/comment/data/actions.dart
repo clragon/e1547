@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 
 import 'comment.dart';
 
-Future<bool> sendComment(BuildContext context, Post post,
+Future<bool> writeComment(BuildContext context, Post post,
     {String text, Comment comment}) async {
   bool sent = false;
   await Navigator.of(context).push(MaterialPageRoute(builder: (context) {

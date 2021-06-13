@@ -21,6 +21,7 @@ abstract class DataProvider<T> extends ChangeNotifier {
     this.search.value = search ?? '';
     [db.host, db.credentials, this.search]
         .forEach((notifier) => notifier.addListener(resetPages));
+    isLoading = true;
     loadNextPage();
   }
 
@@ -63,19 +64,17 @@ abstract class DataProvider<T> extends ChangeNotifier {
   @nonVirtual
   Future<void> loadNextPage({bool reset = false}) async {
     await lock.acquire();
-    if (!isLoading) {
-      isLoading = true;
-      notifyListeners();
-      int page = reset ? 1 : pages.value.length + 1;
+    isLoading = true;
+    notifyListeners();
+    int page = reset ? 1 : pages.value.length + 1;
 
-      await addPage(await loadPage(page), reset: reset);
+    await addPage(await loadPage(page), reset: reset);
 
-      isLoading = false;
-      notifyListeners();
-      if (reload) {
-        reload = false;
-        resetPages();
-      }
+    isLoading = false;
+    notifyListeners();
+    if (reload) {
+      reload = false;
+      resetPages();
     }
     lock.release();
   }
