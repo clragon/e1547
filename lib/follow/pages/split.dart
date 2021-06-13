@@ -37,6 +37,9 @@ class _FollowsSplitPageState extends State<FollowsSplitPage> {
   Future<void> updateFollows() async {
     db.follows.value.then((value) async {
       follows = List.from(value);
+      if (progress == 0 || progress == follows.length) {
+        await follows.sortByNew();
+      }
       update();
     });
   }
@@ -50,7 +53,6 @@ class _FollowsSplitPageState extends State<FollowsSplitPage> {
   Future<void> refreshFollows({bool force = false}) async {
     await followUpdater.run(force: force);
     await followUpdater.finish;
-    await follows.sortByNew();
     update();
   }
 
@@ -64,7 +66,6 @@ class _FollowsSplitPageState extends State<FollowsSplitPage> {
   Future<void> initialLoad() async {
     await updateTileSize();
     await updateFollows();
-    await follows.sortByNew();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       refreshController
           .requestRefresh(
