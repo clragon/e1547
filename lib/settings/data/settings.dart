@@ -67,7 +67,7 @@ class Persistence {
         } else {
           return null;
         }
-      } on TypeError {
+      } on FormatException {
         return prefs
             .getStringList(key)
             .map((e) => Follow.fromString(e))
