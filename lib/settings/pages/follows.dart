@@ -17,7 +17,7 @@ class FollowingPage extends StatefulWidget {
 
 class _FollowingPageState extends State<FollowingPage> {
   int editing;
-  FollowList follows;
+  List<Follow> follows;
   bool isSearching = false;
   TextEditingController textController = TextEditingController();
   PersistentBottomSheetController<String> sheetController;
@@ -48,24 +48,26 @@ class _FollowingPageState extends State<FollowingPage> {
   Widget build(BuildContext context) {
     Future<void> addTags(BuildContext context, {int edit}) async {
       setFocusToEnd(textController);
+      Follow result = Follow.fromString(textController.text.trim());
       if (isSearching) {
         if (editing != null) {
           if (textController.text.trim().isNotEmpty) {
-            follows[editing] = textController.text.trim();
+            follows[editing] = result;
           } else {
             follows.removeAt(editing);
           }
           sheetController?.close();
         } else {
           if (textController.text.trim().isNotEmpty) {
-            follows.add(textController.text.trim());
+            follows.add(result);
             sheetController?.close();
           }
         }
+        db.follows.value = Future.value(follows);
       } else {
         if (edit != null) {
           editing = edit;
-          textController.text = follows[editing];
+          textController.text = follows[editing].tags;
         } else {
           textController.text = '';
         }
@@ -117,7 +119,7 @@ class _FollowingPageState extends State<FollowingPage> {
         padding: EdgeInsets.only(top: 8, bottom: 30),
         itemCount: follows.length,
         itemBuilder: (BuildContext context, int index) => FollowListTile(
-          follow: follows.data[index],
+          follow: follows[index],
           onRename: () {},
           onEdit: () => addTags(context, edit: index),
           onDelete: () => follows.remove(follows[index]),
@@ -135,7 +137,7 @@ class _FollowingPageState extends State<FollowingPage> {
 
     Widget editor() {
       TextEditingController controller = TextEditingController();
-      controller.text = follows.join('\n');
+      controller.text = getFollowTags(follows).join('\n');
       return AlertDialog(
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -159,7 +161,7 @@ class _FollowingPageState extends State<FollowingPage> {
               List<String> tags = controller.text.split('\n');
               tags.removeWhere((tag) => tag.trim().isEmpty);
               tags = tags.map((e) => e.trim()).toList();
-              follows.edit(tags);
+              db.follows.value = editFollows(follows, tags);
               Navigator.of(context).pop();
             },
           ),
@@ -321,7 +323,7 @@ class _FollowListTileState extends State<FollowListTile> {
                           padding: EdgeInsets.all(8.0),
                           child: Text(
                             widget.follow.title,
-                            style: TextStyle(shadows: textShadow),
+                            style: TextStyle(shadows: getTextShadows()),
                           ),
                         ),
                       ],

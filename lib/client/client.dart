@@ -24,7 +24,7 @@ class Client {
 
   Future<String> host = db.host.value;
   Future<List<String>> denylist = db.denylist.value;
-  Future<FollowList> following = db.follows.value;
+  Future<List<Follow>> following = db.follows.value;
   Future<Credentials> credentials = db.credentials.value;
 
   Client() {
@@ -226,7 +226,8 @@ class Client {
 
   Future<List<Post>> follows(int page, {int attempt = 0}) async {
     List<Post> posts = [];
-    List<String> tags = List.from(await following);
+    List<String> tags =
+        List<Follow>.from(await following).map<String>((e) => e.tags).toList();
     // ignore meta tags
     tags.removeWhere((tag) => tag.contains(':'));
     // ignore multitag searches

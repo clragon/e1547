@@ -14,7 +14,7 @@ class FollowsSplitPage extends StatefulWidget {
 class _FollowsSplitPageState extends State<FollowsSplitPage> {
   RefreshController refreshController = RefreshController();
   ScrollController scrollController = ScrollController();
-  FollowList follows;
+  List<Follow> follows;
   bool loading = true;
   int progress = 0;
   int tileSize;
@@ -35,15 +35,23 @@ class _FollowsSplitPageState extends State<FollowsSplitPage> {
   }
 
   Future<void> updateFollows() async {
-    db.follows.value.then((value) {
-      follows = value;
+    db.follows.value.then((value) async {
+      follows = List.from(value);
       update();
     });
   }
 
+  Future<void> updateProgress() async {
+    setState(() {
+      progress = followUpdater.progress.value;
+    });
+  }
+
   Future<void> refreshFollows({bool force = false}) async {
-    await follows.update(force);
-    progress = 0;
+    await followUpdater.run(force: force);
+    await followUpdater.finish;
+    await sortFollows(follows);
+    update();
   }
 
   double notZero(double value) => value < 1 ? 1 : value;
@@ -56,6 +64,7 @@ class _FollowsSplitPageState extends State<FollowsSplitPage> {
   Future<void> initialLoad() async {
     await updateTileSize();
     await updateFollows();
+    await sortFollows(follows);
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       refreshController
           .requestRefresh(
@@ -73,6 +82,7 @@ class _FollowsSplitPageState extends State<FollowsSplitPage> {
     db.follows.addListener(updateFollows);
     db.host.addListener(updateFollows);
     db.tileSize.addListener(updateTileSize);
+    followUpdater.progress.addListener(updateProgress);
     initialLoad();
   }
 
@@ -82,10 +92,11 @@ class _FollowsSplitPageState extends State<FollowsSplitPage> {
     db.follows.removeListener(updateFollows);
     db.host.removeListener(updateFollows);
     db.tileSize.removeListener(updateTileSize);
+    followUpdater.progress.removeListener(updateProgress);
   }
 
   Widget itemBuilder(BuildContext context, int item) {
-    return FollowTile(follow: follows.data[item]);
+    return FollowTile(follow: follows[item]);
   }
 
   StaggeredTile tileBuilder(int item) {

@@ -5,12 +5,11 @@ import 'package:e1547/post.dart';
 import 'package:e1547/tag.dart';
 import 'package:e1547/wiki.dart';
 import 'package:flutter/material.dart';
-import 'package:icon_shadow/icon_shadow.dart';
 
 class FollowTile extends StatefulWidget {
   final Follow follow;
 
-  const FollowTile({@required this.follow});
+  FollowTile({@required this.follow}) : super(key: ObjectKey(follow));
 
   @override
   _FollowTileState createState() => _FollowTileState();
@@ -20,7 +19,11 @@ class _FollowTileState extends State<FollowTile> {
   FollowStatus status;
 
   void update() {
-    widget.follow.status.then((value) => setState(() => status = value));
+    widget.follow.status.then(
+      (value) => setState(() {
+        status = value;
+      }),
+    );
   }
 
   @override
@@ -31,150 +34,155 @@ class _FollowTileState extends State<FollowTile> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: Builder(builder: (context) {
-        Widget image() {
-          return Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              status?.thumbnail != null
-                  ? Expanded(
-                      child: Hero(
-                          tag: 'image_${status.latest}',
-                          child: CachedNetworkImage(
-                            imageUrl: status.thumbnail,
-                            errorWidget: (context, url, error) =>
-                                Icon(Icons.error),
-                            fit: BoxFit.cover,
-                          )),
-                    )
-                  : Text('no image'),
-            ],
-          );
-        }
-
-        Widget info() {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  if (widget.follow.notification)
-                    Padding(
-                      padding: EdgeInsets.only(right: 4),
-                      child: IconShadowWidget(
-                        Icon(
-                          Icons.notifications_active,
-                          size: 16,
-                          color: Theme.of(context).iconTheme.color,
-                        ),
-                        shadowColor: Colors.black,
-                      ),
+    return Padding(
+      padding: EdgeInsets.all(4),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Theme.of(context).cardColor,
+          borderRadius: BorderRadius.all(Radius.circular(4)),
+        ),
+        child: Builder(builder: (context) {
+          Widget image() {
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                  child: Hero(
+                    tag: 'image_${status.latest}',
+                    child: CachedNetworkImage(
+                      imageUrl: status.thumbnail,
+                      errorWidget: (context, url, error) => Icon(Icons.error),
+                      fit: BoxFit.cover,
                     ),
-                  if (status.unseen != null && status.unseen > 0)
-                    Expanded(
-                      child: Text(
-                        () {
-                          String text = status.unseen.toString();
-                          if (status.unseen == widget.follow.checkAmount) {
-                            text += '+';
-                          }
-                          text += ' new post';
-                          if (status.unseen > 1) {
-                            text += 's';
-                          }
-                          return text;
-                        }(),
-                        style: TextStyle(shadows: textShadow),
+                  ),
+                ),
+              ],
+            );
+          }
+
+          Widget info() {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    if (widget.follow.notification)
+                      Padding(
+                        padding: EdgeInsets.only(right: 4),
+                        child: IconShadow(
+                          icon: Icon(
+                            Icons.notifications_active,
+                            size: 16,
+                            color: Theme.of(context).iconTheme.color,
+                          ),
+                          shadowColor: Colors.black,
+                        ),
+                      ),
+                    if (status.unseen != null && status.unseen > 0)
+                      Expanded(
+                        child: Text(
+                          () {
+                            String text = status.unseen.toString();
+                            if (status.unseen == widget.follow.checkAmount) {
+                              text += '+';
+                            }
+                            text += ' new post';
+                            if (status.unseen > 1) {
+                              text += 's';
+                            }
+                            return text;
+                          }(),
+                          style: TextStyle(shadows: getTextShadows()),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    Spacer(),
+                    if (widget.follow.tags.split(' ').length > 2)
+                      Text(
+                        '${widget.follow.tags.split(' ').length} tags',
+                        style: TextStyle(shadows: getTextShadows()),
                         overflow: TextOverflow.ellipsis,
                       ),
+                  ],
+                ),
+                Text(
+                  widget.follow.title,
+                  style: Theme.of(context)
+                      .textTheme
+                      .headline6
+                      .copyWith(shadows: getTextShadows()),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                  softWrap: true,
+                ),
+              ],
+            );
+          }
+
+          return Stack(
+            alignment: Alignment.center,
+            children: [
+              SafeCrossFade(
+                showChild: status?.thumbnail != null,
+                builder: (context) => Stack(
+                  children: [
+                    image(),
+                    Positioned(
+                      right: 0,
+                      left: 0,
+                      bottom: 0,
+                      child: Container(
+                        decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                          colors: [
+                            Colors.transparent,
+                            Theme.of(context).cardColor.withOpacity(0.8),
+                          ],
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                        )),
+                        child: Padding(
+                          padding: EdgeInsets.all(4),
+                          child: info(),
+                        ),
+                      ),
                     ),
-                  Spacer(),
-                  if (widget.follow.tags.split(' ').length > 2)
-                    Text(
-                      '${widget.follow.tags.split(' ').length} tags',
-                      style: TextStyle(shadows: textShadow),
+                  ],
+                ),
+                secondChild: Padding(
+                  padding: EdgeInsets.all(4),
+                  child: Center(
+                    child: Text(
+                      widget.follow.title,
+                      style: Theme.of(context).textTheme.headline6,
                       overflow: TextOverflow.ellipsis,
+                      softWrap: true,
                     ),
-                ],
+                  ),
+                ),
               ),
-              Text(
-                widget.follow.title,
-                style: Theme.of(context)
-                    .textTheme
-                    .headline6
-                    .copyWith(shadows: textShadow),
-                overflow: TextOverflow.ellipsis,
-                maxLines: 1,
-                softWrap: true,
+              Positioned.fill(
+                child: Material(
+                  type: MaterialType.transparency,
+                  child: InkWell(
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            SearchPage(tags: widget.follow.tags),
+                      ),
+                    ),
+                    onLongPress: () => wikiSheet(
+                      context: context,
+                      tag: tagToName(widget.follow.tags),
+                    ),
+                  ),
+                ),
               ),
             ],
           );
-        }
-
-        return Stack(
-          alignment: Alignment.center,
-          children: [
-            SafeCrossFade(
-              showChild: status != null,
-              builder: (context) => Stack(
-                children: [
-                  image(),
-                  Positioned(
-                    right: 0,
-                    left: 0,
-                    bottom: 0,
-                    child: Container(
-                      decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                        colors: [
-                          Colors.transparent,
-                          Theme.of(context).cardColor.withOpacity(0.8),
-                        ],
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                      )),
-                      child: Padding(
-                        padding: EdgeInsets.all(4),
-                        child: info(),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              secondChild: Padding(
-                padding: EdgeInsets.all(4),
-                child: Center(
-                  child: Text(
-                    widget.follow.title,
-                    style: Theme.of(context).textTheme.headline6,
-                    overflow: TextOverflow.ellipsis,
-                    softWrap: true,
-                  ),
-                ),
-              ),
-            ),
-            Positioned.fill(
-              child: Material(
-                type: MaterialType.transparency,
-                child: InkWell(
-                  onTap: () => Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          SearchPage(tags: widget.follow.tags),
-                    ),
-                  ),
-                  onLongPress: () => wikiSheet(
-                    context: context,
-                    tag: tagToName(widget.follow.tags),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        );
-      }),
+        }),
+      ),
     );
   }
 }

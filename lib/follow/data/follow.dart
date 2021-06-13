@@ -1,109 +1,11 @@
-import 'dart:collection';
 import 'dart:convert';
 
 import 'package:e1547/client.dart';
 import 'package:e1547/pool.dart';
 import 'package:e1547/post.dart';
 import 'package:e1547/tag.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:meta/meta.dart';
-
-class FollowList extends ListBase<String> {
-  List<Follow> data;
-
-  FollowList({
-    this.data,
-  }) {
-    data ??= [];
-  }
-
-  factory FollowList.from(FollowList list) {
-    return FollowList(data: list.data);
-  }
-
-  factory FollowList.fromStrings(List<String> searches) {
-    return FollowList(
-        data: searches.map((tags) => Follow(tags: tags)).toList());
-  }
-
-  factory FollowList.fromJson(String raw) =>
-      FollowList.fromMap(json.decode(raw));
-
-  String toJson() => json.encode(toMap());
-
-  factory FollowList.fromMap(Map<String, dynamic> json) => FollowList(
-        data: List<Follow>.from(json["follows"].map((x) => Follow.fromMap(x))),
-      );
-
-  Map<String, dynamic> toMap() => {
-        "follows": List<dynamic>.from(data.map((x) => x.toMap())),
-      };
-
-  @override
-  set length(int newLength) => data.length = newLength;
-
-  @override
-  int get length => data.length;
-
-  @override
-  String operator [](int index) => data[index].tags;
-
-  @override
-  void operator []=(int index, String value) {
-    data[index] = Follow.fromString(value);
-  }
-
-  @override
-  bool contains(Object tags) {
-    return data.any((element) => element.tags == tags);
-  }
-
-  @override
-  void add(String tags) {
-    data.add(Follow(tags: tags));
-  }
-
-  @override
-  void addAll(Iterable<String> searches) => searches.forEach(add);
-
-  @override
-  bool remove(Object tags) {
-    bool removed = false;
-    data.removeWhere((element) {
-      if (element.tags == tags) {
-        removed = true;
-        return true;
-      }
-      return false;
-    });
-    return removed;
-  }
-
-  @override
-  String removeAt(int index) {
-    remove(data.elementAt(index));
-    return super.removeAt(index);
-  }
-
-  @override
-  void insert(int index, String tags) {
-    data.insert(index, Follow.fromString(tags));
-    super.insert(index, tags);
-  }
-
-  void edit(Iterable<String> searches) {
-    List<Follow> edited = [];
-    for (String tags in searches) {
-      Follow match =
-          data.firstWhere((follow) => follow.tags == tags, orElse: () => null);
-      if (match != null) {
-        edited.add(match);
-      } else {
-        edited.add(Follow.fromString(tags));
-      }
-    }
-    data = edited;
-  }
-}
 
 class Follow {
   String tags;

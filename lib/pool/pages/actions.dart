@@ -17,13 +17,14 @@ class FollowButton extends StatefulWidget {
 
 class FollowButtonState extends State<FollowButton> {
   String tag;
-  FollowList follows;
+  List<Follow> follows;
   bool following;
 
   Future<void> update() async {
     await db.follows.value.then((value) => follows = value);
-    following = follows.contains(tag);
-    setState(() {});
+    setState(() {
+      following = follows.any((element) => element.tags == tag);
+    });
   }
 
   @override
@@ -49,10 +50,11 @@ class FollowButtonState extends State<FollowButton> {
           IconButton(
             onPressed: () {
               if (following) {
-                follows.remove(tag);
+                follows.removeWhere((element) => element.tags == tag);
               } else {
-                follows.add(tag);
+                follows.add(Follow.fromString(tag));
               }
+              db.follows.value = Future.value(follows);
             },
             icon: CrossFade(
               showChild: following,
