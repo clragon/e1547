@@ -18,13 +18,12 @@ class _DenyListPageState extends State<DenyListPage> {
   TextEditingController textController = TextEditingController();
   PersistentBottomSheetController<String> sheetController;
 
-  void updateDenylist() {
-    db.denylist.addListener(() async {
-      denylist = await db.denylist.value;
+  Future<void> updateDenylist() async {
+    await db.denylist.value.then((value) {
+      if (mounted) {
+        setState(() => denylist = value);
+      }
     });
-    if (mounted) {
-      setState(() {});
-    }
   }
 
   @override
