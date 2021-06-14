@@ -24,7 +24,7 @@ class PostDetail extends StatefulWidget {
 }
 
 class _PostDetailState extends State<PostDetail> with RouteAware {
-  ValueNotifier<Future<bool> Function()> doEdit = ValueNotifier(null);
+  ValueNotifier<Future<bool> Function()> fabAction = ValueNotifier(null);
   PersistentBottomSheetController sheetController;
   bool keepPlaying = false;
 
@@ -58,14 +58,6 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
   }
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    routeObserver.subscribe(this, ModalRoute.of(context));
-    navigator = Navigator.of(context);
-    route = ModalRoute.of(context);
-  }
-
-  @override
   void reassemble() {
     super.reassemble();
     routeObserver.unsubscribe(this);
@@ -85,16 +77,6 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
   }
 
   @override
-  void didPushNext() {
-    super.didPushNext();
-    if (keepPlaying) {
-      keepPlaying = false;
-    } else {
-      widget.post.controller?.pause();
-    }
-  }
-
-  @override
   void dispose() {
     super.dispose();
     routeObserver.unsubscribe(this);
@@ -110,89 +92,111 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    routeObserver.subscribe(this, ModalRoute.of(context));
+    navigator = Navigator.of(context);
+    route = ModalRoute.of(context);
+  }
+
+  @override
+  void didPushNext() {
+    super.didPushNext();
+    if (keepPlaying) {
+      keepPlaying = false;
+    } else {
+      widget.post.controller?.pause();
+    }
+  }
+
+  Future<void> editPost(BuildContext context, String reason) async {
+    try {
+      await client.updatePost(widget.post, Post.fromMap(widget.post.raw),
+          editReason: reason);
+      widget.post.isEditing.value = false;
+    } on DioError catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        duration: Duration(seconds: 1),
+        content: Text(
+            '${error.response.statusCode} : ${error.response.statusMessage}'),
+        behavior: SnackBarBehavior.floating,
+      ));
+    }
+    await widget.post.resetPost(online: true);
+    closeSheet();
+    return true;
+  }
+
+  @override
   Widget build(BuildContext context) {
     Widget fab(BuildContext context) {
-      return CrossFade(
-        showChild: widget.post.isEditing.value,
-        child: FloatingActionButton(
-          heroTag: null,
-          backgroundColor: Theme.of(context).cardColor,
-          onPressed: () async {
-            if (doEdit.value != null) {
-              if (await doEdit.value()) {
-                sheetController.close();
-              }
-            } else {
-              sheetController = Scaffold.of(context).showBottomSheet(
-                (context) => EditReasonEditor(
-                  onSubmit: (value) async {
-                    try {
-                      await client.updatePost(
-                          widget.post, Post.fromMap(widget.post.raw),
-                          editReason: value);
-                      widget.post.isEditing.value = false;
-                    } on DioError catch (error) {
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        duration: Duration(seconds: 1),
-                        content: Text(
-                            '${error.response.statusCode} : ${error.response.statusMessage}'),
-                        behavior: SnackBarBehavior.floating,
-                      ));
-                    }
-                    await widget.post.resetPost(online: true);
-                    sheetController.close();
-                    return true;
-                  },
-                  onEditorBuild: (submit) => doEdit.value = submit,
-                ),
-              );
-              sheetController.closed.then((_) {
-                doEdit.value = null;
-              });
+      Widget child;
+      Function onPressed;
+
+      if (widget.post.isEditing.value) {
+        onPressed = () async {
+          if (fabAction.value != null) {
+            if (await fabAction.value()) {
+              closeSheet();
             }
-          },
-          child: ValueListenableBuilder(
-            valueListenable: doEdit,
-            builder: (context, value, child) => Icon(
-                value == null ? Icons.check : Icons.add,
-                color: Theme.of(context).iconTheme.color),
+          } else {
+            sheetController = Scaffold.of(context).showBottomSheet(
+              (context) => EditReasonEditor(
+                onSubmit: (value) => editPost(context, value),
+                onEditorBuild: (submit) => fabAction.value = submit,
+              ),
+            );
+            sheetController.closed.then((_) {
+              fabAction.value = null;
+            });
+          }
+        };
+        child = ValueListenableBuilder(
+          valueListenable: fabAction,
+          builder: (context, value, child) => Icon(
+            value == null ? Icons.check : Icons.add,
+            color: Theme.of(context).iconTheme.color,
           ),
-        ),
-        secondChild: FloatingActionButton(
-          heroTag: null,
-          backgroundColor: Theme.of(context).cardColor,
-          onPressed: () {},
-          child: Padding(
-            padding: EdgeInsets.only(left: 2),
-            child: ValueListenableBuilder(
-              valueListenable: widget.post.isFavorite,
-              builder: (context, value, child) => Builder(
-                builder: (context) => LikeButton(
-                  isLiked: value,
-                  circleColor: CircleColor(start: Colors.pink, end: Colors.red),
-                  bubblesColor: BubblesColor(
-                      dotPrimaryColor: Colors.pink,
-                      dotSecondaryColor: Colors.red),
-                  likeBuilder: (bool isLiked) => Icon(
-                    Icons.favorite,
-                    color: isLiked
-                        ? Colors.pinkAccent
-                        : Theme.of(context).iconTheme.color,
-                  ),
-                  onTap: (isLiked) async {
-                    if (isLiked) {
-                      widget.post.tryRemoveFav(context);
-                      return false;
-                    } else {
-                      widget.post.tryAddFav(context);
-                      return true;
-                    }
-                  },
+        );
+      } else {
+        onPressed = () {};
+        child = Padding(
+          padding: EdgeInsets.only(left: 2),
+          child: ValueListenableBuilder(
+            valueListenable: widget.post.isFavorite,
+            builder: (context, value, child) => Builder(
+              builder: (context) => LikeButton(
+                isLiked: value,
+                circleColor: CircleColor(start: Colors.pink, end: Colors.red),
+                bubblesColor: BubblesColor(
+                    dotPrimaryColor: Colors.pink,
+                    dotSecondaryColor: Colors.red),
+                likeBuilder: (bool isLiked) => Icon(
+                  Icons.favorite,
+                  color: isLiked
+                      ? Colors.pinkAccent
+                      : Theme.of(context).iconTheme.color,
                 ),
+                onTap: (isLiked) async {
+                  if (isLiked) {
+                    widget.post.tryRemoveFav(context);
+                    return false;
+                  } else {
+                    widget.post.tryAddFav(context);
+                    return true;
+                  }
+                },
               ),
             ),
           ),
-        ),
+        );
+      }
+
+      return FloatingActionButton(
+        heroTag: null,
+        backgroundColor: Theme.of(context).cardColor,
+        onPressed: onPressed,
+        child: child,
       );
     }
 
@@ -236,7 +240,7 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
 
         return WillPopScope(
           onWillPop: () async {
-            if (doEdit.value != null) {
+            if (fabAction.value != null) {
               return true;
             }
             if (value) {
@@ -289,8 +293,8 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
                               builder: (context) => ParentDisplay(
                                     post: widget.post,
                                     onEditorBuild: (submit) =>
-                                        doEdit.value = submit,
-                                    onEditorClose: () => doEdit.value = null,
+                                        fabAction.value = submit,
+                                    onEditorClose: () => fabAction.value = null,
                                   )),
                           editorDependant(
                               child: PoolDisplay(post: widget.post),
@@ -307,8 +311,8 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
                                       category,
                                     ),
                                     onEditorBuild: (submit) =>
-                                        doEdit.value = submit,
-                                    onEditorClose: () => doEdit.value = null,
+                                        fabAction.value = submit,
+                                    onEditorClose: () => fabAction.value = null,
                                   )),
                           editorDependant(
                               child: FileDisplay(
