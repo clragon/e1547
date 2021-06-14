@@ -145,12 +145,12 @@ class _FollowTileState extends State<FollowTile> {
                   ),
                 ),
                 child: Padding(
-                  padding: EdgeInsets.all(4),
+                  padding: EdgeInsets.all(8),
                   child: info(),
                 ),
               ),
               secondChild: Padding(
-                padding: EdgeInsets.all(4),
+                padding: EdgeInsets.all(8),
                 child: Text(
                   widget.follow.title,
                   style: Theme.of(context).textTheme.headline6,
