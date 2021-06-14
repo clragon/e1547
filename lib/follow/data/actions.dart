@@ -35,6 +35,8 @@ class FollowUpdater {
     Future<void> update(List<Follow> follows) async {
       DateTime now = DateTime.now();
 
+      follows.sortByNew();
+
       for (Follow follow in follows) {
         DateTime updated = await follow.updated;
         if (force || updated == null || now.difference(updated) > stale) {
@@ -49,6 +51,9 @@ class FollowUpdater {
         }
         progress.value = progress.value + 1;
       }
+
+      follows.sortByNew();
+      source.value = Future.value(follows);
 
       lock.release();
       completer.complete();
