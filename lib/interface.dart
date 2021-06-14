@@ -4,6 +4,7 @@ export 'interface/data_provider.dart';
 export 'interface/loading_tile.dart';
 export 'interface/navigation.dart';
 export 'interface/pop_tile.dart';
+export 'interface/progress.dart';
 export 'interface/range_dialog.dart';
 export 'interface/refreshing.dart';
 export 'interface/shadows.dart';

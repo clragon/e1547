@@ -1,3 +1,4 @@
+import 'package:e1547/interface.dart';
 import 'package:e1547/post.dart';
 import 'package:e1547/settings.dart';
 import 'package:flutter/material.dart';
@@ -51,11 +52,7 @@ class _HomePageState extends State<HomePage> {
     } else {
       return Scaffold(
         body: Center(
-          child: Container(
-            height: 28,
-            width: 28,
-            child: CircularProgressIndicator(),
-          ),
+          child: SizedCircularProgressIndicator(size: 28),
         ),
       );
     }

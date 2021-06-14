@@ -1,6 +1,7 @@
 import 'dart:async' show Future, Timer;
 
 import 'package:e1547/client.dart';
+import 'package:e1547/interface.dart';
 import 'package:e1547/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show Clipboard;
@@ -296,11 +297,7 @@ class _LoginProgressDialogState extends State<_LoginProgressDialog> {
         child: Container(
       padding: EdgeInsets.all(20.0),
       child: Row(children: [
-        Container(
-          height: 28,
-          width: 28,
-          child: CircularProgressIndicator(),
-        ),
+        SizedCircularProgressIndicator(size: 28),
         Padding(
           padding: EdgeInsets.only(left: 16),
           child: Text('Logging in as ${widget.username}'),
