@@ -107,11 +107,7 @@ class TagInput extends StatelessWidget {
           title: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Container(
-                height: 20,
-                width: 20,
-                child: CircularProgressIndicator(),
-              ),
+              SizedCircularProgressIndicator(size: 20),
             ],
           ),
         );

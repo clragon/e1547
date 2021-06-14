@@ -146,12 +146,8 @@ class _WikiTagDisplayState extends State<WikiTagDisplay> {
       showChild: loading,
       child: message(
         Padding(
-          padding: EdgeInsets.all(16),
-          child: Container(
-            height: 26,
-            width: 26,
-            child: CircularProgressIndicator(),
-          ),
+          padding: EdgeInsets.all(12),
+          child: SizedCircularProgressIndicator(size: 26),
         ),
       ),
       secondChild: SafeCrossFade(

@@ -251,11 +251,7 @@ class PageLoader extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Container(
-                height: 28,
-                width: 28,
-                child: CircularProgressIndicator(),
-              ),
+              SizedCircularProgressIndicator(size: 28),
               Padding(
                 padding: EdgeInsets.all(20),
                 child: onLoading ?? Text('Loading...'),

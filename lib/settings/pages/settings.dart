@@ -264,14 +264,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   return Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Padding(
-                        padding: EdgeInsets.all(4),
-                        child: Container(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(),
-                        ),
-                      )
+                      SizedCircularProgressIndicator(size: 20),
                     ],
                   );
                 }
@@ -357,18 +350,12 @@ Future<bool> setCustomHost(BuildContext context) async {
                   valueListenable: isLoading,
                   builder: (BuildContext context, value, Widget child) =>
                       CrossFade(
-                          showChild: value,
-                          child: Padding(
-                            padding: EdgeInsets.only(right: 8),
-                            child: Padding(
-                              padding: EdgeInsets.all(4),
-                              child: Container(
-                                height: 16,
-                                width: 16,
-                                child: CircularProgressIndicator(),
-                              ),
-                            ),
-                          )),
+                    showChild: value,
+                    child: Padding(
+                      padding: EdgeInsets.only(right: 8),
+                      child: SizedCircularProgressIndicator(size: 16),
+                    ),
+                  ),
                 ),
                 Expanded(
                     child: ValueListenableBuilder(

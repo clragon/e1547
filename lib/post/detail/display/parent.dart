@@ -203,12 +203,8 @@ class _ParentEditorState extends State<ParentEditor> {
                     child: Center(
                       child: Padding(
                         padding: EdgeInsets.only(right: 10),
-                        child: Padding(
-                          padding: EdgeInsets.all(4),
-                          child: Container(
-                              height: 16,
-                              width: 16,
-                              child: CircularProgressIndicator()),
+                        child: SizedCircularProgressIndicator(
+                          size: 16,
                         ),
                       ),
                     ),
