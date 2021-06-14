@@ -15,6 +15,7 @@ dependencies:
   video_player: ^2.1.0
   photo_view: ^0.11.1
   pull_to_refresh: ^2.0.0
+  decorated_icon: ^1.2.0
   cached_network_image: ^3.0.0
   font_awesome_flutter: ^9.0.0
   flutter_typeahead: ^3.1.1
