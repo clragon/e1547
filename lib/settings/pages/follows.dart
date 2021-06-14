@@ -1,5 +1,4 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:decorated_icon/decorated_icon.dart';
 import 'package:e1547/follow.dart';
 import 'package:e1547/interface.dart';
 import 'package:e1547/post.dart';

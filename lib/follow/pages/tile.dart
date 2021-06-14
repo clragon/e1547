@@ -157,20 +157,17 @@ class _FollowTileState extends State<FollowTile> {
                 ),
               ),
             ),
-            Positioned.fill(
-              child: Material(
-                type: MaterialType.transparency,
-                child: InkWell(
-                  onTap: () => Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          SearchPage(tags: widget.follow.tags),
-                    ),
+            Material(
+              type: MaterialType.transparency,
+              child: InkWell(
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => SearchPage(tags: widget.follow.tags),
                   ),
-                  onLongPress: () => wikiSheet(
-                    context: context,
-                    tag: tagToName(widget.follow.tags),
-                  ),
+                ),
+                onLongPress: () => wikiSheet(
+                  context: context,
+                  tag: tagToName(widget.follow.tags),
                 ),
               ),
             ),
