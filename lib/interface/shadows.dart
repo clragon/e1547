@@ -12,12 +12,7 @@ class ShadowIcon extends StatelessWidget {
     return DecoratedIcon(
       icon,
       size: size,
-      shadows: [
-        Shadow(
-          blurRadius: 4,
-          color: Colors.black,
-        ),
-      ],
+      shadows: getTextShadows(),
     );
   }
 }
@@ -25,27 +20,28 @@ class ShadowIcon extends StatelessWidget {
 List<Shadow> getTextShadows() {
   final double blur = 3;
   final double offset = 3.0;
+  final Color color = Colors.black54;
 
   return [
     Shadow(
       offset: Offset(offset, offset),
       blurRadius: blur,
-      color: Colors.black,
+      color: color,
     ),
     Shadow(
       offset: Offset(-offset, offset),
       blurRadius: blur,
-      color: Colors.black,
+      color: color,
     ),
     Shadow(
       offset: Offset(-offset, -offset),
       blurRadius: blur,
-      color: Colors.black,
+      color: color,
     ),
     Shadow(
       offset: Offset(offset, -offset),
       blurRadius: blur,
-      color: Colors.black,
+      color: color,
     ),
   ];
 }

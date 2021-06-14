@@ -59,7 +59,7 @@ class DetailVideo extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Expanded(
+            Flexible(
               child: Stack(
                 alignment: Alignment.center,
                 children: [

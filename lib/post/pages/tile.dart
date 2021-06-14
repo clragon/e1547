@@ -71,12 +71,10 @@ class PostTile extends StatelessWidget {
           children: [
             image(),
             Positioned(top: 0, right: 0, child: overlay()),
-            Positioned.fill(
-              child: Material(
-                type: MaterialType.transparency,
-                child: InkWell(
-                  onTap: onPressed,
-                ),
+            Material(
+              type: MaterialType.transparency,
+              child: InkWell(
+                onTap: onPressed,
               ),
             ),
           ],
