@@ -71,6 +71,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.0.1"
+  decorated_icon:
+    dependency: "direct main"
+    description:
+      name: decorated_icon
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.2.0"
   dio:
     dependency: "direct main"
     description:

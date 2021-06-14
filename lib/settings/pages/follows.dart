@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:decorated_icon/decorated_icon.dart';
 import 'package:e1547/follow.dart';
 import 'package:e1547/interface.dart';
 import 'package:e1547/post.dart';
@@ -287,17 +288,24 @@ class _FollowListTileState extends State<FollowListTile> {
   @override
   Widget build(BuildContext context) {
     Widget cardWidget(String tag) {
-      return Card(
-        child: TagGesture(
-          tag: tag,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-                child: Text(tagToTitle(tag)),
-              ),
-            ],
+      return Padding(
+        padding: EdgeInsets.all(4),
+        child: Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).cardColor,
+            borderRadius: BorderRadius.all(Radius.circular(4)),
+          ),
+          child: TagGesture(
+            tag: tag,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                  child: Text(tagToTitle(tag)),
+                ),
+              ],
+            ),
           ),
         ),
       );
@@ -305,12 +313,8 @@ class _FollowListTileState extends State<FollowListTile> {
 
     Widget contextMenu() {
       return PopupMenuButton<String>(
-        icon: IconShadow(
-          icon: Icon(
-            Icons.more_vert,
-            color: Theme.of(context).iconTheme.color,
-          ),
-          shadowColor: Theme.of(context).shadowColor,
+        icon: ShadowIcon(
+          Icons.more_vert,
         ),
         itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
           if (widget.follow.tags.split(' ').length > 1)

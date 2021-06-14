@@ -23,14 +23,10 @@ class PostAppBar extends StatelessWidget implements PreferredSizeWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: IconShadow(
-            icon: Icon(
-              post.isEditing.value && this.canEdit
-                  ? Icons.clear
-                  : Icons.arrow_back,
-              color: Theme.of(context).iconTheme.color,
-            ),
-            shadowColor: Theme.of(context).canvasColor,
+          icon: ShadowIcon(
+            post.isEditing.value && this.canEdit
+                ? Icons.clear
+                : Icons.arrow_back,
           ),
           onPressed: Navigator.of(context).maybePop,
         ),
@@ -40,12 +36,8 @@ class PostAppBar extends StatelessWidget implements PreferredSizeWidget {
                 Builder(
                   builder: (context) {
                     return PopupMenuButton<String>(
-                      icon: IconShadow(
-                        icon: Icon(
-                          Icons.more_vert,
-                          color: Theme.of(context).iconTheme.color,
-                        ),
-                        shadowColor: Colors.black,
+                      icon: ShadowIcon(
+                        Icons.more_vert,
                       ),
                       itemBuilder: (BuildContext context) =>
                           <PopupMenuEntry<String>>[
