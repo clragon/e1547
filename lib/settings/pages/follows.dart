@@ -281,7 +281,14 @@ class _FollowListTileState extends State<FollowListTile> {
   @override
   void initState() {
     super.initState();
+    db.host.addListener(update);
     update();
+  }
+
+  @override
+  dispose() {
+    super.dispose();
+    db.host.removeListener(update);
   }
 
   @override

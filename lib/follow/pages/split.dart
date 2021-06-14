@@ -81,7 +81,6 @@ class _FollowsSplitPageState extends State<FollowsSplitPage> {
   void initState() {
     super.initState();
     db.follows.addListener(updateFollows);
-    db.host.addListener(updateFollows);
     db.tileSize.addListener(updateTileSize);
     followUpdater.progress.addListener(updateProgress);
     initialLoad();
@@ -91,7 +90,6 @@ class _FollowsSplitPageState extends State<FollowsSplitPage> {
   void dispose() {
     super.dispose();
     db.follows.removeListener(updateFollows);
-    db.host.removeListener(updateFollows);
     db.tileSize.removeListener(updateTileSize);
     followUpdater.progress.removeListener(updateProgress);
   }
