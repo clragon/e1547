@@ -27,9 +27,8 @@ class PostProvider extends DataProvider<Post> {
           search: sortTags(search ?? ''),
         ) {
     this.denying.value = denying;
-    allowlist.addListener(refresh);
-    db.denylist.addListener(refresh);
-    this.denying.addListener(refresh);
+    [allowlist, db.denylist, this.denying]
+        .forEach((element) => element.addListener(refresh));
   }
 
   Future<void> refresh({List<Post> items}) async {
@@ -100,6 +99,8 @@ class PostProvider extends DataProvider<Post> {
   @override
   void dispose() {
     disposePosts();
+    [allowlist, db.denylist, this.denying]
+        .forEach((element) => element.removeListener(refresh));
     [
       deniedMap,
       allowlist,

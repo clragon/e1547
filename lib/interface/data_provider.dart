@@ -20,7 +20,7 @@ abstract class DataProvider<T> extends ChangeNotifier {
   DataProvider({String search}) {
     this.search.value = search ?? '';
     [db.host, db.credentials, this.search]
-        .forEach((notifier) => notifier.addListener(resetPages));
+        .forEach((element) => element.addListener(resetPages));
     isLoading = true;
     loadNextPage();
   }
@@ -82,6 +82,8 @@ abstract class DataProvider<T> extends ChangeNotifier {
   @override
   void dispose() {
     super.dispose();
+    [db.host, db.credentials, this.search]
+        .forEach((element) => element.removeListener(resetPages));
     search.dispose();
     pages.dispose();
   }
