@@ -108,71 +108,66 @@ class _FollowTileState extends State<FollowTile> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.all(4),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Theme.of(context).cardColor,
-          borderRadius: BorderRadius.all(Radius.circular(4)),
-        ),
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            SafeCrossFade(
-              showChild: status?.thumbnail != null,
-              builder: (context) => Stack(
-                children: [
-                  image(),
-                  Positioned(
-                    right: 0,
-                    left: 0,
-                    bottom: 0,
-                    child: Container(
-                      decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                        colors: [
-                          Colors.transparent,
-                          Theme.of(context).cardColor.withOpacity(0.8),
-                        ],
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                      )),
-                      child: Padding(
-                        padding: EdgeInsets.all(4),
-                        child: info(),
-                      ),
-                    ),
+    bool active = status?.thumbnail != null;
+
+    return FakeCard(
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          AnimatedOpacity(
+            opacity: active ? 1 : 0,
+            duration: defaultAnimationDuration,
+            child: active ? image() : SizedBox.shrink(),
+          ),
+          AnimatedPositioned(
+            bottom: active ? 0 : null,
+            right: active ? 0 : null,
+            left: active ? 0 : null,
+            child: SafeCrossFade(
+              showChild: active,
+              builder: (context) => Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.transparent,
+                      Theme.of(context).cardColor.withOpacity(0.8),
+                    ],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
                   ),
-                ],
+                ),
+                child: Padding(
+                  padding: EdgeInsets.all(4),
+                  child: info(),
+                ),
               ),
               secondChild: Padding(
                 padding: EdgeInsets.all(4),
-                child: Center(
-                  child: Text(
-                    widget.follow.title,
-                    style: Theme.of(context).textTheme.headline6,
-                    overflow: TextOverflow.ellipsis,
-                    softWrap: true,
-                  ),
+                child: Text(
+                  widget.follow.title,
+                  style: Theme.of(context).textTheme.headline6,
+                  overflow: TextOverflow.ellipsis,
+                  softWrap: true,
                 ),
               ),
             ),
-            Material(
-              type: MaterialType.transparency,
-              child: InkWell(
-                onTap: () => Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => SearchPage(tags: widget.follow.tags),
-                  ),
-                ),
-                onLongPress: () => wikiSheet(
-                  context: context,
-                  tag: tagToName(widget.follow.tags),
+            duration: defaultAnimationDuration,
+          ),
+          Material(
+            type: MaterialType.transparency,
+            child: InkWell(
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => SearchPage(tags: widget.follow.tags),
                 ),
               ),
+              onLongPress: () => wikiSheet(
+                context: context,
+                tag: tagToName(widget.follow.tags),
+              ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
