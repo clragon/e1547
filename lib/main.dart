@@ -14,7 +14,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   WidgetsBinding.instance.renderView.automaticSystemUiAdjustment = false;
   db.theme.addListener(updateTheme);
-  updateTheme();
+  await updateTheme();
   runApp(Main());
 }
 

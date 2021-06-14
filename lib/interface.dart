@@ -1,4 +1,5 @@
 export 'interface/animation.dart';
+export 'interface/card.dart';
 export 'interface/data_provider.dart';
 export 'interface/loading_tile.dart';
 export 'interface/navigation.dart';

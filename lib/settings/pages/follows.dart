@@ -287,24 +287,17 @@ class _FollowListTileState extends State<FollowListTile> {
   @override
   Widget build(BuildContext context) {
     Widget cardWidget(String tag) {
-      return Padding(
-        padding: EdgeInsets.all(4),
-        child: Container(
-          decoration: BoxDecoration(
-            color: Theme.of(context).cardColor,
-            borderRadius: BorderRadius.all(Radius.circular(4)),
-          ),
-          child: TagGesture(
-            tag: tag,
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Padding(
-                  padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-                  child: Text(tagToTitle(tag)),
-                ),
-              ],
-            ),
+      return FakeCard(
+        child: TagGesture(
+          tag: tag,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                child: Text(tagToTitle(tag)),
+              ),
+            ],
           ),
         ),
       );
