@@ -1,6 +1,4 @@
-export 'pages/favs.dart';
-export 'pages/home.dart';
-export 'pages/hot.dart';
-export 'pages/page.dart';
-export 'pages/pool.dart';
+export 'pages/detail.dart';
+export 'pages/photo.dart';
 export 'pages/search.dart';
+export 'pages/widgets.dart';

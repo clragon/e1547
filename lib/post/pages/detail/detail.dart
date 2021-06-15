@@ -3,12 +3,11 @@ import 'package:dio/dio.dart';
 import 'package:e1547/client.dart';
 import 'package:e1547/interface.dart';
 import 'package:e1547/post.dart';
-import 'package:e1547/post/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:like_button/like_button.dart';
 
-import 'display.dart';
 import 'image.dart';
+import 'widgets.dart';
 
 class PostDetail extends StatefulWidget {
   final Post post;

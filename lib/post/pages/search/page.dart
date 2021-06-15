@@ -1,18 +1,18 @@
 import 'dart:math';
 
 import 'package:e1547/interface.dart';
-import 'package:e1547/interface/tiles.dart';
+import 'package:e1547/interface/pages/tiles.dart';
 import 'package:e1547/post.dart';
-import 'package:e1547/post/pages/search_drawer.dart';
+import 'package:e1547/post/pages/search/display/search_drawer.dart';
 import 'package:e1547/settings.dart';
 import 'package:e1547/tag.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:like_button/like_button.dart';
 
-import 'search_bar.dart';
-import 'snackbar.dart';
-import 'tile.dart';
+import 'display/search_bar.dart';
+import 'display/snackbar.dart';
+import 'display/tile.dart';
 
 class PostsPage extends StatefulWidget {
   final bool canSelect;

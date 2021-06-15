@@ -1,1 +1,2 @@
-export 'pages/thread.dart';
+export 'pages/detail.dart';
+export 'pages/search.dart';
