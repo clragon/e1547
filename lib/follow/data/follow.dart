@@ -122,7 +122,9 @@ class Follow {
         other = safe;
       }
       posts.sort((a, b) => b.id.compareTo(a.id));
-      posts = posts.takeWhile((value) => value.id > status.latest).toList();
+      if (status.latest != null) {
+        posts = posts.takeWhile((value) => value.id > status.latest).toList();
+      }
       if (posts.isNotEmpty) {
         updated = await updateLatest(posts.first);
       }

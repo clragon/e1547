@@ -70,9 +70,6 @@ class _PostsPageState extends State<PostsPage>
     widget.provider.dispose();
   }
 
-  double notZero(double value) => value < 1 ? 1 : value;
-  int roundedNotZero(double value) => value.round() == 0 ? 1 : value.round();
-
   Widget itemBuilder(BuildContext context, int item) {
     Widget preview(Post post, PostProvider provider) {
       void select() {
@@ -263,31 +260,24 @@ class _PostsPageState extends State<PostsPage>
     }
 
     return LayoutBuilder(builder: (context, constraints) {
-      int crossAxisCount() {
-        return notZero(constraints.maxWidth / tileSize).round();
-      }
-
       StaggeredTile tileBuilder(int item) {
         if (item < widget.provider.posts.value.length) {
-          double extra = 0.2;
           PostImage sample = widget.provider.posts.value[item].sample.value;
           double heightRatio = notZero(sample.height / sample.width);
           double widthRatio = notZero(sample.width / sample.height);
 
           switch (stagger) {
             case GridState.square:
-              return StaggeredTile.count(1, 1 + extra);
+              return StaggeredTile.count(1, 1 * tileHeightFactor);
             case GridState.vertical:
               return StaggeredTile.count(1, heightRatio);
               break;
             case GridState.omni:
-              if (crossAxisCount() == 1) {
+              if (crossAxisCount(constraints.maxWidth) == 1) {
                 return StaggeredTile.count(1, heightRatio);
               } else {
-                return StaggeredTile.count(
-                    roundedNotZero(widthRatio),
-                    roundedNotZero(heightRatio) +
-                        roundedNotZero(heightRatio) * extra);
+                return StaggeredTile.count(roundedNotZero(widthRatio),
+                    roundedNotZero(heightRatio) * tileHeightFactor);
               }
               break;
           }
@@ -299,7 +289,7 @@ class _PostsPageState extends State<PostsPage>
         if (tileSize != null && stagger != null) {
           return StaggeredGridView.countBuilder(
             key: Key('grid_${[tileSize, stagger].join('_')}_key'),
-            crossAxisCount: crossAxisCount(),
+            crossAxisCount: crossAxisCount(constraints.maxWidth),
             itemCount: widget.provider.posts.value.length,
             itemBuilder: itemBuilder,
             staggeredTileBuilder: tileBuilder,

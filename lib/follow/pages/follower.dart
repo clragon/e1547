@@ -25,13 +25,19 @@ mixin FollowerMixin<T extends StatefulWidget> on State<T> {
     update();
   }
 
+  Future<void> initFollows() async {
+    updateFollows();
+    updateSafety();
+  }
+
+  Future<void> afterFollowInit() async {}
+
   @override
   void initState() {
     super.initState();
     db.host.addListener(updateSafety);
     db.follows.addListener(updateFollows);
-    updateFollows();
-    updateSafety();
+    initFollows().then((_) => afterFollowInit());
   }
 
   @override

@@ -10,21 +10,21 @@ import 'package:mutex/mutex.dart';
 
 final FollowUpdater followUpdater = FollowUpdater(db.follows);
 
-class FollowUpdater {
+class FollowUpdater extends ChangeNotifier {
   Future finish;
   List<String> tags;
   bool restart = false;
   Completer completer;
-  Mutex lock = Mutex();
+  Mutex updateLock = Mutex();
   ValueNotifier<Future<List<Follow>>> source;
   ValueNotifier<int> progress = ValueNotifier(0);
   Duration get stale => Duration(hours: 4);
 
   Future<void> run({bool force = false}) async {
-    if (lock.isLocked) {
+    if (updateLock.isLocked) {
       return;
     }
-    await lock.acquire();
+    await updateLock.acquire();
     if (completer?.isCompleted ?? true) {
       completer = Completer();
       finish = completer.future;
@@ -32,10 +32,12 @@ class FollowUpdater {
     progress.value = 0;
     restart = false;
 
+    notifyListeners();
+
     Future<void> update(List<Follow> follows) async {
       DateTime now = DateTime.now();
 
-      follows.sortByNew();
+      await follows.sortByNew();
 
       for (Follow follow in follows) {
         DateTime updated = await follow.updated;
@@ -43,19 +45,21 @@ class FollowUpdater {
           await follow.refresh();
           await Future.delayed(Duration(milliseconds: 500));
           if (restart) {
-            lock.release();
+            updateLock.release();
             run(force: force);
             return;
           }
           source.value = Future.value(follows);
         }
         progress.value = progress.value + 1;
+        notifyListeners();
       }
 
-      follows.sortByNew();
+      await follows.sortByNew();
       source.value = Future.value(follows);
+      notifyListeners();
 
-      lock.release();
+      updateLock.release();
       completer.complete();
     }
 
@@ -63,18 +67,33 @@ class FollowUpdater {
     return completer.future;
   }
 
-  FollowUpdater(this.source) {
-    source.addListener(() async {
-      List<String> update = (await source.value).tags;
-      if (tags == null) {
+  Future<void> updateLoop() async {
+    List<String> update = (await source.value).tags;
+    if (tags == null) {
+      tags = update;
+    } else {
+      if (!listEquals(tags, update) && !completer.isCompleted) {
         tags = update;
-      } else {
-        if (!listEquals(tags, update) && !completer.isCompleted) {
-          tags = update;
-          restart = true;
-        }
+        restart = true;
       }
-    });
+    }
+  }
+
+  Future<void> updateHost() async {
+    restart = true;
+    run();
+  }
+
+  FollowUpdater(this.source) {
+    source.addListener(updateLoop);
+    db.host.addListener(updateHost);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    source.removeListener(updateLoop);
+    db.host.removeListener(updateHost);
   }
 }
 
@@ -95,22 +114,9 @@ extension utility on List<Follow> {
           first = b.unsafe.unseen;
           second = a.unsafe.unseen;
         }
-        if (first != null && second != null) {
-          if (result == 0) {
-            result = first.compareTo(second);
-          }
-        } else {
-          if (first == null && second == null) {
-            result = 0;
-          } else {
-            if (first == null) {
-              result = -1;
-            }
-            if (second == null) {
-              result = 1;
-            }
-          }
-        }
+        first ??= -1;
+        second ??= -1;
+        result = first.compareTo(second);
         if (result == 0) {
           result = a.title.toLowerCase().compareTo(b.title.toLowerCase());
         }
