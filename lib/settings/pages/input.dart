@@ -1,5 +1,5 @@
-import 'package:e1547/interface/data/text.dart';
-import 'package:e1547/tag/pages/input.dart';
+import 'package:e1547/interface.dart';
+import 'package:e1547/tag.dart';
 import 'package:flutter/material.dart';
 
 class ListTagEditor extends StatefulWidget {
