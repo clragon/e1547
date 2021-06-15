@@ -91,7 +91,7 @@ class Post {
     switch (file.value.ext) {
       case 'webm':
         if (Platform.isIOS) {
-          file.value.url.replaceAll('.webm', '.mp4');
+          file.value.url = file.value.url.replaceAll('.webm', '.mp4');
         }
         type = ImageType.Video;
         break;
