@@ -67,7 +67,7 @@ class Follow {
     return updateTimestamp(status);
   }
 
-  Future<bool> updateLatest(Post post, {bool foreground = true}) async {
+  Future<bool> updateLatest(Post post, {bool foreground = false}) async {
     bool updated = false;
     if (post != null) {
       FollowStatus status;
@@ -80,7 +80,9 @@ class Follow {
         status = unsafe;
         other = safe;
       }
-      if (status.latest == null || status.latest < post.id) {
+      if (status.latest == null ||
+          status.latest < post.id ||
+          (foreground && status.latest != post.id)) {
         status.latest = post.id;
         status.thumbnail = post.sample.value.url;
         updated = true;
@@ -120,12 +122,11 @@ class Follow {
         other = safe;
       }
       posts.sort((a, b) => b.id.compareTo(a.id));
-      int limit = posts.indexWhere((element) => element.id == status.latest);
-      if (limit == -1) {
-        limit = posts.length;
+      posts = posts.takeWhile((value) => value.id > status.latest).toList();
+      if (posts.isNotEmpty) {
+        updated = await updateLatest(posts.first);
       }
-      updated = await updateLatest(posts.first, foreground: false);
-      int length = posts.sublist(0, limit).length;
+      int length = posts.length;
       if (status.unseen != null) {
         if ((length > status.unseen &&
             !(status.latest == other.latest && other.unseen == 0))) {

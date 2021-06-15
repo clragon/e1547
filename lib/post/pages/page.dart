@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:e1547/interface.dart';
+import 'package:e1547/interface/tiles.dart';
 import 'package:e1547/post.dart';
 import 'package:e1547/post/pages/search_drawer.dart';
 import 'package:e1547/settings.dart';
@@ -15,8 +16,8 @@ import 'tile.dart';
 
 class PostsPage extends StatefulWidget {
   final bool canSelect;
-  final PreferredSizeWidget Function(BuildContext) appBarBuilder;
   final PostProvider provider;
+  final PreferredSizeWidget Function(BuildContext) appBarBuilder;
 
   PostsPage({
     this.canSelect = true,
@@ -28,14 +29,13 @@ class PostsPage extends StatefulWidget {
   State<StatefulWidget> createState() => _PostsPageState();
 }
 
-class _PostsPageState extends State<PostsPage> {
+class _PostsPageState extends State<PostsPage>
+    with TileSizeMixin, TileStaggerMixin {
   ValueNotifier<bool> isSearching = ValueNotifier(false);
   TextEditingController textController = TextEditingController();
   PersistentBottomSheetController<Tagset> sheetController;
 
   Set<Post> selections = Set();
-  GridState stagger;
-  int tileSize;
 
   void updatePage() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -49,27 +49,9 @@ class _PostsPageState extends State<PostsPage> {
     });
   }
 
-  void updateStagger() {
-    db.stagger.value.then((value) {
-      setState(() {
-        stagger = value;
-      });
-    });
-  }
-
-  void updateTileSize() {
-    db.tileSize.value.then((value) {
-      setState(() {
-        tileSize = value;
-      });
-    });
-  }
-
   @override
   void initState() {
     super.initState();
-    db.tileSize.addListener(updateTileSize);
-    db.stagger.addListener(updateStagger);
     widget.provider.posts.addListener(updatePage);
   }
 
@@ -83,10 +65,6 @@ class _PostsPageState extends State<PostsPage> {
   @override
   void reassemble() {
     super.reassemble();
-    db.tileSize.removeListener(updateTileSize);
-    db.tileSize.addListener(updateTileSize);
-    db.stagger.removeListener(updateStagger);
-    db.stagger.addListener(updateStagger);
     widget.provider.posts.removeListener(updatePage);
     widget.provider.posts.addListener(updatePage);
   }
@@ -94,8 +72,6 @@ class _PostsPageState extends State<PostsPage> {
   @override
   void dispose() {
     super.dispose();
-    db.tileSize.removeListener(updateTileSize);
-    db.stagger.removeListener(updateStagger);
     widget.provider.posts.removeListener(updatePage);
     widget.provider.dispose();
   }
@@ -328,7 +304,7 @@ class _PostsPageState extends State<PostsPage> {
       Widget body() {
         if (tileSize != null && stagger != null) {
           return StaggeredGridView.countBuilder(
-            key: Key('grid_${tileSize}_${stagger}_key'),
+            key: Key('grid_${[tileSize, stagger].join('_')}_key'),
             crossAxisCount: crossAxisCount(),
             itemCount: widget.provider.posts.value.length,
             itemBuilder: itemBuilder,

@@ -1,6 +1,7 @@
 import 'package:e1547/client.dart';
 import 'package:e1547/follow.dart';
 import 'package:e1547/interface.dart';
+import 'package:e1547/interface/tiles.dart';
 import 'package:e1547/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -11,34 +12,19 @@ class FollowsSplitPage extends StatefulWidget {
   _FollowsSplitPageState createState() => _FollowsSplitPageState();
 }
 
-class _FollowsSplitPageState extends State<FollowsSplitPage> {
+class _FollowsSplitPageState extends State<FollowsSplitPage>
+    with FollowerMixin, TileSizeMixin {
   RefreshController refreshController = RefreshController();
   ScrollController scrollController = ScrollController();
-  List<Follow> follows;
   bool loading = true;
   int progress = 0;
-  int tileSize;
 
   void update() {
     if (this.mounted) {
       setState(() {
-        loading = follows == null || tileSize == null;
+        loading = tileSize == null || follows == null || safe == null;
       });
     }
-  }
-
-  Future<void> updateTileSize() async {
-    await db.tileSize.value.then((value) {
-      tileSize = value;
-      update();
-    });
-  }
-
-  Future<void> updateFollows() async {
-    db.follows.value.then((value) async {
-      follows = List.from(value);
-      update();
-    });
   }
 
   Future<void> updateProgress() async {
@@ -60,8 +46,6 @@ class _FollowsSplitPageState extends State<FollowsSplitPage> {
   }
 
   Future<void> initialLoad() async {
-    await updateTileSize();
-    await updateFollows();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       refreshController
           .requestRefresh(
@@ -76,8 +60,6 @@ class _FollowsSplitPageState extends State<FollowsSplitPage> {
   @override
   void initState() {
     super.initState();
-    db.follows.addListener(updateFollows);
-    db.tileSize.addListener(updateTileSize);
     followUpdater.progress.addListener(updateProgress);
     initialLoad();
   }
@@ -85,13 +67,11 @@ class _FollowsSplitPageState extends State<FollowsSplitPage> {
   @override
   void dispose() {
     super.dispose();
-    db.follows.removeListener(updateFollows);
-    db.tileSize.removeListener(updateTileSize);
     followUpdater.progress.removeListener(updateProgress);
   }
 
   Widget itemBuilder(BuildContext context, int item) {
-    return FollowTile(follow: follows[item]);
+    return FollowTile(follow: follows[item], safe: safe);
   }
 
   StaggeredTile tileBuilder(int item) {
@@ -102,9 +82,9 @@ class _FollowsSplitPageState extends State<FollowsSplitPage> {
   @override
   Widget build(BuildContext context) {
     Widget body() {
-      if (tileSize != null && follows != null) {
+      if (!loading) {
         return StaggeredGridView.countBuilder(
-          key: Key('grid_${crossAxisCount}_key'),
+          key: Key('grid_${[crossAxisCount, safe].join('_')}_key'),
           crossAxisCount: crossAxisCount,
           itemCount: follows.length,
           itemBuilder: itemBuilder,
