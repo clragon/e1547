@@ -1,3 +1,4 @@
+export 'search/display.dart';
 export 'search/favs.dart';
 export 'search/home.dart';
 export 'search/hot.dart';
