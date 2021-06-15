@@ -1,6 +1,5 @@
 import 'package:e1547/dtext.dart';
 import 'package:e1547/interface.dart';
-import 'package:e1547/interface/pages/text_editor.dart';
 import 'package:e1547/post.dart';
 import 'package:flutter/material.dart';
 

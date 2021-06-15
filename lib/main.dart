@@ -1,5 +1,4 @@
 import 'package:e1547/interface.dart';
-import 'package:e1547/interface/pages/startup.dart';
 import 'package:e1547/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

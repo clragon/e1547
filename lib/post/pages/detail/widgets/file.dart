@@ -1,4 +1,4 @@
-import 'package:e1547/interface/data/text.dart';
+import 'package:e1547/interface.dart';
 import 'package:e1547/post.dart';
 import 'package:e1547/tag.dart';
 import 'package:flutter/material.dart';
