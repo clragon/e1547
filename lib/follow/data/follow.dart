@@ -102,8 +102,9 @@ class Follow {
         }
         updated = true;
       }
-    } else {
-      ensureCooldown();
+    }
+    if (await ensureCooldown()) {
+      updated = true;
     }
     return updated;
   }
@@ -139,8 +140,9 @@ class Follow {
         status.unseen = 0;
         updated = true;
       }
-    } else {
-      ensureCooldown();
+    }
+    if (await ensureCooldown()) {
+      updated = true;
     }
     return updated;
   }
