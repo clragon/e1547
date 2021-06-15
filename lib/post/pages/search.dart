@@ -91,7 +91,7 @@ class _SearchPageAppBarState extends State<SearchPageAppBar> {
             (follow) => follow.tags == widget.provider.search.value);
         if (widget.provider.posts.value.isNotEmpty) {
           follow
-              .updateLatest(widget.provider.posts.value.first)
+              .updateLatest(widget.provider.posts.value.first, foreground: true)
               .then((updated) {
             if (updated) {
               db.follows.value = Future.value(follows);

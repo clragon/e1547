@@ -13,32 +13,10 @@ class FollowingPage extends StatefulWidget {
   }
 }
 
-class _FollowingPageState extends State<FollowingPage> {
-  List<Follow> follows;
+class _FollowingPageState extends State<FollowingPage> with FollowerMixin {
   Function fabAction;
   PersistentBottomSheetController<String> sheetController;
   ScrollController scrollController = ScrollController();
-
-  Future<void> update() async {
-    await db.follows.value.then((value) {
-      if (mounted) {
-        setState(() => follows = value);
-      }
-    });
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    db.follows.addListener(update);
-    update();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    db.follows.removeListener(update);
-  }
 
   Widget aliasEditor({
     TextEditingController controller,
@@ -175,6 +153,7 @@ class _FollowingPageState extends State<FollowingPage> {
             follows.removeAt(index);
             db.follows.value = Future.value(follows);
           },
+          safe: safe,
         ),
         physics: BouncingScrollPhysics(),
       );
