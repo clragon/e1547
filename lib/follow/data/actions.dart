@@ -36,8 +36,8 @@ class FollowUpdater extends ChangeNotifier {
 
     Future<void> update(List<Follow> follows) async {
       DateTime now = DateTime.now();
-
       await follows.sortByNew();
+      source.value = Future.value(follows);
 
       for (Follow follow in follows) {
         DateTime updated = await follow.updated;
@@ -57,10 +57,9 @@ class FollowUpdater extends ChangeNotifier {
 
       await follows.sortByNew();
       source.value = Future.value(follows);
-      notifyListeners();
-
       updateLock.release();
       completer.complete();
+      notifyListeners();
     }
 
     source.value.then((value) => update(List.from(value)));
