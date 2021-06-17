@@ -126,7 +126,7 @@ class _DetailImageToggleState extends State<DetailImageToggle> {
                   CrossFade(
                     showChild: loading,
                     child: SizedCircularProgressIndicator(
-                      size: 16,
+                      size: 12,
                     ),
                   ),
                 ],

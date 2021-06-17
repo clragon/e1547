@@ -13,8 +13,9 @@ final FollowUpdater followUpdater = FollowUpdater(db.follows);
 class FollowUpdater extends ChangeNotifier {
   Future finish;
   List<String> tags;
-  bool restart = false;
   Completer completer;
+  bool error = false;
+  bool restart = false;
   Mutex updateLock = Mutex();
   ValueNotifier<Future<List<Follow>>> source;
   ValueNotifier<int> progress = ValueNotifier(0);
@@ -31,6 +32,7 @@ class FollowUpdater extends ChangeNotifier {
     }
     progress.value = 0;
     restart = false;
+    error = false;
 
     notifyListeners();
 
@@ -40,16 +42,23 @@ class FollowUpdater extends ChangeNotifier {
       source.value = Future.value(follows);
 
       for (Follow follow in follows) {
-        DateTime updated = await follow.updated;
-        if (force || updated == null || now.difference(updated) > stale) {
-          await follow.refresh();
-          await Future.delayed(Duration(milliseconds: 500));
-          if (restart) {
-            updateLock.release();
-            run(force: force);
-            return;
+        if (follow.type != FollowType.bookmark) {
+          DateTime updated = await follow.updated;
+          if (force || updated == null || now.difference(updated) > stale) {
+            if (!await follow.refresh()) {
+              error = true;
+              updateLock.release();
+              completer.complete();
+              return;
+            }
+            await Future.delayed(Duration(milliseconds: 500));
+            if (restart) {
+              updateLock.release();
+              run(force: force);
+              return;
+            }
+            source.value = Future.value(follows);
           }
-          source.value = Future.value(follows);
         }
         progress.value = progress.value + 1;
         notifyListeners();
@@ -103,19 +112,39 @@ extension utility on List<Follow> {
     bool isSafe = await client.isSafe;
     this.sort(
       (a, b) {
-        int first;
-        int second;
         int result = 0;
+
+        int unseenA;
+        int unseenB;
         if (isSafe) {
-          first = b.safe.unseen;
-          second = a.safe.unseen;
+          unseenB = b.safe.unseen;
+          unseenA = a.safe.unseen;
         } else {
-          first = b.unsafe.unseen;
-          second = a.unsafe.unseen;
+          unseenB = b.unsafe.unseen;
+          unseenA = a.unsafe.unseen;
         }
-        first ??= -1;
-        second ??= -1;
-        result = first.compareTo(second);
+        unseenB ??= -1;
+        unseenA ??= -1;
+        result = unseenB.compareTo(unseenA);
+
+        if (result == 0) {
+          int latestA;
+          int latestB;
+
+          if (isSafe) {
+            latestB = b.safe.latest;
+            latestA = a.safe.latest;
+          } else {
+            latestB = b.unsafe.latest;
+            latestA = a.unsafe.latest;
+          }
+
+          latestB ??= -1;
+          latestA ??= -1;
+
+          result = latestB.compareTo(latestA);
+        }
+
         if (result == 0) {
           result = a.title.toLowerCase().compareTo(b.title.toLowerCase());
         }

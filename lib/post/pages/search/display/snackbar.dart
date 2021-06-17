@@ -1,3 +1,4 @@
+import 'package:e1547/interface.dart';
 import 'package:e1547/post.dart';
 import 'package:flutter/material.dart';
 
@@ -46,7 +47,7 @@ class _LoadingSnackbarState extends State<LoadingSnackbar> {
   Future<void> run() async {
     for (Post post in widget.items) {
       if (await widget.process(post)) {
-        await Future.delayed(widget.timeout ?? Duration(milliseconds: 200));
+        await Future.delayed(widget.timeout ?? defaultAnimationDuration);
         setState(() {
           progress++;
         });
@@ -91,13 +92,16 @@ class _LoadingSnackbarState extends State<LoadingSnackbar> {
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: 8),
                 child: TweenAnimationBuilder(
-                  duration: widget.timeout ?? Duration(milliseconds: 200),
-                  builder: (BuildContext context, value, Widget child) {
+                  duration: widget.timeout ?? defaultAnimationDuration,
+                  builder: (context, value, child) {
+                    double indicator = 1 / widget.items.length;
+                    if (indicator < 0) {
+                      indicator = 1;
+                    }
+                    indicator = indicator * value;
                     return LinearProgressIndicator(
-                      value: (1 / widget.items.length > 0
-                              ? 1 / widget.items.length
-                              : 1) *
-                          value,
+                      value: indicator,
+                      color: Theme.of(context).accentColor,
                     );
                   },
                   tween: Tween<double>(begin: 0, end: progress.toDouble()),

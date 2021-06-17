@@ -221,35 +221,28 @@ class _PostsPageState extends State<PostsPage>
                     );
                   },
                   onTap: (isLiked) async {
-                    if (isLiked) {
-                      loadingSnackbar(
-                          context: context,
-                          items: Set.from(selections),
-                          process: (post) async {
-                            if (post.isFavorite.value) {
-                              return post.tryRemoveFav(context);
-                            } else {
-                              return true;
+                    loadingSnackbar(
+                      context: context,
+                      items: Set.from(selections),
+                      process: isLiked
+                          ? (post) async {
+                              if (post.isFavorite.value) {
+                                return post.tryRemoveFav(context);
+                              } else {
+                                return true;
+                              }
                             }
-                          },
-                          timeout: Duration(milliseconds: 800));
-                      setState(() => selections.clear());
-                      return false;
-                    } else {
-                      loadingSnackbar(
-                          context: context,
-                          items: Set.from(selections),
-                          process: (post) async {
-                            if (!post.isFavorite.value) {
-                              return post.tryAddFav(context);
-                            } else {
-                              return true;
-                            }
-                          },
-                          timeout: Duration(milliseconds: 800));
-                      setState(() => selections.clear());
-                      return true;
-                    }
+                          : (post) async {
+                              if (!post.isFavorite.value) {
+                                return post.tryAddFav(context);
+                              } else {
+                                return true;
+                              }
+                            },
+                      timeout: Duration(milliseconds: 500),
+                    );
+                    setState(() => selections.clear());
+                    return !isLiked;
                   },
                 ),
               );

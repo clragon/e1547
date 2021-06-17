@@ -53,22 +53,19 @@ class WikiSheet extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 8),
-                      child: InkWell(
-                        onTap: () =>
-                            Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => SearchPage(tags: tag),
-                        )),
-                        child: Text(
-                          tagToTitle(tag),
-                          style: Theme.of(context).textTheme.headline6,
-                        ),
+                Flexible(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 8),
+                    child: InkWell(
+                      onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => SearchPage(tags: tag),
+                      )),
+                      child: Text(
+                        tagToTitle(tag),
+                        style: Theme.of(context).textTheme.headline6,
                       ),
                     ),
-                  ],
+                  ),
                 ),
                 Row(
                   children: [
