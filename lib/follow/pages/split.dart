@@ -41,7 +41,11 @@ class _FollowsSplitPageState extends State<FollowsSplitPage>
           duration: Duration(milliseconds: 100),
         );
         await followUpdater.finish;
-        refreshController.refreshCompleted();
+        if (!followUpdater.error) {
+          refreshController.refreshCompleted();
+        } else {
+          refreshController.refreshFailed();
+        }
       });
     }
   }

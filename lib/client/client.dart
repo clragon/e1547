@@ -221,7 +221,27 @@ class Client {
   }
 
   Future<List<Post>> poolPosts(int poolId, int page) async {
-    return client.posts('pool:$poolId order:id', page, faithful: true);
+    Pool pool = await client.pool(poolId);
+    int limit = 80;
+    int lower = ((page - 1) * limit);
+    int upper = lower + limit;
+
+    if (pool.postIDs.length < lower) {
+      return [];
+    }
+    if (pool.postIDs.length < upper) {
+      upper = pool.postIDs.length;
+    }
+
+    List<int> ids = pool.postIDs.sublist(lower, upper);
+    String filter = 'id:${ids.join(',')}';
+
+    List<Post> posts = await client.posts(filter, 1);
+    Map<int, Post> table =
+        Map.fromIterable(posts, key: (e) => e.id, value: (e) => e);
+    posts = ids.map((e) => table[e]).toList();
+    posts.removeWhere((e) => e == null);
+    return posts;
   }
 
   Future<List<Post>> follows(int page, {int attempt = 0}) async {

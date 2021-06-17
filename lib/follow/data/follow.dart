@@ -7,23 +7,30 @@ import 'package:e1547/tag.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
+enum FollowType {
+  update,
+  notify,
+  bookmark,
+}
+
 class Follow {
   String tags;
   String alias;
-  bool notification;
   FollowStatus safe;
   FollowStatus unsafe;
+  FollowType type;
 
   Follow({
     @required this.tags,
+    this.type,
     this.alias,
-    this.notification = false,
     this.safe,
     this.unsafe,
   }) {
     tags = sortTags(tags);
     safe ??= FollowStatus();
     unsafe ??= FollowStatus();
+    type ??= FollowType.update;
   }
 
   Future<FollowStatus> get status async => await client.isSafe ? safe : unsafe;
@@ -80,9 +87,7 @@ class Follow {
         status = unsafe;
         other = safe;
       }
-      if (status.latest == null ||
-          status.latest < post.id ||
-          (foreground && status.latest != post.id)) {
+      if (status.latest == null || status.latest < post.id) {
         status.latest = post.id;
         status.thumbnail = post.sample.value.url;
         updated = true;
@@ -156,21 +161,25 @@ class Follow {
   factory Follow.fromMap(Map<String, dynamic> json) => Follow(
         tags: json["tags"],
         alias: json["alias"],
-        notification: json["notification"],
         safe: json["safe"] == null
             ? FollowStatus()
             : FollowStatus.fromJson(json['safe']),
         unsafe: json["unsafe"] == null
             ? FollowStatus()
             : FollowStatus.fromJson(json['unsafe']),
+        type: json['type'] == null
+            ? FollowType.update
+            : FollowType.values.firstWhere(
+                (element) => element?.toString() == json['type'],
+                orElse: () => null),
       );
 
   Map<String, dynamic> toMap() => {
         "tags": tags,
         "alias": alias,
-        "notification": notification,
-        "safe": safe == null ? null : safe.toJson(),
-        "unsafe": unsafe == null ? null : unsafe.toJson(),
+        "safe": safe?.toJson(),
+        "unsafe": unsafe?.toJson(),
+        "type": type?.toString(),
       };
 
   @override

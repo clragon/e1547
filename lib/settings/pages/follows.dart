@@ -153,6 +153,18 @@ class _FollowingPageState extends State<FollowingPage> with FollowerMixin {
             follows.removeAt(index);
             db.follows.value = Future.value(follows);
           },
+          onType: () {
+            switch (follows[index].type) {
+              case FollowType.notify:
+              case FollowType.update:
+                follows[index].type = FollowType.bookmark;
+                break;
+              case FollowType.bookmark:
+                follows[index].type = FollowType.update;
+                break;
+            }
+            db.follows.value = Future.value(follows);
+          },
           safe: safe,
         ),
         physics: BouncingScrollPhysics(),

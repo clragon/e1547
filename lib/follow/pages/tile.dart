@@ -6,6 +6,17 @@ import 'package:e1547/tag.dart';
 import 'package:e1547/wiki.dart';
 import 'package:flutter/material.dart';
 
+IconData getFollowIcon(FollowType type) {
+  switch (type) {
+    case FollowType.update:
+      return Icons.update;
+    case FollowType.notify:
+      return Icons.notifications_active;
+    case FollowType.bookmark:
+      return Icons.update_disabled;
+  }
+}
+
 class FollowTile extends StatefulWidget {
   final Follow follow;
   final bool safe;
@@ -59,11 +70,11 @@ class _FollowTileState extends State<FollowTile> {
       children: [
         Row(
           children: [
-            if (widget.follow.notification)
+            if (widget.follow.type != FollowType.update)
               Padding(
                 padding: EdgeInsets.only(right: 4),
                 child: ShadowIcon(
-                  Icons.notifications_active,
+                  getFollowIcon(widget.follow.type),
                   size: 16,
                 ),
               ),
@@ -179,6 +190,7 @@ class FollowListTile extends StatefulWidget {
   final Function onEdit;
   final Function onDelete;
   final Function onRename;
+  final Function onType;
   final Follow follow;
   final bool safe;
 
@@ -187,6 +199,7 @@ class FollowListTile extends StatefulWidget {
     @required this.onEdit,
     @required this.onDelete,
     @required this.onRename,
+    @required this.onType,
     @required this.safe,
   }) : super(key: ObjectKey(follow));
 
@@ -236,6 +249,17 @@ class _FollowListTileState extends State<FollowListTile> {
           Icons.more_vert,
         ),
         itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+          PopupMenuItem(
+            value: 'type',
+            child: PopTile(
+              title: widget.follow.type == FollowType.update
+                  ? 'Disable updates'
+                  : 'Enable updates',
+              icon: widget.follow.type == FollowType.update
+                  ? Icons.update_disabled
+                  : Icons.update,
+            ),
+          ),
           if (widget.follow.tags.split(' ').length > 1)
             PopupMenuItem(
               value: 'rename',
@@ -252,6 +276,9 @@ class _FollowListTileState extends State<FollowListTile> {
         ],
         onSelected: (value) async {
           switch (value) {
+            case 'type':
+              widget.onType();
+              break;
             case 'rename':
               widget.onRename();
               break;
@@ -322,7 +349,20 @@ class _FollowListTileState extends State<FollowListTile> {
                             ),
                           ])
                         : null,
-                    trailing: contextMenu(),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        CrossFade(
+                          showChild: widget.follow.type != FollowType.update,
+                          child: Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child:
+                                ShadowIcon(getFollowIcon(widget.follow.type)),
+                          ),
+                        ),
+                        contextMenu(),
+                      ],
+                    ),
                   ),
                 ),
               )

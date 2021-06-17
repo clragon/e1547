@@ -34,8 +34,8 @@ final Map<AppTheme, ThemeData> appThemeMap = {
     dialogBackgroundColor: Colors.black,
     brightness: Brightness.dark,
     accentColor: Colors.deepPurple,
-    accentColorBrightness: Brightness.dark,
     primaryColor: Colors.black,
+    accentColorBrightness: Brightness.dark,
     primaryColorBrightness: Brightness.dark,
     switchTheme: SwitchThemeData(
       thumbColor: MaterialStateProperty.resolveWith((states) {
