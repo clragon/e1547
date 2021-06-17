@@ -30,7 +30,7 @@ class TagCard extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              height: 24,
+              height: 26,
               decoration: BoxDecoration(
                 color: getCategoryColor(category),
                 borderRadius: BorderRadius.only(
@@ -80,7 +80,7 @@ class DenyListTagCard extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              height: 24,
+              height: 26,
               width: 5,
               decoration: BoxDecoration(
                 color: () {
