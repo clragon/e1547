@@ -1,7 +1,6 @@
 import 'package:e1547/interface.dart';
 import 'package:e1547/settings.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 ValueNotifier<ThemeData> theme = ValueNotifier(appThemeMap[AppTheme.dark]);
 
@@ -22,25 +21,12 @@ class Main extends StatelessWidget {
   Widget build(BuildContext context) => StartupActions(
         child: ValueListenableBuilder(
           valueListenable: theme,
-          builder: (context, value, child) =>
-              AnnotatedRegion<SystemUiOverlayStyle>(
-            value: SystemUiOverlayStyle(
-              statusBarColor: Colors.transparent,
-              statusBarBrightness: Brightness.dark,
-              statusBarIconBrightness: Brightness.light,
-              systemNavigationBarColor: value.canvasColor,
-              systemNavigationBarIconBrightness:
-                  value.brightness == Brightness.light
-                      ? Brightness.dark
-                      : Brightness.light,
-            ),
-            child: ExcludeSemantics(
-              child: MaterialApp(
-                title: appName,
-                theme: value,
-                navigatorObservers: [routeObserver],
-                routes: routes,
-              ),
+          builder: (context, value, child) => ExcludeSemantics(
+            child: MaterialApp(
+              title: appName,
+              theme: value,
+              navigatorObservers: [routeObserver],
+              routes: routes,
             ),
           ),
         ),
