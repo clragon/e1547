@@ -9,6 +9,7 @@ enum AppTheme {
 }
 
 ThemeData prepareTheme(ThemeData theme) => theme.copyWith(
+      applyElevationOverlayColor: false,
       dialogBackgroundColor: theme.canvasColor,
       switchTheme: SwitchThemeData(
         thumbColor: MaterialStateProperty.resolveWith((states) {
