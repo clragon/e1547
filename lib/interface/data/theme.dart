@@ -12,26 +12,23 @@ ThemeData prepareTheme(ThemeData theme) => theme.copyWith(
       applyElevationOverlayColor: false,
       dialogBackgroundColor: theme.canvasColor,
       switchTheme: SwitchThemeData(
-        thumbColor: MaterialStateProperty.resolveWith((states) {
-          if (states.contains(MaterialState.selected)) {
-            return theme.accentColor;
-          }
-          return null;
-        }),
-        trackColor: MaterialStateProperty.resolveWith((states) {
-          if (states.contains(MaterialState.selected)) {
-            return theme.colorScheme.primary.withOpacity(0.5);
-          }
-          return null;
-        }),
+        thumbColor: MaterialStateProperty.resolveWith(
+          (states) => states.contains(MaterialState.selected)
+              ? theme.accentColor
+              : null,
+        ),
+        trackColor: MaterialStateProperty.resolveWith(
+          (states) => states.contains(MaterialState.selected)
+              ? theme.colorScheme.primary.withOpacity(0.5)
+              : null,
+        ),
       ),
       checkboxTheme: CheckboxThemeData(
-        fillColor: MaterialStateProperty.resolveWith((states) {
-          if (states.contains(MaterialState.selected)) {
-            return theme.colorScheme.primary;
-          }
-          return null;
-        }),
+        fillColor: MaterialStateProperty.resolveWith(
+          (states) => states.contains(MaterialState.selected)
+              ? theme.colorScheme.primary
+              : null,
+        ),
       ),
       appBarTheme: AppBarTheme(
         systemOverlayStyle: SystemUiOverlayStyle(
@@ -56,6 +53,7 @@ final Map<AppTheme, ThemeData> appThemeMap = {
       colorScheme: ColorScheme.fromSwatch(
         primarySwatch: Colors.blue,
         accentColor: Colors.lightBlue,
+        cardColor: Colors.white,
         backgroundColor: Colors.grey[50],
         brightness: Brightness.light,
       ),
