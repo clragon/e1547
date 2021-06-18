@@ -244,52 +244,38 @@ class _FollowListTileState extends State<FollowListTile> {
     }
 
     Widget contextMenu() {
-      return PopupMenuButton<String>(
+      return PopupMenuButton(
         icon: ShadowIcon(
           Icons.more_vert,
         ),
-        itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-          PopupMenuItem(
-            value: 'type',
-            child: PopTile(
-              title: widget.follow.type == FollowType.update
-                  ? 'Disable updates'
-                  : 'Enable updates',
-              icon: widget.follow.type == FollowType.update
-                  ? Icons.update_disabled
-                  : Icons.update,
-            ),
+        onSelected: (value) => value(),
+        itemBuilder: (context) => [
+          PopupMenuTile(
+            value: widget.onType,
+            title: widget.follow.type == FollowType.update
+                ? 'Disable updates'
+                : 'Enable updates',
+            icon: widget.follow.type == FollowType.update
+                ? Icons.update_disabled
+                : Icons.update,
           ),
           if (widget.follow.tags.split(' ').length > 1)
-            PopupMenuItem(
-              value: 'rename',
-              child: PopTile(title: 'Rename', icon: Icons.label),
+            PopupMenuTile(
+              value: widget.onRename,
+              title: 'Rename',
+              icon: Icons.label,
             ),
-          PopupMenuItem(
-            value: 'edit',
-            child: PopTile(title: 'Edit', icon: Icons.edit),
+          PopupMenuTile(
+            value: widget.onEdit,
+            title: 'Edit',
+            icon: Icons.edit,
           ),
-          PopupMenuItem(
-            value: 'delete',
-            child: PopTile(title: 'Delete', icon: Icons.delete),
+          PopupMenuTile(
+            value: widget.onDelete,
+            title: 'Delete',
+            icon: Icons.delete,
           ),
         ],
-        onSelected: (value) async {
-          switch (value) {
-            case 'type':
-              widget.onType();
-              break;
-            case 'rename':
-              widget.onRename();
-              break;
-            case 'edit':
-              widget.onEdit();
-              break;
-            case 'delete':
-              widget.onDelete();
-              break;
-          }
-        },
       );
     }
 
@@ -322,19 +308,14 @@ class _FollowListTileState extends State<FollowListTile> {
                   onLongPress: () =>
                       wikiSheet(context: context, tag: widget.follow.tags),
                   child: ListTile(
-                    title: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text(
-                            widget.follow.title,
-                            style: thumbnail != null
-                                ? TextStyle(shadows: getTextShadows())
-                                : null,
-                          ),
-                        ),
-                      ],
+                    title: Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Text(
+                        widget.follow.title,
+                        style: thumbnail != null
+                            ? TextStyle(shadows: getTextShadows())
+                            : null,
+                      ),
                     ),
                     subtitle: (widget.follow.tags.split(' ').length > 1)
                         ? Row(children: [

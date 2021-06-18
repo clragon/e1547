@@ -103,32 +103,24 @@ class _DenyListPageState extends State<DenyListPage> {
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  PopupMenuButton<String>(
+                  PopupMenuButton(
                     icon: Icon(
                       Icons.more_vert,
                       color: Theme.of(context).iconTheme.color,
                     ),
-                    itemBuilder: (BuildContext context) =>
-                        <PopupMenuEntry<String>>[
-                      PopupMenuItem(
+                    onSelected: (value) => value(),
+                    itemBuilder: (context) => [
+                      PopupMenuTile(
                         value: 'edit',
-                        child: PopTile(title: 'Edit', icon: Icons.edit),
+                        title: 'Edit',
+                        icon: Icons.edit,
                       ),
-                      PopupMenuItem(
+                      PopupMenuTile(
                         value: 'delete',
-                        child: PopTile(title: 'Delete', icon: Icons.delete),
+                        title: 'Delete',
+                        icon: Icons.delete,
                       ),
                     ],
-                    onSelected: (value) async {
-                      switch (value) {
-                        case 'edit':
-                          onEdit();
-                          break;
-                        case 'delete':
-                          onDelete();
-                          break;
-                      }
-                    },
                   ),
                 ],
               ),
@@ -165,7 +157,7 @@ class _DenyListPageState extends State<DenyListPage> {
         padding: EdgeInsets.only(bottom: 30),
         itemCount: denylist.length,
         itemBuilder: (BuildContext context, int index) => denyListTile(
-            tag: denylist.elementAt(index),
+            tag: denylist[index],
             onEdit: () => addTags(context, index),
             onDelete: () {
               denylist.removeAt(index);

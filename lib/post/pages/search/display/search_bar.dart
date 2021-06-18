@@ -18,62 +18,54 @@ class PostSearchBar extends StatelessWidget {
     setFocusToEnd(controller);
   }
 
-  List<PopupMenuEntry<String>> Function(BuildContext) menuEntryBuilder(
-      List<String> text) {
-    return (context) {
-      List<PopupMenuEntry<String>> items = [];
-      for (int i = 0; i < text.length; i++) {
-        String t = text[i];
-        items.add(PopupMenuItem(child: Text(t), value: t));
-      }
-      return items;
-    };
-  }
+  List<PopupMenuEntry> fromMap(Map<String, String> strings) =>
+      strings.keys.map((e) => PopupMenuItem(child: Text(e), value: e)).toList();
 
   @override
   Widget build(BuildContext context) {
     Widget filterByWidget() {
+      Map<String, String> filterTypes = {
+        'Score': 'score',
+        'Favorites': 'favcount',
+      };
+
       return PopupMenuButton<String>(
-          icon: Icon(Icons.filter_list),
-          tooltip: 'Filter by',
-          itemBuilder: menuEntryBuilder(
-            ['Score', 'Favorites'],
-          ),
-          onSelected: (selection) {
-            String filterType = {
-              'Score': 'score',
-              'Favorites': 'favcount',
-            }[selection];
+        icon: Icon(Icons.filter_list),
+        tooltip: 'Filter by',
+        itemBuilder: (context) => fromMap(filterTypes),
+        onSelected: (selection) {
+          String filterType = filterTypes[selection];
 
-            withTags((tags) async {
-              String valueString = tags[filterType];
-              int value =
-                  valueString == null ? 0 : int.parse(valueString.substring(2));
+          withTags((tags) async {
+            String valueString = tags[filterType];
+            int value =
+                valueString == null ? 0 : int.parse(valueString.substring(2));
 
-              int min;
-              await showDialog(
-                context: context,
-                builder: (context) => RangeDialog(
-                  title: Text('Minimum $filterType'),
-                  value: value,
-                  division: 10,
-                  max: 100,
-                  onSubmit: (int value) => min = value,
-                ),
-              );
+            int min;
+            await showDialog(
+              context: context,
+              builder: (context) => RangeDialog(
+                title: Text('Minimum $filterType'),
+                value: value,
+                division: 10,
+                max: 100,
+                onSubmit: (int value) => min = value,
+              ),
+            );
 
-              if (min == null) {
-                return tags;
-              }
-
-              if (min == 0) {
-                tags.remove(filterType);
-              } else {
-                tags[filterType] = '>=$min';
-              }
+            if (min == null) {
               return tags;
-            });
+            }
+
+            if (min == 0) {
+              tags.remove(filterType);
+            } else {
+              tags[filterType] = '>=$min';
+            }
+            return tags;
           });
+        },
+      );
     }
 
     Widget sortByWidget() {
@@ -88,9 +80,7 @@ class PostSearchBar extends StatelessWidget {
       return PopupMenuButton<String>(
         icon: Icon(Icons.sort),
         tooltip: 'Sort by',
-        itemBuilder: menuEntryBuilder(
-          orders.keys.toList(),
-        ),
+        itemBuilder: (context) => fromMap(orders),
         onSelected: (String selection) {
           String orderType = orders[selection];
 
@@ -115,79 +105,77 @@ class PostSearchBar extends StatelessWidget {
       };
 
       return PopupMenuButton<String>(
-          icon: Icon(Icons.playlist_add_check),
-          tooltip: 'Conditions',
-          itemBuilder: menuEntryBuilder(
-            status.keys.toList(),
-          ),
-          onSelected: (selection) async {
-            String key;
-            String value;
+        icon: Icon(Icons.playlist_add_check),
+        tooltip: 'Conditions',
+        itemBuilder: (context) => fromMap(status),
+        onSelected: (selection) async {
+          String key;
+          String value;
 
-            switch (status[selection]) {
-              case 'rating':
-                await showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return RatingDialog(onTap: (rating) {
-                      key = 'rating';
-                      value = rating;
-                    });
-                  },
-                );
-                break;
-              case 'deleted':
-                key = 'status';
-                value = 'deleted';
-                break;
-              case 'favorited':
-                // unimplemented
-                break;
-              case 'type':
-                // unimplemented
-                break;
-              case 'pool':
-                key = 'inpool';
-                value = 'true';
-                break;
-            }
+          switch (status[selection]) {
+            case 'rating':
+              await showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return RatingDialog(onTap: (rating) {
+                    key = 'rating';
+                    value = rating;
+                  });
+                },
+              );
+              break;
+            case 'deleted':
+              key = 'status';
+              value = 'deleted';
+              break;
+            case 'pool':
+              key = 'inpool';
+              value = 'true';
+              break;
+          }
 
-            withTags((tags) async {
-              if (key == null) {
-                return tags;
-              }
-              if (key == 'status' && tags.contains('status')) {
-                tags.remove('status');
-                return tags;
-              }
-              if (key == 'inpool' && tags.contains('inpool')) {
-                tags.remove('inpool');
-                return tags;
-              }
-              tags[key] = value;
+          withTags((tags) async {
+            if (key == null) {
               return tags;
-            });
+            }
+            if (key == 'status' && tags.contains('status')) {
+              tags.remove('status');
+              return tags;
+            }
+            if (key == 'inpool' && tags.contains('inpool')) {
+              tags.remove('inpool');
+              return tags;
+            }
+            tags[key] = value;
+            return tags;
           });
+        },
+      );
     }
 
     return Container(
-      padding: EdgeInsets.only(left: 10.0, right: 10.0, top: 20.0),
-      child: Column(mainAxisSize: MainAxisSize.min, children: [
-        TagInput(
-          controller: controller,
-          labelText: 'Tags',
-          onSubmit: onSubmit,
-        ),
-        Padding(
-          padding: EdgeInsets.symmetric(vertical: 10.0),
-          child:
-              Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
-            statusWidget(),
-            filterByWidget(),
-            sortByWidget(),
-          ]),
-        ),
-      ]),
+      padding: EdgeInsets.only(left: 10, right: 10, top: 20),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TagInput(
+            controller: controller,
+            labelText: 'Tags',
+            onSubmit: onSubmit,
+          ),
+          Padding(
+            padding: EdgeInsets.symmetric(vertical: 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                statusWidget(),
+                filterByWidget(),
+                sortByWidget(),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
