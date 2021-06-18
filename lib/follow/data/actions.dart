@@ -21,7 +21,29 @@ class FollowUpdater extends ChangeNotifier {
   ValueNotifier<int> progress = ValueNotifier(0);
   Duration get stale => Duration(hours: 4);
 
-  Future<void> run({bool force = false}) async {
+  Future<void> updateSource() async {
+    List<String> update = (await source.value).tags;
+    if (tags == null) {
+      tags = update;
+    } else {
+      if (!listEquals(tags, update) && !completer.isCompleted) {
+        tags = update;
+        restart = true;
+      }
+    }
+  }
+
+  Future<void> updateHost() async {
+    restart = true;
+    update();
+  }
+
+  FollowUpdater(this.source) {
+    source.addListener(updateSource);
+    db.host.addListener(updateHost);
+  }
+
+  Future<void> update({bool force = false}) async {
     if (updateLock.isLocked) {
       return;
     }
@@ -36,7 +58,7 @@ class FollowUpdater extends ChangeNotifier {
 
     notifyListeners();
 
-    Future<void> update(List<Follow> follows) async {
+    Future<void> run(List<Follow> follows) async {
       DateTime now = DateTime.now();
       await follows.sortByNew();
       source.value = Future.value(follows);
@@ -54,7 +76,7 @@ class FollowUpdater extends ChangeNotifier {
             await Future.delayed(Duration(milliseconds: 500));
             if (restart) {
               updateLock.release();
-              run(force: force);
+              update(force: force);
               return;
             }
             source.value = Future.value(follows);
@@ -71,36 +93,14 @@ class FollowUpdater extends ChangeNotifier {
       notifyListeners();
     }
 
-    source.value.then((value) => update(List.from(value)));
+    source.value.then((value) => run(List.from(value)));
     return completer.future;
-  }
-
-  Future<void> updateLoop() async {
-    List<String> update = (await source.value).tags;
-    if (tags == null) {
-      tags = update;
-    } else {
-      if (!listEquals(tags, update) && !completer.isCompleted) {
-        tags = update;
-        restart = true;
-      }
-    }
-  }
-
-  Future<void> updateHost() async {
-    restart = true;
-    run();
-  }
-
-  FollowUpdater(this.source) {
-    source.addListener(updateLoop);
-    db.host.addListener(updateHost);
   }
 
   @override
   void dispose() {
     super.dispose();
-    source.removeListener(updateLoop);
+    source.removeListener(updateSource);
     db.host.removeListener(updateHost);
   }
 }

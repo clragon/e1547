@@ -27,7 +27,7 @@ class _FollowsSplitPageState extends State<FollowsSplitPage>
   }
 
   Future<void> refreshFollows({bool force = false}) async {
-    await followUpdater.run(force: force);
+    await followUpdater.update(force: force);
     update();
   }
 

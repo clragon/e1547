@@ -13,7 +13,7 @@ class PostProvider extends DataProvider<Post> {
   ValueNotifier<List<Post>> denied = ValueNotifier([]);
   ValueNotifier<List<Post>> posts = ValueNotifier([]);
   ValueNotifier<bool> denying = ValueNotifier(true);
-  Mutex lock = Mutex();
+  Mutex refreshLock = Mutex();
   bool canSearch;
   bool canDeny;
 
@@ -31,9 +31,9 @@ class PostProvider extends DataProvider<Post> {
         .forEach((element) => element.addListener(refresh));
   }
 
-  Future<void> refresh({List<Post> items}) async {
-    lock.acquire();
-    items ??= this.items;
+  @override
+  Future<void> refresh() async {
+    refreshLock.acquire();
 
     List<String> denylist = [];
     if (denying.value && canDeny) {
@@ -63,7 +63,7 @@ class PostProvider extends DataProvider<Post> {
     posts.value = newPosts;
     denied.value = newDenied;
     notifyListeners();
-    lock.release();
+    refreshLock.release();
   }
 
   Future<void> disposePosts() async {
@@ -86,14 +86,6 @@ class PostProvider extends DataProvider<Post> {
     } else {
       return client.posts(search.value, page);
     }
-  }
-
-  @override
-  Future<List<Post>> transform(
-      List<Post> next, List<List<Post>> current) async {
-    await refresh(
-        items: (current..add(next)).expand((element) => element).toList());
-    return super.transform(next, current);
   }
 
   @override
