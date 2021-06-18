@@ -56,12 +56,10 @@ class _FollowingPageState extends State<FollowingPage> with FollowerMixin {
           }
           db.follows.value = Future.value(follows);
           sheetController?.close();
-        } else {
-          if (value.isNotEmpty) {
-            follows.add(result);
-            db.follows.value = Future.value(follows);
-            sheetController?.close();
-          }
+        } else if (value.isNotEmpty) {
+          follows.add(result);
+          db.follows.value = Future.value(follows);
+          sheetController?.close();
         }
       }
 
