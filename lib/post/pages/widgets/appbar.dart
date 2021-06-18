@@ -17,6 +17,19 @@ class PostAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    Future<void> download() async {
+      String message;
+      if (await post.downloadDialog(context)) {
+        message = 'Saved image #${post.id} to gallery';
+      } else {
+        message = 'Failed to download post ${post.id}';
+      }
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        duration: Duration(seconds: 1),
+        content: Text(message),
+      ));
+    }
+
     return Hero(
       tag: 'appbar',
       child: AppBar(
@@ -33,78 +46,50 @@ class PostAppBar extends StatelessWidget implements PreferredSizeWidget {
         actions: post.isEditing.value
             ? null
             : [
-                Builder(
-                  builder: (context) {
-                    return PopupMenuButton<String>(
-                      icon: ShadowIcon(
-                        Icons.more_vert,
-                      ),
-                      itemBuilder: (BuildContext context) =>
-                          <PopupMenuEntry<String>>[
-                        PopupMenuItem(
-                          value: 'share',
-                          child: PopTile(title: 'Share', icon: Icons.share),
-                        ),
-                        post.file.value.url != null
-                            ? PopupMenuItem(
-                                value: 'download',
-                                child: PopTile(
-                                    title: 'Download',
-                                    icon: Icons.file_download),
-                              )
-                            : null,
-                        PopupMenuItem(
-                          value: 'browse',
-                          child: PopTile(
-                              title: 'Browse', icon: Icons.open_in_browser),
-                        ),
-                        post.isLoggedIn && canEdit
-                            ? PopupMenuItem(
-                                value: 'edit',
-                                child: PopTile(title: 'Edit', icon: Icons.edit),
-                              )
-                            : null,
-                        post.isLoggedIn
-                            ? PopupMenuItem(
-                                value: 'comment',
-                                child: PopTile(
-                                    title: 'Comment', icon: Icons.comment),
-                              )
-                            : null,
-                      ],
-                      onSelected: (value) async {
-                        switch (value) {
-                          case 'share':
-                            Share.share(
-                                post.url(await db.host.value).toString());
-                            break;
-                          case 'download':
-                            String message;
-                            if (await post.downloadDialog(context)) {
-                              message = 'Saved image #${post.id} to gallery';
-                            } else {
-                              message = 'Failed to download post ${post.id}';
-                            }
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                              duration: Duration(seconds: 1),
-                              content: Text(message),
-                            ));
-                            break;
-                          case 'browse':
-                            launch(post.url(await db.host.value).toString());
-                            break;
-                          case 'edit':
-                            post.isEditing.value = true;
-                            break;
-                          case 'comment':
-                            if (await writeComment(context, post)) {
-                              post.comments.value++;
-                            }
-                            break;
-                        }
-                      },
-                    );
-                  },
+                PopupMenuButton(
+                  icon: ShadowIcon(
+                    Icons.more_vert,
+                  ),
+                  onSelected: (value) => value(),
+                  itemBuilder: (context) => [
+                    PopupMenuTile(
+                      value: () async =>
+                          Share.share(post.url(await db.host.value).toString()),
+                      title: 'Share',
+                      icon: Icons.share,
+                    ),
+                    post.file.value.url != null
+                        ? PopupMenuTile(
+                            value: download,
+                            title: 'Download',
+                            icon: Icons.file_download,
+                          )
+                        : null,
+                    PopupMenuTile(
+                      value: () async =>
+                          launch(post.url(await db.host.value).toString()),
+                      title: 'Browse',
+                      icon: Icons.open_in_browser,
+                    ),
+                    post.isLoggedIn && canEdit
+                        ? PopupMenuTile(
+                            value: () => post.isEditing.value = true,
+                            title: 'Edit',
+                            icon: Icons.edit,
+                          )
+                        : null,
+                    post.isLoggedIn
+                        ? PopupMenuTile(
+                            value: () async {
+                              if (await writeComment(context, post)) {
+                                post.comments.value++;
+                              }
+                            },
+                            title: 'Comment',
+                            icon: Icons.comment,
+                          )
+                        : null,
+                  ],
                 ),
               ],
       ),
