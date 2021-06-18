@@ -5,7 +5,7 @@ import 'navigation.dart';
 
 final List<Function(BuildContext context)> actions = [
   initAvatar,
-  (_) => followUpdater.run(),
+  (_) => followUpdater.update(),
 ];
 
 class StartupActions extends StatefulWidget {

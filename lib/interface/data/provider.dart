@@ -5,39 +5,40 @@ import 'package:flutter/material.dart';
 import 'package:mutex/mutex.dart';
 
 abstract class DataProvider<T> extends ChangeNotifier {
-  bool reload = false;
+  ValueNotifier<List<List<T>>> pages = ValueNotifier([]);
+  ValueNotifier<String> search = ValueNotifier('');
+  Mutex updateLock = Mutex();
+  bool isRestarting = false;
   bool isLoading = false;
   bool isError = false;
-  ValueNotifier<String> search = ValueNotifier('');
-  ValueNotifier<List<List<T>>> pages = ValueNotifier([]);
-  Mutex lock = Mutex();
 
-  List<T> get items {
-    return pages.value.expand((element) => element).toList();
-  }
+  List<T> get items => pages.value.expand((element) => element).toList();
 
   @mustCallSuper
   DataProvider({String search}) {
     this.search.value = search ?? '';
     [db.host, db.credentials, this.search]
         .forEach((element) => element.addListener(resetPages));
-    isLoading = true;
-    loadNextPage();
+    onInit();
   }
 
   @mustCallSuper
   Future<void> resetPages() async {
     pages.value = [];
     if (isLoading) {
-      reload = true;
+      isRestarting = true;
     } else {
       loadNextPage(reset: true);
     }
   }
 
+  Future<void> onInit() async => loadNextPage();
+
   Future<List<T>> provide(int page);
 
   Future<List<T>> transform(List<T> next, List<List<T>> current) async => next;
+
+  Future<void> refresh() async {}
 
   Future<List<T>> catchError(Future<List<T>> Function() callback) async {
     isError = false;
@@ -58,13 +59,17 @@ abstract class DataProvider<T> extends ChangeNotifier {
       List<List<T>> current = reset ? [] : pages.value = List.from(pages.value);
       next = await transform(next, List.from(current));
       pages.value = current..add(next);
+      await refresh();
     }
   }
 
   @nonVirtual
   Future<void> loadNextPage({bool reset = false}) async {
-    await lock.acquire();
+    if (updateLock.isLocked) {
+      return;
+    }
     isLoading = true;
+    await updateLock.acquire();
     notifyListeners();
     int page = reset ? 1 : pages.value.length + 1;
 
@@ -72,11 +77,11 @@ abstract class DataProvider<T> extends ChangeNotifier {
 
     isLoading = false;
     notifyListeners();
-    if (reload) {
-      reload = false;
+    if (isRestarting) {
+      isRestarting = false;
       resetPages();
     }
-    lock.release();
+    updateLock.release();
   }
 
   @override

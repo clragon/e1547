@@ -15,22 +15,21 @@ class RefreshableProviderPage extends StatefulWidget {
   final Widget floatingActionButton;
   final PreferredSizeWidget appBar;
   final ScrollController scrollController;
-  final Scaffold Function(
-          BuildContext context, Widget child, ScrollController scrollController)
-      builder;
+  final RefreshController refreshController;
 
   const RefreshableProviderPage({
     @required this.child,
     @required this.appBar,
     @required this.provider,
     this.scrollController,
+    this.refreshController,
     this.refreshedText,
     this.onLoading,
     this.onEmpty,
     this.onError,
     this.drawer,
     this.floatingActionButton,
-  }) : this.builder = null;
+  });
 
   @override
   _RefreshableProviderPageState createState() =>
@@ -69,6 +68,7 @@ class _RefreshableProviderPageState extends State<RefreshableProviderPage> {
       isLoading: widget.provider.isLoading,
       isEmpty: widget.provider.items.isEmpty,
       isError: widget.provider.isError,
+      refreshController: widget.refreshController,
       scrollController: widget.scrollController,
       refreshedText: widget.refreshedText,
       onLoading: widget.onLoading,
@@ -94,6 +94,7 @@ class RefreshablePage extends StatefulWidget {
   final Widget drawer;
   final Widget floatingActionButton;
   final PreferredSizeWidget appBar;
+  final RefreshController refreshController;
   final ScrollController scrollController;
   final Future<bool> Function() refresh;
   final Scaffold Function(
@@ -107,6 +108,7 @@ class RefreshablePage extends StatefulWidget {
     @required this.isLoading,
     @required this.isEmpty,
     @required this.isError,
+    this.refreshController,
     this.scrollController,
     this.refreshedText,
     this.initial,
@@ -124,6 +126,7 @@ class RefreshablePage extends StatefulWidget {
     @required this.isEmpty,
     @required this.isError,
     this.child,
+    this.refreshController,
     this.scrollController,
     this.refreshedText,
     this.initial,
@@ -139,13 +142,14 @@ class RefreshablePage extends StatefulWidget {
 }
 
 class _RefreshablePageState extends State<RefreshablePage> {
-  RefreshController refreshController = RefreshController();
-  ScrollController scrollController = ScrollController();
+  RefreshController refreshController;
+  ScrollController scrollController;
 
   @override
   void initState() {
     super.initState();
     scrollController = widget.scrollController ?? ScrollController();
+    refreshController = widget.refreshController ?? RefreshController();
     if (widget.initial ?? false) {
       widget.refresh();
     }
