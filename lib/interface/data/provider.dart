@@ -19,6 +19,7 @@ abstract class DataProvider<T> extends ChangeNotifier {
     this.search.value = search ?? '';
     [db.host, db.credentials, this.search]
         .forEach((element) => element.addListener(resetPages));
+    isLoading = true;
     onInit();
   }
 
@@ -68,8 +69,8 @@ abstract class DataProvider<T> extends ChangeNotifier {
     if (updateLock.isLocked) {
       return;
     }
-    isLoading = true;
     await updateLock.acquire();
+    isLoading = true;
     notifyListeners();
     int page = reset ? 1 : pages.value.length + 1;
 
@@ -77,11 +78,11 @@ abstract class DataProvider<T> extends ChangeNotifier {
 
     isLoading = false;
     notifyListeners();
+    updateLock.release();
     if (isRestarting) {
       isRestarting = false;
       resetPages();
     }
-    updateLock.release();
   }
 
   @override
