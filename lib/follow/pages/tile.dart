@@ -14,6 +14,8 @@ IconData getFollowIcon(FollowType type) {
       return Icons.notifications_active;
     case FollowType.bookmark:
       return Icons.update_disabled;
+    default:
+      return Icons.warning;
   }
 }
 
@@ -43,6 +45,21 @@ class _FollowTileState extends State<FollowTile> {
   void initState() {
     super.initState();
     update();
+  }
+
+  String getStatusText(FollowStatus status) {
+    if (status == null) {
+      return '';
+    }
+    String text = status.unseen.toString();
+    if (status.unseen == widget.follow.checkAmount) {
+      text += '+';
+    }
+    text += ' new post';
+    if (status.unseen > 1) {
+      text += 's';
+    }
+    return text;
   }
 
   Widget image() {
@@ -81,27 +98,10 @@ class _FollowTileState extends State<FollowTile> {
             if (status.unseen != null && status.unseen > 0)
               Expanded(
                 child: Text(
-                  () {
-                    String text = status.unseen.toString();
-                    if (status.unseen == widget.follow.checkAmount) {
-                      text += '+';
-                    }
-                    text += ' new post';
-                    if (status.unseen > 1) {
-                      text += 's';
-                    }
-                    return text;
-                  }(),
+                  getStatusText(status),
                   style: TextStyle(shadows: getTextShadows()),
                   overflow: TextOverflow.ellipsis,
                 ),
-              ),
-            Spacer(),
-            if (widget.follow.tags.split(' ').length > 2)
-              Text(
-                '${widget.follow.tags.split(' ').length} tags',
-                style: TextStyle(shadows: getTextShadows()),
-                overflow: TextOverflow.ellipsis,
               ),
           ],
         ),
@@ -176,7 +176,7 @@ class _FollowTileState extends State<FollowTile> {
               ),
               onLongPress: () => wikiSheet(
                 context: context,
-                tag: tagToName(widget.follow.tags),
+                tag: widget.follow.tags,
               ),
             ),
           ),
@@ -319,8 +319,8 @@ class _FollowListTileState extends State<FollowListTile> {
                   onTap: () => Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) =>
                           SearchPage(tags: widget.follow.tags))),
-                  onLongPress: () => wikiSheet(
-                      context: context, tag: tagToName(widget.follow.tags)),
+                  onLongPress: () =>
+                      wikiSheet(context: context, tag: widget.follow.tags),
                   child: ListTile(
                     title: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,

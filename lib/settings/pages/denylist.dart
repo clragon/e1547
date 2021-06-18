@@ -39,51 +39,109 @@ class _DenyListPageState extends State<DenyListPage> {
     db.denylist.removeListener(updateDenylist);
   }
 
-  @override
-  Widget build(BuildContext context) {
-    void addTags(BuildContext context, [int edit]) {
-      void submit(String value, [int edit]) {
-        value = value.trim();
+  void addTags(BuildContext context, [int edit]) {
+    void submit(String value, [int edit]) {
+      value = value.trim();
 
-        if (edit != null) {
-          if (value.isNotEmpty) {
-            denylist[edit] = value;
-          } else {
-            denylist.removeAt(edit);
-          }
+      if (edit != null) {
+        if (value.isNotEmpty) {
+          denylist[edit] = value;
+        } else {
+          denylist.removeAt(edit);
+        }
+        db.denylist.value = Future.value(denylist);
+        sheetController?.close();
+      } else {
+        if (value.isNotEmpty) {
+          denylist.add(value);
           db.denylist.value = Future.value(denylist);
           sheetController?.close();
-        } else {
-          if (value.isNotEmpty) {
-            denylist.add(value);
-            db.denylist.value = Future.value(denylist);
-            sheetController?.close();
-          }
         }
       }
-
-      TextEditingController controller =
-          TextEditingController(text: edit != null ? denylist[edit] : null);
-
-      sheetController = Scaffold.of(context).showBottomSheet((context) {
-        return ListTagEditor(
-          controller: controller,
-          onSubmit: (value) => submit(value, edit),
-          prompt: 'Add to blacklist',
-        );
-      });
-
-      setState(() {
-        fabAction = () => submit(controller.text, edit);
-      });
-
-      sheetController.closed.then((_) {
-        setState(() {
-          fabAction = null;
-        });
-      });
     }
 
+    TextEditingController controller =
+        TextEditingController(text: edit != null ? denylist[edit] : null);
+
+    sheetController = Scaffold.of(context).showBottomSheet((context) {
+      return ListTagEditor(
+        controller: controller,
+        onSubmit: (value) => submit(value, edit),
+        prompt: 'Add to blacklist',
+      );
+    });
+
+    setState(() {
+      fabAction = () => submit(controller.text, edit);
+    });
+
+    sheetController.closed.then((_) {
+      setState(() {
+        fabAction = null;
+      });
+    });
+  }
+
+  Widget denyListTile(
+      {@required String tag, Function() onEdit, Function() onDelete}) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Wrap(
+                  direction: Axis.horizontal,
+                  children: Tagset.parse(tag)
+                      .map((tag) => DenyListTagCard(tag.toString()))
+                      .toList(),
+                ),
+              ),
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  PopupMenuButton<String>(
+                    icon: Icon(
+                      Icons.more_vert,
+                      color: Theme.of(context).iconTheme.color,
+                    ),
+                    itemBuilder: (BuildContext context) =>
+                        <PopupMenuEntry<String>>[
+                      PopupMenuItem(
+                        value: 'edit',
+                        child: PopTile(title: 'Edit', icon: Icons.edit),
+                      ),
+                      PopupMenuItem(
+                        value: 'delete',
+                        child: PopTile(title: 'Delete', icon: Icons.delete),
+                      ),
+                    ],
+                    onSelected: (value) async {
+                      switch (value) {
+                        case 'edit':
+                          onEdit();
+                          break;
+                        case 'delete':
+                          onDelete();
+                          break;
+                      }
+                    },
+                  ),
+                ],
+              ),
+            ],
+          ),
+          Divider()
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
     Widget body() {
       if (denylist.isEmpty) {
         return Center(
@@ -106,74 +164,13 @@ class _DenyListPageState extends State<DenyListPage> {
       return ListView.builder(
         padding: EdgeInsets.only(bottom: 30),
         itemCount: denylist.length,
-        itemBuilder: (BuildContext context, int index) {
-          return Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: Wrap(
-                        direction: Axis.horizontal,
-                        children: Tagset.parse(denylist.elementAt(index))
-                            .map((tag) => DenyListTagCard(tag.toString()))
-                            .toList(),
-                      ),
-                    ),
-                    Column(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        PopupMenuButton<String>(
-                          icon: Icon(
-                            Icons.more_vert,
-                            color: Theme.of(context).iconTheme.color,
-                          ),
-                          itemBuilder: (BuildContext context) =>
-                              <PopupMenuEntry<String>>[
-                            PopupMenuItem(
-                              value: 'wiki',
-                              child: PopTile(
-                                  title: 'Wiki', icon: Icons.info_outline),
-                            ),
-                            PopupMenuItem(
-                              value: 'edit',
-                              child: PopTile(title: 'Edit', icon: Icons.edit),
-                            ),
-                            PopupMenuItem(
-                              value: 'delete',
-                              child:
-                                  PopTile(title: 'Delete', icon: Icons.delete),
-                            ),
-                          ],
-                          onSelected: (value) async {
-                            switch (value) {
-                              case 'wiki':
-                                wikiSheet(
-                                    context: context,
-                                    tag: tagToName(denylist[index]));
-                                break;
-                              case 'edit':
-                                addTags(context, index);
-                                break;
-                              case 'delete':
-                                denylist.removeAt(index);
-                                db.denylist.value = Future.value(denylist);
-                                break;
-                            }
-                          },
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                Divider()
-              ],
-            ),
-          );
-        },
+        itemBuilder: (BuildContext context, int index) => denyListTile(
+            tag: denylist.elementAt(index),
+            onEdit: () => addTags(context, index),
+            onDelete: () {
+              denylist.removeAt(index);
+              db.denylist.value = Future.value(denylist);
+            }),
         physics: BouncingScrollPhysics(),
       );
     }
