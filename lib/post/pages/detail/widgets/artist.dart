@@ -17,39 +17,30 @@ class ArtistDisplay extends StatelessWidget {
         valueListenable: post.tags,
         builder: (BuildContext context, value, Widget child) {
           if (value['artist'].isNotEmpty) {
-            return Text.rich(
-              TextSpan(
-                children: post.artists
-                    .map<List<InlineSpan>>(
-                      (artist) => [
-                        if (artist != post.artists.first &&
-                            post.artists.length > 1)
-                          TextSpan(text: ', '),
-                        WidgetSpan(
-                          child: TagGesture(
-                            tag: artist,
-                            provider: provider,
-                            child: Text(
-                              artist,
-                              style: TextStyle(
-                                fontSize: 14.0,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    )
-                    .reduce(
-                      (value, element) => [...value, ...element],
-                    ),
-              ),
-              overflow: TextOverflow.fade,
-            );
+            List<InlineSpan> spans = [];
+            for (String artist in post.artists) {
+              if (artist != post.artists.first && post.artists.length > 1) {
+                spans.add(TextSpan(text: ', '));
+              }
+              spans.add(
+                WidgetSpan(
+                  child: TagGesture(
+                    tag: artist,
+                    provider: provider,
+                    child: Text(artist, style: TextStyle(fontSize: 14.0)),
+                  ),
+                ),
+              );
+            }
+            return Text.rich(TextSpan(children: spans),
+                overflow: TextOverflow.fade);
           } else {
-            return Text('no artist',
-                style: TextStyle(
-                    color: Theme.of(context).textTheme.subtitle2.color,
-                    fontStyle: FontStyle.italic));
+            return Text(
+              'no artist',
+              style: TextStyle(
+                  color: Theme.of(context).textTheme.subtitle2.color,
+                  fontStyle: FontStyle.italic),
+            );
           }
         },
       );
