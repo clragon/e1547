@@ -19,7 +19,6 @@ class SearchDrawer extends StatelessWidget {
           padding: EdgeInsets.only(top: 8),
           physics: BouncingScrollPhysics(),
           children: [
-            DrawerCounter(provider: provider),
             Builder(
               builder: (context) => DrawerDenySwitch(provider: provider),
             ),
