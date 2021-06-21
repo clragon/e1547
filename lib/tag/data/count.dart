@@ -1,8 +1,9 @@
 import 'package:e1547/post.dart';
 import 'package:e1547/tag.dart';
+import 'package:meta/meta.dart';
 
 Map<String, int> countTags(List<String> tags, [Map<String, int> counts]) {
-  counts ??= {};
+  counts = Map.from(counts) ?? {};
 
   for (String tag in tags) {
     counts[tag] = (counts[tag] ?? 0) + 1;
@@ -11,14 +12,38 @@ Map<String, int> countTags(List<String> tags, [Map<String, int> counts]) {
   return counts;
 }
 
-Map<String, int> countTagsFromPosts(List<Post> posts) {
-  Map<String, int> counts = {};
+List<CountedTag> countTagsByPosts(List<Post> posts) {
+  Map<String, Map<String, int>> categoryCounts = {};
+  for (String category in categories.keys) {
+    categoryCounts[category] = {};
+  }
+  List<CountedTag> counted = [];
 
   for (Post post in posts) {
-    List<List<String>> tags = categories.keys.map((e) => post.tags.value[e]);
-    for (List<String> category in tags) {
-      countTags(category, counts);
+    for (String category in categories.keys) {
+      List<String> tags = post.tags.value[category];
+      categoryCounts[category] = countTags(tags, categoryCounts[category]);
     }
   }
-  return counts;
+
+  for (MapEntry<String, Map<String, int>> category in categoryCounts.entries) {
+    for (MapEntry<String, int> tags in category.value.entries) {
+      counted.add(
+          CountedTag(category: category.key, tag: tags.key, count: tags.value));
+    }
+  }
+
+  return counted;
+}
+
+class CountedTag {
+  final String category;
+  final String tag;
+  final int count;
+
+  CountedTag({
+    @required this.category,
+    @required this.tag,
+    @required this.count,
+  });
 }

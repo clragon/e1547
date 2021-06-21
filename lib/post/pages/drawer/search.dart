@@ -16,11 +16,13 @@ class SearchDrawer extends StatelessWidget {
           leading: BackButton(),
         ),
         body: ListView(
+          padding: EdgeInsets.only(top: 8),
           physics: BouncingScrollPhysics(),
           children: [
+            DrawerCounter(provider: provider),
             Builder(
-              builder: (context) => DenyDrawerSwitch(provider: provider),
-            )
+              builder: (context) => DrawerDenySwitch(provider: provider),
+            ),
           ],
         ),
       ),

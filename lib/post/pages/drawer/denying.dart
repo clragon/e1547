@@ -4,10 +4,10 @@ import 'package:e1547/settings.dart';
 import 'package:e1547/tag.dart';
 import 'package:flutter/material.dart';
 
-class DenyDrawerSwitch extends StatelessWidget {
+class DrawerDenySwitch extends StatelessWidget {
   final PostProvider provider;
 
-  const DenyDrawerSwitch({@required this.provider});
+  const DrawerDenySwitch({@required this.provider});
 
   @override
   Widget build(BuildContext context) {
@@ -28,27 +28,24 @@ class DenyDrawerSwitch extends StatelessWidget {
 
         return Column(
           children: [
-            Padding(
-              padding: EdgeInsets.only(top: 8),
-              child: SwitchListTile(
-                  title: Text(
-                    'Blacklist',
-                    style: Theme.of(context).textTheme.subtitle1,
-                  ),
-                  subtitle: provider.denying.value
-                      ? TweenAnimationBuilder(
-                          tween: IntTween(
-                              begin: 0, end: provider.denied.value.length),
-                          duration: Duration(milliseconds: 200),
-                          builder: (context, value, child) {
-                            return Text('blocked $value posts');
-                          },
-                        )
-                      : null,
-                  secondary: Icon(Icons.block),
-                  value: provider.denying.value,
-                  onChanged: (value) => provider.denying.value = value),
-            ),
+            SwitchListTile(
+                title: Text(
+                  'Blacklist',
+                  style: Theme.of(context).textTheme.subtitle1,
+                ),
+                subtitle: provider.denying.value
+                    ? TweenAnimationBuilder(
+                        tween: IntTween(
+                            begin: 0, end: provider.denied.value.length),
+                        duration: Duration(milliseconds: 200),
+                        builder: (context, value, child) {
+                          return Text('blocked $value posts');
+                        },
+                      )
+                    : null,
+                secondary: Icon(Icons.block),
+                value: provider.denying.value,
+                onChanged: (value) => provider.denying.value = value),
             CrossFade(
               showChild: provider.denied.value.isNotEmpty ||
                   provider.allowlist.value.isNotEmpty,
@@ -56,7 +53,7 @@ class DenyDrawerSwitch extends StatelessWidget {
                 children: [
                   Divider(),
                   ...entries.map(
-                    (e) => DenyDrawerTile(
+                    (e) => DrawerDenyTile(
                       entry: e,
                       provider: provider,
                     ),
@@ -107,11 +104,11 @@ class DenyDrawerSwitch extends StatelessWidget {
   }
 }
 
-class DenyDrawerTile extends StatelessWidget {
+class DrawerDenyTile extends StatelessWidget {
   final PostProvider provider;
   final MapEntry<String, List<Post>> entry;
 
-  const DenyDrawerTile({@required this.entry, @required this.provider});
+  const DrawerDenyTile({@required this.entry, @required this.provider});
 
   @override
   Widget build(BuildContext context) {

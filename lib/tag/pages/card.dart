@@ -65,6 +65,70 @@ class TagCard extends StatelessWidget {
   }
 }
 
+class TagCounterCard extends StatelessWidget {
+  final String tag;
+  final int count;
+  final String category;
+  final PostProvider provider;
+
+  TagCounterCard({
+    @required this.tag,
+    @required this.category,
+    @required this.provider,
+    @required this.count,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: TagGesture(
+        tag: tag,
+        provider: provider,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Container(
+              height: 26,
+              width: 5,
+              decoration: BoxDecoration(
+                color: getCategoryColor(category),
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(4),
+                    bottomLeft: Radius.circular(4)),
+              ),
+            ),
+            Flexible(
+              child: Padding(
+                padding: EdgeInsets.only(top: 4, bottom: 4, right: 6, left: 6),
+                child: Text(
+                  tagToCard(tag),
+                  softWrap: false,
+                  maxLines: 1,
+                  overflow: TextOverflow.fade,
+                ),
+              ),
+            ),
+            Container(
+              width: 2,
+              height: 18,
+              color: Theme.of(context).dividerColor,
+            ),
+            Flexible(
+              child: Padding(
+                padding: EdgeInsets.all(4),
+                child: Text(
+                  count.toString(),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class DenyListTagCard extends StatelessWidget {
   final String tag;
 
