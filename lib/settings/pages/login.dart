@@ -1,44 +1,44 @@
 import 'dart:async' show Future, Timer;
 
 import 'package:e1547/client.dart';
-import 'package:e1547/interface.dart';
 import 'package:e1547/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show Clipboard;
 import 'package:url_launcher/url_launcher.dart';
 
 class LoginPage extends StatelessWidget {
+  Widget stepWidget(int stepNumber, Widget content) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 10.0),
+      child: Row(children: [
+        Container(
+          width: 36.0,
+          height: 36.0,
+          alignment: Alignment.center,
+          child: Text(
+            stepNumber.toString(),
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 26.0),
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.only(left: 16),
+          child: content,
+        ),
+      ]),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    Widget stepWidget(int stepNumber, Widget content) {
-      return Padding(
-        padding: EdgeInsets.symmetric(vertical: 10.0),
-        child: Row(children: [
-          Container(
-            width: 36.0,
-            height: 36.0,
-            alignment: Alignment.center,
-            child: Text(
-              stepNumber.toString(),
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 26.0),
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.only(left: 16),
-            child: content,
-          ),
-        ]),
-      );
-    }
-
     return Scaffold(
       appBar: AppBar(title: Text('Login')),
       body: SingleChildScrollView(
-          padding: EdgeInsets.all(16.0),
-          child: Form(
-              child: Column(children: [
-            stepWidget(
+        padding: EdgeInsets.all(16.0),
+        child: Form(
+          child: Column(
+            children: [
+              stepWidget(
                 1,
                 TextButton(
                   onPressed: () async {
@@ -50,152 +50,149 @@ class LoginPage extends StatelessWidget {
                         decoration: TextDecoration.underline,
                         color: Colors.blue[400]),
                   ),
-                )),
-            stepWidget(
-                2,
-                Padding(
-                    padding: EdgeInsets.all(16),
-                    child: Text('Enable API Access'))),
-            stepWidget(
-                3,
-                Padding(
-                    padding: EdgeInsets.all(16),
-                    child: Text('Copy and paste your API key'))),
-            _LoginFormFields(),
-          ]))),
+                ),
+              ),
+              stepWidget(
+                  2,
+                  Padding(
+                      padding: EdgeInsets.all(16),
+                      child: Text('Enable API Access'))),
+              stepWidget(
+                  3,
+                  Padding(
+                      padding: EdgeInsets.all(16),
+                      child: Text('Copy and paste your API key'))),
+              LoginFormFields(),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
 
-class _LoginFormFields extends StatefulWidget {
+class LoginFormFields extends StatefulWidget {
   @override
   _LoginFormFieldsState createState() => _LoginFormFieldsState();
 }
 
-class _LoginFormFieldsState extends State<_LoginFormFields> {
-  final TextEditingController _apiKeyFieldController = TextEditingController();
+class _LoginFormFieldsState extends State<LoginFormFields> {
+  final TextEditingController apiKeyFieldController = TextEditingController();
 
-  bool _didJustPaste = false;
-  String _beforePasteText;
+  String username;
+  String apiKey;
 
-  bool _authDidJustFail = false;
+  bool authFailed = false;
 
-  Timer _pasteUndoTimer;
-
-  String _username;
-  String _apiKey;
+  bool justPasted = false;
+  String previousPaste;
+  Timer pasteUndoTimer;
 
   @override
   void dispose() {
     super.dispose();
-    if (_pasteUndoTimer != null) {
-      _pasteUndoTimer.cancel();
-    }
+    pasteUndoTimer?.cancel();
   }
 
-  void _saveUsername(String username) {
-    _authDidJustFail = false;
-    _username = username.trim();
-  }
-
-  void _saveApiKey(String apiKey) {
-    _authDidJustFail = false;
-    _apiKey = apiKey.trim();
-  }
-
-  String _validateUsername(String username) {
-    if (_authDidJustFail) {
-      return 'Failed to login. Please check username.';
+  Future<void> saveAndTest() async {
+    FormState form = Form.of(context)..save();
+    if (form.validate()) {
+      showDialog(
+        context: context,
+        builder: (context) => LoginProgressDialog(
+          username: username,
+          apiKey: apiKey,
+          onResult: (value) {
+            if (value) {
+              Navigator.of(context).maybePop();
+            } else {
+              authFailed = true;
+              form.validate();
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  duration: Duration(seconds: 10),
+                  content: Text('Failed to login. '
+                      'Check your network connection and login details')));
+            }
+          },
+        ),
+      );
     }
-
-    if (username.trim().isEmpty) {
-      return 'You must provide a username.';
-    }
-
-    return null;
-  }
-
-  String _validateApiKey(String apiKey) {
-    if (_authDidJustFail) {
-      return 'Failed to login. Please check API key.\n'
-          'e.g. 1ca1d165e973d7f8d35b7deb7a2ae54c';
-    }
-
-    apiKey = apiKey.trim();
-    if (apiKey.isEmpty) {
-      return 'You must provide an API key.\n'
-          'e.g. 1ca1d165e973d7f8d35b7deb7a2ae54c';
-    }
-
-    if (!RegExp(r'^[A-z0-9]{24,32}$').hasMatch(apiKey)) {
-      return 'API key is a 24 or 32-character sequence of {A..z} and {0..9}\n'
-          'e.g. 1ca1d165e973d7f8d35b7deb7a2ae54c';
-    }
-
-    return null;
-  }
-
-  Function() _saveAndTest(BuildContext context) {
-    return () async {
-      FormState form = Form.of(context)..save();
-      if (form.validate()) {
-        bool ok = await showDialog(
-          context: context,
-          builder: (context) => _LoginProgressDialog(_username, _apiKey),
-        );
-
-        if (ok) {
-          Navigator.of(context).pop();
-        } else {
-          _authDidJustFail = true;
-          form.validate();
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              duration: Duration(seconds: 10),
-              content: Text('Failed to login. '
-                  'Check your network connection and login details')));
-        }
-      }
-    };
   }
 
   @override
   Widget build(BuildContext context) {
-    Widget usernameWidget() {
+    Widget usernameField() {
       return TextFormField(
         autocorrect: false,
         decoration: InputDecoration(
           labelText: 'Username',
         ),
         autofillHints: [AutofillHints.username],
-        onSaved: _saveUsername,
-        validator: _validateUsername,
+        onSaved: (value) {
+          authFailed = false;
+          username = value.trim();
+        },
+        validator: (value) {
+          if (authFailed) {
+            return 'Failed to login. Please check username.';
+          }
+
+          if (username.trim().isEmpty) {
+            return 'You must provide a username.';
+          }
+
+          return null;
+        },
       );
     }
 
-    Widget apiKeyWidget() {
-      Widget textEntryWidget() {
+    Widget apiKeyField() {
+      String apiKeyExample = '1ca1d165e973d7f8d35b7deb7a2ae54c';
+
+      Widget inputField() {
         return TextFormField(
           autocorrect: false,
-          controller: _apiKeyFieldController,
+          controller: apiKeyFieldController,
           decoration: InputDecoration(
             labelText: 'API Key',
-            helperText: 'e.g. 1ca1d165e973d7f8d35b7deb7a2ae54c',
+            helperText: 'e.g. $apiKeyExample',
           ),
           autofillHints: [AutofillHints.password],
-          onSaved: _saveApiKey,
-          validator: _validateApiKey,
+          onSaved: (value) {
+            authFailed = false;
+            apiKey = value.trim();
+          },
+          validator: (value) {
+            if (authFailed) {
+              return 'Failed to login. Please check API key.\n'
+                  'e.g. $apiKeyExample';
+            }
+
+            apiKey = value.trim();
+            if (apiKey.isEmpty) {
+              return 'You must provide an API key.\n'
+                  'e.g. $apiKeyExample';
+            }
+
+            if (!RegExp(r'^[A-z0-9]{24,32}$').hasMatch(apiKey)) {
+              return 'API key is a 24 or 32-character sequence of {A..z} and {0..9}\n'
+                  'e.g. $apiKeyExample';
+            }
+
+            return null;
+          },
         );
       }
 
-      Widget specialActionWidget() {
-        if (_didJustPaste) {
+      Widget pasteButton() {
+        if (justPasted) {
           return IconButton(
             icon: Icon(Icons.undo),
             tooltip: 'Undo previous paste',
             onPressed: () {
               setState(() {
-                _didJustPaste = false;
-                _apiKeyFieldController.text = _beforePasteText;
+                justPasted = false;
+                apiKeyFieldController.text = previousPaste;
               });
             },
           );
@@ -212,14 +209,14 @@ class _LoginFormFieldsState extends State<_LoginFormFields> {
               }
 
               setState(() {
-                _didJustPaste = true;
-                _beforePasteText = _apiKeyFieldController.text;
-                _apiKeyFieldController.text = data.text;
+                justPasted = true;
+                previousPaste = apiKeyFieldController.text;
+                apiKeyFieldController.text = data.text;
               });
 
-              _pasteUndoTimer = Timer(Duration(seconds: 10), () {
+              pasteUndoTimer = Timer(Duration(seconds: 10), () {
                 setState(() {
-                  _didJustPaste = false;
+                  justPasted = false;
                 });
               });
             },
@@ -228,25 +225,28 @@ class _LoginFormFieldsState extends State<_LoginFormFields> {
       }
 
       return Row(children: [
-        Expanded(child: textEntryWidget()),
-        specialActionWidget(),
+        Expanded(child: inputField()),
+        pasteButton(),
       ]);
     }
 
-    Widget saveAndTestWidget() {
+    Widget loginButton() {
       return Padding(
         padding: EdgeInsets.only(top: 26.0),
         child: ElevatedButton(
           style: ButtonStyle(
-            backgroundColor: MaterialStateProperty.all(
-              Theme.of(context).accentColor,
-            ),
+            backgroundColor: MaterialStateProperty.resolveWith((states) {
+              if (!states.contains(MaterialState.disabled)) {
+                return Theme.of(context).accentColor;
+              }
+              return null;
+            }),
           ),
           child: Text(
             'LOGIN',
             style: Theme.of(context).accentTextTheme.button,
           ),
-          onPressed: _saveAndTest(context),
+          onPressed: saveAndTest,
         ),
       );
     }
@@ -256,53 +256,60 @@ class _LoginFormFieldsState extends State<_LoginFormFields> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          usernameWidget(),
-          apiKeyWidget(),
-          saveAndTestWidget(),
+          usernameField(),
+          apiKeyField(),
+          loginButton(),
         ],
       ),
     );
   }
 }
 
-class _LoginProgressDialog extends StatefulWidget {
+class LoginProgressDialog extends StatefulWidget {
   final String username;
   final String apiKey;
+  final Function(bool value) onResult;
 
-  _LoginProgressDialog(this.username, this.apiKey);
+  LoginProgressDialog({
+    @required this.username,
+    @required this.apiKey,
+    @required this.onResult,
+  });
 
   @override
   _LoginProgressDialogState createState() => _LoginProgressDialogState();
 }
 
-class _LoginProgressDialogState extends State<_LoginProgressDialog> {
-  Future<bool> _isLoginOk;
-
+class _LoginProgressDialogState extends State<LoginProgressDialog> {
   @override
   void initState() {
     super.initState();
-    _isLoginOk = client.saveLogin(
-      widget.username,
-      widget.apiKey,
-    );
+    client.saveLogin(widget.username, widget.apiKey).then((value) async {
+      await Navigator.of(context).maybePop();
+      widget.onResult(value);
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    _isLoginOk.then((ok) {
-      Navigator.of(context).pop(ok);
-    });
-
     return Dialog(
-        child: Container(
-      padding: EdgeInsets.all(20.0),
-      child: Row(children: [
-        SizedCircularProgressIndicator(size: 28),
-        Padding(
-          padding: EdgeInsets.only(left: 16),
-          child: Text('Logging in as ${widget.username}'),
-        )
-      ]),
-    ));
+      child: Container(
+        padding: EdgeInsets.all(20.0),
+        child: Row(children: [
+          Padding(
+            padding: EdgeInsets.all(4),
+            child: Container(
+              height: 28,
+              width: 28,
+              child: CircularProgressIndicator(),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.only(left: 16),
+            child: Text('Logging in as ${widget.username}'),
+          )
+        ]),
+      ),
+    );
   }
 }
