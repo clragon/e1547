@@ -3,7 +3,7 @@ import 'package:e1547/tag.dart';
 import 'package:meta/meta.dart';
 
 Map<String, int> countTags(List<String> tags, [Map<String, int> counts]) {
-  counts = Map.from(counts) ?? {};
+  counts ??= {};
 
   for (String tag in tags) {
     counts[tag] = (counts[tag] ?? 0) + 1;

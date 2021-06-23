@@ -82,6 +82,7 @@ class TagCounterCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: TagGesture(
+        wiki: true,
         tag: tag,
         provider: provider,
         child: Row(
