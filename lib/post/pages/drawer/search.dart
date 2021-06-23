@@ -2,6 +2,8 @@ import 'package:e1547/post.dart';
 import 'package:e1547/post/pages/drawer.dart';
 import 'package:flutter/material.dart';
 
+import 'counter.dart';
+
 class SearchDrawer extends StatelessWidget {
   final PostProvider provider;
 
@@ -19,6 +21,7 @@ class SearchDrawer extends StatelessWidget {
           padding: EdgeInsets.only(top: 8),
           physics: BouncingScrollPhysics(),
           children: [
+            DrawerCounter(provider: provider),
             Builder(
               builder: (context) => DrawerDenySwitch(provider: provider),
             ),
