@@ -107,7 +107,7 @@ Future<bool> onPostTagsEdit(
   if (category != 'general') {
     () async {
       for (String tag in tags) {
-        List validator = await client.autocomplete(tag);
+        List validator = await client.tag(tag, category: categories[category]);
         String target;
         if (validator.isEmpty) {
           target = 'general';

@@ -154,11 +154,10 @@ class _SettingsPageState extends State<SettingsPage> {
                                 (theme) => ListTile(
                                   title: Text(describeEnum(theme)),
                                   trailing: Container(
-                                    height: 36,
-                                    width: 36,
+                                    height: 28,
+                                    width: 28,
                                     decoration: BoxDecoration(
-                                      borderRadius:
-                                          BorderRadius.all(Radius.circular(5)),
+                                      shape: BoxShape.circle,
                                       color: appThemeMap[theme].cardColor,
                                       border: Border.all(
                                         color:
@@ -168,7 +167,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                   ),
                                   onTap: () {
                                     db.theme.value = Future.value(theme);
-                                    Navigator.of(context).pop();
+                                    Navigator.of(context).maybePop();
                                   },
                                 ),
                               )

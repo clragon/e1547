@@ -1,4 +1,3 @@
-import 'package:e1547/interface.dart';
 import 'package:flutter/material.dart';
 
 class SpoilerWrap extends StatefulWidget {
@@ -11,57 +10,53 @@ class SpoilerWrap extends StatefulWidget {
 }
 
 class _SpoilerWrapState extends State<SpoilerWrap> {
-  ValueNotifier<bool> isShown = ValueNotifier(false);
+  bool visible = false;
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Card(
-          child: Padding(
-            padding: EdgeInsets.all(8),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [widget.child],
+    return Card(
+      child: Stack(
+        children: [
+          InkWell(
+            child: Padding(
+              padding: EdgeInsets.all(8),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [widget.child],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            onTap: () => setState(() => visible = !visible),
+          ),
+          Positioned.fill(
+            child: IgnorePointer(
+              child: AnimatedOpacity(
+                opacity: visible ? 0 : 1,
+                duration: Duration(milliseconds: 200),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.black,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Center(
+                    child: Text(
+                      'SPOILER',
+                      style: TextStyle(
+                        color: Colors.white,
+                      ),
+                    ),
                   ),
                 ),
-              ],
+              ),
             ),
-          ),
-        ),
-        Positioned.fill(
-          child: ValueListenableBuilder(
-            valueListenable: isShown,
-            builder: (context, value, child) => TweenAnimationBuilder(
-                tween:
-                    ColorTween(end: value ? Colors.transparent : Colors.black),
-                duration: defaultAnimationDuration,
-                builder: (context, color, child) {
-                  return Card(
-                      elevation: 0,
-                      color: color,
-                      child: InkWell(
-                        child: AnimatedOpacity(
-                          opacity: value ? 0 : 1,
-                          duration: Duration(milliseconds: 200),
-                          child: Center(
-                            child: Text(
-                              'SPOILER',
-                              style: TextStyle(
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ),
-                        onTap: () => isShown.value = !isShown.value,
-                      ));
-                }),
-          ),
-        ),
-      ],
+          )
+        ],
+      ),
     );
   }
 }

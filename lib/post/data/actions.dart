@@ -140,48 +140,20 @@ extension downloading on Post {
     try {
       await ImageGallerySaver.saveFile(file.path).then((result) {
         if (result['filePath'] != null) {
+          String filepath = result['filePath'].replaceFirst('file://', '');
+          filepath = filepath.substring(0, filepath.lastIndexOf('/'));
           String filename =
               '${this.artists.join(', ')} - ${this.id}.${this.file.value.ext}';
-          String filepath = result['filePath'].replaceFirst('file://', '');
-          File saved = File(filepath);
-          filepath = filepath.substring(0, filepath.lastIndexOf('/'));
-          filepath = [filepath, appName].join('/');
-          Directory(filepath).createSync();
-          filepath = [filepath, filename].join('/');
-          saved.renameSync(filepath);
+          filepath = [filepath, appName, filename].join('/');
+          Directory(filepath).createSync(recursive: true);
+          File target = File(filepath);
+          target.renameSync(filepath);
         }
       });
       return true;
     } catch (_) {
       return false;
     }
-  }
-
-  Future<bool> downloadDialog(BuildContext context) async {
-    bool success = false;
-    if (!await Permission.storage.request().isGranted) {
-      showDialog(
-          context: context,
-          builder: (context) {
-            return AlertDialog(
-              content: Text(
-                  'You need to grant write permission in order to download files.'),
-              actions: [
-                ElevatedButton(
-                  child: Text('TRY AGAIN'),
-                  onPressed: () async {
-                    Navigator.of(context).pop();
-                    success =
-                        await downloadDialog(context); // recursively re-execute
-                  },
-                ),
-              ],
-            );
-          });
-      return success;
-    }
-
-    return await this.download();
   }
 }
 

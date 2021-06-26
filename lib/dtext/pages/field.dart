@@ -196,9 +196,7 @@ class DTextField extends StatelessWidget {
 
         if (display == null) {
           display = match.namedGroup('link');
-          display = display.replaceFirst('https://', '');
-          display = display.replaceFirst('http://', '');
-          display = display.replaceFirst('www.', '');
+          display = linkToDisplay(display);
         }
 
         if (insite) {
