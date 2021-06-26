@@ -117,6 +117,28 @@ class Client {
     return _avatar;
   }
 
+  Future<List<Post>> postsFromJson(List json) async {
+    List<Post> posts = [];
+    bool loggedIn = await this.hasLogin;
+    bool hasPosts = false;
+    for (Map raw in json) {
+      hasPosts = true;
+      Post post = Post.fromMap(raw);
+      post.isLoggedIn = loggedIn;
+      if (post.file.value.url == null && !post.isDeleted) {
+        continue;
+      }
+      if (post.file.value.ext == 'swf') {
+        continue;
+      }
+      posts.add(post);
+    }
+    if (!hasPosts) {
+      return null;
+    }
+    return posts;
+  }
+
   Future<List<Post>> posts(String tags, int page,
       {int limit, bool faithful = false, int attempt = 0}) async {
     await initialized;
@@ -131,22 +153,9 @@ class Client {
         },
       ).then((response) => response.data);
 
-      List<Post> posts = [];
-      bool loggedIn = await this.hasLogin;
-      bool hasPosts = false;
-      for (Map raw in body['posts']) {
-        hasPosts = true;
-        Post post = Post.fromMap(raw);
-        post.isLoggedIn = loggedIn;
-        if (post.file.value.url == null && !post.isDeleted) {
-          continue;
-        }
-        if (post.file.value.ext == 'swf') {
-          continue;
-        }
-        posts.add(post);
-      }
-      if (hasPosts && posts.isEmpty && attempt < 3) {
+      List<Post> posts = await postsFromJson(body['posts']);
+
+      if (posts != null && posts.isEmpty && attempt < 3) {
         return client.posts(tags, page + 1,
             faithful: faithful, attempt: attempt + 1);
       }
@@ -156,12 +165,43 @@ class Client {
     if (faithful) {
       return getPosts();
     } else {
-      RegExpMatch match = RegExp(r'^pool:(?<id>\d+)$').firstMatch(tags);
-      if (match != null) {
-        return poolPosts(int.tryParse(match.namedGroup('id')), page);
+      // String username = (await credentials).username;
+
+      Map<RegExp, Future<List<Post>> Function(RegExpMatch match, String result)>
+          regexes = {
+        RegExp(r'^pool:(?<id>\d+)$'): (match, result) =>
+            poolPosts(int.tryParse(match.namedGroup('id')), page),
+        /*
+        if (username != null)
+          RegExp(r'^fav:' + username + r'$'): (match, result) =>
+              favorites(page, limit: limit),
+         */
+      };
+
+      for (MapEntry<RegExp, Function(RegExpMatch match, String result)> entry
+          in regexes.entries) {
+        RegExpMatch match = entry.key.firstMatch(tags.trim());
+        if (match != null) {
+          return entry.value(match, tags);
+        }
       }
+
       return getPosts();
     }
+  }
+
+  Future<List<Post>> favorites(int page, {int limit}) async {
+    await initialized;
+
+    Map body = await dio.get(
+      'favorites.json',
+      queryParameters: {
+        'page': page,
+        'limit': limit,
+      },
+    ).then((response) => response.data);
+
+    return (await postsFromJson(body['posts'])) ?? [];
   }
 
   Future<bool> addFavorite(int post) async {

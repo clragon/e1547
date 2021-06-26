@@ -136,18 +136,13 @@ class DrawerDenyTile extends StatelessWidget {
           ),
         ],
       ),
-      secondary: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          TweenAnimationBuilder(
-            tween: IntTween(begin: 0, end: entry.value.length),
-            duration: Duration(milliseconds: 200),
-            builder: (BuildContext context, value, Widget child) {
-              return Text(value.toString(),
-                  style: Theme.of(context).textTheme.headline6);
-            },
-          ),
-        ],
+      secondary: TweenAnimationBuilder(
+        tween: IntTween(begin: 0, end: entry.value.length),
+        duration: Duration(milliseconds: 200),
+        builder: (BuildContext context, value, Widget child) {
+          return Text(value.toString(),
+              style: Theme.of(context).textTheme.headline6);
+        },
       ),
     );
   }
