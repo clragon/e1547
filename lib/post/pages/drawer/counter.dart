@@ -14,19 +14,21 @@ class DrawerCounter extends StatefulWidget {
 }
 
 class _DrawerCounterState extends State<DrawerCounter> {
-  List<CountedTag> counts;
-  List<Widget> cards;
-  int limit = 15;
+  final int limit = 15;
+  List<Widget> children;
 
   Future<void> updateTags() async {
     setState(() {
-      cards = null;
+      children = null;
     });
 
-    counts = countTagsByPosts(widget.provider.posts.value);
+    if (widget.provider.isLoading) {
+      return;
+    }
+    List<CountedTag> counts = countTagsByPosts(widget.provider.posts.value);
     counts.sort((a, b) => b.count.compareTo(a.count));
-    cards = [];
 
+    List<Widget> cards = [];
     for (CountedTag tag in counts.take(limit)) {
       cards.add(TagCounterCard(
         tag: tag.tag,
@@ -36,13 +38,15 @@ class _DrawerCounterState extends State<DrawerCounter> {
       ));
     }
 
-    setState(() {});
+    setState(() {
+      children = cards;
+    });
   }
 
   @override
   void initState() {
     super.initState();
-    widget.provider.posts.addListener(updateTags);
+    widget.provider.addListener(updateTags);
     updateTags();
   }
 
@@ -78,7 +82,7 @@ class _DrawerCounterState extends State<DrawerCounter> {
                   children: [
                     Divider(),
                     SafeCrossFade(
-                      showChild: cards != null,
+                      showChild: children != null,
                       builder: (context) => Padding(
                         padding:
                             EdgeInsets.symmetric(horizontal: 8, vertical: 8),
@@ -87,7 +91,7 @@ class _DrawerCounterState extends State<DrawerCounter> {
                             Expanded(
                               child: Wrap(
                                 direction: Axis.horizontal,
-                                children: cards,
+                                children: children,
                               ),
                             )
                           ],

@@ -70,6 +70,7 @@ class PostSearchBar extends StatelessWidget {
 
     Widget sortByWidget() {
       Map<String, String> orders = {
+        'Default': 'default',
         'New': 'new',
         'Score': 'score',
         'Favorites': 'favcount',
@@ -85,7 +86,7 @@ class PostSearchBar extends StatelessWidget {
           String orderType = orders[selection];
 
           withTags((tags) async {
-            if (orderType == 'new') {
+            if (orderType == 'default') {
               tags.remove('order');
             } else {
               tags['order'] = orderType;
