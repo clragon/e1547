@@ -425,26 +425,35 @@ class Client {
     return body;
   }
 
-  Future<List> autocomplete(String search, {int category}) async {
-    var body;
-    if (category == null) {
-      body = await dio.get('tags/autocomplete.json', queryParameters: {
-        'search[name_matches]': search,
-      }).then((response) => response.data);
-    } else {
-      body = await dio.get('tags.json', queryParameters: {
-        'search[name_matches]': search + '*',
-        'search[category]': category,
-        'search[order]': 'count',
-        'limit': 3,
-      }).then((response) => response.data);
-    }
+  Future<List> tag(String search, {int category}) async {
+    var body = await dio.get('tags.json', queryParameters: {
+      'search[name_matches]': search,
+      'search[category]': category,
+      'search[order]': 'count',
+      'limit': 3,
+    }).then((response) => response.data);
     List tags = [];
     if (body is List) {
       tags = body;
     }
     tags = tags.take(3).toList();
     return tags;
+  }
+
+  Future<List> autocomplete(String search, {int category}) async {
+    if (category == null) {
+      var body = await dio.get('tags/autocomplete.json', queryParameters: {
+        'search[name_matches]': search,
+      }).then((response) => response.data);
+      List tags = [];
+      if (body is List) {
+        tags = body;
+      }
+      tags = tags.take(3).toList();
+      return tags;
+    } else {
+      return tag(search + '*', category: category);
+    }
   }
 
   Future<List<Comment>> comments(int postID, String page) async {

@@ -19,7 +19,7 @@ class PostAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     Future<void> download() async {
       String message;
-      if (await post.downloadDialog(context)) {
+      if (await post.download()) {
         message = 'Saved image #${post.id} to gallery';
       } else {
         message = 'Failed to download post ${post.id}';

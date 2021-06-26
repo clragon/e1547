@@ -197,7 +197,7 @@ class _PostsPageState extends State<PostsPage>
                     loadingSnackbar(
                         context: context,
                         items: Set.from(selections),
-                        process: (post) => post.downloadDialog(context),
+                        process: (post) => post.download(),
                         timeout: Duration(milliseconds: 100));
                     setState(() => selections.clear());
                   })),

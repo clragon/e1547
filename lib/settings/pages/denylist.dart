@@ -112,12 +112,12 @@ class _DenyListPageState extends State<DenyListPage> {
                     onSelected: (value) => value(),
                     itemBuilder: (context) => [
                       PopupMenuTile(
-                        value: 'edit',
+                        value: onEdit,
                         title: 'Edit',
                         icon: Icons.edit,
                       ),
                       PopupMenuTile(
-                        value: 'delete',
+                        value: onDelete,
                         title: 'Delete',
                         icon: Icons.delete,
                       ),
@@ -171,7 +171,7 @@ class _DenyListPageState extends State<DenyListPage> {
     Widget floatingActionButton(BuildContext context) {
       return FloatingActionButton(
         child: fabAction != null ? Icon(Icons.check) : Icon(Icons.add),
-        onPressed: () => fabAction != null ? fabAction : addTags(context),
+        onPressed: () => fabAction != null ? fabAction() : addTags(context),
       );
     }
 
