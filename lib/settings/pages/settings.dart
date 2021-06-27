@@ -60,21 +60,19 @@ class _SettingsPageState extends State<SettingsPage> {
     links.forEach(linkSetting);
   }
 
-  Function() _onTapSignOut(BuildContext context) {
-    return () async {
-      String name = username;
-      await client.logout();
+  Future<void> logout() async {
+    String name = username;
+    await client.logout();
 
-      String msg = 'Forgot login details';
-      if (name != null) {
-        msg = msg + ' for $name';
-      }
+    String msg = 'Forgot login details';
+    if (name != null) {
+      msg = msg + ' for $name';
+    }
 
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        duration: Duration(seconds: 1),
-        content: Text(msg),
-      ));
-    };
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      duration: Duration(seconds: 1),
+      content: Text(msg),
+    ));
   }
 
   Widget settingsHeader(String title) {
@@ -252,7 +250,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         title: Text('Sign out'),
                         subtitle: Text(username ?? ''),
                         leading: Icon(Icons.exit_to_app),
-                        onTap: _onTapSignOut(context),
+                        onTap: logout,
                       ),
                       secondChild: ListTile(
                         title: Text('Sign in'),
