@@ -36,12 +36,9 @@ class _FavPageState extends State<FavPage> {
   @override
   Widget build(BuildContext context) {
     return PageLoader(
-      child: SafeBuilder(
-        showChild: provider != null,
-        builder: (context) => PostsPage(
-          appBarBuilder: defaultAppBar('Favorites'),
-          provider: provider,
-        ),
+      builder: (context) => PostsPage(
+        appBarBuilder: defaultAppBar('Favorites'),
+        provider: provider,
       ),
       isLoading: provider == null && error == false,
       isEmpty: false,

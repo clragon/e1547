@@ -46,7 +46,7 @@ class _PostsPageState extends State<PostsPage>
   @override
   void initState() {
     super.initState();
-    widget.provider.posts.addListener(updatePage);
+    widget.provider.addListener(updatePage);
   }
 
   @override
@@ -59,14 +59,14 @@ class _PostsPageState extends State<PostsPage>
   @override
   void reassemble() {
     super.reassemble();
-    widget.provider.posts.removeListener(updatePage);
-    widget.provider.posts.addListener(updatePage);
+    widget.provider.removeListener(updatePage);
+    widget.provider.addListener(updatePage);
   }
 
   @override
   void dispose() {
     super.dispose();
-    widget.provider.posts.removeListener(updatePage);
+    widget.provider.removeListener(updatePage);
     widget.provider.dispose();
   }
 
@@ -278,21 +278,6 @@ class _PostsPageState extends State<PostsPage>
         return null;
       }
 
-      Widget body() {
-        if (tileSize != null && stagger != null) {
-          return StaggeredGridView.countBuilder(
-            key: Key('grid_${[tileSize, stagger].join('_')}_key'),
-            crossAxisCount: crossAxisCount(constraints.maxWidth),
-            itemCount: widget.provider.posts.value.length,
-            itemBuilder: itemBuilder,
-            staggeredTileBuilder: tileBuilder,
-            physics: BouncingScrollPhysics(),
-          );
-        } else {
-          return SizedBox.shrink();
-        }
-      }
-
       return WillPopScope(
         onWillPop: () async {
           if (selections.isNotEmpty) {
@@ -302,8 +287,8 @@ class _PostsPageState extends State<PostsPage>
             return true;
           }
         },
-        child: RefreshablePage.builder(
-          builder: (context, child, scrollController) => Scaffold(
+        child: RefreshablePage.pageBuilder(
+          pageBuilder: (context, child, scrollController) => Scaffold(
             appBar: ScrollingAppbarFrame(
               child: Material(
                 elevation: Theme.of(context).appBarTheme.elevation ?? 4,
@@ -327,7 +312,14 @@ class _PostsPageState extends State<PostsPage>
             await widget.provider.loadNextPage(reset: true);
             return !widget.provider.isError;
           },
-          child: body(),
+          builder: (context) => StaggeredGridView.countBuilder(
+            key: Key('grid_${[tileSize, stagger].join('_')}_key'),
+            crossAxisCount: crossAxisCount(constraints.maxWidth),
+            itemCount: widget.provider.posts.value.length,
+            itemBuilder: itemBuilder,
+            staggeredTileBuilder: tileBuilder,
+            physics: BouncingScrollPhysics(),
+          ),
           isLoading:
               widget.provider.isLoading || tileSize == null || stagger == null,
           isEmpty: widget.provider.posts.value.isEmpty,

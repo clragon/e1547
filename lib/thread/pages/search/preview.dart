@@ -60,21 +60,15 @@ class ThreadPreview extends StatelessWidget {
     }
 
     return Card(
-        child: InkWell(
-            onTap: this.onPressed,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  child: Center(child: title()),
-                ),
-                () {
-                  return Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [],
-                  );
-                }(),
-              ],
-            )));
+      child: InkWell(
+        onTap: onPressed,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            title(),
+          ],
+        ),
+      ),
+    );
   }
 }

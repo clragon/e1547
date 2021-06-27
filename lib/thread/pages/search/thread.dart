@@ -19,23 +19,19 @@ class _ThreadsPageState extends State<ThreadsPage> {
   ValueNotifier<bool> isSearching = ValueNotifier(false);
   PersistentBottomSheetController<String> sheetController;
 
-  Widget itemBuilder(BuildContext context, int item) {
-    Widget preview(Thread thread, ThreadProvider provider) {
-      return ThreadPreview(thread, onPressed: () {
-        Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => ThreadDetail(thread),
-        ));
-      });
-    }
+  Widget preview(Thread thread, ThreadProvider provider) {
+    return ThreadPreview(thread, onPressed: () {
+      Navigator.of(context).push(MaterialPageRoute(
+        builder: (context) => ThreadDetail(thread),
+      ));
+    });
+  }
 
+  Widget itemBuilder(BuildContext context, int item) {
     if (item == provider.items.length - 1) {
       provider.loadNextPage();
     }
-
-    if (item < provider.items.length) {
-      return preview(provider.items[item], provider);
-    }
-    return null;
+    return preview(provider.items[item], provider);
   }
 
   @override
@@ -55,33 +51,31 @@ class _ThreadsPageState extends State<ThreadsPage> {
                     sheetController?.close();
                   } else {
                     textController.text = provider.search.value;
-                    sheetController = Scaffold.of(context)
-                        .showBottomSheet((context) => Container(
-                              padding: EdgeInsets.only(
-                                  left: 10.0, right: 10.0, bottom: 10),
-                              child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    TextField(
-                                      controller: textController,
-                                      autofocus: true,
-                                      maxLines: 1,
-                                      inputFormatters: [
-                                        LowercaseTextInputFormatter()
-                                      ],
-                                      decoration: InputDecoration(
-                                        labelText: 'Title',
-                                      ),
-                                    ),
-                                  ]),
-                            ));
+                    sheetController = Scaffold.of(context).showBottomSheet(
+                      (context) => Container(
+                        padding:
+                            EdgeInsets.only(left: 10, right: 10, bottom: 10),
+                        child:
+                            Column(mainAxisSize: MainAxisSize.min, children: [
+                          TextField(
+                            controller: textController,
+                            autofocus: true,
+                            maxLines: 1,
+                            inputFormatters: [LowercaseTextInputFormatter()],
+                            decoration: InputDecoration(
+                              labelText: 'Title',
+                            ),
+                          ),
+                        ]),
+                      ),
+                    );
                     isSearching.value = true;
-                    sheetController.closed.then((a) {
+                    sheetController.closed.then((_) {
                       isSearching.value = false;
                     });
                   }
                 },
-              ).build(context);
+              );
             },
           );
         },
@@ -89,7 +83,7 @@ class _ThreadsPageState extends State<ThreadsPage> {
     }
 
     return RefreshableProviderPage(
-      child: ListView.builder(
+      builder: (context) => ListView.builder(
         itemCount: provider.items.length,
         itemBuilder: itemBuilder,
         physics: BouncingScrollPhysics(),
