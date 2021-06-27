@@ -6,7 +6,7 @@ import 'package:flutter/services.dart';
 
 class ParentDisplay extends StatefulWidget {
   final Post post;
-  final Function() onEditorClose;
+  final VoidCallback onEditorClose;
   final Function(Future<bool> Function() submit) onEditorBuild;
 
   ParentDisplay({@required this.post, this.onEditorClose, this.onEditorBuild});

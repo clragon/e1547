@@ -4,7 +4,7 @@ final Duration defaultAnimationDuration = Duration(milliseconds: 200);
 
 class SafeBuilder extends StatelessWidget {
   final bool showChild;
-  final Widget Function(BuildContext context) builder;
+  final WidgetBuilder builder;
 
   const SafeBuilder({@required this.showChild, @required this.builder});
 
@@ -45,7 +45,7 @@ class CrossFade extends StatelessWidget {
 }
 
 class SafeCrossFade extends StatelessWidget {
-  final Widget Function(BuildContext context) builder;
+  final WidgetBuilder builder;
 
   final Widget secondChild;
   final Duration duration;

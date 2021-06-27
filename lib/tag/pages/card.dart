@@ -7,7 +7,7 @@ import 'package:flutter/widgets.dart';
 class TagCard extends StatelessWidget {
   final String tag;
   final String category;
-  final Function() onRemove;
+  final VoidCallback onRemove;
   final PostProvider provider;
 
   TagCard({
