@@ -84,21 +84,6 @@ class _FollowsSplitPageState extends State<FollowsSplitPage>
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
-      Widget body() {
-        if (!loading) {
-          return StaggeredGridView.countBuilder(
-            key: Key('grid_${[crossAxisCount, safe].join('_')}_key'),
-            crossAxisCount: crossAxisCount(constraints.maxWidth),
-            itemCount: follows.length,
-            itemBuilder: itemBuilder,
-            staggeredTileBuilder: tileBuilder,
-            physics: BouncingScrollPhysics(),
-          );
-        } else {
-          return SizedBox.shrink();
-        }
-      }
-
       Widget page() {
         return PageLoader(
           onEmpty: Text('No follows'),
@@ -107,7 +92,7 @@ class _FollowsSplitPageState extends State<FollowsSplitPage>
           isError: false,
           isLoading: loading,
           isEmpty: follows?.length == 0,
-          child: SmartRefresher(
+          pageBuilder: (child) => SmartRefresher(
             primary: false,
             scrollController: scrollController,
             controller: refreshController,
@@ -125,7 +110,15 @@ class _FollowsSplitPageState extends State<FollowsSplitPage>
               }
             },
             physics: BouncingScrollPhysics(),
-            child: body(),
+            child: child,
+          ),
+          builder: (context) => StaggeredGridView.countBuilder(
+            key: Key('grid_${[crossAxisCount, safe].join('_')}_key'),
+            crossAxisCount: crossAxisCount(constraints.maxWidth),
+            itemCount: follows.length,
+            itemBuilder: itemBuilder,
+            staggeredTileBuilder: tileBuilder,
+            physics: BouncingScrollPhysics(),
           ),
         );
       }

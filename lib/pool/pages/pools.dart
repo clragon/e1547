@@ -27,13 +27,13 @@ class _PoolsPageState extends State<PoolsPage> {
   @override
   void initState() {
     super.initState();
-    provider.pages.addListener(update);
+    provider.addListener(update);
   }
 
   @override
   void dispose() {
     super.dispose();
-    provider.pages.removeListener(update);
+    provider.removeListener(update);
   }
 
   Widget itemBuilder(BuildContext context, int item) {
@@ -104,7 +104,7 @@ class _PoolsPageState extends State<PoolsPage> {
       appBar: AppBar(
         title: Text('Pools'),
       ),
-      child: ListView.builder(
+      builder: (context) => ListView.builder(
         itemCount: provider.pools.length,
         itemBuilder: itemBuilder,
         physics: BouncingScrollPhysics(),

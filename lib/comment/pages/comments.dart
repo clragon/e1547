@@ -27,13 +27,13 @@ class _CommentsPageState extends State<CommentsPage> {
   void initState() {
     super.initState();
     provider = CommentProvider(postID: widget.post.id);
-    provider.pages.addListener(update);
+    provider.addListener(update);
   }
 
   @override
   void dispose() {
     super.dispose();
-    provider.pages.addListener(update);
+    provider.addListener(update);
   }
 
   Widget picture(Comment comment) {
@@ -183,7 +183,7 @@ class _CommentsPageState extends State<CommentsPage> {
     }
 
     return RefreshableProviderPage(
-      child: ListView.builder(
+      builder: (context) => ListView.builder(
         itemBuilder: itemBuilder,
         itemCount: provider.items.length,
         padding: EdgeInsets.all(10.0),

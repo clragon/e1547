@@ -5,7 +5,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 export 'package:e1547/client.dart' show validateCall;
 
 class RefreshableProviderPage extends StatefulWidget {
-  final Widget child;
+  final WidgetBuilder builder;
   final DataProvider provider;
   final String refreshedText;
   final Widget onEmpty;
@@ -18,7 +18,7 @@ class RefreshableProviderPage extends StatefulWidget {
   final RefreshController refreshController;
 
   const RefreshableProviderPage({
-    @required this.child,
+    @required this.builder,
     @required this.appBar,
     @required this.provider,
     this.scrollController,
@@ -47,13 +47,13 @@ class _RefreshableProviderPageState extends State<RefreshableProviderPage> {
   void initState() {
     super.initState();
     update();
-    widget.provider.pages.addListener(update);
+    widget.provider.addListener(update);
   }
 
   @override
   void dispose() {
     super.dispose();
-    widget.provider.pages.removeListener(update);
+    widget.provider.removeListener(update);
   }
 
   @override
@@ -63,7 +63,7 @@ class _RefreshableProviderPageState extends State<RefreshableProviderPage> {
         await widget.provider.loadNextPage(reset: true);
         return !widget.provider.isError;
       },
-      child: widget.child,
+      builder: widget.builder,
       appBar: widget.appBar,
       isLoading: widget.provider.isLoading,
       isEmpty: widget.provider.items.isEmpty,
@@ -82,7 +82,7 @@ class _RefreshableProviderPageState extends State<RefreshableProviderPage> {
 }
 
 class RefreshablePage extends StatefulWidget {
-  final Widget child;
+  final WidgetBuilder builder;
   final bool isLoading;
   final bool isEmpty;
   final bool isError;
@@ -99,11 +99,11 @@ class RefreshablePage extends StatefulWidget {
   final Future<bool> Function() refresh;
   final Scaffold Function(
           BuildContext context, Widget child, ScrollController scrollController)
-      builder;
+      pageBuilder;
 
   const RefreshablePage({
     @required this.refresh,
-    @required this.child,
+    @required this.builder,
     @required this.appBar,
     @required this.isLoading,
     @required this.isEmpty,
@@ -117,15 +117,15 @@ class RefreshablePage extends StatefulWidget {
     this.onError,
     this.drawer,
     this.floatingActionButton,
-  }) : this.builder = null;
+  }) : this.pageBuilder = null;
 
-  const RefreshablePage.builder({
-    @required this.builder,
+  const RefreshablePage.pageBuilder({
+    @required this.pageBuilder,
     @required this.refresh,
     @required this.isLoading,
     @required this.isEmpty,
     @required this.isError,
-    this.child,
+    this.builder,
     this.refreshController,
     this.scrollController,
     this.refreshedText,
@@ -165,7 +165,7 @@ class _RefreshablePageState extends State<RefreshablePage> {
         isLoading: widget.isLoading,
         isEmpty: widget.isEmpty,
         isError: widget.isError,
-        child: SmartRefresher(
+        pageBuilder: (child) => SmartRefresher(
           primary: false,
           scrollController: scrollController,
           controller: refreshController,
@@ -181,13 +181,14 @@ class _RefreshablePageState extends State<RefreshablePage> {
             }
           },
           physics: BouncingScrollPhysics(),
-          child: widget.child,
+          child: child,
         ),
+        builder: widget.builder,
       );
     }
 
-    if (widget.builder != null) {
-      return widget.builder(
+    if (widget.pageBuilder != null) {
+      return widget.pageBuilder(
         context,
         body(),
         scrollController,
@@ -213,11 +214,12 @@ enum PageLoaderState {
   loading,
   empty,
   error,
-  none,
+  child,
 }
 
 class PageLoader extends StatelessWidget {
-  final Widget child;
+  final WidgetBuilder builder;
+  final Widget Function(Widget child) pageBuilder;
   final Widget onLoading;
   final Widget onEmpty;
   final Widget onError;
@@ -226,10 +228,11 @@ class PageLoader extends StatelessWidget {
   final bool isError;
 
   PageLoader({
-    @required this.child,
+    @required this.builder,
     @required this.isLoading,
     @required this.isEmpty,
     @required this.isError,
+    this.pageBuilder,
     this.onLoading,
     this.onEmpty,
     this.onError,
@@ -237,7 +240,7 @@ class PageLoader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    PageLoaderState state = PageLoaderState.none;
+    PageLoaderState state = PageLoaderState.child;
     if (isEmpty) {
       if (isLoading) {
         state = PageLoaderState.loading;
@@ -245,6 +248,14 @@ class PageLoader extends StatelessWidget {
         state = PageLoaderState.error;
       } else {
         state = PageLoaderState.empty;
+      }
+    }
+
+    Widget child() {
+      if (state == PageLoaderState.child) {
+        return builder(context);
+      } else {
+        return SizedBox.shrink();
       }
     }
 
@@ -264,7 +275,7 @@ class PageLoader extends StatelessWidget {
           ),
         ),
       ),
-      child,
+      pageBuilder?.call(child()) ?? child(),
       Visibility(
         visible: state == PageLoaderState.error,
         child: Center(
