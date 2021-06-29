@@ -7,7 +7,7 @@ export 'package:e1547/client.dart' show validateCall;
 class RefreshableProviderPage extends StatefulWidget {
   final WidgetBuilder builder;
   final DataProvider provider;
-  final String refreshedText;
+  final Widget refreshHeader;
   final Widget onEmpty;
   final Widget onLoading;
   final Widget onError;
@@ -23,7 +23,7 @@ class RefreshableProviderPage extends StatefulWidget {
     @required this.provider,
     this.scrollController,
     this.refreshController,
-    this.refreshedText,
+    this.refreshHeader,
     this.onLoading,
     this.onEmpty,
     this.onError,
@@ -36,13 +36,8 @@ class RefreshableProviderPage extends StatefulWidget {
       _RefreshableProviderPageState();
 }
 
-class _RefreshableProviderPageState extends State<RefreshableProviderPage> {
-  void update() {
-    if (mounted) {
-      setState(() {});
-    }
-  }
-
+class _RefreshableProviderPageState extends State<RefreshableProviderPage>
+    with UpdateMixin {
   @override
   void initState() {
     super.initState();
@@ -70,7 +65,7 @@ class _RefreshableProviderPageState extends State<RefreshableProviderPage> {
       isError: widget.provider.isError,
       refreshController: widget.refreshController,
       scrollController: widget.scrollController,
-      refreshedText: widget.refreshedText,
+      refreshHeader: widget.refreshHeader,
       onLoading: widget.onLoading,
       onEmpty: widget.onEmpty,
       onError: widget.onError,
@@ -86,8 +81,9 @@ class RefreshablePage extends StatefulWidget {
   final bool isLoading;
   final bool isEmpty;
   final bool isError;
+  final bool isBuilt;
   final bool initial;
-  final String refreshedText;
+  final Widget refreshHeader;
   final Widget onEmpty;
   final Widget onLoading;
   final Widget onError;
@@ -108,9 +104,10 @@ class RefreshablePage extends StatefulWidget {
     @required this.isLoading,
     @required this.isEmpty,
     @required this.isError,
+    this.isBuilt,
     this.refreshController,
     this.scrollController,
-    this.refreshedText,
+    this.refreshHeader,
     this.initial,
     this.onLoading,
     this.onEmpty,
@@ -125,10 +122,11 @@ class RefreshablePage extends StatefulWidget {
     @required this.isLoading,
     @required this.isEmpty,
     @required this.isError,
+    this.isBuilt,
     this.builder,
     this.refreshController,
     this.scrollController,
-    this.refreshedText,
+    this.refreshHeader,
     this.initial,
     this.onLoading,
     this.onEmpty,
@@ -165,13 +163,12 @@ class _RefreshablePageState extends State<RefreshablePage> {
         isLoading: widget.isLoading,
         isEmpty: widget.isEmpty,
         isError: widget.isError,
+        isBuilt: widget.isBuilt,
         pageBuilder: (child) => SmartRefresher(
           primary: false,
           scrollController: scrollController,
           controller: refreshController,
-          header: ClassicHeader(
-            completeText: widget.refreshedText,
-          ),
+          header: widget.refreshHeader ?? RefreshablePageDefaultHeader(),
           onRefresh: () async {
             bool result = await widget.refresh();
             if (result) {
@@ -226,12 +223,14 @@ class PageLoader extends StatelessWidget {
   final bool isLoading;
   final bool isEmpty;
   final bool isError;
+  final bool isBuilt;
 
   PageLoader({
     @required this.builder,
     @required this.isLoading,
     @required this.isEmpty,
     @required this.isError,
+    this.isBuilt,
     this.pageBuilder,
     this.onLoading,
     this.onEmpty,
@@ -240,7 +239,8 @@ class PageLoader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    PageLoaderState state = PageLoaderState.child;
+    PageLoaderState state =
+        isBuilt ?? true ? PageLoaderState.child : PageLoaderState.loading;
     if (isEmpty) {
       if (isLoading) {
         state = PageLoaderState.loading;
@@ -337,4 +337,18 @@ class ScrollingAppbarFrame extends StatelessWidget with PreferredSizeWidget {
 
   @override
   Size get preferredSize => Size.fromHeight(kToolbarHeight);
+}
+
+class RefreshablePageDefaultHeader extends StatelessWidget {
+  final String refreshingText;
+  final String completeText;
+  const RefreshablePageDefaultHeader({this.completeText, this.refreshingText});
+
+  @override
+  Widget build(BuildContext context) {
+    return ClassicHeader(
+      refreshingText: refreshingText,
+      completeText: completeText,
+    );
+  }
 }

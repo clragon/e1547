@@ -11,3 +11,4 @@ export 'pages/shadows.dart';
 export 'pages/startup.dart';
 export 'pages/text_editor.dart';
 export 'pages/tiles.dart';
+export 'pages/update.dart';

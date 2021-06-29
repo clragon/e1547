@@ -133,7 +133,7 @@ class Client {
       }
       posts.add(post);
     }
-    if (!hasPosts) {
+    if (hasPosts && posts.isEmpty) {
       return null;
     }
     return posts;
@@ -155,9 +155,13 @@ class Client {
 
       List<Post> posts = await postsFromJson(body['posts']);
 
-      if (posts != null && posts.isEmpty && attempt < 3) {
-        return client.posts(tags, page + 1,
-            faithful: faithful, attempt: attempt + 1);
+      if (posts == null) {
+        if (attempt < 3) {
+          return client.posts(tags, page + 1,
+              faithful: faithful, attempt: attempt + 1);
+        } else {
+          posts = [];
+        }
       }
       return posts;
     }

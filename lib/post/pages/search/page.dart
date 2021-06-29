@@ -320,8 +320,8 @@ class _PostsPageState extends State<PostsPage>
             staggeredTileBuilder: tileBuilder,
             physics: BouncingScrollPhysics(),
           ),
-          isLoading:
-              widget.provider.isLoading || tileSize == null || stagger == null,
+          isLoading: widget.provider.isLoading,
+          isBuilt: tileSize != null && stagger != null,
           isEmpty: widget.provider.posts.value.isEmpty,
           isError: widget.provider.isError,
           onEmpty: Text('No posts'),

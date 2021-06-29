@@ -20,6 +20,7 @@ mixin TileSizeMixin<T extends StatefulWidget> on State<T> {
   }
 
   int crossAxisCount(double width) {
+    assert(tileSize != null);
     return notZero(width / tileSize).round();
   }
 
