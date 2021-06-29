@@ -14,14 +14,8 @@ class CommentsPage extends StatefulWidget {
   State createState() => _CommentsPageState();
 }
 
-class _CommentsPageState extends State<CommentsPage> {
+class _CommentsPageState extends State<CommentsPage> with UpdateMixin {
   CommentProvider provider;
-
-  void update() {
-    if (this.mounted) {
-      setState(() {});
-    }
-  }
 
   @override
   void initState() {

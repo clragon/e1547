@@ -12,17 +12,11 @@ class PoolsPage extends StatefulWidget {
   }
 }
 
-class _PoolsPageState extends State<PoolsPage> {
+class _PoolsPageState extends State<PoolsPage> with UpdateMixin {
   PoolProvider provider = PoolProvider();
   TextEditingController textController = TextEditingController();
   ValueNotifier<bool> isSearching = ValueNotifier(false);
   PersistentBottomSheetController<String> sheetController;
-
-  void update() {
-    if (this.mounted) {
-      setState(() {});
-    }
-  }
 
   @override
   void initState() {
