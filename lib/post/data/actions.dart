@@ -6,6 +6,7 @@ import 'package:e1547/post.dart';
 import 'package:e1547/settings.dart';
 import 'package:e1547/tag.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart'
     show DefaultCacheManager;
 import 'package:image_gallery_saver/image_gallery_saver.dart';
@@ -133,23 +134,25 @@ extension denying on Post {
 
 extension downloading on Post {
   Future<bool> download() async {
-    if (!await Permission.storage.request().isGranted) {
-      return false;
-    }
-    File file = await DefaultCacheManager().getSingleFile(this.file.value.url);
     try {
-      await ImageGallerySaver.saveFile(file.path).then((result) {
-        if (result['filePath'] != null) {
-          String filepath = result['filePath'].replaceFirst('file://', '');
-          filepath = filepath.substring(0, filepath.lastIndexOf('/'));
-          String filename =
-              '${this.artists.join(', ')} - ${this.id}.${this.file.value.ext}';
-          filepath = [filepath, appName, filename].join('/');
-          Directory(filepath).createSync(recursive: true);
-          File target = File(filepath);
-          target.renameSync(filepath);
-        }
-      });
+      if (!await Permission.storage.request().isGranted) {
+        return false;
+      }
+      File download =
+          await DefaultCacheManager().getSingleFile(this.file.value.url);
+      if (Platform.isAndroid) {
+        String directory =
+            '${Platform.environment['EXTERNAL_STORAGE']}/Pictures';
+        directory = [directory, appName].join('/');
+        String filename = '${artists.join(', ')} - $id.${file.value.ext}';
+        String filepath = [directory, filename].join('/');
+        await Directory(directory).create();
+        await download.copy(filepath);
+      } else if (Platform.isIOS) {
+        await ImageGallerySaver.saveFile(download.path);
+      } else {
+        throw PlatformException(code: 'unsupported platform');
+      }
       return true;
     } catch (_) {
       return false;
