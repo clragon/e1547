@@ -81,11 +81,11 @@ class _LoadingSnackbarState extends State<LoadingSnackbar> {
         Row(
           children: [
             Text(
-              progress == widget.items.length
-                  ? failure
+              progress < widget.items.length
+                  ? 'Post #${widget.items.elementAt(progress).id} ($progress/${widget.items.length})'
+                  : failure
                       ? 'Failure'
-                      : 'Done'
-                  : 'Post #${widget.items.elementAt(progress).id} ($progress/${widget.items.length})',
+                      : 'Done',
               overflow: TextOverflow.visible,
             ),
             Flexible(
