@@ -1,5 +1,4 @@
 import 'package:e1547/post.dart';
-import 'package:e1547/post/pages/drawer.dart';
 import 'package:flutter/material.dart';
 
 import 'counter.dart';

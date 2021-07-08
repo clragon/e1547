@@ -1,2 +1,2 @@
 export 'interface/data.dart';
-export 'interface/pages.dart';
+export 'interface/widgets.dart';

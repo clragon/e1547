@@ -1,15 +1,15 @@
-import 'package:e1547/dtext.dart';
-import 'package:e1547/pool.dart';
-import 'package:e1547/pool/pages/info.dart';
-import 'package:e1547/settings.dart';
+import 'package:e1547/post.dart';
 import 'package:e1547/tag.dart';
 import 'package:flutter/material.dart';
-import 'package:share/share.dart';
 import 'package:sliding_sheet/sliding_sheet.dart';
 
 import 'actions.dart';
+import 'body.dart';
 
-void poolSheet(BuildContext context, Pool pool) {
+void wikiSheet(
+    {@required BuildContext context,
+    @required String tag,
+    PostProvider provider}) {
   showSlidingBottomSheet(
     context,
     builder: (BuildContext context) {
@@ -19,8 +19,9 @@ void poolSheet(BuildContext context, Pool pool) {
         cornerRadius: 16,
         minHeight: MediaQuery.of(context).size.height * 0.6,
         builder: (context, sheetState) {
-          return PoolSheet(
-            pool: pool,
+          return WikiSheet(
+            tag: tag,
+            provider: provider,
           );
         },
         snapSpec: SnapSpec(
@@ -36,10 +37,11 @@ void poolSheet(BuildContext context, Pool pool) {
   );
 }
 
-class PoolSheet extends StatelessWidget {
-  final Pool pool;
+class WikiSheet extends StatelessWidget {
+  final String tag;
+  final PostProvider provider;
 
-  PoolSheet({@required this.pool});
+  WikiSheet({@required this.tag, this.provider});
 
   @override
   Widget build(BuildContext context) {
@@ -52,38 +54,40 @@ class PoolSheet extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Expanded(
+                Flexible(
                   child: Padding(
                     padding: EdgeInsets.symmetric(horizontal: 8),
-                    child: Text(
-                      tagToTitle(pool.name),
-                      style: Theme.of(context).textTheme.headline6,
-                      softWrap: true,
+                    child: InkWell(
+                      onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => SearchPage(tags: tag),
+                      )),
+                      child: Text(
+                        tagToTitle(tag),
+                        style: Theme.of(context).textTheme.headline6,
+                      ),
                     ),
                   ),
                 ),
-                IconButton(
-                  icon: Icon(Icons.share),
-                  onPressed: () async =>
-                      Share.share(pool.url(await db.host.value).toString()),
-                  tooltip: 'Share',
-                ),
-                FollowButton(pool),
+                Row(
+                  children: [
+                    if (provider != null)
+                      TagSearchActions(
+                        tag: tag,
+                        provider: provider,
+                      ),
+                    TagListActions(
+                      tag: tag,
+                    ),
+                  ],
+                )
               ],
             ),
             Padding(
               padding: EdgeInsets.all(16),
-              child: pool.description.isNotEmpty
-                  ? DTextField(source: pool.description)
-                  : Text(
-                      'no description',
-                      style: TextStyle(fontStyle: FontStyle.italic),
-                    ),
-            ),
-            Divider(),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: PoolInfo(pool: pool),
+              child: WikiBody(
+                tag: tag,
+                provider: provider,
+              ),
             ),
           ],
         ),

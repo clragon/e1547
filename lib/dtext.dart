@@ -1,2 +1,2 @@
 export 'dtext/data.dart';
-export 'dtext/pages.dart';
+export 'dtext/widgets.dart';

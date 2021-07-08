@@ -6,10 +6,11 @@ import 'package:e1547/client.dart';
 import 'package:e1547/interface.dart';
 import 'package:e1547/settings.dart' show db;
 import 'package:e1547/settings.dart';
-import 'package:e1547/settings/pages/grid.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+
+import 'grid.dart';
 
 class SettingsPage extends StatefulWidget {
   @override

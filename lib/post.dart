@@ -1,2 +1,2 @@
 export 'post/data.dart';
-export 'post/pages.dart';
+export 'post/widgets.dart';

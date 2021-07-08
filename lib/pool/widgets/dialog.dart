@@ -1,11 +1,11 @@
 import 'package:e1547/dtext.dart';
 import 'package:e1547/pool.dart';
-import 'package:e1547/pool/pages/info.dart';
 import 'package:e1547/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:share/share.dart';
 
 import 'actions.dart';
+import 'info.dart';
 
 void poolDialog({@required BuildContext context, @required Pool pool}) {
   showDialog(
