@@ -1,2 +1,2 @@
 export 'follow/data.dart';
-export 'follow/pages.dart';
+export 'follow/widgets.dart';

@@ -1,2 +1,2 @@
 export 'wiki/data.dart';
-export 'wiki/pages.dart';
+export 'wiki/widgets.dart';

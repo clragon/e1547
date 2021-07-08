@@ -1,2 +1,2 @@
 export 'comment/data.dart';
-export 'comment/pages.dart';
+export 'comment/widgets.dart';
