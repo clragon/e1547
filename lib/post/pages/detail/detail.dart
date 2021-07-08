@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
 import 'package:e1547/client.dart';
 import 'package:e1547/interface.dart';
@@ -67,10 +66,7 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
     widget.provider?.posts?.addListener(onPageChange);
     if (widget.post.file.value.url != null) {
       if (widget.post.type == ImageType.Image) {
-        precacheImage(
-          CachedNetworkImageProvider(widget.post.file.value.url),
-          context,
-        );
+        preloadImage(context: context, post: widget.post, size: ImageSize.file);
       }
     }
   }

@@ -72,7 +72,7 @@ class _FollowTileState extends State<FollowTile> {
             tag: 'image_${status.latest}',
             child: CachedNetworkImage(
               imageUrl: status.thumbnail,
-              errorWidget: (context, url, error) => Icon(Icons.error),
+              errorWidget: defaultErrorBuilder,
               fit: BoxFit.cover,
             ),
           ),
@@ -292,8 +292,7 @@ class _FollowListTileState extends State<FollowListTile> {
                         opacity: 0.8,
                         child: CachedNetworkImage(
                           imageUrl: thumbnail,
-                          errorWidget: (context, url, error) =>
-                              Icon(Icons.error),
+                          errorWidget: defaultErrorBuilder,
                           fit: BoxFit.cover,
                         ),
                       )

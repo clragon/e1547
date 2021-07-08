@@ -175,7 +175,7 @@ class _PostsPageState extends State<PostsPage>
         } else {
           return SizedBox.shrink();
         }
-      }).build(context);
+      });
     }
 
     Widget selectionAppBar() {
@@ -191,16 +191,18 @@ class _PostsPageState extends State<PostsPage>
               onPressed: () => setState(() =>
                   selections.addAll(widget.provider.posts.value.toSet()))),
           Builder(
-              builder: (context) => IconButton(
-                  icon: Icon(Icons.file_download),
-                  onPressed: () {
-                    loadingSnackbar(
-                        context: context,
-                        items: Set.from(selections),
-                        process: (post) => post.download(),
-                        timeout: Duration(milliseconds: 100));
-                    setState(() => selections.clear());
-                  })),
+            builder: (context) => IconButton(
+              icon: Icon(Icons.file_download),
+              onPressed: () {
+                loadingSnackbar(
+                    context: context,
+                    items: Set.from(selections),
+                    process: (post) => post.download(),
+                    timeout: Duration(milliseconds: 100));
+                setState(selections.clear);
+              },
+            ),
+          ),
           Builder(
             builder: (context) {
               return Padding(
@@ -239,9 +241,9 @@ class _PostsPageState extends State<PostsPage>
                                 return true;
                               }
                             },
-                      timeout: Duration(milliseconds: 500),
+                      timeout: Duration(milliseconds: 300),
                     );
-                    setState(() => selections.clear());
+                    setState(selections.clear);
                     return !isLiked;
                   },
                 ),
@@ -321,7 +323,7 @@ class _PostsPageState extends State<PostsPage>
             physics: BouncingScrollPhysics(),
           ),
           isLoading: widget.provider.isLoading,
-          isBuilt: tileSize != null && stagger != null,
+          isBuilt: [tileSize, stagger].every((element) => element != null),
           isEmpty: widget.provider.posts.value.isEmpty,
           isError: widget.provider.isError,
           onEmpty: Text('No posts'),

@@ -35,7 +35,7 @@ class PostTile extends StatelessWidget {
                     tag: getPostHero(post),
                     child: CachedNetworkImage(
                       imageUrl: post.sample.value.url,
-                      errorWidget: (context, url, error) => Icon(Icons.error),
+                      errorWidget: defaultErrorBuilder,
                       fit: BoxFit.cover,
                     ),
                   );

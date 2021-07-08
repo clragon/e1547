@@ -193,28 +193,15 @@ class _ProfileHeaderState extends State<ProfileHeader> {
           return CrossFade(
             showChild: value != null,
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Expanded(
                   child: Text(
                     value ?? '...',
-                    style: TextStyle(fontSize: 16),
+                    style: Theme.of(context).textTheme.headline6,
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                IconButton(
-                  icon: Icon(Icons.exit_to_app),
-                  onPressed: () {
-                    String msg = 'Forgot login details for $value';
-                    client.logout();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        duration: Duration(seconds: 2),
-                        content: Text(msg),
-                      ),
-                    );
-                    Navigator.of(context).pop();
-                  },
-                )
               ],
             ),
             secondChild: Padding(

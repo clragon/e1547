@@ -134,67 +134,65 @@ class _TextEditorState extends State<TextEditor> with TickerProviderStateMixin {
       );
     }
 
-    return Scaffold(
-        floatingActionButton: fab(),
-        bottomSheet: () {
-          if (isLoading) {
-            return Padding(
-                padding: EdgeInsets.only(
-                    left: 10.0, right: 10.0, bottom: 16, top: 16),
-                child: Column(mainAxisSize: MainAxisSize.min, children: [
-                  IntrinsicHeight(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.max,
-                      children: [
-                        Container(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(),
-                        )
-                      ],
-                    ),
-                  )
-                ]));
-          }
-          return (widget.richEditor && showBar)
-              ? EditorBar(controller: textController)
-              : null;
-        }(),
-        body: NestedScrollView(
-          headerSliverBuilder: (context, innerBoxIsScrolled) {
-            return [
-              SliverAppBar(
-                floating: true,
-                pinned: false,
-                snap: false,
-                leading: CloseButton(),
-                title: Text(widget.title),
-                bottom: widget.richEditor
-                    ? TabBar(
-                        controller: tabController,
-                        tabs: [
-                          Tab(text: 'WRITE'),
-                          Tab(text: 'PREVIEW'),
-                        ],
-                      )
-                    : null,
+    Widget loadingBar() {
+      return Padding(
+        padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IntrinsicHeight(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  SizedCircularProgressIndicator(size: 20),
+                ],
               ),
-            ];
-          },
-          body: Padding(
-            padding: EdgeInsets.only(bottom: 42),
-            child: widget.richEditor
-                ? TabBarView(
+            )
+          ],
+        ),
+      );
+    }
+
+    Map<Widget, Widget> tabs = {
+      Tab(text: 'WRITE'): editor(),
+      Tab(text: 'PREVIEW'): preview(),
+    };
+
+    return Scaffold(
+      floatingActionButton: fab(),
+      bottomSheet: isLoading
+          ? loadingBar()
+          : (widget.richEditor && showBar)
+              ? EditorBar(controller: textController)
+              : null,
+      body: NestedScrollView(
+        headerSliverBuilder: (context, innerBoxIsScrolled) => [
+          SliverAppBar(
+            floating: true,
+            leading: CloseButton(),
+            title: Text(widget.title),
+            bottom: widget.richEditor
+                ? TabBar(
                     controller: tabController,
-                    children: [
-                      editor(),
-                      preview(),
-                    ],
+                    tabs: tabs.keys.toList(),
+                    labelColor: Theme.of(context).iconTheme.color,
+                    indicatorColor: Theme.of(context).iconTheme.color,
                   )
-                : editor(),
+                : null,
           ),
-        ));
+        ],
+        body: Padding(
+          padding: EdgeInsets.only(bottom: 42),
+          child: widget.richEditor
+              ? TabBarView(
+                  controller: tabController,
+                  children: tabs.values.toList(),
+                )
+              : editor(),
+        ),
+      ),
+    );
   }
 }
 
