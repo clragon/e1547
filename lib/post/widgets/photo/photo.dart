@@ -14,6 +14,7 @@ class PostPhoto extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PhotoViewGestureDetectorScope(
+      axis: Axis.horizontal,
       child: PhotoView.customChild(
         heroAttributes: PhotoViewHeroAttributes(tag: getPostHero(post)),
         backgroundDecoration: BoxDecoration(
@@ -59,6 +60,8 @@ class PostPhoto extends StatelessWidget {
             ],
           ),
         ),
+        initialScale: PhotoViewComputedScale.contained,
+        minScale: PhotoViewComputedScale.contained,
         maxScale: PhotoViewComputedScale.covered * 6,
       ),
     );
