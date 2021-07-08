@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e1547/client.dart';
 import 'package:e1547/post.dart';
 import 'package:e1547/settings.dart';
@@ -256,44 +255,6 @@ extension editing on Post {
     this.rating.value = reset.rating.value;
     this.parent.value = reset.parent.value;
     this.isEditing.value = false;
-  }
-}
-
-enum ImageSize {
-  preview,
-  sample,
-  file,
-}
-
-void preloadImages({
-  @required BuildContext context,
-  @required int index,
-  @required List<Post> posts,
-  @required ImageSize size,
-  int reach = 2,
-}) {
-  for (int i = -(reach + 1); i < reach; i++) {
-    int target = index + 1 + i;
-    if (0 < target && target < posts.length) {
-      String url;
-      switch (size) {
-        case ImageSize.preview:
-          url = posts[target].preview.value.url;
-          break;
-        case ImageSize.sample:
-          url = posts[target].sample.value.url;
-          break;
-        case ImageSize.file:
-          url = posts[target].file.value.url;
-          break;
-      }
-      if (url != null) {
-        precacheImage(
-          CachedNetworkImageProvider(url),
-          context,
-        );
-      }
-    }
   }
 }
 

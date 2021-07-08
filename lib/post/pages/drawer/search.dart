@@ -14,8 +14,8 @@ class SearchDrawer extends StatelessWidget {
     return Drawer(
       child: Scaffold(
         appBar: AppBar(
+          elevation: 0,
           title: Text('Search'),
-          leading: BackButton(),
         ),
         body: ListView(
           padding: EdgeInsets.only(top: 8),

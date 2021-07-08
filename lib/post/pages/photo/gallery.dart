@@ -100,14 +100,8 @@ class _PostPhotoGalleryState extends State<PostPhotoGallery> with RouteAware {
               ),
               secondChild: CachedNetworkImage(
                 imageUrl: post.sample.value.url,
-                progressIndicatorBuilder: (context, url, progress) => Center(
-                  child: SizedCircularProgressIndicator(
-                    size: 26,
-                    value: progress.progress,
-                  ),
-                ),
-                errorWidget: (context, url, error) =>
-                    Center(child: Icon(Icons.error_outline)),
+                progressIndicatorBuilder: defaultProgressIndicatorBuilder,
+                errorWidget: defaultErrorBuilder,
               ),
             ),
           ],

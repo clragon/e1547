@@ -81,14 +81,14 @@ class _FollowsSplitPageState extends State<FollowsSplitPage>
         onError: Text('Failed to load follows'),
         isError: false,
         isLoading: follows == null,
-        isBuilt: tileSize != null && safe != null,
+        isBuilt: [tileSize, safe].every((element) => element != null),
         isEmpty: follows?.length == 0,
         refreshController: refreshController,
         refreshHeader: RefreshablePageDefaultHeader(
           refreshingText: 'Refreshing $progress / ${follows?.length ?? '?'}...',
         ),
         builder: (context) => StaggeredGridView.countBuilder(
-          key: Key('grid_${[crossAxisCount, safe].join('_')}_key'),
+          key: Key('grid_${[tileSize, safe].join('_')}_key'),
           crossAxisCount: crossAxisCount(constraints.maxWidth),
           itemCount: follows.length,
           itemBuilder: itemBuilder,

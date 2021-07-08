@@ -18,9 +18,11 @@ class _DrawerCounterState extends State<DrawerCounter> {
   List<Widget> children;
 
   Future<void> updateTags() async {
-    setState(() {
-      children = null;
-    });
+    if (mounted) {
+      setState(() {
+        children = null;
+      });
+    }
 
     if (widget.provider.isLoading) {
       return;
@@ -38,9 +40,11 @@ class _DrawerCounterState extends State<DrawerCounter> {
       ));
     }
 
-    setState(() {
-      children = cards;
-    });
+    if (mounted) {
+      setState(() {
+        children = cards;
+      });
+    }
   }
 
   @override
