@@ -22,6 +22,7 @@ class PostPhoto extends StatelessWidget {
         childSize: Size(post.file.value.width.toDouble(),
             post.file.value.height.toDouble()),
         child: CachedNetworkImage(
+          fit: BoxFit.contain,
           fadeInDuration: Duration(milliseconds: 0),
           fadeOutDuration: Duration(milliseconds: 0),
           imageUrl: post.file.value.url,
@@ -31,13 +32,14 @@ class PostPhoto extends StatelessWidget {
             children: [
               Positioned.fill(
                 child: CachedNetworkImage(
+                  fit: BoxFit.contain,
                   imageUrl: post.sample.value.url,
                   errorWidget: defaultErrorBuilder,
                   progressIndicatorBuilder: (context, url, progress) => Center(
                     child: SizedCircularProgressIndicator(
                         size:
                             min(post.file.value.width, post.file.value.height) *
-                                0.2),
+                                0.1),
                   ),
                 ),
               ),
