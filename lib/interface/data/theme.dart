@@ -8,6 +8,16 @@ enum AppTheme {
   blue,
 }
 
+SystemUiOverlayStyle defaultUIStyle(ThemeData theme) => SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarBrightness: Brightness.dark,
+      statusBarIconBrightness: Brightness.light,
+      systemNavigationBarColor: theme.canvasColor,
+      systemNavigationBarIconBrightness: theme.brightness == Brightness.light
+          ? Brightness.dark
+          : Brightness.light,
+    );
+
 ThemeData prepareTheme(ThemeData theme) => theme.copyWith(
       applyElevationOverlayColor: false,
       dialogBackgroundColor: theme.canvasColor,
@@ -31,16 +41,7 @@ ThemeData prepareTheme(ThemeData theme) => theme.copyWith(
         ),
       ),
       appBarTheme: AppBarTheme(
-        systemOverlayStyle: SystemUiOverlayStyle(
-          statusBarColor: Colors.transparent,
-          statusBarBrightness: Brightness.dark,
-          statusBarIconBrightness: Brightness.light,
-          systemNavigationBarColor: theme.canvasColor,
-          systemNavigationBarIconBrightness:
-              theme.brightness == Brightness.light
-                  ? Brightness.dark
-                  : Brightness.light,
-        ),
+        systemOverlayStyle: defaultUIStyle(theme),
         color: theme.canvasColor,
         foregroundColor: theme.iconTheme.color,
         backwardsCompatibility: false,
