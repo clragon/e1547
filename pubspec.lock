@@ -170,10 +170,12 @@ packages:
   flutter_staggered_grid_view:
     dependency: "direct main"
     description:
-      name: flutter_staggered_grid_view
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.3.3"
+      path: "."
+      ref: HEAD
+      resolved-ref: "406c0b6e410b6d0cb40836175f269b26635625a0"
+      url: "git://github.com/clragon/flutter_staggered_grid_view.git"
+    source: git
+    version: "0.4.0"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -355,9 +357,11 @@ packages:
   photo_view:
     dependency: "direct main"
     description:
-      name: photo_view
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "."
+      ref: HEAD
+      resolved-ref: "81bdd05d75ea740b23751f8d261a94ded1e5b37f"
+      url: "git://github.com/clragon/photo_view.git"
+    source: git
     version: "0.11.1"
   platform:
     dependency: transitive
