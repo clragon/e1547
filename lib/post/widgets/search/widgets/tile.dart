@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e1547/interface.dart';
 import 'package:e1547/post.dart';
 import 'package:flutter/material.dart';
@@ -33,10 +32,12 @@ class PostTile extends StatelessWidget {
                   }
                   return Hero(
                     tag: post.hero,
-                    child: CachedNetworkImage(
-                      imageUrl: post.sample.value.url,
-                      errorWidget: defaultErrorBuilder,
+                    child: PostImageWidget(
+                      post: post,
+                      size: ImageSize.sample,
                       fit: BoxFit.cover,
+                      showProgress: false,
+                      withPreview: false,
                     ),
                   );
                 }),
