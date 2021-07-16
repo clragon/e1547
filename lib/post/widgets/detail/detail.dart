@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:e1547/client.dart';
 import 'package:e1547/interface.dart';
 import 'package:e1547/post.dart';
@@ -253,7 +252,9 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
                 removeTop: true,
                 child: ListView(
                   padding: EdgeInsets.only(
-                      top: MediaQuery.of(context).padding.top, bottom: 24),
+                    top: MediaQuery.of(context).padding.top,
+                    bottom: kBottomNavigationBarHeight + 24,
+                  ),
                   children: [
                     Padding(
                       padding: EdgeInsets.only(bottom: 10),

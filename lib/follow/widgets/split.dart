@@ -88,6 +88,7 @@ class _FollowsSplitPageState extends State<FollowsSplitPage>
         ),
         builder: (context) => StaggeredGridView.countBuilder(
           key: Key('grid_${[tileSize, safe].join('_')}_key'),
+          addAutomaticKeepAlives: false,
           crossAxisCount: crossAxisCount(constraints.maxWidth),
           itemCount: follows.length,
           itemBuilder: itemBuilder,

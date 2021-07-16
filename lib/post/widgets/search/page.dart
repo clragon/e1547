@@ -316,6 +316,7 @@ class _PostsPageState extends State<PostsPage>
           },
           builder: (context) => StaggeredGridView.countBuilder(
             key: Key('grid_${[tileSize, stagger].join('_')}_key'),
+            addAutomaticKeepAlives: false,
             crossAxisCount: crossAxisCount(constraints.maxWidth),
             itemCount: widget.provider.posts.value.length,
             itemBuilder: itemBuilder,
