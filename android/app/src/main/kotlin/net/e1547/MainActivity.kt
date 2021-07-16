@@ -1,4 +1,4 @@
-package clragon.e1547
+package net.e1547
 
 import androidx.core.view.WindowCompat
 import io.flutter.embedding.android.FlutterActivity
