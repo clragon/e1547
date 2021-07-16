@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
-import 'package:wakelock/wakelock.dart';
 
 import 'image.dart';
 
@@ -50,11 +49,7 @@ class Post {
 
   ValueNotifier<VoteStatus> voteStatus = ValueNotifier(VoteStatus.unknown);
 
-  static List<Post> loadedVideos = [];
-
   VideoPlayerController controller;
-
-  ImageType type;
 
   List<String> get artists {
     return tags.value['artist']
@@ -88,76 +83,13 @@ class Post {
     isFavorite = ValueNotifier(raw['is_favorited']);
     score = ValueNotifier(raw['score']['total']);
 
-    switch (file.value.ext) {
-      case 'webm':
-        if (Platform.isIOS) {
-          file.value.url = file.value.url.replaceAll('.webm', '.mp4');
-        }
-        type = ImageType.Video;
-        break;
-      case 'swf':
-        type = ImageType.Unsupported;
-        break;
-      default:
-        type = ImageType.Image;
-        break;
-    }
-
-    prepareVideo();
-  }
-
-  Future<void> prepareVideo() async {
-    if (type == ImageType.Video) {
-      if (controller != null) {
-        await controller.pause();
-        await controller.dispose();
+    if (file.value.ext == 'webm') {
+      if (Platform.isIOS) {
+        file.value.ext = 'mp4';
+        file.value.url = file.value.url.replaceAll('.webm', '.mp4');
       }
-      controller = VideoPlayerController.network(file.value.url);
-      controller.setLooping(true);
-      controller.addListener(() =>
-          controller.value.isPlaying ? Wakelock.enable() : Wakelock.disable());
     }
   }
-
-  Future<void> initVideo() async {
-    if (type != ImageType.Video || loadedVideos.contains(this)) {
-      return;
-    }
-    if (loadedVideos.length >= 6) {
-      loadedVideos.first.removeVideo();
-    }
-    loadedVideos.add(this);
-    await this.controller.initialize();
-  }
-
-  Future<void> removeVideo() async {
-    await prepareVideo();
-    loadedVideos.remove(this);
-  }
-
-  Future<void> dispose() async {
-    tags.dispose();
-    comments.dispose();
-    parent.dispose();
-    score.dispose();
-    favorites.dispose();
-    rating.dispose();
-    description.dispose();
-    sources.dispose();
-    isFavorite.dispose();
-    isEditing.dispose();
-    showUnsafe.dispose();
-    controller?.dispose();
-    loadedVideos.remove(this);
-  }
-
-  Uri url(String host) => Uri(scheme: 'https', host: host, path: '/posts/$id');
-}
-
-enum ImageType {
-  Image,
-  Video,
-  Unsupported,
 }
 
 enum VoteStatus {

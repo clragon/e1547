@@ -10,18 +10,89 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart'
     show DefaultCacheManager;
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:video_player/video_player.dart';
+import 'package:wakelock/wakelock.dart';
 
 import 'post.dart';
 
+extension tagging on Post {
+  bool hasTag(String tag) {
+    if (tag.contains(':')) {
+      String identifier = tag.split(':')[0];
+      String value = tag.split(':')[1];
+      switch (identifier) {
+        case 'rating':
+          if (this.rating.value.toLowerCase() == value.toLowerCase()) {
+            return true;
+          }
+          break;
+        case 'id':
+          if (this.id == int.tryParse(value)) {
+            return true;
+          }
+          break;
+        case 'type':
+          if (this.file.value.ext.toLowerCase() == value.toLowerCase()) {
+            return true;
+          }
+          break;
+        case 'pool':
+          if (this.pools.contains(value)) {
+            return true;
+          }
+          break;
+        case 'uploader':
+        case 'userid':
+        case 'user':
+          if (this.uploader.toString() == value) {
+            return true;
+          }
+          break;
+        case 'score':
+          bool greater = value.contains('>');
+          bool smaller = value.contains('<');
+          bool equal = value.contains('=');
+          int score = int.tryParse(value.replaceAll(r'[<>=]', ''));
+          if (greater) {
+            if (equal) {
+              if (this.score.value >= score) {
+                return true;
+              }
+            } else {
+              if (this.score.value > score) {
+                return true;
+              }
+            }
+          }
+          if (smaller) {
+            if (equal) {
+              if (this.score.value <= score) {
+                return true;
+              }
+            } else {
+              if (this.score.value < score) {
+                return true;
+              }
+            }
+          }
+          if ((!greater && !smaller) && this.score.value == score) {
+            return true;
+          }
+          break;
+      }
+    }
+
+    return tags.value.values
+        .any((category) => category.contains(tag.toLowerCase()));
+  }
+}
+
 extension denying on Post {
   Future<bool> isDeniedBy(List<String> denylist) async =>
-      await deniedBy(denylist) != null;
+      await getDenier(denylist) != null;
 
-  Future<String> deniedBy(List<String> denylist) async {
+  Future<String> getDenier(List<String> denylist) async {
     if (denylist.length > 0) {
-      List<String> tags =
-          this.tags.value.values.expand((tags) => tags).toList();
-
       for (String line in denylist) {
         List<String> deny = [];
         List<String> any = [];
@@ -48,79 +119,9 @@ extension denying on Post {
           }
         });
 
-        bool containtsTag(String tag, List<String> tags) {
-          if (tag.contains(':')) {
-            String identifier = tag.split(':')[0];
-            String value = tag.split(':')[1];
-            switch (identifier) {
-              case 'rating':
-                if (this.rating.value.toLowerCase() == value.toLowerCase()) {
-                  return true;
-                }
-                break;
-              case 'id':
-                if (this.id == int.tryParse(value)) {
-                  return true;
-                }
-                break;
-              case 'type':
-                if (this.file.value.ext.toLowerCase() == value.toLowerCase()) {
-                  return true;
-                }
-                break;
-              case 'pool':
-                if (this.pools.contains(value)) {
-                  return true;
-                }
-                break;
-              case 'uploader':
-              case 'userid':
-              case 'user':
-                if (this.uploader.toString() == value) {
-                  return true;
-                }
-                break;
-              case 'score':
-                bool greater = value.contains('>');
-                bool smaller = value.contains('<');
-                bool equal = value.contains('=');
-                int score = int.tryParse(value.replaceAll(r'[<>=]', ''));
-                if (greater) {
-                  if (equal) {
-                    if (this.score.value >= score) {
-                      return true;
-                    }
-                  } else {
-                    if (this.score.value > score) {
-                      return true;
-                    }
-                  }
-                }
-                if (smaller) {
-                  if (equal) {
-                    if (this.score.value <= score) {
-                      return true;
-                    }
-                  } else {
-                    if (this.score.value < score) {
-                      return true;
-                    }
-                  }
-                }
-                if ((!greater && !smaller) && this.score.value == score) {
-                  return true;
-                }
-                break;
-            }
-          }
-
-          return tags.contains(tag.toLowerCase());
-        }
-
-        bool denied = deny.every((tag) => containtsTag(tag, tags));
-        bool allowed = allow.any((tag) => containtsTag(tag, tags));
-        bool optional =
-            any.isEmpty || any.any((tag) => containtsTag(tag, tags));
+        bool denied = deny.every((tag) => hasTag(tag));
+        bool allowed = allow.any((tag) => hasTag(tag));
+        bool optional = any.isEmpty || any.any((tag) => hasTag(tag));
 
         if (denied && optional && !allowed) {
           return line;
@@ -167,29 +168,32 @@ extension favoriting on Post {
       return true;
     } else {
       this.isFavorite.value = true;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        duration: Duration(seconds: 1),
-        content: Text('Failed to remove Post #${this.id} from favorites'),
-      ));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          duration: Duration(seconds: 1),
+          content: Text('Failed to remove Post #${this.id} from favorites'),
+        ),
+      );
       return false;
     }
   }
 
-  Future<bool> tryAddFav(BuildContext context) async {
-    Future<void> cooldown = Future.delayed(Duration(milliseconds: 1000));
+  Future<bool> tryAddFav(BuildContext context, {Duration cooldown}) async {
     if (await client.addFavorite(this.id)) {
       () async {
-        // cooldown ensures no interference with like animation
-        await cooldown;
+        // cooldown avoids interference with animation
+        await Future.delayed(cooldown ?? Duration(milliseconds: 0));
         this.isFavorite.value = true;
       }();
       this.favorites.value += 1;
       return true;
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        duration: Duration(seconds: 1),
-        content: Text('Failed to add Post #${this.id} to favorites'),
-      ));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          duration: Duration(seconds: 1),
+          content: Text('Failed to add Post #${this.id} to favorites'),
+        ),
+      );
       return false;
     }
   }
@@ -258,6 +262,81 @@ extension editing on Post {
   }
 }
 
-String getPostHero(Post post) {
-  return 'image_${post.id}';
+extension transitioning on Post {
+  String get hero => 'image_$id';
+}
+
+enum ImageType {
+  Image,
+  Video,
+  Unsupported,
+}
+
+extension typing on Post {
+  ImageType get type {
+    switch (file.value.ext) {
+      case 'mp4':
+      case 'webm':
+        return ImageType.Video;
+      case 'swf':
+        return ImageType.Unsupported;
+      default:
+        return ImageType.Image;
+    }
+  }
+}
+
+extension playing on Post {
+  static List<Post> loadedVideos = [];
+
+  Future<void> prepareVideo() async {
+    if (type == ImageType.Video) {
+      if (controller != null) {
+        await controller.pause();
+        await controller.dispose();
+      }
+      controller = VideoPlayerController.network(file.value.url);
+      controller.setLooping(true);
+      controller.addListener(() =>
+          controller.value.isPlaying ? Wakelock.enable() : Wakelock.disable());
+    }
+  }
+
+  Future<void> initVideo() async {
+    if (type != ImageType.Video || loadedVideos.contains(this)) {
+      return;
+    }
+    if (loadedVideos.length >= 6) {
+      loadedVideos.first.disposeVideo();
+    }
+    loadedVideos.add(this);
+    await this.controller.initialize();
+  }
+
+  Future<void> disposeVideo() async {
+    await prepareVideo();
+    loadedVideos.remove(this);
+  }
+}
+
+extension disposing on Post {
+  Future<void> dispose() async {
+    tags.dispose();
+    comments.dispose();
+    parent.dispose();
+    score.dispose();
+    favorites.dispose();
+    rating.dispose();
+    description.dispose();
+    sources.dispose();
+    isFavorite.dispose();
+    isEditing.dispose();
+    showUnsafe.dispose();
+    controller?.dispose();
+    disposeVideo();
+  }
+}
+
+extension linking on Post {
+  Uri url(String host) => Uri(scheme: 'https', host: host, path: '/posts/$id');
 }

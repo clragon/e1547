@@ -143,7 +143,7 @@ class _PostsPageState extends State<PostsPage>
             valueListenable: isSearching,
             builder: (BuildContext context, value, Widget child) {
               void submit(String result) {
-                widget.provider.search.value = result;
+                widget.provider.search.value = sortTags(result);
                 sheetController?.close();
               }
 

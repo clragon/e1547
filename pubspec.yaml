@@ -11,6 +11,7 @@ dependencies:
   # widgets
   expandable: ^5.0.1
   like_button: ^2.0.2
+  photo_view: ^0.11.1
   sliding_sheet: ^0.5.0
   video_player: ^2.1.0
   pull_to_refresh: ^2.0.0
@@ -20,11 +21,8 @@ dependencies:
   flutter_typeahead: ^3.1.1
   flutter_cache_manager: ^3.0.1
 
-  photo_view:
-    git: git://github.com/clragon/photo_view.git
   flutter_staggered_grid_view:
-    git:
-      url: git://github.com/clragon/flutter_staggered_grid_view.git
+    git: git://github.com/clragon/flutter_staggered_grid_view.git
 
   # data
   mutex: ^3.0.0

@@ -47,26 +47,52 @@ class SearchPageAppBar extends StatefulWidget with PreferredSizeWidget {
 }
 
 class _SearchPageAppBarState extends State<SearchPageAppBar> {
-  String title = '...';
+  String title = 'Search';
   List<Follow> follows;
   Pool pool;
 
-  void updateFollows() async {
+  Future<void> updateFollows() async {
     await db.follows.value.then((value) => follows = value);
     updateTitle();
   }
 
-  void updateTitle() {
-    bool matched = false;
+  String getTitle() {
+    if (follows != null && follows.contains(widget.provider.search.value)) {
+      Follow follow = follows
+          .singleWhere((follow) => follow.tags == widget.provider.search.value);
+      if (widget.provider.posts.value.isNotEmpty) {
+        follow
+            .updateLatest(widget.provider.posts.value.first, foreground: true)
+            .then((updated) {
+          if (updated) {
+            db.follows.value = Future.value(follows);
+          }
+        });
+      }
+      if (pool != null) {
+        if (follow.updatePoolName(pool)) {
+          db.follows.value = Future.value(follows);
+        }
+      }
+      return follow.title;
+    }
+    if (pool != null) {
+      return tagToTitle(pool.name);
+    }
+    if (Tagset.parse(widget.provider.search.value).length == 1) {
+      return tagToTitle(widget.provider.search.value);
+    }
+    return 'Search';
+  }
+
+  Future<void> updateTitle() async {
     if (widget.provider.search.value.isNotEmpty &&
         !widget.provider.search.value.contains(' ')) {
+      bool matched = false;
       Map<RegExp, Function(RegExpMatch match)> specials = {
-        RegExp(r'^pool:(?<id>\d+)$'): (match) {
+        RegExp(r'^pool:(?<id>\d+)$'): (match) async {
           if (pool == null) {
-            client.pool(int.tryParse(match.namedGroup('id'))).then((value) {
-              pool = value;
-              updateTitle();
-            });
+            pool = await client.pool(int.tryParse(match.namedGroup('id')));
           }
         },
       };
@@ -74,45 +100,17 @@ class _SearchPageAppBarState extends State<SearchPageAppBar> {
       for (MapEntry<RegExp, Function(RegExpMatch)> entry in specials.entries) {
         RegExpMatch match = entry.key.firstMatch(widget.provider.search.value);
         if (match != null) {
-          entry.value(match);
+          await entry.value(match);
           matched = true;
           break;
         }
       }
+      if (!matched) {
+        pool = null;
+      }
     }
 
-    if (!matched) {
-      pool = null;
-    }
-
-    title = () {
-      if (follows != null && follows.contains(widget.provider.search.value)) {
-        Follow follow = follows.singleWhere(
-            (follow) => follow.tags == widget.provider.search.value);
-        if (widget.provider.posts.value.isNotEmpty) {
-          follow
-              .updateLatest(widget.provider.posts.value.first, foreground: true)
-              .then((updated) {
-            if (updated) {
-              db.follows.value = Future.value(follows);
-            }
-          });
-        }
-        if (pool != null) {
-          if (follow.updatePoolName(pool)) {
-            db.follows.value = Future.value(follows);
-          }
-        }
-        return follow.title;
-      }
-      if (pool != null) {
-        return tagToTitle(pool.name);
-      }
-      if (Tagset.parse(widget.provider.search.value).length == 1) {
-        return tagToTitle(widget.provider.search.value);
-      }
-      return 'Search';
-    }();
+    title = getTitle();
     if (mounted) {
       setState(() {});
     }
@@ -124,8 +122,8 @@ class _SearchPageAppBarState extends State<SearchPageAppBar> {
     updateTitle();
     widget.provider.search.addListener(updateTitle);
     widget.provider.posts.addListener(updateTitle);
-    updateFollows();
     db.follows.addListener(updateFollows);
+    updateFollows();
   }
 
   @override
