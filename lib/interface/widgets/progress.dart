@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 class SizedCircularProgressIndicator extends StatelessWidget {
   final double size;
   final double value;
+  final double strokeWidth;
 
   const SizedCircularProgressIndicator({
     @required this.size,
     this.value,
+    this.strokeWidth = 4,
   });
 
   @override
@@ -18,6 +20,7 @@ class SizedCircularProgressIndicator extends StatelessWidget {
         width: size,
         child: CircularProgressIndicator(
           value: value,
+          strokeWidth: strokeWidth,
         ),
       ),
     );

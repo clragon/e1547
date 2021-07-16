@@ -257,16 +257,15 @@ class _PostsPageState extends State<PostsPage>
     return LayoutBuilder(builder: (context, constraints) {
       StaggeredTile tileBuilder(int item) {
         if (item < widget.provider.posts.value.length) {
-          PostImage sample = widget.provider.posts.value[item].sample.value;
-          double heightRatio = notZero(sample.height / sample.width);
-          double widthRatio = notZero(sample.width / sample.height);
+          PostImage image = widget.provider.posts.value[item].sample.value;
+          double widthRatio = image.width / image.height;
+          double heightRatio = image.height / image.width;
 
           switch (stagger) {
             case GridState.square:
               return StaggeredTile.count(1, 1 * tileHeightFactor);
             case GridState.vertical:
               return StaggeredTile.count(1, heightRatio);
-              break;
             case GridState.omni:
               if (crossAxisCount(constraints.maxWidth) == 1) {
                 return StaggeredTile.count(1, heightRatio);

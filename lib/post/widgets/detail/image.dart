@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e1547/client.dart';
 import 'package:e1547/interface.dart';
 import 'package:e1547/post.dart';
@@ -19,14 +18,7 @@ class DetailImage extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Flexible(
-          child: CachedNetworkImage(
-            imageUrl: post.sample.value.url,
-            fit: BoxFit.contain,
-            progressIndicatorBuilder: defaultProgressIndicatorBuilder,
-            errorWidget: defaultErrorBuilder,
-          ),
-        ),
+        Flexible(child: PostImageWidget(post: post, size: ImageSize.sample)),
       ],
     );
   }
