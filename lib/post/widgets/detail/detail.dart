@@ -29,10 +29,10 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
   ModalRoute route;
 
   Future<void> onPageChange() async {
-    if (this.mounted && !widget.provider.posts.value.contains(widget.post)) {
-      if (mounted && route.isActive) {
-        navigator.removeRoute(route);
-      }
+    if (mounted &&
+        route.isActive &&
+        !widget.provider.posts.value.contains(widget.post)) {
+      navigator.removeRoute(route);
     }
   }
 
@@ -49,20 +49,17 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
     super.initState();
     widget.provider?.posts?.addListener(onPageChange);
     widget.post.isEditing.addListener(closeSheet);
-    if (!(widget.post.controller?.value?.isInitialized ?? true)) {
-      widget.post.initVideo();
-    }
+    widget.post.prepareVideo().then((_) {
+      if (!(widget.post.controller?.value?.isInitialized ?? true)) {
+        widget.post.initVideo();
+      }
+    });
   }
 
   @override
   void reassemble() {
     super.reassemble();
-    routeObserver.unsubscribe(this);
     routeObserver.subscribe(this, ModalRoute.of(context));
-    widget.post.isEditing.removeListener(closeSheet);
-    widget.post.isEditing.addListener(closeSheet);
-    widget.provider?.posts?.removeListener(onPageChange);
-    widget.provider?.posts?.addListener(onPageChange);
     if (widget.post.file.value.url != null) {
       if (widget.post.type == ImageType.Image) {
         preloadImage(context: context, post: widget.post, size: ImageSize.file);
@@ -109,12 +106,14 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
           editReason: reason);
       widget.post.isEditing.value = false;
     } on DioError catch (error) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        duration: Duration(seconds: 1),
-        content: Text(
-            '${error.response.statusCode} : ${error.response.statusMessage}'),
-        behavior: SnackBarBehavior.floating,
-      ));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          duration: Duration(seconds: 1),
+          content: Text(
+              'failed to edit Post #${widget.post.id} with code ${error.response.statusCode}'),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
     }
     await widget.post.resetPost(online: true);
     closeSheet();
@@ -176,7 +175,10 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
                     widget.post.tryRemoveFav(context);
                     return false;
                   } else {
-                    widget.post.tryAddFav(context);
+                    widget.post.tryAddFav(
+                      context,
+                      cooldown: Duration(milliseconds: 1000),
+                    );
                     return true;
                   }
                 },

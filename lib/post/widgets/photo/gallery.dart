@@ -123,7 +123,7 @@ class _PostPhotoGalleryState extends State<PostPhotoGallery> with RouteAware {
                     return PostPhoto(post);
                   case ImageType.Video:
                     return Hero(
-                      tag: getPostHero(widget.posts[index]),
+                      tag: widget.posts[index].hero,
                       child: video(post),
                     );
                   case ImageType.Unsupported:

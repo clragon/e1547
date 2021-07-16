@@ -357,11 +357,9 @@ packages:
   photo_view:
     dependency: "direct main"
     description:
-      path: "."
-      ref: HEAD
-      resolved-ref: "81bdd05d75ea740b23751f8d261a94ded1e5b37f"
-      url: "git://github.com/clragon/photo_view.git"
-    source: git
+      name: photo_view
+      url: "https://pub.dartlang.org"
+    source: hosted
     version: "0.11.1"
   platform:
     dependency: transitive

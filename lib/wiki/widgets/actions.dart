@@ -151,12 +151,10 @@ class TagSearchActions extends StatelessWidget {
             tooltip: 'Remove from search',
             onPressed: () {
               Navigator.of(context).maybePop();
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                provider.search.value = (provider.search.value.split(' ')
-                      ..removeWhere((element) => tagToName(element) == tag))
-                    .join(' ')
-                    .trim();
-              });
+
+              provider.search.value = sortTags((provider.search.value.split(' ')
+                    ..removeWhere((element) => tagToName(element) == tag))
+                  .join(' '));
             },
           );
         } else {
@@ -167,9 +165,8 @@ class TagSearchActions extends StatelessWidget {
                 tooltip: 'Add to search',
                 onPressed: () {
                   Navigator.of(context).maybePop();
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    provider.search.value = provider.search.value + ' $tag';
-                  });
+                  provider.search.value =
+                      sortTags([provider.search.value, tag].join(' '));
                 },
               ),
               IconButton(
@@ -177,9 +174,8 @@ class TagSearchActions extends StatelessWidget {
                 tooltip: 'Subtract from search',
                 onPressed: () {
                   Navigator.of(context).maybePop();
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    provider.search.value = provider.search.value + ' -$tag';
-                  });
+                  provider.search.value =
+                      sortTags([provider.search.value, '-$tag'].join(' '));
                 },
               ),
             ],

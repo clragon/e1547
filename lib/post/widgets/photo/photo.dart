@@ -16,10 +16,8 @@ class PostPhoto extends StatelessWidget {
     return PhotoViewGestureDetectorScope(
       axis: Axis.horizontal,
       child: PhotoView.customChild(
-        heroAttributes: PhotoViewHeroAttributes(tag: getPostHero(post)),
-        backgroundDecoration: BoxDecoration(
-          color: Colors.transparent,
-        ),
+        heroAttributes: PhotoViewHeroAttributes(tag: post.hero),
+        backgroundDecoration: BoxDecoration(color: Colors.transparent),
         childSize: Size(post.file.value.width.toDouble(),
             post.file.value.height.toDouble()),
         child: CachedNetworkImage(

@@ -44,7 +44,7 @@ class PostProvider extends DataProvider<Post> {
 
     deniedMap.value = {};
     for (Post item in items) {
-      String denier = await item.deniedBy(denylist);
+      String denier = await item.getDenier(denylist);
       if (denier != null) {
         if (deniedMap.value[denier] == null) {
           deniedMap.value[denier] = [];
