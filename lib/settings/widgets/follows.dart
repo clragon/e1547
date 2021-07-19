@@ -211,7 +211,7 @@ class _FollowingPageState extends State<FollowingPage> with FollowerMixin {
     }
 
     return Scaffold(
-      appBar: ScrollingAppbarFrame(
+      appBar: ScrollToTop(
         child: AppBar(
           title: Text('Following'),
           actions: [

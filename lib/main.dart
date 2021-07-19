@@ -12,6 +12,7 @@ Future<void> updateTheme() async {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  WidgetsBinding.instance.renderView.automaticSystemUiAdjustment = false;
   db.theme.addListener(updateTheme);
   await updateTheme();
   runApp(Main());

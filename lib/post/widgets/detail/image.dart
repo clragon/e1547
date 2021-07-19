@@ -246,7 +246,7 @@ class DetailImageDisplay extends StatelessWidget {
         return DetailImageOverlay(
           onOpen: onTap,
           post: post,
-          child: Container(
+          child: ConstrainedBox(
             constraints: BoxConstraints(
               minHeight: (MediaQuery.of(context).size.height / 2),
               maxHeight: MediaQuery.of(context).size.width >
