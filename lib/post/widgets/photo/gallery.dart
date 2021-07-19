@@ -68,10 +68,8 @@ class _PostPhotoGalleryState extends State<PostPhotoGallery> with RouteAware {
                   child: child,
                 ),
                 child: Builder(
-                  builder: (context) {
-                    return PostAppBar(
-                        post: widget.posts[value], canEdit: false);
-                  },
+                  builder: (context) =>
+                      PostPhotoAppBar(post: widget.posts[value]),
                 ),
               ),
             ),

@@ -360,6 +360,7 @@ class DTextField extends StatelessWidget {
     };
 
     String result = source.replaceAllMapped(RegExp(r'\r\n'), (_) => '\n');
+    result = result.trim();
 
     try {
       return RichText(

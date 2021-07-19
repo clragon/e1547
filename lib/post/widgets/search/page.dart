@@ -141,7 +141,7 @@ class _PostsPageState extends State<PostsPage>
         if (widget.provider.canSearch) {
           return ValueListenableBuilder(
             valueListenable: isSearching,
-            builder: (BuildContext context, value, Widget child) {
+            builder: (context, value, child) {
               void submit(String result) {
                 widget.provider.search.value = sortTags(result);
                 sheetController?.close();
@@ -290,7 +290,7 @@ class _PostsPageState extends State<PostsPage>
         },
         child: RefreshablePage.pageBuilder(
           pageBuilder: (context, child, scrollController) => Scaffold(
-            appBar: ScrollingAppbarFrame(
+            appBar: ScrollToTop(
               child: Material(
                 elevation: Theme.of(context).appBarTheme.elevation ?? 4,
                 child: CrossFade(

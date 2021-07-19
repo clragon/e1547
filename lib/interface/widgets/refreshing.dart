@@ -193,7 +193,7 @@ class _RefreshablePageState extends State<RefreshablePage> {
     } else {
       return LayoutBuilder(builder: (context, constraints) {
         return Scaffold(
-          appBar: ScrollingAppbarFrame(
+          appBar: ScrollToTop(
             child: widget.appBar,
             controller: scrollController,
           ),
@@ -314,29 +314,6 @@ class PageLoader extends StatelessWidget {
       ),
     ]);
   }
-}
-
-class ScrollingAppbarFrame extends StatelessWidget with PreferredSizeWidget {
-  final ScrollController controller;
-  final Widget child;
-
-  const ScrollingAppbarFrame({@required this.child, this.controller});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onDoubleTap: controller != null
-          ? () => controller.animateTo(controller.position.minScrollExtent,
-              duration: Duration(milliseconds: 500),
-              curve: Curves.fastOutSlowIn)
-          : null,
-      behavior: HitTestBehavior.translucent,
-      child: child,
-    );
-  }
-
-  @override
-  Size get preferredSize => Size.fromHeight(kToolbarHeight);
 }
 
 class RefreshablePageDefaultHeader extends StatelessWidget {
