@@ -258,6 +258,7 @@ extension editing on Post {
     this.sources.value = reset.sources.value;
     this.rating.value = reset.rating.value;
     this.parent.value = reset.parent.value;
+    this.isEditing.value = false;
   }
 }
 

@@ -54,6 +54,12 @@ class _PostDetailGalleryState extends State<PostDetailGallery> {
           itemBuilder: pageBuilder,
           itemCount: widget.provider.posts.value.length,
           onPageChanged: (index) {
+            if (widget.provider.posts.value.isNotEmpty) {
+              Post lastPost = widget.provider.posts.value[lastIndex];
+              if (lastPost.isEditing.value) {
+                lastPost.resetPost();
+              }
+            }
             lastIndex = index;
             preloadImages(
               context: context,
@@ -61,12 +67,6 @@ class _PostDetailGalleryState extends State<PostDetailGallery> {
               posts: widget.provider.posts.value,
               size: ImageSize.sample,
             );
-            // this could potentially be removed
-            if (widget.provider.posts.value.isNotEmpty) {
-              if (widget.provider.posts.value[lastIndex].isEditing.value) {
-                widget.provider.posts.value[lastIndex].resetPost();
-              }
-            }
           },
         );
       },

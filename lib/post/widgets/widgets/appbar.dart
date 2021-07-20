@@ -13,25 +13,29 @@ class PostDetailAppBar extends StatelessWidget with AppBarSizeMixin {
 
   @override
   Widget build(BuildContext context) {
-    return TransparentAppBar(
-      leading: IconButton(
-        icon: ShadowIcon(post.isEditing.value ? Icons.clear : Icons.arrow_back),
-        onPressed: Navigator.of(context).maybePop,
-      ),
-      actions: post.isEditing.value
-          ? null
-          : [
-              PopupMenuButton(
-                icon: ShadowIcon(
-                  Icons.more_vert,
+    return ValueListenableBuilder(
+      valueListenable: post.isEditing,
+      builder: (context, value, child) => TransparentAppBar(
+        leading: IconButton(
+          icon:
+              ShadowIcon(post.isEditing.value ? Icons.clear : Icons.arrow_back),
+          onPressed: Navigator.of(context).maybePop,
+        ),
+        actions: post.isEditing.value
+            ? null
+            : [
+                PopupMenuButton(
+                  icon: ShadowIcon(
+                    Icons.more_vert,
+                  ),
+                  onSelected: (value) => value(),
+                  itemBuilder: (context) => [
+                    ...postMenuActions(context, post),
+                    ...postMenuUserActions(context, post),
+                  ],
                 ),
-                onSelected: (value) => value(),
-                itemBuilder: (context) => [
-                  ...postMenuActions(context, post),
-                  ...postMenuUserActions(context, post),
-                ],
-              ),
-            ],
+              ],
+      ),
     );
   }
 }

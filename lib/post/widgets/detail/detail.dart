@@ -20,10 +20,8 @@ class PostDetail extends StatefulWidget {
   }
 }
 
-class _PostDetailState extends State<PostDetail> with RouteAware, UpdateMixin {
-  FloatingActionButtonController fabController =
-      FloatingActionButtonController(fallbackIcon: Icon(Icons.add));
-  PersistentBottomSheetController sheetController;
+class _PostDetailState extends State<PostDetail> with RouteAware {
+  SheetActionController sheetController = SheetActionController();
   bool keepPlaying = false;
 
   NavigatorState navigator;
@@ -38,7 +36,7 @@ class _PostDetailState extends State<PostDetail> with RouteAware, UpdateMixin {
   }
 
   void closeSheet() {
-    if (!widget.post.isEditing.value && sheetController != null) {
+    if (!widget.post.isEditing.value) {
       sheetController.close();
     }
   }
@@ -48,7 +46,6 @@ class _PostDetailState extends State<PostDetail> with RouteAware, UpdateMixin {
     super.initState();
     widget.provider?.posts?.addListener(onPageChange);
     widget.post.isEditing.addListener(closeSheet);
-    widget.post.isEditing.addListener(update);
     if (widget.post.controller == null) {
       widget.post.prepareVideo().then((_) {
         if (!(widget.post.controller?.value?.isInitialized ?? true)) {
@@ -78,7 +75,6 @@ class _PostDetailState extends State<PostDetail> with RouteAware, UpdateMixin {
     }
     widget.provider?.pages?.removeListener(onPageChange);
     widget.post.isEditing.removeListener(closeSheet);
-    widget.post.isEditing.removeListener(update);
     widget.post.controller?.pause();
     if (widget.provider == null) {
       widget.post.dispose();
@@ -103,7 +99,7 @@ class _PostDetailState extends State<PostDetail> with RouteAware, UpdateMixin {
     }
   }
 
-  Future<void> editPost(BuildContext context, String reason) async {
+  Future<bool> editPost(BuildContext context, String reason) async {
     try {
       await client.updatePost(widget.post, Post.fromMap(widget.post.raw),
           editReason: reason);
@@ -124,13 +120,30 @@ class _PostDetailState extends State<PostDetail> with RouteAware, UpdateMixin {
   }
 
   Future<void> submitEdit(BuildContext context) async {
-    sheetController = Scaffold.of(context).showBottomSheet(
-      (context) => EditReasonEditor(
-        onSubmit: (value) => editPost(context, value),
-        onEditorBuild: fabController.setAction,
+    sheetController.show(
+      context,
+      EditReasonEditor(
+        submit: (value) => editPost(context, value),
+        controller: sheetController,
       ),
     );
-    sheetController.closed.then((_) => fabController.removeAction());
+  }
+
+  Widget fab(BuildContext context) {
+    return AnimatedBuilder(
+      animation: sheetController,
+      builder: (context, child) => FloatingActionButton(
+        heroTag: null,
+        backgroundColor: Theme.of(context).cardColor,
+        foregroundColor: Theme.of(context).iconTheme.color,
+        onPressed: widget.post.isEditing.value
+            ? sheetController.action ?? () => submitEdit(context)
+            : () {},
+        child: widget.post.isEditing.value
+            ? Icon(sheetController.isShown ? Icons.add : Icons.check)
+            : FavoriteButton(post: widget.post),
+      ),
+    );
   }
 
   @override
@@ -170,119 +183,107 @@ class _PostDetailState extends State<PostDetail> with RouteAware, UpdateMixin {
       );
     }
 
-    return WillPopScope(
-      onWillPop: () async {
-        if (fabController.hasAction) {
-          return true;
-        }
-        if (widget.post.isEditing.value) {
-          widget.post.resetPost();
-          return false;
-        } else {
-          return true;
-        }
-      },
-      child: Scaffold(
-        extendBodyBehindAppBar: true,
-        appBar: PostDetailAppBar(post: widget.post),
-        body: MediaQuery.removeViewInsets(
-          context: context,
-          removeTop: true,
-          child: ListView(
-            padding: EdgeInsets.only(
-              top: MediaQuery.of(context).padding.top,
-              bottom: kBottomNavigationBarHeight + 24,
-            ),
-            children: [
-              Padding(
-                padding: EdgeInsets.only(bottom: 10),
-                child: DetailImageDisplay(
-                  post: widget.post,
-                  onTap: () {
-                    keepPlaying = true;
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => fullscreen(),
-                      ),
-                    );
-                  },
+    return ValueListenableBuilder(
+      valueListenable: widget.post.isEditing,
+      builder: (context, value, child) {
+        return WillPopScope(
+          onWillPop: () async {
+            if (sheetController.isShown) {
+              return true;
+            }
+            if (widget.post.isEditing.value) {
+              widget.post.resetPost();
+              return false;
+            }
+            return true;
+          },
+          child: Scaffold(
+            extendBodyBehindAppBar: true,
+            appBar: PostDetailAppBar(post: widget.post),
+            body: MediaQuery.removeViewInsets(
+              context: context,
+              removeTop: true,
+              child: ListView(
+                padding: EdgeInsets.only(
+                  top: MediaQuery.of(context).padding.top,
+                  bottom: kBottomNavigationBarHeight + 24,
                 ),
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20),
-                child: Column(
-                  children: [
-                    ArtistDisplay(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(bottom: 10),
+                    child: DetailImageDisplay(
                       post: widget.post,
-                      provider: widget.provider,
+                      onTap: () {
+                        keepPlaying = true;
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => fullscreen(),
+                          ),
+                        );
+                      },
                     ),
-                    DescriptionDisplay(post: widget.post),
-                    editorDependant(
-                        child: LikeDisplay(post: widget.post), shown: false),
-                    editorDependant(
-                        child: CommentDisplay(post: widget.post), shown: false),
-                    Builder(
-                      builder: (context) => ParentDisplay(
-                        post: widget.post,
-                        onEditorBuild: fabController.setAction,
-                        onEditorClose: fabController.removeAction,
-                      ),
-                    ),
-                    editorDependant(
-                        child: PoolDisplay(post: widget.post), shown: false),
-                    Builder(
-                      builder: (context) => TagDisplay(
-                        post: widget.post,
-                        provider: widget.provider,
-                        onEditorSubmit: (value, category) => onPostTagsEdit(
-                          context,
-                          widget.post,
-                          value,
-                          category,
-                        ),
-                        onEditorBuild: fabController.setAction,
-                        onEditorClose: fabController.removeAction,
-                      ),
-                    ),
-                    editorDependant(
-                        child: FileDisplay(
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    child: Column(
+                      children: [
+                        ArtistDisplay(
                           post: widget.post,
                           provider: widget.provider,
                         ),
-                        shown: false),
-                    editorDependant(
-                        child: RatingDisplay(
-                          post: widget.post,
+                        DescriptionDisplay(post: widget.post),
+                        editorDependant(
+                            child: LikeDisplay(post: widget.post),
+                            shown: false),
+                        editorDependant(
+                            child: CommentDisplay(post: widget.post),
+                            shown: false),
+                        Builder(
+                          builder: (context) => ParentDisplay(
+                            post: widget.post,
+                            controller: sheetController,
+                          ),
                         ),
-                        shown: true),
-                    SourceDisplay(post: widget.post),
-                  ],
-                ),
-              )
-            ],
-            physics: BouncingScrollPhysics(),
+                        editorDependant(
+                            child: PoolDisplay(post: widget.post),
+                            shown: false),
+                        Builder(
+                          builder: (context) => TagDisplay(
+                            post: widget.post,
+                            provider: widget.provider,
+                            submit: (value, category) => onPostTagsEdit(
+                              context,
+                              widget.post,
+                              value,
+                              category,
+                            ),
+                            controller: sheetController,
+                          ),
+                        ),
+                        editorDependant(
+                            child: FileDisplay(
+                              post: widget.post,
+                              provider: widget.provider,
+                            ),
+                            shown: false),
+                        editorDependant(
+                            child: RatingDisplay(
+                              post: widget.post,
+                            ),
+                            shown: true),
+                        SourceDisplay(post: widget.post),
+                      ],
+                    ),
+                  )
+                ],
+                physics: BouncingScrollPhysics(),
+              ),
+            ),
+            floatingActionButton:
+                widget.post.isLoggedIn ? Builder(builder: fab) : null,
           ),
-        ),
-        floatingActionButton: widget.post.isLoggedIn
-            ? Builder(
-                builder: (context) => ControlledFloatingActionButton(
-                  heroTag: null,
-                  backgroundColor: Theme.of(context).cardColor,
-                  controller: fabController,
-                  defaultAction:
-                      widget.post.isEditing.value ? submitEdit : (context) {},
-                  defaultIcon: widget.post.isEditing.value
-                      ? Icon(Icons.check)
-                      : FavoriteButton(post: widget.post),
-                  actionWrapper: (context, action) async {
-                    if (await action(context)) {
-                      closeSheet();
-                    }
-                  },
-                ),
-              )
-            : null,
-      ),
+        );
+      },
     );
   }
 }

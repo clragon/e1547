@@ -7,16 +7,14 @@ import 'package:flutter/material.dart';
 class TagDisplay extends StatelessWidget {
   final Post post;
   final PostProvider provider;
-  final Future<bool> Function(String value, String category) onEditorSubmit;
-  final Function(Future<bool> Function() submit) onEditorBuild;
-  final Function onEditorClose;
+  final Future<bool> Function(String value, String category) submit;
+  final SheetActionController controller;
 
   TagDisplay({
     @required this.post,
     @required this.provider,
-    @required this.onEditorSubmit,
-    this.onEditorClose,
-    this.onEditorBuild,
+    @required this.submit,
+    this.controller,
   });
 
   @override
@@ -68,10 +66,8 @@ class TagDisplay extends StatelessWidget {
                                   post: post,
                                   provider: provider,
                                   category: category,
-                                  onEditorSubmit: (value) =>
-                                      onEditorSubmit(value, category),
-                                  onEditorBuild: onEditorBuild,
-                                  onEditorClose: onEditorClose,
+                                  submit: (value) => submit(value, category),
+                                  controller: controller,
                                 ),
                               ),
                             ],
@@ -107,7 +103,7 @@ Future<bool> onPostTagsEdit(
   if (category != 'general') {
     () async {
       for (String tag in tags) {
-        List validator = await client.tag(tag, category: categories[category]);
+        List validator = await client.tag(tag);
         String target;
         if (validator.isEmpty) {
           target = 'general';
@@ -121,7 +117,7 @@ Future<bool> onPostTagsEdit(
           post.tags.value[target].toSet().toList().sort();
           post.tags.value = Map.from(post.tags.value);
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            duration: Duration(seconds: 1),
+            duration: Duration(milliseconds: 500),
             content: Text('Moved $tag to $target tags'),
             behavior: SnackBarBehavior.floating,
           ));
