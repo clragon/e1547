@@ -6,22 +6,17 @@ import 'package:flutter/services.dart';
 
 class ParentDisplay extends StatefulWidget {
   final Post post;
-  final VoidCallback onEditorClose;
-  final Function(Future<bool> Function() submit) onEditorBuild;
+  final SheetActionController controller;
 
-  ParentDisplay({@required this.post, this.onEditorClose, this.onEditorBuild});
+  ParentDisplay({@required this.post, @required this.controller});
 
   @override
   _ParentDisplayState createState() => _ParentDisplayState();
 }
 
 class _ParentDisplayState extends State<ParentDisplay> {
-  PersistentBottomSheetController sheetController;
-
   @override
   Widget build(BuildContext context) {
-    PersistentBottomSheetController sheetController;
-
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       ValueListenableBuilder(
         valueListenable: widget.post.parent,
@@ -49,21 +44,13 @@ class _ParentDisplayState extends State<ParentDisplay> {
                             return IconButton(
                               icon: Icon(Icons.edit),
                               onPressed: () {
-                                sheetController =
-                                    Scaffold.of(context).showBottomSheet(
-                                  (context) {
-                                    return ParentEditor(
-                                      post: widget.post,
-                                      onSubmit: () {
-                                        sheetController?.close();
-                                      },
-                                      builder: widget.onEditorBuild,
-                                    );
-                                  },
+                                widget.controller.show(
+                                  context,
+                                  ParentEditor(
+                                    post: widget.post,
+                                    controller: widget.controller,
+                                  ),
                                 );
-                                sheetController.closed.then((_) {
-                                  widget.onEditorClose();
-                                });
                               },
                             );
                           },
@@ -138,13 +125,11 @@ class _ParentDisplayState extends State<ParentDisplay> {
 
 class ParentEditor extends StatefulWidget {
   final Post post;
-  final Function() onSubmit;
-  final Function(Future<bool> Function() submit) builder;
+  final ActionController controller;
 
   ParentEditor({
     @required this.post,
-    this.onSubmit,
-    this.builder,
+    this.controller,
   });
 
   @override
@@ -152,7 +137,6 @@ class ParentEditor extends StatefulWidget {
 }
 
 class _ParentEditorState extends State<ParentEditor> {
-  ValueNotifier<bool> isLoading = ValueNotifier(false);
   TextEditingController textController = TextEditingController();
 
   @override
@@ -160,73 +144,46 @@ class _ParentEditorState extends State<ParentEditor> {
     super.initState();
     textController.text = widget.post.parent.value?.toString() ?? ' ';
     setFocusToEnd(textController);
-    widget.builder?.call(submit);
+    widget.controller.setAction(submit);
   }
 
   Future<bool> submit() async {
-    isLoading.value = true;
-    if (textController.text.trim().isEmpty) {
-      widget.post.parent.value = null;
-      isLoading.value = false;
-      widget.onSubmit?.call();
-      return true;
-    }
-    if (int.tryParse(textController.text) != null) {
-      Post parent = await client.post(int.tryParse(textController.text));
-      if (parent != null) {
-        widget.post.parent.value = parent.id;
-        widget.onSubmit?.call();
+    try {
+      if (textController.text.trim().isEmpty) {
+        widget.post.parent.value = null;
         return true;
       }
+      if (int.tryParse(textController.text) != null) {
+        Post parent = await client.post(int.tryParse(textController.text));
+        if (parent != null) {
+          widget.post.parent.value = parent.id;
+          return true;
+        }
+      }
+    } on DioError {
+      // error is handled below
     }
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       duration: Duration(seconds: 1),
       content: Text('Invalid parent post'),
       behavior: SnackBarBehavior.floating,
     ));
-    isLoading.value = false;
     return false;
   }
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-        padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10),
-        child: Column(mainAxisSize: MainAxisSize.min, children: [
-          Row(
-            children: [
-              ValueListenableBuilder(
-                valueListenable: isLoading,
-                builder: (context, value, child) {
-                  return CrossFade(
-                    showChild: value,
-                    child: Center(
-                      child: Padding(
-                        padding: EdgeInsets.only(right: 10),
-                        child: SizedCircularProgressIndicator(
-                          size: 16,
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              ),
-              Expanded(
-                child: TextField(
-                  controller: textController,
-                  autofocus: true,
-                  maxLines: 1,
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [
-                    FilteringTextInputFormatter.allow(RegExp(r'^ ?\d*')),
-                  ],
-                  decoration: InputDecoration(
-                      labelText: 'Parent ID', border: UnderlineInputBorder()),
-                  onSubmitted: (_) => submit(),
-                ),
-              ),
-            ],
-          )
-        ]));
+    return TextField(
+      controller: textController,
+      autofocus: true,
+      maxLines: 1,
+      keyboardType: TextInputType.number,
+      inputFormatters: [
+        FilteringTextInputFormatter.allow(RegExp(r'^ ?\d*')),
+      ],
+      decoration: InputDecoration(
+          labelText: 'Parent ID', border: UnderlineInputBorder()),
+      onSubmitted: (_) => widget.controller.action(),
+    );
   }
 }

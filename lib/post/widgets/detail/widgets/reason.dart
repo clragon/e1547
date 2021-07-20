@@ -1,11 +1,11 @@
-import 'package:e1547/interface.dart';
+import 'package:e1547/post.dart';
 import 'package:flutter/material.dart';
 
 class EditReasonEditor extends StatefulWidget {
-  final Future<bool> Function(String value) onSubmit;
-  final Function(Future<bool> Function() submit) onEditorBuild;
+  final Future<bool> Function(String value) submit;
+  final ActionController controller;
 
-  const EditReasonEditor({@required this.onSubmit, this.onEditorBuild});
+  const EditReasonEditor({@required this.controller, @required this.submit});
 
   @override
   _EditReasonEditorState createState() => _EditReasonEditorState();
@@ -13,61 +13,27 @@ class EditReasonEditor extends StatefulWidget {
 
 class _EditReasonEditorState extends State<EditReasonEditor> {
   TextEditingController controller = TextEditingController();
-  ValueNotifier<bool> loading = ValueNotifier(false);
 
-  Future<bool> submit(value) async {
-    loading.value = true;
-    bool success = await widget.onSubmit(value);
-    loading.value = false;
-    return success;
-  }
+  Future<bool> submit() async => widget.submit(controller.text);
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      widget.onEditorBuild?.call(() => submit(controller.text));
-    });
+    widget.controller.setAction(submit);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Row(
-            children: [
-              ValueListenableBuilder(
-                valueListenable: loading,
-                builder: (context, value, child) => CrossFade(
-                  showChild: value,
-                  child: Center(
-                    child: Padding(
-                      padding: EdgeInsets.only(right: 10),
-                      child: SizedCircularProgressIndicator(size: 16),
-                    ),
-                  ),
-                ),
-              ),
-              Expanded(
-                child: TextField(
-                  controller: controller,
-                  autofocus: true,
-                  maxLines: 1,
-                  keyboardType: TextInputType.text,
-                  decoration: InputDecoration(
-                    labelText: 'Edit reason',
-                    border: UnderlineInputBorder(),
-                  ),
-                  onSubmitted: submit,
-                ),
-              ),
-            ],
-          )
-        ],
+    return TextField(
+      controller: controller,
+      autofocus: true,
+      maxLines: 1,
+      keyboardType: TextInputType.text,
+      decoration: InputDecoration(
+        labelText: 'Edit reason',
+        border: UnderlineInputBorder(),
       ),
+      onSubmitted: (_) => submit(),
     );
   }
 }

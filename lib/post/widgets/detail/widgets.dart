@@ -1,6 +1,7 @@
 export 'widgets/artist.dart';
 export 'widgets/comments.dart';
 export 'widgets/description.dart';
+export 'widgets/editor.dart';
 export 'widgets/file.dart';
 export 'widgets/likes.dart';
 export 'widgets/parent.dart';
