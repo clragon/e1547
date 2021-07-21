@@ -31,6 +31,7 @@ class PostTile extends StatelessWidget {
                     return Center(child: Text('unsafe'));
                   }
                   return Hero(
+                    flightShuttleBuilder: imageFlightShuttleBuilder,
                     tag: post.hero,
                     child: PostImageWidget(
                       post: post,

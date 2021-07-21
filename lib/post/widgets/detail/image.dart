@@ -252,6 +252,7 @@ class DetailImageDisplay extends StatelessWidget {
               post: post,
               builder: (context) => Center(
                 child: Hero(
+                  flightShuttleBuilder: imageFlightShuttleBuilder,
                   tag: post.hero,
                   child: post.type == PostType.Video
                       ? DetailVideo(post: post)

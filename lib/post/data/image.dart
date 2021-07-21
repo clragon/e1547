@@ -9,6 +9,19 @@ enum ImageSize {
   file,
 }
 
+Widget imageFlightShuttleBuilder(
+  BuildContext flightContext,
+  Animation<double> animation,
+  HeroFlightDirection flightDirection,
+  BuildContext fromHeroContext,
+  BuildContext toHeroContext,
+) {
+  final Hero hero = flightDirection == HeroFlightDirection.push
+      ? fromHeroContext.widget
+      : toHeroContext.widget;
+  return hero.child;
+}
+
 Future<void> preloadImage(
     {@required BuildContext context,
     @required Post post,
