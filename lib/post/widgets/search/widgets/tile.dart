@@ -18,16 +18,16 @@ class PostTile extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Expanded(
-            child: ValueListenableBuilder(
-                valueListenable: post.sample,
-                builder: (context, value, child) {
-                  if (post.isDeleted) {
+            child: AnimatedBuilder(
+                animation: post,
+                builder: (context, value) {
+                  if (post.flags.deleted) {
                     return Center(child: Text('deleted'));
                   }
-                  if (post.type == ImageType.Unsupported) {
+                  if (post.type == PostType.Unsupported) {
                     return Center(child: Text('unsupported'));
                   }
-                  if (post.file.value.url == null) {
+                  if (post.file.url == null) {
                     return Center(child: Text('unsafe'));
                   }
                   return Hero(
@@ -47,13 +47,13 @@ class PostTile extends StatelessWidget {
     }
 
     Widget overlay() {
-      if (post.file.value.ext == 'gif') {
+      if (post.file.ext == 'gif') {
         return Container(
           color: Colors.black12,
           child: Icon(Icons.gif),
         );
       }
-      if (post.type == ImageType.Video) {
+      if (post.type == PostType.Video) {
         return Container(
           color: Colors.black12,
           child: Icon(Icons.play_arrow),

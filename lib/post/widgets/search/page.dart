@@ -209,7 +209,7 @@ class _PostsPageState extends State<PostsPage>
                 padding: EdgeInsets.symmetric(horizontal: 4),
                 child: LikeButton(
                   isLiked: selections.length > 0 &&
-                      selections.every((post) => post.isFavorite.value),
+                      selections.every((post) => post.isFavorited),
                   circleColor: CircleColor(start: Colors.pink, end: Colors.red),
                   bubblesColor: BubblesColor(
                       dotPrimaryColor: Colors.pink,
@@ -228,14 +228,14 @@ class _PostsPageState extends State<PostsPage>
                       items: Set.from(selections),
                       process: isLiked
                           ? (post) async {
-                              if (post.isFavorite.value) {
+                              if (post.isFavorited) {
                                 return post.tryRemoveFav(context);
                               } else {
                                 return true;
                               }
                             }
                           : (post) async {
-                              if (!post.isFavorite.value) {
+                              if (!post.isFavorited) {
                                 return post.tryAddFav(context);
                               } else {
                                 return true;
@@ -257,7 +257,7 @@ class _PostsPageState extends State<PostsPage>
     return LayoutBuilder(builder: (context, constraints) {
       StaggeredTile tileBuilder(int item) {
         if (item < widget.provider.posts.value.length) {
-          PostImage image = widget.provider.posts.value[item].sample.value;
+          PostFile image = widget.provider.posts.value[item].sample;
           double widthRatio = image.width / image.height;
           double heightRatio = image.height / image.width;
 

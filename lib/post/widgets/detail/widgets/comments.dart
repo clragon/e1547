@@ -10,10 +10,10 @@ class CommentDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder(
-      valueListenable: post.comments,
-      builder: (BuildContext context, value, Widget child) {
-        int count = value ?? 0;
+    return AnimatedBuilder(
+      animation: post,
+      builder: (context, child) {
+        int count = post.commentCount ?? 0;
         return CrossFade(
           showChild: count > 0,
           child: Column(

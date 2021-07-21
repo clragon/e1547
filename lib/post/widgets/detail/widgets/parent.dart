@@ -18,11 +18,12 @@ class _ParentDisplayState extends State<ParentDisplay> {
   @override
   Widget build(BuildContext context) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      ValueListenableBuilder(
-        valueListenable: widget.post.parent,
-        builder: (BuildContext context, value, Widget child) {
+      AnimatedBuilder(
+        animation: widget.post,
+        builder: (context, child) {
           return CrossFade(
-            showChild: value != null || widget.post.isEditing.value,
+            showChild: widget.post.relationships.parentId != null ||
+                widget.post.isEditing,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -37,8 +38,9 @@ class _ParentDisplayState extends State<ParentDisplay> {
                 ),
                 LoadingTile(
                   leading: Icon(Icons.supervisor_account),
-                  title: Text(value?.toString() ?? 'none'),
-                  trailing: widget.post.isEditing.value
+                  title: Text(
+                      widget.post.relationships.parentId?.toString() ?? 'none'),
+                  trailing: widget.post.isEditing
                       ? Builder(
                           builder: (BuildContext context) {
                             return IconButton(
@@ -57,8 +59,9 @@ class _ParentDisplayState extends State<ParentDisplay> {
                         )
                       : null,
                   onTap: () async {
-                    if (value != null) {
-                      Post post = await client.post(value);
+                    if (widget.post.relationships.parentId != null) {
+                      Post post =
+                          await client.post(widget.post.relationships.parentId);
                       if (post != null) {
                         Navigator.of(context)
                             .push(MaterialPageRoute(builder: (context) {
@@ -67,7 +70,8 @@ class _ParentDisplayState extends State<ParentDisplay> {
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                           duration: Duration(seconds: 1),
-                          content: Text('Coulnd\'t retrieve Post #$value'),
+                          content: Text(
+                              'Coulnd\'t retrieve Post #${widget.post.relationships.parentId}'),
                         ));
                       }
                     }
@@ -80,8 +84,8 @@ class _ParentDisplayState extends State<ParentDisplay> {
         },
       ),
       CrossFade(
-        showChild:
-            widget.post.children.isNotEmpty && !widget.post.isEditing.value,
+        showChild: widget.post.relationships.children.isNotEmpty &&
+            !widget.post.isEditing,
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Padding(
             padding: EdgeInsets.only(
@@ -97,7 +101,7 @@ class _ParentDisplayState extends State<ParentDisplay> {
               ),
             ),
           ),
-          ...widget.post.children.map(
+          ...widget.post.relationships.children.map(
             (child) => LoadingTile(
               leading: Icon(Icons.supervised_user_circle),
               title: Text(child.toString()),
@@ -142,7 +146,7 @@ class _ParentEditorState extends State<ParentEditor> {
   @override
   void initState() {
     super.initState();
-    textController.text = widget.post.parent.value?.toString() ?? ' ';
+    textController.text = widget.post.relationships.parentId?.toString() ?? ' ';
     setFocusToEnd(textController);
     widget.controller.setAction(submit);
   }
@@ -150,13 +154,15 @@ class _ParentEditorState extends State<ParentEditor> {
   Future<bool> submit() async {
     try {
       if (textController.text.trim().isEmpty) {
-        widget.post.parent.value = null;
+        widget.post.relationships.parentId = null;
+        widget.post.notifyListeners();
         return true;
       }
       if (int.tryParse(textController.text) != null) {
         Post parent = await client.post(int.tryParse(textController.text));
         if (parent != null) {
-          widget.post.parent.value = parent.id;
+          widget.post.relationships.parentId = parent.id;
+          widget.post.notifyListeners();
           return true;
         }
       }

@@ -120,7 +120,7 @@ class PostSearchBar extends StatelessWidget {
                 builder: (BuildContext context) {
                   return RatingDialog(onTap: (rating) {
                     key = 'rating';
-                    value = rating;
+                    value = ratingValues.reverse[rating];
                   });
                 },
               );

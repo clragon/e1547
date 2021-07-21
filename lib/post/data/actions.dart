@@ -10,8 +10,6 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart'
     show DefaultCacheManager;
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:video_player/video_player.dart';
-import 'package:wakelock/wakelock.dart';
 
 import 'post.dart';
 
@@ -22,7 +20,7 @@ extension tagging on Post {
       String value = tag.split(':')[1];
       switch (identifier) {
         case 'rating':
-          if (this.rating.value.toLowerCase() == value.toLowerCase()) {
+          if (rating == ratingValues.map[value]) {
             return true;
           }
           break;
@@ -32,7 +30,7 @@ extension tagging on Post {
           }
           break;
         case 'type':
-          if (this.file.value.ext.toLowerCase() == value.toLowerCase()) {
+          if (file.ext.toLowerCase() == value.toLowerCase()) {
             return true;
           }
           break;
@@ -44,7 +42,7 @@ extension tagging on Post {
         case 'uploader':
         case 'userid':
         case 'user':
-          if (this.uploader.toString() == value) {
+          if (uploaderId.toString() == value) {
             return true;
           }
           break;
@@ -55,34 +53,34 @@ extension tagging on Post {
           int score = int.tryParse(value.replaceAll(r'[<>=]', ''));
           if (greater) {
             if (equal) {
-              if (this.score.value >= score) {
+              if (this.score.total >= score) {
                 return true;
               }
             } else {
-              if (this.score.value > score) {
+              if (this.score.total > score) {
                 return true;
               }
             }
           }
           if (smaller) {
             if (equal) {
-              if (this.score.value <= score) {
+              if (this.score.total <= score) {
                 return true;
               }
             } else {
-              if (this.score.value < score) {
+              if (this.score.total < score) {
                 return true;
               }
             }
           }
-          if ((!greater && !smaller) && this.score.value == score) {
+          if ((!greater && !smaller) && this.score.total == score) {
             return true;
           }
           break;
       }
     }
 
-    return tags.value.values
+    return tagMap.values
         .any((category) => category.contains(tag.toLowerCase()));
   }
 }
@@ -138,13 +136,12 @@ extension downloading on Post {
       if (!await Permission.storage.request().isGranted) {
         return false;
       }
-      File download =
-          await DefaultCacheManager().getSingleFile(this.file.value.url);
+      File download = await DefaultCacheManager().getSingleFile(file.url);
       if (Platform.isAndroid) {
         String directory =
             '${Platform.environment['EXTERNAL_STORAGE']}/Pictures';
         directory = [directory, appName].join('/');
-        String filename = '${artists.join(', ')} - $id.${file.value.ext}';
+        String filename = '${artists.join(', ')} - $id.${file.ext}';
         String filepath = [directory, filename].join('/');
         await Directory(directory).create();
         await download.copy(filepath);
@@ -163,11 +160,14 @@ extension downloading on Post {
 extension favoriting on Post {
   Future<bool> tryRemoveFav(BuildContext context) async {
     if (await client.removeFavorite(this.id)) {
-      this.isFavorite.value = false;
-      this.favorites.value -= 1;
+      isFavorited = false;
+      favCount -= 1;
+      notifyListeners();
       return true;
     } else {
-      this.isFavorite.value = true;
+      favCount += 1;
+      isFavorited = true;
+      notifyListeners();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           duration: Duration(seconds: 1),
@@ -180,14 +180,16 @@ extension favoriting on Post {
 
   Future<bool> tryAddFav(BuildContext context, {Duration cooldown}) async {
     if (await client.addFavorite(this.id)) {
-      () async {
-        // cooldown avoids interference with animation
-        await Future.delayed(cooldown ?? Duration(milliseconds: 0));
-        this.isFavorite.value = true;
-      }();
-      this.favorites.value += 1;
+      // cooldown avoids interference with animation
+      await Future.delayed(cooldown ?? Duration(milliseconds: 0));
+      isFavorited = true;
+      favCount += 1;
+      notifyListeners();
       return true;
     } else {
+      favCount -= 1;
+      isFavorited = false;
+      notifyListeners();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           duration: Duration(seconds: 1),
@@ -205,32 +207,41 @@ extension voting on Post {
       @required bool upvote,
       @required bool replace}) async {
     if (await client.votePost(this.id, upvote, replace)) {
-      if (this.voteStatus.value == VoteStatus.unknown) {
+      if (this.voteStatus == VoteStatus.unknown) {
         if (upvote) {
-          this.score.value += 1;
-          this.voteStatus.value = VoteStatus.upvoted;
+          score.total += 1;
+          score.up += 1;
+          voteStatus = VoteStatus.upvoted;
         } else {
-          this.score.value -= 1;
-          this.voteStatus.value = VoteStatus.downvoted;
+          score.total -= 1;
+          score.down += 1;
+          voteStatus = VoteStatus.downvoted;
         }
       } else {
         if (upvote) {
-          if (this.voteStatus.value == VoteStatus.upvoted) {
-            this.score.value -= 1;
-            this.voteStatus.value = VoteStatus.unknown;
+          if (this.voteStatus == VoteStatus.upvoted) {
+            score.total -= 1;
+            score.down += 1;
+            voteStatus = VoteStatus.unknown;
           } else {
-            this.score.value += 2;
-            this.voteStatus.value = VoteStatus.upvoted;
+            this.score.total += 2;
+            score.up += 1;
+            score.down -= 1;
+            this.voteStatus = VoteStatus.upvoted;
           }
         } else {
-          if (this.voteStatus.value == VoteStatus.upvoted) {
-            this.score.value -= 2;
-            this.voteStatus.value = VoteStatus.downvoted;
+          if (this.voteStatus == VoteStatus.upvoted) {
+            score.total -= 2;
+            score.up -= 1;
+            score.down *= 1;
+            voteStatus = VoteStatus.downvoted;
           } else {
-            this.score.value += 1;
-            this.voteStatus.value = VoteStatus.unknown;
+            score.total += 1;
+            score.up += 1;
+            voteStatus = VoteStatus.unknown;
           }
         }
+        notifyListeners();
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -245,95 +256,27 @@ extension editing on Post {
   Future<void> resetPost({bool online = false}) async {
     Post reset;
     if (!online) {
-      reset = Post.fromMap(this.raw);
+      reset = Post.fromMap(this.json);
     } else {
       reset = await client.post(this.id);
-      this.raw = reset.raw;
+      this.json = reset.json;
     }
 
-    this.favorites.value = reset.favorites.value;
-    this.score.value = reset.score.value;
-    this.tags.value = reset.tags.value;
-    this.description.value = reset.description.value;
-    this.sources.value = reset.sources.value;
-    this.rating.value = reset.rating.value;
-    this.parent.value = reset.parent.value;
-    this.isEditing.value = false;
+    this.isFavorited = reset.isFavorited;
+    this.favCount = reset.favCount;
+    this.score = reset.score;
+    this.tags = reset.tags;
+    this.description = reset.description;
+    this.sources = reset.sources;
+    this.rating = reset.rating;
+    this.relationships.parentId = reset.relationships.parentId;
+    this.isEditing = false;
+    notifyListeners();
   }
 }
 
 extension transitioning on Post {
   String get hero => 'image_$id';
-}
-
-enum ImageType {
-  Image,
-  Video,
-  Unsupported,
-}
-
-extension typing on Post {
-  ImageType get type {
-    switch (file.value.ext) {
-      case 'mp4':
-      case 'webm':
-        return ImageType.Video;
-      case 'swf':
-        return ImageType.Unsupported;
-      default:
-        return ImageType.Image;
-    }
-  }
-}
-
-extension playing on Post {
-  static List<Post> loadedVideos = [];
-
-  Future<void> prepareVideo() async {
-    if (type == ImageType.Video) {
-      if (controller != null) {
-        await controller.pause();
-        await controller.dispose();
-      }
-      controller = VideoPlayerController.network(file.value.url);
-      controller.setLooping(true);
-      controller.addListener(() =>
-          controller.value.isPlaying ? Wakelock.enable() : Wakelock.disable());
-    }
-  }
-
-  Future<void> initVideo() async {
-    if (type != ImageType.Video || loadedVideos.contains(this)) {
-      return;
-    }
-    if (loadedVideos.length >= 6) {
-      loadedVideos.first.disposeVideo();
-    }
-    loadedVideos.add(this);
-    await this.controller.initialize();
-  }
-
-  Future<void> disposeVideo() async {
-    await prepareVideo();
-    loadedVideos.remove(this);
-  }
-}
-
-extension disposing on Post {
-  Future<void> dispose() async {
-    tags.dispose();
-    comments.dispose();
-    parent.dispose();
-    score.dispose();
-    favorites.dispose();
-    rating.dispose();
-    description.dispose();
-    sources.dispose();
-    isFavorite.dispose();
-    showUnsafe.dispose();
-    controller?.dispose();
-    disposeVideo();
-  }
 }
 
 extension linking on Post {

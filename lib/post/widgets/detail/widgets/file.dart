@@ -33,11 +33,11 @@ class FileDisplay extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               TagGesture(
-                child: Text(ratings[post.rating.value]),
-                tag: 'rating:${post.rating.value}',
+                child: Text(ratingTexts[post.rating]),
+                tag: 'rating:${post.rating}',
                 provider: provider,
               ),
-              Text('${post.file.value.width} x ${post.file.value.height}'),
+              Text('${post.file.width} x ${post.file.height}'),
             ],
           ),
         ),
@@ -46,8 +46,8 @@ class FileDisplay extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(dateFormat.format(DateTime.parse(post.creation).toLocal())),
-              Text(formatBytes(post.file.value.size, 1)),
+              Text(dateFormat.format(post.createdAt.toLocal())),
+              Text(formatBytes(post.file.size, 1)),
             ],
           ),
         ),
@@ -56,11 +56,11 @@ class FileDisplay extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              if (post.updated != null)
-                Text(dateFormat.format(DateTime.parse(post.updated).toLocal())),
+              if (post.updatedAt != null)
+                Text(dateFormat.format(post.updatedAt.toLocal())),
               TagGesture(
-                child: Text(post.file.value.ext),
-                tag: 'type:${post.file.value.ext}',
+                child: Text(post.file.ext),
+                tag: 'type:${post.file.ext}',
                 provider: provider,
               ),
             ],

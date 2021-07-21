@@ -13,10 +13,10 @@ class ArtistDisplay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Widget artists() {
-      return ValueListenableBuilder(
-        valueListenable: post.tags,
-        builder: (BuildContext context, value, Widget child) {
-          if (value['artist'].isNotEmpty) {
+      return AnimatedBuilder(
+        animation: post,
+        builder: (context, child) {
+          if (post.artists.isNotEmpty) {
             List<InlineSpan> spans = [];
             for (String artist in post.artists) {
               if (artist != post.artists.first && post.artists.length > 1) {
@@ -88,12 +88,12 @@ class ArtistDisplay extends StatelessWidget {
                     Icon(Icons.person, size: 14.0),
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 4),
-                      child: Text(post.uploader.toString()),
+                      child: Text(post.uploaderId.toString()),
                     ),
                   ]),
                   onTap: () async {
                     String uploader =
-                        (await client.user(post.uploader.toString()))['name'];
+                        (await client.user(post.uploaderId.toString()))['name'];
                     Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) =>
                             SearchPage(tags: 'user:$uploader')));

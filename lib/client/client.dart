@@ -112,7 +112,7 @@ class Client {
       int postID =
           (await client.user((await credentials).username))['avatar_id'];
       Post post = await client.post(postID);
-      _avatar = post.sample.value.url;
+      _avatar = post.sample.url;
     }
     return _avatar;
   }
@@ -125,10 +125,10 @@ class Client {
       hasPosts = true;
       Post post = Post.fromMap(raw);
       post.isLoggedIn = loggedIn;
-      if (post.file.value.url == null && !post.isDeleted) {
+      if (post.file.url == null && !post.flags.deleted) {
         continue;
       }
-      if (post.file.value.ext == 'swf') {
+      if (post.file.ext == 'swf') {
         continue;
       }
       posts.add(post);
@@ -364,11 +364,11 @@ class Client {
     Map<String, String> body = {};
 
     List<String> tags(Post post) {
-      List<String> _tags = [];
-      post.tags.value.forEach((key, value) {
-        _tags.addAll(List<String>.from(value));
+      List<String> tags = [];
+      post.tagMap.forEach((key, value) {
+        tags.addAll(List<String>.from(value));
       });
-      return _tags;
+      return tags;
     }
 
     List<String> oldTags = tags(old);
@@ -391,12 +391,12 @@ class Client {
       ]);
     }
 
-    List<String> removedSource = old.sources.value
-        .where((element) => !update.sources.value.contains(element))
+    List<String> removedSource = old.sources
+        .where((element) => !update.sources.contains(element))
         .toList();
     removedSource = removedSource.map((s) => '-$s').toList();
-    List<String> addedSource = update.sources.value
-        .where((element) => !old.sources.value.contains(element))
+    List<String> addedSource = update.sources
+        .where((element) => !old.sources.contains(element))
         .toList();
     List<String> sourceDiff = [];
     sourceDiff.addAll(removedSource);
@@ -411,29 +411,29 @@ class Client {
       ]);
     }
 
-    if (old.parent.value != update.parent.value) {
+    if (old.relationships.parentId != update.relationships.parentId) {
       body.addEntries([
         MapEntry(
           'post[parent_id]',
-          update.parent.value?.toString() ?? '',
+          update.relationships.parentId?.toString() ?? '',
         ),
       ]);
     }
 
-    if (old.description.value != update.description.value) {
+    if (old.description != update.description) {
       body.addEntries([
         MapEntry(
           'post[description]',
-          update.description.value,
+          update.description,
         ),
       ]);
     }
 
-    if (old.rating.value != update.rating.value) {
+    if (old.rating != update.rating) {
       body.addEntries([
         MapEntry(
           'post[rating]',
-          update.rating.value.toLowerCase(),
+          ratingValues.reverse[update.rating],
         ),
       ]);
     }
