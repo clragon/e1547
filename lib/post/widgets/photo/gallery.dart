@@ -16,38 +16,18 @@ class PostPhotoGallery extends StatefulWidget {
   _PostPhotoGalleryState createState() => _PostPhotoGalleryState();
 }
 
-class _PostPhotoGalleryState extends State<PostPhotoGallery> with RouteAware {
+class _PostPhotoGalleryState extends State<PostPhotoGallery> {
   ValueNotifier<bool> showFrame = ValueNotifier(false);
   ValueNotifier<int> current = ValueNotifier(null);
 
   void toggleFrame({bool shown}) {
     showFrame.value = shown ?? !showFrame.value;
-    SystemChrome.setEnabledSystemUIOverlays(
-        showFrame.value ? SystemUiOverlay.values : []);
   }
 
   @override
   void initState() {
     super.initState();
-    SystemChrome.setEnabledSystemUIOverlays([]);
     current.value = widget.index;
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    routeObserver.subscribe(this, ModalRoute.of(context));
-  }
-
-  @override
-  void didPop() {
-    SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    routeObserver.unsubscribe(this);
   }
 
   @override

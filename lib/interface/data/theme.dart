@@ -12,7 +12,7 @@ SystemUiOverlayStyle defaultUIStyle(ThemeData theme) => SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
       statusBarBrightness: Brightness.dark,
       statusBarIconBrightness: Brightness.light,
-      systemNavigationBarColor: theme.canvasColor,
+      systemNavigationBarColor: Colors.transparent,
       systemNavigationBarIconBrightness: theme.brightness == Brightness.light
           ? Brightness.dark
           : Brightness.light,
