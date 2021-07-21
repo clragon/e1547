@@ -7,12 +7,10 @@ ValueNotifier<ThemeData> theme = ValueNotifier(appThemeMap[AppTheme.dark]);
 
 Future<void> updateTheme() async {
   theme.value = appThemeMap[await db.theme.value];
-  SystemChrome.setSystemUIOverlayStyle(defaultUIStyle(theme.value));
 }
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  WidgetsBinding.instance.renderView.automaticSystemUiAdjustment = false;
   db.theme.addListener(updateTheme);
   await updateTheme();
   runApp(Main());
@@ -24,11 +22,14 @@ class Main extends StatelessWidget {
         child: ValueListenableBuilder(
           valueListenable: theme,
           builder: (context, value, child) => ExcludeSemantics(
-            child: MaterialApp(
-              title: appName,
-              theme: value,
-              navigatorObservers: [routeObserver],
-              routes: routes,
+            child: AnnotatedRegion<SystemUiOverlayStyle>(
+              value: defaultUIStyle(theme.value),
+              child: MaterialApp(
+                title: appName,
+                theme: value,
+                navigatorObservers: [routeObserver],
+                routes: routes,
+              ),
             ),
           ),
         ),
