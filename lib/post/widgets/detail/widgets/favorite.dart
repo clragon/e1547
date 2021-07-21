@@ -11,10 +11,10 @@ class FavoriteButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(left: 2),
-      child: ValueListenableBuilder(
-        valueListenable: post.isFavorite,
-        builder: (context, value, child) => LikeButton(
-          isLiked: value,
+      child: AnimatedBuilder(
+        animation: post,
+        builder: (context, child) => LikeButton(
+          isLiked: post.isFavorited,
           circleColor: CircleColor(start: Colors.pink, end: Colors.red),
           bubblesColor: BubblesColor(
               dotPrimaryColor: Colors.pink, dotSecondaryColor: Colors.red),

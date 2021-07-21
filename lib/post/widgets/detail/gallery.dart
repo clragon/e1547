@@ -56,7 +56,7 @@ class _PostDetailGalleryState extends State<PostDetailGallery> {
           onPageChanged: (index) {
             if (widget.provider.posts.value.isNotEmpty) {
               Post lastPost = widget.provider.posts.value[lastIndex];
-              if (lastPost.isEditing.value) {
+              if (lastPost.isEditing) {
                 lastPost.resetPost();
               }
             }

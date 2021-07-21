@@ -1,23 +1,16 @@
 import 'package:e1547/post.dart';
 import 'package:flutter/material.dart';
 
-IconData getIcon(String rating) {
-  switch (rating) {
-    case 's':
-      return Icons.check_circle_outline;
-    case 'q':
-      return Icons.help_outline;
-    case 'e':
-      return Icons.warning;
-    default:
-      return Icons.error_outline;
-  }
-}
+Map<Rating, IconData> ratingIcons = {
+  Rating.S: Icons.check_circle_outline,
+  Rating.Q: Icons.help_outline,
+  Rating.E: Icons.warning,
+};
 
-Map<String, String> ratings = {
-  's': 'Safe',
-  'q': 'Questionable',
-  'e': 'Explicit',
+Map<Rating, String> ratingTexts = {
+  Rating.S: 'Safe',
+  Rating.Q: 'Questionable',
+  Rating.E: 'Explicit',
 };
 
 class RatingDisplay extends StatelessWidget {
@@ -27,9 +20,9 @@ class RatingDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder(
-      valueListenable: post.rating,
-      builder: (BuildContext context, String value, Widget child) {
+    return AnimatedBuilder(
+      animation: post,
+      builder: (context, child) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -48,16 +41,17 @@ class RatingDisplay extends StatelessWidget {
               ),
             ),
             ListTile(
-              title: Text(ratings[value]),
-              leading: Icon(!post.raw['flags']['rating_locked']
-                  ? getIcon(value)
+              title: Text(ratingTexts[post.rating]),
+              leading: Icon(!post.flags.ratingLocked
+                  ? ratingIcons[post.rating]
                   : Icons.lock),
-              onTap: !post.raw['flags']['rating_locked']
+              onTap: !post.flags.ratingLocked
                   ? () => showDialog(
                         context: context,
                         builder: (BuildContext context) {
                           return RatingDialog(onTap: (rating) {
-                            post.rating.value = rating;
+                            post.rating = rating;
+                            post.notifyListeners();
                           });
                         },
                       )
@@ -72,7 +66,7 @@ class RatingDisplay extends StatelessWidget {
 }
 
 class RatingDialog extends StatelessWidget {
-  final Function(String rating) onTap;
+  final Function(Rating rating) onTap;
 
   RatingDialog({@required this.onTap});
 
@@ -82,15 +76,17 @@ class RatingDialog extends StatelessWidget {
       title: Text('Rating'),
       content: Column(
         mainAxisSize: MainAxisSize.min,
-        children: ratings.entries
-            .map((entry) => ListTile(
-                  title: Text(entry.value),
-                  leading: Icon(getIcon(entry.key)),
-                  onTap: () {
-                    onTap(entry.key);
-                    Navigator.of(context).pop();
-                  },
-                ))
+        children: ratingTexts.entries
+            .map(
+              (entry) => ListTile(
+                title: Text(entry.value),
+                leading: Icon(ratingIcons[entry.key]),
+                onTap: () {
+                  onTap(entry.key);
+                  Navigator.of(context).pop();
+                },
+              ),
+            )
             .toList(),
       ),
     );

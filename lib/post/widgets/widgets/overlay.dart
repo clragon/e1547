@@ -19,17 +19,17 @@ class ImageOverlay extends StatelessWidget {
       );
     }
 
-    if (post.isDeleted) {
+    if (post.flags.deleted) {
       return centerText('Post was deleted');
     }
-    if (post.file.value.url == null) {
+    if (post.file.url == null) {
       return centerText('Image unavailable in safe mode');
     }
     if (!post.isVisible) {
       return centerText('Post is blacklisted');
     }
 
-    if (post.type == ImageType.Unsupported) {
+    if (post.type == PostType.Unsupported) {
       return Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -39,7 +39,7 @@ class ImageOverlay extends StatelessWidget {
               Padding(
                 padding: EdgeInsets.all(8),
                 child: Text(
-                  '${post.file.value.ext} files are not supported',
+                  '${post.file.ext} files are not supported',
                   textAlign: TextAlign.center,
                 ),
               ),
@@ -47,7 +47,7 @@ class ImageOverlay extends StatelessWidget {
                 child: InkWell(
                   child:
                       Padding(padding: EdgeInsets.all(8), child: Text('Open')),
-                  onTap: () async => launch(post.file.value.url),
+                  onTap: () async => launch(post.file.url),
                 ),
               )
             ],

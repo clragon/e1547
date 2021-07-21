@@ -291,7 +291,7 @@ class _VideoFrameState extends State<VideoFrame> {
           widget.child,
         ];
 
-        if (widget.post.type == ImageType.Video) {
+        if (widget.post.type == PostType.Video) {
           children.addAll([
             Positioned(
                 bottom: 0,

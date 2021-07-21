@@ -15,8 +15,8 @@ class PostPhoto extends StatelessWidget {
       child: PhotoView.customChild(
         heroAttributes: PhotoViewHeroAttributes(tag: post.hero),
         backgroundDecoration: BoxDecoration(color: Colors.transparent),
-        childSize: Size(post.file.value.width.toDouble(),
-            post.file.value.height.toDouble()),
+        childSize:
+            Size(post.file.width.toDouble(), post.file.height.toDouble()),
         child: PostImageWidget(post: post, size: ImageSize.file),
         initialScale: PhotoViewComputedScale.contained,
         minScale: PhotoViewComputedScale.contained,

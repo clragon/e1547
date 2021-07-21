@@ -89,11 +89,11 @@ class Follow {
       }
       if (status.latest == null || status.latest < post.id) {
         status.latest = post.id;
-        status.thumbnail = post.sample.value.url;
+        status.thumbnail = post.sample.url;
         updated = true;
       } else {
-        if (status.thumbnail != post.sample.value.url) {
-          status.thumbnail = post.sample.value.url;
+        if (status.thumbnail != post.sample.url) {
+          status.thumbnail = post.sample.url;
           updated = true;
         }
       }

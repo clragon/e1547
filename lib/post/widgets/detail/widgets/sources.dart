@@ -11,11 +11,11 @@ class SourceDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder(
-      valueListenable: post.sources,
-      builder: (BuildContext context, value, Widget child) {
+    return AnimatedBuilder(
+      animation: post,
+      builder: (context, child) {
         return CrossFade(
-          showChild: value.isNotEmpty || post.isEditing.value,
+          showChild: post.sources.isNotEmpty || post.isEditing,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -32,7 +32,7 @@ class SourceDisplay extends StatelessWidget {
                     ),
                   ),
                   CrossFade(
-                    showChild: post.isEditing.value,
+                    showChild: post.isEditing,
                     child: IconButton(
                       icon: Icon(Icons.edit),
                       onPressed: () async {
@@ -40,10 +40,11 @@ class SourceDisplay extends StatelessWidget {
                             .push(MaterialPageRoute<String>(builder: (context) {
                           return TextEditor(
                             title: '#${post.id} sources',
-                            content: value.join('\n'),
+                            content: post.sources.join('\n'),
                             richEditor: false,
                             validator: (context, text) async {
-                              post.sources.value = text.trim().split('\n');
+                              post.sources = text.trim().split('\n');
+                              post.notifyListeners();
                               return true;
                             },
                           );
@@ -55,9 +56,9 @@ class SourceDisplay extends StatelessWidget {
               ),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                child: value.join('\n').trim().isNotEmpty
+                child: post.sources.join('\n').trim().isNotEmpty
                     ? Wrap(
-                        children: value
+                        children: post.sources
                             .map<Widget>(
                               (e) => Card(
                                 child: InkWell(

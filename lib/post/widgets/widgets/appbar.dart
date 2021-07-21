@@ -13,15 +13,14 @@ class PostDetailAppBar extends StatelessWidget with AppBarSizeMixin {
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder(
-      valueListenable: post.isEditing,
-      builder: (context, value, child) => TransparentAppBar(
+    return AnimatedBuilder(
+      animation: post,
+      builder: (context, child) => TransparentAppBar(
         leading: IconButton(
-          icon:
-              ShadowIcon(post.isEditing.value ? Icons.clear : Icons.arrow_back),
+          icon: ShadowIcon(post.isEditing ? Icons.clear : Icons.arrow_back),
           onPressed: Navigator.of(context).maybePop,
         ),
-        actions: post.isEditing.value
+        actions: post.isEditing
             ? null
             : [
                 PopupMenuButton(
@@ -52,7 +51,7 @@ class PostPhotoAppBar extends StatelessWidget with AppBarSizeMixin {
         icon: ShadowIcon(Icons.arrow_back),
         onPressed: Navigator.of(context).maybePop,
       ),
-      actions: post.isEditing.value
+      actions: post.isEditing
           ? null
           : [
               PopupMenuButton(
@@ -87,7 +86,7 @@ List<PopupMenuItem> postMenuActions(BuildContext context, Post post) {
       title: 'Share',
       icon: Icons.share,
     ),
-    post.file.value.url != null
+    post.file.url != null
         ? PopupMenuTile(
             value: download,
             title: 'Download',
@@ -106,7 +105,10 @@ List<PopupMenuItem> postMenuUserActions(BuildContext context, Post post) {
   return [
     post.isLoggedIn
         ? PopupMenuTile(
-            value: () => post.isEditing.value = true,
+            value: () {
+              post.isEditing = true;
+              post.notifyListeners();
+            },
             title: 'Edit',
             icon: Icons.edit,
           )
@@ -115,7 +117,8 @@ List<PopupMenuItem> postMenuUserActions(BuildContext context, Post post) {
         ? PopupMenuTile(
             value: () async {
               if (await writeComment(context, post)) {
-                post.comments.value++;
+                post.commentCount++;
+                post.notifyListeners();
               }
             },
             title: 'Comment',

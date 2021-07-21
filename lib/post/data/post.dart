@@ -2,57 +2,86 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
+import 'package:wakelock/wakelock.dart';
 
-import 'image.dart';
+import 'data.dart';
 
 export 'actions.dart';
 export 'image.dart';
 
-class Post {
-  Map raw;
+class Post extends PostData with ChangeNotifier {
+  Map json;
 
-  int id;
+  Map<String, List<String>> get tagMap => {
+        "general": tags.general,
+        "species": tags.species,
+        "character": tags.character,
+        "copyright": tags.copyright,
+        "artist": tags.artist,
+        "invalid": tags.invalid,
+        "lore": tags.lore,
+        "meta": tags.meta,
+      };
 
-  int uploader;
-  String creation;
-  String updated;
-
-  List<int> pools = [];
-  List<int> children = [];
-
-  bool isDeleted = false;
+  bool isEditing = false;
   bool isLoggedIn = false;
   bool isBlacklisted = false;
+  bool isAllowed = false;
 
-  ValueNotifier<PostImage> preview = ValueNotifier(null);
-  ValueNotifier<PostImage> sample = ValueNotifier(null);
-  ValueNotifier<PostImageFile> file = ValueNotifier(null);
+  bool get isVisible => (isFavorited || isAllowed || !isBlacklisted);
 
-  ValueNotifier<Map<String, List<String>>> tags = ValueNotifier({});
+  VoteStatus voteStatus = VoteStatus.unknown;
 
-  ValueNotifier<int> comments = ValueNotifier(null);
-  ValueNotifier<int> score = ValueNotifier(null);
-  ValueNotifier<int> favorites = ValueNotifier(null);
-  ValueNotifier<int> parent = ValueNotifier(null);
-
-  ValueNotifier<String> rating = ValueNotifier(null);
-  ValueNotifier<String> description = ValueNotifier(null);
-
-  ValueNotifier<List<String>> sources = ValueNotifier([]);
-
-  ValueNotifier<bool> isFavorite = ValueNotifier(false);
-  ValueNotifier<bool> isEditing = ValueNotifier(false);
-  ValueNotifier<bool> showUnsafe = ValueNotifier(false);
-
-  bool get isVisible =>
-      (isFavorite.value || showUnsafe.value || !isBlacklisted);
-
-  ValueNotifier<VoteStatus> voteStatus = ValueNotifier(VoteStatus.unknown);
+  PostType get type {
+    switch (file.ext) {
+      case 'webm':
+        if (Platform.isIOS) {
+          file.ext = 'mp4';
+          file.url = file.url.replaceAll('.webm', '.mp4');
+        }
+        return PostType.Video;
+      case 'swf':
+        return PostType.Unsupported;
+      default:
+        return PostType.Image;
+    }
+  }
 
   VideoPlayerController controller;
 
+  static List<Post> loadedVideos = [];
+
+  Future<void> initVideo() async {
+    if (type == PostType.Video) {
+      if (controller != null) {
+        await controller.pause();
+        await controller.dispose();
+      }
+      controller = VideoPlayerController.network(file.url);
+      controller.setLooping(true);
+      controller.addListener(() =>
+          controller.value.isPlaying ? Wakelock.enable() : Wakelock.disable());
+    }
+  }
+
+  Future<void> loadVideo() async {
+    if (type != PostType.Video || loadedVideos.contains(this)) {
+      return;
+    }
+    if (loadedVideos.length >= 6) {
+      loadedVideos.first.disposeVideo();
+    }
+    loadedVideos.add(this);
+    await this.controller.initialize();
+  }
+
+  Future<void> disposeVideo() async {
+    await initVideo();
+    loadedVideos.remove(this);
+  }
+
   List<String> get artists {
-    return tags.value['artist']
+    return tags.artist
       ..removeWhere((artist) => [
             'epilepsy_warning',
             'conditional_dnp',
@@ -61,34 +90,19 @@ class Post {
           ].contains(artist));
   }
 
-  Post.fromMap(this.raw) {
-    id = raw['id'];
-    isDeleted = raw['flags']['deleted'];
-    creation = raw['created_at'];
-    updated = raw['updated_at'];
-    uploader = raw['uploader_id'];
-    children = List<int>.from(raw["relationships"]['children']);
-    pools = List<int>.from(raw['pools']).toSet().toList();
-    tags.value = Map<String, dynamic>.from(raw['tags']).map((key, value) =>
-        MapEntry<String, List<String>>(key, List<String>.from(value)));
-    sources.value = List<String>.from(raw['sources']);
-    parent.value = raw["relationships"]['parent_id'];
-    description.value = raw['description'];
-    rating.value = raw['rating'].toLowerCase();
-    comments.value = raw['comment_count'];
-    file.value = PostImageFile.fromMap(raw['file']);
-    sample.value = PostImage.fromMap(raw['sample']);
-    preview.value = PostImage.fromMap(raw['preview']);
-    favorites = ValueNotifier(raw['fav_count']);
-    isFavorite = ValueNotifier(raw['is_favorited']);
-    score = ValueNotifier(raw['score']['total']);
+  Post.fromMap(this.json) : super.fromMap(json) {
+    initVideo();
+  }
 
-    if (file.value.ext == 'webm') {
-      if (Platform.isIOS) {
-        file.value.ext = 'mp4';
-        file.value.url = file.value.url.replaceAll('.webm', '.mp4');
-      }
-    }
+  @override
+  void notifyListeners() {
+    super.notifyListeners();
+  }
+
+  @override
+  dispose() {
+    disposeVideo();
+    super.dispose();
   }
 }
 
@@ -96,4 +110,10 @@ enum VoteStatus {
   upvoted,
   unknown,
   downvoted,
+}
+
+enum PostType {
+  Image,
+  Video,
+  Unsupported,
 }

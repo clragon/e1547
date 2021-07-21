@@ -19,15 +19,15 @@ class TagDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder(
-      valueListenable: post.tags,
-      builder: (BuildContext context, value, Widget child) {
+    return AnimatedBuilder(
+      animation: post,
+      builder: (context, child) {
         return Column(
           mainAxisSize: MainAxisSize.min,
           children: categories.keys
-              .where((tagSet) =>
-                  value[tagSet].isNotEmpty ||
-                  (post.isEditing.value && tagSet != 'invalid'))
+              .where((category) =>
+                  post.tagMap[category].isNotEmpty ||
+                  (post.isEditing && category != 'invalid'))
               .map(
                 (category) => Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -47,21 +47,21 @@ class TagDisplay extends StatelessWidget {
                           child: Wrap(
                             direction: Axis.horizontal,
                             children: [
-                              ...value[category].map(
+                              ...post.tagMap[category].map(
                                 (tag) => TagCard(
                                   tag: tag,
                                   category: category,
                                   provider: provider,
-                                  onRemove: post.isEditing.value
+                                  onRemove: post.isEditing
                                       ? () {
-                                          post.tags.value[category].remove(tag);
-                                          post.tags.value = Map.from(value);
+                                          post.tagMap[category].remove(tag);
+                                          post.notifyListeners();
                                         }
                                       : null,
                                 ),
                               ),
                               CrossFade(
-                                showChild: post.isEditing.value,
+                                showChild: post.isEditing,
                                 child: TagAddCard(
                                   post: post,
                                   provider: provider,
@@ -97,9 +97,9 @@ Future<bool> onPostTagsEdit(
     return true;
   }
   List<String> tags = value.split(' ');
-  post.tags.value[category].addAll(tags);
-  post.tags.value[category].toSet().toList().sort();
-  post.tags.value = Map.from(post.tags.value);
+  post.tagMap[category].addAll(tags);
+  post.tagMap[category].toSet().toList().sort();
+  post.notifyListeners();
   if (category != 'general') {
     () async {
       for (String tag in tags) {
@@ -112,10 +112,10 @@ Future<bool> onPostTagsEdit(
               .firstWhere((k) => validator[0]['category'] == categories[k]);
         }
         if (target != null) {
-          post.tags.value[category].remove(tag);
-          post.tags.value[target].add(tag);
-          post.tags.value[target].toSet().toList().sort();
-          post.tags.value = Map.from(post.tags.value);
+          post.tagMap[category].remove(tag);
+          post.tagMap[target].add(tag);
+          post.tagMap[target].toSet().toList().sort();
+          post.notifyListeners();
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             duration: Duration(milliseconds: 500),
             content: Text('Moved $tag to $target tags'),

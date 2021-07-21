@@ -36,7 +36,7 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
   }
 
   void closeSheet() {
-    if (!widget.post.isEditing.value) {
+    if (!widget.post.isEditing) {
       sheetController.close();
     }
   }
@@ -45,13 +45,9 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
   void initState() {
     super.initState();
     widget.provider?.posts?.addListener(onPageChange);
-    widget.post.isEditing.addListener(closeSheet);
-    if (widget.post.controller == null) {
-      widget.post.prepareVideo().then((_) {
-        if (!(widget.post.controller?.value?.isInitialized ?? true)) {
-          widget.post.initVideo();
-        }
-      });
+    widget.post.addListener(closeSheet);
+    if (!(widget.post.controller?.value?.isInitialized ?? true)) {
+      widget.post.loadVideo();
     }
   }
 
@@ -59,8 +55,8 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
   void reassemble() {
     super.reassemble();
     routeObserver.subscribe(this, ModalRoute.of(context));
-    if (widget.post.file.value.url != null) {
-      if (widget.post.type == ImageType.Image) {
+    if (widget.post.file.url != null) {
+      if (widget.post.type == PostType.Image) {
         preloadImage(context: context, post: widget.post, size: ImageSize.file);
       }
     }
@@ -70,11 +66,11 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
   void dispose() {
     super.dispose();
     routeObserver.unsubscribe(this);
-    if (widget.post.isEditing.value) {
+    if (widget.post.isEditing) {
       widget.post.resetPost();
     }
     widget.provider?.pages?.removeListener(onPageChange);
-    widget.post.isEditing.removeListener(closeSheet);
+    widget.post.removeListener(closeSheet);
     widget.post.controller?.pause();
     if (widget.provider == null) {
       widget.post.dispose();
@@ -101,9 +97,9 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
 
   Future<bool> editPost(BuildContext context, String reason) async {
     try {
-      await client.updatePost(widget.post, Post.fromMap(widget.post.raw),
+      await client.updatePost(widget.post, Post.fromMap(widget.post.json),
           editReason: reason);
-      widget.post.isEditing.value = false;
+      widget.post.isEditing = false;
     } on DioError catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -136,10 +132,10 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
         heroTag: null,
         backgroundColor: Theme.of(context).cardColor,
         foregroundColor: Theme.of(context).iconTheme.color,
-        onPressed: widget.post.isEditing.value
+        onPressed: widget.post.isEditing
             ? sheetController.action ?? () => submitEdit(context)
             : () {},
-        child: widget.post.isEditing.value
+        child: widget.post.isEditing
             ? Icon(sheetController.isShown ? Icons.add : Icons.check)
             : FavoriteButton(post: widget.post),
       ),
@@ -158,7 +154,7 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
       }
 
       List<Post> posts;
-      if (widget.post.isEditing.value) {
+      if (widget.post.isEditing) {
         posts = [widget.post];
       } else {
         posts = widget.provider?.posts?.value ?? [widget.post];
@@ -178,20 +174,20 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
 
     Widget editorDependant({@required Widget child, @required bool shown}) {
       return CrossFade(
-        showChild: shown == widget.post.isEditing.value,
+        showChild: shown == widget.post.isEditing,
         child: child,
       );
     }
 
-    return ValueListenableBuilder(
-      valueListenable: widget.post.isEditing,
-      builder: (context, value, child) {
+    return AnimatedBuilder(
+      animation: widget.post,
+      builder: (context, child) {
         return WillPopScope(
           onWillPop: () async {
             if (sheetController.isShown) {
               return true;
             }
-            if (widget.post.isEditing.value) {
+            if (widget.post.isEditing) {
               widget.post.resetPost();
               return false;
             }

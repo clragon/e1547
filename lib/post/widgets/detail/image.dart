@@ -81,16 +81,14 @@ class _DetailImageToggleState extends State<DetailImageToggle> {
 
   @override
   Widget build(BuildContext context) {
-    if (!widget.post.isDeleted) {
+    if (!widget.post.flags.deleted) {
       return CrossFade(
-        showChild: (widget.post.file.value.url == null ||
+        showChild: (widget.post.file.url == null ||
             !widget.post.isVisible ||
-            widget.post.showUnsafe.value),
+            widget.post.isAllowed),
         duration: Duration(milliseconds: 200),
         child: Card(
-          color: widget.post.showUnsafe.value
-              ? Colors.black12
-              : Colors.transparent,
+          color: widget.post.isAllowed ? Colors.black12 : Colors.transparent,
           elevation: 0,
           child: InkWell(
             child: Padding(
@@ -98,16 +96,14 @@ class _DetailImageToggleState extends State<DetailImageToggle> {
               child: Row(
                 children: [
                   Icon(
-                    widget.post.showUnsafe.value
+                    widget.post.isAllowed
                         ? Icons.visibility_off
                         : Icons.visibility,
                     size: 16,
                   ),
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 5),
-                    child: widget.post.showUnsafe.value
-                        ? Text('hide')
-                        : Text('show'),
+                    child: widget.post.isAllowed ? Text('hide') : Text('show'),
                   ),
                   CrossFade(
                     showChild: loading,
@@ -123,19 +119,21 @@ class _DetailImageToggleState extends State<DetailImageToggle> {
                 loading = true;
               });
 
-              if (widget.post.file.value.url == null) {
+              if (widget.post.file.url == null) {
                 if (await db.customHost.value == null) {
                   await setCustomHost(context);
                 }
                 if (await db.customHost.value != null) {
                   Post replacement;
                   replacement = await client.post(widget.post.id, unsafe: true);
-                  widget.post.file.value = replacement.file.value;
-                  widget.post.preview.value = replacement.preview.value;
-                  widget.post.sample.value = replacement.sample.value;
+                  widget.post.file = replacement.file;
+                  widget.post.preview = replacement.preview;
+                  widget.post.sample = replacement.sample;
+                  widget.post.notifyListeners();
                 }
               } else {
-                widget.post.showUnsafe.value = !widget.post.showUnsafe.value;
+                widget.post.isAllowed = !widget.post.isAllowed;
+                widget.post.notifyListeners();
               }
 
               setState(() {
@@ -163,9 +161,9 @@ class DetailImageOverlay extends StatelessWidget {
   Widget build(BuildContext context) {
     void Function() onTap;
 
-    if (post.file.value.url != null && post.isVisible) {
-      onTap = post.type == ImageType.Unsupported
-          ? () => launch(post.file.value.url)
+    if (post.file.url != null && post.isVisible) {
+      onTap = post.type == PostType.Unsupported
+          ? () => launch(post.file.url)
           : onOpen;
     }
 
@@ -176,9 +174,9 @@ class DetailImageOverlay extends StatelessWidget {
         ]),
         builder: (context, child) {
           Widget fullscreenButton() {
-            if (post.type == ImageType.Video && onTap != null) {
+            if (post.type == PostType.Video && onTap != null) {
               return CrossFade(
-                showChild: post.file.value.url != null && post.isVisible,
+                showChild: post.file.url != null && post.isVisible,
                 child: Card(
                   elevation: 0,
                   color: Colors.black12,
@@ -203,7 +201,7 @@ class DetailImageOverlay extends StatelessWidget {
           return Stack(
             children: [
               InkWell(
-                onTap: post.type == ImageType.Video
+                onTap: post.type == PostType.Video
                     ? () => post.controller.value.isPlaying
                         ? post.controller.pause()
                         : post.controller.play()
@@ -237,11 +235,7 @@ class DetailImageDisplay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
-      animation: Listenable.merge([
-        post.file,
-        post.showUnsafe,
-        post.isFavorite,
-      ]),
+      animation: post,
       builder: (context, child) {
         return DetailImageOverlay(
           onOpen: onTap,
@@ -259,7 +253,7 @@ class DetailImageDisplay extends StatelessWidget {
               builder: (context) => Center(
                 child: Hero(
                   tag: post.hero,
-                  child: post.type == ImageType.Video
+                  child: post.type == PostType.Video
                       ? DetailVideo(post: post)
                       : DetailImage(post: post),
                 ),

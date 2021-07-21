@@ -97,7 +97,7 @@ class _PostPhotoGalleryState extends State<PostPhotoGallery> with RouteAware {
                 child: VideoPlayer(post.controller),
               ),
               secondChild: CachedNetworkImage(
-                imageUrl: post.sample.value.url,
+                imageUrl: post.sample.url,
                 progressIndicatorBuilder: defaultProgressIndicatorBuilder,
                 errorWidget: defaultErrorBuilder,
               ),
@@ -117,14 +117,14 @@ class _PostPhotoGalleryState extends State<PostPhotoGallery> with RouteAware {
               post: widget.posts[index],
               builder: (post) {
                 switch (widget.posts[index].type) {
-                  case ImageType.Image:
+                  case PostType.Image:
                     return PostPhoto(post);
-                  case ImageType.Video:
+                  case PostType.Video:
                     return Hero(
                       tag: widget.posts[index].hero,
                       child: video(post),
                     );
-                  case ImageType.Unsupported:
+                  case PostType.Unsupported:
                   default:
                     return SizedBox.shrink();
                 }

@@ -61,7 +61,7 @@ class PostImageWidget extends StatelessWidget {
 
         Widget previewWrapper(DownloadProgress progress, Widget child) {
           return AspectRatio(
-            aspectRatio: post.file.value.width / post.file.value.height,
+            aspectRatio: post.file.width / post.file.height,
             child: Stack(
               alignment: Alignment.center,
               children: [
@@ -85,28 +85,28 @@ class PostImageWidget extends StatelessWidget {
         Widget body() {
           switch (size) {
             case ImageSize.preview:
-              return image(url: post.preview.value.url);
+              return image(url: post.preview.url);
             case ImageSize.sample:
               if (withPreview) {
                 return image(
                   stacked: true,
-                  url: post.sample.value.url,
+                  url: post.sample.url,
                   progressIndicatorBuilder: (context, url, progress) =>
                       previewWrapper(
                     progress,
-                    image(url: post.preview.value.url),
+                    image(url: post.preview.url),
                   ),
                 );
               } else {
-                return (image(url: post.sample.value.url));
+                return (image(url: post.sample.url));
               }
               break;
             case ImageSize.file:
               return image(
                 stacked: true,
-                url: post.file.value.url,
+                url: post.file.url,
                 progressIndicatorBuilder: (context, url, progress) =>
-                    previewWrapper(progress, image(url: post.sample.value.url)),
+                    previewWrapper(progress, image(url: post.sample.url)),
               );
             default:
               return null;
