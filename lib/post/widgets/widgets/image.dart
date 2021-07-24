@@ -22,102 +22,105 @@ class PostImageWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        double scale = min(
-            constraints.maxWidth.toDouble(), constraints.maxHeight.toDouble());
+    return RepaintBoundary(
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          double scale = min(constraints.maxWidth.toDouble(),
+              constraints.maxHeight.toDouble());
 
-        Widget image({
-          @required String url,
-          ProgressIndicatorBuilder progressIndicatorBuilder,
-          bool stacked = false,
-        }) {
-          Duration fades =
-              stacked ? Duration(milliseconds: 0) : Duration(milliseconds: 500);
+          Widget image({
+            @required String url,
+            ProgressIndicatorBuilder progressIndicatorBuilder,
+            bool stacked = false,
+          }) {
+            Duration fades = stacked
+                ? Duration(milliseconds: 0)
+                : Duration(milliseconds: 500);
 
-          Widget progressIndicator(context, url, progress) {
-            return Center(
-              child: SizedCircularProgressIndicator(
-                size: scale * 0.1,
-                value: progress.progress,
-                strokeWidth: scale * 0.01,
+            Widget progressIndicator(context, url, progress) {
+              return Center(
+                child: SizedCircularProgressIndicator(
+                  size: scale * 0.1,
+                  value: progress.progress,
+                  strokeWidth: scale * 0.01,
+                ),
+              );
+            }
+
+            return CachedNetworkImage(
+              fit: fit,
+              fadeInDuration: fades,
+              fadeOutDuration: fades,
+              imageUrl: url,
+              errorWidget: stacked
+                  ? defaultErrorBuilder
+                  : (context, url, error) => SizedBox.shrink(),
+              progressIndicatorBuilder: showProgress || stacked
+                  ? progressIndicatorBuilder ?? progressIndicator
+                  : null,
+            );
+          }
+
+          Widget previewWrapper(DownloadProgress progress, Widget child) {
+            return AspectRatio(
+              aspectRatio: post.file.width / post.file.height,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Positioned.fill(child: child),
+                  if (progress.progress != null)
+                    Positioned(
+                      child: LinearProgressIndicator(
+                        value: progress.progress,
+                        minHeight: scale * 0.01,
+                        backgroundColor: Colors.transparent,
+                      ),
+                      top: 0,
+                      right: 0,
+                      left: 0,
+                    ),
+                ],
               ),
             );
           }
 
-          return CachedNetworkImage(
-            fit: fit,
-            fadeInDuration: fades,
-            fadeOutDuration: fades,
-            imageUrl: url,
-            errorWidget: stacked
-                ? defaultErrorBuilder
-                : (context, url, error) => SizedBox.shrink(),
-            progressIndicatorBuilder: showProgress || stacked
-                ? progressIndicatorBuilder ?? progressIndicator
-                : null,
-          );
-        }
-
-        Widget previewWrapper(DownloadProgress progress, Widget child) {
-          return AspectRatio(
-            aspectRatio: post.file.width / post.file.height,
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                Positioned.fill(child: child),
-                if (progress.progress != null)
-                  Positioned(
-                    child: LinearProgressIndicator(
-                      value: progress.progress,
-                      minHeight: scale * 0.01,
-                      backgroundColor: Colors.transparent,
+          Widget body() {
+            switch (size) {
+              case ImageSize.preview:
+                return image(url: post.preview.url);
+              case ImageSize.sample:
+                if (withPreview) {
+                  return image(
+                    stacked: true,
+                    url: post.sample.url,
+                    progressIndicatorBuilder: (context, url, progress) =>
+                        previewWrapper(
+                      progress,
+                      image(url: post.preview.url),
                     ),
-                    top: 0,
-                    right: 0,
-                    left: 0,
-                  ),
-              ],
-            ),
-          );
-        }
-
-        Widget body() {
-          switch (size) {
-            case ImageSize.preview:
-              return image(url: post.preview.url);
-            case ImageSize.sample:
-              if (withPreview) {
+                  );
+                } else {
+                  return (image(url: post.sample.url));
+                }
+                break;
+              case ImageSize.file:
                 return image(
                   stacked: true,
-                  url: post.sample.url,
+                  url: post.file.url,
                   progressIndicatorBuilder: (context, url, progress) =>
-                      previewWrapper(
-                    progress,
-                    image(url: post.preview.url),
-                  ),
+                      previewWrapper(progress, image(url: post.sample.url)),
                 );
-              } else {
-                return (image(url: post.sample.url));
-              }
-              break;
-            case ImageSize.file:
-              return image(
-                stacked: true,
-                url: post.file.url,
-                progressIndicatorBuilder: (context, url, progress) =>
-                    previewWrapper(progress, image(url: post.sample.url)),
-              );
-            default:
-              return null;
+              default:
+                return null;
+            }
           }
-        }
 
-        return DefaultTextStyle(
-          style: TextStyle(fontSize: scale * 0.05),
-          child: body(),
-        );
-      },
+          return DefaultTextStyle(
+            style: TextStyle(fontSize: scale * 0.05),
+            child: body(),
+          );
+        },
+      ),
     );
   }
 }
