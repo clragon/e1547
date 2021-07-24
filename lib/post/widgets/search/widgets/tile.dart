@@ -13,41 +13,20 @@ class PostTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget image() {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Expanded(
-            child: AnimatedBuilder(
-                animation: post,
-                builder: (context, value) {
-                  if (post.flags.deleted) {
-                    return Center(child: Text('deleted'));
-                  }
-                  if (post.type == PostType.Unsupported) {
-                    return Center(child: Text('unsupported'));
-                  }
-                  if (post.file.url == null) {
-                    return Center(child: Text('unsafe'));
-                  }
-                  return Hero(
-                    flightShuttleBuilder: imageFlightShuttleBuilder,
-                    tag: post.hero,
-                    child: PostImageWidget(
-                      post: post,
-                      size: ImageSize.sample,
-                      fit: BoxFit.cover,
-                      showProgress: false,
-                      withPreview: false,
-                    ),
-                  );
-                }),
-          ),
-        ],
-      );
+    Widget overlay({@required Widget child}) {
+      if (post.flags.deleted) {
+        return Center(child: Text('deleted'));
+      }
+      if (post.type == PostType.Unsupported) {
+        return Center(child: Text('unsupported'));
+      }
+      if (post.file.url == null) {
+        return Center(child: Text('unsafe'));
+      }
+      return child;
     }
 
-    Widget overlay() {
+    Widget tag() {
       if (post.file.ext == 'gif') {
         return Container(
           color: Colors.black12,
@@ -63,11 +42,38 @@ class PostTile extends StatelessWidget {
       return SizedBox.shrink();
     }
 
+    Widget image() {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Expanded(
+            child: AnimatedBuilder(
+                animation: post,
+                builder: (context, value) {
+                  return overlay(
+                    child: Hero(
+                      flightShuttleBuilder: imageFlightShuttleBuilder,
+                      tag: post.hero,
+                      child: PostImageWidget(
+                        post: post,
+                        size: ImageSize.sample,
+                        fit: BoxFit.cover,
+                        showProgress: false,
+                        withPreview: false,
+                      ),
+                    ),
+                  );
+                }),
+          ),
+        ],
+      );
+    }
+
     return FakeCard(
       child: Stack(
         children: [
           image(),
-          Positioned(top: 0, right: 0, child: overlay()),
+          Positioned(top: 0, right: 0, child: tag()),
           Material(
             type: MaterialType.transparency,
             child: InkWell(
