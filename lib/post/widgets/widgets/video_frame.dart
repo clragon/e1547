@@ -7,21 +7,21 @@ import 'package:video_player/video_player.dart';
 
 class FrameController extends ChangeNotifier {
   bool visible;
-  Timer frameToggler;
-  void Function(bool shown) onToggle;
+  Timer? frameToggler;
+  void Function(bool shown)? onToggle;
   Duration defaultFrameDuration = Duration(seconds: 1);
 
   FrameController({this.onToggle, this.visible = false});
 
-  void showFrame({Duration duration}) {
+  void showFrame({required Duration duration}) {
     toggleFrame(shown: true, duration: duration);
   }
 
-  void hideFrame({Duration duration}) {
+  void hideFrame({required Duration duration}) {
     toggleFrame(shown: false, duration: duration);
   }
 
-  void toggleFrame({bool shown, Duration duration}) {
+  void toggleFrame({bool? shown, Duration? duration}) {
     frameToggler?.cancel();
     void toggle() {
       visible = shown ?? !visible;
@@ -29,7 +29,7 @@ class FrameController extends ChangeNotifier {
       onToggle?.call(visible);
     }
 
-    if (duration.inMicroseconds == 0) {
+    if (duration?.inMicroseconds == 0) {
       toggle();
     } else {
       frameToggler = Timer(duration ?? defaultFrameDuration, () {
@@ -44,12 +44,12 @@ class FrameController extends ChangeNotifier {
 }
 
 class VideoPlayButton extends StatefulWidget {
-  final VideoPlayerController videoController;
-  final FrameController frameController;
+  final VideoPlayerController? videoController;
+  final FrameController? frameController;
   final double size;
 
   const VideoPlayButton(
-      {@required this.videoController, this.frameController, this.size = 54});
+      {required this.videoController, this.frameController, this.size = 54});
 
   @override
   _VideoPlayButtonState createState() => _VideoPlayButtonState();
@@ -57,13 +57,13 @@ class VideoPlayButton extends StatefulWidget {
 
 class _VideoPlayButtonState extends State<VideoPlayButton>
     with SingleTickerProviderStateMixin {
-  AnimationController animationController;
+  AnimationController? animationController;
 
   void videoUpdate() {
-    if (widget.videoController.value.isPlaying) {
-      animationController.forward();
+    if (widget.videoController!.value.isPlaying) {
+      animationController!.forward();
     } else {
-      animationController.reverse();
+      animationController!.reverse();
     }
   }
 
@@ -72,14 +72,14 @@ class _VideoPlayButtonState extends State<VideoPlayButton>
     super.initState();
     animationController =
         AnimationController(vsync: this, duration: defaultAnimationDuration);
-    widget.videoController.addListener(videoUpdate);
+    widget.videoController!.addListener(videoUpdate);
   }
 
   @override
   void dispose() {
     super.dispose();
-    animationController.dispose();
-    widget.videoController.removeListener(videoUpdate);
+    animationController!.dispose();
+    widget.videoController!.removeListener(videoUpdate);
   }
 
   @override
@@ -91,8 +91,8 @@ class _VideoPlayButtonState extends State<VideoPlayButton>
         widget.frameController
       ]),
       builder: (context, child) {
-        bool loading = !widget.videoController.value.isInitialized ||
-            widget.videoController.value.isBuffering;
+        bool loading = !widget.videoController!.value.isInitialized ||
+            widget.videoController!.value.isBuffering;
 
         Widget button() {
           return Material(
@@ -113,10 +113,10 @@ class _VideoPlayButtonState extends State<VideoPlayButton>
                     child: Replacer(
                       duration: Duration(milliseconds: 100),
                       showChild:
-                          !widget.videoController.value.isPlaying || !loading,
+                          !widget.videoController!.value.isPlaying || !loading,
                       child: AnimatedIcon(
                         icon: AnimatedIcons.play_pause,
-                        progress: animationController,
+                        progress: animationController!,
                         size: widget.size,
                       ),
                       secondChild: Container(
@@ -130,11 +130,11 @@ class _VideoPlayButtonState extends State<VideoPlayButton>
                     ),
                   ),
                   onPressed: () {
-                    if (widget.videoController.value.isPlaying) {
-                      widget.frameController.cancel();
-                      widget.videoController.pause();
+                    if (widget.videoController!.value.isPlaying) {
+                      widget.frameController!.cancel();
+                      widget.videoController!.pause();
                     } else {
-                      widget.videoController.play();
+                      widget.videoController!.play();
                       widget.frameController
                           ?.hideFrame(duration: Duration(milliseconds: 500));
                     }
@@ -145,9 +145,9 @@ class _VideoPlayButtonState extends State<VideoPlayButton>
           );
         }
 
-        bool shown = !widget.videoController.value.isPlaying || loading;
+        bool shown = !widget.videoController!.value.isPlaying || loading;
         if (widget.frameController != null) {
-          shown = widget.frameController.visible || shown;
+          shown = widget.frameController!.visible || shown;
         }
 
         return AnimatedOpacity(
@@ -161,11 +161,11 @@ class _VideoPlayButtonState extends State<VideoPlayButton>
 }
 
 class VideoBar extends StatelessWidget {
-  final VideoPlayerController videoController;
-  final FrameController frameController;
+  final VideoPlayerController? videoController;
+  final FrameController? frameController;
 
   const VideoBar(
-      {@required this.videoController, @required this.frameController});
+      {required this.videoController, required this.frameController});
 
   @override
   Widget build(BuildContext context) {
@@ -177,7 +177,7 @@ class VideoBar extends StatelessWidget {
         ]),
         builder: (context, child) {
           bool shown =
-              frameController.visible && videoController.value.isInitialized;
+              frameController!.visible && videoController!.value.isInitialized;
 
           return SafeCrossFade(
             showChild: shown,
@@ -192,31 +192,31 @@ class VideoBar extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(videoController.value.position
+                        Text(videoController!.value.position
                             .toString()
                             .substring(2, 7)),
                         Flexible(
                             child: Slider(
                           min: 0,
-                          max: videoController.value.duration.inMilliseconds
+                          max: videoController!.value.duration.inMilliseconds
                               .toDouble(),
-                          value: videoController.value.position.inMilliseconds
+                          value: videoController!.value.position.inMilliseconds
                               .toDouble(),
                           onChangeStart: (double value) {
-                            frameController.cancel();
+                            frameController!.cancel();
                           },
                           onChanged: (double value) {
-                            videoController
+                            videoController!
                                 .seekTo(Duration(milliseconds: value.toInt()));
                           },
                           onChangeEnd: (double value) {
-                            if (videoController.value.isPlaying) {
-                              frameController.hideFrame(
-                                  duration: Duration(seconds: 2));
+                            if (videoController!.value.isPlaying) {
+                              frameController!
+                                  .hideFrame(duration: Duration(seconds: 2));
                             }
                           },
                         )),
-                        Text(videoController.value.duration
+                        Text(videoController!.value.duration
                             .toString()
                             .substring(2, 7)),
                         InkWell(
@@ -246,21 +246,18 @@ class VideoBar extends StatelessWidget {
 class VideoFrame extends StatefulWidget {
   final Post post;
   final Widget child;
-  final bool showFrame;
-  final Function(bool shown) onToggle;
+  final bool? showFrame;
+  final Function(bool shown)? onToggle;
 
   VideoFrame(
-      {@required this.child,
-      @required this.post,
-      this.onToggle,
-      this.showFrame});
+      {required this.child, required this.post, this.onToggle, this.showFrame});
 
   @override
   _VideoFrameState createState() => _VideoFrameState();
 }
 
 class _VideoFrameState extends State<VideoFrame> {
-  FrameController frameController;
+  FrameController? frameController;
 
   @override
   void initState() {
@@ -273,12 +270,12 @@ class _VideoFrameState extends State<VideoFrame> {
   @override
   void didUpdateWidget(VideoFrame oldWidget) {
     super.didUpdateWidget(oldWidget);
-    frameController.cancel();
+    frameController!.cancel();
   }
 
   @override
   void dispose() {
-    frameController.dispose();
+    frameController!.dispose();
     super.dispose();
   }
 
@@ -311,10 +308,10 @@ class _VideoFrameState extends State<VideoFrame> {
         return GestureDetector(
           behavior: HitTestBehavior.translucent,
           onTap: () {
-            frameController.toggleFrame(duration: Duration(seconds: 0));
-            if ((widget.post.controller?.value?.isPlaying ?? false) &&
-                frameController.visible) {
-              frameController.hideFrame(duration: Duration(seconds: 2));
+            frameController!.toggleFrame(duration: Duration(seconds: 0));
+            if ((widget.post.controller?.value.isPlaying ?? false) &&
+                frameController!.visible) {
+              frameController!.hideFrame(duration: Duration(seconds: 2));
             }
           },
           child: Stack(

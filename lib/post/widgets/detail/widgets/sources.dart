@@ -7,7 +7,7 @@ import 'package:url_launcher/url_launcher.dart';
 class SourceDisplay extends StatelessWidget {
   final Post post;
 
-  SourceDisplay({@required this.post});
+  SourceDisplay({required this.post});
 
   @override
   Widget build(BuildContext context) {
@@ -84,8 +84,8 @@ class SourceDisplay extends StatelessWidget {
                           style: TextStyle(
                               color: Theme.of(context)
                                   .textTheme
-                                  .bodyText1
-                                  .color
+                                  .bodyText1!
+                                  .color!
                                   .withOpacity(0.35),
                               fontStyle: FontStyle.italic),
                         ),

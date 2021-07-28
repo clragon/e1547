@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:mutex/mutex.dart';
 
 class PostProvider extends DataProvider<Post> {
-  Future<List<Post>> Function(String search, int page) provider;
+  Future<List<Post>> Function(String search, int page)? provider;
   ValueNotifier<Map<String, List<Post>>> deniedMap = ValueNotifier({});
   ValueNotifier<List<String>> allowlist = ValueNotifier([]);
   ValueNotifier<List<Post>> denied = ValueNotifier([]);
@@ -19,7 +19,7 @@ class PostProvider extends DataProvider<Post> {
 
   PostProvider({
     this.provider,
-    String search,
+    String? search,
     bool denying = true,
     this.canSearch = true,
     this.canDeny = true,
@@ -44,12 +44,12 @@ class PostProvider extends DataProvider<Post> {
 
     deniedMap.value = {};
     for (Post item in items) {
-      String denier = await item.getDenier(denylist);
+      String? denier = await item.getDenier(denylist);
       if (denier != null) {
         if (deniedMap.value[denier] == null) {
           deniedMap.value[denier] = [];
         }
-        deniedMap.value[denier].add(item);
+        deniedMap.value[denier]!.add(item);
       }
       item.isBlacklisted = denier != null;
     }
@@ -82,7 +82,7 @@ class PostProvider extends DataProvider<Post> {
   @override
   Future<List<Post>> provide(int page) async {
     if (provider != null) {
-      return provider(search.value, page);
+      return provider!(search.value, page);
     } else {
       return client.posts(search.value, page);
     }

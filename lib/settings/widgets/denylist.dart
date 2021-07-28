@@ -14,10 +14,10 @@ class DenyListPage extends StatefulWidget {
 }
 
 class _DenyListPageState extends State<DenyListPage> {
-  Function fabAction;
+  VoidCallback? fabAction;
   List<String> denylist = [];
   TextEditingController textController = TextEditingController();
-  PersistentBottomSheetController<String> sheetController;
+  PersistentBottomSheetController? sheetController;
 
   Future<void> updateDenylist() async {
     await db.denylist.value.then((value) {
@@ -40,8 +40,8 @@ class _DenyListPageState extends State<DenyListPage> {
     db.denylist.removeListener(updateDenylist);
   }
 
-  void addTags(BuildContext context, [int edit]) {
-    void submit(String value, [int edit]) {
+  void addTags(BuildContext context, [int? edit]) {
+    void submit(String value, [int? edit]) {
       value = value.trim();
 
       if (edit != null) {
@@ -76,7 +76,7 @@ class _DenyListPageState extends State<DenyListPage> {
       fabAction = () => submit(controller.text, edit);
     });
 
-    sheetController.closed.then((_) {
+    sheetController?.closed.then((_) {
       setState(() {
         fabAction = null;
       });
@@ -84,7 +84,7 @@ class _DenyListPageState extends State<DenyListPage> {
   }
 
   Widget denyListTile(
-      {@required String tag, Function() onEdit, Function() onDelete}) {
+      {required String tag, VoidCallback? onEdit, VoidCallback? onDelete}) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       child: Column(
@@ -104,12 +104,12 @@ class _DenyListPageState extends State<DenyListPage> {
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  PopupMenuButton(
+                  PopupMenuButton<VoidCallback?>(
                     icon: Icon(
                       Icons.more_vert,
                       color: Theme.of(context).iconTheme.color,
                     ),
-                    onSelected: (value) => value(),
+                    onSelected: (value) => value?.call(),
                     itemBuilder: (context) => [
                       PopupMenuTile(
                         value: onEdit,
@@ -155,7 +155,8 @@ class _DenyListPageState extends State<DenyListPage> {
       }
 
       return ListView.builder(
-        padding: EdgeInsets.only(bottom: 30),
+        padding:
+            EdgeInsets.only(top: 8, bottom: kBottomNavigationBarHeight + 24),
         itemCount: denylist.length,
         itemBuilder: (BuildContext context, int index) => denyListTile(
             tag: denylist[index],
@@ -171,7 +172,7 @@ class _DenyListPageState extends State<DenyListPage> {
     Widget floatingActionButton(BuildContext context) {
       return FloatingActionButton(
         child: fabAction != null ? Icon(Icons.check) : Icon(Icons.add),
-        onPressed: () => fabAction != null ? fabAction() : addTags(context),
+        onPressed: fabAction != null ? fabAction : () => addTags(context),
       );
     }
 
@@ -198,7 +199,7 @@ class _DenyListPageState extends State<DenyListPage> {
         actions: [
           TextButton(
             child: Text('CANCEL'),
-            onPressed: Navigator.of(context).pop,
+            onPressed: Navigator.of(context).maybePop,
           ),
           TextButton(
             child: Text('OK'),
@@ -219,20 +220,19 @@ class _DenyListPageState extends State<DenyListPage> {
         title: Text('Blacklist'),
         actions: [
           IconButton(
-              icon: Icon(Icons.edit),
-              onPressed: () async {
-                showDialog(
-                  context: context,
-                  builder: (context) => editor(),
-                );
-              }),
+            icon: Icon(Icons.edit),
+            onPressed: () async {
+              showDialog(
+                context: context,
+                builder: (context) => editor(),
+              );
+            },
+          ),
         ],
       ),
       body: body(),
       floatingActionButton: Builder(
-        builder: (context) {
-          return floatingActionButton(context);
-        },
+        builder: floatingActionButton,
       ),
     );
   }

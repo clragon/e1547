@@ -5,7 +5,7 @@ import 'package:like_button/like_button.dart';
 class LikeDisplay extends StatelessWidget {
   final Post post;
 
-  LikeDisplay({@required this.post});
+  LikeDisplay({required this.post});
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +38,7 @@ class LikeDisplay extends StatelessWidget {
                   ),
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 8),
-                    child: Text((post.score.total ?? 0).toString()),
+                    child: Text((post.score.total).toString()),
                   ),
                   LikeButton(
                     isLiked: post.voteStatus == VoteStatus.downvoted,
@@ -70,7 +70,7 @@ class LikeDisplay extends StatelessWidget {
             ),
             Row(
               children: [
-                Text((post.favCount ?? 0).toString()),
+                Text(post.favCount.toString()),
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 8),
                   child: Icon(Icons.favorite),

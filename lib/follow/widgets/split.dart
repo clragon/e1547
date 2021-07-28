@@ -24,8 +24,8 @@ class _FollowsSplitPageState extends State<FollowsSplitPage>
   Future<void> updateRefresh() async {
     progress = followUpdater.progress.value;
     update();
-    if (refreshController.headerMode.value == RefreshStatus.idle) {
-      WidgetsBinding.instance.addPostFrameCallback((_) async {
+    if (refreshController.headerMode!.value == RefreshStatus.idle) {
+      WidgetsBinding.instance!.addPostFrameCallback((_) async {
         await refreshController.requestRefresh(
           needCallback: false,
           duration: Duration(milliseconds: 100),
@@ -64,7 +64,7 @@ class _FollowsSplitPageState extends State<FollowsSplitPage>
   }
 
   Widget itemBuilder(BuildContext context, int item) {
-    return FollowTile(follow: follows[item], safe: safe);
+    return FollowTile(follow: follows![item], safe: safe!);
   }
 
   StaggeredTile tileBuilder(int item) {
@@ -90,7 +90,7 @@ class _FollowsSplitPageState extends State<FollowsSplitPage>
           key: Key('grid_${[tileSize, safe].join('_')}_key'),
           addAutomaticKeepAlives: false,
           crossAxisCount: crossAxisCount(constraints.maxWidth),
-          itemCount: follows.length,
+          itemCount: follows!.length,
           itemBuilder: itemBuilder,
           staggeredTileBuilder: tileBuilder,
           physics: BouncingScrollPhysics(),

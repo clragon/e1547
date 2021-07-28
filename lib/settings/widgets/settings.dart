@@ -1,10 +1,8 @@
 import 'dart:async' show Future;
-import 'dart:io' show Platform;
 
 import 'package:dio/dio.dart';
 import 'package:e1547/client.dart';
 import 'package:e1547/interface.dart';
-import 'package:e1547/settings.dart' show db;
 import 'package:e1547/settings.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/foundation.dart';
@@ -18,19 +16,18 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  String currentHost;
-  String customHost;
-  String username;
-  AppTheme theme;
-  bool useCustomHost = false;
-  bool hideGallery = false;
+  String? currentHost;
+  String? customHost;
+  String? username;
+  AppTheme? theme;
   int tileSize = 0;
-  GridState stagger;
+  GridState? stagger;
+  bool useCustomHost = false;
 
   void linkSetting<T>(ValueNotifier<Future<T>> setting,
       Future<void> Function(T value) assignment) async {
     Future<void> setValue() async {
-      var value = await setting.value;
+      T value = await setting.value;
       await assignment(value);
       if (mounted) {
         setState(() {});
@@ -53,7 +50,6 @@ class _SettingsPageState extends State<SettingsPage> {
       db.customHost: (value) async => customHost = value,
       db.credentials: (value) async => username = value?.username,
       db.theme: (value) async => theme = value,
-      db.hideGallery: (value) async => hideGallery = value,
       db.tileSize: (value) async => tileSize = value,
       db.stagger: (value) async => stagger = value,
     };
@@ -62,7 +58,7 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Future<void> logout() async {
-    String name = username;
+    String? name = username;
     await client.logout();
 
     String msg = 'Forgot login details';
@@ -103,7 +99,7 @@ class _SettingsPageState extends State<SettingsPage> {
               onLongPress: () => setCustomHost(context),
               child: SwitchListTile(
                 title: Text('Custom host'),
-                subtitle: Text(currentHost ?? ''),
+                subtitle: currentHost != null ? Text(currentHost!) : null,
                 secondary: Icon(useCustomHost ? Icons.warning : Icons.security),
                 value: useCustomHost,
                 onChanged: (value) async {
@@ -117,27 +113,11 @@ class _SettingsPageState extends State<SettingsPage> {
                 },
               ),
             ),
-            if (Platform.isAndroid)
-              SwitchListTile(
-                  title: Text('Hide from gallery'),
-                  subtitle: hideGallery
-                      ? Text('Downloads are hidden')
-                      : Text('Downloads are shown'),
-                  secondary: CrossFade(
-                    showChild: hideGallery,
-                    child: Icon(Icons.image_not_supported),
-                    secondChild: Icon(Icons.image),
-                  ),
-                  value: hideGallery,
-                  onChanged: (hide) {
-                    db.hideGallery.value = Future.value(hide);
-                    setState(() {});
-                  }),
             Divider(),
             settingsHeader('Display'),
             ListTile(
               title: Text('Theme'),
-              subtitle: Text(theme != null ? describeEnum(theme) : ''),
+              subtitle: Text(theme != null ? describeEnum(theme!) : ''),
               leading: Icon(Icons.brightness_6),
               onTap: () {
                 showDialog(
@@ -157,10 +137,10 @@ class _SettingsPageState extends State<SettingsPage> {
                                     width: 28,
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
-                                      color: appThemeMap[theme].cardColor,
+                                      color: appThemeMap[theme]!.cardColor,
                                       border: Border.all(
                                         color:
-                                            Theme.of(context).iconTheme.color,
+                                            Theme.of(context).iconTheme.color!,
                                       ),
                                     ),
                                   ),
@@ -206,7 +186,7 @@ class _SettingsPageState extends State<SettingsPage> {
                             division: (300 / 50).round(),
                             min: 100,
                             max: 400,
-                            onSubmit: (int value) {
+                            onSubmit: (value) {
                               if (value == null || value <= 0) {
                                 return;
                               }
@@ -216,7 +196,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         ),
                       ),
                       GridSettingsTile(
-                        state: stagger,
+                        state: stagger ?? GridState.square,
                         onChange: (state) => setState(() {
                           db.stagger.value = Future.value(state);
                         }),
@@ -242,11 +222,12 @@ class _SettingsPageState extends State<SettingsPage> {
             Divider(),
             settingsHeader('Account'),
             FutureBuilder(
-              builder: (context, snapshot) {
+              future: client.hasLogin,
+              builder: (context, AsyncSnapshot<bool?> snapshot) {
                 if (snapshot.hasData) {
                   return CrossFade(
                       duration: Duration(milliseconds: 200),
-                      showChild: snapshot.data,
+                      showChild: snapshot.data!,
                       child: ListTile(
                         title: Text('Sign out'),
                         subtitle: Text(username ?? ''),
@@ -267,7 +248,6 @@ class _SettingsPageState extends State<SettingsPage> {
                   );
                 }
               },
-              future: client.hasLogin,
             ),
           ],
         ),
@@ -287,7 +267,7 @@ class _SettingsPageState extends State<SettingsPage> {
 Future<bool> setCustomHost(BuildContext context) async {
   bool success = false;
   ValueNotifier<bool> isLoading = ValueNotifier<bool>(false);
-  ValueNotifier<String> error = ValueNotifier<String>(null);
+  ValueNotifier<String?> error = ValueNotifier<String?>(null);
   TextEditingController controller =
       TextEditingController(text: await db.customHost.value);
   Future<bool> submit(String text) async {
@@ -346,8 +326,7 @@ Future<bool> setCustomHost(BuildContext context) async {
               children: [
                 ValueListenableBuilder(
                   valueListenable: isLoading,
-                  builder: (BuildContext context, value, Widget child) =>
-                      CrossFade(
+                  builder: (context, bool value, child) => CrossFade(
                     showChild: value,
                     child: Padding(
                       padding: EdgeInsets.only(right: 8),
@@ -358,7 +337,7 @@ Future<bool> setCustomHost(BuildContext context) async {
                 Expanded(
                     child: ValueListenableBuilder(
                   valueListenable: error,
-                  builder: (BuildContext context, value, Widget child) {
+                  builder: (context, String? value, child) {
                     return Theme(
                       data: value != null
                           ? Theme.of(context).copyWith(
@@ -384,7 +363,7 @@ Future<bool> setCustomHost(BuildContext context) async {
             ),
             ValueListenableBuilder(
               valueListenable: error,
-              builder: (BuildContext context, value, Widget child) {
+              builder: (context, String? value, child) {
                 return CrossFade(
                   duration: Duration(milliseconds: 200),
                   showChild: value != null,

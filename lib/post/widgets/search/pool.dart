@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 class PoolPage extends StatelessWidget {
   final Pool pool;
 
-  PoolPage({@required this.pool});
+  PoolPage({required this.pool});
 
   @override
   Widget build(BuildContext context) {

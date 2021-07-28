@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 class DrawerCounter extends StatefulWidget {
   final PostProvider provider;
 
-  const DrawerCounter({@required this.provider});
+  const DrawerCounter({required this.provider});
 
   @override
   _DrawerCounterState createState() => _DrawerCounterState();
@@ -15,7 +15,7 @@ class DrawerCounter extends StatefulWidget {
 
 class _DrawerCounterState extends State<DrawerCounter> {
   final int limit = 15;
-  List<Widget> children;
+  List<Widget>? children;
 
   Future<void> updateTags() async {
     if (mounted) {
@@ -95,7 +95,7 @@ class _DrawerCounterState extends State<DrawerCounter> {
                             Expanded(
                               child: Wrap(
                                 direction: Axis.horizontal,
-                                children: children,
+                                children: children!,
                               ),
                             )
                           ],

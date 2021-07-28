@@ -5,7 +5,7 @@ import 'package:like_button/like_button.dart';
 class FavoriteButton extends StatelessWidget {
   final Post post;
 
-  const FavoriteButton({this.post});
+  const FavoriteButton({required this.post});
 
   @override
   Widget build(BuildContext context) {

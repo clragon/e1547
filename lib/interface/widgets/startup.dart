@@ -11,7 +11,7 @@ final List<Function(BuildContext context)> actions = [
 class StartupActions extends StatefulWidget {
   final Widget child;
 
-  const StartupActions({@required this.child});
+  const StartupActions({required this.child});
 
   @override
   _StartupActionsState createState() => _StartupActionsState();

@@ -7,7 +7,7 @@ import 'package:share/share.dart';
 import 'actions.dart';
 import 'info.dart';
 
-void poolDialog({@required BuildContext context, @required Pool pool}) {
+void poolDialog({required BuildContext context, required Pool pool}) {
   showDialog(
     context: context,
     builder: (BuildContext context) {
@@ -21,7 +21,7 @@ void poolDialog({@required BuildContext context, @required Pool pool}) {
 class PoolDialog extends StatelessWidget {
   final Pool pool;
 
-  PoolDialog({@required this.pool});
+  PoolDialog({required this.pool});
 
   @override
   Widget build(BuildContext context) {
@@ -35,8 +35,8 @@ class PoolDialog extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              pool.description.isNotEmpty
-                  ? DTextField(source: pool.description)
+              pool.description!.isNotEmpty
+                  ? DTextField(source: pool.description!)
                   : Text(
                       'no description',
                       style: TextStyle(fontStyle: FontStyle.italic),

@@ -1,31 +1,29 @@
 import 'dart:convert';
 
-import 'package:meta/meta.dart';
-
 class Wiki {
   Wiki({
-    @required this.id,
-    @required this.createdAt,
-    @required this.updatedAt,
-    @required this.title,
-    @required this.body,
-    @required this.creatorId,
-    @required this.isLocked,
-    @required this.updaterId,
-    @required this.isDeleted,
-    @required this.otherNames,
-    @required this.creatorName,
-    @required this.categoryName,
+    required this.id,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.title,
+    required this.body,
+    required this.creatorId,
+    required this.isLocked,
+    required this.updaterId,
+    required this.isDeleted,
+    required this.otherNames,
+    required this.creatorName,
+    required this.categoryName,
   });
 
   int id;
   DateTime createdAt;
-  DateTime updatedAt;
+  DateTime? updatedAt;
   String title;
   String body;
   int creatorId;
   bool isLocked;
-  int updaterId;
+  int? updaterId;
   bool isDeleted;
   List<String> otherNames;
   String creatorName;
@@ -53,7 +51,7 @@ class Wiki {
   Map<String, dynamic> toMap() => {
         "id": id,
         "created_at": createdAt.toIso8601String(),
-        "updated_at": updatedAt.toIso8601String(),
+        "updated_at": updatedAt!.toIso8601String(),
         "title": title,
         "body": body,
         "creator_id": creatorId,

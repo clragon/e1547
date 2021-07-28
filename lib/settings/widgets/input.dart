@@ -3,26 +3,26 @@ import 'package:e1547/tag.dart';
 import 'package:flutter/material.dart';
 
 class ListTagEditor extends StatefulWidget {
-  final TextEditingController controller;
-  final Function(String value) onSubmit;
+  final TextEditingController? controller;
+  final SubmitString onSubmit;
   final String prompt;
 
   const ListTagEditor(
-      {@required this.onSubmit, this.controller, @required this.prompt});
+      {required this.onSubmit, this.controller, required this.prompt});
 
   @override
   _ListTagEditorState createState() => _ListTagEditorState();
 }
 
 class _ListTagEditorState extends State<ListTagEditor> {
-  TextEditingController controller;
+  TextEditingController? controller;
 
   @override
   void initState() {
     super.initState();
     controller = widget.controller;
     controller ??= TextEditingController();
-    setFocusToEnd(controller);
+    setFocusToEnd(controller!);
   }
 
   @override

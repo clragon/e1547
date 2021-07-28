@@ -6,10 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:share/share.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class PostDetailAppBar extends StatelessWidget with AppBarSizeMixin {
+class PostDetailAppBar extends StatelessWidget with AppBarSize {
   final Post post;
 
-  PostDetailAppBar({@required this.post});
+  PostDetailAppBar({required this.post});
 
   @override
   Widget build(BuildContext context) {
@@ -23,15 +23,15 @@ class PostDetailAppBar extends StatelessWidget with AppBarSizeMixin {
         actions: post.isEditing
             ? null
             : [
-                PopupMenuButton(
+                PopupMenuButton<VoidCallback>(
                   icon: ShadowIcon(
                     Icons.more_vert,
                   ),
                   onSelected: (value) => value(),
-                  itemBuilder: (context) => [
-                    ...postMenuActions(context, post),
-                    ...postMenuUserActions(context, post),
-                  ],
+                  itemBuilder: ((context) => [
+                        ...postMenuActions(context, post),
+                        ...postMenuUserActions(context, post),
+                      ]),
                 ),
               ],
       ),
@@ -39,10 +39,10 @@ class PostDetailAppBar extends StatelessWidget with AppBarSizeMixin {
   }
 }
 
-class PostPhotoAppBar extends StatelessWidget with AppBarSizeMixin {
+class PostPhotoAppBar extends StatelessWidget with AppBarSize {
   final Post post;
 
-  PostPhotoAppBar({@required this.post});
+  PostPhotoAppBar({required this.post});
 
   @override
   Widget build(BuildContext context) {
@@ -54,19 +54,20 @@ class PostPhotoAppBar extends StatelessWidget with AppBarSizeMixin {
       actions: post.isEditing
           ? null
           : [
-              PopupMenuButton(
+              PopupMenuButton<VoidCallback>(
                 icon: ShadowIcon(
                   Icons.more_vert,
                 ),
                 onSelected: (value) => value(),
-                itemBuilder: (context) => postMenuActions(context, post),
+                itemBuilder: ((context) => postMenuActions(context, post)),
               ),
             ],
     );
   }
 }
 
-List<PopupMenuItem> postMenuActions(BuildContext context, Post post) {
+List<PopupMenuItem<VoidCallback>> postMenuActions(
+    BuildContext context, Post post) {
   Future<void> download() async {
     String message;
     if (await post.download()) {
@@ -86,13 +87,12 @@ List<PopupMenuItem> postMenuActions(BuildContext context, Post post) {
       title: 'Share',
       icon: Icons.share,
     ),
-    post.file.url != null
-        ? PopupMenuTile(
-            value: download,
-            title: 'Download',
-            icon: Icons.file_download,
-          )
-        : null,
+    if (post.file.url != null)
+      PopupMenuTile(
+        value: download,
+        title: 'Download',
+        icon: Icons.file_download,
+      ),
     PopupMenuTile(
       value: () async => launch(post.url(await db.host.value).toString()),
       title: 'Browse',
@@ -101,29 +101,28 @@ List<PopupMenuItem> postMenuActions(BuildContext context, Post post) {
   ];
 }
 
-List<PopupMenuItem> postMenuUserActions(BuildContext context, Post post) {
+List<PopupMenuItem<VoidCallback>> postMenuUserActions(
+    BuildContext context, Post post) {
   return [
-    post.isLoggedIn
-        ? PopupMenuTile(
-            value: () {
-              post.isEditing = true;
-              post.notifyListeners();
-            },
-            title: 'Edit',
-            icon: Icons.edit,
-          )
-        : null,
-    post.isLoggedIn
-        ? PopupMenuTile(
-            value: () async {
-              if (await writeComment(context, post)) {
-                post.commentCount++;
-                post.notifyListeners();
-              }
-            },
-            title: 'Comment',
-            icon: Icons.comment,
-          )
-        : null,
+    if (post.isLoggedIn)
+      PopupMenuTile(
+        value: () {
+          post.isEditing = true;
+          post.notifyListeners();
+        },
+        title: 'Edit',
+        icon: Icons.edit,
+      ),
+    if (post.isLoggedIn)
+      PopupMenuTile(
+        value: () async {
+          if (await writeComment(context, post)) {
+            post.commentCount++;
+            post.notifyListeners();
+          }
+        },
+        title: 'Comment',
+        icon: Icons.comment,
+      ),
   ];
 }

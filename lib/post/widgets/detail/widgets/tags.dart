@@ -6,14 +6,14 @@ import 'package:flutter/material.dart';
 
 class TagDisplay extends StatelessWidget {
   final Post post;
-  final PostProvider provider;
+  final PostProvider? provider;
   final Future<bool> Function(String value, String category) submit;
-  final SheetActionController controller;
+  final SheetActionController? controller;
 
   TagDisplay({
-    @required this.post,
-    @required this.provider,
-    @required this.submit,
+    required this.post,
+    required this.provider,
+    required this.submit,
     this.controller,
   });
 
@@ -26,7 +26,7 @@ class TagDisplay extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: categories.keys
               .where((category) =>
-                  post.tagMap[category].isNotEmpty ||
+                  post.tagMap[category]!.isNotEmpty ||
                   (post.isEditing && category != 'invalid'))
               .map(
                 (category) => Column(
@@ -47,14 +47,14 @@ class TagDisplay extends StatelessWidget {
                           child: Wrap(
                             direction: Axis.horizontal,
                             children: [
-                              ...post.tagMap[category].map(
+                              ...post.tagMap[category]!.map(
                                 (tag) => TagCard(
                                   tag: tag,
                                   category: category,
                                   provider: provider,
                                   onRemove: post.isEditing
                                       ? () {
-                                          post.tagMap[category].remove(tag);
+                                          post.tagMap[category]!.remove(tag);
                                           post.notifyListeners();
                                         }
                                       : null,
@@ -97,14 +97,14 @@ Future<bool> onPostTagsEdit(
     return true;
   }
   List<String> tags = value.split(' ');
-  post.tagMap[category].addAll(tags);
-  post.tagMap[category].toSet().toList().sort();
+  post.tagMap[category]!.addAll(tags);
+  post.tagMap[category]!.toSet().toList().sort();
   post.notifyListeners();
   if (category != 'general') {
     () async {
       for (String tag in tags) {
         List validator = await client.tag(tag);
-        String target;
+        String? target;
         if (validator.isEmpty) {
           target = 'general';
         } else if (validator[0]['category'] != categories[category]) {
@@ -112,9 +112,9 @@ Future<bool> onPostTagsEdit(
               .firstWhere((k) => validator[0]['category'] == categories[k]);
         }
         if (target != null) {
-          post.tagMap[category].remove(tag);
-          post.tagMap[target].add(tag);
-          post.tagMap[target].toSet().toList().sort();
+          post.tagMap[category]!.remove(tag);
+          post.tagMap[target]!.add(tag);
+          post.tagMap[target]!.toSet().toList().sort();
           post.notifyListeners();
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             duration: Duration(milliseconds: 500),

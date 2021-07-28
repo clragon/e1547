@@ -7,7 +7,7 @@ class WikiPage extends StatelessWidget {
   final String tag;
   final bool actions;
 
-  WikiPage({@required this.tag, @required this.actions});
+  WikiPage({required this.tag, required this.actions});
 
   @override
   Widget build(BuildContext context) {

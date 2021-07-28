@@ -37,7 +37,7 @@ class Post extends PostData with ChangeNotifier {
       case 'webm':
         if (Platform.isIOS) {
           file.ext = 'mp4';
-          file.url = file.url.replaceAll('.webm', '.mp4');
+          file.url = file.url!.replaceAll('.webm', '.mp4');
         }
         return PostType.Video;
       case 'swf':
@@ -47,20 +47,20 @@ class Post extends PostData with ChangeNotifier {
     }
   }
 
-  VideoPlayerController controller;
+  VideoPlayerController? controller;
 
   static List<Post> loadedVideos = [];
 
   Future<void> initVideo() async {
     if (type == PostType.Video) {
       if (controller != null) {
-        await controller.pause();
-        await controller.dispose();
+        await controller!.pause();
+        await controller!.dispose();
       }
-      controller = VideoPlayerController.network(file.url);
-      controller.setLooping(true);
-      controller.addListener(() =>
-          controller.value.isPlaying ? Wakelock.enable() : Wakelock.disable());
+      controller = VideoPlayerController.network(file.url!);
+      controller!.setLooping(true);
+      controller!.addListener(() =>
+          controller!.value.isPlaying ? Wakelock.enable() : Wakelock.disable());
     }
   }
 
@@ -72,7 +72,7 @@ class Post extends PostData with ChangeNotifier {
       loadedVideos.first.disposeVideo();
     }
     loadedVideos.add(this);
-    await this.controller.initialize();
+    await this.controller!.initialize();
   }
 
   Future<void> disposeVideo() async {
@@ -90,7 +90,7 @@ class Post extends PostData with ChangeNotifier {
           ].contains(artist));
   }
 
-  Post.fromMap(this.json) : super.fromMap(json) {
+  Post.fromMap(this.json) : super.fromMap(json as Map<String, dynamic>) {
     initVideo();
   }
 

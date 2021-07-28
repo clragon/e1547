@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 
 class GridSettingsTile extends StatelessWidget {
   final GridState state;
-  final void Function(GridState state) onChange;
+  final void Function(GridState state)? onChange;
 
-  const GridSettingsTile({@required this.state, this.onChange});
+  const GridSettingsTile({required this.state, this.onChange});
 
   String getDescription(GridState state) {
     switch (state) {
@@ -53,7 +53,7 @@ class GridSettingsTile extends StatelessWidget {
                               trailing: Icon(getIcon(state)),
                               title: Text(getDescription(state)),
                               onTap: () {
-                                onChange(state);
+                                onChange!(state);
                                 Navigator.of(context).maybePop();
                               },
                             ))

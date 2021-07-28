@@ -23,7 +23,7 @@ class FollowTile extends StatefulWidget {
   final Follow follow;
   final bool safe;
 
-  FollowTile({@required this.follow, @required this.safe})
+  FollowTile({required this.follow, required this.safe})
       : super(key: UniqueKey());
 
   @override
@@ -31,7 +31,7 @@ class FollowTile extends StatefulWidget {
 }
 
 class _FollowTileState extends State<FollowTile> {
-  FollowStatus status;
+  FollowStatus? status;
 
   void update() {
     if (widget.safe) {
@@ -47,7 +47,7 @@ class _FollowTileState extends State<FollowTile> {
     update();
   }
 
-  String getStatusText(FollowStatus status) {
+  String getStatusText(FollowStatus? status) {
     if (status == null) {
       return '';
     }
@@ -56,7 +56,7 @@ class _FollowTileState extends State<FollowTile> {
       text += '+';
     }
     text += ' new post';
-    if (status.unseen > 1) {
+    if (status.unseen! > 1) {
       text += 's';
     }
     return text;
@@ -69,9 +69,9 @@ class _FollowTileState extends State<FollowTile> {
       children: [
         Expanded(
           child: Hero(
-            tag: 'image_${status.latest}',
+            tag: 'image_${status!.latest}',
             child: CachedNetworkImage(
-              imageUrl: status.thumbnail,
+              imageUrl: status!.thumbnail!,
               errorWidget: defaultErrorBuilder,
               fit: BoxFit.cover,
             ),
@@ -95,7 +95,7 @@ class _FollowTileState extends State<FollowTile> {
                   size: 16,
                 ),
               ),
-            if (status.unseen != null && status.unseen > 0)
+            if (status!.unseen != null && status!.unseen! > 0)
               Expanded(
                 child: Text(
                   getStatusText(status),
@@ -109,7 +109,7 @@ class _FollowTileState extends State<FollowTile> {
           widget.follow.title,
           style: Theme.of(context)
               .textTheme
-              .headline6
+              .headline6!
               .copyWith(shadows: getTextShadows()),
           overflow: TextOverflow.ellipsis,
           maxLines: 1,
@@ -187,20 +187,20 @@ class _FollowTileState extends State<FollowTile> {
 }
 
 class FollowListTile extends StatefulWidget {
-  final Function onEdit;
-  final Function onDelete;
-  final Function onRename;
-  final Function onType;
+  final VoidCallback onEdit;
+  final VoidCallback onDelete;
+  final VoidCallback onRename;
+  final VoidCallback onType;
   final Follow follow;
-  final bool safe;
+  final bool? safe;
 
   FollowListTile({
-    @required this.follow,
-    @required this.onEdit,
-    @required this.onDelete,
-    @required this.onRename,
-    @required this.onType,
-    @required this.safe,
+    required this.follow,
+    required this.onEdit,
+    required this.onDelete,
+    required this.onRename,
+    required this.onType,
+    required this.safe,
   }) : super(key: UniqueKey());
 
   @override
@@ -208,10 +208,10 @@ class FollowListTile extends StatefulWidget {
 }
 
 class _FollowListTileState extends State<FollowListTile> {
-  String thumbnail;
+  String? thumbnail;
 
   void update() {
-    if (widget.safe) {
+    if (widget.safe!) {
       thumbnail = widget.follow.safe.thumbnail;
     } else {
       thumbnail = widget.follow.unsafe.thumbnail;
@@ -244,7 +244,7 @@ class _FollowListTileState extends State<FollowListTile> {
     }
 
     Widget contextMenu() {
-      return PopupMenuButton(
+      return PopupMenuButton<VoidCallback>(
         icon: ShadowIcon(
           Icons.more_vert,
         ),
@@ -291,7 +291,7 @@ class _FollowListTileState extends State<FollowListTile> {
                     ? Opacity(
                         opacity: 0.8,
                         child: CachedNetworkImage(
-                          imageUrl: thumbnail,
+                          imageUrl: thumbnail!,
                           errorWidget: defaultErrorBuilder,
                           fit: BoxFit.cover,
                         ),

@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 
 class SectionWrap extends StatelessWidget {
   final Widget child;
-  final String title;
+  final String? title;
   final bool expanded;
 
-  const SectionWrap({@required this.child, this.title, this.expanded = false});
+  const SectionWrap({required this.child, this.title, this.expanded = false});
 
   @override
   Widget build(BuildContext context) {

@@ -94,7 +94,7 @@ class VersionButton extends StatefulWidget {
 }
 
 class _VersionButtonState extends State<VersionButton> {
-  List<AppVersion> newVersions;
+  List<AppVersion>? newVersions;
 
   @override
   void initState() {
@@ -114,7 +114,7 @@ class _VersionButtonState extends State<VersionButton> {
               onPressed: () {
                 Widget msg;
                 List<Widget> actions = [];
-                if (newVersions.isEmpty) {
+                if (newVersions!.isEmpty) {
                   msg = Text("You have the newest version ($appVersion)");
                   actions.add(TextButton(
                     child: Text("OK"),
@@ -136,12 +136,12 @@ class _VersionButtonState extends State<VersionButton> {
                             style: TextStyle(
                               color: Theme.of(context)
                                   .textTheme
-                                  .bodyText1
-                                  .color
+                                  .bodyText1!
+                                  .color!
                                   .withOpacity(0.5),
                             ),
                           ),
-                          ...newVersions
+                          ...newVersions!
                               .map(
                                 (release) => [
                                   Padding(
@@ -152,7 +152,7 @@ class _VersionButtonState extends State<VersionButton> {
                                           Theme.of(context).textTheme.headline6,
                                     ),
                                   ),
-                                  Text(release.description),
+                                  Text(release.description!),
                                 ],
                               )
                               .reduce((a, b) => [...a, ...b]),
@@ -186,7 +186,7 @@ class _VersionButtonState extends State<VersionButton> {
                 );
               },
             ),
-            if (newVersions.isNotEmpty)
+            if (newVersions!.isNotEmpty)
               Positioned(
                 bottom: 12,
                 left: 12,

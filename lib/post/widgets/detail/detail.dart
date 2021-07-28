@@ -9,10 +9,10 @@ import 'widgets.dart';
 
 class PostDetail extends StatefulWidget {
   final Post post;
-  final PostProvider provider;
-  final Function(int index) changePage;
+  final PostProvider? provider;
+  final Function(int index)? changePage;
 
-  PostDetail({@required this.post, this.provider, this.changePage});
+  PostDetail({required this.post, this.provider, this.changePage});
 
   @override
   State<StatefulWidget> createState() {
@@ -24,13 +24,13 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
   SheetActionController sheetController = SheetActionController();
   bool keepPlaying = false;
 
-  NavigatorState navigator;
-  ModalRoute route;
+  late NavigatorState navigator;
+  late ModalRoute route;
 
   Future<void> onPageChange() async {
     if (mounted &&
         route.isActive &&
-        !widget.provider.posts.value.contains(widget.post)) {
+        !widget.provider!.posts.value.contains(widget.post)) {
       navigator.removeRoute(route);
     }
   }
@@ -44,9 +44,9 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
   @override
   void initState() {
     super.initState();
-    widget.provider?.posts?.addListener(onPageChange);
+    widget.provider?.posts.addListener(onPageChange);
     widget.post.addListener(closeSheet);
-    if (!(widget.post.controller?.value?.isInitialized ?? true)) {
+    if (!(widget.post.controller?.value.isInitialized ?? true)) {
       widget.post.loadVideo();
     }
   }
@@ -54,7 +54,7 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
   @override
   void reassemble() {
     super.reassemble();
-    routeObserver.subscribe(this, ModalRoute.of(context));
+    routeObserver.subscribe(this, ModalRoute.of(context) as PageRoute);
     if (widget.post.file.url != null) {
       if (widget.post.type == PostType.Image) {
         preloadImage(context: context, post: widget.post, size: ImageSize.file);
@@ -69,7 +69,7 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
     if (widget.post.isEditing) {
       widget.post.resetPost();
     }
-    widget.provider?.pages?.removeListener(onPageChange);
+    widget.provider?.pages.removeListener(onPageChange);
     widget.post.removeListener(closeSheet);
     widget.post.controller?.pause();
     if (widget.provider == null) {
@@ -80,9 +80,9 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    routeObserver.subscribe(this, ModalRoute.of(context));
+    routeObserver.subscribe(this, ModalRoute.of(context) as PageRoute);
     navigator = Navigator.of(context);
-    route = ModalRoute.of(context);
+    route = ModalRoute.of(context)!;
   }
 
   @override
@@ -105,7 +105,7 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
         SnackBar(
           duration: Duration(seconds: 1),
           content: Text(
-              'failed to edit Post #${widget.post.id} with code ${error.response.statusCode}'),
+              'failed to edit Post #${widget.post.id} with code ${error.response!.statusCode}'),
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -157,13 +157,13 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
       if (widget.post.isEditing) {
         posts = [widget.post];
       } else {
-        posts = widget.provider?.posts?.value ?? [widget.post];
+        posts = widget.provider?.posts.value ?? [widget.post];
       }
 
       if (widget.provider != null) {
         return ValueListenableBuilder(
-          valueListenable: widget.provider.pages,
-          builder: (context, value, child) {
+          valueListenable: widget.provider!.pages,
+          builder: (context, List<List<Post>> value, child) {
             return gallery(posts);
           },
         );
@@ -172,7 +172,7 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
       }
     }
 
-    Widget editorDependant({@required Widget child, @required bool shown}) {
+    Widget editorDependant({required Widget child, required bool shown}) {
       return CrossFade(
         showChild: shown == widget.post.isEditing,
         child: child,

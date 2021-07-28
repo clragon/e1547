@@ -4,14 +4,14 @@ import 'package:flutter/material.dart';
 
 class TextEditor extends StatefulWidget {
   final String title;
-  final String content;
+  final String? content;
   final bool richEditor;
-  final Future<bool> Function(BuildContext context, String text) validator;
+  final Future<bool> Function(BuildContext context, String text)? validator;
 
   TextEditor({
-    @required this.title,
+    required this.title,
     this.content,
-    @required this.validator,
+    required this.validator,
     this.richEditor = true,
   });
 
@@ -24,7 +24,7 @@ class TextEditor extends StatefulWidget {
 class _TextEditorState extends State<TextEditor> with TickerProviderStateMixin {
   bool showBar = true;
   bool isLoading = false;
-  TabController tabController;
+  TabController? tabController;
   TextEditingController textController = TextEditingController();
 
   @override
@@ -35,8 +35,8 @@ class _TextEditorState extends State<TextEditor> with TickerProviderStateMixin {
       length: 2,
     );
     textController.text = widget.content ?? '';
-    tabController.addListener(() {
-      if (tabController.index == 0) {
+    tabController!.addListener(() {
+      if (tabController!.index == 0) {
         setState(() {
           showBar = true;
         });
@@ -101,8 +101,8 @@ class _TextEditorState extends State<TextEditor> with TickerProviderStateMixin {
                     style: TextStyle(
                         color: Theme.of(context)
                             .textTheme
-                            .bodyText1
-                            .color
+                            .bodyText1!
+                            .color!
                             .withOpacity(0.35),
                         fontStyle: FontStyle.italic)),
           ),
@@ -199,7 +199,7 @@ class _TextEditorState extends State<TextEditor> with TickerProviderStateMixin {
 class EditorBar extends StatefulWidget {
   final TextEditingController controller;
 
-  EditorBar({@required this.controller});
+  EditorBar({required this.controller});
 
   @override
   _EditorBarState createState() => _EditorBarState();
@@ -210,7 +210,7 @@ class _EditorBarState extends State<EditorBar> {
 
   @override
   Widget build(BuildContext context) {
-    void enclose(String blockTag, {String endTag}) {
+    void enclose(String blockTag, {String? endTag}) {
       String before = widget.controller.text
           .substring(0, widget.controller.selection.baseOffset);
       String block = widget.controller.text.substring(

@@ -9,23 +9,21 @@ import 'package:e1547/pool.dart';
 import 'package:e1547/post.dart';
 import 'package:e1547/settings.dart';
 import 'package:e1547/tag.dart';
-import 'package:e1547/thread.dart';
 import 'package:e1547/wiki.dart';
-import 'package:meta/meta.dart';
 
 export 'package:dio/dio.dart' show DioError;
 
 final Client client = Client();
 
 class Client {
-  Dio dio;
+  late Dio dio;
 
-  Future<bool> initialized;
+  Future<bool>? initialized;
 
   Future<String> host = db.host.value;
   Future<List<String>> denylist = db.denylist.value;
   Future<List<Follow>> following = db.follows.value;
-  Future<Credentials> credentials = db.credentials.value;
+  Future<Credentials?> credentials = db.credentials.value;
 
   Client() {
     db.host.addListener(() => host = db.host.value);
@@ -43,7 +41,7 @@ class Client {
 
   Future<bool> initialize() async {
     Future<bool> init() async {
-      Credentials credentials = await db.credentials.value;
+      Credentials? credentials = await db.credentials.value;
       dio = Dio(
         BaseOptions(
           baseUrl: 'https://${await host}/',
@@ -73,7 +71,7 @@ class Client {
     }
 
     initialized = init();
-    return await initialized;
+    return await initialized!;
   }
 
   Future<void> tryLogin(String username, String password) async {
@@ -105,19 +103,21 @@ class Client {
     db.credentials.value = Future.value(null);
   }
 
-  String _avatar;
+  String? _avatar;
 
-  Future<String> get avatar async {
+  Future<String?> get avatar async {
     if (_avatar == null) {
-      int postID =
-          (await client.user((await credentials).username))['avatar_id'];
-      Post post = await client.post(postID);
-      _avatar = post.sample.url;
+      int? postId =
+          (await client.user((await credentials)!.username))['avatar_id'];
+      if (postId != null) {
+        Post post = await client.post(postId);
+        _avatar = post.sample.url;
+      }
     }
     return _avatar;
   }
 
-  Future<List<Post>> postsFromJson(List json) async {
+  Future<List<Post>?> postsFromJson(List json) async {
     List<Post> posts = [];
     bool loggedIn = await this.hasLogin;
     bool hasPosts = false;
@@ -139,21 +139,21 @@ class Client {
     return posts;
   }
 
-  Future<List<Post>> posts(String tags, int page,
-      {int limit, bool faithful = false, int attempt = 0}) async {
+  Future<List<Post>> posts(String? tags, int page,
+      {int? limit, bool faithful = false, int attempt = 0}) async {
     await initialized;
 
     Future<List<Post>> getPosts() async {
       Map body = await dio.get(
         'posts.json',
         queryParameters: {
-          'tags': sortTags(tags),
+          'tags': sortTags(tags!),
           'page': page,
           'limit': limit,
         },
       ).then((response) => response.data);
 
-      List<Post> posts = await postsFromJson(body['posts']);
+      List<Post>? posts = await postsFromJson(body['posts']);
 
       if (posts == null) {
         if (attempt < 3) {
@@ -171,10 +171,11 @@ class Client {
     } else {
       // String username = (await credentials).username;
 
-      Map<RegExp, Future<List<Post>> Function(RegExpMatch match, String result)>
+      Map<RegExp,
+              Future<List<Post>> Function(RegExpMatch match, String? result)>
           regexes = {
         RegExp(r'^pool:(?<id>\d+)$'): (match, result) =>
-            poolPosts(int.tryParse(match.namedGroup('id')), page),
+            poolPosts(int.tryParse(match.namedGroup('id')!)!, page),
         /*
         if (username != null)
           RegExp(r'^fav:' + username + r'$'): (match, result) =>
@@ -182,9 +183,9 @@ class Client {
          */
       };
 
-      for (MapEntry<RegExp, Function(RegExpMatch match, String result)> entry
+      for (MapEntry<RegExp, Function(RegExpMatch match, String? result)> entry
           in regexes.entries) {
-        RegExpMatch match = entry.key.firstMatch(tags.trim());
+        RegExpMatch? match = entry.key.firstMatch(tags!.trim());
         if (match != null) {
           return entry.value(match, tags);
         }
@@ -194,7 +195,7 @@ class Client {
     }
   }
 
-  Future<List<Post>> favorites(int page, {int limit}) async {
+  Future<List<Post>> favorites(int page, {int? limit}) async {
     await initialized;
 
     Map body = await dio.get(
@@ -205,7 +206,7 @@ class Client {
       },
     ).then((response) => response.data);
 
-    return (await postsFromJson(body['posts'])) ?? [];
+    return (await (postsFromJson(body['posts']))) ?? [];
   }
 
   Future<bool> addFavorite(int post) async {
@@ -283,8 +284,8 @@ class Client {
     List<Post> posts = await client.posts(filter, 1);
     Map<int, Post> table =
         Map.fromIterable(posts, key: (e) => e.id, value: (e) => e);
-    posts = ids.map((e) => table[e]).toList();
-    posts.removeWhere((e) => e == null);
+    posts = (ids.map((e) => table[e]).toList()..removeWhere((e) => e == null))
+        .cast<Post>();
     return posts;
   }
 
@@ -333,7 +334,7 @@ class Client {
     for (int i = position - batches; i < position; i++) {
       int tagPage = getTagPage(i);
       int end = (length > tagPage * max) ? tagPage * max : length;
-      List<String> tagSet = tags.sublist((tagPage - 1) * max, end);
+      List<String?> tagSet = tags.sublist((tagPage - 1) * max, end);
       posts.addAll(await client.posts('~${tagSet.join(' ~')}', getSitePage(i)));
     }
     posts.sort((one, two) => two.id.compareTo(one.id));
@@ -343,11 +344,11 @@ class Client {
     return posts;
   }
 
-  Future<Post> post(int postID, {bool unsafe = false}) async {
+  Future<Post> post(int postId, {bool unsafe = false}) async {
     await initialized;
     Map body = await dio
         .get(
-            'https://${(unsafe ? await db.customHost.value : await host)}/posts/${postID.toString()}.json',
+            'https://${(unsafe ? await db.customHost.value : await host)}/posts/${postId.toString()}.json',
             options: Options())
         .then((response) => response.data);
 
@@ -357,11 +358,11 @@ class Client {
     return post;
   }
 
-  Future<void> updatePost(Post update, Post old, {String editReason}) async {
+  Future<void> updatePost(Post update, Post old, {String? editReason}) async {
     if (!await hasLogin) {
       return null;
     }
-    Map<String, String> body = {};
+    Map<String, String?> body = {};
 
     List<String> tags(Post post) {
       List<String> tags = [];
@@ -433,13 +434,13 @@ class Client {
       body.addEntries([
         MapEntry(
           'post[rating]',
-          ratingValues.reverse[update.rating],
+          ratingValues.reverse![update.rating],
         ),
       ]);
     }
 
     if (body.isNotEmpty) {
-      if (editReason.trim().isNotEmpty) {
+      if (editReason!.trim().isNotEmpty) {
         body.addEntries([
           MapEntry(
             'post[edit_reason]',
@@ -469,7 +470,7 @@ class Client {
     return body;
   }
 
-  Future<List> tag(String search, {int category}) async {
+  Future<List> tag(String search, {int? category}) async {
     var body = await dio.get('tags.json', queryParameters: {
       'search[name_matches]': search,
       'search[category]': category,
@@ -484,7 +485,7 @@ class Client {
     return tags;
   }
 
-  Future<List> autocomplete(String search, {int category}) async {
+  Future<List> autocomplete(String search, {int? category}) async {
     if (category == null) {
       var body = await dio.get('tags/autocomplete.json', queryParameters: {
         'search[name_matches]': search,
@@ -509,15 +510,15 @@ class Client {
 
     List<Comment> comments = [];
     if (body is List) {
-      for (Map rawComment in body) {
-        comments.add(Comment.fromRaw(rawComment));
+      for (Map<String, dynamic> rawComment in body) {
+        comments.add(Comment.fromMap(rawComment));
       }
     }
 
     return comments;
   }
 
-  Future<Map> postComment(String text, Post post, {Comment comment}) async {
+  Future<void> postComment(String text, Post post, {Comment? comment}) async {
     if (!await hasLogin) {
       return null;
     }
@@ -532,62 +533,14 @@ class Client {
     } else {
       request = dio.post('comments.json', data: body);
     }
-    Map response = await request.then((response) {
-      return {'code': response.statusCode, 'reason': response.reasonPhrase};
-    });
-    return response;
-  }
-
-  Future<List<Thread>> threads(int page) async {
-    var body = await dio.get('forum_topics.json', queryParameters: {
-      'page': page,
-    }).then((response) => response.data);
-
-    List<Thread> threads = [];
-    if (body is List) {
-      for (Map thread in body) {
-        threads.add(Thread.fromRaw(thread));
-      }
-    }
-
-    return threads;
-  }
-
-  Future<Thread> thread(int id) async {
-    var body = await dio
-        .get('forum_topics/$id.json')
-        .then((response) => response.data);
-
-    Thread thread;
-    if (body is Map) {
-      thread = Thread.fromRaw(body);
-    }
-
-    return thread;
-  }
-
-  Future<List<Reply>> replies(Thread thread, String page) async {
-    var body = await dio.get('forum_posts.json', queryParameters: {
-      'commit': 'Search',
-      'search[topic_title_matches]': thread.title,
-      'page': page,
-    }).then((response) => response.data);
-
-    List<Reply> replies = [];
-    if (body is List) {
-      for (Map reply in body) {
-        replies.add(Reply.fromRaw(reply));
-      }
-    }
-
-    return replies;
+    await request;
   }
 }
 
 class Credentials {
   Credentials({
-    @required this.username,
-    @required this.password,
+    required this.username,
+    required this.password,
   });
 
   final String username;
@@ -614,7 +567,7 @@ class Credentials {
   }
 }
 
-Future<bool> validateCall(Future Function() call) async {
+Future<bool> validateCall(Future<dynamic> Function() call) async {
   try {
     await call();
     return true;

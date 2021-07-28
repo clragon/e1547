@@ -3,10 +3,10 @@ import 'package:e1547/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-ValueNotifier<ThemeData> theme = ValueNotifier(appThemeMap[AppTheme.dark]);
+ValueNotifier<ThemeData> theme = ValueNotifier(appThemeMap[AppTheme.dark]!);
 
 Future<void> updateTheme() async {
-  theme.value = appThemeMap[await db.theme.value];
+  theme.value = appThemeMap[await db.theme.value]!;
 }
 
 void main() async {
@@ -21,7 +21,7 @@ class Main extends StatelessWidget {
   Widget build(BuildContext context) => StartupActions(
         child: ValueListenableBuilder(
           valueListenable: theme,
-          builder: (context, value, child) => ExcludeSemantics(
+          builder: (context, ThemeData value, child) => ExcludeSemantics(
             child: AnnotatedRegion<SystemUiOverlayStyle>(
               value: defaultUIStyle(theme.value),
               child: MaterialApp(

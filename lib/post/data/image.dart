@@ -1,7 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e1547/post.dart';
 import 'package:flutter/material.dart';
-import 'package:meta/meta.dart';
 
 enum ImageSize {
   preview,
@@ -17,16 +16,16 @@ Widget imageFlightShuttleBuilder(
   BuildContext toHeroContext,
 ) {
   final Hero hero = flightDirection == HeroFlightDirection.push
-      ? fromHeroContext.widget
-      : toHeroContext.widget;
+      ? fromHeroContext.widget as Hero
+      : toHeroContext.widget as Hero;
   return hero.child;
 }
 
 Future<void> preloadImage(
-    {@required BuildContext context,
-    @required Post post,
-    @required ImageSize size}) async {
-  String url;
+    {required BuildContext context,
+    required Post post,
+    required ImageSize size}) async {
+  String? url;
   switch (size) {
     case ImageSize.preview:
       url = post.preview.url;
@@ -47,10 +46,10 @@ Future<void> preloadImage(
 }
 
 Future<void> preloadImages({
-  @required BuildContext context,
-  @required int index,
-  @required List<Post> posts,
-  @required ImageSize size,
+  required BuildContext context,
+  required int index,
+  required List<Post> posts,
+  required ImageSize size,
   int reach = 2,
 }) async {
   for (int i = -(reach + 1); i < reach; i++) {

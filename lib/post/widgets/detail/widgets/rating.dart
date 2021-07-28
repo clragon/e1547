@@ -16,7 +16,7 @@ Map<Rating, String> ratingTexts = {
 class RatingDisplay extends StatelessWidget {
   final Post post;
 
-  RatingDisplay({@required this.post});
+  RatingDisplay({required this.post});
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +41,7 @@ class RatingDisplay extends StatelessWidget {
               ),
             ),
             ListTile(
-              title: Text(ratingTexts[post.rating]),
+              title: Text(ratingTexts[post.rating]!),
               leading: Icon(!post.flags.ratingLocked
                   ? ratingIcons[post.rating]
                   : Icons.lock),
@@ -68,7 +68,7 @@ class RatingDisplay extends StatelessWidget {
 class RatingDialog extends StatelessWidget {
   final Function(Rating rating) onTap;
 
-  RatingDialog({@required this.onTap});
+  RatingDialog({required this.onTap});
 
   @override
   Widget build(BuildContext context) {

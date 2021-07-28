@@ -6,7 +6,7 @@ import 'counter.dart';
 class SearchDrawer extends StatelessWidget {
   final PostProvider provider;
 
-  SearchDrawer({@required this.provider});
+  SearchDrawer({required this.provider});
 
   @override
   Widget build(BuildContext context) {
@@ -37,8 +37,8 @@ class SearchTag {
   final int count;
 
   SearchTag({
-    @required this.category,
-    @required this.tag,
-    @required this.count,
+    required this.category,
+    required this.tag,
+    required this.count,
   });
 }

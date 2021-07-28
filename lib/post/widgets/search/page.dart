@@ -15,8 +15,8 @@ class PostsPage extends StatefulWidget {
 
   PostsPage({
     this.canSelect = true,
-    @required this.provider,
-    @required this.appBarBuilder,
+    required this.provider,
+    required this.appBarBuilder,
   }) : super(key: ObjectKey(provider));
 
   @override
@@ -27,12 +27,12 @@ class _PostsPageState extends State<PostsPage>
     with TileSizeMixin, TileStaggerMixin {
   ValueNotifier<bool> isSearching = ValueNotifier(false);
   TextEditingController textController = TextEditingController();
-  PersistentBottomSheetController<Tagset> sheetController;
+  PersistentBottomSheetController? sheetController;
 
   Set<Post> selections = Set();
 
   void updatePage() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
       if (this.mounted) {
         setState(() {
           if (widget.provider.posts.value.isEmpty) {
@@ -65,13 +65,13 @@ class _PostsPageState extends State<PostsPage>
 
   @override
   void dispose() {
-    super.dispose();
     widget.provider.removeListener(updatePage);
     widget.provider.dispose();
+    super.dispose();
   }
 
   Widget itemBuilder(BuildContext context, int item) {
-    Widget preview(Post post, PostProvider provider) {
+    Widget preview(Post post, PostProvider? provider) {
       void select() {
         if (widget.canSelect) {
           setState(() {
@@ -93,7 +93,7 @@ class _PostsPageState extends State<PostsPage>
               Navigator.of(context).push(MaterialPageRoute(
                 builder: (context) => PostDetailGallery(
                   provider: provider,
-                  initialPage: provider.posts.value.indexOf(post),
+                  initialPage: provider!.posts.value.indexOf(post),
                 ),
               ));
             },
@@ -141,7 +141,7 @@ class _PostsPageState extends State<PostsPage>
         if (widget.provider.canSearch) {
           return ValueListenableBuilder(
             valueListenable: isSearching,
-            builder: (context, value, child) {
+            builder: (context, bool value, child) {
               void submit(String result) {
                 widget.provider.search.value = sortTags(result);
                 sheetController?.close();
@@ -164,7 +164,7 @@ class _PostsPageState extends State<PostsPage>
                       ),
                     );
                     isSearching.value = true;
-                    sheetController.closed.then((a) {
+                    sheetController?.closed.then((a) {
                       isSearching.value = false;
                     });
                   }
@@ -255,13 +255,13 @@ class _PostsPageState extends State<PostsPage>
     }
 
     return LayoutBuilder(builder: (context, constraints) {
-      StaggeredTile tileBuilder(int item) {
+      StaggeredTile? tileBuilder(int item) {
         if (item < widget.provider.posts.value.length) {
           PostFile image = widget.provider.posts.value[item].sample;
           double widthRatio = image.width / image.height;
           double heightRatio = image.height / image.width;
 
-          switch (stagger) {
+          switch (stagger!) {
             case GridState.square:
               return StaggeredTile.count(1, 1 * tileHeightFactor);
             case GridState.vertical:
@@ -273,7 +273,6 @@ class _PostsPageState extends State<PostsPage>
                 return StaggeredTile.count(roundedNotZero(widthRatio),
                     roundedNotZero(heightRatio) * tileHeightFactor);
               }
-              break;
           }
         }
         return null;
@@ -291,6 +290,7 @@ class _PostsPageState extends State<PostsPage>
         child: RefreshablePage.pageBuilder(
           pageBuilder: (context, child, scrollController) => Scaffold(
             appBar: ScrollToTop(
+              controller: selections.isEmpty ? scrollController : null,
               child: Material(
                 elevation: Theme.of(context).appBarTheme.elevation ?? 4,
                 child: CrossFade(
@@ -299,7 +299,6 @@ class _PostsPageState extends State<PostsPage>
                   secondChild: selectionAppBar(),
                 ),
               ),
-              controller: selections.isEmpty ? scrollController : null,
             ),
             body: child,
             drawer: NavigationDrawer(),

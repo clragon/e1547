@@ -13,8 +13,8 @@ class PostImageWidget extends StatelessWidget {
   final bool withPreview;
 
   const PostImageWidget({
-    @required this.post,
-    @required this.size,
+    required this.post,
+    required this.size,
     this.showProgress = true,
     this.withPreview = true,
     this.fit = BoxFit.contain,
@@ -29,8 +29,8 @@ class PostImageWidget extends StatelessWidget {
               constraints.maxHeight.toDouble());
 
           Widget image({
-            @required String url,
-            ProgressIndicatorBuilder progressIndicatorBuilder,
+            required String url,
+            ProgressIndicatorBuilder? progressIndicatorBuilder,
             bool stacked = false,
           }) {
             Duration fades = stacked
@@ -84,31 +84,30 @@ class PostImageWidget extends StatelessWidget {
             );
           }
 
-          Widget body() {
+          Widget? body() {
             switch (size) {
               case ImageSize.preview:
-                return image(url: post.preview.url);
+                return image(url: post.preview.url!);
               case ImageSize.sample:
                 if (withPreview) {
                   return image(
                     stacked: true,
-                    url: post.sample.url,
+                    url: post.sample.url!,
                     progressIndicatorBuilder: (context, url, progress) =>
                         previewWrapper(
                       progress,
-                      image(url: post.preview.url),
+                      image(url: post.preview.url!),
                     ),
                   );
                 } else {
-                  return (image(url: post.sample.url));
+                  return (image(url: post.sample.url!));
                 }
-                break;
               case ImageSize.file:
                 return image(
                   stacked: true,
-                  url: post.file.url,
+                  url: post.file.url!,
                   progressIndicatorBuilder: (context, url, progress) =>
-                      previewWrapper(progress, image(url: post.sample.url)),
+                      previewWrapper(progress, image(url: post.sample.url!)),
                 );
               default:
                 return null;
@@ -117,7 +116,7 @@ class PostImageWidget extends StatelessWidget {
 
           return DefaultTextStyle(
             style: TextStyle(fontSize: scale * 0.05),
-            child: body(),
+            child: body()!,
           );
         },
       ),

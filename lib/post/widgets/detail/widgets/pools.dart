@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 class PoolDisplay extends StatelessWidget {
   final Post post;
 
-  PoolDisplay({@required this.post});
+  PoolDisplay({required this.post});
 
   @override
   Widget build(BuildContext context) {
@@ -35,10 +35,10 @@ class PoolDisplay extends StatelessWidget {
               title: Text(pool.toString()),
               onTap: () async {
                 Pool p = await client.pool(pool);
-                if (p != null) {
+                try {
                   Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) => PoolPage(pool: p)));
-                } else {
+                } on DioError {
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     duration: Duration(seconds: 1),
                     content: Text('Coulnd\'t retrieve Pool #${p.id}'),

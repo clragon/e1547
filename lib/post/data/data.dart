@@ -2,54 +2,54 @@ import 'dart:convert';
 
 class PostData {
   PostData({
-    this.id,
-    this.createdAt,
+    required this.id,
+    required this.createdAt,
     this.updatedAt,
-    this.file,
-    this.preview,
-    this.sample,
-    this.score,
-    this.tags,
+    required this.file,
+    required this.preview,
+    required this.sample,
+    required this.score,
+    required this.tags,
     this.lockedTags,
     this.changeSeq,
-    this.flags,
-    this.rating,
-    this.favCount,
-    this.sources,
-    this.pools,
-    this.relationships,
-    this.approverId,
-    this.uploaderId,
-    this.description,
-    this.commentCount,
-    this.isFavorited,
-    this.hasNotes,
+    required this.flags,
+    required this.rating,
+    required this.favCount,
+    required this.sources,
+    required this.pools,
+    required this.relationships,
+    required this.approverId,
+    required this.uploaderId,
+    required this.description,
+    required this.commentCount,
+    required this.isFavorited,
+    required this.hasNotes,
     this.duration,
   });
 
-  int id;
-  DateTime createdAt;
-  DateTime updatedAt;
-  PostSourceFile file;
-  PostPreviewFile preview;
-  PostSampleFile sample;
-  Score score;
-  Tags tags;
-  List<String> lockedTags;
-  int changeSeq;
-  Flags flags;
-  Rating rating;
-  int favCount;
-  List<String> sources;
-  List<int> pools;
-  Relationships relationships;
-  int approverId;
-  int uploaderId;
-  String description;
-  int commentCount;
-  bool isFavorited;
-  bool hasNotes;
-  double duration;
+  late int id;
+  late DateTime createdAt;
+  late DateTime? updatedAt;
+  late PostSourceFile file;
+  late PostPreviewFile preview;
+  late PostSampleFile sample;
+  late Score score;
+  late Tags tags;
+  late List<String>? lockedTags;
+  late int? changeSeq;
+  late Flags flags;
+  late Rating rating;
+  late int favCount;
+  late List<String> sources;
+  late List<int> pools;
+  late Relationships relationships;
+  late int? approverId;
+  late int uploaderId;
+  late String description;
+  late int commentCount;
+  late bool isFavorited;
+  late bool hasNotes;
+  late double? duration;
 
   factory PostData.fromJson(String str) => PostData.fromMap(json.decode(str));
 
@@ -68,7 +68,7 @@ class PostData {
     lockedTags = List<String>.from(json["locked_tags"].map((x) => x));
     changeSeq = json["change_seq"];
     flags = Flags.fromMap(json["flags"]);
-    rating = ratingValues.map[json["rating"]];
+    rating = ratingValues.map[json["rating"]]!;
     favCount = json["fav_count"];
     sources = List<String>.from(json["sources"].map((x) => x));
     pools = List<int>.from(json["pools"].map((x) => x));
@@ -85,16 +85,16 @@ class PostData {
   Map<String, dynamic> toMap() => {
         "id": id,
         "created_at": createdAt.toIso8601String(),
-        "updated_at": updatedAt == null ? null : updatedAt.toIso8601String(),
+        "updated_at": updatedAt == null ? null : updatedAt!.toIso8601String(),
         "file": file.toMap(),
         "preview": preview.toMap(),
         "sample": sample.toMap(),
         "score": score.toMap(),
         "tags": tags.toMap(),
-        "locked_tags": List<dynamic>.from(lockedTags.map((x) => x)),
+        "locked_tags": List<dynamic>.from(lockedTags!.map((x) => x)),
         "change_seq": changeSeq,
         "flags": flags.toMap(),
-        "rating": ratingValues.reverse[rating],
+        "rating": ratingValues.reverse![rating],
         "fav_count": favCount,
         "sources": List<dynamic>.from(sources.map((x) => x)),
         "pools": List<dynamic>.from(pools.map((x) => x)),
@@ -111,14 +111,14 @@ class PostData {
 
 abstract class PostFile {
   PostFile({
-    this.width,
-    this.height,
+    required this.width,
+    required this.height,
     this.url,
   });
 
   int width;
   int height;
-  String url;
+  String? url;
 
   String toJson();
 
@@ -127,14 +127,14 @@ abstract class PostFile {
 
 class PostPreviewFile implements PostFile {
   PostPreviewFile({
-    this.width,
-    this.height,
+    required this.width,
+    required this.height,
     this.url,
   });
 
   int width;
   int height;
-  String url;
+  String? url;
 
   factory PostPreviewFile.fromJson(String str) =>
       PostPreviewFile.fromMap(json.decode(str));
@@ -156,11 +156,11 @@ class PostPreviewFile implements PostFile {
 
 class PostSourceFile implements PostFile {
   PostSourceFile({
-    this.width,
-    this.height,
-    this.ext,
-    this.size,
-    this.md5,
+    required this.width,
+    required this.height,
+    required this.ext,
+    required this.size,
+    required this.md5,
     this.url,
   });
 
@@ -169,7 +169,7 @@ class PostSourceFile implements PostFile {
   String ext;
   int size;
   String md5;
-  String url;
+  String? url;
 
   factory PostSourceFile.fromJson(String str) =>
       PostSourceFile.fromMap(json.decode(str));
@@ -197,16 +197,16 @@ class PostSourceFile implements PostFile {
 
 class PostSampleFile implements PostFile {
   PostSampleFile({
-    this.has,
-    this.height,
-    this.width,
+    required this.has,
+    required this.height,
+    required this.width,
     this.url,
   });
 
   bool has;
   int height;
   int width;
-  String url;
+  String? url;
 
   factory PostSampleFile.fromJson(String str) =>
       PostSampleFile.fromMap(json.decode(str));
@@ -230,12 +230,12 @@ class PostSampleFile implements PostFile {
 
 class Flags {
   Flags({
-    this.pending,
-    this.flagged,
-    this.noteLocked,
-    this.statusLocked,
-    this.ratingLocked,
-    this.deleted,
+    required this.pending,
+    required this.flagged,
+    required this.noteLocked,
+    required this.statusLocked,
+    required this.ratingLocked,
+    required this.deleted,
   });
 
   bool pending;
@@ -274,13 +274,13 @@ final ratingValues = EnumValues({"e": Rating.E, "q": Rating.Q, "s": Rating.S});
 
 class Relationships {
   Relationships({
-    this.parentId,
-    this.hasChildren,
-    this.hasActiveChildren,
-    this.children,
+    required this.parentId,
+    required this.hasChildren,
+    required this.hasActiveChildren,
+    required this.children,
   });
 
-  int parentId;
+  int? parentId;
   bool hasChildren;
   bool hasActiveChildren;
   List<int> children;
@@ -307,9 +307,9 @@ class Relationships {
 
 class Score {
   Score({
-    this.up,
-    this.down,
-    this.total,
+    required this.up,
+    required this.down,
+    required this.total,
   });
 
   int up;
@@ -335,14 +335,14 @@ class Score {
 
 class Tags {
   Tags({
-    this.general,
-    this.species,
-    this.character,
-    this.copyright,
-    this.artist,
-    this.invalid,
-    this.lore,
-    this.meta,
+    required this.general,
+    required this.species,
+    required this.character,
+    required this.copyright,
+    required this.artist,
+    required this.invalid,
+    required this.lore,
+    required this.meta,
   });
 
   List<String> general;
@@ -383,11 +383,11 @@ class Tags {
 
 class EnumValues<T> {
   Map<String, T> map;
-  Map<T, String> reverseMap;
+  Map<T, String>? reverseMap;
 
   EnumValues(this.map);
 
-  Map<T, String> get reverse {
+  Map<T, String>? get reverse {
     if (reverseMap == null) {
       reverseMap = map.map((k, v) => new MapEntry(v, k));
     }

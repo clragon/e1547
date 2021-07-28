@@ -89,8 +89,8 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "e1547" "\0"
-            VALUE "FileDescription", "A new Flutter project." "\0"
+            VALUE "CompanyName", "Downpour Development" "\0"
+            VALUE "FileDescription", "e1547" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
             VALUE "InternalName", "e1547" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2021 e1547. All rights reserved." "\0"

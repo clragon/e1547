@@ -4,16 +4,16 @@ import 'package:flutter/material.dart';
 
 class TagAddCard extends StatefulWidget {
   final Post post;
-  final String category;
-  final PostProvider provider;
+  final String? category;
+  final PostProvider? provider;
   final Future<bool> Function(String value) submit;
-  final SheetActionController controller;
+  final SheetActionController? controller;
 
   TagAddCard({
-    @required this.post,
-    @required this.provider,
-    @required this.submit,
-    @required this.controller,
+    required this.post,
+    required this.provider,
+    required this.submit,
+    required this.controller,
     this.category,
   });
 
@@ -32,7 +32,7 @@ class _TagAddCardState extends State<TagAddCard> {
               padding: EdgeInsets.all(5),
               child: Icon(Icons.add, size: 16),
             ),
-            onTap: () => widget.controller.show(
+            onTap: () => widget.controller!.show(
               context,
               TagEditor(
                 post: widget.post,

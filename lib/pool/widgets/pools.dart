@@ -16,7 +16,7 @@ class _PoolsPageState extends State<PoolsPage> with UpdateMixin {
   PoolProvider provider = PoolProvider();
   TextEditingController textController = TextEditingController();
   ValueNotifier<bool> isSearching = ValueNotifier(false);
-  PersistentBottomSheetController<String> sheetController;
+  PersistentBottomSheetController? sheetController;
 
   @override
   void initState() {
@@ -52,7 +52,7 @@ class _PoolsPageState extends State<PoolsPage> with UpdateMixin {
       return Builder(builder: (context) {
         return ValueListenableBuilder(
           valueListenable: isSearching,
-          builder: (context, value, child) {
+          builder: (context, bool value, child) {
             void submit(String result) {
               provider.search.value = result;
               sheetController?.close();
@@ -82,7 +82,7 @@ class _PoolsPageState extends State<PoolsPage> with UpdateMixin {
                     ),
                   );
                   isSearching.value = true;
-                  sheetController.closed.then((a) {
+                  sheetController?.closed.then((a) {
                     isSearching.value = false;
                   });
                 }

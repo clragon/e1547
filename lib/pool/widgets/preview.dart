@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 class PoolPreview extends StatelessWidget {
   final Pool pool;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
 
   PoolPreview(
     this.pool, {
@@ -51,7 +51,7 @@ class PoolPreview extends StatelessWidget {
               height: 42,
               child: Center(child: title()),
             ),
-            if (pool.description.isNotEmpty)
+            if (pool.description!.isNotEmpty)
               Padding(
                 padding: EdgeInsets.only(
                   left: 16,
@@ -60,7 +60,7 @@ class PoolPreview extends StatelessWidget {
                   bottom: 8,
                 ),
                 child: IgnorePointer(
-                    child: DTextField(source: pool.description, dark: true)),
+                    child: DTextField(source: pool.description!, dark: true)),
               ),
           ],
         ),

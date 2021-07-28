@@ -5,25 +5,27 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 
+typedef SubmitString = void Function(String result);
+
 class TagInput extends StatelessWidget {
-  final String labelText;
-  final Function(String result) onSubmit;
-  final TextEditingController controller;
+  final String? labelText;
+  final SubmitString onSubmit;
+  final TextEditingController? controller;
   final bool multiInput;
-  final int category;
+  final int? category;
 
   TagInput({
-    @required this.labelText,
-    @required this.onSubmit,
+    required this.labelText,
+    required this.onSubmit,
     this.controller,
     this.category,
     this.multiInput = true,
   }) {
-    controller.text = sortTags(controller.text);
-    if (controller.text != '') {
-      controller.text = controller.text + ' ';
+    controller!.text = sortTags(controller!.text);
+    if (controller!.text != '') {
+      controller!.text = controller!.text + ' ';
     }
-    setFocusToEnd(controller);
+    setFocusToEnd(controller!);
   }
 
   @override
@@ -47,12 +49,12 @@ class TagInput extends StatelessWidget {
             labelText: labelText, border: UnderlineInputBorder()),
         onSubmitted: (result) => onSubmit(sortTags(result)),
       ),
-      onSuggestionSelected: (suggestion) {
-        List<String> tags = sortTags(controller.text).split(' ');
+      onSuggestionSelected: (dynamic suggestion) {
+        List<String> tags = sortTags(controller!.text).split(' ');
         List<String> before = [];
         for (String tag in tags) {
           before.add(tag);
-          if (before.join(' ').length >= controller.selection.extent.offset) {
+          if (before.join(' ').length >= controller!.selection.extent.offset) {
             String operator = tags[tags.indexOf(tag)][0];
             if (operator != '-' && operator != '~') {
               operator = '';
@@ -61,10 +63,10 @@ class TagInput extends StatelessWidget {
             break;
           }
         }
-        controller.text = tags.join(' ') + ' ';
-        setFocusToEnd(controller);
+        controller!.text = tags.join(' ') + ' ';
+        setFocusToEnd(controller!);
       },
-      itemBuilder: (BuildContext context, itemData) {
+      itemBuilder: (BuildContext context, dynamic itemData) {
         String count = itemData['post_count'].toString();
         return Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -113,12 +115,12 @@ class TagInput extends StatelessWidget {
         );
       },
       suggestionsCallback: (String pattern) async {
-        List<String> tags = controller.text.split(' ');
+        List<String> tags = controller!.text.split(' ');
         List<String> before = [];
         int selection = 0;
         for (String tag in tags) {
           before.add(tag);
-          if (before.join(' ').length >= controller.selection.extent.offset) {
+          if (before.join(' ').length >= controller!.selection.extent.offset) {
             selection = tags.indexOf(tag);
             break;
           }

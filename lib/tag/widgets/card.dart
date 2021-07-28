@@ -7,13 +7,13 @@ import 'package:flutter/widgets.dart';
 class TagCard extends StatelessWidget {
   final String tag;
   final String category;
-  final VoidCallback onRemove;
-  final PostProvider provider;
+  final VoidCallback? onRemove;
+  final PostProvider? provider;
 
   TagCard({
-    @required this.tag,
-    @required this.category,
-    @required this.provider,
+    required this.tag,
+    required this.category,
+    required this.provider,
     this.onRemove,
   });
 
@@ -72,10 +72,10 @@ class TagCounterCard extends StatelessWidget {
   final PostProvider provider;
 
   TagCounterCard({
-    @required this.tag,
-    @required this.category,
-    @required this.provider,
-    @required this.count,
+    required this.tag,
+    required this.category,
+    required this.provider,
+    required this.count,
   });
 
   @override
@@ -155,13 +155,10 @@ class DenyListTagCard extends StatelessWidget {
                   switch (prefix) {
                     case '-':
                       return Colors.green[300];
-                      break;
                     case '~':
                       return Colors.orange[300];
-                      break;
                     default:
                       return Colors.red[300];
-                      break;
                   }
                 }(),
                 borderRadius: BorderRadius.only(

@@ -9,7 +9,7 @@ import 'package:video_player/video_player.dart';
 class DetailImage extends StatelessWidget {
   final Post post;
 
-  const DetailImage({@required this.post});
+  const DetailImage({required this.post});
 
   @override
   Widget build(BuildContext context) {
@@ -27,16 +27,17 @@ class DetailImage extends StatelessWidget {
 class DetailVideo extends StatelessWidget {
   final Post post;
 
-  const DetailVideo({@required this.post});
+  const DetailVideo({required this.post});
 
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder(
-      valueListenable: post.controller,
-      builder: (context, value, child) => GestureDetector(
+      valueListenable: post.controller!,
+      builder: (context, VideoPlayerValue value, child) => GestureDetector(
         behavior: HitTestBehavior.opaque,
-        onTap: () =>
-            value.isPlaying ? post.controller.pause() : post.controller.play(),
+        onTap: () => value.isPlaying
+            ? post.controller!.pause()
+            : post.controller!.play(),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
@@ -50,7 +51,7 @@ class DetailVideo extends StatelessWidget {
                     showChild: value.isInitialized,
                     builder: (context) => AspectRatio(
                       aspectRatio: value.aspectRatio,
-                      child: VideoPlayer(post.controller),
+                      child: VideoPlayer(post.controller!),
                     ),
                     secondChild: DetailImage(post: post),
                   ),
@@ -70,7 +71,7 @@ class DetailVideo extends StatelessWidget {
 class DetailImageToggle extends StatefulWidget {
   final Post post;
 
-  const DetailImageToggle({@required this.post});
+  const DetailImageToggle({required this.post});
 
   @override
   _DetailImageToggleState createState() => _DetailImageToggleState();
@@ -152,18 +153,18 @@ class _DetailImageToggleState extends State<DetailImageToggle> {
 class DetailImageOverlay extends StatelessWidget {
   final Post post;
   final Widget child;
-  final void Function() onOpen;
+  final VoidCallback? onOpen;
 
   const DetailImageOverlay(
-      {@required this.post, @required this.child, @required this.onOpen});
+      {required this.post, required this.child, required this.onOpen});
 
   @override
   Widget build(BuildContext context) {
-    void Function() onTap;
+    VoidCallback? onTap;
 
     if (post.file.url != null && post.isVisible) {
       onTap = post.type == PostType.Unsupported
-          ? () => launch(post.file.url)
+          ? () => launch(post.file.url!)
           : onOpen;
     }
 
@@ -202,9 +203,9 @@ class DetailImageOverlay extends StatelessWidget {
             children: [
               InkWell(
                 onTap: post.type == PostType.Video
-                    ? () => post.controller.value.isPlaying
-                        ? post.controller.pause()
-                        : post.controller.play()
+                    ? () => post.controller!.value.isPlaying
+                        ? post.controller!.pause()
+                        : post.controller!.play()
                     : onTap,
                 child: IgnorePointer(child: child),
               ),
@@ -228,9 +229,9 @@ class DetailImageOverlay extends StatelessWidget {
 
 class DetailImageDisplay extends StatelessWidget {
   final Post post;
-  final void Function() onTap;
+  final VoidCallback? onTap;
 
-  const DetailImageDisplay({@required this.post, this.onTap});
+  const DetailImageDisplay({required this.post, this.onTap});
 
   @override
   Widget build(BuildContext context) {

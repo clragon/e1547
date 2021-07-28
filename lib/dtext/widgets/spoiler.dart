@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class SpoilerWrap extends StatefulWidget {
   final Widget child;
 
-  const SpoilerWrap({@required this.child});
+  const SpoilerWrap({required this.child});
 
   @override
   _SpoilerWrapState createState() => _SpoilerWrapState();

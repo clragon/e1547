@@ -1,20 +1,19 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import 'package:meta/meta.dart';
 
 import 'app_info.dart';
 
 class AppVersion extends Comparable<AppVersion> {
-  int major;
-  int minor;
-  int patch;
+  late int major;
+  late int minor;
+  late int patch;
 
-  String name;
-  String description;
+  String? name;
+  String? description;
   String version;
 
   AppVersion({
-    @required this.version,
+    required this.version,
     this.name,
     this.description,
   }) {
@@ -23,7 +22,7 @@ class AppVersion extends Comparable<AppVersion> {
     }
     List<String> parts = version.split('.');
     try {
-      major = int.tryParse(parts[0]);
+      major = int.tryParse(parts[0])!;
       minor = int.tryParse(parts[1]) ?? 0;
       patch = int.tryParse(parts[2]) ?? 0;
     } catch (_) {

@@ -9,9 +9,9 @@ import 'package:flutter/material.dart';
 
 class WikiBody extends StatefulWidget {
   final String tag;
-  final PostProvider provider;
+  final PostProvider? provider;
 
-  WikiBody({@required this.tag, this.provider});
+  WikiBody({required this.tag, this.provider});
 
   @override
   _WikiBodyState createState() => _WikiBodyState();
@@ -54,9 +54,9 @@ class _WikiBodyState extends State<WikiBody> {
                                   icon: Icon(Icons.search_off),
                                   tooltip: 'Remove from search',
                                   onPressed: () {
-                                    widget.provider.search.value = widget
-                                        .provider.search.value
-                                        ?.replaceFirst(
+                                    widget.provider!.search.value = widget
+                                        .provider!.search.value
+                                        .replaceFirst(
                                             RegExp(r'(?<!\S)-?' +
                                                 tag.toString() +
                                                 r'(?!\S)'),
@@ -90,14 +90,14 @@ class _WikiBodyState extends State<WikiBody> {
 class WikiTagDisplay extends StatefulWidget {
   final String tag;
 
-  const WikiTagDisplay({@required this.tag});
+  const WikiTagDisplay({required this.tag});
 
   @override
   _WikiTagDisplayState createState() => _WikiTagDisplayState();
 }
 
 class _WikiTagDisplayState extends State<WikiTagDisplay> {
-  Wiki wiki;
+  Wiki? wiki;
   bool loading = true;
   bool error = false;
 
@@ -153,7 +153,7 @@ class _WikiTagDisplayState extends State<WikiTagDisplay> {
       secondChild: SafeCrossFade(
         showChild: wiki != null,
         builder: (context) => SingleChildScrollView(
-          child: DTextField(source: wiki.body),
+          child: DTextField(source: wiki!.body),
           physics: BouncingScrollPhysics(),
         ),
         secondChild: message(
@@ -165,8 +165,8 @@ class _WikiTagDisplayState extends State<WikiTagDisplay> {
                   style: TextStyle(
                       color: Theme.of(context)
                           .textTheme
-                          .bodyText1
-                          .color
+                          .bodyText1!
+                          .color!
                           .withOpacity(0.5),
                       fontStyle: FontStyle.italic),
                 ),

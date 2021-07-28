@@ -6,7 +6,7 @@ class PoolProvider extends DataProvider<Pool> {
   List<Pool> get pools => super.items;
 
   PoolProvider({
-    String search,
+    String? search,
   }) : super(search: search);
 
   @override

@@ -20,13 +20,13 @@ String stopsAtEndChar(String wrapped) => [
       r'(?=([.,!:"\s]|(\? ))?)',
     ].join();
 
-String startsWithName(String wrapped, [bool needsName]) => [
+String startsWithName(String wrapped, [bool? needsName]) => [
       r'("(?<name>[^"]+?)":)',
       if (!(needsName ?? true)) r'?',
       wrapped,
     ].join();
 
-String linkWrap(String wrapped, [bool needsName]) =>
+String linkWrap(String wrapped, [bool? needsName]) =>
     startsWithName(stopsAtEndChar(wrapped), needsName);
 
 RegExp anyBlockTag = RegExp(

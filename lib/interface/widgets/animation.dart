@@ -6,7 +6,7 @@ class SafeBuilder extends StatelessWidget {
   final bool showChild;
   final WidgetBuilder builder;
 
-  const SafeBuilder({@required this.showChild, @required this.builder});
+  const SafeBuilder({required this.showChild, required this.builder});
 
   @override
   Widget build(BuildContext context) {
@@ -21,14 +21,14 @@ class SafeBuilder extends StatelessWidget {
 class CrossFade extends StatelessWidget {
   final Widget child;
 
-  final Widget secondChild;
-  final Duration duration;
+  final Widget? secondChild;
+  final Duration? duration;
 
   final bool showChild;
 
   const CrossFade({
-    @required this.showChild,
-    @required this.child,
+    required this.showChild,
+    required this.child,
     this.secondChild,
     this.duration,
   });
@@ -47,14 +47,14 @@ class CrossFade extends StatelessWidget {
 class SafeCrossFade extends StatelessWidget {
   final WidgetBuilder builder;
 
-  final Widget secondChild;
-  final Duration duration;
+  final Widget? secondChild;
+  final Duration? duration;
 
   final bool showChild;
 
   const SafeCrossFade({
-    @required this.showChild,
-    @required this.builder,
+    required this.showChild,
+    required this.builder,
     this.secondChild,
     this.duration,
   });
@@ -77,14 +77,14 @@ class Replacer extends StatelessWidget {
   final Widget child;
 
   final Widget secondChild;
-  final Duration duration;
+  final Duration? duration;
 
   final bool showChild;
 
   const Replacer({
-    @required this.showChild,
-    @required this.child,
-    @required this.secondChild,
+    required this.showChild,
+    required this.child,
+    required this.secondChild,
     this.duration,
   });
 

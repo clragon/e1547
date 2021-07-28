@@ -8,7 +8,7 @@ class ParentDisplay extends StatefulWidget {
   final Post post;
   final SheetActionController controller;
 
-  ParentDisplay({@required this.post, @required this.controller});
+  ParentDisplay({required this.post, required this.controller});
 
   @override
   _ParentDisplayState createState() => _ParentDisplayState();
@@ -60,14 +60,14 @@ class _ParentDisplayState extends State<ParentDisplay> {
                       : null,
                   onTap: () async {
                     if (widget.post.relationships.parentId != null) {
-                      Post post =
-                          await client.post(widget.post.relationships.parentId);
-                      if (post != null) {
+                      try {
+                        Post post = await client
+                            .post(widget.post.relationships.parentId!);
                         Navigator.of(context)
                             .push(MaterialPageRoute(builder: (context) {
                           return PostDetail(post: post);
                         }));
-                      } else {
+                      } on DioError {
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                           duration: Duration(seconds: 1),
                           content: Text(
@@ -106,11 +106,11 @@ class _ParentDisplayState extends State<ParentDisplay> {
               leading: Icon(Icons.supervised_user_circle),
               title: Text(child.toString()),
               onTap: () async {
-                Post post = await client.post(child);
-                if (post != null) {
+                try {
+                  Post post = await client.post(child);
                   await Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) => PostDetail(post: post)));
-                } else {
+                } on DioError {
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     duration: Duration(seconds: 1),
                     content:
@@ -129,10 +129,10 @@ class _ParentDisplayState extends State<ParentDisplay> {
 
 class ParentEditor extends StatefulWidget {
   final Post post;
-  final ActionController controller;
+  final ActionController? controller;
 
   ParentEditor({
-    @required this.post,
+    required this.post,
     this.controller,
   });
 
@@ -148,25 +148,25 @@ class _ParentEditorState extends State<ParentEditor> {
     super.initState();
     textController.text = widget.post.relationships.parentId?.toString() ?? ' ';
     setFocusToEnd(textController);
-    widget.controller.setAction(submit);
+    widget.controller!.setAction(submit);
   }
 
   Future<bool> submit() async {
+    if (textController.text.trim().isEmpty) {
+      widget.post.relationships.parentId = null;
+      widget.post.notifyListeners();
+      return true;
+    }
     try {
-      if (textController.text.trim().isEmpty) {
-        widget.post.relationships.parentId = null;
+      if (int.tryParse(textController.text) != null) {
+        Post parent = await client.post(int.parse(textController.text));
+        widget.post.relationships.parentId = parent.id;
         widget.post.notifyListeners();
         return true;
       }
-      if (int.tryParse(textController.text) != null) {
-        Post parent = await client.post(int.tryParse(textController.text));
-        if (parent != null) {
-          widget.post.relationships.parentId = parent.id;
-          widget.post.notifyListeners();
-          return true;
-        }
-      }
     } on DioError {
+      // error is handled below
+    } on FormatException {
       // error is handled below
     }
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -189,7 +189,7 @@ class _ParentEditorState extends State<ParentEditor> {
       ],
       decoration: InputDecoration(
           labelText: 'Parent ID', border: UnderlineInputBorder()),
-      onSubmitted: (_) => widget.controller.action(),
+      onSubmitted: (_) => widget.controller!.action!(),
     );
   }
 }

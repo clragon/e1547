@@ -6,14 +6,14 @@ import 'package:flutter/material.dart';
 class CommentDisplay extends StatelessWidget {
   final Post post;
 
-  CommentDisplay({@required this.post});
+  CommentDisplay({required this.post});
 
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: post,
       builder: (context, child) {
-        int count = post.commentCount ?? 0;
+        int count = post.commentCount;
         return CrossFade(
           showChild: count > 0,
           child: Column(
@@ -30,7 +30,7 @@ class CommentDisplay extends StatelessWidget {
                       },
                       style: ButtonStyle(
                         foregroundColor: MaterialStateProperty.all(
-                            Theme.of(context).textTheme.bodyText1.color),
+                            Theme.of(context).textTheme.bodyText1!.color),
                         overlayColor: MaterialStateProperty.all(
                             Theme.of(context).splashColor),
                       ),
