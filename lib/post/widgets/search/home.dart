@@ -11,11 +11,11 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  PostProvider provider;
+  PostProvider? provider;
 
   void update() {
     if (provider != null) {
-      db.homeTags.value = Future.value(provider.search.value);
+      db.homeTags.value = Future.value(provider!.search.value);
     }
   }
 
@@ -24,14 +24,10 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     db.homeTags.value.then(
       (value) {
-        setState(
-          () {
-            provider = PostProvider(
-              search: value,
-            );
-          },
-        );
-        provider.search.addListener(update);
+        setState(() {
+          provider = PostProvider(search: value);
+        });
+        provider!.search.addListener(update);
       },
     );
   }
@@ -46,15 +42,15 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    if (provider != null) {
-      return PostsPage(
-          appBarBuilder: defaultAppBar('Home'), provider: provider);
-    } else {
-      return Scaffold(
-        body: Center(
-          child: SizedCircularProgressIndicator(size: 28),
-        ),
-      );
-    }
+    return PageLoader(
+      builder: (context) => PostsPage(
+        appBarBuilder: defaultAppBar('Home'),
+        provider: provider!,
+      ),
+      isBuilt: provider != null,
+      isLoading: false,
+      isEmpty: false,
+      isError: false,
+    );
   }
 }

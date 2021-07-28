@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 class DescriptionDisplay extends StatelessWidget {
   final Post post;
 
-  DescriptionDisplay({@required this.post});
+  DescriptionDisplay({required this.post});
 
   @override
   Widget build(BuildContext context) {
@@ -64,8 +64,8 @@ class DescriptionDisplay extends StatelessWidget {
                                 style: TextStyle(
                                     color: Theme.of(context)
                                         .textTheme
-                                        .bodyText1
-                                        .color
+                                        .bodyText1!
+                                        .color!
                                         .withOpacity(0.35),
                                     fontStyle: FontStyle.italic),
                               ),

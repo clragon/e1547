@@ -39,7 +39,7 @@ void poolSheet(BuildContext context, Pool pool) {
 class PoolSheet extends StatelessWidget {
   final Pool pool;
 
-  PoolSheet({@required this.pool});
+  PoolSheet({required this.pool});
 
   @override
   Widget build(BuildContext context) {
@@ -73,8 +73,8 @@ class PoolSheet extends StatelessWidget {
             ),
             Padding(
               padding: EdgeInsets.all(16),
-              child: pool.description.isNotEmpty
-                  ? DTextField(source: pool.description)
+              child: pool.description!.isNotEmpty
+                  ? DTextField(source: pool.description!)
                   : Text(
                       'no description',
                       style: TextStyle(fontStyle: FontStyle.italic),

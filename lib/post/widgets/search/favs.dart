@@ -13,7 +13,7 @@ class FavPage extends StatefulWidget {
 
 class _FavPageState extends State<FavPage> {
   bool error = false;
-  PostProvider provider;
+  PostProvider? provider;
 
   @override
   void initState() {
@@ -38,11 +38,12 @@ class _FavPageState extends State<FavPage> {
     return PageLoader(
       builder: (context) => PostsPage(
         appBarBuilder: defaultAppBar('Favorites'),
-        provider: provider,
+        provider: provider!,
       ),
-      isLoading: provider == null && error == false,
+      isBuilt: provider != null,
+      isLoading: false,
       isEmpty: false,
-      isError: error == true,
+      isError: error,
       onError: Text('User is not logged in'),
     );
   }

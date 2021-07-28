@@ -8,18 +8,18 @@ class TagGesture extends StatelessWidget {
   final bool wiki;
   final String tag;
   final Widget child;
-  final PostProvider provider;
+  final PostProvider? provider;
 
   const TagGesture(
-      {@required this.child,
-      @required this.tag,
+      {required this.child,
+      required this.tag,
       this.provider,
       this.safe = true,
       this.wiki = false});
 
   @override
   Widget build(BuildContext context) {
-    Function sheet =
+    VoidCallback sheet =
         () => wikiSheet(context: context, tag: tag, provider: provider);
 
     return InkWell(

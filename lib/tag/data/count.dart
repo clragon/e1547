@@ -1,8 +1,7 @@
 import 'package:e1547/post.dart';
 import 'package:e1547/tag.dart';
-import 'package:meta/meta.dart';
 
-Map<String, int> countTags(List<String> tags, [Map<String, int> counts]) {
+Map<String, int> countTags(List<String> tags, [Map<String, int>? counts]) {
   counts ??= {};
 
   for (String tag in tags) {
@@ -21,7 +20,7 @@ List<CountedTag> countTagsByPosts(List<Post> posts) {
 
   for (Post post in posts) {
     for (String category in categories.keys) {
-      List<String> tags = post.tagMap[category];
+      List<String> tags = post.tagMap[category]!;
       categoryCounts[category] = countTags(tags, categoryCounts[category]);
     }
   }
@@ -42,8 +41,8 @@ class CountedTag {
   final int count;
 
   CountedTag({
-    @required this.category,
-    @required this.tag,
-    @required this.count,
+    required this.category,
+    required this.tag,
+    required this.count,
   });
 }

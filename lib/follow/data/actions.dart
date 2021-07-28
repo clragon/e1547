@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:collection/collection.dart';
 import 'package:e1547/client.dart';
 import 'package:e1547/follow/data.dart';
 import 'package:e1547/post.dart';
@@ -11,9 +12,9 @@ import 'package:mutex/mutex.dart';
 final FollowUpdater followUpdater = FollowUpdater(db.follows);
 
 class FollowUpdater extends ChangeNotifier {
-  Future finish;
-  List<String> tags;
-  Completer completer;
+  Future? finish;
+  List<String>? tags;
+  Completer? completer;
   bool error = false;
   bool restart = false;
   Mutex updateLock = Mutex();
@@ -22,11 +23,11 @@ class FollowUpdater extends ChangeNotifier {
   Duration get stale => Duration(hours: 4);
 
   Future<void> updateSource() async {
-    List<String> update = (await source.value).tags;
+    List<String> update = (await source.value).tags as List<String>;
     if (tags == null) {
       tags = update;
     } else {
-      if (!listEquals(tags, update) && !completer.isCompleted) {
+      if (!listEquals(tags, update) && !completer!.isCompleted) {
         tags = update;
         restart = true;
       }
@@ -50,7 +51,7 @@ class FollowUpdater extends ChangeNotifier {
     await updateLock.acquire();
     if (completer?.isCompleted ?? true) {
       completer = Completer();
-      finish = completer.future;
+      finish = completer!.future;
     }
     progress.value = 0;
     restart = false;
@@ -65,12 +66,12 @@ class FollowUpdater extends ChangeNotifier {
 
       for (Follow follow in follows) {
         if (follow.type != FollowType.bookmark) {
-          DateTime updated = await follow.updated;
+          DateTime? updated = await follow.updated;
           if (force || updated == null || now.difference(updated) > stale) {
             if (!await follow.refresh()) {
               error = true;
               updateLock.release();
-              completer.complete();
+              completer!.complete();
               return;
             }
             await Future.delayed(Duration(milliseconds: 500));
@@ -89,12 +90,12 @@ class FollowUpdater extends ChangeNotifier {
       await follows.sortByNew();
       source.value = Future.value(follows);
       updateLock.release();
-      completer.complete();
+      completer!.complete();
       notifyListeners();
     }
 
     source.value.then((value) => run(List.from(value)));
-    return completer.future;
+    return completer!.future;
   }
 
   @override
@@ -106,7 +107,7 @@ class FollowUpdater extends ChangeNotifier {
 }
 
 extension utility on List<Follow> {
-  List<String> get tags => this.map((e) => e.tags).toList();
+  List<String?> get tags => this.map((e) => e.tags).toList();
 
   Future<void> sortByNew() async {
     bool isSafe = await client.isSafe;
@@ -114,8 +115,8 @@ extension utility on List<Follow> {
       (a, b) {
         int result = 0;
 
-        int unseenA;
-        int unseenB;
+        int? unseenA;
+        int? unseenB;
         if (isSafe) {
           unseenB = b.safe.unseen;
           unseenA = a.safe.unseen;
@@ -128,8 +129,8 @@ extension utility on List<Follow> {
         result = unseenB.compareTo(unseenA);
 
         if (result == 0) {
-          int latestA;
-          int latestB;
+          int? latestA;
+          int? latestB;
 
           if (isSafe) {
             latestB = b.safe.latest;
@@ -156,8 +157,7 @@ extension utility on List<Follow> {
   Future<List<Follow>> editWith(List<String> update) async {
     List<Follow> edited = [];
     for (String tags in update) {
-      Follow match =
-          this.firstWhere((follow) => follow.tags == tags, orElse: () => null);
+      Follow? match = this.firstWhereOrNull((follow) => follow.tags == tags);
       if (match != null) {
         edited.add(match);
       } else {
@@ -188,10 +188,10 @@ extension Refreshing on Follow {
       await updateUnseen(posts);
 
       if (!tags.contains(' ') && alias == null) {
-        RegExpMatch match = RegExp(r'^pool:(?<id>\d+)$').firstMatch(tags);
+        RegExpMatch? match = RegExp(r'^pool:(?<id>\d+)$').firstMatch(tags);
         if (match != null) {
           client
-              .pool(int.tryParse(match.namedGroup('id')))
+              .pool(int.tryParse(match.namedGroup('id')!)!)
               .then((value) => updatePoolName(value));
         }
       }

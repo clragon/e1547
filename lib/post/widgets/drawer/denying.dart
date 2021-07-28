@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 class DrawerDenySwitch extends StatelessWidget {
   final PostProvider provider;
 
-  const DrawerDenySwitch({@required this.provider});
+  const DrawerDenySwitch({required this.provider});
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +38,7 @@ class DrawerDenySwitch extends StatelessWidget {
                         tween: IntTween(
                             begin: 0, end: provider.denied.value.length),
                         duration: Duration(milliseconds: 200),
-                        builder: (context, value, child) {
+                        builder: (context, int value, child) {
                           return Text('blocked $value posts');
                         },
                       )
@@ -67,26 +67,26 @@ class DrawerDenySwitch extends StatelessWidget {
               children: [
                 FutureBuilder(
                   future: db.denylist.value,
-                  builder: (context, snapshot) {
-                    int count = snapshot.data?.length;
+                  builder: (context, AsyncSnapshot<List<String>> snapshot) {
+                    int? count = snapshot.data?.length;
                     if (count != null && provider.denying.value) {
                       count -= provider.deniedMap.value.keys.length;
                       count -= provider.allowlist.value.length;
                     }
                     return CrossFade(
-                      showChild: snapshot.hasData && count > 0,
+                      showChild: snapshot.hasData && count! > 0,
                       child: TweenAnimationBuilder(
                         tween: IntTween(begin: 0, end: count ?? 0),
                         duration: Duration(milliseconds: 200),
-                        builder: (BuildContext context, value, Widget child) {
+                        builder: (context, int value, child) {
                           return Text(
                             '$value inactive entries',
                             style: TextStyle(
                               fontStyle: FontStyle.italic,
                               color: Theme.of(context)
                                   .textTheme
-                                  .bodyText1
-                                  .color
+                                  .bodyText1!
+                                  .color!
                                   .withOpacity(0.35),
                             ),
                           );
@@ -108,14 +108,14 @@ class DrawerDenyTile extends StatelessWidget {
   final PostProvider provider;
   final MapEntry<String, List<Post>> entry;
 
-  const DrawerDenyTile({@required this.entry, @required this.provider});
+  const DrawerDenyTile({required this.entry, required this.provider});
 
   @override
   Widget build(BuildContext context) {
     return CheckboxListTile(
       value: !provider.allowlist.value.contains(entry.key),
       onChanged: (value) {
-        if (value) {
+        if (value!) {
           provider.allowlist.value.remove(entry.key);
         } else {
           provider.allowlist.value.add(entry.key);
@@ -139,7 +139,7 @@ class DrawerDenyTile extends StatelessWidget {
       secondary: TweenAnimationBuilder(
         tween: IntTween(begin: 0, end: entry.value.length),
         duration: Duration(milliseconds: 200),
-        builder: (BuildContext context, value, Widget child) {
+        builder: (context, int value, child) {
           return Text(value.toString(),
               style: Theme.of(context).textTheme.headline6);
         },

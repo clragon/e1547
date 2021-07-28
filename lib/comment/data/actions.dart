@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'comment.dart';
 
 Future<bool> writeComment(BuildContext context, Post post,
-    {String text, Comment comment}) async {
+    {String? text, Comment? comment}) async {
   bool sent = false;
   await Navigator.of(context).push(MaterialPageRoute(builder: (context) {
     return TextEditor(
@@ -14,22 +14,21 @@ Future<bool> writeComment(BuildContext context, Post post,
       content: text ?? (comment != null ? comment.body : null),
       validator: (context, text) async {
         if (text.isNotEmpty) {
-          Map response;
-          if (text != null) {
-            response = await client.postComment(text, post, comment: comment);
-          } else {
-            response = await client.postComment(text, post);
-          }
-          if (response['code'] == 200 || response['code'] == 204) {
+          try {
+            if (comment != null) {
+              await client.postComment(text, post, comment: comment);
+            } else {
+              await client.postComment(text, post);
+            }
             sent = true;
             return true;
-          } else {
+          } on DioError {
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
               duration: Duration(seconds: 1),
-              content: Text(
-                  'Failed to send comment: ${response['code']} : ${response['reason']}'),
+              content: Text('Failed to send comment!'),
               behavior: SnackBarBehavior.floating,
             ));
+            return false;
           }
         }
         return false;

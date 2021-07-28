@@ -15,7 +15,7 @@ abstract class DataProvider<T> extends ChangeNotifier {
   List<T> get items => pages.value.expand((element) => element).toList();
 
   @mustCallSuper
-  DataProvider({String search}) {
+  DataProvider({String? search}) {
     this.search.value = search ?? '';
     [db.host, db.credentials, this.search]
         .forEach((element) => element.addListener(resetPages));

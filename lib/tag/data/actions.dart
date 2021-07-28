@@ -16,7 +16,7 @@ String tagToTitle(String tags) =>
 
 String tagToCard(String tags) => tagToTitle(tagToName(tags));
 
-Color getCategoryColor(String category) {
+Color? getCategoryColor(String category) {
   switch (category) {
     case 'general':
       return Colors.indigo[300];

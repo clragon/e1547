@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 typedef Action = Future<bool> Function();
 
 class ActionController extends ChangeNotifier {
-  Action action;
+  Action? action;
 
   @mustCallSuper
   void setAction(Action submit) {
@@ -14,19 +14,19 @@ class ActionController extends ChangeNotifier {
 }
 
 class SheetActionController extends ActionController {
-  PersistentBottomSheetController sheetController;
+  PersistentBottomSheetController? sheetController;
   bool loading = false;
 
   bool get isShown => sheetController != null;
 
-  void close() => sheetController?.close?.call();
+  void close() => sheetController?.close.call();
 
   Future<bool> wrapper(Action submit) async {
     loading = true;
     notifyListeners();
     bool result = await submit();
     if (result) {
-      sheetController.close();
+      sheetController!.close();
     }
     loading = false;
     notifyListeners();
@@ -37,7 +37,7 @@ class SheetActionController extends ActionController {
     sheetController = Scaffold.of(context).showBottomSheet(
       (context) => BottomSheetLoadingIndicator(child: child, controller: this),
     );
-    sheetController.closed.then((_) {
+    sheetController!.closed.then((_) {
       sheetController = null;
       action = null;
       loading = false;
@@ -47,7 +47,7 @@ class SheetActionController extends ActionController {
 
   @override
   void setAction(Action submit) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
       loading = false;
       super.setAction(() => wrapper(submit));
     });
@@ -59,7 +59,7 @@ class BottomSheetLoadingIndicator extends StatefulWidget {
   final SheetActionController controller;
 
   const BottomSheetLoadingIndicator(
-      {@required this.controller, @required this.child});
+      {required this.controller, required this.child});
 
   @override
   _BottomSheetLoadingIndicatorState createState() =>

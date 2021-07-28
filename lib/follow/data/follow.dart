@@ -1,11 +1,10 @@
 import 'dart:convert';
 
+import 'package:collection/collection.dart';
 import 'package:e1547/client.dart';
 import 'package:e1547/pool.dart';
 import 'package:e1547/post.dart';
 import 'package:e1547/tag.dart';
-import 'package:flutter/material.dart';
-import 'package:meta/meta.dart';
 
 enum FollowType {
   update,
@@ -15,31 +14,31 @@ enum FollowType {
 
 class Follow {
   String tags;
-  String alias;
-  FollowStatus safe;
-  FollowStatus unsafe;
-  FollowType type;
+  String? alias;
+  late FollowStatus safe;
+  late FollowStatus unsafe;
+  late FollowType type;
 
   Follow({
-    @required this.tags,
-    this.type,
+    required this.tags,
     this.alias,
-    this.safe,
-    this.unsafe,
+    FollowType? type,
+    FollowStatus? safe,
+    FollowStatus? unsafe,
   }) {
     tags = sortTags(tags);
-    safe ??= FollowStatus();
-    unsafe ??= FollowStatus();
-    type ??= FollowType.update;
+    this.safe = safe ?? FollowStatus();
+    this.unsafe = unsafe ?? FollowStatus();
+    this.type = type ?? FollowType.update;
   }
 
   Future<FollowStatus> get status async => await client.isSafe ? safe : unsafe;
 
-  Future<DateTime> get updated async => (await status).updated;
+  Future<DateTime?> get updated async => (await status).updated;
 
-  Future<String> get thumbnail async => (await status).thumbnail;
+  Future<String?> get thumbnail async => (await status).thumbnail;
 
-  Future<int> get latest async => (await status).latest;
+  Future<int?> get latest async => (await status).latest;
 
   String get title => alias ?? tagToTitle(tags);
 
@@ -51,9 +50,9 @@ class Follow {
     return false;
   }
 
-  bool updatePoolName(Pool pool) {
+  bool updatePoolName(Pool? pool) {
     if (alias == null) {
-      this.alias = tagToTitle(pool.name);
+      this.alias = tagToTitle(pool!.name);
       return true;
     }
     return false;
@@ -62,7 +61,7 @@ class Follow {
   Future<bool> updateTimestamp(FollowStatus status) async {
     bool updated = false;
     if (status.updated == null ||
-        DateTime.now().difference(status.updated).inHours > 1) {
+        DateTime.now().difference(status.updated!).inHours > 1) {
       status.updated = DateTime.now();
       updated = true;
     }
@@ -74,11 +73,11 @@ class Follow {
     return updateTimestamp(status);
   }
 
-  Future<bool> updateLatest(Post post, {bool foreground = false}) async {
+  Future<bool> updateLatest(Post? post, {bool foreground = false}) async {
     bool updated = false;
     if (post != null) {
-      FollowStatus status;
-      FollowStatus other;
+      FollowStatus? status;
+      FollowStatus? other;
 
       if (await client.isSafe) {
         status = safe;
@@ -87,7 +86,7 @@ class Follow {
         status = unsafe;
         other = safe;
       }
-      if (status.latest == null || status.latest < post.id) {
+      if (status.latest == null || status.latest! < post.id) {
         status.latest = post.id;
         status.thumbnail = post.sample.url;
         updated = true;
@@ -117,8 +116,8 @@ class Follow {
   Future<bool> updateUnseen(List<Post> posts) async {
     bool updated = false;
     if (posts.isNotEmpty) {
-      FollowStatus status;
-      FollowStatus other;
+      FollowStatus? status;
+      FollowStatus? other;
 
       if (await client.isSafe) {
         status = safe;
@@ -129,14 +128,14 @@ class Follow {
       }
       posts.sort((a, b) => b.id.compareTo(a.id));
       if (status.latest != null) {
-        posts = posts.takeWhile((value) => value.id > status.latest).toList();
+        posts = posts.takeWhile((value) => value.id > status!.latest!).toList();
       }
       if (posts.isNotEmpty) {
         updated = await updateLatest(posts.first);
       }
       int length = posts.length;
       if (status.unseen != null) {
-        if ((length > status.unseen &&
+        if ((length > status.unseen! &&
             !(status.latest == other.latest && other.unseen == 0))) {
           status.unseen = length;
           updated = true;
@@ -169,17 +168,16 @@ class Follow {
             : FollowStatus.fromJson(json['unsafe']),
         type: json['type'] == null
             ? FollowType.update
-            : FollowType.values.firstWhere(
-                (element) => element?.toString() == json['type'],
-                orElse: () => null),
+            : FollowType.values.firstWhereOrNull(
+                (element) => element.toString() == json['type']),
       );
 
   Map<String, dynamic> toMap() => {
         "tags": tags,
         "alias": alias,
-        "safe": safe?.toJson(),
-        "unsafe": unsafe?.toJson(),
-        "type": type?.toString(),
+        "safe": safe.toJson(),
+        "unsafe": unsafe.toJson(),
+        "type": type.toString(),
       };
 
   @override
@@ -198,10 +196,10 @@ class Follow {
 }
 
 class FollowStatus {
-  int latest;
-  int unseen;
-  String thumbnail;
-  DateTime updated;
+  int? latest;
+  int? unseen;
+  String? thumbnail;
+  DateTime? updated;
 
   FollowStatus({
     this.latest,

@@ -6,7 +6,7 @@ class ImageOverlay extends StatelessWidget {
   final Post post;
   final Widget Function(Post post) builder;
 
-  ImageOverlay({@required this.post, @required this.builder});
+  ImageOverlay({required this.post, required this.builder});
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +47,7 @@ class ImageOverlay extends StatelessWidget {
                 child: InkWell(
                   child:
                       Padding(padding: EdgeInsets.all(8), child: Text('Open')),
-                  onTap: () async => launch(post.file.url),
+                  onTap: () async => launch(post.file.url!),
                 ),
               )
             ],

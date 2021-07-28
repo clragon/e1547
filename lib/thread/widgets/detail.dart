@@ -1,1 +1,0 @@
-export 'detail/detail.dart';

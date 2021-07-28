@@ -14,13 +14,13 @@ class FollowingPage extends StatefulWidget {
 }
 
 class _FollowingPageState extends State<FollowingPage> with FollowerMixin {
-  Function fabAction;
-  PersistentBottomSheetController<String> sheetController;
+  Function? fabAction;
+  PersistentBottomSheetController? sheetController;
   ScrollController scrollController = ScrollController();
 
   Widget aliasEditor({
-    TextEditingController controller,
-    @required Function(String value) onSubmit,
+    TextEditingController? controller,
+    required Function(String value) onSubmit,
   }) {
     controller ??= TextEditingController();
     setFocusToEnd(controller);
@@ -43,28 +43,28 @@ class _FollowingPageState extends State<FollowingPage> with FollowerMixin {
 
   @override
   Widget build(BuildContext context) {
-    void addTags(BuildContext context, [int edit]) {
-      void submit(String value, {int edit}) {
+    void addTags(BuildContext context, [int? edit]) {
+      void submit(String value, {int? edit}) {
         value = value.trim();
         Follow result = Follow.fromString(value);
 
         if (edit != null) {
           if (value.isNotEmpty) {
-            follows[edit] = result;
+            follows![edit] = result;
           } else {
-            follows.removeAt(edit);
+            follows!.removeAt(edit);
           }
           db.follows.value = Future.value(follows);
           sheetController?.close();
         } else if (value.isNotEmpty) {
-          follows.add(result);
+          follows!.add(result);
           db.follows.value = Future.value(follows);
           sheetController?.close();
         }
       }
 
-      TextEditingController controller =
-          TextEditingController(text: edit != null ? follows[edit].tags : null);
+      TextEditingController controller = TextEditingController(
+          text: edit != null ? follows![edit].tags : null);
 
       sheetController = Scaffold.of(context).showBottomSheet((context) {
         return ListTagEditor(
@@ -78,7 +78,7 @@ class _FollowingPageState extends State<FollowingPage> with FollowerMixin {
         fabAction = () => submit(controller.text, edit: edit);
       });
 
-      sheetController.closed.then((_) {
+      sheetController?.closed.then((_) {
         setState(() {
           fabAction = null;
         });
@@ -88,11 +88,11 @@ class _FollowingPageState extends State<FollowingPage> with FollowerMixin {
     void editAlias(BuildContext context, int edit) {
       void submit(String value, int edit) {
         value = value.trim();
-        if (follows[edit].alias != value) {
+        if (follows![edit].alias != value) {
           if (value.isNotEmpty) {
-            follows[edit].alias = value;
+            follows![edit].alias = value;
           } else {
-            follows[edit].alias = null;
+            follows![edit].alias = null;
           }
           db.follows.value = Future.value(follows);
           sheetController?.close();
@@ -100,7 +100,7 @@ class _FollowingPageState extends State<FollowingPage> with FollowerMixin {
       }
 
       TextEditingController controller =
-          TextEditingController(text: follows[edit].title);
+          TextEditingController(text: follows![edit].title);
 
       sheetController = Scaffold.of(context).showBottomSheet((context) {
         return aliasEditor(
@@ -113,7 +113,7 @@ class _FollowingPageState extends State<FollowingPage> with FollowerMixin {
         fabAction = () => submit(controller.text, edit);
       });
 
-      sheetController.closed.then((_) {
+      sheetController?.closed.then((_) {
         setState(() {
           fabAction = null;
         });
@@ -141,24 +141,25 @@ class _FollowingPageState extends State<FollowingPage> with FollowerMixin {
 
       return ListView.builder(
         controller: scrollController,
-        padding: EdgeInsets.only(top: 8, bottom: 30),
-        itemCount: follows.length,
+        padding:
+            EdgeInsets.only(top: 8, bottom: kBottomNavigationBarHeight + 24),
+        itemCount: follows!.length,
         itemBuilder: (BuildContext context, int index) => FollowListTile(
-          follow: follows[index],
+          follow: follows![index],
           onRename: () => editAlias(context, index),
           onEdit: () => addTags(context, index),
           onDelete: () {
-            follows.removeAt(index);
+            follows!.removeAt(index);
             db.follows.value = Future.value(follows);
           },
           onType: () {
-            switch (follows[index].type) {
+            switch (follows![index].type) {
               case FollowType.notify:
               case FollowType.update:
-                follows[index].type = FollowType.bookmark;
+                follows![index].type = FollowType.bookmark;
                 break;
               case FollowType.bookmark:
-                follows[index].type = FollowType.update;
+                follows![index].type = FollowType.update;
                 break;
             }
             db.follows.value = Future.value(follows);
@@ -172,13 +173,13 @@ class _FollowingPageState extends State<FollowingPage> with FollowerMixin {
     Widget floatingActionButton(BuildContext context) {
       return FloatingActionButton(
         child: fabAction != null ? Icon(Icons.check) : Icon(Icons.add),
-        onPressed: () => fabAction != null ? fabAction() : addTags(context),
+        onPressed: () => fabAction != null ? fabAction!() : addTags(context),
       );
     }
 
     Widget editor() {
       TextEditingController controller = TextEditingController();
-      controller.text = follows.tags.join('\n');
+      controller.text = follows!.tags.join('\n');
       return AlertDialog(
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -202,7 +203,7 @@ class _FollowingPageState extends State<FollowingPage> with FollowerMixin {
               List<String> tags = controller.text.split('\n');
               tags.removeWhere((tag) => tag.trim().isEmpty);
               tags = tags.map((e) => e.trim()).toList();
-              db.follows.value = follows.editWith(tags);
+              db.follows.value = follows!.editWith(tags);
               Navigator.of(context).pop();
             },
           ),

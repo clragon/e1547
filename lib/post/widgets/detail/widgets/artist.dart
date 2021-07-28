@@ -6,9 +6,9 @@ import 'package:flutter/services.dart';
 
 class ArtistDisplay extends StatelessWidget {
   final Post post;
-  final PostProvider provider;
+  final PostProvider? provider;
 
-  ArtistDisplay({@required this.post, @required this.provider});
+  ArtistDisplay({required this.post, required this.provider});
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +38,7 @@ class ArtistDisplay extends StatelessWidget {
             return Text(
               'no artist',
               style: TextStyle(
-                  color: Theme.of(context).textTheme.subtitle2.color,
+                  color: Theme.of(context).textTheme.subtitle2!.color,
                   fontStyle: FontStyle.italic),
             );
           }
@@ -92,7 +92,7 @@ class ArtistDisplay extends StatelessWidget {
                     ),
                   ]),
                   onTap: () async {
-                    String uploader =
+                    String? uploader =
                         (await client.user(post.uploaderId.toString()))['name'];
                     Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) =>

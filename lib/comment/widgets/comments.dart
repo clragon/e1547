@@ -1,21 +1,23 @@
+import 'package:e1547/client.dart';
 import 'package:e1547/comment.dart';
 import 'package:e1547/dtext.dart';
 import 'package:e1547/interface.dart';
 import 'package:e1547/post.dart';
 import 'package:e1547/settings.dart';
 import 'package:flutter/material.dart';
+import 'package:timeago/timeago.dart';
 
 class CommentsPage extends StatefulWidget {
   final Post post;
 
-  CommentsPage({@required this.post});
+  CommentsPage({required this.post});
 
   @override
   State createState() => _CommentsPageState();
 }
 
 class _CommentsPageState extends State<CommentsPage> with UpdateMixin {
-  CommentProvider provider;
+  late CommentProvider provider;
 
   @override
   void initState() {
@@ -44,34 +46,33 @@ class _CommentsPageState extends State<CommentsPage> with UpdateMixin {
           padding: EdgeInsets.only(top: 4, bottom: 4),
           child: InkWell(
             child: Text(
-              comment.creator,
+              comment.creatorName,
               style: TextStyle(
                 color: Theme.of(context)
                     .textTheme
-                    .bodyText1
-                    .color
+                    .bodyText1!
+                    .color!
                     .withOpacity(0.35),
               ),
             ),
             onTap: () {
               Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                return SearchPage(tags: 'user:${comment.creator}');
+                return SearchPage(tags: 'user:${comment.creatorName}');
               }));
             },
           ),
         ),
         Text(
           () {
-            String time = ' • ${getAge(comment.creation)}';
-            if (DateTime.parse(comment.creation) !=
-                DateTime.parse(comment.update)) {
+            String time = ' • ${format(comment.createdAt)}';
+            if (comment.createdAt != comment.updatedAt) {
               time += ' (edited)';
             }
             return time;
           }(),
           style: TextStyle(
             color:
-                Theme.of(context).textTheme.bodyText1.color.withOpacity(0.35),
+                Theme.of(context).textTheme.bodyText1!.color!.withOpacity(0.35),
             fontSize: 12,
           ),
         ),
@@ -91,8 +92,9 @@ class _CommentsPageState extends State<CommentsPage> with UpdateMixin {
         ),
         FutureBuilder(
           future: db.credentials.value,
-          builder: (context, snapshot) {
-            if (snapshot.hasData && snapshot.data.username == comment.creator) {
+          builder: (context, AsyncSnapshot<Credentials?> snapshot) {
+            if (snapshot.hasData &&
+                snapshot.data!.username == comment.creatorName) {
               return Padding(
                 padding: EdgeInsets.only(left: 8),
                 child: InkWell(
@@ -146,7 +148,7 @@ class _CommentsPageState extends State<CommentsPage> with UpdateMixin {
                         (match) => '')
                     .trim();
                 body =
-                    '[quote]"${comment.creator}":/users/${comment.creatorID} said:\n$body[/quote]\n';
+                    '[quote]"${comment.creatorName}":/users/${comment.creatorId} said:\n$body[/quote]\n';
                 writeComment(context, widget.post, text: body);
               }
             },

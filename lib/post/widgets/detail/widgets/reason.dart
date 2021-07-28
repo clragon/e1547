@@ -5,7 +5,7 @@ class EditReasonEditor extends StatefulWidget {
   final Future<bool> Function(String value) submit;
   final ActionController controller;
 
-  const EditReasonEditor({@required this.controller, @required this.submit});
+  const EditReasonEditor({required this.controller, required this.submit});
 
   @override
   _EditReasonEditorState createState() => _EditReasonEditorState();

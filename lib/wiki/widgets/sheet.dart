@@ -7,9 +7,9 @@ import 'actions.dart';
 import 'body.dart';
 
 void wikiSheet(
-    {@required BuildContext context,
-    @required String tag,
-    PostProvider provider}) {
+    {required BuildContext context,
+    required String tag,
+    PostProvider? provider}) {
   showSlidingBottomSheet(
     context,
     builder: (BuildContext context) {
@@ -39,9 +39,9 @@ void wikiSheet(
 
 class WikiSheet extends StatelessWidget {
   final String tag;
-  final PostProvider provider;
+  final PostProvider? provider;
 
-  WikiSheet({@required this.tag, this.provider});
+  WikiSheet({required this.tag, this.provider});
 
   @override
   Widget build(BuildContext context) {
@@ -73,7 +73,7 @@ class WikiSheet extends StatelessWidget {
                     if (provider != null)
                       TagSearchActions(
                         tag: tag,
-                        provider: provider,
+                        provider: provider!,
                       ),
                     TagListActions(
                       tag: tag,

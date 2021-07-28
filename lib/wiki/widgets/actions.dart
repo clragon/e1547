@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 class TagListActions extends StatefulWidget {
   final String tag;
 
-  TagListActions({@required this.tag});
+  TagListActions({required this.tag});
 
   @override
   State<StatefulWidget> createState() {
@@ -19,14 +19,14 @@ class TagListActions extends StatefulWidget {
 class _TagListActionsState extends State<TagListActions> {
   bool denied = false;
   bool following = false;
-  List<String> denylist;
-  List<Follow> follows;
+  List<String>? denylist;
+  List<Follow>? follows;
 
   Future<void> updateLists() async {
     denylist = await db.denylist.value;
-    denied = denylist.contains(widget.tag);
+    denied = denylist!.contains(widget.tag);
     follows = await db.follows.value;
-    following = follows.contains(widget.tag);
+    following = follows!.contains(widget.tag);
     if (mounted) {
       setState(() {});
     }
@@ -63,11 +63,11 @@ class _TagListActionsState extends State<TagListActions> {
             child: IconButton(
               onPressed: () {
                 if (following) {
-                  follows.removeWhere((element) => element.tags == widget.tag);
+                  follows!.removeWhere((element) => element.tags == widget.tag);
                 } else {
-                  follows.add(Follow.fromString(widget.tag));
+                  follows!.add(Follow.fromString(widget.tag));
                   if (denied) {
-                    denylist.remove(widget.tag);
+                    denylist!.remove(widget.tag);
                     db.denylist.value = Future.value(denylist);
                   }
                 }
@@ -87,13 +87,13 @@ class _TagListActionsState extends State<TagListActions> {
             child: IconButton(
               onPressed: () {
                 if (denied) {
-                  denylist.remove(widget.tag);
+                  denylist!.remove(widget.tag);
                   db.denylist.value = Future.value(denylist);
                 } else {
-                  denylist.add(widget.tag);
+                  denylist!.add(widget.tag);
                   db.denylist.value = Future.value(denylist);
                   if (following) {
-                    follows.remove(widget.tag);
+                    follows!.remove(widget.tag);
                     db.follows.value = Future.value(follows);
                   }
                 }
@@ -130,13 +130,13 @@ class TagSearchActions extends StatelessWidget {
   final String tag;
   final PostProvider provider;
 
-  TagSearchActions({@required this.tag, @required this.provider});
+  TagSearchActions({required this.tag, required this.provider});
 
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder(
       valueListenable: provider.search,
-      builder: (context, value, child) {
+      builder: (context, String value, child) {
         if (!provider.canSearch || tag.contains(' ')) {
           return SizedBox.shrink();
         }

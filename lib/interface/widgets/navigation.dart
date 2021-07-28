@@ -5,7 +5,6 @@ import 'package:e1547/interface.dart';
 import 'package:e1547/pool.dart';
 import 'package:e1547/post.dart';
 import 'package:e1547/settings.dart';
-import 'package:e1547/thread.dart';
 import 'package:flutter/material.dart';
 
 final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
@@ -42,10 +41,6 @@ Map<String, WidgetBuilder> routes = <String, WidgetBuilder>{
   '/pools': (context) => () {
         drawerSelection = DrawerSelection.pools;
         return PoolsPage();
-      }(),
-  '/forum': (context) => () {
-        drawerSelection = DrawerSelection.forum;
-        return ThreadsPage();
       }(),
   '/login': (context) => LoginPage(),
   '/settings': (context) => SettingsPage(),
@@ -130,8 +125,8 @@ class NavigationDrawer extends StatelessWidget {
         ListTile(
           // this would be better solved with a seperate stateful widget.
           leading: FutureBuilder(
-            builder: (context, snapshot) {
-              if (snapshot.hasData && snapshot.data.isNotEmpty) {
+            builder: (context, AsyncSnapshot<List<AppVersion>> snapshot) {
+              if (snapshot.hasData && snapshot.data!.isNotEmpty) {
                 return Stack(
                   children: [
                     Icon(Icons.update),
@@ -189,7 +184,7 @@ class _ProfileHeaderState extends State<ProfileHeader> {
     Widget userNameWidget() {
       return ValueListenableBuilder(
         valueListenable: userName,
-        builder: (context, value, child) {
+        builder: (context, String? value, child) {
           return CrossFade(
             showChild: value != null,
             child: Row(
@@ -219,11 +214,11 @@ class _ProfileHeaderState extends State<ProfileHeader> {
     Widget userAvatarWidget() {
       return ValueListenableBuilder(
         valueListenable: userAvatar,
-        builder: (context, value, child) {
+        builder: (context, String? value, child) {
           return CircleAvatar(
-            backgroundImage: value == null
+            backgroundImage: (value == null
                 ? AssetImage('assets/icon/app/paw.png')
-                : CachedNetworkImageProvider(value),
+                : CachedNetworkImageProvider(value)) as ImageProvider<Object>?,
             radius: 36,
           );
         },
@@ -250,10 +245,10 @@ class _ProfileHeaderState extends State<ProfileHeader> {
   }
 }
 
-final ValueNotifier<String> userName = ValueNotifier(null);
-final ValueNotifier<String> userAvatar = ValueNotifier(null);
+final ValueNotifier<String?> userName = ValueNotifier(null);
+final ValueNotifier<String?> userAvatar = ValueNotifier(null);
 
-void initAvatar([BuildContext context]) {
+void initAvatar([BuildContext? context]) {
   db.credentials.value.then(
     (credentials) {
       userName.value = credentials?.username;

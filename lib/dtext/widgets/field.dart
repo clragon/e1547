@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:e1547/client.dart';
 import 'package:e1547/dtext.dart';
 import 'package:e1547/pool.dart';
@@ -11,7 +12,7 @@ class DTextField extends StatelessWidget {
   final String source;
   final bool dark;
 
-  DTextField({@required this.source, this.dark = false});
+  DTextField({required this.source, this.dark = false});
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +26,7 @@ class DTextField extends StatelessWidget {
         return TextSpan();
       }
 
-      RegExpMatch bracketMatch = anyBlockTag.firstMatch(text);
+      RegExpMatch? bracketMatch = anyBlockTag.firstMatch(text);
       if (bracketMatch != null) {
         // string before bracket
         String before = text.substring(0, bracketMatch.start);
@@ -35,16 +36,16 @@ class DTextField extends StatelessWidget {
         String after = text.substring(bracketMatch.end);
 
         // the key of the tag
-        String key = bracketMatch.namedGroup('tag').toLowerCase();
+        String key = bracketMatch.namedGroup('tag')!.toLowerCase();
         // whether the tag is closing
         bool active = bracketMatch.namedGroup('closing') == null;
         // whether section tag is expanded
         bool expanded = bracketMatch.namedGroup('expanded') != null;
         // the value of the tag
-        String value = bracketMatch.namedGroup('value');
+        String? value = bracketMatch.namedGroup('value');
 
         // block tag check.
-        Widget blocked;
+        Widget? blocked;
 
         if ([
               'spoiler',
@@ -68,11 +69,11 @@ class DTextField extends StatelessWidget {
             caseSensitive: false,
           );
 
-          Match endMatch = end.allMatches(after).firstWhere((match) {
+          Match? endMatch = end.allMatches(after).firstWhereOrNull((match) {
             String container = after.substring(0, match.start);
             return start.allMatches(container).length ==
                 end.allMatches(container).length;
-          }, orElse: () => null);
+          });
 
           int splitStart;
           int splitEnd;
@@ -188,15 +189,15 @@ class DTextField extends StatelessWidget {
 
       InlineSpan parseLink(RegExpMatch match, String result,
           [bool insite = false]) {
-        String display = match.namedGroup('name');
-        String search = match.namedGroup('link');
+        String? display = match.namedGroup('name');
+        String search = match.namedGroup('link')!;
         String siteMatch = r'((e621|e926)\.net)?';
-        Function onTap = () => launch(search);
-        int id = int.tryParse(search.split('/').last.split('?').first);
+        VoidCallback onTap = () => launch(search);
+        int? id = int.tryParse(search.split('/').last.split('?').first);
 
         if (display == null) {
           display = match.namedGroup('link');
-          display = linkToDisplay(display);
+          display = linkToDisplay(display!);
         }
 
         if (insite) {
@@ -205,12 +206,12 @@ class DTextField extends StatelessWidget {
 
         Map<RegExp, Function Function(RegExpMatch match)> links = {
           RegExp(siteMatch + r'/posts/\d+'): (match) => () async {
-                Post p = await client.post(id);
+                Post p = await client.post(id!);
                 Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => PostDetail(post: p)));
               },
           RegExp(siteMatch + r'/pool(s|/show)/\d+'): (match) => () async {
-                Pool p = await client.pool(id);
+                Pool p = await client.pool(id!);
                 Navigator.of(context).push(
                     MaterialPageRoute(builder: (context) => PoolPage(pool: p)));
               },
@@ -218,7 +219,7 @@ class DTextField extends StatelessWidget {
 
         for (MapEntry<RegExp, Function(RegExpMatch match)> entry
             in links.entries) {
-          RegExpMatch match = entry.key.firstMatch(result);
+          RegExpMatch? match = entry.key.firstMatch(result);
           if (match != null) {
             onTap = entry.value(match);
             break;
@@ -232,15 +233,15 @@ class DTextField extends StatelessWidget {
             onTap: onTap);
       }
 
-      InlineSpan parseWord(LinkWord word, RegExpMatch match, String result) {
-        Function onTap;
+      InlineSpan parseWord(LinkWord? word, RegExpMatch match, String result) {
+        VoidCallback? onTap;
 
         switch (word) {
           case LinkWord.thumb:
           // add actual pictures here some day.
           case LinkWord.post:
             onTap = () async {
-              Post p = await client.post(int.parse(match.namedGroup('id')));
+              Post p = await client.post(int.parse(match.namedGroup('id')!));
               Navigator.of(context).push(MaterialPageRoute(builder: (context) {
                 return PostDetail(post: p);
               }));
@@ -248,7 +249,7 @@ class DTextField extends StatelessWidget {
             break;
           case LinkWord.pool:
             onTap = () async {
-              Pool p = await client.pool(int.parse(match.namedGroup('id')));
+              Pool p = await client.pool(int.parse(match.namedGroup('id')!));
               Navigator.of(context).push(MaterialPageRoute(builder: (context) {
                 return PoolPage(pool: p);
               }));
@@ -270,10 +271,10 @@ class DTextField extends StatelessWidget {
         RegExp(r'\[\[(?<anchor>#)?(?<tags>.*?)(\|(?<name>.*?))?\]\]'):
             (match, result) {
           bool anchor = match.namedGroup('anchor') != null;
-          String tags = match.namedGroup('tags');
-          String name = match.namedGroup('name') ?? tags;
+          String? tags = match.namedGroup('tags');
+          String name = match.namedGroup('name') ?? tags!;
 
-          Function onTap;
+          VoidCallback? onTap;
 
           if (!anchor) {
             onTap = () => Navigator.of(context).push(MaterialPageRoute(
@@ -287,10 +288,10 @@ class DTextField extends StatelessWidget {
               onTap: onTap);
         },
         RegExp(r'{{(?<tags>.*?)(\|(?<name>.*?))?}}'): (match, result) {
-          String tags = match.namedGroup('tags');
-          String name = match.namedGroup('name') ?? tags;
+          String? tags = match.namedGroup('tags');
+          String name = match.namedGroup('name') ?? tags!;
 
-          Function onTap = () {
+          VoidCallback onTap = () {
             Navigator.of(context).push(MaterialPageRoute(
                 builder: (context) => SearchPage(tags: tags)));
           };
@@ -308,7 +309,7 @@ class DTextField extends StatelessWidget {
         RegExp(r'h[1-6]\.\s?(?<name>.*)', caseSensitive: false):
             (match, result) {
           return resolve(
-            match.namedGroup('name'),
+            match.namedGroup('name')!,
             Map.from(state)..[TextState.header] = true,
           );
         },

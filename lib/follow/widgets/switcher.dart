@@ -9,7 +9,7 @@ class FollowsPage extends StatefulWidget {
 }
 
 class _FollowsPageState extends State<FollowsPage> {
-  bool isSplit;
+  bool? isSplit;
 
   Future<void> update() async {
     await db.followsSplit.value
@@ -36,7 +36,7 @@ class _FollowsPageState extends State<FollowsPage> {
               duration: defaultAnimationDuration,
               child: isSplit == null
                   ? SizedBox.shrink()
-                  : isSplit
+                  : isSplit!
                       ? FollowsSplitPage()
                       : FollowsCombinedPage(),
             ),

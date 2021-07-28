@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class QuoteWrap extends StatelessWidget {
   final Widget child;
 
-  const QuoteWrap({this.child});
+  const QuoteWrap({required this.child});
 
   @override
   Widget build(BuildContext context) {

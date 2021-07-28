@@ -7,7 +7,7 @@ class PoolInfo extends StatelessWidget {
   final DateFormat dateFormat = DateFormat('dd.MM.yy HH:mm');
   final Pool pool;
 
-  PoolInfo({@required this.pool});
+  PoolInfo({required this.pool});
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +27,7 @@ class PoolInfo extends StatelessWidget {
 
     return DefaultTextStyle(
       style: TextStyle(
-          color: Theme.of(context).textTheme.bodyText1.color.withOpacity(0.35)),
+          color: Theme.of(context).textTheme.bodyText1!.color!.withOpacity(0.35)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
@@ -63,7 +63,7 @@ class PoolInfo extends StatelessWidget {
               dateFormat.format(DateTime.parse(pool.creation).toLocal())),
           textInfoRow(
             'updated',
-            dateFormat.format(DateTime.parse(pool.updated).toLocal()),
+            dateFormat.format(DateTime.parse(pool.updated!).toLocal()),
           ),
         ],
       ),

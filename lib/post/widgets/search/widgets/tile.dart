@@ -4,16 +4,16 @@ import 'package:flutter/material.dart';
 
 class PostTile extends StatelessWidget {
   final Post post;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
 
   PostTile({
-    @required this.post,
+    required this.post,
     this.onPressed,
   });
 
   @override
   Widget build(BuildContext context) {
-    Widget overlay({@required Widget child}) {
+    Widget overlay({required Widget child}) {
       if (post.flags.deleted) {
         return Center(child: Text('deleted'));
       }

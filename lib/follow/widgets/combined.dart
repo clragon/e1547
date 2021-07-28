@@ -11,7 +11,7 @@ class FollowsCombinedPage extends StatefulWidget {
 }
 
 class _FollowsCombinedPageState extends State<FollowsCombinedPage> {
-  List<String> tags;
+  List<String?>? tags;
 
   PostProvider provider = PostProvider(
     provider: (tags, page) => client.follows(page),
@@ -19,7 +19,7 @@ class _FollowsCombinedPageState extends State<FollowsCombinedPage> {
   );
 
   Future<void> updateTags() async {
-    List<String> update = (await db.follows.value).tags;
+    List<String?> update = (await db.follows.value).tags;
     if (!listEquals(tags, update)) {
       provider.resetPages();
       tags = update;

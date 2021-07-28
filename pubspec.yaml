@@ -4,7 +4,7 @@ version: 1.8.0+41
 publish_to: none
 
 environment:
-  sdk: '>=2.6.0 <3.0.0'
+  sdk: '>=2.12.0 <3.0.0'
 
 dependencies:
 
@@ -25,6 +25,8 @@ dependencies:
     git: git://github.com/clragon/flutter_staggered_grid_view.git
 
   # data
+  filesize: ^2.0.1
+  timeago: ^3.1.0
   mutex: ^3.0.0
   dio: ^4.0.0
   share: ^2.0.1
@@ -38,6 +40,7 @@ dependencies:
 
   flutter:
     sdk: flutter
+  collection: ^1.15.0-nullsafety.4
 
 dev_dependencies:
   flutter_test:

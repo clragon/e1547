@@ -16,14 +16,14 @@ class FollowButton extends StatefulWidget {
 }
 
 class FollowButtonState extends State<FollowButton> {
-  String tag;
-  List<Follow> follows;
-  bool following;
+  late String tag;
+  List<Follow>? follows;
+  late bool following;
 
   Future<void> update() async {
     await db.follows.value.then((value) => follows = value);
     setState(() {
-      following = follows.any((element) => element.tags == tag);
+      following = follows!.any((element) => element.tags == tag);
     });
   }
 
@@ -50,9 +50,9 @@ class FollowButtonState extends State<FollowButton> {
           IconButton(
             onPressed: () {
               if (following) {
-                follows.removeWhere((element) => element.tags == tag);
+                follows!.removeWhere((element) => element.tags == tag);
               } else {
-                follows.add(Follow.fromString(tag));
+                follows!.add(Follow.fromString(tag));
               }
               db.follows.value = Future.value(follows);
             },

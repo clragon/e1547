@@ -3,12 +3,12 @@ import 'package:e1547/post.dart';
 import 'package:flutter/material.dart';
 
 Future<void> loadingSnackbar({
-  @required BuildContext context,
-  @required Set<Post> items,
-  @required Future<bool> Function(Post post) process,
-  Duration timeout,
+  required BuildContext context,
+  required Set<Post> items,
+  required Future<bool> Function(Post post) process,
+  Duration? timeout,
 }) async {
-  ScaffoldFeatureController controller;
+  late ScaffoldFeatureController controller;
   controller = ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
       content: LoadingSnackbar(
@@ -25,15 +25,12 @@ Future<void> loadingSnackbar({
 
 class LoadingSnackbar extends StatefulWidget {
   final Set<Post> items;
-  final Duration timeout;
-  final Function onDone;
+  final Duration? timeout;
+  final Function? onDone;
   final Future<bool> Function(Post post) process;
 
   LoadingSnackbar(
-      {@required this.items,
-      @required this.process,
-      this.timeout,
-      this.onDone});
+      {required this.items, required this.process, this.timeout, this.onDone});
 
   @override
   _LoadingSnackbarState createState() => _LoadingSnackbarState();
@@ -63,7 +60,7 @@ class _LoadingSnackbarState extends State<LoadingSnackbar> {
       }
     }
     await Future.delayed(Duration(milliseconds: 600));
-    widget.onDone();
+    widget.onDone!();
     return;
   }
 
@@ -93,7 +90,7 @@ class _LoadingSnackbarState extends State<LoadingSnackbar> {
                 padding: EdgeInsets.symmetric(horizontal: 8),
                 child: TweenAnimationBuilder(
                   duration: widget.timeout ?? defaultAnimationDuration,
-                  builder: (context, value, child) {
+                  builder: (context, double value, child) {
                     double indicator = 1 / widget.items.length;
                     if (indicator < 0) {
                       indicator = 1;

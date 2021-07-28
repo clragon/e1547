@@ -79,14 +79,14 @@ class LoginFormFields extends StatefulWidget {
 class _LoginFormFieldsState extends State<LoginFormFields> {
   final TextEditingController apiKeyFieldController = TextEditingController();
 
-  String username;
-  String apiKey;
+  String? username;
+  String? apiKey;
 
   bool authFailed = false;
 
   bool justPasted = false;
-  String previousPaste;
-  Timer pasteUndoTimer;
+  String? previousPaste;
+  Timer? pasteUndoTimer;
 
   @override
   void dispose() {
@@ -95,7 +95,7 @@ class _LoginFormFieldsState extends State<LoginFormFields> {
   }
 
   Future<void> saveAndTest() async {
-    FormState form = Form.of(context)..save();
+    FormState form = Form.of(context)!..save();
     if (form.validate()) {
       showDialog(
         context: context,
@@ -130,14 +130,14 @@ class _LoginFormFieldsState extends State<LoginFormFields> {
         autofillHints: [AutofillHints.username],
         onSaved: (value) {
           authFailed = false;
-          username = value.trim();
+          username = value!.trim();
         },
         validator: (value) {
           if (authFailed) {
             return 'Failed to login. Please check username.';
           }
 
-          if (username.trim().isEmpty) {
+          if (username!.trim().isEmpty) {
             return 'You must provide a username.';
           }
 
@@ -160,7 +160,7 @@ class _LoginFormFieldsState extends State<LoginFormFields> {
           autofillHints: [AutofillHints.password],
           onSaved: (value) {
             authFailed = false;
-            apiKey = value.trim();
+            apiKey = value!.trim();
           },
           validator: (value) {
             if (authFailed) {
@@ -168,13 +168,13 @@ class _LoginFormFieldsState extends State<LoginFormFields> {
                   'e.g. $apiKeyExample';
             }
 
-            apiKey = value.trim();
-            if (apiKey.isEmpty) {
+            apiKey = value!.trim();
+            if (apiKey!.isEmpty) {
               return 'You must provide an API key.\n'
                   'e.g. $apiKeyExample';
             }
 
-            if (!RegExp(r'^[A-z0-9]{24,32}$').hasMatch(apiKey)) {
+            if (!RegExp(r'^[A-z0-9]{24,32}$').hasMatch(apiKey!)) {
               return 'API key is a 24 or 32-character sequence of {A..z} and {0..9}\n'
                   'e.g. $apiKeyExample';
             }
@@ -192,7 +192,7 @@ class _LoginFormFieldsState extends State<LoginFormFields> {
             onPressed: () {
               setState(() {
                 justPasted = false;
-                apiKeyFieldController.text = previousPaste;
+                apiKeyFieldController.text = previousPaste!;
               });
             },
           );
@@ -202,7 +202,7 @@ class _LoginFormFieldsState extends State<LoginFormFields> {
             tooltip: 'Paste',
             onPressed: () async {
               var data = await Clipboard.getData('text/plain');
-              if (data == null || data.text.trim().isEmpty) {
+              if (data == null || data.text!.trim().isEmpty) {
                 ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('Clipboard is empty')));
                 return;
@@ -211,7 +211,7 @@ class _LoginFormFieldsState extends State<LoginFormFields> {
               setState(() {
                 justPasted = true;
                 previousPaste = apiKeyFieldController.text;
-                apiKeyFieldController.text = data.text;
+                apiKeyFieldController.text = data.text!;
               });
 
               pasteUndoTimer = Timer(Duration(seconds: 10), () {
@@ -266,14 +266,14 @@ class _LoginFormFieldsState extends State<LoginFormFields> {
 }
 
 class LoginProgressDialog extends StatefulWidget {
-  final String username;
-  final String apiKey;
+  final String? username;
+  final String? apiKey;
   final Function(bool value) onResult;
 
   LoginProgressDialog({
-    @required this.username,
-    @required this.apiKey,
-    @required this.onResult,
+    required this.username,
+    required this.apiKey,
+    required this.onResult,
   });
 
   @override
@@ -284,7 +284,7 @@ class _LoginProgressDialogState extends State<LoginProgressDialog> {
   @override
   void initState() {
     super.initState();
-    client.saveLogin(widget.username, widget.apiKey).then((value) async {
+    client.saveLogin(widget.username!, widget.apiKey!).then((value) async {
       await Navigator.of(context).maybePop();
       widget.onResult(value);
     });

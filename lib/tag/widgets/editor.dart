@@ -4,13 +4,13 @@ import 'package:flutter/material.dart';
 
 class TagEditor extends StatefulWidget {
   final Post post;
-  final String category;
-  final Future<bool> Function(String text) submit;
-  final ActionController controller;
+  final String? category;
+  final Future<bool> Function(String text)? submit;
+  final ActionController? controller;
 
   TagEditor({
-    @required this.post,
-    @required this.category,
+    required this.post,
+    required this.category,
     this.submit,
     this.controller,
   });
@@ -25,16 +25,16 @@ class _TagEditorState extends State<TagEditor> {
   @override
   void initState() {
     super.initState();
-    widget.controller.setAction(() => widget.submit(controller.text));
+    widget.controller!.setAction(() => widget.submit!(controller.text));
   }
 
   @override
   Widget build(BuildContext context) {
     return TagInput(
       labelText: widget.category,
-      onSubmit: (_) => widget.controller.action(),
+      onSubmit: (_) => widget.controller!.action!(),
       controller: controller,
-      category: categories[widget.category],
+      category: categories[widget.category!],
     );
   }
 }

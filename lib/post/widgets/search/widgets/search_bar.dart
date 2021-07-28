@@ -5,11 +5,11 @@ import 'package:flutter/material.dart';
 
 class PostSearchBar extends StatelessWidget {
   final TextEditingController controller;
-  final Function(String result) onSubmit;
+  final SubmitString onSubmit;
 
   PostSearchBar({
-    @required this.controller,
-    @required this.onSubmit,
+    required this.controller,
+    required this.onSubmit,
   });
 
   void withTags(Future<Tagset> Function(Tagset tags) editor) async {
@@ -18,7 +18,7 @@ class PostSearchBar extends StatelessWidget {
     setFocusToEnd(controller);
   }
 
-  List<PopupMenuEntry> fromMap(Map<String, String> strings) =>
+  List<PopupMenuEntry<String>> fromMap(Map<String, String> strings) =>
       strings.keys.map((e) => PopupMenuItem(child: Text(e), value: e)).toList();
 
   @override
@@ -34,14 +34,14 @@ class PostSearchBar extends StatelessWidget {
         tooltip: 'Filter by',
         itemBuilder: (context) => fromMap(filterTypes),
         onSelected: (selection) {
-          String filterType = filterTypes[selection];
+          String? filterType = filterTypes[selection];
 
           withTags((tags) async {
-            String valueString = tags[filterType];
+            String? valueString = tags[filterType!];
             int value =
                 valueString == null ? 0 : int.parse(valueString.substring(2));
 
-            int min;
+            int? min;
             await showDialog(
               context: context,
               builder: (context) => RangeDialog(
@@ -49,7 +49,7 @@ class PostSearchBar extends StatelessWidget {
                 value: value,
                 division: 10,
                 max: 100,
-                onSubmit: (int value) => min = value,
+                onSubmit: (value) => min = value,
               ),
             );
 
@@ -83,7 +83,7 @@ class PostSearchBar extends StatelessWidget {
         tooltip: 'Sort by',
         itemBuilder: (context) => fromMap(orders),
         onSelected: (String selection) {
-          String orderType = orders[selection];
+          String? orderType = orders[selection];
 
           withTags((tags) async {
             if (orderType == 'default') {
@@ -110,8 +110,8 @@ class PostSearchBar extends StatelessWidget {
         tooltip: 'Conditions',
         itemBuilder: (context) => fromMap(status),
         onSelected: (selection) async {
-          String key;
-          String value;
+          String? key;
+          String? value;
 
           switch (status[selection]) {
             case 'rating':
@@ -120,7 +120,7 @@ class PostSearchBar extends StatelessWidget {
                 builder: (BuildContext context) {
                   return RatingDialog(onTap: (rating) {
                     key = 'rating';
-                    value = ratingValues.reverse[rating];
+                    value = ratingValues.reverse![rating];
                   });
                 },
               );
@@ -147,7 +147,7 @@ class PostSearchBar extends StatelessWidget {
               tags.remove('inpool');
               return tags;
             }
-            tags[key] = value;
+            tags[key!] = value;
             return tags;
           });
         },

@@ -4,8 +4,8 @@ import 'package:e1547/settings.dart';
 import 'package:flutter/material.dart';
 
 mixin FollowerMixin<T extends StatefulWidget> on State<T> {
-  bool safe;
-  List<Follow> follows;
+  bool? safe;
+  List<Follow>? follows;
 
   void update() {
     if (this.mounted) {

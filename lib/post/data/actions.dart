@@ -50,25 +50,25 @@ extension tagging on Post {
           bool greater = value.contains('>');
           bool smaller = value.contains('<');
           bool equal = value.contains('=');
-          int score = int.tryParse(value.replaceAll(r'[<>=]', ''));
+          int? score = int.tryParse(value.replaceAll(r'[<>=]', ''));
           if (greater) {
             if (equal) {
-              if (this.score.total >= score) {
+              if (this.score.total >= score!) {
                 return true;
               }
             } else {
-              if (this.score.total > score) {
+              if (this.score.total > score!) {
                 return true;
               }
             }
           }
           if (smaller) {
             if (equal) {
-              if (this.score.total <= score) {
+              if (this.score.total <= score!) {
                 return true;
               }
             } else {
-              if (this.score.total < score) {
+              if (this.score.total < score!) {
                 return true;
               }
             }
@@ -89,7 +89,7 @@ extension denying on Post {
   Future<bool> isDeniedBy(List<String> denylist) async =>
       await getDenier(denylist) != null;
 
-  Future<String> getDenier(List<String> denylist) async {
+  Future<String?> getDenier(List<String> denylist) async {
     if (denylist.length > 0) {
       for (String line in denylist) {
         List<String> deny = [];
@@ -136,7 +136,7 @@ extension downloading on Post {
       if (!await Permission.storage.request().isGranted) {
         return false;
       }
-      File download = await DefaultCacheManager().getSingleFile(file.url);
+      File download = await DefaultCacheManager().getSingleFile(file.url!);
       if (Platform.isAndroid) {
         String directory =
             '${Platform.environment['EXTERNAL_STORAGE']}/Pictures';
@@ -178,7 +178,7 @@ extension favoriting on Post {
     }
   }
 
-  Future<bool> tryAddFav(BuildContext context, {Duration cooldown}) async {
+  Future<bool> tryAddFav(BuildContext context, {Duration? cooldown}) async {
     if (await client.addFavorite(this.id)) {
       // cooldown avoids interference with animation
       await Future.delayed(cooldown ?? Duration(milliseconds: 0));
@@ -203,9 +203,9 @@ extension favoriting on Post {
 
 extension voting on Post {
   Future<void> tryVote(
-      {@required BuildContext context,
-      @required bool upvote,
-      @required bool replace}) async {
+      {required BuildContext context,
+      required bool upvote,
+      required bool replace}) async {
     if (await client.votePost(this.id, upvote, replace)) {
       if (this.voteStatus == VoteStatus.unknown) {
         if (upvote) {

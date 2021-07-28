@@ -7,7 +7,7 @@ class Tagset extends Object with IterableMixin<Tag> {
       : _tags = Map.fromIterable(
           tags,
           key: (t) => (t as Tag).name,
-          value: (t) => t as Tag,
+          value: ((t) => (t as Tag?)!),
         );
 
   Tagset.parse(String tagString) : _tags = {} {
@@ -31,12 +31,12 @@ class Tagset extends Object with IterableMixin<Tag> {
       );
 
   @override
-  bool contains(Object tagName) {
+  bool contains(Object? tagName) {
     return _tags.containsKey(tagName);
   }
 
-  String operator [](String name) {
-    Tag t = _tags[name];
+  String? operator [](String? name) {
+    Tag? t = _tags[name!];
     if (t == null) {
       return null;
     }
@@ -44,11 +44,11 @@ class Tagset extends Object with IterableMixin<Tag> {
     return t.value;
   }
 
-  void operator []=(String name, String value) {
+  void operator []=(String name, String? value) {
     _tags[name] = Tag(name, value);
   }
 
-  void remove(String name) {
+  void remove(String? name) {
     _tags.remove(name);
   }
 

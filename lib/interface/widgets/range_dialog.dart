@@ -8,16 +8,16 @@ class RangeDialog extends StatefulWidget {
   final int value;
   final int max;
   final int min;
-  final int division;
+  final int? division;
   final bool strict;
-  final Function(int value) onSubmit;
+  final Function(int? value) onSubmit;
 
   RangeDialog({
-    @required this.title,
-    @required this.onSubmit,
+    required this.title,
+    required this.onSubmit,
     this.min = 0,
     this.value = 0,
-    this.max,
+    required this.max,
     this.division,
     this.strict = false,
   });
@@ -28,7 +28,7 @@ class RangeDialog extends StatefulWidget {
 
 class _RangeDialogState extends State<RangeDialog> {
   final TextEditingController controller = TextEditingController();
-  int value;
+  late int value;
 
   @override
   void initState() {
@@ -40,7 +40,7 @@ class _RangeDialogState extends State<RangeDialog> {
   }
 
   void submit(String output) {
-    widget.onSubmit(int.tryParse(output));
+    widget.onSubmit(int.tryParse(output)!);
     Navigator.of(context).maybePop();
   }
 
