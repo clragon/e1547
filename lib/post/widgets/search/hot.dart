@@ -1,3 +1,4 @@
+import 'package:e1547/interface.dart';
 import 'package:e1547/post.dart';
 import 'package:flutter/material.dart';
 
@@ -20,7 +21,7 @@ class _HotPageState extends State<HotPage> {
   @override
   Widget build(BuildContext context) {
     return PostsPage(
-      appBarBuilder: defaultAppBar('Hot'),
+      appBarBuilder: defaultAppBarBuilder('Hot'),
       controller: controller,
     );
   }

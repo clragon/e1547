@@ -43,7 +43,7 @@ class _FavPageState extends State<FavPage> {
   Widget build(BuildContext context) {
     return PageLoader(
       builder: (context) => PostsPage(
-        appBarBuilder: defaultAppBar('Favorites'),
+        appBarBuilder: defaultAppBarBuilder('Favorites'),
         controller: controller!,
       ),
       isBuilt: controller != null,

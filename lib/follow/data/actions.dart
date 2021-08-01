@@ -76,6 +76,12 @@ class FollowUpdater extends ChangeNotifier {
             }
             await Future.delayed(Duration(milliseconds: 500));
             if (restart) {
+              // prevent thumbnails from wrong host
+              if (await client.isSafe) {
+                follow.safe = FollowStatus();
+              } else {
+                follow.unsafe = FollowStatus();
+              }
               updateLock.release();
               update(force: force);
               return;
