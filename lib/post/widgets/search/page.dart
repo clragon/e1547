@@ -10,14 +10,14 @@ import 'package:like_button/like_button.dart';
 
 class PostsPage extends StatefulWidget {
   final bool canSelect;
-  final PostProvider provider;
+  final PostController controller;
   final PreferredSizeWidget Function(BuildContext) appBarBuilder;
 
   PostsPage({
     this.canSelect = true,
-    required this.provider,
+    required this.controller,
     required this.appBarBuilder,
-  }) : super(key: ObjectKey(provider));
+  }) : super(key: ObjectKey(controller));
 
   @override
   State<StatefulWidget> createState() => _PostsPageState();
@@ -25,17 +25,14 @@ class PostsPage extends StatefulWidget {
 
 class _PostsPageState extends State<PostsPage>
     with TileSizeMixin, TileStaggerMixin {
-  ValueNotifier<bool> isSearching = ValueNotifier(false);
-  TextEditingController textController = TextEditingController();
-  PersistentBottomSheetController? sheetController;
-
+  ScrollController scrollController = ScrollController();
   Set<Post> selections = Set();
 
   void updatePage() {
     WidgetsBinding.instance!.addPostFrameCallback((_) {
       if (this.mounted) {
         setState(() {
-          if (widget.provider.posts.value.isEmpty) {
+          if (widget.controller.itemList?.isEmpty ?? true) {
             selections.clear();
           }
         });
@@ -46,7 +43,7 @@ class _PostsPageState extends State<PostsPage>
   @override
   void initState() {
     super.initState();
-    widget.provider.addListener(updatePage);
+    widget.controller.addListener(updatePage);
   }
 
   @override
@@ -59,123 +56,93 @@ class _PostsPageState extends State<PostsPage>
   @override
   void reassemble() {
     super.reassemble();
-    widget.provider.removeListener(updatePage);
-    widget.provider.addListener(updatePage);
+    widget.controller.removeListener(updatePage);
+    widget.controller.addListener(updatePage);
   }
 
   @override
   void dispose() {
-    widget.provider.removeListener(updatePage);
-    widget.provider.dispose();
+    widget.controller.removeListener(updatePage);
     super.dispose();
   }
 
-  Widget itemBuilder(BuildContext context, int item) {
-    Widget preview(Post post, PostProvider? provider) {
-      void select() {
-        if (widget.canSelect) {
-          setState(() {
-            if (selections.contains(post)) {
-              selections.remove(post);
-            } else {
-              selections.add(post);
-            }
-          });
-        }
+  Widget itemBuilder(BuildContext context, Post item, int index) {
+    void select() {
+      if (widget.canSelect) {
+        setState(() {
+          if (selections.contains(item)) {
+            selections.remove(item);
+          } else {
+            selections.add(item);
+          }
+        });
       }
+    }
 
-      return Stack(
-        alignment: Alignment.center,
-        children: [
-          PostTile(
-            post: post,
-            onPressed: () {
-              Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => PostDetailGallery(
-                  provider: provider,
-                  initialPage: provider!.posts.value.indexOf(post),
-                ),
-              ));
-            },
-          ),
-          Positioned.fill(
-            child: GestureDetector(
-              behavior: HitTestBehavior.translucent,
-              onTap: selections.isNotEmpty ? select : null,
-              onLongPress: select,
-              child: IgnorePointer(
-                child: AnimatedOpacity(
-                  duration: defaultAnimationDuration,
-                  opacity: selections.contains(post) ? 1 : 0,
-                  child: Padding(
-                    padding: EdgeInsets.all(4),
-                    child: Container(
-                      color: Colors.black38,
-                      child: LayoutBuilder(
-                        builder: (context, constraint) => Icon(
-                            Icons.check_circle_outline,
-                            size:
-                                min(constraint.maxHeight, constraint.maxWidth) *
-                                    0.4),
-                      ),
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        PostTile(
+          post: item,
+          onPressed: () {
+            Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => PostDetailGallery(
+                controller: widget.controller,
+                initialPage: index,
+              ),
+            ));
+          },
+        ),
+        Positioned.fill(
+          child: GestureDetector(
+            behavior: HitTestBehavior.translucent,
+            onTap: selections.isNotEmpty ? select : null,
+            onLongPress: select,
+            child: IgnorePointer(
+              child: AnimatedOpacity(
+                duration: defaultAnimationDuration,
+                opacity: selections.contains(item) ? 1 : 0,
+                child: Padding(
+                  padding: EdgeInsets.all(4),
+                  child: Container(
+                    color: Colors.black38,
+                    child: LayoutBuilder(
+                      builder: (context, constraint) => Icon(
+                          Icons.check_circle_outline,
+                          size: min(constraint.maxHeight, constraint.maxWidth) *
+                              0.4),
                     ),
                   ),
                 ),
               ),
             ),
           ),
-        ],
-      );
-    }
-
-    if (item == widget.provider.posts.value.length - 1) {
-      widget.provider.loadNextPage();
-    }
-    return preview(widget.provider.posts.value[item], widget.provider);
+        ),
+      ],
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     Widget floatingActionButton() {
-      return Builder(builder: (context) {
-        if (widget.provider.canSearch) {
-          return ValueListenableBuilder(
-            valueListenable: isSearching,
-            builder: (context, bool value, child) {
-              void submit(String result) {
-                widget.provider.search.value = sortTags(result);
-                sheetController?.close();
-              }
-
-              return FloatingActionButton(
-                heroTag: 'float',
-                child: Icon(value ? Icons.check : Icons.search),
-                onPressed: () async {
-                  selections.clear();
-                  if (isSearching.value) {
-                    submit(textController.text);
-                  } else {
-                    textController.text = widget.provider.search.value + ' ';
-                    isSearching.value = true;
-                    sheetController = Scaffold.of(context).showBottomSheet(
-                      (context) => PostSearchBar(
-                        controller: textController,
-                        onSubmit: submit,
-                      ),
-                    );
-                    isSearching.value = true;
-                    sheetController?.closed.then((a) {
-                      isSearching.value = false;
-                    });
-                  }
-                },
-              );
-            },
-          );
-        } else {
-          return SizedBox.shrink();
-        }
-      });
+      if (widget.controller.canSearch) {
+        return SheetFloatingActionButton(
+          actionIcon: Icons.search,
+          builder: (context, actionController) => SheetTextWrapper(
+            actionController: actionController,
+            textController:
+                TextEditingController(text: widget.controller.search.value),
+            submit: (value) => widget.controller.search.value = sortTags(value),
+            builder: (context, controller, submit) => AdvancedTagInput(
+              labelText: 'Tags',
+              controller: controller,
+              submit: submit,
+            ),
+          ),
+        );
+      } else {
+        return SizedBox.shrink();
+      }
     }
 
     Widget selectionAppBar() {
@@ -189,7 +156,7 @@ class _PostsPageState extends State<PostsPage>
           IconButton(
               icon: Icon(Icons.select_all),
               onPressed: () => setState(() =>
-                  selections.addAll(widget.provider.posts.value.toSet()))),
+                  selections.addAll(widget.controller.itemList!.toSet()))),
           Builder(
             builder: (context) => IconButton(
               icon: Icon(Icons.file_download),
@@ -256,8 +223,8 @@ class _PostsPageState extends State<PostsPage>
 
     return LayoutBuilder(builder: (context, constraints) {
       StaggeredTile? tileBuilder(int item) {
-        if (item < widget.provider.posts.value.length) {
-          PostFile image = widget.provider.posts.value[item].sample;
+        if (item < widget.controller.itemList!.length) {
+          PostFile image = widget.controller.itemList![item].sample;
           double widthRatio = image.width / image.height;
           double heightRatio = image.height / image.width;
 
@@ -287,47 +254,47 @@ class _PostsPageState extends State<PostsPage>
             return true;
           }
         },
-        child: RefreshablePage.pageBuilder(
-          pageBuilder: (context, child, scrollController) => Scaffold(
-            appBar: ScrollToTop(
-              controller: selections.isEmpty ? scrollController : null,
-              child: Material(
-                elevation: Theme.of(context).appBarTheme.elevation ?? 4,
-                child: CrossFade(
-                  showChild: selections.isEmpty,
-                  child: widget.appBarBuilder(context),
-                  secondChild: selectionAppBar(),
+        child: PageLoader(
+          isBuilt: [tileSize, stagger].every((element) => element != null),
+          builder: (context) => RefreshablePage.pageBuilder(
+            scrollController: scrollController,
+            refreshController: widget.controller.refreshController,
+            pageBuilder: (context, child, scrollController) => Scaffold(
+              appBar: ScrollToTop(
+                controller: selections.isEmpty ? scrollController : null,
+                child: Material(
+                  elevation: Theme.of(context).appBarTheme.elevation ?? 4,
+                  child: CrossFade(
+                    showChild: selections.isEmpty,
+                    child: widget.appBarBuilder(context),
+                    secondChild: selectionAppBar(),
+                  ),
                 ),
               ),
+              body: child,
+              drawer: NavigationDrawer(),
+              drawerEdgeDragWidth: defaultDrawerEdge(constraints.maxWidth),
+              endDrawer: widget.controller.canDeny
+                  ? SearchDrawer(controller: widget.controller)
+                  : null,
+              floatingActionButton: floatingActionButton(),
             ),
-            body: child,
-            drawer: NavigationDrawer(),
-            drawerEdgeDragWidth: defaultDrawerEdge(constraints.maxWidth),
-            endDrawer: widget.provider.canDeny
-                ? SearchDrawer(provider: widget.provider)
-                : null,
-            floatingActionButton: floatingActionButton(),
+            refresh: () => widget.controller.refresh(background: true),
+            builder: (BuildContext context) => PagedStaggeredGridView(
+              primary: false,
+              scrollController: scrollController,
+              addAutomaticKeepAlives: false,
+              tileBuilder: tileBuilder,
+              pagingController: widget.controller,
+              crossAxisCount: crossAxisCount(constraints.maxWidth),
+              builderDelegate: defaultPagedChildBuilderDelegate(
+                itemBuilder: itemBuilder,
+                onEmpty: Text('No posts'),
+                onLoading: Text('Loading posts'),
+                onError: Text('Failed to load posts'),
+              ),
+            ),
           ),
-          refresh: () async {
-            await widget.provider.loadNextPage(reset: true);
-            return !widget.provider.isError;
-          },
-          builder: (context) => StaggeredGridView.countBuilder(
-            key: Key('grid_${[tileSize, stagger].join('_')}_key'),
-            addAutomaticKeepAlives: false,
-            crossAxisCount: crossAxisCount(constraints.maxWidth),
-            itemCount: widget.provider.posts.value.length,
-            itemBuilder: itemBuilder,
-            staggeredTileBuilder: tileBuilder,
-            physics: BouncingScrollPhysics(),
-          ),
-          isLoading: widget.provider.isLoading,
-          isBuilt: [tileSize, stagger].every((element) => element != null),
-          isEmpty: widget.provider.posts.value.isEmpty,
-          isError: widget.provider.isError,
-          onEmpty: Text('No posts'),
-          onLoading: Text('Loading posts'),
-          onError: Text('Failed to load posts'),
         ),
       );
     });

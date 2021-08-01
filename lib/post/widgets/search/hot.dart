@@ -9,13 +9,19 @@ class HotPage extends StatefulWidget {
 }
 
 class _HotPageState extends State<HotPage> {
-  PostProvider provider = PostProvider(search: "order:rank");
+  PostController controller = PostController(search: "order:rank");
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return PostsPage(
       appBarBuilder: defaultAppBar('Hot'),
-      provider: provider,
+      controller: controller,
     );
   }
 }

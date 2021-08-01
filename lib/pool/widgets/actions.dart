@@ -21,7 +21,7 @@ class FollowButtonState extends State<FollowButton> {
   late bool following;
 
   Future<void> update() async {
-    await db.follows.value.then((value) => follows = value);
+    await settings.follows.value.then((value) => follows = value);
     setState(() {
       following = follows!.any((element) => element.tags == tag);
     });
@@ -31,14 +31,14 @@ class FollowButtonState extends State<FollowButton> {
   void initState() {
     super.initState();
     tag = 'pool:${widget.pool.id}';
-    db.follows.addListener(update);
+    settings.follows.addListener(update);
     update();
   }
 
   @override
   void dispose() {
     super.dispose();
-    db.follows.removeListener(update);
+    settings.follows.removeListener(update);
   }
 
   @override
@@ -54,7 +54,7 @@ class FollowButtonState extends State<FollowButton> {
               } else {
                 follows!.add(Follow.fromString(tag));
               }
-              db.follows.value = Future.value(follows);
+              settings.follows.value = Future.value(follows);
             },
             icon: CrossFade(
               showChild: following,

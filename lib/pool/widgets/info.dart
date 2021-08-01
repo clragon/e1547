@@ -27,12 +27,13 @@ class PoolInfo extends StatelessWidget {
 
     return DefaultTextStyle(
       style: TextStyle(
-          color: Theme.of(context).textTheme.bodyText1!.color!.withOpacity(0.35)),
+          color:
+              Theme.of(context).textTheme.bodyText1!.color!.withOpacity(0.35)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          textInfoRow('posts', pool.postIDs.length.toString()),
+          textInfoRow('posts', pool.postIds.length.toString()),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -57,13 +58,12 @@ class PoolInfo extends StatelessWidget {
           ),
           textInfoRow(
             'status',
-            pool.active ? 'active' : 'inactive',
+            pool.isActive ? 'active' : 'inactive',
           ),
-          textInfoRow('created',
-              dateFormat.format(DateTime.parse(pool.creation).toLocal())),
+          textInfoRow('created', dateFormat.format(pool.createdAt.toLocal())),
           textInfoRow(
             'updated',
-            dateFormat.format(DateTime.parse(pool.updated!).toLocal()),
+            dateFormat.format(pool.updatedAt.toLocal()),
           ),
         ],
       ),

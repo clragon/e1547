@@ -3,10 +3,10 @@ import 'package:e1547/post.dart';
 import 'package:flutter/material.dart';
 
 class PostDetailGallery extends StatefulWidget {
-  final PostProvider? provider;
+  final PostController controller;
   final int initialPage;
 
-  PostDetailGallery({required this.provider, this.initialPage = 0});
+  PostDetailGallery({required this.controller, this.initialPage = 0});
 
   @override
   _PostDetailGalleryState createState() => _PostDetailGalleryState();
@@ -32,16 +32,17 @@ class _PostDetailGalleryState extends State<PostDetailGallery> {
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder(
-      valueListenable: widget.provider!.posts,
-      builder: (context, value, child) {
+    return AnimatedBuilder(
+      animation: widget.controller,
+      builder: (context, child) {
         Widget pageBuilder(BuildContext context, int index) {
-          if (index == widget.provider!.posts.value.length - 1) {
-            widget.provider!.loadNextPage();
+          if (index == widget.controller.itemList!.length - 1) {
+            widget.controller
+                .notifyPageRequestListeners(widget.controller.nextPageKey!);
           }
           return PostDetail(
-            post: widget.provider!.posts.value[index],
-            provider: widget.provider,
+            post: widget.controller.itemList![index],
+            controller: widget.controller,
             changePage: (index) => ModalRoute.of(context)!.isCurrent
                 ? controller.animateToPage(index,
                     duration: defaultAnimationDuration, curve: Curves.easeInOut)
@@ -52,10 +53,10 @@ class _PostDetailGalleryState extends State<PostDetailGallery> {
         return PageView.builder(
           controller: controller,
           itemBuilder: pageBuilder,
-          itemCount: widget.provider!.posts.value.length,
+          itemCount: widget.controller.itemList?.length ?? 0,
           onPageChanged: (index) {
-            if (widget.provider!.posts.value.isNotEmpty) {
-              Post lastPost = widget.provider!.posts.value[lastIndex];
+            if (widget.controller.itemList!.isNotEmpty) {
+              Post lastPost = widget.controller.itemList![lastIndex];
               if (lastPost.isEditing) {
                 lastPost.resetPost();
               }
@@ -64,7 +65,7 @@ class _PostDetailGalleryState extends State<PostDetailGallery> {
             preloadImages(
               context: context,
               index: index,
-              posts: widget.provider!.posts.value,
+              posts: widget.controller.itemList!,
               size: ImageSize.sample,
             );
           },

@@ -6,10 +6,11 @@ import 'package:sliding_sheet/sliding_sheet.dart';
 import 'actions.dart';
 import 'body.dart';
 
-void wikiSheet(
-    {required BuildContext context,
-    required String tag,
-    PostProvider? provider}) {
+void wikiSheet({
+  required BuildContext context,
+  required String tag,
+  PostController? controller,
+}) {
   showSlidingBottomSheet(
     context,
     builder: (BuildContext context) {
@@ -21,7 +22,7 @@ void wikiSheet(
         builder: (context, sheetState) {
           return WikiSheet(
             tag: tag,
-            provider: provider,
+            controller: controller,
           );
         },
         snapSpec: SnapSpec(
@@ -39,9 +40,9 @@ void wikiSheet(
 
 class WikiSheet extends StatelessWidget {
   final String tag;
-  final PostProvider? provider;
+  final PostController? controller;
 
-  WikiSheet({required this.tag, this.provider});
+  WikiSheet({required this.tag, this.controller});
 
   @override
   Widget build(BuildContext context) {
@@ -70,10 +71,10 @@ class WikiSheet extends StatelessWidget {
                 ),
                 Row(
                   children: [
-                    if (provider != null)
+                    if (controller != null)
                       TagSearchActions(
                         tag: tag,
-                        provider: provider!,
+                        controller: controller!,
                       ),
                     TagListActions(
                       tag: tag,
@@ -86,7 +87,7 @@ class WikiSheet extends StatelessWidget {
               padding: EdgeInsets.all(16),
               child: WikiBody(
                 tag: tag,
-                provider: provider,
+                controller: controller,
               ),
             ),
           ],

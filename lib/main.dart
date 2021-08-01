@@ -6,12 +6,12 @@ import 'package:flutter/services.dart';
 ValueNotifier<ThemeData> theme = ValueNotifier(appThemeMap[AppTheme.dark]!);
 
 Future<void> updateTheme() async {
-  theme.value = appThemeMap[await db.theme.value]!;
+  theme.value = appThemeMap[await settings.theme.value]!;
 }
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  db.theme.addListener(updateTheme);
+  settings.theme.addListener(updateTheme);
   await updateTheme();
   runApp(Main());
 }

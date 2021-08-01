@@ -12,7 +12,7 @@ class _FollowsPageState extends State<FollowsPage> {
   bool? isSplit;
 
   Future<void> update() async {
-    await db.followsSplit.value
+    await settings.followsSplit.value
         .then((value) => setState(() => isSplit = value));
   }
 
@@ -20,13 +20,13 @@ class _FollowsPageState extends State<FollowsPage> {
   void initState() {
     super.initState();
     update();
-    db.followsSplit.addListener(update);
+    settings.followsSplit.addListener(update);
   }
 
   @override
   void dispose() {
     super.dispose();
-    db.followsSplit.removeListener(update);
+    settings.followsSplit.removeListener(update);
   }
 
   @override

@@ -201,7 +201,8 @@ class DTextField extends StatelessWidget {
         }
 
         if (insite) {
-          onTap = () async => launch('https://${await db.host.value}$search');
+          onTap =
+              () async => launch('https://${await settings.host.value}$search');
         }
 
         Map<RegExp, Function Function(RegExpMatch match)> links = {

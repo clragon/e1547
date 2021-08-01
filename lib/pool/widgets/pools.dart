@@ -2,8 +2,9 @@ import 'package:e1547/interface.dart';
 import 'package:e1547/pool.dart';
 import 'package:e1547/post.dart';
 import 'package:flutter/material.dart';
+import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
-import 'preview.dart';
+import 'tile.dart';
 
 class PoolsPage extends StatefulWidget {
   @override
@@ -12,102 +13,42 @@ class PoolsPage extends StatefulWidget {
   }
 }
 
-class _PoolsPageState extends State<PoolsPage> with UpdateMixin {
-  PoolProvider provider = PoolProvider();
-  TextEditingController textController = TextEditingController();
-  ValueNotifier<bool> isSearching = ValueNotifier(false);
-  PersistentBottomSheetController? sheetController;
-
-  @override
-  void initState() {
-    super.initState();
-    provider.addListener(update);
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    provider.removeListener(update);
-  }
-
-  Widget itemBuilder(BuildContext context, int item) {
-    Widget preview(Pool pool, PoolProvider provider) {
-      return PoolPreview(pool, onPressed: () {
-        Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => PoolPage(pool: pool),
-        ));
-      });
-    }
-
-    if (item == provider.pools.length - 1) {
-      provider.loadNextPage();
-    }
-
-    return preview(provider.pools[item], provider);
-  }
+class _PoolsPageState extends State<PoolsPage> {
+  PoolController controller = PoolController();
 
   @override
   Widget build(BuildContext context) {
-    Widget floatingActionButtonWidget() {
-      return Builder(builder: (context) {
-        return ValueListenableBuilder(
-          valueListenable: isSearching,
-          builder: (context, bool value, child) {
-            void submit(String result) {
-              provider.search.value = result;
-              sheetController?.close();
-            }
-
-            return FloatingActionButton(
-              child: value ? Icon(Icons.check) : Icon(Icons.search),
-              onPressed: () async {
-                setFocusToEnd(textController);
-                if (value) {
-                  submit(textController.text);
-                } else {
-                  textController.text = provider.search.value;
-                  sheetController = Scaffold.of(context).showBottomSheet(
-                    (context) => Padding(
-                      padding:
-                          EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10),
-                      child: TextField(
-                        controller: textController,
-                        autofocus: true,
-                        maxLines: 1,
-                        decoration: InputDecoration(
-                          labelText: 'Title',
-                        ),
-                        onSubmitted: submit,
-                      ),
-                    ),
-                  );
-                  isSearching.value = true;
-                  sheetController?.closed.then((a) {
-                    isSearching.value = false;
-                  });
-                }
-              },
-            );
-          },
-        );
-      });
-    }
-
-    return RefreshableProviderPage(
-      provider: provider,
-      appBar: AppBar(
-        title: Text('Pools'),
+    return RefreshableControllerPage(
+      appBar: AppBar(title: Text('Pools')),
+      floatingActionButton: SheetFloatingActionButton(
+        actionIcon: Icons.search,
+        builder: (context, actionController) => SheetTextField(
+          labelText: 'Pool title',
+          actionController: actionController,
+          textController: TextEditingController(text: controller.search.value),
+          submit: (value) => controller.search.value = value,
+        ),
       ),
-      builder: (context) => ListView.builder(
-        itemCount: provider.pools.length,
-        itemBuilder: itemBuilder,
-        physics: BouncingScrollPhysics(),
-      ),
-      onLoading: Text('Loading pools'),
-      onEmpty: Text('No pools'),
-      onError: Text('Failed to load pools'),
       drawer: NavigationDrawer(),
-      floatingActionButton: floatingActionButtonWidget(),
+      controller: controller,
+      builder: (context) {
+        return PagedListView(
+          pagingController: controller,
+          builderDelegate: defaultPagedChildBuilderDelegate(
+            itemBuilder: (context, Pool item, index) => PoolTile(
+              pool: item,
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => PoolPage(pool: item),
+                ),
+              ),
+            ),
+            onLoading: Text('Loading pools'),
+            onEmpty: Text('No pools'),
+            onError: Text('Failed to load pools'),
+          ),
+        );
+      },
     );
   }
 }

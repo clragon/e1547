@@ -17,27 +17,33 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
-  late PostProvider provider;
+  late PostController controller;
 
   @override
   void initState() {
     super.initState();
-    provider = PostProvider(search: widget.tags);
+    controller = PostController(search: widget.tags);
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return PostsPage(
-      appBarBuilder: (context) => SearchPageAppBar(provider: provider),
-      provider: provider,
+      appBarBuilder: (context) => SearchPageAppBar(controller: controller),
+      controller: controller,
     );
   }
 }
 
 class SearchPageAppBar extends StatefulWidget with PreferredSizeWidget {
-  final PostProvider? provider;
+  final PostController controller;
 
-  const SearchPageAppBar({required this.provider});
+  const SearchPageAppBar({required this.controller});
 
   @override
   _SearchPageAppBarState createState() => _SearchPageAppBarState();
@@ -52,26 +58,26 @@ class _SearchPageAppBarState extends State<SearchPageAppBar> {
   Pool? pool;
 
   Future<void> updateFollows() async {
-    await db.follows.value.then((value) => follows = value);
+    await settings.follows.value.then((value) => follows = value);
     updateTitle();
   }
 
   String getTitle() {
-    if (follows != null && follows!.contains(widget.provider!.search.value)) {
+    if (follows != null && follows!.contains(widget.controller.search.value)) {
       Follow follow = follows!.singleWhere(
-          (follow) => follow.tags == widget.provider!.search.value);
-      if (widget.provider!.posts.value.isNotEmpty) {
+          (follow) => follow.tags == widget.controller.search.value);
+      if (widget.controller.itemList!.isNotEmpty) {
         follow
-            .updateLatest(widget.provider!.posts.value.first, foreground: true)
+            .updateLatest(widget.controller.itemList!.first, foreground: true)
             .then((updated) {
           if (updated) {
-            db.follows.value = Future.value(follows);
+            settings.follows.value = Future.value(follows);
           }
         });
       }
       if (pool != null) {
         if (follow.updatePoolName(pool)) {
-          db.follows.value = Future.value(follows);
+          settings.follows.value = Future.value(follows);
         }
       }
       return follow.title;
@@ -79,15 +85,15 @@ class _SearchPageAppBarState extends State<SearchPageAppBar> {
     if (pool != null) {
       return tagToTitle(pool!.name);
     }
-    if (Tagset.parse(widget.provider!.search.value).length == 1) {
-      return tagToTitle(widget.provider!.search.value);
+    if (Tagset.parse(widget.controller.search.value).length == 1) {
+      return tagToTitle(widget.controller.search.value);
     }
     return 'Search';
   }
 
   Future<void> updateTitle() async {
-    if (widget.provider!.search.value.isNotEmpty &&
-        !widget.provider!.search.value.contains(' ')) {
+    if (widget.controller.search.value.isNotEmpty &&
+        !widget.controller.search.value.contains(' ')) {
       bool matched = false;
       Map<RegExp, Function(RegExpMatch match)> specials = {
         RegExp(r'^pool:(?<id>\d+)$'): (match) async {
@@ -99,7 +105,7 @@ class _SearchPageAppBarState extends State<SearchPageAppBar> {
 
       for (MapEntry<RegExp, Function(RegExpMatch)> entry in specials.entries) {
         RegExpMatch? match =
-            entry.key.firstMatch(widget.provider!.search.value);
+            entry.key.firstMatch(widget.controller.search.value);
         if (match != null) {
           await entry.value(match);
           matched = true;
@@ -121,18 +127,16 @@ class _SearchPageAppBarState extends State<SearchPageAppBar> {
   void initState() {
     super.initState();
     updateTitle();
-    widget.provider!.search.addListener(updateTitle);
-    widget.provider!.posts.addListener(updateTitle);
-    db.follows.addListener(updateFollows);
+    widget.controller.addListener(updateTitle);
+    settings.follows.addListener(updateFollows);
     updateFollows();
   }
 
   @override
   void dispose() {
+    widget.controller.removeListener(updateTitle);
+    settings.follows.removeListener(updateFollows);
     super.dispose();
-    widget.provider!.search.removeListener(updateTitle);
-    widget.provider!.posts.removeListener(updateTitle);
-    db.follows.removeListener(updateFollows);
   }
 
   @override
@@ -149,7 +153,8 @@ class _SearchPageAppBarState extends State<SearchPageAppBar> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             CrossFade(
-              showChild: Tagset.parse(widget.provider!.search.value).length > 0,
+              showChild:
+                  Tagset.parse(widget.controller.search.value).length > 0,
               child: IconButton(
                 icon: Icon(Icons.info_outline),
                 onPressed: () {
@@ -158,8 +163,8 @@ class _SearchPageAppBarState extends State<SearchPageAppBar> {
                   }
                   return wikiSheet(
                       context: context,
-                      tag: widget.provider!.search.value,
-                      provider: widget.provider);
+                      tag: widget.controller.search.value,
+                      controller: widget.controller);
                 },
               ),
             ),

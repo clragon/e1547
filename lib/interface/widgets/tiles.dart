@@ -13,7 +13,7 @@ mixin TileSizeMixin<T extends StatefulWidget> on State<T> {
   }
 
   Future<void> updateTileSize() async {
-    await db.tileSize.value.then((value) {
+    await settings.tileSize.value.then((value) {
       tileSize = value;
       update();
     });
@@ -27,21 +27,21 @@ mixin TileSizeMixin<T extends StatefulWidget> on State<T> {
   @override
   void initState() {
     super.initState();
-    db.tileSize.addListener(updateTileSize);
+    settings.tileSize.addListener(updateTileSize);
     updateTileSize();
   }
 
   @override
   void reassemble() {
     super.reassemble();
-    db.tileSize.removeListener(updateTileSize);
-    db.tileSize.addListener(updateTileSize);
+    settings.tileSize.removeListener(updateTileSize);
+    settings.tileSize.addListener(updateTileSize);
   }
 
   @override
   void dispose() {
     super.dispose();
-    db.tileSize.removeListener(updateTileSize);
+    settings.tileSize.removeListener(updateTileSize);
   }
 }
 
@@ -49,7 +49,7 @@ mixin TileStaggerMixin<T extends StatefulWidget> on State<T> {
   GridState? stagger;
 
   void updateStagger() {
-    db.stagger.value.then((value) {
+    settings.stagger.value.then((value) {
       setState(() {
         stagger = value;
       });
@@ -59,20 +59,20 @@ mixin TileStaggerMixin<T extends StatefulWidget> on State<T> {
   @override
   void initState() {
     super.initState();
-    db.stagger.addListener(updateStagger);
+    settings.stagger.addListener(updateStagger);
     updateStagger();
   }
 
   @override
   void reassemble() {
     super.reassemble();
-    db.stagger.removeListener(updateStagger);
-    db.stagger.addListener(updateStagger);
+    settings.stagger.removeListener(updateStagger);
+    settings.stagger.addListener(updateStagger);
   }
 
   @override
   void dispose() {
     super.dispose();
-    db.stagger.removeListener(updateStagger);
+    settings.stagger.removeListener(updateStagger);
   }
 }

@@ -11,46 +11,40 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  PostProvider? provider;
+  PostController? controller;
 
   void update() {
-    if (provider != null) {
-      db.homeTags.value = Future.value(provider!.search.value);
-    }
+    settings.homeTags.value = Future.value(controller!.search.value);
   }
 
   @override
   void initState() {
     super.initState();
-    db.homeTags.value.then(
+    settings.homeTags.value.then(
       (value) {
         setState(() {
-          provider = PostProvider(search: value);
+          controller = PostController(search: value);
         });
-        provider!.search.addListener(update);
+        controller!.search.addListener(update);
       },
     );
   }
 
   @override
   void dispose() {
+    controller?.search.removeListener(update);
+    controller?.dispose();
     super.dispose();
-    // removing this isn't necessary
-    // the provider will be disposed by the child.
-    // provider?.search?.removeListener(update);
   }
 
   @override
   Widget build(BuildContext context) {
     return PageLoader(
+      isBuilt: controller != null,
       builder: (context) => PostsPage(
         appBarBuilder: defaultAppBar('Home'),
-        provider: provider!,
+        controller: controller!,
       ),
-      isBuilt: provider != null,
-      isLoading: false,
-      isEmpty: false,
-      isError: false,
     );
   }
 }

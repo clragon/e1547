@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'counter.dart';
 
 class SearchDrawer extends StatelessWidget {
-  final PostProvider provider;
+  final PostController controller;
 
-  SearchDrawer({required this.provider});
+  SearchDrawer({required this.controller});
 
   @override
   Widget build(BuildContext context) {
@@ -20,9 +20,9 @@ class SearchDrawer extends StatelessWidget {
           padding: EdgeInsets.only(top: 8),
           physics: BouncingScrollPhysics(),
           children: [
-            DrawerCounter(provider: provider),
+            DrawerCounter(controller: controller),
             Builder(
-              builder: (context) => DrawerDenySwitch(provider: provider),
+              builder: (context) => DrawerDenySwitch(controller: controller),
             ),
           ],
         ),

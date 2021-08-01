@@ -4,79 +4,42 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 export 'package:e1547/client.dart' show validateCall;
 
-class RefreshableProviderPage extends StatefulWidget {
-  final WidgetBuilder builder;
-  final DataProvider provider;
+class RefreshableControllerPage<T extends RefreshableDataMixin>
+    extends StatelessWidget {
+  final WidgetBuilder? builder;
   final Widget? refreshHeader;
-  final Widget? onEmpty;
-  final Widget? onLoading;
-  final Widget? onError;
   final Widget? drawer;
   final Widget? floatingActionButton;
-  final PreferredSizeWidget appBar;
+  final PreferredSizeWidget? appBar;
+  final T controller;
   final ScrollController? scrollController;
-  final RefreshController? refreshController;
 
-  const RefreshableProviderPage({
+  const RefreshableControllerPage({
     required this.builder,
     required this.appBar,
-    required this.provider,
+    required this.controller,
     this.scrollController,
-    this.refreshController,
     this.refreshHeader,
-    this.onLoading,
-    this.onEmpty,
-    this.onError,
     this.drawer,
     this.floatingActionButton,
   });
 
   @override
-  _RefreshableProviderPageState createState() =>
-      _RefreshableProviderPageState();
-}
-
-class _RefreshableProviderPageState extends State<RefreshableProviderPage>
-    with UpdateMixin {
-  @override
-  void initState() {
-    super.initState();
-    update();
-    widget.provider.addListener(update);
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    widget.provider.removeListener(update);
-  }
-
-  @override
   Widget build(BuildContext context) {
     return RefreshablePage(
-      refresh: () async {
-        await widget.provider.loadNextPage(reset: true);
-        return !widget.provider.isError;
-      },
-      builder: widget.builder,
-      appBar: widget.appBar,
-      isLoading: widget.provider.isLoading,
-      isEmpty: widget.provider.items.isEmpty,
-      isError: widget.provider.isError,
-      refreshController: widget.refreshController,
-      scrollController: widget.scrollController,
-      refreshHeader: widget.refreshHeader,
-      onLoading: widget.onLoading,
-      onEmpty: widget.onEmpty,
-      onError: widget.onError,
-      floatingActionButton: widget.floatingActionButton,
-      drawer: widget.drawer,
-      initial: false,
+      builder: builder,
+      refreshHeader: refreshHeader,
+      drawer: drawer,
+      appBar: appBar,
+      floatingActionButton: floatingActionButton,
+      scrollController: scrollController,
+      refreshController: controller.refreshController,
+      refresh: () => controller.refresh(background: true),
     );
   }
 }
 
-class RefreshablePage extends StatefulWidget {
+class RefreshablePageLoader extends StatefulWidget {
   final WidgetBuilder? builder;
   final bool isLoading;
   final bool isEmpty;
@@ -93,11 +56,10 @@ class RefreshablePage extends StatefulWidget {
   final RefreshController? refreshController;
   final ScrollController? scrollController;
   final Future<bool> Function() refresh;
-  final Scaffold Function(
-          BuildContext context, Widget child, ScrollController? scrollController)?
-      pageBuilder;
+  final Scaffold Function(BuildContext context, Widget child,
+      ScrollController? scrollController)? pageBuilder;
 
-  const RefreshablePage({
+  const RefreshablePageLoader({
     required this.refresh,
     required this.builder,
     required this.appBar,
@@ -116,7 +78,7 @@ class RefreshablePage extends StatefulWidget {
     this.floatingActionButton,
   }) : this.pageBuilder = null;
 
-  const RefreshablePage.pageBuilder({
+  const RefreshablePageLoader.pageBuilder({
     required this.pageBuilder,
     required this.refresh,
     required this.isLoading,
@@ -136,10 +98,10 @@ class RefreshablePage extends StatefulWidget {
         this.floatingActionButton = null;
 
   @override
-  _RefreshablePageState createState() => _RefreshablePageState();
+  _RefreshablePageLoaderState createState() => _RefreshablePageLoaderState();
 }
 
-class _RefreshablePageState extends State<RefreshablePage> {
+class _RefreshablePageLoaderState extends State<RefreshablePageLoader> {
   late RefreshController refreshController;
   ScrollController? scrollController;
 
@@ -164,21 +126,12 @@ class _RefreshablePageState extends State<RefreshablePage> {
         isEmpty: widget.isEmpty,
         isError: widget.isError,
         isBuilt: widget.isBuilt,
-        pageBuilder: (child) => SmartRefresher(
-          primary: false,
+        pageBuilder: (child) => RefreshablePage(
+          builder: (context) => child,
           scrollController: scrollController,
-          controller: refreshController,
-          header: widget.refreshHeader ?? RefreshablePageDefaultHeader(),
-          onRefresh: () async {
-            bool result = await widget.refresh();
-            if (result) {
-              refreshController.refreshCompleted();
-            } else {
-              refreshController.refreshFailed();
-            }
-          },
-          physics: BouncingScrollPhysics(),
-          child: child,
+          refreshHeader: widget.refreshHeader,
+          refresh: widget.refresh,
+          appBar: widget.appBar,
         ),
         builder: widget.builder,
       );
@@ -190,6 +143,83 @@ class _RefreshablePageState extends State<RefreshablePage> {
         body(),
         scrollController,
       );
+    } else {
+      return LayoutBuilder(builder: (context, constraints) {
+        return Scaffold(
+          appBar: ScrollToTop(
+            child: widget.appBar!,
+            controller: scrollController,
+          ),
+          body: body(),
+          drawer: widget.drawer,
+          drawerEdgeDragWidth: defaultDrawerEdge(constraints.maxWidth),
+          floatingActionButton: widget.floatingActionButton,
+        );
+      });
+    }
+  }
+}
+
+class RefreshablePage extends StatefulWidget {
+  final WidgetBuilder? builder;
+  final Widget? refreshHeader;
+  final Widget? drawer;
+  final Widget? floatingActionButton;
+  final PreferredSizeWidget? appBar;
+  final RefreshController? refreshController;
+  final ScrollController? scrollController;
+  final Future<void> Function() refresh;
+  final Scaffold Function(BuildContext context, Widget child,
+      ScrollController? scrollController)? pageBuilder;
+
+  const RefreshablePage({
+    required this.refresh,
+    required this.builder,
+    required this.appBar,
+    this.refreshController,
+    this.scrollController,
+    this.refreshHeader,
+    this.drawer,
+    this.floatingActionButton,
+  }) : this.pageBuilder = null;
+
+  const RefreshablePage.pageBuilder({
+    required this.pageBuilder,
+    required this.refresh,
+    this.builder,
+    this.refreshController,
+    this.scrollController,
+    this.refreshHeader,
+  })  : this.appBar = null,
+        this.drawer = null,
+        this.floatingActionButton = null;
+
+  @override
+  _RefreshablePageState createState() => _RefreshablePageState();
+}
+
+class _RefreshablePageState extends State<RefreshablePage> {
+  late RefreshController refreshController =
+      widget.refreshController ?? RefreshController();
+  late ScrollController scrollController =
+      widget.scrollController ?? ScrollController();
+
+  @override
+  Widget build(BuildContext context) {
+    Widget body() {
+      return SmartRefresher(
+        primary: false,
+        scrollController: scrollController,
+        controller: refreshController,
+        onRefresh: widget.refresh,
+        physics: BouncingScrollPhysics(),
+        child: widget.builder?.call(context),
+        header: widget.refreshHeader ?? RefreshablePageDefaultHeader(),
+      );
+    }
+
+    if (widget.pageBuilder != null) {
+      return widget.pageBuilder!(context, body(), scrollController);
     } else {
       return LayoutBuilder(builder: (context, constraints) {
         return Scaffold(
@@ -227,9 +257,9 @@ class PageLoader extends StatelessWidget {
 
   PageLoader({
     required this.builder,
-    required this.isLoading,
-    required this.isEmpty,
-    required this.isError,
+    this.isError = false,
+    this.isLoading = false,
+    this.isEmpty = false,
     this.isBuilt,
     this.pageBuilder,
     this.onLoading,
@@ -259,60 +289,40 @@ class PageLoader extends StatelessWidget {
       }
     }
 
-    return Stack(children: [
-      Visibility(
-        visible: state == PageLoaderState.loading,
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SizedCircularProgressIndicator(size: 28),
-              Padding(
-                padding: EdgeInsets.all(20),
-                child: onLoading ?? Text('Loading...'),
-              ),
-            ],
+    return Scaffold(
+      body: Stack(children: [
+        Visibility(
+          visible: state == PageLoaderState.loading,
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedCircularProgressIndicator(size: 28),
+                Padding(
+                  padding: EdgeInsets.all(20),
+                  child: onLoading ?? Text('Loading...'),
+                ),
+              ],
+            ),
           ),
         ),
-      ),
-      pageBuilder?.call(child()) ?? child(),
-      Visibility(
-        visible: state == PageLoaderState.error,
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.warning_amber_outlined,
-                size: 32,
-              ),
-              Padding(
-                padding: EdgeInsets.all(20),
-                child: onError ?? Text('Failed to load items'),
-              ),
-            ],
+        pageBuilder?.call(child()) ?? child(),
+        Visibility(
+          visible: state == PageLoaderState.error,
+          child: IconMessage(
+            icon: Icons.warning_amber_outlined,
+            message: onError ?? Text('Failed to load'),
           ),
         ),
-      ),
-      Visibility(
-        visible: state == PageLoaderState.empty,
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.clear,
-                size: 32,
-              ),
-              Padding(
-                padding: EdgeInsets.all(20),
-                child: onEmpty ?? Text('No items'),
-              ),
-            ],
+        Visibility(
+          visible: state == PageLoaderState.empty,
+          child: IconMessage(
+            icon: Icons.clear,
+            message: onEmpty ?? Text('Nothing to see here'),
           ),
         ),
-      ),
-    ]);
+      ]),
+    );
   }
 }
 
@@ -326,6 +336,37 @@ class RefreshablePageDefaultHeader extends StatelessWidget {
     return ClassicHeader(
       refreshingText: refreshingText,
       completeText: completeText,
+    );
+  }
+}
+
+class IconMessage extends StatelessWidget {
+  final Axis direction;
+  final Widget message;
+  final IconData icon;
+
+  const IconMessage(
+      {this.direction = Axis.vertical,
+      required this.message,
+      required this.icon});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Flex(
+        direction: direction,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            icon,
+            size: 32,
+          ),
+          Padding(
+            padding: EdgeInsets.all(20),
+            child: message,
+          ),
+        ],
+      ),
     );
   }
 }

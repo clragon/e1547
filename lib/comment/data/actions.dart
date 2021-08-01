@@ -5,35 +5,62 @@ import 'package:flutter/material.dart';
 
 import 'comment.dart';
 
-Future<bool> writeComment(BuildContext context, Post post,
-    {String? text, Comment? comment}) async {
+Future<bool> replyComment(
+    {required BuildContext context,
+    required Post post,
+    required Comment comment}) {
+  String body = comment.body;
+  body = body
+      .replaceFirstMapped(
+          RegExp(r'\[quote\]".*?":/user/show/[0-9]* said:.*\[\/quote\]',
+              dotAll: true),
+          (match) => '')
+      .trim();
+  body =
+      '[quote]"${comment.creatorName}":/users/${comment.creatorId} said:\n$body[/quote]\n';
+  return writeComment(context: context, post: post, text: body);
+}
+
+Future<bool> editComment(
+        {required BuildContext context,
+        required Post post,
+        required Comment comment}) =>
+    writeComment(context: context, post: post, comment: comment);
+
+Future<bool> writeComment(
+    {required BuildContext context,
+    required Post post,
+    String? text,
+    Comment? comment}) async {
   bool sent = false;
-  await Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-    return TextEditor(
-      title: '#${post.id} comment',
-      content: text ?? (comment != null ? comment.body : null),
-      validator: (context, text) async {
-        if (text.isNotEmpty) {
-          try {
-            if (comment != null) {
-              await client.postComment(text, post, comment: comment);
-            } else {
-              await client.postComment(text, post);
+  await Navigator.of(context).push(
+    MaterialPageRoute(
+      builder: (context) => TextEditor(
+        title: '#${post.id} comment',
+        content: text ?? (comment != null ? comment.body : null),
+        validator: (context, text) async {
+          if (text.isNotEmpty) {
+            try {
+              if (comment != null) {
+                await client.postComment(text, post, comment: comment);
+              } else {
+                await client.postComment(text, post);
+              }
+              sent = true;
+              return true;
+            } on DioError {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                duration: Duration(seconds: 1),
+                content: Text('Failed to send comment!'),
+                behavior: SnackBarBehavior.floating,
+              ));
+              return false;
             }
-            sent = true;
-            return true;
-          } on DioError {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              duration: Duration(seconds: 1),
-              content: Text('Failed to send comment!'),
-              behavior: SnackBarBehavior.floating,
-            ));
-            return false;
           }
-        }
-        return false;
-      },
-    );
-  }));
+          return false;
+        },
+      ),
+    ),
+  );
   return sent;
 }

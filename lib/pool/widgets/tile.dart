@@ -2,12 +2,12 @@ import 'package:e1547/dtext.dart';
 import 'package:e1547/pool.dart';
 import 'package:flutter/material.dart';
 
-class PoolPreview extends StatelessWidget {
+class PoolTile extends StatelessWidget {
   final Pool pool;
   final VoidCallback? onPressed;
 
-  PoolPreview(
-    this.pool, {
+  PoolTile({
+    required this.pool,
     this.onPressed,
   });
 
@@ -31,7 +31,7 @@ class PoolPreview extends StatelessWidget {
           Container(
             margin: EdgeInsets.only(left: 22, top: 8, bottom: 8, right: 12),
             child: Text(
-              pool.postIDs.length.toString(),
+              pool.postIds.length.toString(),
               style: TextStyle(
                 fontSize: 16,
               ),
@@ -51,7 +51,7 @@ class PoolPreview extends StatelessWidget {
               height: 42,
               child: Center(child: title()),
             ),
-            if (pool.description!.isNotEmpty)
+            if (pool.description.isNotEmpty)
               Padding(
                 padding: EdgeInsets.only(
                   left: 16,
@@ -60,7 +60,7 @@ class PoolPreview extends StatelessWidget {
                   bottom: 8,
                 ),
                 child: IgnorePointer(
-                    child: DTextField(source: pool.description!, dark: true)),
+                    child: DTextField(source: pool.description, dark: true)),
               ),
           ],
         ),

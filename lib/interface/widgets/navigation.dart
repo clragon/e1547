@@ -169,14 +169,14 @@ class _ProfileHeaderState extends State<ProfileHeader> {
   @override
   void initState() {
     super.initState();
-    db.credentials.addListener(initAvatar);
+    settings.credentials.addListener(initAvatar);
     initAvatar();
   }
 
   @override
   void dispose() {
     super.dispose();
-    db.credentials.removeListener(initAvatar);
+    settings.credentials.removeListener(initAvatar);
   }
 
   @override
@@ -249,7 +249,7 @@ final ValueNotifier<String?> userName = ValueNotifier(null);
 final ValueNotifier<String?> userAvatar = ValueNotifier(null);
 
 void initAvatar([BuildContext? context]) {
-  db.credentials.value.then(
+  settings.credentials.value.then(
     (credentials) {
       userName.value = credentials?.username;
       if (userName.value != null) {

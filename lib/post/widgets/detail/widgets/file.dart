@@ -8,10 +8,10 @@ import 'rating.dart';
 
 class FileDisplay extends StatelessWidget {
   final Post post;
-  final PostProvider? provider;
+  final PostController? controller;
   final DateFormat dateFormat = DateFormat('dd.MM.yy HH:mm');
 
-  FileDisplay({required this.post, this.provider});
+  FileDisplay({required this.post, this.controller});
 
   @override
   Widget build(BuildContext context) {
@@ -34,8 +34,8 @@ class FileDisplay extends StatelessWidget {
             children: [
               TagGesture(
                 child: Text(ratingTexts[post.rating]!),
-                tag: 'rating:${post.rating}',
-                provider: provider,
+                tag: 'rating:${ratingValues.reverse![post.rating]}',
+                controller: controller,
               ),
               Text('${post.file.width} x ${post.file.height}'),
             ],
@@ -61,7 +61,7 @@ class FileDisplay extends StatelessWidget {
               TagGesture(
                 child: Text(post.file.ext),
                 tag: 'type:${post.file.ext}',
-                provider: provider,
+                controller: controller,
               ),
             ],
           ),

@@ -42,7 +42,7 @@ class LoginPage extends StatelessWidget {
                 1,
                 TextButton(
                   onPressed: () async {
-                    launch('https://${await db.host.value}/session/new');
+                    launch('https://${await settings.host.value}/session/new');
                   },
                   child: Text(
                     'Login via web browser',

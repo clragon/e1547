@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 
 class TagDisplay extends StatelessWidget {
   final Post post;
-  final PostProvider? provider;
+  final PostController? provider;
   final Future<bool> Function(String value, String category) submit;
   final SheetActionController? controller;
 
@@ -51,7 +51,7 @@ class TagDisplay extends StatelessWidget {
                                 (tag) => TagCard(
                                   tag: tag,
                                   category: category,
-                                  provider: provider,
+                                  controller: provider,
                                   onRemove: post.isEditing
                                       ? () {
                                           post.tagMap[category]!.remove(tag);

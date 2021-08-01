@@ -13,15 +13,15 @@ class FollowsCombinedPage extends StatefulWidget {
 class _FollowsCombinedPageState extends State<FollowsCombinedPage> {
   List<String?>? tags;
 
-  PostProvider provider = PostProvider(
+  PostController provider = PostController(
     provider: (tags, page) => client.follows(page),
     canSearch: false,
   );
 
   Future<void> updateTags() async {
-    List<String?> update = (await db.follows.value).tags;
+    List<String?> update = (await settings.follows.value).tags;
     if (!listEquals(tags, update)) {
-      provider.resetPages();
+      provider.refresh();
       tags = update;
     }
   }
@@ -29,13 +29,13 @@ class _FollowsCombinedPageState extends State<FollowsCombinedPage> {
   @override
   void initState() {
     super.initState();
-    db.follows.addListener(updateTags);
+    settings.follows.addListener(updateTags);
   }
 
   @override
   void dispose() {
     super.dispose();
-    db.follows.removeListener(updateTags);
+    settings.follows.removeListener(updateTags);
   }
 
   @override
@@ -48,7 +48,7 @@ class _FollowsCombinedPageState extends State<FollowsCombinedPage> {
             IconButton(
               icon: Icon(Icons.view_comfy),
               tooltip: 'Split',
-              onPressed: () => db.followsSplit.value = Future.value(true),
+              onPressed: () => settings.followsSplit.value = Future.value(true),
             ),
             IconButton(
               icon: Icon(Icons.turned_in),
@@ -58,7 +58,7 @@ class _FollowsCombinedPageState extends State<FollowsCombinedPage> {
           ],
         );
       },
-      provider: provider,
+      controller: provider,
     );
   }
 }

@@ -9,10 +9,10 @@ import 'widgets.dart';
 
 class PostDetail extends StatefulWidget {
   final Post post;
-  final PostProvider? provider;
+  final PostController? controller;
   final Function(int index)? changePage;
 
-  PostDetail({required this.post, this.provider, this.changePage});
+  PostDetail({required this.post, this.controller, this.changePage});
 
   @override
   State<StatefulWidget> createState() {
@@ -30,7 +30,7 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
   Future<void> onPageChange() async {
     if (mounted &&
         route.isActive &&
-        !widget.provider!.posts.value.contains(widget.post)) {
+        !(widget.controller!.itemList?.contains(widget.post) ?? false)) {
       navigator.removeRoute(route);
     }
   }
@@ -44,7 +44,7 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
   @override
   void initState() {
     super.initState();
-    widget.provider?.posts.addListener(onPageChange);
+    widget.controller?.addListener(onPageChange);
     widget.post.addListener(closeSheet);
     if (!(widget.post.controller?.value.isInitialized ?? true)) {
       widget.post.loadVideo();
@@ -64,17 +64,17 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
 
   @override
   void dispose() {
-    super.dispose();
     routeObserver.unsubscribe(this);
     if (widget.post.isEditing) {
       widget.post.resetPost();
     }
-    widget.provider?.pages.removeListener(onPageChange);
+    widget.controller?.removeListener(onPageChange);
     widget.post.removeListener(closeSheet);
     widget.post.controller?.pause();
-    if (widget.provider == null) {
+    if (widget.controller == null) {
       widget.post.dispose();
     }
+    super.dispose();
   }
 
   @override
@@ -118,9 +118,9 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
   Future<void> submitEdit(BuildContext context) async {
     sheetController.show(
       context,
-      EditReasonEditor(
+      SheetTextField(
         submit: (value) => editPost(context, value),
-        controller: sheetController,
+        actionController: sheetController,
       ),
     );
   }
@@ -157,13 +157,13 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
       if (widget.post.isEditing) {
         posts = [widget.post];
       } else {
-        posts = widget.provider?.posts.value ?? [widget.post];
+        posts = widget.controller?.itemList ?? [widget.post];
       }
 
-      if (widget.provider != null) {
-        return ValueListenableBuilder(
-          valueListenable: widget.provider!.pages,
-          builder: (context, List<List<Post>> value, child) {
+      if (widget.controller != null) {
+        return AnimatedBuilder(
+          animation: widget.controller!,
+          builder: (context, child) {
             return gallery(posts);
           },
         );
@@ -225,7 +225,7 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
                       children: [
                         ArtistDisplay(
                           post: widget.post,
-                          provider: widget.provider,
+                          controller: widget.controller,
                         ),
                         DescriptionDisplay(post: widget.post),
                         editorDependant(
@@ -246,7 +246,7 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
                         Builder(
                           builder: (context) => TagDisplay(
                             post: widget.post,
-                            provider: widget.provider,
+                            provider: widget.controller,
                             submit: (value, category) => onPostTagsEdit(
                               context,
                               widget.post,
@@ -259,7 +259,7 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
                         editorDependant(
                             child: FileDisplay(
                               post: widget.post,
-                              provider: widget.provider,
+                              controller: widget.controller,
                             ),
                             shown: false),
                         editorDependant(

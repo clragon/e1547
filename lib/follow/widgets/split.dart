@@ -74,7 +74,7 @@ class _FollowsSplitPageState extends State<FollowsSplitPage>
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
-      return RefreshablePage(
+      return RefreshablePageLoader(
         onEmpty: Text('No follows'),
         onLoading: Text('Loading follows'),
         onError: Text('Failed to load follows'),
@@ -101,7 +101,8 @@ class _FollowsSplitPageState extends State<FollowsSplitPage>
             IconButton(
               icon: Icon(Icons.view_compact),
               tooltip: 'Combine',
-              onPressed: () => db.followsSplit.value = Future.value(false),
+              onPressed: () =>
+                  settings.followsSplit.value = Future.value(false),
             ),
             IconButton(
               icon: Icon(Icons.turned_in),

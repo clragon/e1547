@@ -9,7 +9,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mutex/mutex.dart';
 
-final FollowUpdater followUpdater = FollowUpdater(db.follows);
+final FollowUpdater followUpdater = FollowUpdater(settings.follows);
 
 class FollowUpdater extends ChangeNotifier {
   Future? finish;
@@ -41,7 +41,7 @@ class FollowUpdater extends ChangeNotifier {
 
   FollowUpdater(this.source) {
     source.addListener(updateSource);
-    db.host.addListener(updateHost);
+    settings.host.addListener(updateHost);
   }
 
   Future<void> update({bool force = false}) async {
@@ -102,7 +102,7 @@ class FollowUpdater extends ChangeNotifier {
   void dispose() {
     super.dispose();
     source.removeListener(updateSource);
-    db.host.removeListener(updateHost);
+    settings.host.removeListener(updateHost);
   }
 }
 
@@ -176,7 +176,7 @@ extension Refreshing on Follow {
       List<Post> posts =
           await client.posts(tags, 1, limit: checkAmount, faithful: true);
 
-      List<String> denylist = await db.denylist.value;
+      List<String> denylist = await settings.denylist.value;
 
       await Future.forEach(
         posts,

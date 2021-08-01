@@ -1,3 +1,4 @@
+import 'package:e1547/interface.dart';
 import 'package:e1547/post.dart';
 import 'package:e1547/tag.dart';
 import 'package:flutter/material.dart';
@@ -5,7 +6,7 @@ import 'package:flutter/material.dart';
 class TagAddCard extends StatefulWidget {
   final Post post;
   final String? category;
-  final PostProvider? provider;
+  final PostController? provider;
   final Future<bool> Function(String value) submit;
   final SheetActionController? controller;
 

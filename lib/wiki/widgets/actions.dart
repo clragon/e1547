@@ -23,9 +23,9 @@ class _TagListActionsState extends State<TagListActions> {
   List<Follow>? follows;
 
   Future<void> updateLists() async {
-    denylist = await db.denylist.value;
+    denylist = await settings.denylist.value;
     denied = denylist!.contains(widget.tag);
-    follows = await db.follows.value;
+    follows = await settings.follows.value;
     following = follows!.contains(widget.tag);
     if (mounted) {
       setState(() {});
@@ -35,8 +35,8 @@ class _TagListActionsState extends State<TagListActions> {
   @override
   void initState() {
     super.initState();
-    db.denylist.addListener(updateLists);
-    db.follows.addListener(updateLists);
+    settings.denylist.addListener(updateLists);
+    settings.follows.addListener(updateLists);
   }
 
   @override
@@ -48,8 +48,8 @@ class _TagListActionsState extends State<TagListActions> {
   @override
   void dispose() {
     super.dispose();
-    db.denylist.removeListener(updateLists);
-    db.follows.removeListener(updateLists);
+    settings.denylist.removeListener(updateLists);
+    settings.follows.removeListener(updateLists);
   }
 
   @override
@@ -68,10 +68,10 @@ class _TagListActionsState extends State<TagListActions> {
                   follows!.add(Follow.fromString(widget.tag));
                   if (denied) {
                     denylist!.remove(widget.tag);
-                    db.denylist.value = Future.value(denylist);
+                    settings.denylist.value = Future.value(denylist);
                   }
                 }
-                db.follows.value = Future.value(follows);
+                settings.follows.value = Future.value(follows);
               },
               icon: CrossFade(
                 duration: Duration(milliseconds: 200),
@@ -88,13 +88,13 @@ class _TagListActionsState extends State<TagListActions> {
               onPressed: () {
                 if (denied) {
                   denylist!.remove(widget.tag);
-                  db.denylist.value = Future.value(denylist);
+                  settings.denylist.value = Future.value(denylist);
                 } else {
                   denylist!.add(widget.tag);
-                  db.denylist.value = Future.value(denylist);
+                  settings.denylist.value = Future.value(denylist);
                   if (following) {
                     follows!.remove(widget.tag);
-                    db.follows.value = Future.value(follows);
+                    settings.follows.value = Future.value(follows);
                   }
                 }
               },
@@ -128,20 +128,20 @@ class _TagListActionsState extends State<TagListActions> {
 
 class TagSearchActions extends StatelessWidget {
   final String tag;
-  final PostProvider provider;
+  final PostController controller;
 
-  TagSearchActions({required this.tag, required this.provider});
+  TagSearchActions({required this.tag, required this.controller});
 
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder(
-      valueListenable: provider.search,
+      valueListenable: controller.search,
       builder: (context, String value, child) {
-        if (!provider.canSearch || tag.contains(' ')) {
+        if (!controller.canSearch || tag.contains(' ')) {
           return SizedBox.shrink();
         }
 
-        bool isSearched = provider.search.value
+        bool isSearched = controller.search.value
             .split(' ')
             .any((element) => tagToName(element) == tag);
 
@@ -152,9 +152,10 @@ class TagSearchActions extends StatelessWidget {
             onPressed: () {
               Navigator.of(context).maybePop();
 
-              provider.search.value = sortTags((provider.search.value.split(' ')
-                    ..removeWhere((element) => tagToName(element) == tag))
-                  .join(' '));
+              controller.search.value = sortTags(
+                  (controller.search.value.split(' ')
+                        ..removeWhere((element) => tagToName(element) == tag))
+                      .join(' '));
             },
           );
         } else {
@@ -165,8 +166,8 @@ class TagSearchActions extends StatelessWidget {
                 tooltip: 'Add to search',
                 onPressed: () {
                   Navigator.of(context).maybePop();
-                  provider.search.value =
-                      sortTags([provider.search.value, tag].join(' '));
+                  controller.search.value =
+                      sortTags([controller.search.value, tag].join(' '));
                 },
               ),
               IconButton(
@@ -174,8 +175,8 @@ class TagSearchActions extends StatelessWidget {
                 tooltip: 'Subtract from search',
                 onPressed: () {
                   Navigator.of(context).maybePop();
-                  provider.search.value =
-                      sortTags([provider.search.value, '-$tag'].join(' '));
+                  controller.search.value =
+                      sortTags([controller.search.value, '-$tag'].join(' '));
                 },
               ),
             ],
