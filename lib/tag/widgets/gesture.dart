@@ -8,23 +8,23 @@ class TagGesture extends StatelessWidget {
   final bool wiki;
   final String tag;
   final Widget child;
-  final PostProvider? provider;
+  final PostController? controller;
 
   const TagGesture(
       {required this.child,
       required this.tag,
-      this.provider,
+      this.controller,
       this.safe = true,
       this.wiki = false});
 
   @override
   Widget build(BuildContext context) {
     VoidCallback sheet =
-        () => wikiSheet(context: context, tag: tag, provider: provider);
+        () => wikiSheet(context: context, tag: tag, controller: controller);
 
     return InkWell(
       onTap: () async {
-        if (wiki || (safe && (await db.denylist.value).contains(tag))) {
+        if (wiki || (safe && (await settings.denylist.value).contains(tag))) {
           sheet();
         } else {
           Navigator.of(context).push(MaterialPageRoute(

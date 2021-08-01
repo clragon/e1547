@@ -35,8 +35,8 @@ class PoolDialog extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              pool.description!.isNotEmpty
-                  ? DTextField(source: pool.description!)
+              pool.description.isNotEmpty
+                  ? DTextField(source: pool.description)
                   : Text(
                       'no description',
                       style: TextStyle(fontStyle: FontStyle.italic),
@@ -75,11 +75,11 @@ class PoolDialog extends StatelessWidget {
         TextButton(
           child: Text('SHARE'),
           onPressed: () async =>
-              Share.share(pool.url(await db.host.value).toString()),
+              Share.share(pool.url(await settings.host.value).toString()),
         ),
         TextButton(
           child: Text('OK'),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: Navigator.of(context).maybePop,
         ),
       ],
     );

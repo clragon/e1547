@@ -43,15 +43,15 @@ class _SettingsPageState extends State<SettingsPage> {
     super.initState();
 
     Map<ValueNotifier<Future>, Future<void> Function(dynamic value)> links = {
-      db.host: (value) async {
+      settings.host: (value) async {
         currentHost = value;
-        useCustomHost = value == await db.customHost.value;
+        useCustomHost = value == await settings.customHost.value;
       },
-      db.customHost: (value) async => customHost = value,
-      db.credentials: (value) async => username = value?.username,
-      db.theme: (value) async => theme = value,
-      db.tileSize: (value) async => tileSize = value,
-      db.stagger: (value) async => stagger = value,
+      settings.customHost: (value) async => customHost = value,
+      settings.credentials: (value) async => username = value?.username,
+      settings.theme: (value) async => theme = value,
+      settings.tileSize: (value) async => tileSize = value,
+      settings.stagger: (value) async => stagger = value,
     };
 
     links.forEach(linkSetting);
@@ -107,7 +107,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     await setCustomHost(context);
                   }
                   if (customHost != null) {
-                    db.host.value =
+                    settings.host.value =
                         Future.value(value ? customHost : 'e926.net');
                   }
                 },
@@ -145,7 +145,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                     ),
                                   ),
                                   onTap: () {
-                                    db.theme.value = Future.value(theme);
+                                    settings.theme.value = Future.value(theme);
                                     Navigator.of(context).maybePop();
                                   },
                                 ),
@@ -190,7 +190,7 @@ class _SettingsPageState extends State<SettingsPage> {
                               if (value == null || value <= 0) {
                                 return;
                               }
-                              db.tileSize.value = Future.value(value);
+                              settings.tileSize.value = Future.value(value);
                             },
                           ),
                         ),
@@ -198,7 +198,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       GridSettingsTile(
                         state: stagger ?? GridState.square,
                         onChange: (state) => setState(() {
-                          db.stagger.value = Future.value(state);
+                          settings.stagger.value = Future.value(state);
                         }),
                       ),
                     ],
@@ -269,7 +269,7 @@ Future<bool> setCustomHost(BuildContext context) async {
   ValueNotifier<bool> isLoading = ValueNotifier<bool>(false);
   ValueNotifier<String?> error = ValueNotifier<String?>(null);
   TextEditingController controller =
-      TextEditingController(text: await db.customHost.value);
+      TextEditingController(text: await settings.customHost.value);
   Future<bool> submit(String text) async {
     error.value = null;
     isLoading.value = true;
@@ -285,14 +285,14 @@ Future<bool> setCustomHost(BuildContext context) async {
     if (host.isEmpty) {
       success = false;
       error.value = null;
-      db.customHost.value = Future.value(null);
+      settings.customHost.value = Future.value(null);
     } else {
       await Future.delayed(Duration(seconds: 1));
       try {
         await dio.get('https://$host');
         switch (host) {
           case 'e621.net':
-            db.customHost.value = Future.value(host);
+            settings.customHost.value = Future.value(host);
             error.value = null;
             success = true;
             break;

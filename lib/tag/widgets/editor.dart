@@ -1,3 +1,4 @@
+import 'package:e1547/interface.dart';
 import 'package:e1547/post.dart';
 import 'package:e1547/tag.dart';
 import 'package:flutter/material.dart';
@@ -32,7 +33,7 @@ class _TagEditorState extends State<TagEditor> {
   Widget build(BuildContext context) {
     return TagInput(
       labelText: widget.category,
-      onSubmit: (_) => widget.controller!.action!(),
+      submit: (_) => widget.controller!.action!(),
       controller: controller,
       category: categories[widget.category!],
     );

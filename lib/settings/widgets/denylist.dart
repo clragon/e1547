@@ -4,8 +4,6 @@ import 'package:e1547/tag.dart';
 import 'package:e1547/wiki.dart';
 import 'package:flutter/material.dart';
 
-import 'input.dart';
-
 class DenyListPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
@@ -14,13 +12,11 @@ class DenyListPage extends StatefulWidget {
 }
 
 class _DenyListPageState extends State<DenyListPage> {
-  VoidCallback? fabAction;
   List<String> denylist = [];
-  TextEditingController textController = TextEditingController();
-  PersistentBottomSheetController? sheetController;
+  SheetActionController sheetController = SheetActionController();
 
   Future<void> updateDenylist() async {
-    await db.denylist.value.then((value) {
+    await settings.denylist.value.then((value) {
       if (mounted) {
         setState(() => denylist = value);
       }
@@ -30,14 +26,14 @@ class _DenyListPageState extends State<DenyListPage> {
   @override
   void initState() {
     super.initState();
-    db.denylist.addListener(updateDenylist);
+    settings.denylist.addListener(updateDenylist);
     updateDenylist();
   }
 
   @override
   void dispose() {
+    settings.denylist.removeListener(updateDenylist);
     super.dispose();
-    db.denylist.removeListener(updateDenylist);
   }
 
   void addTags(BuildContext context, [int? edit]) {
@@ -50,41 +46,36 @@ class _DenyListPageState extends State<DenyListPage> {
         } else {
           denylist.removeAt(edit);
         }
-        db.denylist.value = Future.value(denylist);
-        sheetController?.close();
+        settings.denylist.value = Future.value(denylist);
       } else {
         if (value.isNotEmpty) {
           denylist.add(value);
-          db.denylist.value = Future.value(denylist);
-          sheetController?.close();
+          settings.denylist.value = Future.value(denylist);
         }
       }
     }
 
-    TextEditingController controller =
-        TextEditingController(text: edit != null ? denylist[edit] : null);
-
-    sheetController = Scaffold.of(context).showBottomSheet((context) {
-      return ListTagEditor(
-        controller: controller,
-        onSubmit: (value) => submit(value, edit),
-        prompt: 'Add to blacklist',
-      );
-    });
-
-    setState(() {
-      fabAction = () => submit(controller.text, edit);
-    });
-
-    sheetController?.closed.then((_) {
-      setState(() {
-        fabAction = null;
-      });
-    });
+    sheetController.show(
+      context,
+      SheetTextWrapper(
+        submit: (value) => submit(value, edit),
+        actionController: sheetController,
+        textController:
+            TextEditingController(text: edit != null ? denylist[edit] : null),
+        builder: (context, controller, submit) => TagInput(
+          controller: controller,
+          labelText: 'Add to blacklist',
+          submit: submit,
+        ),
+      ),
+    );
   }
 
-  Widget denyListTile(
-      {required String tag, VoidCallback? onEdit, VoidCallback? onDelete}) {
+  Widget denyListTile({
+    required String tag,
+    VoidCallback? onEdit,
+    VoidCallback? onDelete,
+  }) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       child: Column(
@@ -137,20 +128,9 @@ class _DenyListPageState extends State<DenyListPage> {
   Widget build(BuildContext context) {
     Widget body() {
       if (denylist.isEmpty) {
-        return Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.check,
-                size: 32,
-              ),
-              Padding(
-                padding: EdgeInsets.all(20),
-                child: Text('Your blacklist is empty'),
-              ),
-            ],
-          ),
+        return IconMessage(
+          icon: Icons.check,
+          message: Text('Your blacklist is empty'),
         );
       }
 
@@ -158,21 +138,14 @@ class _DenyListPageState extends State<DenyListPage> {
         padding:
             EdgeInsets.only(top: 8, bottom: kBottomNavigationBarHeight + 24),
         itemCount: denylist.length,
-        itemBuilder: (BuildContext context, int index) => denyListTile(
+        itemBuilder: (context, index) => denyListTile(
             tag: denylist[index],
             onEdit: () => addTags(context, index),
             onDelete: () {
               denylist.removeAt(index);
-              db.denylist.value = Future.value(denylist);
+              settings.denylist.value = Future.value(denylist);
             }),
         physics: BouncingScrollPhysics(),
-      );
-    }
-
-    Widget floatingActionButton(BuildContext context) {
-      return FloatingActionButton(
-        child: fabAction != null ? Icon(Icons.check) : Icon(Icons.add),
-        onPressed: fabAction != null ? fabAction : () => addTags(context),
       );
     }
 
@@ -207,8 +180,8 @@ class _DenyListPageState extends State<DenyListPage> {
               List<String> tags = controller.text.split('\n');
               tags = tags.map((e) => e.trim()).toList();
               tags.removeWhere((tag) => tag.isEmpty);
-              db.denylist.value = Future.value(tags);
-              Navigator.of(context).pop();
+              settings.denylist.value = Future.value(tags);
+              Navigator.of(context).maybePop();
             },
           ),
         ],
@@ -232,7 +205,13 @@ class _DenyListPageState extends State<DenyListPage> {
       ),
       body: body(),
       floatingActionButton: Builder(
-        builder: floatingActionButton,
+        builder: (context) => AnimatedBuilder(
+          animation: sheetController,
+          builder: (context, child) => FloatingActionButton(
+            child: Icon(sheetController.isShown ? Icons.check : Icons.add),
+            onPressed: sheetController.action ?? () => addTags(context),
+          ),
+        ),
       ),
     );
   }

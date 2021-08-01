@@ -3,11 +3,12 @@ import 'package:e1547/post.dart';
 import 'package:e1547/tag.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
+import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
 class DrawerCounter extends StatefulWidget {
-  final PostProvider provider;
+  final PostController controller;
 
-  const DrawerCounter({required this.provider});
+  const DrawerCounter({required this.controller});
 
   @override
   _DrawerCounterState createState() => _DrawerCounterState();
@@ -24,10 +25,10 @@ class _DrawerCounterState extends State<DrawerCounter> {
       });
     }
 
-    if (widget.provider.isLoading) {
+    if (widget.controller.value.status == PagingStatus.loadingFirstPage) {
       return;
     }
-    List<CountedTag> counts = countTagsByPosts(widget.provider.posts.value);
+    List<CountedTag> counts = countTagsByPosts(widget.controller.itemList!);
     counts.sort((a, b) => b.count.compareTo(a.count));
 
     List<Widget> cards = [];
@@ -36,7 +37,7 @@ class _DrawerCounterState extends State<DrawerCounter> {
         tag: tag.tag,
         count: tag.count,
         category: tag.category,
-        provider: widget.provider,
+        controller: widget.controller,
       ));
     }
 
@@ -50,14 +51,14 @@ class _DrawerCounterState extends State<DrawerCounter> {
   @override
   void initState() {
     super.initState();
-    widget.provider.addListener(updateTags);
+    widget.controller.addListener(updateTags);
     updateTags();
   }
 
   @override
   void dispose() {
     super.dispose();
-    widget.provider.posts.removeListener(updateTags);
+    widget.controller.removeListener(updateTags);
   }
 
   @override

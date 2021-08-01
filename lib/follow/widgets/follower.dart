@@ -14,7 +14,7 @@ mixin FollowerMixin<T extends StatefulWidget> on State<T> {
   }
 
   Future<void> updateFollows() async {
-    db.follows.value.then((value) async {
+    settings.follows.value.then((value) async {
       follows = value;
       update();
     });
@@ -35,24 +35,24 @@ mixin FollowerMixin<T extends StatefulWidget> on State<T> {
   @override
   void initState() {
     super.initState();
-    db.host.addListener(updateSafety);
-    db.follows.addListener(updateFollows);
+    settings.host.addListener(updateSafety);
+    settings.follows.addListener(updateFollows);
     initFollows().then((_) => afterFollowInit());
   }
 
   @override
   void reassemble() {
     super.reassemble();
-    db.host.removeListener(updateSafety);
-    db.follows.removeListener(updateFollows);
-    db.host.addListener(updateSafety);
-    db.follows.addListener(updateFollows);
+    settings.host.removeListener(updateSafety);
+    settings.follows.removeListener(updateFollows);
+    settings.host.addListener(updateSafety);
+    settings.follows.addListener(updateFollows);
   }
 
   @override
   void dispose() {
     super.dispose();
-    db.host.removeListener(updateSafety);
-    db.follows.removeListener(updateFollows);
+    settings.host.removeListener(updateSafety);
+    settings.follows.removeListener(updateFollows);
   }
 }

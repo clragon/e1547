@@ -13,15 +13,15 @@ class FavPage extends StatefulWidget {
 
 class _FavPageState extends State<FavPage> {
   bool error = false;
-  PostProvider? provider;
+  PostController? controller;
 
   @override
   void initState() {
     super.initState();
-    db.credentials.value.then((value) {
+    settings.credentials.value.then((value) {
       if (value != null) {
         setState(() {
-          provider = PostProvider(
+          controller = PostController(
             provider: (tags, page) {
               return client.posts(tags, page);
             },
@@ -34,17 +34,21 @@ class _FavPageState extends State<FavPage> {
   }
 
   @override
+  void dispose() {
+    controller?.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return PageLoader(
       builder: (context) => PostsPage(
         appBarBuilder: defaultAppBar('Favorites'),
-        provider: provider!,
+        controller: controller!,
       ),
-      isBuilt: provider != null,
-      isLoading: false,
-      isEmpty: false,
+      isBuilt: controller != null,
       isError: error,
-      onError: Text('User is not logged in'),
+      onError: Text('You are not logged in'),
     );
   }
 }

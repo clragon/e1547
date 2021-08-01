@@ -8,12 +8,12 @@ class TagCard extends StatelessWidget {
   final String tag;
   final String category;
   final VoidCallback? onRemove;
-  final PostProvider? provider;
+  final PostController? controller;
 
   TagCard({
     required this.tag,
     required this.category,
-    required this.provider,
+    required this.controller,
     this.onRemove,
   });
 
@@ -24,7 +24,7 @@ class TagCard extends StatelessWidget {
     return Card(
       child: TagGesture(
         tag: tag,
-        provider: provider,
+        controller: controller,
         child: Row(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -69,12 +69,12 @@ class TagCounterCard extends StatelessWidget {
   final String tag;
   final int count;
   final String category;
-  final PostProvider provider;
+  final PostController controller;
 
   TagCounterCard({
     required this.tag,
     required this.category,
-    required this.provider,
+    required this.controller,
     required this.count,
   });
 
@@ -84,7 +84,7 @@ class TagCounterCard extends StatelessWidget {
       child: TagGesture(
         wiki: true,
         tag: tag,
-        provider: provider,
+        controller: controller,
         child: Row(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,

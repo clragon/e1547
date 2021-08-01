@@ -9,9 +9,9 @@ import 'package:flutter/material.dart';
 
 class WikiBody extends StatefulWidget {
   final String tag;
-  final PostProvider? provider;
+  final PostController? controller;
 
-  WikiBody({required this.tag, this.provider});
+  WikiBody({required this.tag, this.controller});
 
   @override
   _WikiBodyState createState() => _WikiBodyState();
@@ -49,13 +49,13 @@ class _WikiBodyState extends State<WikiBody> {
                                   ),
                                 ),
                               ),
-                              if (widget.provider != null)
+                              if (widget.controller != null)
                                 IconButton(
                                   icon: Icon(Icons.search_off),
                                   tooltip: 'Remove from search',
                                   onPressed: () {
-                                    widget.provider!.search.value = widget
-                                        .provider!.search.value
+                                    widget.controller!.search.value = widget
+                                        .controller!.search.value
                                         .replaceFirst(
                                             RegExp(r'(?<!\S)-?' +
                                                 tag.toString() +

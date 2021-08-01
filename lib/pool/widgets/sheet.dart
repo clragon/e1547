@@ -64,8 +64,8 @@ class PoolSheet extends StatelessWidget {
                 ),
                 IconButton(
                   icon: Icon(Icons.share),
-                  onPressed: () async =>
-                      Share.share(pool.url(await db.host.value).toString()),
+                  onPressed: () async => Share.share(
+                      pool.url(await settings.host.value).toString()),
                   tooltip: 'Share',
                 ),
                 FollowButton(pool),
@@ -73,8 +73,8 @@ class PoolSheet extends StatelessWidget {
             ),
             Padding(
               padding: EdgeInsets.all(16),
-              child: pool.description!.isNotEmpty
-                  ? DTextField(source: pool.description!)
+              child: pool.description.isNotEmpty
+                  ? DTextField(source: pool.description)
                   : Text(
                       'no description',
                       style: TextStyle(fontStyle: FontStyle.italic),

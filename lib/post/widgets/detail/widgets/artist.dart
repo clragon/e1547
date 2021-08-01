@@ -6,9 +6,9 @@ import 'package:flutter/services.dart';
 
 class ArtistDisplay extends StatelessWidget {
   final Post post;
-  final PostProvider? provider;
+  final PostController? controller;
 
-  ArtistDisplay({required this.post, required this.provider});
+  ArtistDisplay({required this.post, required this.controller});
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +26,7 @@ class ArtistDisplay extends StatelessWidget {
                 WidgetSpan(
                   child: TagGesture(
                     tag: artist,
-                    provider: provider,
+                    controller: controller,
                     child: Text(artist, style: TextStyle(fontSize: 14.0)),
                   ),
                 ),

@@ -20,28 +20,29 @@ class Client {
 
   Future<bool>? initialized;
 
-  Future<String> host = db.host.value;
-  Future<List<String>> denylist = db.denylist.value;
-  Future<List<Follow>> following = db.follows.value;
-  Future<Credentials?> credentials = db.credentials.value;
+  Future<String> host = settings.host.value;
+  Future<List<String>> denylist = settings.denylist.value;
+  Future<List<Follow>> following = settings.follows.value;
+  Future<Credentials?> credentials = settings.credentials.value;
 
   Client() {
-    db.host.addListener(() => host = db.host.value);
-    db.credentials.addListener(() => credentials = db.credentials.value);
-    db.denylist.addListener(() => denylist = db.denylist.value);
-    db.follows.addListener(() => following = db.follows.value);
+    settings.host.addListener(() => host = settings.host.value);
+    settings.credentials
+        .addListener(() => credentials = settings.credentials.value);
+    settings.denylist.addListener(() => denylist = settings.denylist.value);
+    settings.follows.addListener(() => following = settings.follows.value);
 
-    db.host.addListener(initialize);
-    db.credentials.addListener(initialize);
+    settings.host.addListener(initialize);
+    settings.credentials.addListener(initialize);
     initialize();
   }
 
   Future<bool> get isSafe async =>
-      (await db.host.value) != (await db.customHost.value);
+      (await settings.host.value) != (await settings.customHost.value);
 
   Future<bool> initialize() async {
     Future<bool> init() async {
-      Credentials? credentials = await db.credentials.value;
+      Credentials? credentials = await settings.credentials.value;
       dio = Dio(
         BaseOptions(
           baseUrl: 'https://${await host}/',
@@ -86,7 +87,7 @@ class Client {
 
   Future<bool> saveLogin(String username, String password) async {
     if (await validateCall(() => tryLogin(username, password))) {
-      db.credentials.value =
+      settings.credentials.value =
           Future.value(Credentials(username: username, password: password));
       return true;
     } else {
@@ -100,7 +101,7 @@ class Client {
   }
 
   Future<void> logout() async {
-    db.credentials.value = Future.value(null);
+    settings.credentials.value = Future.value(null);
   }
 
   String? _avatar;
@@ -250,8 +251,8 @@ class Client {
     }).then((response) => response.data);
 
     List<Pool> pools = [];
-    for (Map rawPool in body) {
-      Pool pool = Pool.fromRaw(rawPool);
+    for (Map<String, dynamic> rawPool in body) {
+      Pool pool = Pool.fromMap(rawPool);
       pools.add(pool);
     }
 
@@ -259,10 +260,10 @@ class Client {
   }
 
   Future<Pool> pool(int poolId) async {
-    Map body =
+    Map<String, dynamic> body =
         await dio.get('pools/$poolId.json').then((response) => response.data);
 
-    return Pool.fromRaw(body);
+    return Pool.fromMap(body);
   }
 
   Future<List<Post>> poolPosts(int poolId, int page) async {
@@ -271,14 +272,14 @@ class Client {
     int lower = ((page - 1) * limit);
     int upper = lower + limit;
 
-    if (pool.postIDs.length < lower) {
+    if (pool.postIds.length < lower) {
       return [];
     }
-    if (pool.postIDs.length < upper) {
-      upper = pool.postIDs.length;
+    if (pool.postIds.length < upper) {
+      upper = pool.postIds.length;
     }
 
-    List<int> ids = pool.postIDs.sublist(lower, upper);
+    List<int> ids = pool.postIds.sublist(lower, upper);
     String filter = 'id:${ids.join(',')}';
 
     List<Post> posts = await client.posts(filter, 1);
@@ -348,13 +349,13 @@ class Client {
     await initialized;
     Map body = await dio
         .get(
-            'https://${(unsafe ? await db.customHost.value : await host)}/posts/${postId.toString()}.json',
+            'https://${(unsafe ? await settings.customHost.value : await host)}/posts/${postId.toString()}.json',
             options: Options())
         .then((response) => response.data);
 
     Post post = Post.fromMap(body['post']);
     post.isLoggedIn = await hasLogin;
-    post.isBlacklisted = await post.isDeniedBy(await db.denylist.value);
+    post.isBlacklisted = await post.isDeniedBy(await settings.denylist.value);
     return post;
   }
 
@@ -501,10 +502,10 @@ class Client {
     }
   }
 
-  Future<List<Comment>> comments(int postID, String page) async {
+  Future<List<Comment>> comments(int postId, String page) async {
     var body = await dio.get('comments.json', queryParameters: {
       'group_by': 'comment',
-      'search[post_id]': '$postID',
+      'search[post_id]': '$postId',
       'page': page,
     }).then((response) => response.data);
 

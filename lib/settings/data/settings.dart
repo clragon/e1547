@@ -9,7 +9,7 @@ import 'package:flutter/foundation.dart' show ValueNotifier;
 import 'package:shared_preferences/shared_preferences.dart'
     show SharedPreferences;
 
-final Persistence db = Persistence();
+final Persistence settings = Persistence();
 
 typedef Serializer<T> = Future<bool> Function(String key, T value);
 typedef Deserializer<T> = T? Function(String key);

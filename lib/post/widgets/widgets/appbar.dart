@@ -83,7 +83,8 @@ List<PopupMenuItem<VoidCallback>> postMenuActions(
 
   return [
     PopupMenuTile(
-      value: () async => Share.share(post.url(await db.host.value).toString()),
+      value: () async =>
+          Share.share(post.url(await settings.host.value).toString()),
       title: 'Share',
       icon: Icons.share,
     ),
@@ -94,7 +95,7 @@ List<PopupMenuItem<VoidCallback>> postMenuActions(
         icon: Icons.file_download,
       ),
     PopupMenuTile(
-      value: () async => launch(post.url(await db.host.value).toString()),
+      value: () async => launch(post.url(await settings.host.value).toString()),
       title: 'Browse',
       icon: Icons.open_in_browser,
     )
@@ -116,7 +117,7 @@ List<PopupMenuItem<VoidCallback>> postMenuUserActions(
     if (post.isLoggedIn)
       PopupMenuTile(
         value: () async {
-          if (await writeComment(context, post)) {
+          if (await writeComment(context: context, post: post)) {
             post.commentCount++;
             post.notifyListeners();
           }

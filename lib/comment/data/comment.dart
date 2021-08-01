@@ -1,7 +1,3 @@
-// To parse this JSON data, do
-//
-//     final comment = commentFromMap(jsonString);
-
 import 'dart:convert';
 
 class Comment {

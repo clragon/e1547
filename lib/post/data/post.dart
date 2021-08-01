@@ -52,7 +52,7 @@ class Post extends PostData with ChangeNotifier {
   static List<Post> loadedVideos = [];
 
   Future<void> initVideo() async {
-    if (type == PostType.Video) {
+    if (type == PostType.Video && file.url != null) {
       if (controller != null) {
         await controller!.pause();
         await controller!.dispose();

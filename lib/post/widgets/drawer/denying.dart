@@ -5,26 +5,25 @@ import 'package:e1547/tag.dart';
 import 'package:flutter/material.dart';
 
 class DrawerDenySwitch extends StatelessWidget {
-  final PostProvider provider;
+  final PostController controller;
 
-  const DrawerDenySwitch({required this.provider});
+  const DrawerDenySwitch({required this.controller});
 
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
-      animation: Listenable.merge([
-        provider.denying,
-        provider.denied,
-        provider.allowlist,
-      ]),
+      animation: controller,
       builder: (context, child) {
         List<MapEntry<String, List<Post>>> entries = [];
 
-        entries.addAll(provider.deniedMap.value.entries);
+        entries.addAll(controller.denied.entries);
         entries
-            .addAll(provider.allowlist.value.map((e) => MapEntry(e, <Post>[])));
+            .addAll(controller.allowed.value.map((e) => MapEntry(e, <Post>[])));
 
         entries.sort((a, b) => a.key.compareTo(b.key));
+
+        int count = controller.denied.values.fold(
+            0, (previousValue, element) => previousValue + element.length);
 
         return Column(
           children: [
@@ -33,10 +32,9 @@ class DrawerDenySwitch extends StatelessWidget {
                   'Blacklist',
                   style: Theme.of(context).textTheme.subtitle1,
                 ),
-                subtitle: provider.denying.value
+                subtitle: controller.denying.value
                     ? TweenAnimationBuilder(
-                        tween: IntTween(
-                            begin: 0, end: provider.denied.value.length),
+                        tween: IntTween(begin: 0, end: count),
                         duration: Duration(milliseconds: 200),
                         builder: (context, int value, child) {
                           return Text('blocked $value posts');
@@ -44,18 +42,18 @@ class DrawerDenySwitch extends StatelessWidget {
                       )
                     : null,
                 secondary: Icon(Icons.block),
-                value: provider.denying.value,
-                onChanged: (value) => provider.denying.value = value),
+                value: controller.denying.value,
+                onChanged: (value) => controller.denying.value = value),
             CrossFade(
-              showChild: provider.denied.value.isNotEmpty ||
-                  provider.allowlist.value.isNotEmpty,
+              showChild: controller.denied.isNotEmpty ||
+                  controller.allowed.value.isNotEmpty,
               child: Column(
                 children: [
                   Divider(),
                   ...entries.map(
                     (e) => DrawerDenyTile(
                       entry: e,
-                      provider: provider,
+                      controller: controller,
                     ),
                   ),
                 ],
@@ -66,12 +64,12 @@ class DrawerDenySwitch extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 FutureBuilder(
-                  future: db.denylist.value,
+                  future: settings.denylist.value,
                   builder: (context, AsyncSnapshot<List<String>> snapshot) {
                     int? count = snapshot.data?.length;
-                    if (count != null && provider.denying.value) {
-                      count -= provider.deniedMap.value.keys.length;
-                      count -= provider.allowlist.value.length;
+                    if (count != null && controller.denying.value) {
+                      count -= controller.denied.keys.length;
+                      count -= controller.allowed.value.length;
                     }
                     return CrossFade(
                       showChild: snapshot.hasData && count! > 0,
@@ -105,22 +103,22 @@ class DrawerDenySwitch extends StatelessWidget {
 }
 
 class DrawerDenyTile extends StatelessWidget {
-  final PostProvider provider;
+  final PostController controller;
   final MapEntry<String, List<Post>> entry;
 
-  const DrawerDenyTile({required this.entry, required this.provider});
+  const DrawerDenyTile({required this.entry, required this.controller});
 
   @override
   Widget build(BuildContext context) {
     return CheckboxListTile(
-      value: !provider.allowlist.value.contains(entry.key),
+      value: !controller.allowed.value.contains(entry.key),
       onChanged: (value) {
         if (value!) {
-          provider.allowlist.value.remove(entry.key);
+          controller.allowed.value.remove(entry.key);
         } else {
-          provider.allowlist.value.add(entry.key);
+          controller.allowed.value.add(entry.key);
         }
-        provider.allowlist.value = List.from(provider.allowlist.value);
+        controller.allowed.value = List.from(controller.allowed.value);
       },
       title: Row(
         children: [
