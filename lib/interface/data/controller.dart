@@ -56,7 +56,7 @@ abstract class RawDataController<PageKeyType, ItemType>
   @override
   Future<void> refresh({bool background = false}) async {
     try {
-      List<ItemType> old = List<ItemType>.from(itemList!);
+      List<ItemType> old = List<ItemType>.from(itemList ?? []);
       if (background) {
         List<ItemType>? items = await loadPage(firstPageKey);
         if (items != null) {

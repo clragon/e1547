@@ -9,6 +9,10 @@ import 'package:flutter/material.dart';
 
 final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
 
+double defaultDrawerEdge(double screenWidth) => screenWidth * 0.1;
+
+DrawerSelection drawerSelection = DrawerSelection.home;
+
 enum DrawerSelection {
   home,
   hot,
@@ -17,8 +21,6 @@ enum DrawerSelection {
   pools,
   forum,
 }
-
-DrawerSelection drawerSelection = DrawerSelection.home;
 
 Map<String, WidgetBuilder> routes = <String, WidgetBuilder>{
   '/': (context) => () {
@@ -50,8 +52,6 @@ Map<String, WidgetBuilder> routes = <String, WidgetBuilder>{
 };
 
 ProfileHeader header = ProfileHeader();
-
-double defaultDrawerEdge(double screenWidth) => screenWidth * 0.1;
 
 class NavigationDrawer extends StatelessWidget {
   @override
@@ -107,15 +107,6 @@ class NavigationDrawer extends StatelessWidget {
           onTap: () => Navigator.of(context)
               .pushNamedAndRemoveUntil('/pools', (_) => false),
         ),
-        /*
-        ListTile(
-          selected: drawerSelection == DrawerSelection.forum,
-          leading: Icon(Icons.group),
-          title: Text('Forum'),
-          onTap: () => Navigator.of(context)
-              .pushNamedAndRemoveUntil('/forum', (_) => false),
-        ),
-         */
         Divider(),
         ListTile(
           leading: Icon(Icons.settings),
@@ -125,6 +116,7 @@ class NavigationDrawer extends StatelessWidget {
         ListTile(
           // this would be better solved with a seperate stateful widget.
           leading: FutureBuilder(
+            future: getNewVersions(),
             builder: (context, AsyncSnapshot<List<AppVersion>> snapshot) {
               if (snapshot.hasData && snapshot.data!.isNotEmpty) {
                 return Stack(
@@ -148,7 +140,6 @@ class NavigationDrawer extends StatelessWidget {
                 return Icon(Icons.info);
               }
             },
-            future: getNewVersions(),
           ),
           title: Text('About'),
           onTap: () => Navigator.popAndPushNamed(context, '/about'),

@@ -12,11 +12,13 @@ class PostsPage extends StatefulWidget {
   final bool canSelect;
   final PostController controller;
   final PreferredSizeWidget Function(BuildContext) appBarBuilder;
+  final List<Widget>? drawerActions;
 
   PostsPage({
     this.canSelect = true,
     required this.controller,
     required this.appBarBuilder,
+    this.drawerActions,
   }) : super(key: ObjectKey(controller));
 
   @override
@@ -124,7 +126,7 @@ class _PostsPageState extends State<PostsPage>
 
   @override
   Widget build(BuildContext context) {
-    Widget floatingActionButton() {
+    Widget? floatingActionButton() {
       if (widget.controller.canSearch) {
         return SheetFloatingActionButton(
           actionIcon: Icons.search,
@@ -140,8 +142,20 @@ class _PostsPageState extends State<PostsPage>
             ),
           ),
         );
-      } else {
-        return SizedBox.shrink();
+      }
+    }
+
+    Widget? endDrawer() {
+      List<Widget> children = List.from(widget.drawerActions ?? []);
+      if (children.isNotEmpty) {
+        children.add(Divider());
+      }
+      children.add(DrawerCounter(controller: widget.controller));
+      if (widget.controller.canDeny) {
+        children.add(DrawerDenySwitch(controller: widget.controller));
+      }
+      if (children.isNotEmpty) {
+        return ContextDrawer(title: Text('Search'), children: children);
       }
     }
 
@@ -256,29 +270,23 @@ class _PostsPageState extends State<PostsPage>
         },
         child: PageLoader(
           isBuilt: [tileSize, stagger].every((element) => element != null),
-          builder: (context) => RefreshablePage.pageBuilder(
+          builder: (context) => RefreshablePage(
             scrollController: scrollController,
             refreshController: widget.controller.refreshController,
-            pageBuilder: (context, child, scrollController) => Scaffold(
-              appBar: ScrollToTop(
-                controller: selections.isEmpty ? scrollController : null,
-                child: Material(
-                  elevation: Theme.of(context).appBarTheme.elevation ?? 4,
-                  child: CrossFade(
-                    showChild: selections.isEmpty,
-                    child: widget.appBarBuilder(context),
-                    secondChild: selectionAppBar(),
-                  ),
+            appBar: PreferredSize(
+              preferredSize: Size.fromHeight(kToolbarHeight),
+              child: Material(
+                elevation: Theme.of(context).appBarTheme.elevation ?? 4,
+                child: CrossFade(
+                  showChild: selections.isEmpty,
+                  child: widget.appBarBuilder(context),
+                  secondChild: selectionAppBar(),
                 ),
               ),
-              body: child,
-              drawer: NavigationDrawer(),
-              drawerEdgeDragWidth: defaultDrawerEdge(constraints.maxWidth),
-              endDrawer: widget.controller.canDeny
-                  ? SearchDrawer(controller: widget.controller)
-                  : null,
-              floatingActionButton: floatingActionButton(),
             ),
+            drawer: NavigationDrawer(),
+            endDrawer: endDrawer(),
+            floatingActionButton: floatingActionButton(),
             refresh: () => widget.controller.refresh(background: true),
             builder: (BuildContext context) => PagedStaggeredGridView(
               primary: false,
@@ -299,13 +307,4 @@ class _PostsPageState extends State<PostsPage>
       );
     });
   }
-}
-
-AppBar Function(BuildContext context) defaultAppBar(String title) {
-  return (context) {
-    return AppBar(
-      title: Text(title),
-      actions: [SizedBox.shrink()],
-    );
-  };
 }

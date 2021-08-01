@@ -51,11 +51,12 @@ class RefreshablePageLoader extends StatefulWidget {
   final Widget? onLoading;
   final Widget? onError;
   final Widget? drawer;
+  final Widget? endDrawer;
   final Widget? floatingActionButton;
   final PreferredSizeWidget? appBar;
   final RefreshController? refreshController;
   final ScrollController? scrollController;
-  final Future<bool> Function() refresh;
+  final VoidCallback refresh;
   final Scaffold Function(BuildContext context, Widget child,
       ScrollController? scrollController)? pageBuilder;
 
@@ -75,6 +76,7 @@ class RefreshablePageLoader extends StatefulWidget {
     this.onEmpty,
     this.onError,
     this.drawer,
+    this.endDrawer,
     this.floatingActionButton,
   }) : this.pageBuilder = null;
 
@@ -95,6 +97,7 @@ class RefreshablePageLoader extends StatefulWidget {
     this.onError,
   })  : this.appBar = null,
         this.drawer = null,
+        this.endDrawer = null,
         this.floatingActionButton = null;
 
   @override
@@ -117,46 +120,40 @@ class _RefreshablePageLoaderState extends State<RefreshablePageLoader> {
 
   @override
   Widget build(BuildContext context) {
-    Widget body() {
-      return PageLoader(
-        onLoading: widget.onLoading,
-        onEmpty: widget.onEmpty,
-        onError: widget.onError,
-        isLoading: widget.isLoading,
-        isEmpty: widget.isEmpty,
-        isError: widget.isError,
-        isBuilt: widget.isBuilt,
-        pageBuilder: (child) => RefreshablePage(
-          builder: (context) => child,
-          scrollController: scrollController,
-          refreshHeader: widget.refreshHeader,
-          refresh: widget.refresh,
-          appBar: widget.appBar,
-        ),
-        builder: widget.builder,
-      );
-    }
-
-    if (widget.pageBuilder != null) {
-      return widget.pageBuilder!(
-        context,
-        body(),
-        scrollController,
-      );
-    } else {
-      return LayoutBuilder(builder: (context, constraints) {
-        return Scaffold(
-          appBar: ScrollToTop(
-            child: widget.appBar!,
-            controller: scrollController,
-          ),
-          body: body(),
-          drawer: widget.drawer,
-          drawerEdgeDragWidth: defaultDrawerEdge(constraints.maxWidth),
-          floatingActionButton: widget.floatingActionButton,
-        );
-      });
-    }
+    return PageLoader(
+      onLoading: widget.onLoading,
+      onEmpty: widget.onEmpty,
+      onError: widget.onError,
+      isLoading: widget.isLoading,
+      isEmpty: widget.isEmpty,
+      isError: widget.isError,
+      isBuilt: widget.isBuilt,
+      pageBuilder: (child) {
+        if (widget.pageBuilder != null) {
+          return RefreshablePage.pageBuilder(
+            builder: (context) => child,
+            refreshController: refreshController,
+            scrollController: scrollController,
+            refreshHeader: widget.refreshHeader,
+            refresh: widget.refresh,
+            pageBuilder: widget.pageBuilder,
+          );
+        } else {
+          return RefreshablePage(
+            builder: (context) => child,
+            refreshController: refreshController,
+            scrollController: scrollController,
+            refreshHeader: widget.refreshHeader,
+            refresh: widget.refresh,
+            appBar: widget.appBar,
+            drawer: widget.drawer,
+            endDrawer: widget.endDrawer,
+            floatingActionButton: widget.floatingActionButton,
+          );
+        }
+      },
+      builder: widget.builder,
+    );
   }
 }
 
@@ -164,11 +161,12 @@ class RefreshablePage extends StatefulWidget {
   final WidgetBuilder? builder;
   final Widget? refreshHeader;
   final Widget? drawer;
+  final Widget? endDrawer;
   final Widget? floatingActionButton;
   final PreferredSizeWidget? appBar;
   final RefreshController? refreshController;
   final ScrollController? scrollController;
-  final Future<void> Function() refresh;
+  final VoidCallback refresh;
   final Scaffold Function(BuildContext context, Widget child,
       ScrollController? scrollController)? pageBuilder;
 
@@ -180,6 +178,7 @@ class RefreshablePage extends StatefulWidget {
     this.scrollController,
     this.refreshHeader,
     this.drawer,
+    this.endDrawer,
     this.floatingActionButton,
   }) : this.pageBuilder = null;
 
@@ -192,6 +191,7 @@ class RefreshablePage extends StatefulWidget {
     this.refreshHeader,
   })  : this.appBar = null,
         this.drawer = null,
+        this.endDrawer = null,
         this.floatingActionButton = null;
 
   @override
@@ -229,6 +229,7 @@ class _RefreshablePageState extends State<RefreshablePage> {
           ),
           body: body(),
           drawer: widget.drawer,
+          endDrawer: widget.endDrawer,
           drawerEdgeDragWidth: defaultDrawerEdge(constraints.maxWidth),
           floatingActionButton: widget.floatingActionButton,
         );

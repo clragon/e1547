@@ -87,179 +87,170 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    Widget bodyWidgetBuilder(BuildContext context) {
-      return Container(
-        padding: EdgeInsets.all(10.0),
-        child: ListView(
-          physics: BouncingScrollPhysics(),
-          children: [
-            settingsHeader('Posts'),
-            GestureDetector(
-              behavior: HitTestBehavior.translucent,
-              onLongPress: () => setCustomHost(context),
-              child: SwitchListTile(
-                title: Text('Custom host'),
-                subtitle: currentHost != null ? Text(currentHost!) : null,
-                secondary: Icon(useCustomHost ? Icons.warning : Icons.security),
-                value: useCustomHost,
-                onChanged: (value) async {
-                  if (customHost == null) {
-                    await setCustomHost(context);
-                  }
-                  if (customHost != null) {
-                    settings.host.value =
-                        Future.value(value ? customHost : 'e926.net');
-                  }
-                },
-              ),
-            ),
-            Divider(),
-            settingsHeader('Display'),
-            ListTile(
-              title: Text('Theme'),
-              subtitle: Text(theme != null ? describeEnum(theme!) : ''),
-              leading: Icon(Icons.brightness_6),
-              onTap: () {
-                showDialog(
-                  context: context,
-                  builder: (context) {
-                    return SimpleDialog(
-                      title: Text('Theme'),
-                      children: [
-                        Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: appThemeMap.keys
-                              .map(
-                                (theme) => ListTile(
-                                  title: Text(describeEnum(theme)),
-                                  trailing: Container(
-                                    height: 28,
-                                    width: 28,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: appThemeMap[theme]!.cardColor,
-                                      border: Border.all(
-                                        color:
-                                            Theme.of(context).iconTheme.color!,
-                                      ),
-                                    ),
-                                  ),
-                                  onTap: () {
-                                    settings.theme.value = Future.value(theme);
-                                    Navigator.of(context).maybePop();
-                                  },
-                                ),
-                              )
-                              .toList(),
-                        )
-                      ],
-                    );
-                  },
-                );
-              },
-            ),
-            ExpandableNotifier(
-              initialExpanded: false,
-              child: ExpandableTheme(
-                data: ExpandableThemeData(
-                  headerAlignment: ExpandablePanelHeaderAlignment.center,
-                  iconColor: Theme.of(context).iconTheme.color,
-                ),
-                child: ExpandablePanel(
-                  header: ListTile(
-                    leading: Icon(Icons.grid_view),
-                    title: Text('Grid'),
-                    subtitle: Text('post grid settings'),
-                  ),
-                  expanded: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      ListTile(
-                        title: Text('Post tile size'),
-                        subtitle: Text(tileSize.toString()),
-                        leading: Icon(Icons.crop),
-                        onTap: () => showDialog(
-                          context: context,
-                          builder: (context) => RangeDialog(
-                            title: Text('Tile size'),
-                            value: tileSize,
-                            division: (300 / 50).round(),
-                            min: 100,
-                            max: 400,
-                            onSubmit: (value) {
-                              if (value == null || value <= 0) {
-                                return;
-                              }
-                              settings.tileSize.value = Future.value(value);
-                            },
-                          ),
-                        ),
-                      ),
-                      GridSettingsTile(
-                        state: stagger ?? GridState.square,
-                        onChange: (state) => setState(() {
-                          settings.stagger.value = Future.value(state);
-                        }),
-                      ),
-                    ],
-                  ),
-                  collapsed: SizedBox.shrink(),
-                ),
-              ),
-            ),
-            Divider(),
-            settingsHeader('Listing'),
-            ListTile(
-              title: Text('Blacklist'),
-              leading: Icon(Icons.block),
-              onTap: () => Navigator.pushNamed(context, '/blacklist'),
-            ),
-            ListTile(
-              title: Text('Following'),
-              leading: Icon(Icons.turned_in),
-              onTap: () => Navigator.pushNamed(context, '/following'),
-            ),
-            Divider(),
-            settingsHeader('Account'),
-            FutureBuilder(
-              future: client.hasLogin,
-              builder: (context, AsyncSnapshot<bool?> snapshot) {
-                if (snapshot.hasData) {
-                  return CrossFade(
-                      duration: Duration(milliseconds: 200),
-                      showChild: snapshot.data!,
-                      child: ListTile(
-                        title: Text('Sign out'),
-                        subtitle: Text(username ?? ''),
-                        leading: Icon(Icons.exit_to_app),
-                        onTap: logout,
-                      ),
-                      secondChild: ListTile(
-                        title: Text('Sign in'),
-                        leading: Icon(Icons.person_add),
-                        onTap: () => Navigator.pushNamed(context, '/login'),
-                      ));
-                } else {
-                  return Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SizedCircularProgressIndicator(size: 20),
-                    ],
-                  );
-                }
-              },
-            ),
-          ],
-        ),
-      );
-    }
-
     return Scaffold(
       appBar: AppBar(
         title: Text('Settings'),
         leading: BackButton(),
       ),
-      body: Builder(builder: bodyWidgetBuilder),
+      body: ListView(
+        padding: EdgeInsets.all(10.0),
+        physics: BouncingScrollPhysics(),
+        children: [
+          settingsHeader('Posts'),
+          GestureDetector(
+            behavior: HitTestBehavior.translucent,
+            onLongPress: () => setCustomHost(context),
+            child: SwitchListTile(
+              title: Text('Custom host'),
+              subtitle: currentHost != null ? Text(currentHost!) : null,
+              secondary: Icon(useCustomHost ? Icons.warning : Icons.security),
+              value: useCustomHost,
+              onChanged: (value) async {
+                if (customHost == null) {
+                  await setCustomHost(context);
+                }
+                if (customHost != null) {
+                  settings.host.value =
+                      Future.value(value ? customHost : 'e926.net');
+                }
+              },
+            ),
+          ),
+          Divider(),
+          settingsHeader('Display'),
+          ListTile(
+            title: Text('Theme'),
+            subtitle: Text(theme != null ? describeEnum(theme!) : ''),
+            leading: Icon(Icons.brightness_6),
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (context) => SimpleDialog(
+                  title: Text('Theme'),
+                  children: [
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: appThemeMap.keys
+                          .map(
+                            (theme) => ListTile(
+                              title: Text(describeEnum(theme)),
+                              trailing: Container(
+                                height: 28,
+                                width: 28,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: appThemeMap[theme]!.cardColor,
+                                  border: Border.all(
+                                    color: Theme.of(context).iconTheme.color!,
+                                  ),
+                                ),
+                              ),
+                              onTap: () {
+                                settings.theme.value = Future.value(theme);
+                                Navigator.of(context).maybePop();
+                              },
+                            ),
+                          )
+                          .toList(),
+                    )
+                  ],
+                ),
+              );
+            },
+          ),
+          ExpandableNotifier(
+            initialExpanded: false,
+            child: ExpandableTheme(
+              data: ExpandableThemeData(
+                headerAlignment: ExpandablePanelHeaderAlignment.center,
+                iconColor: Theme.of(context).iconTheme.color,
+              ),
+              child: ExpandablePanel(
+                header: ListTile(
+                  leading: Icon(Icons.grid_view),
+                  title: Text('Grid'),
+                  subtitle: Text('post grid settings'),
+                ),
+                expanded: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ListTile(
+                      title: Text('Post tile size'),
+                      subtitle: Text(tileSize.toString()),
+                      leading: Icon(Icons.crop),
+                      onTap: () => showDialog(
+                        context: context,
+                        builder: (context) => RangeDialog(
+                          title: Text('Tile size'),
+                          value: tileSize,
+                          division: (300 / 50).round(),
+                          min: 100,
+                          max: 400,
+                          onSubmit: (value) {
+                            if (value == null || value <= 0) {
+                              return;
+                            }
+                            settings.tileSize.value = Future.value(value);
+                          },
+                        ),
+                      ),
+                    ),
+                    GridSettingsTile(
+                      state: stagger ?? GridState.square,
+                      onChange: (state) => setState(() {
+                        settings.stagger.value = Future.value(state);
+                      }),
+                    ),
+                  ],
+                ),
+                collapsed: SizedBox.shrink(),
+              ),
+            ),
+          ),
+          Divider(),
+          settingsHeader('Listing'),
+          ListTile(
+            title: Text('Blacklist'),
+            leading: Icon(Icons.block),
+            onTap: () => Navigator.pushNamed(context, '/blacklist'),
+          ),
+          ListTile(
+            title: Text('Following'),
+            leading: Icon(Icons.turned_in),
+            onTap: () => Navigator.pushNamed(context, '/following'),
+          ),
+          Divider(),
+          settingsHeader('Account'),
+          FutureBuilder(
+            future: client.hasLogin,
+            builder: (context, AsyncSnapshot<bool?> snapshot) {
+              if (snapshot.hasData) {
+                return CrossFade(
+                    duration: Duration(milliseconds: 200),
+                    showChild: snapshot.data!,
+                    child: ListTile(
+                      title: Text('Sign out'),
+                      subtitle: Text(username ?? ''),
+                      leading: Icon(Icons.exit_to_app),
+                      onTap: logout,
+                    ),
+                    secondChild: ListTile(
+                      title: Text('Sign in'),
+                      leading: Icon(Icons.person_add),
+                      onTap: () => Navigator.pushNamed(context, '/login'),
+                    ));
+              } else {
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedCircularProgressIndicator(size: 20),
+                  ],
+                );
+              }
+            },
+          ),
+        ],
+      ),
     );
   }
 }

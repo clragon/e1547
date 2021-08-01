@@ -42,7 +42,7 @@ class _HomePageState extends State<HomePage> {
     return PageLoader(
       isBuilt: controller != null,
       builder: (context) => PostsPage(
-        appBarBuilder: defaultAppBar('Home'),
+        appBarBuilder: defaultAppBarBuilder('Home'),
         controller: controller!,
       ),
     );

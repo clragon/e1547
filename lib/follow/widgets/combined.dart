@@ -1,5 +1,6 @@
 import 'package:e1547/client.dart';
 import 'package:e1547/follow.dart';
+import 'package:e1547/interface.dart';
 import 'package:e1547/post.dart';
 import 'package:e1547/settings.dart';
 import 'package:flutter/foundation.dart';
@@ -41,24 +42,12 @@ class _FollowsCombinedPageState extends State<FollowsCombinedPage> {
   @override
   Widget build(BuildContext context) {
     return PostsPage(
-      appBarBuilder: (context) {
-        return AppBar(
-          title: Text('Following'),
-          actions: [
-            IconButton(
-              icon: Icon(Icons.view_comfy),
-              tooltip: 'Split',
-              onPressed: () => settings.followsSplit.value = Future.value(true),
-            ),
-            IconButton(
-              icon: Icon(Icons.turned_in),
-              tooltip: 'Settings',
-              onPressed: () => Navigator.pushNamed(context, '/following'),
-            )
-          ],
-        );
-      },
       controller: provider,
+      appBarBuilder: defaultAppBarBuilder('Following'),
+      drawerActions: [
+        FollowSplitSwitchTile(),
+        FollowSettingsTile(),
+      ],
     );
   }
 }

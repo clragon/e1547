@@ -75,7 +75,7 @@ class DrawerDenySwitch extends StatelessWidget {
                       showChild: snapshot.hasData && count! > 0,
                       child: TweenAnimationBuilder(
                         tween: IntTween(begin: 0, end: count ?? 0),
-                        duration: Duration(milliseconds: 200),
+                        duration: defaultAnimationDuration,
                         builder: (context, int value, child) {
                           return Text(
                             '$value inactive entries',

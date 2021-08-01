@@ -43,7 +43,7 @@ class _FollowingPageState extends State<FollowingPage> with FollowerMixin {
             text: edit != null ? follows![edit].tags : null),
         builder: (context, controller, submit) => TagInput(
           controller: controller,
-          labelText: 'Add to follows',
+          labelText: edit != null ? 'Edit follow' : 'Add to follows',
           submit: submit,
         ),
       ),

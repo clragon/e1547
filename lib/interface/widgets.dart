@@ -1,6 +1,7 @@
 export 'widgets/animation.dart';
 export 'widgets/appbar.dart';
 export 'widgets/card.dart';
+export 'widgets/drawer.dart';
 export 'widgets/loading_tile.dart';
 export 'widgets/navigation.dart';
 export 'widgets/pagination.dart';

@@ -1,7 +1,6 @@
 import 'package:e1547/client.dart';
 import 'package:e1547/follow.dart';
 import 'package:e1547/interface.dart';
-import 'package:e1547/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -95,24 +94,24 @@ class _FollowsSplitPageState extends State<FollowsSplitPage>
           staggeredTileBuilder: tileBuilder,
           physics: BouncingScrollPhysics(),
         ),
-        appBar: AppBar(
-          title: Text('Following'),
-          actions: [
-            IconButton(
-              icon: Icon(Icons.view_compact),
-              tooltip: 'Combine',
-              onPressed: () =>
-                  settings.followsSplit.value = Future.value(false),
-            ),
-            IconButton(
-              icon: Icon(Icons.turned_in),
-              tooltip: 'Settings',
-              onPressed: () => Navigator.pushNamed(context, '/following'),
-            )
+        appBar: defaultAppBar(title: 'Following'),
+        refresh: () async {
+          if (await validateCall(() => refreshFollows(force: true))) {
+            refreshController.refreshCompleted();
+          } else {
+            refreshController.refreshFailed();
+          }
+        },
+        drawer: NavigationDrawer(),
+        endDrawer: ContextDrawer(
+          title: Text('Options'),
+          children: [
+            FollowSplitSwitchTile(),
+            FollowMarkReadTile(),
+            Divider(),
+            FollowSettingsTile(),
           ],
         ),
-        refresh: () => validateCall(() => refreshFollows(force: true)),
-        drawer: NavigationDrawer(),
       );
     });
   }
