@@ -37,7 +37,7 @@ class _FollowingPageState extends State<FollowingPage> with FollowerMixin {
     sheetController.show(
       context,
       SheetTextWrapper(
-        submit: (value) => submit(value, edit),
+        submit: (value) => submit(sortTags(value), edit),
         actionController: sheetController,
         textController: TextEditingController(
             text: edit != null ? follows![edit].tags : null),

@@ -22,7 +22,6 @@ class Tagset extends Object with IterableMixin<Tag> {
 
   final Map<String, Tag> _tags;
 
-  // Get the URL for this search/tagset.
   Uri url(String host) => Uri(
         scheme: 'https',
         host: host,
@@ -55,8 +54,6 @@ class Tagset extends Object with IterableMixin<Tag> {
   @override
   Iterator<Tag> get iterator => _tags.values.iterator;
 
-  // The toString order isn't the same as the iteration order. We order the metatags ahead of the
-  // normal tags.
   @override
   String toString() {
     List<Tag> meta = [];
@@ -70,15 +67,31 @@ class Tagset extends Object with IterableMixin<Tag> {
       }
     }
 
-    // This isn't terribly efficient, but it probably doesn't matter since the strings are tiny.
-    // Something that could be interesting to use here since it would be lazy:
-    //    https://www.dartdocs.org/documentation/quiver/0.25.0/quiver.iterables/concat.html
-    //
-    //    Iterable<T> concat<T>(
-    //      Iterable<Iterable<T>> iterables
-    //    )
+    // normal tags, then optional, then subtracting
+    int order(Tag a, Tag b) {
+      int getPrefixValue(String prefix) {
+        switch (prefix) {
+          case '-':
+            return 1;
+          case '~':
+            return 0;
+          default:
+            return -1;
+        }
+      }
 
-    meta.addAll(normal);
-    return meta.join(' ');
+      int firstValue = getPrefixValue(a.name[0]);
+      int secondValue = getPrefixValue(b.name[0]);
+      return firstValue.compareTo(secondValue);
+    }
+
+    normal.sort(order);
+    meta.sort(order);
+
+    // meta tags first
+    List<Tag> output = [];
+    output.addAll(meta);
+    output.addAll(normal);
+    return output.join(' ');
   }
 }
