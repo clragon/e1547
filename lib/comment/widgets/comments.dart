@@ -39,6 +39,7 @@ class _CommentsPageState extends State<CommentsPage> with UpdateMixin {
       controller: controller,
       builder: (context) {
         return PagedListView(
+          padding: EdgeInsets.only(top: 8),
           pagingController: controller,
           builderDelegate: defaultPagedChildBuilderDelegate(
             itemBuilder: (context, Comment item, index) =>

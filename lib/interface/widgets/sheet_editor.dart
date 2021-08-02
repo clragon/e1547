@@ -187,6 +187,7 @@ class SheetTextField extends StatelessWidget {
   Widget build(BuildContext context) {
     return SheetTextWrapper(
       submit: submit,
+      textController: textController,
       actionController: actionController,
       builder: (context, controller, submit) {
         return TextField(
