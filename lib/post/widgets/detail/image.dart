@@ -4,7 +4,6 @@ import 'package:e1547/post.dart';
 import 'package:e1547/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:video_player/video_player.dart';
 
 class DetailImage extends StatelessWidget {
   final Post post;
@@ -31,13 +30,15 @@ class DetailVideo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder(
-      valueListenable: post.controller!,
-      builder: (context, VideoPlayerValue value, child) => GestureDetector(
+    return PostVideoLoader(
+      post: post,
+      child: GestureDetector(
         behavior: HitTestBehavior.opaque,
-        onTap: () => value.isPlaying
-            ? post.controller!.pause()
-            : post.controller!.play(),
+        onTap: post.controller != null
+            ? () => post.controller!.value.isPlaying
+                ? post.controller!.pause()
+                : post.controller!.play()
+            : null,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
@@ -47,16 +48,14 @@ class DetailVideo extends StatelessWidget {
               child: Stack(
                 alignment: Alignment.center,
                 children: [
+                  PostVideoWidget(post: post),
                   SafeCrossFade(
-                    showChild: value.isInitialized,
-                    builder: (context) => AspectRatio(
-                      aspectRatio: value.aspectRatio,
-                      child: VideoPlayer(post.controller!),
+                    showChild: post.controller != null,
+                    builder: (context) => Padding(
+                      padding: EdgeInsets.all(8),
+                      child: VideoPlayButton(videoController: post.controller!),
                     ),
-                    secondChild: DetailImage(post: post),
-                  ),
-                  VideoPlayButton(
-                    videoController: post.controller,
+                    secondChild: SizedCircularProgressIndicator(size: 24),
                   ),
                 ],
               ),
@@ -134,6 +133,7 @@ class _DetailImageToggleState extends State<DetailImageToggle> {
                 }
               } else {
                 widget.post.isAllowed = !widget.post.isAllowed;
+                widget.post.controller?.pause();
                 widget.post.notifyListeners();
               }
 

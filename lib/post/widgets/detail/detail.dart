@@ -46,9 +46,6 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
     super.initState();
     widget.controller?.addListener(onPageChange);
     widget.post.addListener(closeSheet);
-    if (!(widget.post.controller?.value.isInitialized ?? true)) {
-      widget.post.loadVideo();
-    }
   }
 
   @override

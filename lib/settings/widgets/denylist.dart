@@ -58,7 +58,7 @@ class _DenyListPageState extends State<DenyListPage> {
     sheetController.show(
       context,
       SheetTextWrapper(
-        submit: (value) => submit(value, edit),
+        submit: (value) => submit(sortTags(value), edit),
         actionController: sheetController,
         textController:
             TextEditingController(text: edit != null ? denylist[edit] : null),
