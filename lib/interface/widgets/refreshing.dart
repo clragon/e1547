@@ -312,14 +312,14 @@ class PageLoader extends StatelessWidget {
           visible: state == PageLoaderState.error,
           child: IconMessage(
             icon: Icons.warning_amber_outlined,
-            message: onError ?? Text('Failed to load'),
+            title: onError ?? Text('Failed to load'),
           ),
         ),
         Visibility(
           visible: state == PageLoaderState.empty,
           child: IconMessage(
             icon: Icons.clear,
-            message: onEmpty ?? Text('Nothing to see here'),
+            title: onEmpty ?? Text('Nothing to see here'),
           ),
         ),
       ]),
@@ -343,12 +343,12 @@ class RefreshablePageDefaultHeader extends StatelessWidget {
 
 class IconMessage extends StatelessWidget {
   final Axis direction;
-  final Widget message;
+  final Widget title;
   final IconData icon;
 
   const IconMessage(
       {this.direction = Axis.vertical,
-      required this.message,
+      required this.title,
       required this.icon});
 
   @override
@@ -364,7 +364,7 @@ class IconMessage extends StatelessWidget {
           ),
           Padding(
             padding: EdgeInsets.all(20),
-            child: message,
+            child: title,
           ),
         ],
       ),

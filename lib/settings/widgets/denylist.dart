@@ -130,7 +130,7 @@ class _DenyListPageState extends State<DenyListPage> {
       if (denylist.isEmpty) {
         return IconMessage(
           icon: Icons.check,
-          message: Text('Your blacklist is empty'),
+          title: Text('Your blacklist is empty'),
         );
       }
 

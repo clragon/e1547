@@ -52,8 +52,8 @@ class DetailVideo extends StatelessWidget {
                   SafeCrossFade(
                     showChild: post.controller != null,
                     builder: (context) => Padding(
-                      padding: EdgeInsets.all(8),
-                      child: VideoPlayButton(videoController: post.controller!),
+                      padding: EdgeInsets.all(12),
+                      child: VideoButton(videoController: post.controller!),
                     ),
                     secondChild: SizedCircularProgressIndicator(size: 24),
                   ),

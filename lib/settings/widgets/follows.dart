@@ -80,7 +80,7 @@ class _FollowingPageState extends State<FollowingPage> with FollowerMixin {
       if (follows?.isEmpty ?? true) {
         return IconMessage(
           icon: Icons.bookmark,
-          message: Text('You are not following any tags'),
+          title: Text('You are not following any tags'),
         );
       }
 
