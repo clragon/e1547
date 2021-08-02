@@ -57,11 +57,12 @@ class _PostPhotoGalleryState extends State<PostPhotoGallery> {
               case PostType.Video:
                 return Hero(
                   tag: widget.posts[index].hero,
-                  child: PostVideoWidget(post: post),
+                  child: PostVideoLoader(
+                      post: post, child: PostVideoWidget(post: post)),
                 );
               case PostType.Unsupported:
               default:
-                // this never occurs, it is caught by ImageOverly
+                // this never occurs, it is caught by ImageOverlay
                 return SizedBox.shrink();
             }
           },

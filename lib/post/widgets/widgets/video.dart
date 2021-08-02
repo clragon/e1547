@@ -365,24 +365,33 @@ class PostVideoWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Widget placeholder() {
+      return PostImageWidget(
+        post: post,
+        size: ImageSize.sample,
+        showProgress: false,
+      );
+    }
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        SafeCrossFade(
-          showChild:
-              post.controller != null && post.controller!.value.isInitialized,
-          builder: (context) => AnimatedBuilder(
-            animation: post.controller!,
-            builder: (context, child) => AspectRatio(
-              aspectRatio: post.controller!.value.aspectRatio,
-              child: VideoPlayer(post.controller!),
+        Flexible(
+          child: SafeCrossFade(
+            showChild: post.controller != null,
+            builder: (context) => AnimatedBuilder(
+              animation: post.controller!,
+              builder: (context, child) => CrossFade(
+                showChild: post.controller!.value.isInitialized,
+                child: AspectRatio(
+                  aspectRatio: post.controller!.value.aspectRatio,
+                  child: VideoPlayer(post.controller!),
+                ),
+                secondChild: placeholder(),
+              ),
             ),
-          ),
-          secondChild: PostImageWidget(
-            post: post,
-            size: ImageSize.sample,
-            showProgress: false,
+            secondChild: placeholder(),
           ),
         ),
       ],
