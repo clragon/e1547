@@ -1,6 +1,9 @@
+import 'dart:math';
+
 import 'package:e1547/interface.dart';
 import 'package:e1547/post.dart';
 import 'package:flutter/material.dart';
+import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
 class PostDetailGallery extends StatefulWidget {
   final PostController controller;
@@ -13,19 +16,26 @@ class PostDetailGallery extends StatefulWidget {
 }
 
 class _PostDetailGalleryState extends State<PostDetailGallery> {
-  late int lastIndex;
-  late PageController controller;
+  late int lastIndex = widget.initialPage;
+  late PageController controller = PageController(
+      initialPage: widget.initialPage, viewportFraction: 1.000000000001);
+  bool hasRequestedNextPage = false;
+
+  void updateStatus(PagingStatus status) {
+    if (status == PagingStatus.ongoing) {
+      hasRequestedNextPage = false;
+    }
+  }
 
   @override
   void initState() {
     super.initState();
-    lastIndex = widget.initialPage;
-    controller = PageController(
-        initialPage: widget.initialPage, viewportFraction: 1.000000000001);
+    widget.controller.addStatusListener(updateStatus);
   }
 
   @override
   void dispose() {
+    widget.controller.removeStatusListener(updateStatus);
     controller.dispose();
     super.dispose();
   }
@@ -36,10 +46,20 @@ class _PostDetailGalleryState extends State<PostDetailGallery> {
       animation: widget.controller,
       builder: (context, child) {
         Widget pageBuilder(BuildContext context, int index) {
-          if (index == widget.controller.itemList!.length - 1) {
-            widget.controller
-                .notifyPageRequestListeners(widget.controller.nextPageKey!);
+          if (!hasRequestedNextPage) {
+            int newPageRequestTriggerIndex =
+                max(0, widget.controller.itemList?.length ?? 0 - 3);
+
+            if (widget.controller.nextPageKey != null &&
+                index >= newPageRequestTriggerIndex) {
+              WidgetsBinding.instance?.addPostFrameCallback((_) {
+                widget.controller
+                    .notifyPageRequestListeners(widget.controller.nextPageKey!);
+              });
+              hasRequestedNextPage = true;
+            }
           }
+
           return PostDetail(
             post: widget.controller.itemList![index],
             controller: widget.controller,
