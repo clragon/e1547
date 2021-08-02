@@ -86,24 +86,30 @@ class _VideoFrameState extends State<VideoFrame> {
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
-      animation: Listenable.merge([frameController, widget.post.controller]),
+      animation: Listenable.merge([
+        frameController,
+        widget.post.controller,
+      ]),
       builder: (contex, child) {
         List<Widget> children = [
           widget.child,
         ];
 
-        if (widget.post.type == PostType.Video &&
-            widget.post.controller != null) {
+        if (widget.post.controller != null) {
           children.addAll([
+            Positioned.fill(
+              child: VideoGestures(videoController: widget.post.controller!),
+            ),
             Positioned(
-                bottom: 0,
-                right: 0,
-                left: 0,
-                child: VideoBar(
-                  videoController: widget.post.controller!,
-                  frameController: frameController,
-                )),
-            VideoPlayButton(
+              bottom: 0,
+              right: 0,
+              left: 0,
+              child: VideoBar(
+                videoController: widget.post.controller!,
+                frameController: frameController,
+              ),
+            ),
+            VideoButton(
               videoController: widget.post.controller!,
               frameController: frameController,
             )
@@ -129,21 +135,22 @@ class _VideoFrameState extends State<VideoFrame> {
   }
 }
 
-class VideoPlayButton extends StatefulWidget {
+class VideoButton extends StatefulWidget {
   final VideoPlayerController videoController;
   final FrameController? frameController;
   final double size;
 
-  const VideoPlayButton(
+  const VideoButton(
       {required this.videoController, this.frameController, this.size = 54});
 
   @override
-  _VideoPlayButtonState createState() => _VideoPlayButtonState();
+  _VideoButtonState createState() => _VideoButtonState();
 }
 
-class _VideoPlayButtonState extends State<VideoPlayButton>
+class _VideoButtonState extends State<VideoButton>
     with SingleTickerProviderStateMixin {
-  late AnimationController animationController;
+  late AnimationController animationController =
+      AnimationController(vsync: this, duration: defaultAnimationDuration);
 
   void videoUpdate() {
     if (widget.videoController.value.isPlaying) {
@@ -156,8 +163,6 @@ class _VideoPlayButtonState extends State<VideoPlayButton>
   @override
   void initState() {
     super.initState();
-    animationController =
-        AnimationController(vsync: this, duration: defaultAnimationDuration);
     widget.videoController.addListener(videoUpdate);
   }
 
@@ -174,7 +179,7 @@ class _VideoPlayButtonState extends State<VideoPlayButton>
       animation: Listenable.merge([
         animationController,
         widget.videoController,
-        if (widget.frameController != null) widget.frameController
+        widget.frameController
       ]),
       builder: (context, child) {
         bool loading = !widget.videoController.value.isInitialized ||
@@ -322,6 +327,102 @@ class VideoBar extends StatelessWidget {
             ),
           );
         },
+      ),
+    );
+  }
+}
+
+class VideoGesture extends StatefulWidget {
+  final bool forward;
+  final VideoPlayerController videoController;
+  const VideoGesture({required this.forward, required this.videoController});
+
+  @override
+  _VideoGestureState createState() => _VideoGestureState();
+}
+
+class _VideoGestureState extends State<VideoGesture>
+    with SingleTickerProviderStateMixin {
+  late AnimationController animationController =
+      AnimationController(vsync: this, duration: Duration(milliseconds: 400));
+  late final Animation<double> fadeAnimation = CurvedAnimation(
+    parent: animationController,
+    curve: Curves.easeInOut,
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      behavior: HitTestBehavior.translucent,
+      onDoubleTap: () async {
+        if (widget.videoController.value.isInitialized) {
+          Duration target = (await widget.videoController.position)!;
+          if (widget.forward) {
+            target += Duration(seconds: 10);
+            if (target > widget.videoController.value.duration) {
+              target = widget.videoController.value.duration;
+            }
+          } else {
+            target -= Duration(seconds: 10);
+            if (target < Duration.zero) {
+              target = Duration.zero;
+            }
+          }
+
+          widget.videoController.seekTo(target);
+          await animationController.forward();
+          await animationController.reverse();
+        }
+      },
+      child: FadeTransition(
+        opacity: fadeAnimation,
+        child: IconMessage(
+          icon: widget.forward ? Icons.fast_forward : Icons.fast_rewind,
+          title: Text('10 seconds'),
+        ),
+      ),
+    );
+  }
+}
+
+class VideoGestures extends StatefulWidget {
+  final VideoPlayerController videoController;
+
+  const VideoGestures({required this.videoController});
+
+  @override
+  _VideoGesturesState createState() => _VideoGesturesState();
+}
+
+class _VideoGesturesState extends State<VideoGestures> {
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) => Column(
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          Expanded(
+              child: Row(
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Expanded(
+                child: VideoGesture(
+                  forward: false,
+                  videoController: widget.videoController,
+                ),
+              ),
+              SizedBox(
+                width: constraints.maxWidth * 0.1,
+              ),
+              Expanded(
+                child: VideoGesture(
+                  forward: true,
+                  videoController: widget.videoController,
+                ),
+              ),
+            ],
+          ))
+        ],
       ),
     );
   }

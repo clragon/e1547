@@ -94,16 +94,16 @@ PagedChildBuilderDelegate<T> defaultPagedChildBuilderDelegate<T>({
     )),
     noItemsFoundIndicatorBuilder: (context) => IconMessage(
       icon: Icons.clear,
-      message: onEmpty ?? Text('Nothing to see here'),
+      title: onEmpty ?? Text('Nothing to see here'),
     ),
     firstPageErrorIndicatorBuilder: (context) => IconMessage(
       icon: Icons.warning_amber_outlined,
-      message: onError ?? Text('Failed to load'),
+      title: onError ?? Text('Failed to load'),
     ),
     newPageErrorIndicatorBuilder: (context) => IconMessage(
       direction: Axis.horizontal,
       icon: Icons.warning_amber_outlined,
-      message: onError ?? Text('Failed to load'),
+      title: onError ?? Text('Failed to load'),
     ),
   );
 }
