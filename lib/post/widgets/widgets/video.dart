@@ -349,6 +349,8 @@ class _VideoGestureState extends State<VideoGesture>
     parent: animationController,
     curve: Curves.easeInOut,
   );
+  int combo = 0;
+  Timer? comboReset;
 
   @override
   Widget build(BuildContext context) {
@@ -356,30 +358,61 @@ class _VideoGestureState extends State<VideoGesture>
       behavior: HitTestBehavior.translucent,
       onDoubleTap: () async {
         if (widget.videoController.value.isInitialized) {
-          Duration target = (await widget.videoController.position)!;
-          if (widget.forward) {
-            target += Duration(seconds: 10);
-            if (target > widget.videoController.value.duration) {
-              target = widget.videoController.value.duration;
-            }
-          } else {
-            target -= Duration(seconds: 10);
-            if (target < Duration.zero) {
-              target = Duration.zero;
-            }
+          Duration current = (await widget.videoController.position)!;
+          bool boundOnZero = current == Duration.zero;
+          // for inexplicable reasons, duration will be a single ms ahead
+          bool boundOnEnd = current ==
+              widget.videoController.value.duration - Duration(milliseconds: 1);
+          if ((!widget.forward && boundOnZero) ||
+              (widget.forward && boundOnEnd)) {
+            return;
           }
 
+          Duration target = current;
+          if (widget.forward) {
+            target += Duration(seconds: 10);
+          } else {
+            target -= Duration(seconds: 10);
+          }
+          setState(() {
+            combo++;
+          });
+
           widget.videoController.seekTo(target);
+          comboReset?.cancel();
+          comboReset = Timer(
+              Duration(milliseconds: 900), () => setState(() => combo = 0));
           await animationController.forward();
           await animationController.reverse();
         }
       },
       child: FadeTransition(
         opacity: fadeAnimation,
-        child: IconMessage(
-          icon: widget.forward ? Icons.fast_forward : Icons.fast_rewind,
-          title: Text('10 seconds'),
-        ),
+        child: Stack(children: [
+          IconMessage(
+            icon: widget.forward ? Icons.fast_forward : Icons.fast_rewind,
+            title: Text('${10 * combo} seconds'),
+          ),
+          AnimatedBuilder(
+            animation: fadeAnimation,
+            builder: (context, child) => Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Colors.transparent,
+                    Colors.white.withOpacity(0.6 * animationController.value),
+                  ],
+                  begin: widget.forward
+                      ? Alignment.centerLeft
+                      : Alignment.centerRight,
+                  end: widget.forward
+                      ? Alignment.centerRight
+                      : Alignment.centerLeft,
+                ),
+              ),
+            ),
+          )
+        ]),
       ),
     );
   }
@@ -475,6 +508,7 @@ class PostVideoWidget extends StatelessWidget {
     }
 
     return Column(
+      mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
