@@ -93,16 +93,16 @@ PagedChildBuilderDelegate<T> defaultPagedChildBuilderDelegate<T>({
       child: SizedCircularProgressIndicator(size: 28),
     )),
     noItemsFoundIndicatorBuilder: (context) => IconMessage(
-      icon: Icons.clear,
+      icon: Icon(Icons.clear),
       title: onEmpty ?? Text('Nothing to see here'),
     ),
     firstPageErrorIndicatorBuilder: (context) => IconMessage(
-      icon: Icons.warning_amber_outlined,
+      icon: Icon(Icons.warning_amber_outlined),
       title: onError ?? Text('Failed to load'),
     ),
     newPageErrorIndicatorBuilder: (context) => IconMessage(
       direction: Axis.horizontal,
-      icon: Icons.warning_amber_outlined,
+      icon: Icon(Icons.warning_amber_outlined),
       title: onError ?? Text('Failed to load'),
     ),
   );

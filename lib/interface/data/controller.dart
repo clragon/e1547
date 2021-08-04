@@ -18,7 +18,9 @@ abstract class RawDataController<PageKeyType, ItemType>
   @override
   void dispose() {
     getRefreshListeners().forEach((element) => element.removeListener(refresh));
-    disposeItems(itemList!);
+    if (itemList != null) {
+      disposeItems(itemList!);
+    }
     super.dispose();
   }
 
