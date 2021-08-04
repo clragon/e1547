@@ -282,47 +282,30 @@ class PageLoader extends StatelessWidget {
       }
     }
 
-    Widget child() {
-      if (state == PageLoaderState.child) {
-        return builder!(context);
-      } else {
-        return SizedBox.shrink();
+    Widget body() {
+      switch (state) {
+        case PageLoaderState.loading:
+          return IconMessage(
+            icon: SizedCircularProgressIndicator(size: 28),
+            title: onLoading ?? Text('Loading...'),
+          );
+        case PageLoaderState.error:
+          return IconMessage(
+            icon: Icon(Icons.warning_amber_outlined),
+            title: onError ?? Text('Failed to load'),
+          );
+        case PageLoaderState.empty:
+          return IconMessage(
+            icon: Icon(Icons.clear),
+            title: onEmpty ?? Text('Nothing to see here'),
+          );
+        case PageLoaderState.child:
+          return builder!(context);
       }
     }
 
     return Scaffold(
-      body: Stack(children: [
-        Visibility(
-          visible: state == PageLoaderState.loading,
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SizedCircularProgressIndicator(size: 28),
-                Padding(
-                  padding: EdgeInsets.all(20),
-                  child: onLoading ?? Text('Loading...'),
-                ),
-              ],
-            ),
-          ),
-        ),
-        pageBuilder?.call(child()) ?? child(),
-        Visibility(
-          visible: state == PageLoaderState.error,
-          child: IconMessage(
-            icon: Icons.warning_amber_outlined,
-            title: onError ?? Text('Failed to load'),
-          ),
-        ),
-        Visibility(
-          visible: state == PageLoaderState.empty,
-          child: IconMessage(
-            icon: Icons.clear,
-            title: onEmpty ?? Text('Nothing to see here'),
-          ),
-        ),
-      ]),
+      body: pageBuilder?.call(body()) ?? body(),
     );
   }
 }
@@ -344,7 +327,7 @@ class RefreshablePageDefaultHeader extends StatelessWidget {
 class IconMessage extends StatelessWidget {
   final Axis direction;
   final Widget title;
-  final IconData icon;
+  final Widget icon;
 
   const IconMessage(
       {this.direction = Axis.vertical,
@@ -358,9 +341,11 @@ class IconMessage extends StatelessWidget {
         direction: direction,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            icon,
-            size: 32,
+          Theme(
+            data: Theme.of(context).copyWith(
+              iconTheme: Theme.of(context).iconTheme.copyWith(size: 32),
+            ),
+            child: icon,
           ),
           Padding(
             padding: EdgeInsets.all(20),

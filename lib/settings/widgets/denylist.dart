@@ -129,7 +129,7 @@ class _DenyListPageState extends State<DenyListPage> {
     Widget body() {
       if (denylist.isEmpty) {
         return IconMessage(
-          icon: Icons.check,
+          icon: Icon(Icons.check),
           title: Text('Your blacklist is empty'),
         );
       }

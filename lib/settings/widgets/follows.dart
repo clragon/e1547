@@ -79,7 +79,7 @@ class _FollowingPageState extends State<FollowingPage> with FollowerMixin {
     Widget body() {
       if (follows?.isEmpty ?? true) {
         return IconMessage(
-          icon: Icons.bookmark,
+          icon: Icon(Icons.bookmark),
           title: Text('You are not following any tags'),
         );
       }

@@ -27,7 +27,8 @@ class FollowUpdater extends ChangeNotifier {
     if (tags == null) {
       tags = update;
     } else {
-      if (!listEquals(tags, update) && !completer!.isCompleted) {
+      if (!UnorderedIterableEquality().equals(tags, update) &&
+          !completer!.isCompleted) {
         tags = update;
         restart = true;
       }
@@ -35,8 +36,11 @@ class FollowUpdater extends ChangeNotifier {
   }
 
   Future<void> updateHost() async {
-    restart = true;
-    update();
+    if (!completer!.isCompleted) {
+      restart = true;
+    } else {
+      update();
+    }
   }
 
   FollowUpdater(this.source) {
@@ -74,7 +78,6 @@ class FollowUpdater extends ChangeNotifier {
               completer!.complete();
               return;
             }
-            await Future.delayed(Duration(milliseconds: 500));
             if (restart) {
               // prevent thumbnails from wrong host
               if (await client.isSafe) {
@@ -87,6 +90,7 @@ class FollowUpdater extends ChangeNotifier {
               return;
             }
             source.value = Future.value(follows);
+            await Future.delayed(Duration(milliseconds: 500));
           }
         }
         progress.value = progress.value + 1;

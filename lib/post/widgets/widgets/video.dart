@@ -390,7 +390,7 @@ class _VideoGestureState extends State<VideoGesture>
         opacity: fadeAnimation,
         child: Stack(children: [
           IconMessage(
-            icon: widget.forward ? Icons.fast_forward : Icons.fast_rewind,
+            icon: Icon(widget.forward ? Icons.fast_forward : Icons.fast_rewind),
             title: Text('${10 * combo} seconds'),
           ),
           AnimatedBuilder(
