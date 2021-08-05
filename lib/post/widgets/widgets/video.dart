@@ -397,15 +397,13 @@ class _VideoGestureState extends State<VideoGesture>
             animation: fadeAnimation,
             builder: (context, child) => Container(
               decoration: BoxDecoration(
-                gradient: LinearGradient(
+                gradient: RadialGradient(
+                  radius: 1,
                   colors: [
-                    Colors.transparent,
                     Colors.white.withOpacity(0.6 * animationController.value),
+                    Colors.transparent,
                   ],
-                  begin: widget.forward
-                      ? Alignment.centerLeft
-                      : Alignment.centerRight,
-                  end: widget.forward
+                  center: widget.forward
                       ? Alignment.centerRight
                       : Alignment.centerLeft,
                 ),
