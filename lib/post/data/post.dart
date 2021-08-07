@@ -34,6 +34,7 @@ class Post extends PostData with ChangeNotifier {
 
   PostType get type {
     switch (file.ext) {
+      case 'mp4':
       case 'webm':
         return PostType.Video;
       case 'swf':
