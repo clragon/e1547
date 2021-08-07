@@ -22,26 +22,28 @@ class FollowUpdater extends ChangeNotifier {
   ValueNotifier<int> progress = ValueNotifier(0);
   Duration get stale => Duration(hours: 4);
 
-  Future<void> updateSource() async {
-    List<String> update = (await source.value).tags as List<String>;
-    if (tags == null) {
-      tags = update;
-    } else {
-      if (!UnorderedIterableEquality().equals(tags, update) &&
-          !completer!.isCompleted) {
-        tags = update;
-        restart = true;
-      }
-    }
-  }
-
-  Future<void> updateHost() async {
+  Future<void> refresh() async {
     if (!completer!.isCompleted) {
       restart = true;
     } else {
       update();
     }
+    return completer!.future;
   }
+
+  Future<void> updateSource() async {
+    List<String> update = (await source.value).tags as List<String>;
+    if (tags == null) {
+      tags = update;
+    } else {
+      if (!UnorderedIterableEquality().equals(tags, update)) {
+        tags = update;
+        refresh();
+      }
+    }
+  }
+
+  Future<void> updateHost() async => refresh();
 
   FollowUpdater(this.source) {
     source.addListener(updateSource);
