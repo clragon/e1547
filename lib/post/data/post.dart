@@ -35,10 +35,6 @@ class Post extends PostData with ChangeNotifier {
   PostType get type {
     switch (file.ext) {
       case 'webm':
-        if (Platform.isIOS) {
-          file.ext = 'mp4';
-          file.url = file.url!.replaceAll('.webm', '.mp4');
-        }
         return PostType.Video;
       case 'swf':
         return PostType.Unsupported;
@@ -91,6 +87,10 @@ class Post extends PostData with ChangeNotifier {
   }
 
   Post.fromMap(this.json) : super.fromMap(json as Map<String, dynamic>) {
+    if (type == PostType.Video && Platform.isIOS) {
+      file.ext = 'mp4';
+      file.url = file.url!.replaceAll('.webm', '.mp4');
+    }
     initVideo();
   }
 
