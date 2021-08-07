@@ -59,6 +59,7 @@ class _FollowMarkReadTileState extends State<FollowMarkReadTile> {
           (await follow.status).unseen = 0;
         }
         settings.follows.value = Future.value(follows);
+        Navigator.of(context).maybePop();
       },
     );
   }
@@ -102,7 +103,10 @@ class _FollowSplitSwitchTileState extends State<FollowSplitSwitchTile> {
       ),
       subtitle: followsSplit ? Text('Seperated tags') : Text('Mixed tags'),
       value: followsSplit,
-      onChanged: (value) => settings.followsSplit.value = Future.value(value),
+      onChanged: (value) async {
+        await Navigator.of(context).maybePop();
+        settings.followsSplit.value = Future.value(value);
+      },
     );
   }
 }
