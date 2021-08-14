@@ -44,12 +44,12 @@ class TransparentAppBar extends StatelessWidget with AppBarSize {
   Widget build(BuildContext context) {
     return Theme(
       data: Theme.of(context).copyWith(
-        iconTheme: IconThemeData(color: Colors.white),
+        iconTheme: transparent ? IconThemeData(color: Colors.white) : null,
       ),
       child: AppBar(
         leading: leading,
         elevation: 0,
-        backgroundColor: Colors.transparent,
+        backgroundColor: transparent ? Colors.transparent : null,
         title: title,
         actions: actions,
       ),

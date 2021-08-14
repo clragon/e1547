@@ -5,136 +5,6 @@ import 'package:e1547/post.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
-class FrameController extends ChangeNotifier {
-  bool visible;
-  Timer? frameToggler;
-  void Function(bool shown)? onToggle;
-  Duration defaultFrameDuration = Duration(seconds: 1);
-
-  FrameController({this.onToggle, this.visible = false});
-
-  void showFrame({required Duration duration}) {
-    toggleFrame(shown: true, duration: duration);
-  }
-
-  void hideFrame({required Duration duration}) {
-    toggleFrame(shown: false, duration: duration);
-  }
-
-  void toggleFrame({bool? shown, Duration? duration}) {
-    frameToggler?.cancel();
-    void toggle() {
-      visible = shown ?? !visible;
-      this.notifyListeners();
-      onToggle?.call(visible);
-    }
-
-    if (duration?.inMicroseconds == 0) {
-      toggle();
-    } else {
-      frameToggler = Timer(duration ?? defaultFrameDuration, toggle);
-    }
-  }
-
-  void cancel() {
-    frameToggler?.cancel();
-  }
-
-  @override
-  void dispose() {
-    cancel();
-    super.dispose();
-  }
-}
-
-class VideoFrame extends StatefulWidget {
-  final Post post;
-  final Widget child;
-  final bool? showFrame;
-  final Function(bool shown)? onToggle;
-
-  VideoFrame(
-      {required this.child, required this.post, this.onToggle, this.showFrame});
-
-  @override
-  _VideoFrameState createState() => _VideoFrameState();
-}
-
-class _VideoFrameState extends State<VideoFrame> {
-  late FrameController frameController;
-
-  @override
-  void initState() {
-    super.initState();
-    frameController = FrameController(
-      onToggle: widget.onToggle,
-    );
-  }
-
-  @override
-  void didUpdateWidget(VideoFrame oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    frameController.cancel();
-  }
-
-  @override
-  void dispose() {
-    frameController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: Listenable.merge([
-        frameController,
-        widget.post.controller,
-      ]),
-      builder: (contex, child) {
-        List<Widget> children = [
-          widget.child,
-        ];
-
-        if (widget.post.controller != null) {
-          children.addAll([
-            Positioned.fill(
-              child: VideoGestures(videoController: widget.post.controller!),
-            ),
-            Positioned(
-              bottom: 0,
-              right: 0,
-              left: 0,
-              child: VideoBar(
-                videoController: widget.post.controller!,
-                frameController: frameController,
-              ),
-            ),
-            VideoButton(
-              videoController: widget.post.controller!,
-              frameController: frameController,
-            )
-          ]);
-        }
-
-        return GestureDetector(
-          behavior: HitTestBehavior.translucent,
-          onTap: () {
-            frameController.toggleFrame(duration: Duration(seconds: 0));
-            if ((widget.post.controller?.value.isPlaying ?? false) &&
-                frameController.visible) {
-              frameController.hideFrame(duration: Duration(seconds: 2));
-            }
-          },
-          child: Stack(
-            alignment: Alignment.center,
-            children: children,
-          ),
-        );
-      },
-    );
-  }
-}
-
 class VideoButton extends StatefulWidget {
   final VideoPlayerController videoController;
   final FrameController? frameController;
@@ -417,9 +287,10 @@ class _VideoGestureState extends State<VideoGesture>
 }
 
 class VideoGestures extends StatefulWidget {
+  final Widget child;
   final VideoPlayerController videoController;
 
-  const VideoGestures({required this.videoController});
+  const VideoGestures({required this.videoController, required this.child});
 
   @override
   _VideoGesturesState createState() => _VideoGesturesState();
@@ -429,30 +300,32 @@ class _VideoGesturesState extends State<VideoGestures> {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
-      builder: (context, constraints) => Column(
-        mainAxisSize: MainAxisSize.max,
+      builder: (context, constraints) => Stack(
+        alignment: Alignment.center,
         children: [
-          Expanded(
-              child: Row(
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              Expanded(
-                child: VideoGesture(
-                  forward: false,
-                  videoController: widget.videoController,
+          widget.child,
+          Positioned.fill(
+            child: Row(
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Expanded(
+                  child: VideoGesture(
+                    forward: false,
+                    videoController: widget.videoController,
+                  ),
                 ),
-              ),
-              SizedBox(
-                width: constraints.maxWidth * 0.1,
-              ),
-              Expanded(
-                child: VideoGesture(
-                  forward: true,
-                  videoController: widget.videoController,
+                SizedBox(
+                  width: constraints.maxWidth * 0.1,
                 ),
-              ),
-            ],
-          ))
+                Expanded(
+                  child: VideoGesture(
+                    forward: true,
+                    videoController: widget.videoController,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );

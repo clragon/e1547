@@ -14,12 +14,8 @@ class PostPhotoGallery extends StatefulWidget {
 }
 
 class _PostPhotoGalleryState extends State<PostPhotoGallery> {
-  ValueNotifier<bool> showFrame = ValueNotifier(false);
+  FrameController frameController = FrameController();
   late ValueNotifier<int> current = ValueNotifier(widget.index);
-
-  void toggleFrame({bool? shown}) {
-    showFrame.value = shown ?? !showFrame.value;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,26 +25,26 @@ class _PostPhotoGalleryState extends State<PostPhotoGallery> {
         extendBodyBehindAppBar: true,
         appBar: PreferredSize(
           preferredSize: Size.fromHeight(kToolbarHeight),
-          child: ValueListenableBuilder(
-            valueListenable: showFrame,
+          child: AnimatedBuilder(
+            animation: frameController,
             child: PostPhotoAppBar(post: widget.posts[value]),
-            builder: (context, bool visible, child) => CrossFade(
-              showChild: visible,
+            builder: (context, child) => CrossFade(
+              showChild: frameController.visible,
               child: child!,
             ),
           ),
         ),
-        body: VideoFrame(
+        body: PostPhotoFrame(
           child: child!,
           post: widget.posts[value],
-          onToggle: (shown) => toggleFrame(shown: shown),
+          controller: frameController,
         ),
       ),
       child: PageView.builder(
         itemCount: widget.posts.length,
         controller: PageController(initialPage: widget.index),
         physics: BouncingScrollPhysics(),
-        itemBuilder: (BuildContext context, int index) => ImageOverlay(
+        itemBuilder: (context, int index) => ImageOverlay(
           post: widget.posts[index],
           builder: (post) {
             switch (widget.posts[index].type) {
@@ -58,7 +54,12 @@ class _PostPhotoGalleryState extends State<PostPhotoGallery> {
                 return Hero(
                   tag: widget.posts[index].hero,
                   child: PostVideoLoader(
-                      post: post, child: PostVideoWidget(post: post)),
+                    post: post,
+                    child: VideoGestures(
+                      child: PostVideoWidget(post: post),
+                      videoController: post.controller!,
+                    ),
+                  ),
                 );
               case PostType.Unsupported:
               default:
