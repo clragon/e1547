@@ -52,8 +52,8 @@ class _FollowsSplitPageState extends State<FollowsSplitPage>
 
   @override
   void dispose() {
-    super.dispose();
     followUpdater.removeListener(updateRefresh);
+    super.dispose();
   }
 
   @override

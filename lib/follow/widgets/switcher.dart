@@ -8,7 +8,7 @@ class FollowsPage extends StatefulWidget {
   _FollowsPageState createState() => _FollowsPageState();
 }
 
-class _FollowsPageState extends State<FollowsPage> {
+class _FollowsPageState extends State<FollowsPage> with LinkingMixin {
   bool? isSplit;
 
   Future<void> update() async {
@@ -17,17 +17,9 @@ class _FollowsPageState extends State<FollowsPage> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    update();
-    settings.followsSplit.addListener(update);
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    settings.followsSplit.removeListener(update);
-  }
+  Map<ChangeNotifier, VoidCallback> get links => {
+        settings.followsSplit: update,
+      };
 
   @override
   Widget build(BuildContext context) {

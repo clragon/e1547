@@ -10,8 +10,14 @@ class FollowMarkReadTile extends StatefulWidget {
   _FollowMarkReadTileState createState() => _FollowMarkReadTileState();
 }
 
-class _FollowMarkReadTileState extends State<FollowMarkReadTile> {
+class _FollowMarkReadTileState extends State<FollowMarkReadTile>
+    with LinkingMixin {
   int unseen = 0;
+
+  @override
+  Map<ChangeNotifier, VoidCallback> get links => {
+        settings.follows: update,
+      };
 
   Future<void> update() async {
     unseen = 0;
@@ -20,19 +26,6 @@ class _FollowMarkReadTileState extends State<FollowMarkReadTile> {
       unseen += (await follow.status).unseen ?? 0;
     }
     setState(() {});
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    settings.follows.addListener(update);
-    update();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    settings.follows.removeListener(update);
   }
 
   @override
@@ -72,7 +65,8 @@ class FollowSplitSwitchTile extends StatefulWidget {
   _FollowSplitSwitchTileState createState() => _FollowSplitSwitchTileState();
 }
 
-class _FollowSplitSwitchTileState extends State<FollowSplitSwitchTile> {
+class _FollowSplitSwitchTileState extends State<FollowSplitSwitchTile>
+    with LinkingMixin {
   bool followsSplit = false;
 
   void update() {
@@ -81,17 +75,9 @@ class _FollowSplitSwitchTileState extends State<FollowSplitSwitchTile> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    settings.followsSplit.addListener(update);
-    update();
-  }
-
-  @override
-  void dispose() {
-    settings.followsSplit.removeListener(update);
-    super.dispose();
-  }
+  Map<ChangeNotifier, VoidCallback> get links => {
+        settings.followsSplit: update,
+      };
 
   @override
   Widget build(BuildContext context) {

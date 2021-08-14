@@ -14,9 +14,14 @@ class DrawerCounter extends StatefulWidget {
   _DrawerCounterState createState() => _DrawerCounterState();
 }
 
-class _DrawerCounterState extends State<DrawerCounter> {
+class _DrawerCounterState extends State<DrawerCounter> with LinkingMixin {
   final int limit = 15;
   List<Widget>? children;
+
+  @override
+  Map<ChangeNotifier, VoidCallback> get links => {
+        widget.controller: updateTags,
+      };
 
   Future<void> updateTags() async {
     if (mounted) {
@@ -46,19 +51,6 @@ class _DrawerCounterState extends State<DrawerCounter> {
         children = cards;
       });
     }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    widget.controller.addListener(updateTags);
-    updateTags();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    widget.controller.removeListener(updateTags);
   }
 
   @override
