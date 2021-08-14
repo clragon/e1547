@@ -13,10 +13,10 @@ class FrameController extends ChangeNotifier {
 
   FrameController({this.onToggle, this.visible = false});
 
-  void showFrame({required Duration duration}) =>
+  void showFrame({Duration? duration}) =>
       toggleFrame(shown: true, duration: duration);
 
-  void hideFrame({required Duration duration}) =>
+  void hideFrame({Duration? duration}) =>
       toggleFrame(shown: false, duration: duration);
 
   void toggleFrame({bool? shown, Duration? duration}) {
@@ -27,7 +27,11 @@ class FrameController extends ChangeNotifier {
       onToggle?.call(visible);
     }
 
-    frameToggler = Timer(duration ?? defaultFrameDuration, toggle);
+    if (duration == null) {
+      toggle();
+    } else {
+      frameToggler = Timer(duration, toggle);
+    }
   }
 
   void cancel() {
@@ -70,13 +74,10 @@ class _PostPhotoFrameState extends State<PostPhotoFrame> {
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
-      animation: Listenable.merge([
-        controller,
-        widget.post.controller,
-      ]),
+      animation: controller,
       builder: (contex, child) {
         List<Widget> children = [
-          widget.child,
+          child!,
         ];
 
         if (widget.post.controller != null) {
@@ -100,7 +101,7 @@ class _PostPhotoFrameState extends State<PostPhotoFrame> {
         return GestureDetector(
           behavior: HitTestBehavior.translucent,
           onTap: () {
-            controller.toggleFrame(duration: Duration.zero);
+            controller.toggleFrame();
             if ((widget.post.controller?.value.isPlaying ?? false) &&
                 controller.visible) {
               controller.hideFrame(duration: Duration(seconds: 2));
@@ -112,6 +113,7 @@ class _PostPhotoFrameState extends State<PostPhotoFrame> {
           ),
         );
       },
+      child: widget.child,
     );
   }
 }

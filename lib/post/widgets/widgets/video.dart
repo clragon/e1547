@@ -10,8 +10,9 @@ class VideoButton extends StatefulWidget {
   final FrameController? frameController;
   final double size;
 
-  const VideoButton(
-      {required this.videoController, this.frameController, this.size = 54});
+  VideoButton(
+      {required this.videoController, this.frameController, this.size = 54})
+      : super(key: ObjectKey(videoController));
 
   @override
   _VideoButtonState createState() => _VideoButtonState();
