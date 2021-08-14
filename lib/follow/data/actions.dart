@@ -5,6 +5,7 @@ import 'package:e1547/client.dart';
 import 'package:e1547/follow/data.dart';
 import 'package:e1547/post.dart';
 import 'package:e1547/settings.dart';
+import 'package:e1547/tag.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mutex/mutex.dart';
@@ -185,8 +186,7 @@ extension Refreshing on Follow {
 
   Future<bool> refresh() async {
     try {
-      List<Post> posts =
-          await client.posts(tags, 1, limit: checkAmount, faithful: true);
+      List<Post> posts = await client.postsRaw(tags, 1, limit: checkAmount);
 
       List<String> denylist = await settings.denylist.value;
 
@@ -200,7 +200,7 @@ extension Refreshing on Follow {
       await updateUnseen(posts);
 
       if (!tags.contains(' ') && alias == null) {
-        RegExpMatch? match = RegExp(r'^pool:(?<id>\d+)$').firstMatch(tags);
+        RegExpMatch? match = RegExp(poolRegex).firstMatch(tags);
         if (match != null) {
           client
               .pool(int.tryParse(match.namedGroup('id')!)!)
