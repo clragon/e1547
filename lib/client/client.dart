@@ -118,12 +118,10 @@ class Client {
     return _avatar;
   }
 
-  Future<List<Post>?> postsFromJson(List json) async {
+  Future<List<Post>> postsFromJson(List json) async {
     List<Post> posts = [];
     bool loggedIn = await this.hasLogin;
-    bool hasPosts = false;
     for (Map raw in json) {
-      hasPosts = true;
       Post post = Post.fromMap(raw);
       post.isLoggedIn = loggedIn;
       if (post.file.url == null && !post.flags.deleted) {
@@ -134,66 +132,45 @@ class Client {
       }
       posts.add(post);
     }
-    if (hasPosts && posts.isEmpty) {
-      return null;
-    }
     return posts;
   }
 
+  Future<List<Post>> postsRaw(String? tags, int page, {int? limit}) async {
+    await initialized;
+    Map body = await dio.get(
+      'posts.json',
+      queryParameters: {
+        'tags': sortTags(tags!),
+        'page': page,
+        'limit': limit,
+      },
+    ).then((response) => response.data);
+
+    return postsFromJson(body['posts']);
+  }
+
   Future<List<Post>> posts(String? tags, int page,
-      {int? limit, bool faithful = false, int attempt = 0}) async {
+      {int? limit, bool? reversePools}) async {
     await initialized;
 
-    Future<List<Post>> getPosts() async {
-      Map body = await dio.get(
-        'posts.json',
-        queryParameters: {
-          'tags': sortTags(tags!),
-          'page': page,
-          'limit': limit,
-        },
-      ).then((response) => response.data);
+    Map<RegExp, Future<List<Post>> Function(RegExpMatch match, String? result)>
+        regexes = {
+      RegExp(poolRegex): (match, result) => poolPosts(
+          int.parse(match.namedGroup('id')!), page,
+          reverse: reversePools),
+    };
 
-      List<Post>? posts = await postsFromJson(body['posts']);
-
-      if (posts == null) {
-        if (attempt < 3) {
-          return client.posts(tags, page + 1,
-              faithful: faithful, attempt: attempt + 1);
-        } else {
-          posts = [];
-        }
+    for (MapEntry<
+        RegExp,
+        Future<List<Post>> Function(
+            RegExpMatch match, String? result)> entry in regexes.entries) {
+      RegExpMatch? match = entry.key.firstMatch(tags!.trim());
+      if (match != null) {
+        return entry.value(match, tags);
       }
-      return posts;
     }
 
-    if (faithful) {
-      return getPosts();
-    } else {
-      // String username = (await credentials).username;
-
-      Map<RegExp,
-              Future<List<Post>> Function(RegExpMatch match, String? result)>
-          regexes = {
-        RegExp(r'^pool:(?<id>\d+)$'): (match, result) =>
-            poolPosts(int.tryParse(match.namedGroup('id')!)!, page),
-        /*
-        if (username != null)
-          RegExp(r'^fav:' + username + r'$'): (match, result) =>
-              favorites(page, limit: limit),
-         */
-      };
-
-      for (MapEntry<RegExp, Function(RegExpMatch match, String? result)> entry
-          in regexes.entries) {
-        RegExpMatch? match = entry.key.firstMatch(tags!.trim());
-        if (match != null) {
-          return entry.value(match, tags);
-        }
-      }
-
-      return getPosts();
-    }
+    return postsRaw(tags, page, limit: limit);
   }
 
   Future<List<Post>> favorites(int page, {int? limit}) async {
@@ -207,7 +184,7 @@ class Client {
       },
     ).then((response) => response.data);
 
-    return (await (postsFromJson(body['posts']))) ?? [];
+    return (postsFromJson(body['posts']));
   }
 
   Future<bool> addFavorite(int post) async {
@@ -266,26 +243,29 @@ class Client {
     return Pool.fromMap(body);
   }
 
-  Future<List<Post>> poolPosts(int poolId, int page) async {
+  Future<List<Post>> poolPosts(int poolId, int page, {bool? reverse}) async {
     Pool pool = await client.pool(poolId);
+    List<int> ids =
+        reverse ?? false ? pool.postIds.reversed.toList() : pool.postIds;
     int limit = 80;
     int lower = ((page - 1) * limit);
     int upper = lower + limit;
 
-    if (pool.postIds.length < lower) {
+    if (ids.length < lower) {
       return [];
     }
-    if (pool.postIds.length < upper) {
-      upper = pool.postIds.length;
+    if (ids.length < upper) {
+      upper = ids.length;
     }
 
-    List<int> ids = pool.postIds.sublist(lower, upper);
-    String filter = 'id:${ids.join(',')}';
+    List<int> pageIds = ids.sublist(lower, upper);
+    String filter = 'id:${pageIds.join(',')}';
 
     List<Post> posts = await client.posts(filter, 1);
     Map<int, Post> table =
         Map.fromIterable(posts, key: (e) => e.id, value: (e) => e);
-    posts = (ids.map((e) => table[e]).toList()..removeWhere((e) => e == null))
+    posts = (pageIds.map((e) => table[e]).toList()
+          ..removeWhere((e) => e == null))
         .cast<Post>();
     return posts;
   }
