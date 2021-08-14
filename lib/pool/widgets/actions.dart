@@ -15,30 +15,21 @@ class FollowButton extends StatefulWidget {
   }
 }
 
-class FollowButtonState extends State<FollowButton> {
-  late String tag;
+class FollowButtonState extends State<FollowButton> with LinkingMixin {
+  late String tag = 'pool:${widget.pool.id}';
   List<Follow>? follows;
   late bool following;
+
+  @override
+  Map<ChangeNotifier, VoidCallback> get links => {
+        settings.follows: update,
+      };
 
   Future<void> update() async {
     await settings.follows.value.then((value) => follows = value);
     setState(() {
       following = follows!.any((element) => element.tags == tag);
     });
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    tag = 'pool:${widget.pool.id}';
-    settings.follows.addListener(update);
-    update();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    settings.follows.removeListener(update);
   }
 
   @override

@@ -11,9 +11,14 @@ class DenyListPage extends StatefulWidget {
   }
 }
 
-class _DenyListPageState extends State<DenyListPage> {
+class _DenyListPageState extends State<DenyListPage> with LinkingMixin {
   List<String> denylist = [];
   SheetActionController sheetController = SheetActionController();
+
+  @override
+  Map<ChangeNotifier, VoidCallback> get links => {
+        settings.denylist: updateDenylist,
+      };
 
   Future<void> updateDenylist() async {
     await settings.denylist.value.then((value) {
@@ -21,19 +26,6 @@ class _DenyListPageState extends State<DenyListPage> {
         setState(() => denylist = value);
       }
     });
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    settings.denylist.addListener(updateDenylist);
-    updateDenylist();
-  }
-
-  @override
-  void dispose() {
-    settings.denylist.removeListener(updateDenylist);
-    super.dispose();
   }
 
   void addTags(BuildContext context, [int? edit]) {

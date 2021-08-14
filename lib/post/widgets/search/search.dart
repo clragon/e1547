@@ -17,8 +17,12 @@ class SearchPage extends StatefulWidget {
   _SearchPageState createState() => _SearchPageState();
 }
 
-class _SearchPageState extends State<SearchPage> {
-  late PostController controller;
+class _SearchPageState extends State<SearchPage> with LinkingMixin {
+  late PostController controller = PostController(
+    provider: (tags, page) =>
+        client.posts(tags, page, reversePools: reversePools),
+    search: widget.tags,
+  );
 
   List<Follow>? follows;
   Pool? pool;
@@ -29,34 +33,24 @@ class _SearchPageState extends State<SearchPage> {
   String title = 'Search';
 
   @override
-  void initState() {
-    super.initState();
-    controller = PostController(
-      provider: (tags, page) =>
-          client.posts(tags, page, reversePools: reversePools),
-      search: widget.tags,
-    );
-    updatePool();
-    updateTitle();
-    controller.addListener(updateTitle);
-    controller.search.addListener(updatePool);
-    settings.follows.addListener(updateFollows);
-  }
+  Map<ChangeNotifier, VoidCallback> get links => {
+        controller: updateTitle,
+        controller.search: updatePool,
+        settings.follows: updateFollows,
+      };
 
   @override
   void dispose() {
-    controller.removeListener(updateTitle);
-    controller.search.removeListener(updatePool);
-    settings.follows.removeListener(updateFollows);
-    controller.dispose();
     super.dispose();
+    // call super first, to disconnect mixin listeners
+    controller.dispose();
   }
 
   String getTitle() {
     Follow? follow = follows
         ?.singleWhereOrNull((follow) => follow.tags == controller.search.value);
     if (follow != null) {
-      if (controller.itemList!.isNotEmpty) {
+      if (controller.itemList?.isNotEmpty ?? false) {
         follow
             .updateLatest(controller.itemList!.first, foreground: true)
             .then((updated) {
@@ -89,8 +83,8 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   Future<void> updateFollows() async {
-    await settings.follows.value.then((value) => follows = value);
-    setState(() {});
+    follows = await settings.follows.value;
+    updateTitle();
   }
 
   Future<void> updatePool() async {

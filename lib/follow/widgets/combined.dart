@@ -11,7 +11,8 @@ class FollowsCombinedPage extends StatefulWidget {
   _FollowsCombinedPageState createState() => _FollowsCombinedPageState();
 }
 
-class _FollowsCombinedPageState extends State<FollowsCombinedPage> {
+class _FollowsCombinedPageState extends State<FollowsCombinedPage>
+    with LinkingMixin {
   List<String?>? tags;
 
   PostController provider = PostController(
@@ -19,24 +20,19 @@ class _FollowsCombinedPageState extends State<FollowsCombinedPage> {
     canSearch: false,
   );
 
+  @override
+  Map<ChangeNotifier, VoidCallback> get links => {
+        settings.follows: updateTags,
+      };
+
   Future<void> updateTags() async {
     List<String?> update = (await settings.follows.value).tags;
-    if (!listEquals(tags, update)) {
+    if (tags == null) {
+      tags = update;
+    } else if (!listEquals(tags, update)) {
       provider.refresh();
       tags = update;
     }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    settings.follows.addListener(updateTags);
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    settings.follows.removeListener(updateTags);
   }
 
   @override
