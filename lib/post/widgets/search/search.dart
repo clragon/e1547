@@ -73,13 +73,12 @@ class _SearchPageState extends State<SearchPage> {
     setState(() {
       loading = true;
     });
+    pool = null;
     Tagset input = Tagset.parse(controller.search.value);
     if (input.length == 1) {
       RegExpMatch? match = RegExp(poolRegex).firstMatch(input.toString());
       if (match != null) {
         pool = await client.pool(int.parse(match.namedGroup('id')!));
-      } else {
-        pool = null;
       }
     }
     setState(() {
@@ -149,7 +148,24 @@ class _SearchPageState extends State<SearchPage> {
     return PostsPage(
       appBarBuilder: (context) => appbar(),
       controller: controller,
-      drawerActions: [],
+      drawerActions: [
+        if (pool != null)
+          SwitchListTile(
+            secondary: Icon(Icons.sort),
+            title: Text(
+              'Pool order',
+              style: Theme.of(context).textTheme.subtitle1,
+            ),
+            subtitle: Text(reversePools ? 'newest first' : 'oldest first'),
+            value: reversePools,
+            onChanged: (value) {
+              setState(() {
+                reversePools = value;
+              });
+              controller.refresh();
+            },
+          ),
+      ],
     );
   }
 }
