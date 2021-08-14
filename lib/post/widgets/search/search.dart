@@ -28,6 +28,30 @@ class _SearchPageState extends State<SearchPage> {
 
   String title = 'Search';
 
+  @override
+  void initState() {
+    super.initState();
+    controller = PostController(
+      provider: (tags, page) =>
+          client.posts(tags, page, reversePools: reversePools),
+      search: widget.tags,
+    );
+    updatePool();
+    updateTitle();
+    controller.addListener(updateTitle);
+    controller.search.addListener(updatePool);
+    settings.follows.addListener(updateFollows);
+  }
+
+  @override
+  void dispose() {
+    controller.removeListener(updateTitle);
+    controller.search.removeListener(updatePool);
+    settings.follows.removeListener(updateFollows);
+    controller.dispose();
+    super.dispose();
+  }
+
   String getTitle() {
     Follow? follow = follows
         ?.singleWhereOrNull((follow) => follow.tags == controller.search.value);
@@ -88,30 +112,6 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    controller = PostController(
-      provider: (tags, page) =>
-          client.posts(tags, page, reversePools: reversePools),
-      search: widget.tags,
-    );
-    updatePool();
-    updateTitle();
-    controller.addListener(updateTitle);
-    controller.search.addListener(updatePool);
-    settings.follows.addListener(updateFollows);
-  }
-
-  @override
-  void dispose() {
-    controller.removeListener(updateTitle);
-    controller.search.removeListener(updatePool);
-    settings.follows.removeListener(updateFollows);
-    controller.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     PreferredSizeWidget appbar() {
       return AppBar(
@@ -150,15 +150,9 @@ class _SearchPageState extends State<SearchPage> {
       controller: controller,
       drawerActions: [
         if (pool != null)
-          SwitchListTile(
-            secondary: Icon(Icons.sort),
-            title: Text(
-              'Pool order',
-              style: Theme.of(context).textTheme.subtitle1,
-            ),
-            subtitle: Text(reversePools ? 'newest first' : 'oldest first'),
-            value: reversePools,
-            onChanged: (value) {
+          PoolOrderSwitch(
+            reversePool: reversePools,
+            onChange: (value) {
               setState(() {
                 reversePools = value;
               });

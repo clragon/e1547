@@ -15,12 +15,14 @@ class PoolPage extends StatefulWidget {
 
 class _PoolPageState extends State<PoolPage> {
   late PostController controller;
+  bool reversePool = false;
 
   @override
   void initState() {
     super.initState();
     controller = PostController(
-      provider: (tags, page) => client.poolPosts(widget.pool.id, page),
+      provider: (tags, page) =>
+          client.poolPosts(widget.pool.id, page, reverse: reversePool),
       canSearch: false,
     );
   }
@@ -48,6 +50,37 @@ class _PoolPageState extends State<PoolPage> {
           ],
         );
       },
+      drawerActions: [
+        PoolOrderSwitch(
+          reversePool: reversePool,
+          onChange: (value) {
+            setState(() {
+              reversePool = value;
+            });
+            controller.refresh();
+          },
+        )
+      ],
+    );
+  }
+}
+
+class PoolOrderSwitch extends StatelessWidget {
+  final bool reversePool;
+  final void Function(bool value) onChange;
+  const PoolOrderSwitch({required this.reversePool, required this.onChange});
+
+  @override
+  Widget build(BuildContext context) {
+    return SwitchListTile(
+      secondary: Icon(Icons.sort),
+      title: Text(
+        'Pool order',
+        style: Theme.of(context).textTheme.subtitle1,
+      ),
+      subtitle: Text(reversePool ? 'newest first' : 'oldest first'),
+      value: reversePool,
+      onChanged: onChange,
     );
   }
 }
