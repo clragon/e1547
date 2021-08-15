@@ -2,11 +2,14 @@ import 'package:e1547/client.dart';
 import 'package:e1547/settings.dart';
 import 'package:flutter/foundation.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
+import 'package:mutex/mutex.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 abstract class RawDataController<PageKeyType, ItemType>
     extends PagingController<PageKeyType, ItemType> {
   final PageKeyType firstPageKey;
+  Mutex requestLock = Mutex();
+  bool isRefreshing = false;
 
   RawDataController({
     required this.firstPageKey,
@@ -57,6 +60,17 @@ abstract class RawDataController<PageKeyType, ItemType>
 
   @override
   Future<void> refresh({bool background = false}) async {
+    // makes sure a singular refresh can be queued up
+    if (requestLock.isLocked) {
+      if (isRefreshing) {
+        return;
+      }
+      isRefreshing = true;
+      // waits for the current request to be done
+      await requestLock.acquire();
+      requestLock.release();
+      isRefreshing = false;
+    }
     try {
       List<ItemType> old = List<ItemType>.from(itemList ?? []);
       if (background) {
@@ -80,6 +94,7 @@ abstract class RawDataController<PageKeyType, ItemType>
   }
 
   Future<void> requestPage(PageKeyType page) async {
+    await requestLock.acquire();
     try {
       List<ItemType>? items = await loadPage(page);
       if (items != null) {
@@ -92,6 +107,7 @@ abstract class RawDataController<PageKeyType, ItemType>
     } finally {
       success();
     }
+    requestLock.release();
   }
 }
 
