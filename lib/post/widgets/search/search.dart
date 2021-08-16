@@ -151,6 +151,7 @@ class _SearchPageState extends State<SearchPage> with LinkingMixin {
                 reversePools = value;
               });
               controller.refresh();
+              Navigator.of(context).maybePop();
             },
           ),
       ],

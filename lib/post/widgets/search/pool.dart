@@ -58,6 +58,7 @@ class _PoolPageState extends State<PoolPage> {
               reversePool = value;
             });
             controller.refresh();
+            Navigator.of(context).maybePop();
           },
         )
       ],
