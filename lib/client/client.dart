@@ -150,14 +150,22 @@ class Client {
   }
 
   Future<List<Post>> posts(String? tags, int page,
-      {int? limit, bool? reversePools}) async {
+      {int? limit, bool? reversePools, bool? orderFavorites}) async {
     await initialized;
+    String? username;
+
+    if (orderFavorites ?? false) {
+      username = (await credentials)?.username;
+    }
 
     Map<RegExp, Future<List<Post>> Function(RegExpMatch match, String? result)>
         regexes = {
       RegExp(poolRegex): (match, result) => poolPosts(
           int.parse(match.namedGroup('id')!), page,
           reverse: reversePools),
+      if (username != null)
+        RegExp(r'^fav:' + username + r'$'): (match, result) =>
+            favorites(page, limit: limit),
     };
 
     for (MapEntry<

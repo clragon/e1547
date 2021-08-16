@@ -11,26 +11,33 @@ class FavPage extends StatefulWidget {
   _FavPageState createState() => _FavPageState();
 }
 
-class _FavPageState extends State<FavPage> {
-  bool error = false;
+class _FavPageState extends State<FavPage> with LinkingMixin {
+  bool orderFavorites = false;
   PostController? controller;
+  bool error = false;
 
   @override
-  void initState() {
-    super.initState();
-    settings.credentials.value.then((value) {
-      if (value != null) {
-        setState(() {
-          controller = PostController(
-            provider: (tags, page) {
-              return client.posts(tags, page);
-            },
-            search: 'fav:${value.username}',
-            canDeny: false,
-          );
-        });
-      }
-    });
+  Map<ChangeNotifier, VoidCallback> get links => {
+        settings.credentials: updateUsername,
+      };
+
+  Future<void> updateUsername() async {
+    Credentials? credentials = await settings.credentials.value;
+    if (credentials != null) {
+      setState(() {
+        controller = PostController(
+          provider: (tags, page) =>
+              client.posts(tags, page, orderFavorites: orderFavorites),
+          search: 'fav:${credentials.username}',
+          canDeny: false,
+        );
+        error = false;
+      });
+    } else {
+      setState(() {
+        error = true;
+      });
+    }
   }
 
   @override
@@ -45,6 +52,25 @@ class _FavPageState extends State<FavPage> {
       builder: (context) => PostsPage(
         appBarBuilder: defaultAppBarBuilder('Favorites'),
         controller: controller!,
+        drawerActions: [
+          if (controller != null)
+            SwitchListTile(
+              secondary: Icon(Icons.sort),
+              title: Text(
+                'Favorite order',
+                style: Theme.of(context).textTheme.subtitle1,
+              ),
+              subtitle: Text(orderFavorites ? 'added order' : 'id order'),
+              value: orderFavorites,
+              onChanged: (value) {
+                setState(() {
+                  orderFavorites = !orderFavorites;
+                });
+                controller!.refresh();
+                Navigator.of(context).maybePop();
+              },
+            ),
+        ],
       ),
       isBuilt: controller != null,
       isError: error,
