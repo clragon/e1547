@@ -76,9 +76,10 @@ class _SearchPageState extends State<SearchPage> with LinkingMixin {
   }
 
   Future<void> updateTitle() async {
-    title = getTitle();
     if (mounted) {
-      setState(() {});
+      setState(() {
+        title = getTitle();
+      });
     }
   }
 

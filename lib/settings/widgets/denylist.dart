@@ -20,13 +20,13 @@ class _DenyListPageState extends State<DenyListPage> with LinkingMixin {
         settings.denylist: updateDenylist,
       };
 
-  Future<void> updateDenylist() async {
-    await settings.denylist.value.then((value) {
-      if (mounted) {
-        setState(() => denylist = value);
-      }
-    });
-  }
+  Future<void> updateDenylist() async => settings.denylist.value.then(
+        (value) {
+          if (mounted) {
+            setState(() => denylist = value);
+          }
+        },
+      );
 
   void addTags(BuildContext context, [int? edit]) {
     void submit(String value, [int? edit]) {

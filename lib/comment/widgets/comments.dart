@@ -13,43 +13,32 @@ class CommentsPage extends StatefulWidget {
   State createState() => _CommentsPageState();
 }
 
-class _CommentsPageState extends State<CommentsPage> with UpdateMixin {
-  late CommentController controller;
-
-  @override
-  void initState() {
-    super.initState();
-    controller = CommentController(postId: widget.post.id);
-  }
+class _CommentsPageState extends State<CommentsPage> {
+  late CommentController controller = CommentController(postId: widget.post.id);
 
   @override
   Widget build(BuildContext context) {
-    Widget floatingActionButton() {
-      return FloatingActionButton(
+    return RefreshableControllerPage(
+      appBar: AppBar(title: Text('#${widget.post.id} comments')),
+      floatingActionButton: FloatingActionButton(
         heroTag: 'float',
         backgroundColor: Theme.of(context).cardColor,
         child: Icon(Icons.comment, color: Theme.of(context).iconTheme.color),
         onPressed: () => writeComment(context: context, post: widget.post),
-      );
-    }
-
-    return RefreshableControllerPage(
-      appBar: AppBar(title: Text('#${widget.post.id} comments')),
-      floatingActionButton: floatingActionButton(),
+      ),
       controller: controller,
-      builder: (context) {
-        return PagedListView(
-          padding: EdgeInsets.only(top: 8),
-          pagingController: controller,
-          builderDelegate: defaultPagedChildBuilderDelegate(
-            itemBuilder: (context, Comment item, index) =>
-                CommentTile(comment: item, post: widget.post),
-            onLoading: Text('Loading comments'),
-            onEmpty: Text('No comments'),
-            onError: Text('Failed to load comments'),
-          ),
-        );
-      },
+      builder: (context) => PagedListView(
+        padding:
+            EdgeInsets.only(top: 8, bottom: kBottomNavigationBarHeight + 24),
+        pagingController: controller,
+        builderDelegate: defaultPagedChildBuilderDelegate(
+          itemBuilder: (context, Comment item, index) =>
+              CommentTile(comment: item, post: widget.post),
+          onLoading: Text('Loading comments'),
+          onEmpty: Text('No comments'),
+          onError: Text('Failed to load comments'),
+        ),
+      ),
     );
   }
 }
