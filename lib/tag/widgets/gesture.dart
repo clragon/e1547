@@ -1,6 +1,6 @@
-import 'package:e1547/post.dart';
-import 'package:e1547/settings.dart';
-import 'package:e1547/wiki.dart';
+import 'package:e1547/post/post.dart';
+import 'package:e1547/settings/settings.dart';
+import 'package:e1547/wiki/wiki.dart';
 import 'package:flutter/material.dart';
 
 class TagGesture extends StatelessWidget {

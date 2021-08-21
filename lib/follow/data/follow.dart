@@ -1,10 +1,10 @@
 import 'dart:convert';
 
 import 'package:collection/collection.dart';
-import 'package:e1547/client.dart';
-import 'package:e1547/pool.dart';
-import 'package:e1547/post.dart';
-import 'package:e1547/tag.dart';
+import 'package:e1547/client/client.dart';
+import 'package:e1547/pool/pool.dart';
+import 'package:e1547/post/post.dart';
+import 'package:e1547/tag/tag.dart';
 
 enum FollowType {
   update,

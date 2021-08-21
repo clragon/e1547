@@ -1,4 +1,4 @@
-import 'package:e1547/dtext.dart';
+import 'package:e1547/dtext/dtext.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 

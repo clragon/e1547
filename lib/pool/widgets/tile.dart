@@ -1,5 +1,5 @@
-import 'package:e1547/dtext.dart';
-import 'package:e1547/pool.dart';
+import 'package:e1547/dtext/dtext.dart';
+import 'package:e1547/pool/pool.dart';
 import 'package:flutter/material.dart';
 
 class PoolTile extends StatelessWidget {

@@ -1,8 +1,8 @@
-import 'package:e1547/interface.dart';
+import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-export 'package:e1547/client.dart' show validateCall;
+export 'package:e1547/client/client.dart' show validateCall;
 
 class RefreshableControllerPage<T extends RefreshableDataMixin>
     extends StatelessWidget {

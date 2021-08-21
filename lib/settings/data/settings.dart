@@ -1,9 +1,9 @@
 import 'dart:async' show Future;
 
 import 'package:collection/collection.dart';
-import 'package:e1547/client.dart';
-import 'package:e1547/follow.dart';
-import 'package:e1547/interface.dart';
+import 'package:e1547/client/client.dart';
+import 'package:e1547/follow/follow.dart';
+import 'package:e1547/interface/interface.dart';
 import 'package:e1547/settings/data/grid.dart';
 import 'package:flutter/foundation.dart' show ValueNotifier;
 import 'package:shared_preferences/shared_preferences.dart'

@@ -1,8 +1,8 @@
-import 'package:e1547/client.dart';
-import 'package:e1547/comment.dart';
-import 'package:e1547/dtext.dart';
-import 'package:e1547/post.dart';
-import 'package:e1547/settings.dart';
+import 'package:e1547/client/client.dart';
+import 'package:e1547/comment/comment.dart';
+import 'package:e1547/dtext/dtext.dart';
+import 'package:e1547/post/post.dart';
+import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:timeago/timeago.dart';
 

@@ -1,5 +1,5 @@
-import 'package:e1547/interface.dart';
-import 'package:e1547/settings.dart';
+import 'package:e1547/interface/interface.dart';
+import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
 
 mixin TileSizeMixin<T extends StatefulWidget> on State<T> {

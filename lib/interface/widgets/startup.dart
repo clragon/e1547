@@ -1,4 +1,4 @@
-import 'package:e1547/follow.dart';
+import 'package:e1547/follow/follow.dart';
 import 'package:flutter/material.dart';
 
 import 'navigation.dart';

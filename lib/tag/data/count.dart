@@ -1,5 +1,5 @@
-import 'package:e1547/post.dart';
-import 'package:e1547/tag.dart';
+import 'package:e1547/post/post.dart';
+import 'package:e1547/tag/tag.dart';
 
 Map<String, int> countTags(List<String> tags, [Map<String, int>? counts]) {
   counts ??= {};
