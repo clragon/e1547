@@ -47,9 +47,9 @@ class _TagListActionsState extends State<TagListActions> {
 
   @override
   void dispose() {
-    super.dispose();
     settings.denylist.removeListener(updateLists);
     settings.follows.removeListener(updateLists);
+    super.dispose();
   }
 
   @override

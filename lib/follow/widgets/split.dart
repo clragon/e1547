@@ -11,18 +11,19 @@ class FollowsSplitPage extends StatefulWidget {
 }
 
 class _FollowsSplitPageState extends State<FollowsSplitPage>
-    with FollowerMixin, TileSizeMixin, UpdateMixin {
+    with FollowerMixin, TileSizeMixin {
   RefreshController refreshController = RefreshController();
   int progress = 0;
 
   Future<void> refreshFollows({bool force = false}) async {
     await followUpdater.update(force: force);
-    update();
+    setState(() {});
   }
 
   Future<void> updateRefresh() async {
-    progress = followUpdater.progress.value;
-    update();
+    setState(() {
+      progress = followUpdater.progress.value;
+    });
     if (refreshController.headerMode!.value == RefreshStatus.idle) {
       WidgetsBinding.instance!.addPostFrameCallback((_) async {
         await refreshController.requestRefresh(
@@ -79,7 +80,7 @@ class _FollowsSplitPageState extends State<FollowsSplitPage>
         onError: Text('Failed to load follows'),
         isError: false,
         isLoading: follows == null,
-        isBuilt: [tileSize, safe].every((element) => element != null),
+        isBuilt: [tileSize, safe].every((e) => e != null),
         isEmpty: follows?.length == 0,
         refreshController: refreshController,
         refreshHeader: RefreshablePageDefaultHeader(

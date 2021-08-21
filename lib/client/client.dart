@@ -556,7 +556,7 @@ class Credentials {
   }
 }
 
-Future<bool> validateCall(Future<dynamic> Function() call) async {
+Future<bool> validateCall(Future<void> Function() call) async {
   try {
     await call();
     return true;

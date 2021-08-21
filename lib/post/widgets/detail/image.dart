@@ -235,6 +235,8 @@ class DetailImageDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Size screenSize = MediaQuery.of(context).size;
+
     return AnimatedBuilder(
       animation: post,
       builder: (context, child) {
@@ -243,10 +245,9 @@ class DetailImageDisplay extends StatelessWidget {
           post: post,
           child: ConstrainedBox(
             constraints: BoxConstraints(
-              minHeight: (MediaQuery.of(context).size.height / 2),
-              maxHeight: MediaQuery.of(context).size.width >
-                      MediaQuery.of(context).size.height
-                  ? MediaQuery.of(context).size.height * 0.8
+              minHeight: (screenSize.height / 2),
+              maxHeight: screenSize.width > screenSize.height
+                  ? screenSize.height * 0.8
                   : double.infinity,
             ),
             child: ImageOverlay(
