@@ -1,5 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:e1547/post.dart';
+import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 
 enum ImageSize {

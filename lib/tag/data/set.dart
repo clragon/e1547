@@ -1,6 +1,6 @@
 import 'dart:collection';
 
-import 'package:e1547/tag.dart';
+import 'package:e1547/tag/tag.dart';
 
 class Tagset extends Object with IterableMixin<Tag> {
   Tagset(Set<Tag> tags)

@@ -1,7 +1,7 @@
-import 'package:e1547/comment.dart';
-import 'package:e1547/interface.dart';
-import 'package:e1547/post.dart';
-import 'package:e1547/settings.dart';
+import 'package:e1547/comment/comment.dart';
+import 'package:e1547/interface/interface.dart';
+import 'package:e1547/post/post.dart';
+import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:share/share.dart';
 import 'package:url_launcher/url_launcher.dart';

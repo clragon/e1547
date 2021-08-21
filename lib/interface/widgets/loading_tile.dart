@@ -1,4 +1,4 @@
-import 'package:e1547/interface.dart';
+import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
 
 class LoadingTile extends StatefulWidget {

@@ -1,4 +1,4 @@
-import 'package:e1547/interface.dart';
+import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';

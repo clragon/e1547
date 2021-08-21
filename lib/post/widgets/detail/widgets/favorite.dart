@@ -1,4 +1,4 @@
-import 'package:e1547/post.dart';
+import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 import 'package:like_button/like_button.dart';
 

@@ -1,5 +1,5 @@
-import 'package:e1547/client.dart';
-import 'package:e1547/settings.dart';
+import 'package:e1547/client/client.dart';
+import 'package:e1547/settings/settings.dart';
 import 'package:flutter/foundation.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:mutex/mutex.dart';

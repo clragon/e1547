@@ -1,4 +1,4 @@
-import 'package:e1547/pool.dart';
+import 'package:e1547/pool/pool.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';

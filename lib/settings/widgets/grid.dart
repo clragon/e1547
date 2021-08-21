@@ -1,4 +1,4 @@
-import 'package:e1547/settings.dart';
+import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
 
 class GridSettingsTile extends StatelessWidget {

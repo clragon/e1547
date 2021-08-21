@@ -1,9 +1,9 @@
 import 'dart:async' show Future;
 
 import 'package:dio/dio.dart';
-import 'package:e1547/client.dart';
-import 'package:e1547/interface.dart';
-import 'package:e1547/settings.dart';
+import 'package:e1547/client/client.dart';
+import 'package:e1547/interface/interface.dart';
+import 'package:e1547/settings/settings.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';

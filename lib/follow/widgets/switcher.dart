@@ -1,6 +1,6 @@
-import 'package:e1547/follow.dart';
-import 'package:e1547/interface.dart';
-import 'package:e1547/settings.dart';
+import 'package:e1547/follow/follow.dart';
+import 'package:e1547/interface/interface.dart';
+import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
 
 class FollowsPage extends StatefulWidget {

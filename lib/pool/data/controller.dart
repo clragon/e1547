@@ -1,6 +1,6 @@
-import 'package:e1547/client.dart';
-import 'package:e1547/interface.dart';
-import 'package:e1547/pool.dart';
+import 'package:e1547/client/client.dart';
+import 'package:e1547/interface/interface.dart';
+import 'package:e1547/pool/pool.dart';
 import 'package:flutter/material.dart';
 
 class PoolController extends DataController<Pool>

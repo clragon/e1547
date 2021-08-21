@@ -3,13 +3,13 @@ import 'dart:convert' show base64Encode, json, utf8;
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:e1547/comment.dart';
-import 'package:e1547/follow.dart';
-import 'package:e1547/pool.dart';
-import 'package:e1547/post.dart';
-import 'package:e1547/settings.dart';
-import 'package:e1547/tag.dart';
-import 'package:e1547/wiki.dart';
+import 'package:e1547/comment/comment.dart';
+import 'package:e1547/follow/follow.dart';
+import 'package:e1547/pool/pool.dart';
+import 'package:e1547/post/post.dart';
+import 'package:e1547/settings/settings.dart';
+import 'package:e1547/tag/tag.dart';
+import 'package:e1547/wiki/wiki.dart';
 
 export 'package:dio/dio.dart' show DioError;
 

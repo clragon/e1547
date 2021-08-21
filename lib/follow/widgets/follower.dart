@@ -1,6 +1,6 @@
-import 'package:e1547/client.dart';
-import 'package:e1547/follow.dart';
-import 'package:e1547/settings.dart';
+import 'package:e1547/client/client.dart';
+import 'package:e1547/follow/follow.dart';
+import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
 
 mixin FollowerMixin<T extends StatefulWidget> on State<T> {
