@@ -21,7 +21,7 @@ class FollowButtonState extends State<FollowButton> with LinkingMixin {
   late bool following;
 
   @override
-  Map<ChangeNotifier, VoidCallback> get links => {
+  Map<ChangeNotifier, VoidCallback> get initLinks => {
         settings.follows: update,
       };
 

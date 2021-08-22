@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -26,17 +27,17 @@ class RangeDialog extends StatefulWidget {
   _RangeDialogState createState() => _RangeDialogState();
 }
 
-class _RangeDialogState extends State<RangeDialog> {
+class _RangeDialogState extends State<RangeDialog> with LinkingMixin {
   final TextEditingController controller = TextEditingController();
-  late int value;
+  late int value = widget.value;
 
   @override
-  void initState() {
-    super.initState();
-    value = widget.value;
-    controller.addListener(() {
-      value = int.tryParse(controller.text) ?? value;
-    });
+  Map<ChangeNotifier, VoidCallback> get links => {
+        controller: updateValue,
+      };
+
+  void updateValue() {
+    value = int.tryParse(controller.text) ?? value;
   }
 
   void submit(String output) {
@@ -88,7 +89,7 @@ class _RangeDialogState extends State<RangeDialog> {
       actions: [
         TextButton(
           child: Text('cancel'),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: Navigator.of(context).maybePop,
         ),
         TextButton(
           child: Text('save'),

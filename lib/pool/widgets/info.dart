@@ -1,10 +1,9 @@
+import 'package:e1547/interface/interface.dart';
 import 'package:e1547/pool/pool.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:intl/intl.dart';
 
 class PoolInfo extends StatelessWidget {
-  final DateFormat dateFormat = DateFormat('dd.MM.yy HH:mm');
   final Pool pool;
 
   PoolInfo({required this.pool});
@@ -60,10 +59,11 @@ class PoolInfo extends StatelessWidget {
             'status',
             pool.isActive ? 'active' : 'inactive',
           ),
-          textInfoRow('created', dateFormat.format(pool.createdAt.toLocal())),
+          textInfoRow('created',
+              getCurrentDateFormat().format(pool.createdAt.toLocal())),
           textInfoRow(
             'updated',
-            dateFormat.format(pool.updatedAt.toLocal()),
+            getCurrentDateFormat().format(pool.updatedAt.toLocal()),
           ),
         ],
       ),

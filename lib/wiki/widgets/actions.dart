@@ -16,11 +16,17 @@ class TagListActions extends StatefulWidget {
   }
 }
 
-class _TagListActionsState extends State<TagListActions> {
+class _TagListActionsState extends State<TagListActions> with LinkingMixin {
   bool denied = false;
   bool following = false;
   List<String>? denylist;
   List<Follow>? follows;
+
+  @override
+  Map<ChangeNotifier, VoidCallback> get links => {
+        settings.denylist: updateLists,
+        settings.follows: updateLists,
+      };
 
   Future<void> updateLists() async {
     denylist = await settings.denylist.value;
@@ -33,23 +39,9 @@ class _TagListActionsState extends State<TagListActions> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    settings.denylist.addListener(updateLists);
-    settings.follows.addListener(updateLists);
-  }
-
-  @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     updateLists();
-  }
-
-  @override
-  void dispose() {
-    settings.denylist.removeListener(updateLists);
-    settings.follows.removeListener(updateLists);
-    super.dispose();
   }
 
   @override

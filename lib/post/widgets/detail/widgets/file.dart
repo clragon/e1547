@@ -1,15 +1,14 @@
+import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:filesize/filesize.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 import 'rating.dart';
 
 class FileDisplay extends StatelessWidget {
   final Post post;
   final PostController? controller;
-  final DateFormat dateFormat = DateFormat('dd.MM.yy HH:mm');
 
   FileDisplay({required this.post, this.controller});
 
@@ -46,7 +45,7 @@ class FileDisplay extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(dateFormat.format(post.createdAt.toLocal())),
+              Text(getCurrentDateFormat().format(post.createdAt.toLocal())),
               Text(filesize(post.file.size, 1)),
             ],
           ),
@@ -57,7 +56,7 @@ class FileDisplay extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               if (post.updatedAt != null)
-                Text(dateFormat.format(post.updatedAt!.toLocal())),
+                Text(getCurrentDateFormat().format(post.updatedAt!.toLocal())),
               TagGesture(
                 child: Text(post.file.ext),
                 tag: 'type:${post.file.ext}',

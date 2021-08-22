@@ -8,7 +8,7 @@ class TagAddCard extends StatefulWidget {
   final String? category;
   final PostController? provider;
   final Future<bool> Function(String value) submit;
-  final SheetActionController? controller;
+  final SheetActionController controller;
 
   TagAddCard({
     required this.post,
@@ -27,23 +27,21 @@ class _TagAddCardState extends State<TagAddCard> {
   Widget build(BuildContext context) {
     return Card(
       child: Builder(
-        builder: (BuildContext context) {
-          return InkWell(
-            child: Padding(
-              padding: EdgeInsets.all(5),
-              child: Icon(Icons.add, size: 16),
+        builder: (BuildContext context) => InkWell(
+          child: Padding(
+            padding: EdgeInsets.all(5),
+            child: Icon(Icons.add, size: 16),
+          ),
+          onTap: () => widget.controller.show(
+            context,
+            TagEditor(
+              post: widget.post,
+              category: widget.category,
+              submit: widget.submit,
+              controller: widget.controller,
             ),
-            onTap: () => widget.controller!.show(
-              context,
-              TagEditor(
-                post: widget.post,
-                category: widget.category,
-                submit: widget.submit,
-                controller: widget.controller,
-              ),
-            ),
-          );
-        },
+          ),
+        ),
       ),
     );
   }

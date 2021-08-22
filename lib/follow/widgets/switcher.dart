@@ -17,7 +17,7 @@ class _FollowsPageState extends State<FollowsPage> with LinkingMixin {
   }
 
   @override
-  Map<ChangeNotifier, VoidCallback> get links => {
+  Map<ChangeNotifier, VoidCallback> get initLinks => {
         settings.followsSplit: update,
       };
 

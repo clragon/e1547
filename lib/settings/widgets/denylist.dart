@@ -16,7 +16,7 @@ class _DenyListPageState extends State<DenyListPage> with LinkingMixin {
   SheetActionController sheetController = SheetActionController();
 
   @override
-  Map<ChangeNotifier, VoidCallback> get links => {
+  Map<ChangeNotifier, VoidCallback> get initLinks => {
         settings.denylist: updateDenylist,
       };
 

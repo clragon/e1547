@@ -11,7 +11,7 @@ class FollowsSplitPage extends StatefulWidget {
 }
 
 class _FollowsSplitPageState extends State<FollowsSplitPage>
-    with FollowerMixin, TileSizeMixin {
+    with FollowerMixin, TileSizeMixin, LinkingMixin {
   RefreshController refreshController = RefreshController();
   int progress = 0;
 
@@ -41,20 +41,13 @@ class _FollowsSplitPageState extends State<FollowsSplitPage>
   }
 
   @override
+  Map<ChangeNotifier, VoidCallback> get links => {
+        followUpdater: updateRefresh,
+      };
+
+  @override
   Future<void> afterFollowInit() async {
     await refreshFollows();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    followUpdater.addListener(updateRefresh);
-  }
-
-  @override
-  void dispose() {
-    followUpdater.removeListener(updateRefresh);
-    super.dispose();
   }
 
   @override

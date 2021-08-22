@@ -351,7 +351,9 @@ class _PostVideoLoaderState extends State<PostVideoLoader> {
     if (!widget.post.controller!.value.isInitialized) {
       await widget.post.loadVideo();
     }
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   @override

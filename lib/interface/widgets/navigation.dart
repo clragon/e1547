@@ -156,19 +156,11 @@ class ProfileHeader extends StatefulWidget {
   }
 }
 
-class _ProfileHeaderState extends State<ProfileHeader> {
+class _ProfileHeaderState extends State<ProfileHeader> with LinkingMixin {
   @override
-  void initState() {
-    super.initState();
-    settings.credentials.addListener(initAvatar);
-    initAvatar();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    settings.credentials.removeListener(initAvatar);
-  }
+  Map<ChangeNotifier, VoidCallback> get initLinks => {
+        settings.credentials: initAvatar,
+      };
 
   @override
   Widget build(BuildContext context) {

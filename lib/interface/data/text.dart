@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 
 class LowercaseTextInputFormatter extends TextInputFormatter {
   @override
@@ -15,3 +18,6 @@ void setFocusToEnd(TextEditingController controller) {
     extentOffset: controller.text.length,
   );
 }
+
+DateFormat getCurrentDateFormat() =>
+    DateFormat.yMd(Platform.localeName).add_jm();

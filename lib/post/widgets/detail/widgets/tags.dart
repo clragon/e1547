@@ -8,80 +8,86 @@ class TagDisplay extends StatelessWidget {
   final Post post;
   final PostController? provider;
   final Future<bool> Function(String value, String category) submit;
-  final SheetActionController? controller;
+  final SheetActionController controller;
 
   TagDisplay({
     required this.post,
     required this.provider,
     required this.submit,
-    this.controller,
+    required this.controller,
   });
 
   @override
   Widget build(BuildContext context) {
+    Widget title(String category) {
+      return Padding(
+        padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+        child: Text(
+          '${category[0].toUpperCase()}${category.substring(1)}',
+          style: TextStyle(
+            fontSize: 16,
+          ),
+        ),
+      );
+    }
+
+    Widget tags(Post post, String category) {
+      return Wrap(
+        direction: Axis.horizontal,
+        children: [
+          ...post.tagMap[category]!.map(
+            (tag) => TagCard(
+              tag: tag,
+              category: category,
+              controller: provider,
+              onRemove: post.isEditing
+                  ? () {
+                      post.tagMap[category]!.remove(tag);
+                      post.notifyListeners();
+                    }
+                  : null,
+            ),
+          ),
+          CrossFade(
+            showChild: post.isEditing,
+            child: TagAddCard(
+              post: post,
+              provider: provider,
+              category: category,
+              submit: (value) => submit(value, category),
+              controller: controller,
+            ),
+          ),
+        ],
+      );
+    }
+
+    Widget categoryTile(Post post, String category) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          title(category),
+          Row(children: [
+            Expanded(
+              child: tags(post, category),
+            )
+          ]),
+          Divider(),
+        ],
+      );
+    }
+
     return AnimatedBuilder(
       animation: post,
-      builder: (context, child) {
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: categories.keys
-              .where((category) =>
-                  post.tagMap[category]!.isNotEmpty ||
-                  (post.isEditing && category != 'invalid'))
-              .map(
-                (category) => Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                      child: Text(
-                        '${category[0].toUpperCase()}${category.substring(1)}',
-                        style: TextStyle(
-                          fontSize: 16,
-                        ),
-                      ),
-                    ),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Wrap(
-                            direction: Axis.horizontal,
-                            children: [
-                              ...post.tagMap[category]!.map(
-                                (tag) => TagCard(
-                                  tag: tag,
-                                  category: category,
-                                  controller: provider,
-                                  onRemove: post.isEditing
-                                      ? () {
-                                          post.tagMap[category]!.remove(tag);
-                                          post.notifyListeners();
-                                        }
-                                      : null,
-                                ),
-                              ),
-                              CrossFade(
-                                showChild: post.isEditing,
-                                child: TagAddCard(
-                                  post: post,
-                                  provider: provider,
-                                  category: category,
-                                  submit: (value) => submit(value, category),
-                                  controller: controller,
-                                ),
-                              ),
-                            ],
-                          ),
-                        )
-                      ],
-                    ),
-                    Divider(),
-                  ],
-                ),
-              )
-              .toList(),
-        );
-      },
+      builder: (context, child) => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: categories.keys
+            .where((category) =>
+                post.tagMap[category]!.isNotEmpty ||
+                post.isEditing && category != 'invalid')
+            .map((category) => categoryTile(post, category))
+            .toList(),
+      ),
     );
   }
 }
