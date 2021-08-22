@@ -160,12 +160,11 @@ class Client {
 
     Map<RegExp, Future<List<Post>> Function(RegExpMatch match, String? result)>
         regexes = {
-      RegExp(poolRegex): (match, result) => poolPosts(
+      poolRegex(): (match, result) => poolPosts(
           int.parse(match.namedGroup('id')!), page,
           reverse: reversePools),
       if (username != null)
-        RegExp(r'^fav:' + username + r'$'): (match, result) =>
-            favorites(page, limit: limit),
+        favRegex(username): (match, result) => favorites(page, limit: limit),
     };
 
     for (MapEntry<

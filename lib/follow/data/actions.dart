@@ -200,11 +200,11 @@ extension Refreshing on Follow {
       await updateUnseen(posts);
 
       if (!tags.contains(' ') && alias == null) {
-        RegExpMatch? match = RegExp(poolRegex).firstMatch(tags);
+        RegExpMatch? match = poolRegex().firstMatch(tags);
         if (match != null) {
           client
               .pool(int.tryParse(match.namedGroup('id')!)!)
-              .then((value) => updatePoolName(value));
+              .then((value) => updatePool(value));
         }
       }
       return true;
