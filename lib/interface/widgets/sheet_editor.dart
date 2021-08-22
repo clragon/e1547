@@ -78,8 +78,13 @@ class BottomSheetLoadingIndicator extends StatefulWidget {
 }
 
 class _BottomSheetLoadingIndicatorState
-    extends State<BottomSheetLoadingIndicator> {
-  bool loading = false;
+    extends State<BottomSheetLoadingIndicator> with LinkingMixin {
+  late bool loading = widget.controller.loading;
+
+  @override
+  Map<ChangeNotifier, VoidCallback> get links => {
+        widget.controller: updateLoading,
+      };
 
   void updateLoading() {
     if (mounted && loading != widget.controller.loading) {
@@ -87,19 +92,6 @@ class _BottomSheetLoadingIndicatorState
         loading = widget.controller.loading;
       });
     }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    loading = widget.controller.loading;
-    widget.controller.addListener(updateLoading);
-  }
-
-  @override
-  void dispose() {
-    widget.controller.removeListener(updateLoading);
-    super.dispose();
   }
 
   @override

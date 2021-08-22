@@ -15,7 +15,7 @@ class _FollowMarkReadTileState extends State<FollowMarkReadTile>
   int unseen = 0;
 
   @override
-  Map<ChangeNotifier, VoidCallback> get links => {
+  Map<ChangeNotifier, VoidCallback> get initLinks => {
         settings.follows: update,
       };
 
@@ -75,7 +75,7 @@ class _FollowSplitSwitchTileState extends State<FollowSplitSwitchTile>
   }
 
   @override
-  Map<ChangeNotifier, VoidCallback> get links => {
+  Map<ChangeNotifier, VoidCallback> get initLinks => {
         settings.followsSplit: update,
       };
 

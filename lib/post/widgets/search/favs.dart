@@ -17,7 +17,7 @@ class _FavPageState extends State<FavPage> with LinkingMixin {
   bool error = false;
 
   @override
-  Map<ChangeNotifier, VoidCallback> get links => {
+  Map<ChangeNotifier, VoidCallback> get initLinks => {
         settings.credentials: updateUsername,
       };
 

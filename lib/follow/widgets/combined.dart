@@ -21,7 +21,7 @@ class _FollowsCombinedPageState extends State<FollowsCombinedPage>
   );
 
   @override
-  Map<ChangeNotifier, VoidCallback> get links => {
+  Map<ChangeNotifier, VoidCallback> get initLinks => {
         settings.follows: updateTags,
       };
 

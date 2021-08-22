@@ -19,7 +19,7 @@ class _DrawerCounterState extends State<DrawerCounter> with LinkingMixin {
   List<Widget>? children;
 
   @override
-  Map<ChangeNotifier, VoidCallback> get links => {
+  Map<ChangeNotifier, VoidCallback> get initLinks => {
         widget.controller: updateTags,
       };
 

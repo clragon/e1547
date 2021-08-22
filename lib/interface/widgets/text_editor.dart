@@ -21,11 +21,17 @@ class TextEditor extends StatefulWidget {
   }
 }
 
-class _TextEditorState extends State<TextEditor> with TickerProviderStateMixin {
+class _TextEditorState extends State<TextEditor>
+    with TickerProviderStateMixin, LinkingMixin {
   bool showBar = true;
   bool isLoading = false;
   TabController? tabController;
   TextEditingController textController = TextEditingController();
+
+  @override
+  Map<ChangeNotifier, VoidCallback> get links => {
+        textController: () => setState(() {}),
+      };
 
   @override
   void initState() {
@@ -47,7 +53,6 @@ class _TextEditorState extends State<TextEditor> with TickerProviderStateMixin {
         });
       }
     });
-    textController.addListener(() => setState(() {}));
   }
 
   @override
@@ -76,7 +81,7 @@ class _TextEditorState extends State<TextEditor> with TickerProviderStateMixin {
 
     Widget editor() {
       return frame(Padding(
-        padding: EdgeInsets.only(left: 8, right: 8),
+        padding: EdgeInsets.symmetric(horizontal: 8),
         child: TextField(
           controller: textController,
           keyboardType: TextInputType.multiline,
@@ -97,14 +102,16 @@ class _TextEditorState extends State<TextEditor> with TickerProviderStateMixin {
             padding: EdgeInsets.all(16),
             child: textController.text.trim().isNotEmpty
                 ? DTextField(source: textController.text.trim())
-                : Text('your text here',
+                : Text(
+                    'your text here',
                     style: TextStyle(
                         color: Theme.of(context)
                             .textTheme
                             .bodyText1!
                             .color!
                             .withOpacity(0.35),
-                        fontStyle: FontStyle.italic)),
+                        fontStyle: FontStyle.italic),
+                  ),
           ),
         ),
       );

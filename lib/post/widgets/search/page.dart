@@ -26,7 +26,7 @@ class PostsPage extends StatefulWidget {
 }
 
 class _PostsPageState extends State<PostsPage>
-    with TileSizeMixin, TileStaggerMixin {
+    with TileSizeMixin, TileStaggerMixin, LinkingMixin {
   ScrollController scrollController = ScrollController();
   Set<Post> selections = Set();
 
@@ -43,29 +43,15 @@ class _PostsPageState extends State<PostsPage>
   }
 
   @override
-  void initState() {
-    super.initState();
-    widget.controller.addListener(updatePage);
-  }
+  Map<ChangeNotifier, VoidCallback> get links => {
+        widget.controller: updatePage,
+      };
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     updateTileSize();
     updateStagger();
-  }
-
-  @override
-  void reassemble() {
-    super.reassemble();
-    widget.controller.removeListener(updatePage);
-    widget.controller.addListener(updatePage);
-  }
-
-  @override
-  void dispose() {
-    widget.controller.removeListener(updatePage);
-    super.dispose();
   }
 
   Widget itemBuilder(BuildContext context, Post item, int index) {

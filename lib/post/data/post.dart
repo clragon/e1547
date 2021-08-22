@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
@@ -48,16 +49,20 @@ class Post extends PostData with ChangeNotifier {
 
   static List<Post> loadedVideos = [];
 
+  Future<void> wakelock() async {
+    controller!.value.isPlaying ? Wakelock.enable() : Wakelock.disable();
+  }
+
   Future<void> initVideo() async {
     if (type == PostType.Video && file.url != null) {
       if (controller != null) {
         await controller!.pause();
+        controller!.removeListener(wakelock);
         await controller!.dispose();
       }
       controller = VideoPlayerController.network(file.url!);
       controller!.setLooping(true);
-      controller!.addListener(() =>
-          controller!.value.isPlaying ? Wakelock.enable() : Wakelock.disable());
+      controller!.addListener(wakelock);
     }
   }
 
@@ -65,9 +70,20 @@ class Post extends PostData with ChangeNotifier {
     if (type != PostType.Video || loadedVideos.contains(this)) {
       return;
     }
+
     if (loadedVideos.length >= 6) {
       loadedVideos.first.disposeVideo();
     }
+
+    while (true) {
+      if (loadedVideos.fold<int>(
+              0, (current, post) => current += post.file.size) <
+          2 * pow(10, 8)) {
+        break;
+      }
+      await loadedVideos.first.disposeVideo();
+    }
+
     loadedVideos.add(this);
     await this.controller!.initialize();
   }
@@ -78,13 +94,15 @@ class Post extends PostData with ChangeNotifier {
   }
 
   List<String> get artists {
-    return tags.artist
-      ..removeWhere((artist) => [
-            'epilepsy_warning',
-            'conditional_dnp',
-            'sound_warning',
-            'avoid_posting',
-          ].contains(artist));
+    List<String> excluded = [
+      'epilepsy_warning',
+      'conditional_dnp',
+      'sound_warning',
+      'avoid_posting',
+    ];
+
+    return List.from(tags.artist)
+      ..removeWhere((artist) => excluded.contains(artist));
   }
 
   Post.fromMap(this.json) : super.fromMap(json as Map<String, dynamic>) {

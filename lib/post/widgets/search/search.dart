@@ -33,7 +33,7 @@ class _SearchPageState extends State<SearchPage> with LinkingMixin {
   String title = 'Search';
 
   @override
-  Map<ChangeNotifier, VoidCallback> get links => {
+  Map<ChangeNotifier, VoidCallback> get initLinks => {
         controller: updateTitle,
         controller.search: updatePool,
         settings.follows: updateFollows,

@@ -41,15 +41,6 @@ mixin FollowerMixin<T extends StatefulWidget> on State<T> {
   }
 
   @override
-  void reassemble() {
-    super.reassemble();
-    settings.host.removeListener(updateSafety);
-    settings.follows.removeListener(updateFollows);
-    settings.host.addListener(updateSafety);
-    settings.follows.addListener(updateFollows);
-  }
-
-  @override
   void dispose() {
     super.dispose();
     settings.host.removeListener(updateSafety);
