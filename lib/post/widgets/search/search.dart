@@ -60,7 +60,7 @@ class _SearchPageState extends State<SearchPage> with LinkingMixin {
         });
       }
       if (pool != null) {
-        if (follow.updatePoolName(pool)) {
+        if (follow.updatePool(pool!)) {
           settings.follows.value = Future.value(follows);
         }
       }
@@ -95,7 +95,7 @@ class _SearchPageState extends State<SearchPage> with LinkingMixin {
     pool = null;
     Tagset input = Tagset.parse(controller.search.value);
     if (input.length == 1) {
-      RegExpMatch? match = RegExp(poolRegex).firstMatch(input.toString());
+      RegExpMatch? match = poolRegex().firstMatch(input.toString());
       if (match != null) {
         pool = await client.pool(int.parse(match.namedGroup('id')!));
       }

@@ -4,6 +4,7 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:e1547/tag/tag.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:like_button/like_button.dart';
@@ -221,6 +222,20 @@ class _PostsPageState extends State<PostsPage>
       );
     }
 
+    Widget selectionScope(Widget child) {
+      return WillPopScope(
+        onWillPop: () async {
+          if (selections.isNotEmpty) {
+            setState(() => selections.clear());
+            return false;
+          } else {
+            return true;
+          }
+        },
+        child: child,
+      );
+    }
+
     return LayoutBuilder(builder: (context, constraints) {
       StaggeredTile? tileBuilder(int item) {
         if (item < widget.controller.itemList!.length) {
@@ -245,52 +260,42 @@ class _PostsPageState extends State<PostsPage>
         return null;
       }
 
-      return WillPopScope(
-        onWillPop: () async {
-          if (selections.isNotEmpty) {
-            setState(() => selections.clear());
-            return false;
-          } else {
-            return true;
-          }
-        },
-        child: PageLoader(
-          isBuilt: [tileSize, stagger].every((element) => element != null),
-          builder: (context) => RefreshablePage(
-            scrollController: scrollController,
-            refreshController: widget.controller.refreshController,
-            appBar: PreferredSize(
-              preferredSize: Size.fromHeight(kToolbarHeight),
-              child: Material(
-                elevation: Theme.of(context).appBarTheme.elevation ?? 4,
-                child: CrossFade(
-                  showChild: selections.isEmpty,
-                  child: widget.appBarBuilder(context),
-                  secondChild: selectionAppBar(),
-                ),
-              ),
-            ),
-            drawer: NavigationDrawer(),
-            endDrawer: endDrawer(),
-            floatingActionButton: floatingActionButton(),
-            refresh: () => widget.controller.refresh(background: true),
-            builder: (BuildContext context) => PagedStaggeredGridView(
-              primary: false,
-              scrollController: scrollController,
-              addAutomaticKeepAlives: false,
-              tileBuilder: tileBuilder,
-              pagingController: widget.controller,
-              crossAxisCount: crossAxisCount(constraints.maxWidth),
-              builderDelegate: defaultPagedChildBuilderDelegate(
-                itemBuilder: itemBuilder,
-                onEmpty: Text('No posts'),
-                onLoading: Text('Loading posts'),
-                onError: Text('Failed to load posts'),
+      return selectionScope(PageLoader(
+        isBuilt: [tileSize, stagger].every((element) => element != null),
+        builder: (context) => RefreshablePage(
+          scrollController: scrollController,
+          refreshController: widget.controller.refreshController,
+          appBar: PreferredSize(
+            preferredSize: Size.fromHeight(kToolbarHeight),
+            child: Material(
+              elevation: Theme.of(context).appBarTheme.elevation ?? 4,
+              child: CrossFade(
+                showChild: selections.isEmpty,
+                child: widget.appBarBuilder(context),
+                secondChild: selectionAppBar(),
               ),
             ),
           ),
+          drawer: NavigationDrawer(),
+          endDrawer: endDrawer(),
+          floatingActionButton: floatingActionButton(),
+          refresh: () => widget.controller.refresh(background: true),
+          builder: (BuildContext context) => PagedStaggeredGridView(
+            primary: false,
+            scrollController: scrollController,
+            addAutomaticKeepAlives: false,
+            tileBuilder: tileBuilder,
+            pagingController: widget.controller,
+            crossAxisCount: crossAxisCount(constraints.maxWidth),
+            builderDelegate: defaultPagedChildBuilderDelegate(
+              itemBuilder: itemBuilder,
+              onEmpty: Text('No posts'),
+              onLoading: Text('Loading posts'),
+              onError: Text('Failed to load posts'),
+            ),
+          ),
         ),
-      );
+      ));
     });
   }
 }

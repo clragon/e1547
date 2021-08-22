@@ -2,6 +2,7 @@ import 'package:e1547/client/client.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
+import 'package:e1547/tag/data.dart';
 import 'package:flutter/material.dart';
 
 class FavPage extends StatefulWidget {
@@ -13,35 +14,56 @@ class FavPage extends StatefulWidget {
 
 class _FavPageState extends State<FavPage> with LinkingMixin {
   bool orderFavorites = false;
-  PostController? controller;
+  bool showSwitch = false;
   bool error = false;
+
+  PostController? controller;
+  String? username;
 
   @override
   Map<ChangeNotifier, VoidCallback> get initLinks => {
         settings.credentials: updateUsername,
       };
 
+  Future<void> updateSwitch() async {
+    setState(() {
+      if (controller != null &&
+          username != null &&
+          favRegex(username!).hasMatch(controller!.search.value)) {
+        showSwitch = true;
+      } else {
+        showSwitch = false;
+      }
+    });
+  }
+
   Future<void> updateUsername() async {
     Credentials? credentials = await settings.credentials.value;
     if (credentials != null) {
       setState(() {
+        error = false;
+        username = credentials.username;
+        controller?.removeListener(updateSwitch);
         controller = PostController(
           provider: (tags, page) =>
               client.posts(tags, page, orderFavorites: orderFavorites),
-          search: 'fav:${credentials.username}',
+          search: 'fav:$username',
           canDeny: false,
         );
-        error = false;
+        controller!.addListener(updateSwitch);
       });
     } else {
       setState(() {
         error = true;
+        username = null;
+        controller = null;
       });
     }
   }
 
   @override
   void dispose() {
+    controller?.removeListener(updateSwitch);
     controller?.dispose();
     super.dispose();
   }
@@ -49,11 +71,15 @@ class _FavPageState extends State<FavPage> with LinkingMixin {
   @override
   Widget build(BuildContext context) {
     return PageLoader(
+      isBuilt: controller != null,
+      isError: error,
+      onError: IconMessage(
+          icon: Icon(Icons.login), title: Text('You are not logged in')),
       builder: (context) => PostsPage(
         appBarBuilder: defaultAppBarBuilder('Favorites'),
         controller: controller!,
         drawerActions: [
-          if (controller != null)
+          if (showSwitch)
             SwitchListTile(
               secondary: Icon(Icons.sort),
               title: Text(
@@ -72,9 +98,6 @@ class _FavPageState extends State<FavPage> with LinkingMixin {
             ),
         ],
       ),
-      isBuilt: controller != null,
-      isError: error,
-      onError: Text('You are not logged in'),
     );
   }
 }
