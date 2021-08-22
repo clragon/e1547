@@ -48,9 +48,22 @@ class _PostDetailState extends State<PostDetail> with LinkingMixin, RouteAware {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (widget.post.type == PostType.Video) {
+      routeObserver.subscribe(this, ModalRoute.of(context) as PageRoute);
+    }
+    navigator = Navigator.of(context);
+    route = ModalRoute.of(context)!;
+  }
+
+  @override
   void reassemble() {
     super.reassemble();
-    routeObserver.subscribe(this, ModalRoute.of(context) as PageRoute);
+    if (widget.post.type == PostType.Video) {
+      routeObserver.unsubscribe(this);
+      routeObserver.subscribe(this, ModalRoute.of(context) as PageRoute);
+    }
     if (widget.post.type == PostType.Image && widget.post.file.url != null) {
       preloadImage(context: context, post: widget.post, size: ImageSize.file);
     }
@@ -58,7 +71,9 @@ class _PostDetailState extends State<PostDetail> with LinkingMixin, RouteAware {
 
   @override
   void dispose() {
-    routeObserver.unsubscribe(this);
+    if (widget.post.type == PostType.Video) {
+      routeObserver.unsubscribe(this);
+    }
     if (widget.post.isEditing) {
       widget.post.resetPost();
     }
@@ -67,14 +82,6 @@ class _PostDetailState extends State<PostDetail> with LinkingMixin, RouteAware {
       widget.post.dispose();
     }
     super.dispose();
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    routeObserver.subscribe(this, ModalRoute.of(context) as PageRoute);
-    navigator = Navigator.of(context);
-    route = ModalRoute.of(context)!;
   }
 
   @override
