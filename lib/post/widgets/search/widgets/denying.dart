@@ -63,9 +63,9 @@ class DrawerDenySwitch extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                FutureBuilder(
+                FutureBuilder<List<String>>(
                   future: settings.denylist.value,
-                  builder: (context, AsyncSnapshot<List<String>> snapshot) {
+                  builder: (context, snapshot) {
                     int? count = snapshot.data?.length;
                     if (count != null && controller.denying.value) {
                       count -= controller.denied.keys.length;

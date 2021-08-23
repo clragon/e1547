@@ -221,9 +221,9 @@ class _SettingsPageState extends State<SettingsPage> {
           ),
           Divider(),
           settingsHeader('Account'),
-          FutureBuilder(
+          FutureBuilder<bool?>(
             future: client.hasLogin,
-            builder: (context, AsyncSnapshot<bool?> snapshot) {
+            builder: (context, snapshot) {
               if (snapshot.hasData) {
                 return CrossFade(
                     duration: Duration(milliseconds: 200),
