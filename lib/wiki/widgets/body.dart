@@ -104,9 +104,9 @@ class _WikiTagDisplayState extends State<WikiTagDisplay> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
+    return FutureBuilder<Wiki?>(
       future: wiki,
-      builder: (context, AsyncSnapshot<Wiki?> snapshot) => SafeCrossFade(
+      builder: (context, snapshot) => SafeCrossFade(
         showChild: snapshot.connectionState == ConnectionState.done,
         builder: (context) {
           if (snapshot.hasData) {

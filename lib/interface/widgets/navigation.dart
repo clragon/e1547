@@ -115,9 +115,9 @@ class NavigationDrawer extends StatelessWidget {
         ),
         ListTile(
           // this would be better solved with a seperate stateful widget.
-          leading: FutureBuilder(
+          leading: FutureBuilder<List<AppVersion>>(
             future: getNewVersions(),
-            builder: (context, AsyncSnapshot<List<AppVersion>> snapshot) {
+            builder: (context, snapshot) {
               if (snapshot.hasData && snapshot.data!.isNotEmpty) {
                 return Stack(
                   children: [

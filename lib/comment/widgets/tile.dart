@@ -76,9 +76,9 @@ class CommentTile extends StatelessWidget {
               child: DTextField(source: comment.body),
             ),
           ),
-          FutureBuilder(
+          FutureBuilder<Credentials?>(
             future: settings.credentials.value,
-            builder: (context, AsyncSnapshot<Credentials?> snapshot) {
+            builder: (context, snapshot) {
               if (snapshot.hasData &&
                   snapshot.data!.username == comment.creatorName) {
                 return Padding(
