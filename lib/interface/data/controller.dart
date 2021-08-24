@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:e1547/client/client.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:flutter/foundation.dart';
@@ -50,13 +52,15 @@ abstract class RawDataController<PageKeyType, ItemType>
 
   Future<List<ItemType>> provide(PageKeyType page);
 
+  List<ItemType> sort(List<ItemType> items) => items;
+
   PageKeyType provideNextPageKey(PageKeyType current, List<ItemType> items);
 
   void disposeItems(List<ItemType> items) {}
 
   @nonVirtual
   Future<List<ItemType>?> loadPage(PageKeyType page) =>
-      catchError(() => provide(page));
+      catchError(() async => sort(await provide(page)));
 
   @override
   Future<void> refresh({bool background = false}) async {
@@ -111,6 +115,49 @@ abstract class RawDataController<PageKeyType, ItemType>
   }
 }
 
+abstract class CursorDataController<T> extends RawDataController<String, T> {
+  final String firstPageKey;
+  ValueNotifier<bool> orderByOldest = ValueNotifier(true);
+
+  CursorDataController({
+    this.firstPageKey = 'a0',
+  }) : super(firstPageKey: firstPageKey);
+
+  int getId(T item);
+
+  @override
+  String provideNextPageKey(String current, List<T> items) {
+    if (orderByOldest.value) {
+      if (items.isEmpty) {
+        return firstPageKey;
+      } else {
+        return 'a${items.map((e) => getId(e)).reduce(max).toString()}';
+      }
+    } else {
+      int next;
+      try {
+        next = int.parse(current);
+        next++;
+      } on FormatException {
+        next = 1;
+      }
+      return next.toString();
+    }
+  }
+
+  @override
+  List<ValueNotifier> getRefreshListeners() =>
+      super.getRefreshListeners()..add(orderByOldest);
+
+  @override
+  List<T> sort(List<T> items) {
+    if (orderByOldest.value) {
+      items.sort((a, b) => getId(b).compareTo(getId(a)));
+    }
+    return items;
+  }
+}
+
 abstract class DataController<T> extends RawDataController<int, T> {
   final int firstPageKey;
 
@@ -118,6 +165,7 @@ abstract class DataController<T> extends RawDataController<int, T> {
     this.firstPageKey = 1,
   }) : super(firstPageKey: firstPageKey);
 
+  @override
   int provideNextPageKey(int current, List<T> items) => current + 1;
 }
 
