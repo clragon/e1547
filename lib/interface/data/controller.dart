@@ -22,6 +22,7 @@ abstract class RawDataController<PageKeyType, ItemType>
 
   @override
   void dispose() {
+    super.removePageRequestListener(requestPage);
     getRefreshListeners().forEach((element) => element.removeListener(refresh));
     if (itemList != null) {
       disposeItems(itemList!);
@@ -75,42 +76,36 @@ abstract class RawDataController<PageKeyType, ItemType>
       requestLock.release();
       isRefreshing = false;
     }
-    try {
-      List<ItemType> old = List<ItemType>.from(itemList ?? []);
-      if (background) {
-        List<ItemType>? items = await loadPage(firstPageKey);
-        if (items != null) {
-          value = PagingState(
-            nextPageKey: provideNextPageKey(firstPageKey, items),
-            itemList: items,
-          );
-          // disposing these breaks everything
-          // TODO: figure out how to dispose items while replacing them
-          // disposeItems(old);
-        }
-      } else {
-        super.refresh();
-        disposeItems(old);
+    List<ItemType> old = List<ItemType>.from(itemList ?? []);
+    if (background) {
+      List<ItemType>? items = await loadPage(firstPageKey);
+      if (items != null) {
+        value = PagingState(
+          nextPageKey: provideNextPageKey(firstPageKey, items),
+          itemList: items,
+        );
+        // disposing these breaks everything
+        // TODO: figure out how to dispose items while replacing them
+        // disposeItems(old);
       }
-    } finally {
-      success();
+    } else {
+      super.refresh();
+      disposeItems(old);
     }
+    success();
   }
 
   Future<void> requestPage(PageKeyType page) async {
     await requestLock.acquire();
-    try {
-      List<ItemType>? items = await loadPage(page);
-      if (items != null) {
-        if (items.isEmpty) {
-          appendLastPage(items);
-        } else {
-          appendPage(items, provideNextPageKey(page, items));
-        }
+    List<ItemType>? items = await loadPage(page);
+    if (items != null) {
+      if (items.isEmpty) {
+        appendLastPage(items);
+      } else {
+        appendPage(items, provideNextPageKey(page, items));
       }
-    } finally {
-      success();
     }
+    success();
     requestLock.release();
   }
 }

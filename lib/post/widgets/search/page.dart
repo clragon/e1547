@@ -271,7 +271,7 @@ class _PostsPageState extends State<PostsPage>
               elevation: Theme.of(context).appBarTheme.elevation ?? 4,
               child: CrossFade(
                 showChild: selections.isEmpty,
-                child: widget.appBarBuilder(context),
+                child: Builder(builder: widget.appBarBuilder),
                 secondChild: selectionAppBar(),
               ),
             ),

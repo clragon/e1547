@@ -108,7 +108,7 @@ class _SearchPageState extends State<SearchPage> with LinkingMixin {
 
   @override
   Widget build(BuildContext context) {
-    PreferredSizeWidget appbar() {
+    PreferredSizeWidget appbar(BuildContext context) {
       return AppBar(
         title: AnimatedSwitcher(
           key: Key(title),
@@ -141,7 +141,7 @@ class _SearchPageState extends State<SearchPage> with LinkingMixin {
     }
 
     return PostsPage(
-      appBarBuilder: (context) => appbar(),
+      appBarBuilder: appbar,
       controller: controller,
       drawerActions: [
         if (pool != null)
