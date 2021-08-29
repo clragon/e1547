@@ -52,7 +52,6 @@ class PostTile extends StatelessWidget {
                 builder: (context, value) {
                   return overlay(
                     child: Hero(
-                      flightShuttleBuilder: imageFlightShuttleBuilder,
                       tag: post.hero,
                       child: PostImageWidget(
                         post: post,

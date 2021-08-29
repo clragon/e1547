@@ -12,14 +12,7 @@ class DetailImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Flexible(child: PostImageWidget(post: post, size: ImageSize.sample)),
-      ],
-    );
+    return PostImageWidget(post: post, size: ImageSize.sample);
   }
 }
 
@@ -254,7 +247,6 @@ class DetailImageDisplay extends StatelessWidget {
               post: post,
               builder: (context) => Center(
                 child: Hero(
-                  flightShuttleBuilder: imageFlightShuttleBuilder,
                   tag: post.hero,
                   child: post.type == PostType.Video
                       ? DetailVideo(post: post)
