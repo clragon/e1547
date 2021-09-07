@@ -164,7 +164,7 @@ abstract class DataController<T> extends RawDataController<int, T> {
   int provideNextPageKey(int current, List<T> items) => current + 1;
 }
 
-mixin SearchableDataMixin<PageKeyType, ItemType>
+mixin SearchableController<PageKeyType, ItemType>
     on RawDataController<PageKeyType, ItemType> {
   ValueNotifier<String> search = ValueNotifier('');
 
@@ -173,14 +173,14 @@ mixin SearchableDataMixin<PageKeyType, ItemType>
       super.getRefreshListeners()..add(search);
 }
 
-mixin HostableDataMixin<PageKeyType, ItemType>
+mixin HostableController<PageKeyType, ItemType>
     on RawDataController<PageKeyType, ItemType> {
   @override
   List<ValueNotifier> getRefreshListeners() =>
       super.getRefreshListeners()..add(settings.host);
 }
 
-mixin RefreshableDataMixin<PageKeyType, ItemType>
+mixin RefreshableController<PageKeyType, ItemType>
     on RawDataController<PageKeyType, ItemType> {
   RefreshController refreshController = RefreshController();
 

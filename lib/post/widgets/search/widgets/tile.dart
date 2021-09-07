@@ -48,21 +48,20 @@ class PostTile extends StatelessWidget {
         children: [
           Expanded(
             child: AnimatedBuilder(
-                animation: post,
-                builder: (context, value) {
-                  return overlay(
-                    child: Hero(
-                      tag: post.hero,
-                      child: PostImageWidget(
-                        post: post,
-                        size: ImageSize.sample,
-                        fit: BoxFit.cover,
-                        showProgress: false,
-                        withPreview: false,
-                      ),
-                    ),
-                  );
-                }),
+              animation: post,
+              builder: (context, value) => overlay(
+                child: Hero(
+                  tag: post.hero,
+                  child: PostImageWidget(
+                    post: post,
+                    size: ImageSize.sample,
+                    fit: BoxFit.cover,
+                    showProgress: false,
+                    withPreview: false,
+                  ),
+                ),
+              ),
+            ),
           ),
         ],
       );

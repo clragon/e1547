@@ -12,7 +12,11 @@ class DetailImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return PostImageWidget(post: post, size: ImageSize.sample);
+    return PostImageWidget(
+      post: post,
+      size: ImageSize.sample,
+      fit: BoxFit.cover,
+    );
   }
 }
 
@@ -32,26 +36,17 @@ class DetailVideo extends StatelessWidget {
                 ? post.controller!.pause()
                 : post.controller!.play()
             : null,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
+        child: Stack(
+          alignment: Alignment.center,
           children: [
-            Flexible(
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  PostVideoWidget(post: post),
-                  SafeCrossFade(
-                    showChild: post.controller != null,
-                    builder: (context) => Padding(
-                      padding: EdgeInsets.all(12),
-                      child: VideoButton(videoController: post.controller!),
-                    ),
-                    secondChild: SizedCircularProgressIndicator(size: 24),
-                  ),
-                ],
+            PostVideoWidget(post: post),
+            SafeCrossFade(
+              showChild: post.controller != null,
+              builder: (context) => Padding(
+                padding: EdgeInsets.all(12),
+                child: VideoButton(videoController: post.controller!),
               ),
+              secondChild: SizedCircularProgressIndicator(size: 24),
             ),
           ],
         ),

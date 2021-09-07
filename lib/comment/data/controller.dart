@@ -4,7 +4,7 @@ import 'package:e1547/interface/interface.dart';
 import 'comment.dart';
 
 class CommentController extends CursorDataController<Comment>
-    with RefreshableDataMixin {
+    with RefreshableController {
   final int postId;
 
   CommentController({required this.postId});
