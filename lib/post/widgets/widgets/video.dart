@@ -378,32 +378,24 @@ class PostVideoWidget extends StatelessWidget {
         post: post,
         size: ImageSize.sample,
         showProgress: false,
+        fit: BoxFit.cover,
       );
     }
 
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Flexible(
-          child: SafeCrossFade(
-            showChild: post.controller != null,
-            builder: (context) => AnimatedBuilder(
-              animation: post.controller!,
-              builder: (context, child) => CrossFade(
-                showChild: post.controller!.value.isInitialized,
-                child: AspectRatio(
-                  aspectRatio: post.controller!.value.aspectRatio,
-                  child: VideoPlayer(post.controller!),
-                ),
-                secondChild: placeholder(),
-              ),
-            ),
-            secondChild: placeholder(),
+    return SafeCrossFade(
+      showChild: post.controller != null,
+      builder: (context) => AnimatedBuilder(
+        animation: post.controller!,
+        builder: (context, child) => CrossFade(
+          showChild: post.controller!.value.isInitialized,
+          child: AspectRatio(
+            aspectRatio: post.controller!.value.aspectRatio,
+            child: VideoPlayer(post.controller!),
           ),
+          secondChild: placeholder(),
         ),
-      ],
+      ),
+      secondChild: placeholder(),
     );
   }
 }

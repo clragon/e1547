@@ -4,7 +4,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 export 'package:e1547/client/client.dart' show validateCall;
 
-class RefreshableControllerPage<T extends RefreshableDataMixin>
+class RefreshableControllerPage<T extends RefreshableController>
     extends StatelessWidget {
   final WidgetBuilder? builder;
   final Widget? refreshHeader;
