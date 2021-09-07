@@ -1,7 +1,6 @@
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 
 ValueNotifier<ThemeData> theme = ValueNotifier(appThemeMap[AppTheme.dark]!);
@@ -14,8 +13,6 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   settings.theme.addListener(updateTheme);
   await updateTheme();
-
-  timeDilation = 16;
   runApp(Main());
 }
 
