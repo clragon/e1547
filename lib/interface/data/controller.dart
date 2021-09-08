@@ -180,6 +180,13 @@ mixin HostableController<PageKeyType, ItemType>
       super.getRefreshListeners()..add(settings.host);
 }
 
+mixin AccountableController<PageKeyType, ItemType>
+    on RawDataController<PageKeyType, ItemType> {
+  @override
+  List<ValueNotifier> getRefreshListeners() =>
+      super.getRefreshListeners()..add(settings.credentials);
+}
+
 mixin RefreshableController<PageKeyType, ItemType>
     on RawDataController<PageKeyType, ItemType> {
   RefreshController refreshController = RefreshController();

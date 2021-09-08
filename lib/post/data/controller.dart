@@ -7,7 +7,11 @@ import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
 class PostController extends DataController<Post>
-    with SearchableController, HostableController, RefreshableController {
+    with
+        SearchableController,
+        HostableController,
+        RefreshableController,
+        AccountableController {
   Future<List<Post>> Function(String search, int page)? provider;
   ValueNotifier<List<String>> allowed = ValueNotifier([]);
   Map<String, List<Post>> denied = {};
