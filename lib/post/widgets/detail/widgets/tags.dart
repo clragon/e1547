@@ -120,7 +120,8 @@ Future<bool> onPostTagsEdit(
         if (target != null) {
           post.tagMap[category]!.remove(tag);
           post.tagMap[target]!.add(tag);
-          post.tagMap[target]!.toSet().toList().sort();
+          post.tagMap[target] = post.tagMap[target]!.toSet().toList();
+          post.tagMap[target]!.sort();
           post.notifyListeners();
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             duration: Duration(milliseconds: 500),
