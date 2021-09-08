@@ -1,9 +1,11 @@
 import 'dart:async';
 
+import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 
-import 'video.dart';
+import '../widgets/video.dart';
+import 'appbar.dart';
 
 class FrameController extends ChangeNotifier {
   final Duration defaultFrameDuration = Duration(seconds: 1);
@@ -45,29 +47,35 @@ class FrameController extends ChangeNotifier {
   }
 }
 
-class PostPhotoFrame extends StatefulWidget {
+class PostFullscreenFrame extends StatefulWidget {
   final Post post;
   final Widget child;
   final FrameController? controller;
 
-  PostPhotoFrame({required this.child, required this.post, this.controller});
+  PostFullscreenFrame({
+    required this.child,
+    required this.post,
+    this.controller,
+  });
 
   @override
-  _PostPhotoFrameState createState() => _PostPhotoFrameState();
+  _PostFullscreenFrameState createState() => _PostFullscreenFrameState();
 }
 
-class _PostPhotoFrameState extends State<PostPhotoFrame> {
+class _PostFullscreenFrameState extends State<PostFullscreenFrame> {
   late FrameController controller = widget.controller ?? FrameController();
 
   @override
-  void didUpdateWidget(PostPhotoFrame oldWidget) {
+  void didUpdateWidget(PostFullscreenFrame oldWidget) {
     super.didUpdateWidget(oldWidget);
     controller.cancel();
   }
 
   @override
   void dispose() {
-    controller.dispose();
+    if (widget.controller == null) {
+      controller.dispose();
+    }
     super.dispose();
   }
 
@@ -75,10 +83,9 @@ class _PostPhotoFrameState extends State<PostPhotoFrame> {
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: controller,
+      child: widget.child,
       builder: (contex, child) {
-        List<Widget> children = [
-          child!,
-        ];
+        List<Widget> children = [child!];
 
         if (widget.post.controller != null) {
           children.addAll([
@@ -98,22 +105,31 @@ class _PostPhotoFrameState extends State<PostPhotoFrame> {
           ]);
         }
 
-        return GestureDetector(
-          behavior: HitTestBehavior.translucent,
-          onTap: () {
-            controller.toggleFrame();
-            if ((widget.post.controller?.value.isPlaying ?? false) &&
-                controller.visible) {
-              controller.hideFrame(duration: Duration(seconds: 2));
-            }
-          },
-          child: Stack(
-            alignment: Alignment.center,
-            children: children,
+        return Scaffold(
+          extendBodyBehindAppBar: true,
+          appBar: PreferredSize(
+            preferredSize: Size.fromHeight(kToolbarHeight),
+            child: CrossFade(
+              showChild: controller.visible,
+              child: PostFullscreenAppBar(post: widget.post),
+            ),
+          ),
+          body: GestureDetector(
+            behavior: HitTestBehavior.translucent,
+            onTap: () {
+              controller.toggleFrame();
+              if ((widget.post.controller?.value.isPlaying ?? false) &&
+                  controller.visible) {
+                controller.hideFrame(duration: Duration(seconds: 2));
+              }
+            },
+            child: Stack(
+              alignment: Alignment.center,
+              children: children,
+            ),
           ),
         );
       },
-      child: widget.child,
     );
   }
 }
