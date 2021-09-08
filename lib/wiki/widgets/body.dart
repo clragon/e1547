@@ -7,6 +7,8 @@ import 'package:e1547/wiki/wiki.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 
+import 'actions.dart';
+
 class WikiBody extends StatefulWidget {
   final String tag;
   final PostController? controller;
@@ -23,18 +25,6 @@ class _WikiBodyState extends State<WikiBody> {
   @override
   Widget build(BuildContext context) {
     if (tags.length > 1) {
-      Widget searchRemover(String tag) {
-        return IconButton(
-          icon: Icon(Icons.search_off),
-          tooltip: 'Remove from search',
-          onPressed: () {
-            widget.controller!.search.value = widget.controller!.search.value
-                .replaceFirst(RegExp(r'(?<!\S)-?' + tag + r'(?!\S)'), '');
-            Navigator.of(context).maybePop();
-          },
-        );
-      }
-
       Widget tagInfo(String tag) {
         return Padding(
           padding: EdgeInsets.symmetric(vertical: 8),
@@ -58,7 +48,9 @@ class _WikiBodyState extends State<WikiBody> {
                           style: TextStyle(fontSize: 16),
                         ),
                       ),
-                      if (widget.controller != null) searchRemover(tag),
+                      if (widget.controller != null)
+                        RemoveTagAction(
+                            controller: widget.controller!, tag: tag),
                     ],
                   ),
                 ),

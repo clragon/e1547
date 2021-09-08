@@ -348,6 +348,9 @@ class _PostVideoLoaderState extends State<PostVideoLoader> {
     if (widget.post.controller == null) {
       await widget.post.initVideo();
     }
+    if (mounted) {
+      setState(() {});
+    }
     if (!widget.post.controller!.value.isInitialized) {
       await widget.post.loadVideo();
     }
@@ -377,25 +380,17 @@ class PostVideoWidget extends StatelessWidget {
       return PostImageWidget(
         post: post,
         size: ImageSize.sample,
-        showProgress: false,
         fit: BoxFit.cover,
+        showProgress: false,
       );
     }
 
-    return SafeCrossFade(
-      showChild: post.controller != null,
-      builder: (context) => AnimatedBuilder(
-        animation: post.controller!,
-        builder: (context, child) => CrossFade(
-          showChild: post.controller!.value.isInitialized,
-          child: AspectRatio(
-            aspectRatio: post.controller!.value.aspectRatio,
-            child: VideoPlayer(post.controller!),
-          ),
-          secondChild: placeholder(),
-        ),
-      ),
-      secondChild: placeholder(),
-    );
+    if (post.controller != null && post.controller!.value.isInitialized) {
+      return AspectRatio(
+        aspectRatio: post.controller!.value.aspectRatio,
+        child: VideoPlayer(post.controller!),
+      );
+    }
+    return placeholder();
   }
 }

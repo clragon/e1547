@@ -14,12 +14,8 @@ class PoolInfo extends StatelessWidget {
       return Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            label,
-          ),
-          Text(
-            value,
-          ),
+          Text(label),
+          Text(value),
         ],
       );
     }
@@ -36,9 +32,7 @@ class PoolInfo extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'id',
-              ),
+              Text('id'),
               InkWell(
                 child: Text(
                   pool.id.toString(),
@@ -59,11 +53,15 @@ class PoolInfo extends StatelessWidget {
             'status',
             pool.isActive ? 'active' : 'inactive',
           ),
-          textInfoRow('created',
-              getCurrentDateFormat().format(pool.createdAt.toLocal())),
+          textInfoRow(
+            'created',
+            getCurrentDateFormat().format(pool.createdAt.toLocal()),
+          ),
           textInfoRow(
             'updated',
-            getCurrentDateFormat().format(pool.updatedAt.toLocal()),
+            getCurrentDateFormat().format(
+              pool.updatedAt.toLocal(),
+            ),
           ),
         ],
       ),

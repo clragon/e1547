@@ -68,7 +68,7 @@ class PoolSheet extends StatelessWidget {
                       pool.url(await settings.host.value).toString()),
                   tooltip: 'Share',
                 ),
-                FollowButton(pool),
+                PoolFollowButton(pool),
               ],
             ),
             Padding(
