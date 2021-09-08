@@ -38,15 +38,20 @@ class DetailVideo extends StatelessWidget {
             : null,
         child: Stack(
           alignment: Alignment.center,
+          fit: StackFit.passthrough,
           children: [
             PostVideoWidget(post: post),
-            SafeCrossFade(
-              showChild: post.controller != null,
-              builder: (context) => Padding(
-                padding: EdgeInsets.all(12),
-                child: VideoButton(videoController: post.controller!),
+            Positioned.fill(
+              child: Center(
+                child: SafeCrossFade(
+                  showChild: post.controller != null,
+                  builder: (context) => Padding(
+                    padding: EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+                    child: VideoButton(videoController: post.controller!),
+                  ),
+                  secondChild: SizedCircularProgressIndicator(size: 24),
+                ),
               ),
-              secondChild: SizedCircularProgressIndicator(size: 24),
             ),
           ],
         ),

@@ -63,7 +63,7 @@ class PoolDialog extends StatelessWidget {
               softWrap: true,
             ),
           ),
-          FollowButton(pool),
+          PoolFollowButton(pool),
         ],
       );
     }

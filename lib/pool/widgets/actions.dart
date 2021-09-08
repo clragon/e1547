@@ -4,18 +4,18 @@ import 'package:e1547/pool/pool.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
 
-class FollowButton extends StatefulWidget {
+class PoolFollowButton extends StatefulWidget {
   final Pool pool;
 
-  FollowButton(this.pool);
+  PoolFollowButton(this.pool);
 
   @override
   State<StatefulWidget> createState() {
-    return FollowButtonState();
+    return PoolFollowButtonState();
   }
 }
 
-class FollowButtonState extends State<FollowButton> with LinkingMixin {
+class PoolFollowButtonState extends State<PoolFollowButton> with LinkingMixin {
   late String tag = 'pool:${widget.pool.id}';
   List<Follow>? follows;
   late bool following;

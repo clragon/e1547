@@ -17,8 +17,6 @@ class TagListActions extends StatefulWidget {
 }
 
 class _TagListActionsState extends State<TagListActions> with LinkingMixin {
-  bool denied = false;
-  bool following = false;
   List<String>? denylist;
   List<Follow>? follows;
 
@@ -30,9 +28,7 @@ class _TagListActionsState extends State<TagListActions> with LinkingMixin {
 
   Future<void> updateLists() async {
     denylist = await settings.denylist.value;
-    denied = denylist!.contains(widget.tag);
     follows = await settings.follows.value;
-    following = follows!.contains(widget.tag);
     if (mounted) {
       setState(() {});
     }
@@ -47,6 +43,8 @@ class _TagListActionsState extends State<TagListActions> with LinkingMixin {
   @override
   Widget build(BuildContext context) {
     if (follows != null && denylist != null) {
+      bool following = follows!.contains(widget.tag);
+      bool denied = denylist!.contains(widget.tag);
       return Row(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -66,7 +64,6 @@ class _TagListActionsState extends State<TagListActions> with LinkingMixin {
                 settings.follows.value = Future.value(follows);
               },
               icon: CrossFade(
-                duration: Duration(milliseconds: 200),
                 showChild: following,
                 child: Icon(Icons.turned_in),
                 secondChild: Icon(Icons.turned_in_not),
@@ -91,7 +88,6 @@ class _TagListActionsState extends State<TagListActions> with LinkingMixin {
                 }
               },
               icon: CrossFade(
-                duration: Duration(milliseconds: 200),
                 showChild: denied,
                 child: Icon(Icons.check),
                 secondChild: Icon(Icons.block),
@@ -118,6 +114,64 @@ class _TagListActionsState extends State<TagListActions> with LinkingMixin {
   }
 }
 
+class RemoveTagAction extends StatelessWidget {
+  final PostController controller;
+  final String tag;
+  const RemoveTagAction({required this.controller, required this.tag});
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      icon: Icon(Icons.search_off),
+      tooltip: 'Remove from search',
+      onPressed: () {
+        Navigator.of(context).maybePop();
+        List<String> result = controller.search.value.split(' ');
+        result.removeWhere((element) => tagToName(element) == tag);
+        controller.search.value = sortTags(result.join(' '));
+      },
+    );
+  }
+}
+
+class AddTagAction extends StatelessWidget {
+  final PostController controller;
+  final String tag;
+  const AddTagAction({required this.controller, required this.tag});
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      icon: Icon(Icons.zoom_in),
+      tooltip: 'Add to search',
+      onPressed: () {
+        Navigator.of(context).maybePop();
+        controller.search.value =
+            sortTags([controller.search.value, tag].join(' '));
+      },
+    );
+  }
+}
+
+class SubtractTagAction extends StatelessWidget {
+  final PostController controller;
+  final String tag;
+  const SubtractTagAction({required this.controller, required this.tag});
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      icon: Icon(Icons.zoom_out),
+      tooltip: 'Subtract from search',
+      onPressed: () {
+        Navigator.of(context).maybePop();
+        controller.search.value =
+            sortTags([controller.search.value, '-$tag'].join(' '));
+      },
+    );
+  }
+}
+
 class TagSearchActions extends StatelessWidget {
   final String tag;
   final PostController controller;
@@ -138,39 +192,12 @@ class TagSearchActions extends StatelessWidget {
             .any((element) => tagToName(element) == tag);
 
         if (isSearched) {
-          return IconButton(
-            icon: Icon(Icons.search_off),
-            tooltip: 'Remove from search',
-            onPressed: () {
-              Navigator.of(context).maybePop();
-
-              controller.search.value = sortTags(
-                  (controller.search.value.split(' ')
-                        ..removeWhere((element) => tagToName(element) == tag))
-                      .join(' '));
-            },
-          );
+          return RemoveTagAction(controller: controller, tag: tag);
         } else {
           return Row(
             children: [
-              IconButton(
-                icon: Icon(Icons.zoom_in),
-                tooltip: 'Add to search',
-                onPressed: () {
-                  Navigator.of(context).maybePop();
-                  controller.search.value =
-                      sortTags([controller.search.value, tag].join(' '));
-                },
-              ),
-              IconButton(
-                icon: Icon(Icons.zoom_out),
-                tooltip: 'Subtract from search',
-                onPressed: () {
-                  Navigator.of(context).maybePop();
-                  controller.search.value =
-                      sortTags([controller.search.value, '-$tag'].join(' '));
-                },
-              ),
+              AddTagAction(controller: controller, tag: tag),
+              SubtractTagAction(controller: controller, tag: tag),
             ],
           );
         }

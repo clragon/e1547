@@ -51,13 +51,15 @@ class _PostPhotoGalleryState extends State<PostPhotoGallery> {
               case PostType.Image:
                 return PostPhoto(post);
               case PostType.Video:
-                return Hero(
-                  tag: widget.posts[index].hero,
-                  child: PostVideoLoader(
-                    post: post,
-                    child: VideoGestures(
-                      child: PostVideoWidget(post: post),
-                      videoController: post.controller!,
+                return Center(
+                  child: Hero(
+                    tag: widget.posts[index].hero,
+                    child: PostVideoLoader(
+                      post: post,
+                      child: VideoGestures(
+                        child: PostVideoWidget(post: post),
+                        videoController: post.controller!,
+                      ),
                     ),
                   ),
                 );
