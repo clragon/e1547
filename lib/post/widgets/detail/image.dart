@@ -5,10 +5,10 @@ import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class DetailImage extends StatelessWidget {
+class PostDetailImage extends StatelessWidget {
   final Post post;
 
-  const DetailImage({required this.post});
+  const PostDetailImage({required this.post});
 
   @override
   Widget build(BuildContext context) {
@@ -20,10 +20,10 @@ class DetailImage extends StatelessWidget {
   }
 }
 
-class DetailVideo extends StatelessWidget {
+class PostDetailVideo extends StatelessWidget {
   final Post post;
 
-  const DetailVideo({required this.post});
+  const PostDetailVideo({required this.post});
 
   @override
   Widget build(BuildContext context) {
@@ -60,16 +60,16 @@ class DetailVideo extends StatelessWidget {
   }
 }
 
-class DetailImageToggle extends StatefulWidget {
+class PostDetailImageToggle extends StatefulWidget {
   final Post post;
 
-  const DetailImageToggle({required this.post});
+  const PostDetailImageToggle({required this.post});
 
   @override
-  _DetailImageToggleState createState() => _DetailImageToggleState();
+  _PostDetailImageToggleState createState() => _PostDetailImageToggleState();
 }
 
-class _DetailImageToggleState extends State<DetailImageToggle> {
+class _PostDetailImageToggleState extends State<PostDetailImageToggle> {
   bool loading = false;
 
   @override
@@ -143,12 +143,12 @@ class _DetailImageToggleState extends State<DetailImageToggle> {
   }
 }
 
-class DetailImageOverlay extends StatelessWidget {
+class PostDetailImageOverlay extends StatelessWidget {
   final Post post;
   final Widget child;
   final VoidCallback? onOpen;
 
-  const DetailImageOverlay(
+  const PostDetailImageOverlay(
       {required this.post, required this.child, required this.onOpen});
 
   @override
@@ -208,7 +208,7 @@ class DetailImageOverlay extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     fullscreenButton(),
-                    DetailImageToggle(post: post),
+                    PostDetailImageToggle(post: post),
                   ],
                 ),
                 bottom: 0,
@@ -220,11 +220,11 @@ class DetailImageOverlay extends StatelessWidget {
   }
 }
 
-class DetailImageDisplay extends StatelessWidget {
+class PostDetailImageDisplay extends StatelessWidget {
   final Post post;
   final VoidCallback? onTap;
 
-  const DetailImageDisplay({required this.post, this.onTap});
+  const PostDetailImageDisplay({required this.post, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -233,7 +233,7 @@ class DetailImageDisplay extends StatelessWidget {
     return AnimatedBuilder(
       animation: post,
       builder: (context, child) {
-        return DetailImageOverlay(
+        return PostDetailImageOverlay(
           onOpen: onTap,
           post: post,
           child: ConstrainedBox(
@@ -249,8 +249,8 @@ class DetailImageDisplay extends StatelessWidget {
                 child: Hero(
                   tag: post.hero,
                   child: post.type == PostType.Video
-                      ? DetailVideo(post: post)
-                      : DetailImage(post: post),
+                      ? PostDetailVideo(post: post)
+                      : PostDetailImage(post: post),
                 ),
               ),
             ),

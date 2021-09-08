@@ -63,7 +63,7 @@ class _PostDetailGalleryState extends State<PostDetailGallery> {
           return PostDetail(
             post: widget.controller.itemList![index],
             controller: widget.controller,
-            changePage: (index) => ModalRoute.of(context)!.isCurrent
+            onPageChanged: (index) => ModalRoute.of(context)!.isCurrent
                 ? controller.animateToPage(index,
                     duration: defaultAnimationDuration, curve: Curves.easeInOut)
                 : controller.jumpToPage(index),

@@ -4,15 +4,16 @@ import 'package:e1547/post/post.dart';
 import 'package:e1547/post/widgets/detail/widgets/favorite.dart';
 import 'package:flutter/material.dart';
 
+import 'appbar.dart';
 import 'image.dart';
 import 'widgets.dart';
 
 class PostDetail extends StatefulWidget {
   final Post post;
   final PostController? controller;
-  final Function(int index)? changePage;
+  final Function(int index)? onPageChanged;
 
-  PostDetail({required this.post, this.controller, this.changePage});
+  PostDetail({required this.post, this.controller, this.onPageChanged});
 
   @override
   State<StatefulWidget> createState() {
@@ -145,10 +146,10 @@ class _PostDetailState extends State<PostDetail> with LinkingMixin, RouteAware {
   Widget build(BuildContext context) {
     Widget fullscreen() {
       Widget gallery(List<Post> posts) {
-        return PostPhotoGallery(
+        return PostFullscreenGallery(
           index: posts.indexOf(widget.post),
           posts: posts,
-          onPageChanged: widget.changePage,
+          onPageChanged: widget.onPageChanged,
         );
       }
 
@@ -210,7 +211,7 @@ class _PostDetailState extends State<PostDetail> with LinkingMixin, RouteAware {
               children: [
                 Padding(
                   padding: EdgeInsets.only(bottom: 10),
-                  child: DetailImageDisplay(
+                  child: PostDetailImageDisplay(
                     post: widget.post,
                     onTap: () {
                       keepPlaying = true;
