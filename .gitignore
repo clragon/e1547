@@ -19,7 +19,7 @@
 gradle/
 .gradle/
 local.properties
-/android/app/keys
+android/app/keys
 
 # Flutter/Dart/Pub related
 **/doc/api/
