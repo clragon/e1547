@@ -385,10 +385,15 @@ class PostVideoWidget extends StatelessWidget {
       );
     }
 
-    if (post.controller != null && post.controller!.value.isInitialized) {
-      return AspectRatio(
-        aspectRatio: post.controller!.value.aspectRatio,
-        child: VideoPlayer(post.controller!),
+    if (post.controller != null) {
+      return AnimatedBuilder(
+        animation: post.controller!,
+        builder: (context, child) => post.controller!.value.isInitialized
+            ? AspectRatio(
+                aspectRatio: post.controller!.value.aspectRatio,
+                child: VideoPlayer(post.controller!),
+              )
+            : placeholder(),
       );
     }
     return placeholder();
