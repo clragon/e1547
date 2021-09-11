@@ -91,7 +91,7 @@ extension Refreshing on Follow {
         RegExpMatch? match = poolRegex().firstMatch(tags);
         if (match != null) {
           client
-              .pool(int.tryParse(match.namedGroup('id')!)!)
+              .pool(int.parse(match.namedGroup('id')!))
               .then((value) => updatePool(value));
         }
       }
