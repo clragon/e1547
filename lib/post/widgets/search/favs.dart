@@ -38,7 +38,7 @@ class _FavPageState extends State<FavPage> with LinkingMixin {
   }
 
   Future<void> updateUsername() async {
-    Credentials? credentials = await settings.credentials.value;
+    Credentials? credentials = settings.credentials.value;
     if (credentials != null) {
       setState(() {
         error = false;

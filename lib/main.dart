@@ -3,30 +3,23 @@ import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-ValueNotifier<ThemeData> theme = ValueNotifier(appThemeMap[AppTheme.dark]!);
-
-Future<void> updateTheme() async {
-  theme.value = appThemeMap[await settings.theme.value]!;
-}
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  settings.theme.addListener(updateTheme);
-  await updateTheme();
+  await settings.initialized;
   runApp(Main());
 }
 
 class Main extends StatelessWidget {
   @override
-  Widget build(BuildContext context) => StartupActions(
-        child: ValueListenableBuilder(
-          valueListenable: theme,
-          builder: (context, ThemeData value, child) => ExcludeSemantics(
+  Widget build(context) => StartupActions(
+        child: ValueListenableBuilder<AppTheme>(
+          valueListenable: settings.theme,
+          builder: (context, value, child) => ExcludeSemantics(
             child: AnnotatedRegion<SystemUiOverlayStyle>(
-              value: defaultUIStyle(theme.value),
+              value: defaultUIStyle(appThemeMap[value]!),
               child: MaterialApp(
                 title: appName,
-                theme: value,
+                theme: appThemeMap[value],
                 navigatorObservers: [routeObserver],
                 routes: routes,
               ),

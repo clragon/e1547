@@ -113,10 +113,10 @@ class _PostDetailImageToggleState extends State<PostDetailImageToggle> {
               });
 
               if (widget.post.file.url == null) {
-                if (await settings.customHost.value == null) {
+                if (settings.customHost.value == null) {
                   await setCustomHost(context);
                 }
-                if (await settings.customHost.value != null) {
+                if (settings.customHost.value != null) {
                   Post replacement;
                   replacement = await client.post(widget.post.id, unsafe: true);
                   widget.post.file = replacement.file;

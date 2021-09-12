@@ -24,7 +24,7 @@ class TagGesture extends StatelessWidget {
 
     return InkWell(
       onTap: () async {
-        if (wiki || (safe && (await settings.denylist.value).contains(tag))) {
+        if (wiki || (safe && settings.denylist.value.contains(tag))) {
           sheet();
         } else {
           Navigator.of(context).push(MaterialPageRoute(

@@ -23,14 +23,14 @@ class _FollowingPageState extends State<FollowingPage> with FollowerMixin {
 
       if (edit != null) {
         if (value.isNotEmpty) {
-          follows![edit] = result;
+          follows[edit] = result;
         } else {
-          follows!.removeAt(edit);
+          follows.removeAt(edit);
         }
-        settings.follows.value = Future.value(follows);
+        settings.follows.value = follows;
       } else if (value.isNotEmpty) {
-        follows!.add(result);
-        settings.follows.value = Future.value(follows);
+        follows.add(result);
+        settings.follows.value = follows;
       }
     }
 
@@ -40,7 +40,7 @@ class _FollowingPageState extends State<FollowingPage> with FollowerMixin {
         submit: (value) => submit(sortTags(value), edit),
         actionController: sheetController,
         textController: TextEditingController(
-            text: edit != null ? follows![edit].tags : null),
+            text: edit != null ? follows[edit].tags : null),
         builder: (context, controller, submit) => TagInput(
           controller: controller,
           labelText: edit != null ? 'Edit follow' : 'Add to follows',
@@ -53,13 +53,13 @@ class _FollowingPageState extends State<FollowingPage> with FollowerMixin {
   void editAlias(BuildContext context, int edit) {
     void submit(String value, int edit) {
       value = value.trim();
-      if (follows![edit].alias != value) {
+      if (follows[edit].alias != value) {
         if (value.isNotEmpty) {
-          follows![edit].alias = value;
+          follows[edit].alias = value;
         } else {
-          follows![edit].alias = null;
+          follows[edit].alias = null;
         }
-        settings.follows.value = Future.value(follows);
+        settings.follows.value = follows;
       }
     }
 
@@ -68,7 +68,7 @@ class _FollowingPageState extends State<FollowingPage> with FollowerMixin {
       SheetTextField(
         labelText: 'Follow alias',
         actionController: sheetController,
-        textController: TextEditingController(text: follows![edit].title),
+        textController: TextEditingController(text: follows[edit].title),
         submit: (value) => submit(value, edit),
       ),
     );
@@ -77,7 +77,7 @@ class _FollowingPageState extends State<FollowingPage> with FollowerMixin {
   @override
   Widget build(BuildContext context) {
     Widget body() {
-      if (follows?.isEmpty ?? true) {
+      if (follows.isEmpty) {
         return IconMessage(
           icon: Icon(Icons.bookmark),
           title: Text('You are not following any tags'),
@@ -89,27 +89,27 @@ class _FollowingPageState extends State<FollowingPage> with FollowerMixin {
         physics: BouncingScrollPhysics(),
         padding:
             EdgeInsets.only(top: 8, bottom: kBottomNavigationBarHeight + 24),
-        itemCount: follows!.length,
+        itemCount: follows.length,
         itemBuilder: (BuildContext context, int index) => FollowListTile(
           safe: safe,
-          follow: follows![index],
+          follow: follows[index],
           onRename: () => editAlias(context, index),
           onEdit: () => addTags(context, index),
           onDelete: () {
-            follows!.removeAt(index);
-            settings.follows.value = Future.value(follows);
+            follows.removeAt(index);
+            settings.follows.value = follows;
           },
           onType: () {
-            switch (follows![index].type) {
+            switch (follows[index].type) {
               case FollowType.notify:
               case FollowType.update:
-                follows![index].type = FollowType.bookmark;
+                follows[index].type = FollowType.bookmark;
                 break;
               case FollowType.bookmark:
-                follows![index].type = FollowType.update;
+                follows[index].type = FollowType.update;
                 break;
             }
-            settings.follows.value = Future.value(follows);
+            settings.follows.value = follows;
           },
         ),
       );
@@ -117,7 +117,7 @@ class _FollowingPageState extends State<FollowingPage> with FollowerMixin {
 
     Widget editor() {
       TextEditingController controller = TextEditingController();
-      controller.text = follows!.tags.join('\n');
+      controller.text = follows.tags.join('\n');
       return AlertDialog(
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -141,7 +141,7 @@ class _FollowingPageState extends State<FollowingPage> with FollowerMixin {
               List<String> tags = controller.text.split('\n');
               tags = tags.map((e) => e.trim()).toList();
               tags.removeWhere((tag) => tag.isEmpty);
-              settings.follows.value = follows!.editWith(tags);
+              settings.follows.value = follows.editWith(tags);
               Navigator.of(context).maybePop();
             },
           ),

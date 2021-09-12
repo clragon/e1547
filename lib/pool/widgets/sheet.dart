@@ -64,8 +64,8 @@ class PoolSheet extends StatelessWidget {
                 ),
                 IconButton(
                   icon: Icon(Icons.share),
-                  onPressed: () async => Share.share(
-                      pool.url(await settings.host.value).toString()),
+                  onPressed: () async =>
+                      Share.share(pool.url(settings.host.value).toString()),
                   tooltip: 'Share',
                 ),
                 PoolFollowButton(pool),

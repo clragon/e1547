@@ -21,7 +21,7 @@ class _FollowMarkReadTileState extends State<FollowMarkReadTile>
 
   Future<void> update() async {
     unseen = 0;
-    List<Follow> follows = await settings.follows.value;
+    List<Follow> follows = settings.follows.value;
     for (Follow follow in follows) {
       unseen += (await follow.status).unseen ?? 0;
     }
@@ -47,11 +47,11 @@ class _FollowMarkReadTileState extends State<FollowMarkReadTile>
             )
           : Text('No unseen posts'),
       onTap: () async {
-        List<Follow> follows = await settings.follows.value;
+        List<Follow> follows = settings.follows.value;
         for (Follow follow in follows) {
           (await follow.status).unseen = 0;
         }
-        settings.follows.value = Future.value(follows);
+        settings.follows.value = follows;
         Navigator.of(context).maybePop();
       },
     );
@@ -65,34 +65,24 @@ class FollowSplitSwitchTile extends StatefulWidget {
   _FollowSplitSwitchTileState createState() => _FollowSplitSwitchTileState();
 }
 
-class _FollowSplitSwitchTileState extends State<FollowSplitSwitchTile>
-    with LinkingMixin {
-  bool followsSplit = false;
-
-  void update() {
-    settings.followsSplit.value
-        .then((value) => setState(() => followsSplit = value));
-  }
-
-  @override
-  Map<ChangeNotifier, VoidCallback> get initLinks => {
-        settings.followsSplit: update,
-      };
-
+class _FollowSplitSwitchTileState extends State<FollowSplitSwitchTile> {
   @override
   Widget build(BuildContext context) {
-    return SwitchListTile(
-      secondary: Icon(followsSplit ? Icons.view_comfy : Icons.view_compact),
-      title: Text(
-        'Split tags',
-        style: Theme.of(context).textTheme.subtitle1,
+    return ValueListenableBuilder<bool>(
+      valueListenable: settings.followsSplit,
+      builder: (context, value, child) => SwitchListTile(
+        secondary: Icon(value ? Icons.view_comfy : Icons.view_compact),
+        title: Text(
+          'Split tags',
+          style: Theme.of(context).textTheme.subtitle1,
+        ),
+        subtitle: value ? Text('Seperated tags') : Text('Mixed tags'),
+        value: value,
+        onChanged: (value) async {
+          await Navigator.of(context).maybePop();
+          settings.followsSplit.value = value;
+        },
       ),
-      subtitle: followsSplit ? Text('Seperated tags') : Text('Mixed tags'),
-      value: followsSplit,
-      onChanged: (value) async {
-        await Navigator.of(context).maybePop();
-        settings.followsSplit.value = Future.value(value);
-      },
     );
   }
 }

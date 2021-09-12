@@ -10,41 +10,29 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
-  PostController? controller;
-
-  void update() {
-    settings.homeTags.value = Future.value(controller!.search.value);
-  }
+class _HomePageState extends State<HomePage> with LinkingMixin {
+  PostController controller = PostController(search: settings.homeTags.value);
 
   @override
-  void initState() {
-    super.initState();
-    settings.homeTags.value.then(
-      (value) {
-        setState(() {
-          controller = PostController(search: value);
-        });
-        controller!.search.addListener(update);
-      },
-    );
+  Map<ChangeNotifier, VoidCallback> get links => {
+        controller: update,
+      };
+
+  void update() {
+    settings.homeTags.value = controller.search.value;
   }
 
   @override
   void dispose() {
-    controller?.search.removeListener(update);
-    controller?.dispose();
     super.dispose();
+    controller.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return PageLoader(
-      isBuilt: controller != null,
-      builder: (context) => PostsPage(
-        appBarBuilder: defaultAppBarBuilder('Home'),
-        controller: controller!,
-      ),
+    return PostsPage(
+      appBarBuilder: defaultAppBarBuilder('Home'),
+      controller: controller,
     );
   }
 }

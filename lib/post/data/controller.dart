@@ -36,7 +36,7 @@ class PostController extends DataController<Post>
   Future<List<Post>> filter(List<Post> items) async {
     List<String> denylist = [];
     if (denying.value && canDeny) {
-      denylist = (await settings.denylist.value)
+      denylist = settings.denylist.value
           .where((line) => !allowed.value.contains(line))
           .toList();
     }

@@ -71,7 +71,7 @@ class _RangeDialogState extends State<RangeDialog> with LinkingMixin {
           max: max(widget.max, value).toDouble(),
           divisions: widget.division,
           value: value.toDouble(),
-          activeColor: Theme.of(context).accentColor,
+          activeColor: Theme.of(context).colorScheme.secondary,
           onChanged: (output) {
             setState(() => value = output.toInt());
           });

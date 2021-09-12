@@ -16,49 +16,8 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  String? currentHost;
-  String? customHost;
-  String? username;
-  AppTheme? theme;
-  int tileSize = 0;
-  GridState? stagger;
-  bool useCustomHost = false;
-
-  void linkSetting<T>(ValueNotifier<Future<T>> setting,
-      Future<void> Function(T value) assignment) async {
-    Future<void> setValue() async {
-      T value = await setting.value;
-      await assignment(value);
-      if (mounted) {
-        setState(() {});
-      }
-    }
-
-    setting.addListener(setValue);
-    await setValue();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-
-    Map<ValueNotifier<Future>, Future<void> Function(dynamic value)> links = {
-      settings.host: (value) async {
-        currentHost = value;
-        useCustomHost = value == await settings.customHost.value;
-      },
-      settings.customHost: (value) async => customHost = value,
-      settings.credentials: (value) async => username = value?.username,
-      settings.theme: (value) async => theme = value,
-      settings.tileSize: (value) async => tileSize = value,
-      settings.stagger: (value) async => stagger = value,
-    };
-
-    links.forEach(linkSetting);
-  }
-
   Future<void> logout() async {
-    String? name = username;
+    String? name = settings.credentials.value?.username;
     await client.logout();
 
     String msg = 'Forgot login details';
@@ -78,7 +37,7 @@ class _SettingsPageState extends State<SettingsPage> {
       child: Text(
         title,
         style: TextStyle(
-          color: Theme.of(context).accentColor,
+          color: Theme.of(context).colorScheme.secondary,
           fontSize: 16,
         ),
       ),
@@ -100,63 +59,77 @@ class _SettingsPageState extends State<SettingsPage> {
           GestureDetector(
             behavior: HitTestBehavior.translucent,
             onLongPress: () => setCustomHost(context),
-            child: SwitchListTile(
-              title: Text('Custom host'),
-              subtitle: currentHost != null ? Text(currentHost!) : null,
-              secondary: Icon(useCustomHost ? Icons.warning : Icons.security),
-              value: useCustomHost,
-              onChanged: (value) async {
-                if (customHost == null) {
-                  await setCustomHost(context);
-                }
-                if (customHost != null) {
-                  settings.host.value =
-                      Future.value(value ? customHost : 'e926.net');
-                }
+            child: AnimatedBuilder(
+              animation: Listenable.merge([
+                settings.host,
+                settings.customHost,
+              ]),
+              builder: (context, child) {
+                bool useCustomHost =
+                    settings.host.value == settings.customHost.value;
+                return SwitchListTile(
+                  title: Text('Custom host'),
+                  subtitle: Text(settings.host.value),
+                  secondary:
+                      Icon(useCustomHost ? Icons.warning : Icons.security),
+                  value: useCustomHost,
+                  onChanged: (value) async {
+                    if (settings.customHost.value == null) {
+                      await setCustomHost(context);
+                    }
+                    if (settings.customHost.value != null) {
+                      settings.host.value =
+                          value ? settings.customHost.value! : 'e926.net';
+                    }
+                  },
+                );
               },
             ),
           ),
           Divider(),
           settingsHeader('Display'),
-          ListTile(
-            title: Text('Theme'),
-            subtitle: Text(theme != null ? describeEnum(theme!) : ''),
-            leading: Icon(Icons.brightness_6),
-            onTap: () {
-              showDialog(
-                context: context,
-                builder: (context) => SimpleDialog(
-                  title: Text('Theme'),
-                  children: [
-                    Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: appThemeMap.keys
-                          .map(
-                            (theme) => ListTile(
-                              title: Text(describeEnum(theme)),
-                              trailing: Container(
-                                height: 28,
-                                width: 28,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: appThemeMap[theme]!.cardColor,
-                                  border: Border.all(
-                                    color: Theme.of(context).iconTheme.color!,
+          ValueListenableBuilder<AppTheme>(
+            valueListenable: settings.theme,
+            builder: (context, value, child) => ListTile(
+              title: Text('Theme'),
+              subtitle: Text(describeEnum(value)),
+              leading: Icon(Icons.brightness_6),
+              onTap: () {
+                showDialog(
+                  context: context,
+                  builder: (context) => SimpleDialog(
+                    title: Text('Theme'),
+                    children: [
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: appThemeMap.keys
+                            .map(
+                              (theme) => ListTile(
+                                title: Text(describeEnum(theme)),
+                                trailing: Container(
+                                  height: 28,
+                                  width: 28,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: appThemeMap[theme]!.cardColor,
+                                    border: Border.all(
+                                      color: Theme.of(context).iconTheme.color!,
+                                    ),
                                   ),
                                 ),
+                                onTap: () {
+                                  settings.theme.value = theme;
+                                  Navigator.of(context).maybePop();
+                                },
                               ),
-                              onTap: () {
-                                settings.theme.value = Future.value(theme);
-                                Navigator.of(context).maybePop();
-                              },
-                            ),
-                          )
-                          .toList(),
-                    )
-                  ],
-                ),
-              );
-            },
+                            )
+                            .toList(),
+                      )
+                    ],
+                  ),
+                );
+              },
+            ),
           ),
           ExpandableNotifier(
             initialExpanded: false,
@@ -174,32 +147,38 @@ class _SettingsPageState extends State<SettingsPage> {
                 expanded: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    ListTile(
-                      title: Text('Post tile size'),
-                      subtitle: Text(tileSize.toString()),
-                      leading: Icon(Icons.crop),
-                      onTap: () => showDialog(
-                        context: context,
-                        builder: (context) => RangeDialog(
-                          title: Text('Tile size'),
-                          value: tileSize,
-                          division: (300 / 50).round(),
-                          min: 100,
-                          max: 400,
-                          onSubmit: (value) {
-                            if (value == null || value <= 0) {
-                              return;
-                            }
-                            settings.tileSize.value = Future.value(value);
-                          },
+                    ValueListenableBuilder<int>(
+                      valueListenable: settings.tileSize,
+                      builder: (context, value, child) => ListTile(
+                        title: Text('Post tile size'),
+                        subtitle: Text(value.toString()),
+                        leading: Icon(Icons.crop),
+                        onTap: () => showDialog(
+                          context: context,
+                          builder: (context) => RangeDialog(
+                            title: Text('Tile size'),
+                            value: value,
+                            division: (300 / 50).round(),
+                            min: 100,
+                            max: 400,
+                            onSubmit: (value) {
+                              if (value == null || value <= 0) {
+                                return;
+                              }
+                              settings.tileSize.value = value;
+                            },
+                          ),
                         ),
                       ),
                     ),
-                    GridSettingsTile(
-                      state: stagger ?? GridState.square,
-                      onChange: (state) => setState(() {
-                        settings.stagger.value = Future.value(state);
-                      }),
+                    ValueListenableBuilder<GridState>(
+                      valueListenable: settings.stagger,
+                      builder: (context, value, child) => GridSettingsTile(
+                        state: value,
+                        onChange: (state) => setState(() {
+                          settings.stagger.value = state;
+                        }),
+                      ),
                     ),
                   ],
                 ),
@@ -221,32 +200,24 @@ class _SettingsPageState extends State<SettingsPage> {
           ),
           Divider(),
           settingsHeader('Account'),
-          FutureBuilder<bool?>(
-            future: client.hasLogin,
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return CrossFade(
-                    duration: Duration(milliseconds: 200),
-                    showChild: snapshot.data!,
-                    child: ListTile(
-                      title: Text('Sign out'),
-                      subtitle: Text(username ?? ''),
-                      leading: Icon(Icons.exit_to_app),
-                      onTap: logout,
-                    ),
-                    secondChild: ListTile(
-                      title: Text('Sign in'),
-                      leading: Icon(Icons.person_add),
-                      onTap: () => Navigator.pushNamed(context, '/login'),
-                    ));
-              } else {
-                return Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedCircularProgressIndicator(size: 20),
-                  ],
-                );
-              }
+          ValueListenableBuilder<Credentials?>(
+            valueListenable: settings.credentials,
+            builder: (context, value, child) {
+              return SafeCrossFade(
+                duration: Duration(milliseconds: 200),
+                showChild: value != null,
+                builder: (context) => ListTile(
+                  title: Text('Sign out'),
+                  subtitle: Text(value!.username),
+                  leading: Icon(Icons.exit_to_app),
+                  onTap: logout,
+                ),
+                secondChild: ListTile(
+                  title: Text('Sign in'),
+                  leading: Icon(Icons.person_add),
+                  onTap: () => Navigator.pushNamed(context, '/login'),
+                ),
+              );
             },
           ),
         ],
@@ -260,7 +231,7 @@ Future<bool> setCustomHost(BuildContext context) async {
   ValueNotifier<bool> isLoading = ValueNotifier<bool>(false);
   ValueNotifier<String?> error = ValueNotifier<String?>(null);
   TextEditingController controller =
-      TextEditingController(text: await settings.customHost.value);
+      TextEditingController(text: settings.customHost.value);
   Future<bool> submit(String text) async {
     error.value = null;
     isLoading.value = true;
@@ -276,14 +247,14 @@ Future<bool> setCustomHost(BuildContext context) async {
     if (host.isEmpty) {
       success = false;
       error.value = null;
-      settings.customHost.value = Future.value(null);
+      settings.customHost.value = null;
     } else {
       await Future.delayed(Duration(seconds: 1));
       try {
         await dio.get('https://$host');
         switch (host) {
           case 'e621.net':
-            settings.customHost.value = Future.value(host);
+            settings.customHost.value = host;
             error.value = null;
             success = true;
             break;
@@ -332,7 +303,8 @@ Future<bool> setCustomHost(BuildContext context) async {
                     return Theme(
                       data: value != null
                           ? Theme.of(context).copyWith(
-                              accentColor: Theme.of(context).errorColor)
+                              colorScheme: ColorScheme.fromSwatch().copyWith(
+                                  secondary: Theme.of(context).errorColor))
                           : Theme.of(context),
                       child: TextField(
                         controller: controller,

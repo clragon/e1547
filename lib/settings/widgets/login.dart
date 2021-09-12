@@ -42,7 +42,7 @@ class LoginPage extends StatelessWidget {
                 1,
                 TextButton(
                   onPressed: () async {
-                    launch('https://${await settings.host.value}/session/new');
+                    launch('https://${settings.host.value}/session/new');
                   },
                   child: Text(
                     'Login via web browser',
@@ -237,14 +237,16 @@ class _LoginFormFieldsState extends State<LoginFormFields> {
           style: ButtonStyle(
             backgroundColor: MaterialStateProperty.resolveWith((states) {
               if (!states.contains(MaterialState.disabled)) {
-                return Theme.of(context).accentColor;
+                return Theme.of(context).colorScheme.secondary;
               }
               return null;
             }),
           ),
           child: Text(
             'LOGIN',
-            style: Theme.of(context).accentTextTheme.button,
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onSecondary,
+            ),
           ),
           onPressed: saveAndTest,
         ),

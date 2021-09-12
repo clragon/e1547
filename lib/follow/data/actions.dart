@@ -10,8 +10,8 @@ import 'package:e1547/tag/tag.dart';
 extension utility on List<Follow> {
   List<String> get tags => this.map((e) => e.tags).toList();
 
-  Future<void> sortByNew() async {
-    bool isSafe = await client.isSafe;
+  void sortByNew() {
+    bool isSafe = client.isSafe;
     this.sort(
       (a, b) {
         int result = 0;
@@ -55,7 +55,7 @@ extension utility on List<Follow> {
     );
   }
 
-  Future<List<Follow>> editWith(List<String> update) async {
+  List<Follow> editWith(List<String> update) {
     List<Follow> edited = [];
     for (String tags in update) {
       Follow? match = this.firstWhereOrNull((follow) => follow.tags == tags);
@@ -76,7 +76,7 @@ extension Refreshing on Follow {
     try {
       List<Post> posts = await client.postsRaw(tags, 1, limit: checkAmount);
 
-      List<String> denylist = await settings.denylist.value;
+      List<String> denylist = settings.denylist.value;
 
       await Future.forEach(
         posts,
