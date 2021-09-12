@@ -57,7 +57,7 @@ class _FollowsSplitPageState extends State<FollowsSplitPage>
   }
 
   Widget itemBuilder(BuildContext context, int item) {
-    return FollowTile(follow: follows![item], safe: safe!);
+    return FollowTile(follow: follows[item], safe: safe);
   }
 
   StaggeredTile tileBuilder(int item) {
@@ -72,18 +72,18 @@ class _FollowsSplitPageState extends State<FollowsSplitPage>
         onLoading: Text('Loading follows'),
         onError: Text('Failed to load follows'),
         isError: false,
-        isLoading: follows == null,
+        isLoading: false,
         isBuilt: [tileSize, safe].every((e) => e != null),
-        isEmpty: follows?.length == 0,
+        isEmpty: follows.length == 0,
         refreshController: refreshController,
         refreshHeader: RefreshablePageDefaultHeader(
-          refreshingText: 'Refreshing $progress / ${follows?.length ?? '?'}...',
+          refreshingText: 'Refreshing $progress / ${follows.length}...',
         ),
         builder: (context) => StaggeredGridView.countBuilder(
           key: Key('grid_${[tileSize, safe].join('_')}_key'),
           addAutomaticKeepAlives: false,
           crossAxisCount: crossAxisCount(constraints.maxWidth),
-          itemCount: follows!.length,
+          itemCount: follows.length,
           itemBuilder: itemBuilder,
           staggeredTileBuilder: tileBuilder,
           physics: BouncingScrollPhysics(),

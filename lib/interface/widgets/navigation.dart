@@ -164,92 +164,87 @@ class _ProfileHeaderState extends State<ProfileHeader> with LinkingMixin {
 
   @override
   Widget build(BuildContext context) {
-    Widget userNameWidget() {
-      return ValueListenableBuilder(
-        valueListenable: userName,
-        builder: (context, String? value, child) {
-          return CrossFade(
-            showChild: value != null,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: Text(
-                    value ?? '...',
-                    style: Theme.of(context).textTheme.headline6,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ],
-            ),
-            secondChild: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              child: OutlinedButton(
-                child: Text('LOGIN'),
-                onPressed: () => Navigator.popAndPushNamed(context, '/login'),
-              ),
-            ),
-          );
-        },
-      );
-    }
-
-    Widget userAvatarWidget() {
-      return ValueListenableBuilder(
-        valueListenable: userAvatar,
-        builder: (context, String? value, child) {
-          return CircleAvatar(
-            backgroundImage: (value == null
-                ? AssetImage('assets/icon/app/paw.png')
-                : CachedNetworkImageProvider(value)) as ImageProvider<Object>?,
-            radius: 36,
-          );
-        },
-      );
-    }
-
-    return Container(
-      height: 140,
-      child: DrawerHeader(
+    Widget userNameWidget(String? name) {
+      return CrossFade(
+        showChild: name != null,
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            userAvatarWidget(),
             Expanded(
-              child: Padding(
-                padding: EdgeInsets.all(20),
-                child: userNameWidget(),
+              child: Text(
+                name ?? '...',
+                style: Theme.of(context).textTheme.headline6,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           ],
+        ),
+        secondChild: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 20),
+          child: OutlinedButton(
+            child: Text('LOGIN'),
+            onPressed: () => Navigator.popAndPushNamed(context, '/login'),
+          ),
+        ),
+      );
+    }
+
+    Widget userAvatarWidget(String? avatar) {
+      return CircleAvatar(
+        backgroundImage: (avatar == null
+            ? AssetImage('assets/icon/app/paw.png')
+            : CachedNetworkImageProvider(avatar)) as ImageProvider<Object>?,
+        radius: 36,
+      );
+    }
+
+    return SizedBox(
+      height: 140,
+      child: ValueListenableBuilder<UserInfo?>(
+        valueListenable: userInfo,
+        builder: (context, value, child) => DrawerHeader(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              userAvatarWidget(value?.avatar),
+              Expanded(
+                child: Padding(
+                  padding: EdgeInsets.all(20),
+                  child: userNameWidget(value?.name),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-final ValueNotifier<String?> userName = ValueNotifier(null);
-final ValueNotifier<String?> userAvatar = ValueNotifier(null);
+class UserInfo {
+  final String name;
+  final String avatar;
 
-void initAvatar([BuildContext? context]) {
-  settings.credentials.value.then(
-    (credentials) {
-      userName.value = credentials?.username;
-      if (userName.value != null) {
-        client.avatar.then(
-          (avatar) {
-            userAvatar.value = avatar;
-            if (avatar != null && context != null) {
-              precacheImage(
-                CachedNetworkImageProvider(avatar),
-                context,
-              );
-            }
-          },
-        );
-      } else {
-        userAvatar.value = null;
-      }
-    },
-  );
+  UserInfo(this.name, this.avatar);
+}
+
+final ValueNotifier<UserInfo?> userInfo = ValueNotifier(null);
+
+Future<void> initAvatar([BuildContext? context]) async {
+  Credentials? credentials = settings.credentials.value;
+  String? avatar = await client.avatar;
+  if (credentials != null && avatar != null) {
+    userInfo.value = UserInfo(
+      credentials.username,
+      avatar,
+    );
+    if (context != null) {
+      precacheImage(
+        CachedNetworkImageProvider(avatar),
+        context,
+      );
+    }
+  } else {
+    userInfo.value = null;
+  }
 }

@@ -19,12 +19,15 @@ SystemUiOverlayStyle defaultUIStyle(ThemeData theme) => SystemUiOverlayStyle(
     );
 
 ThemeData prepareTheme(ThemeData theme) => theme.copyWith(
+      platform: theme.platform == TargetPlatform.windows
+          ? TargetPlatform.android
+          : theme.platform,
       applyElevationOverlayColor: false,
       dialogBackgroundColor: theme.canvasColor,
       switchTheme: SwitchThemeData(
         thumbColor: MaterialStateProperty.resolveWith(
           (states) => states.contains(MaterialState.selected)
-              ? theme.accentColor
+              ? theme.colorScheme.secondary
               : null,
         ),
         trackColor: MaterialStateProperty.resolveWith(
@@ -44,7 +47,6 @@ ThemeData prepareTheme(ThemeData theme) => theme.copyWith(
         systemOverlayStyle: defaultUIStyle(theme),
         color: theme.canvasColor,
         foregroundColor: theme.iconTheme.color,
-        backwardsCompatibility: false,
       ),
     );
 

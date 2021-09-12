@@ -75,7 +75,7 @@ class PoolDialog extends StatelessWidget {
         TextButton(
           child: Text('SHARE'),
           onPressed: () async =>
-              Share.share(pool.url(await settings.host.value).toString()),
+              Share.share(pool.url(settings.host.value).toString()),
         ),
         TextButton(
           child: Text('OK'),

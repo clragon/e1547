@@ -6,16 +6,9 @@ mixin TileSizeMixin<T extends StatefulWidget> on State<T> {
   double tileHeightFactor = 1.2;
   int? tileSize;
 
-  void update() {
-    if (this.mounted) {
-      setState(() {});
-    }
-  }
-
-  Future<void> updateTileSize() async {
-    await settings.tileSize.value.then((value) {
-      tileSize = value;
-      update();
+  void updateTileSize() {
+    setState(() {
+      tileSize = settings.tileSize.value;
     });
   }
 
@@ -49,10 +42,8 @@ mixin TileStaggerMixin<T extends StatefulWidget> on State<T> {
   GridState? stagger;
 
   void updateStagger() {
-    settings.stagger.value.then((value) {
-      setState(() {
-        stagger = value;
-      });
+    setState(() {
+      stagger = settings.stagger.value;
     });
   }
 

@@ -63,18 +63,18 @@ class DrawerDenySwitch extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                FutureBuilder<List<String>>(
-                  future: settings.denylist.value,
-                  builder: (context, snapshot) {
-                    int? count = snapshot.data?.length;
-                    if (count != null && controller.denying.value) {
+                ValueListenableBuilder<List<String>>(
+                  valueListenable: settings.denylist,
+                  builder: (context, value, child) {
+                    int count = value.length;
+                    if (controller.denying.value) {
                       count -= controller.denied.keys.length;
                       count -= controller.allowed.value.length;
                     }
                     return CrossFade(
-                      showChild: snapshot.hasData && count! > 0,
+                      showChild: 0 < count,
                       child: TweenAnimationBuilder(
-                        tween: IntTween(begin: 0, end: count ?? 0),
+                        tween: IntTween(begin: 0, end: count),
                         duration: defaultAnimationDuration,
                         builder: (context, int value, child) {
                           return Text(

@@ -6,12 +6,12 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/settings/data/settings.dart';
 import 'package:flutter/material.dart';
 
-final FollowUpdater followUpdater = FollowUpdater(settings.follows);
+late final FollowUpdater followUpdater = FollowUpdater(settings.follows);
 
 class FollowUpdater extends DataUpdater<List<Follow>> with HostableUpdater {
   Duration get stale => Duration(hours: 4);
 
-  ValueNotifier<Future<List<Follow>>> source;
+  ValueNotifier<List<Follow>> source;
   List<String>? tags;
 
   FollowUpdater(this.source) {
@@ -24,8 +24,8 @@ class FollowUpdater extends DataUpdater<List<Follow>> with HostableUpdater {
     super.dispose();
   }
 
-  Future<void> updateSource() async {
-    List<String> update = (await source.value).tags;
+  void updateSource() {
+    List<String> update = source.value.tags;
     if (tags == null) {
       tags = update;
     } else {
@@ -37,17 +37,17 @@ class FollowUpdater extends DataUpdater<List<Follow>> with HostableUpdater {
   }
 
   @override
-  Future<List<Follow>> read() => source.value;
+  Future<List<Follow>> read() async => source.value;
 
   @override
   Future<void> write(List<Follow>? data) async {
     if (data != null) {
-      source.value = Future.value(data);
+      source.value = data;
     }
   }
 
   Future<void> sort(List<Follow> data) async {
-    await data.sortByNew();
+    data.sortByNew();
     await write(data);
   }
 

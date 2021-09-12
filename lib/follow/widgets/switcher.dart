@@ -8,32 +8,16 @@ class FollowsPage extends StatefulWidget {
   _FollowsPageState createState() => _FollowsPageState();
 }
 
-class _FollowsPageState extends State<FollowsPage> with LinkingMixin {
-  bool? isSplit;
-
-  Future<void> update() async {
-    await settings.followsSplit.value
-        .then((value) => setState(() => isSplit = value));
-  }
-
-  @override
-  Map<ChangeNotifier, VoidCallback> get initLinks => {
-        settings.followsSplit: update,
-      };
-
+class _FollowsPageState extends State<FollowsPage> {
   @override
   Widget build(BuildContext context) {
-    return PageLoader(
-        builder: (context) => AnimatedSwitcher(
-              duration: defaultAnimationDuration,
-              child: isSplit == null
-                  ? SizedBox.shrink()
-                  : isSplit!
-                      ? FollowsSplitPage()
-                      : FollowsCombinedPage(),
-            ),
-        isLoading: isSplit == null,
-        isEmpty: false,
-        isError: false);
+    return ValueListenableBuilder<bool>(
+      valueListenable: settings.followsSplit,
+      builder: (context, value, child) => CrossFade(
+        showChild: value,
+        child: FollowsSplitPage(),
+        secondChild: FollowsCombinedPage(),
+      ),
+    );
   }
 }

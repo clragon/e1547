@@ -32,7 +32,7 @@ class Follow {
     this.type = type ?? FollowType.update;
   }
 
-  Future<FollowStatus> get status async => await client.isSafe ? safe : unsafe;
+  Future<FollowStatus> get status async => client.isSafe ? safe : unsafe;
 
   Future<DateTime?> get updated async => (await status).updated;
 
@@ -83,7 +83,7 @@ class Follow {
       FollowStatus? status;
       FollowStatus? other;
 
-      if (await client.isSafe) {
+      if (client.isSafe) {
         status = safe;
         other = unsafe;
       } else {
@@ -123,7 +123,7 @@ class Follow {
       FollowStatus? status;
       FollowStatus? other;
 
-      if (await client.isSafe) {
+      if (client.isSafe) {
         status = safe;
         other = unsafe;
       } else {

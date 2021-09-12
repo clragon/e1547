@@ -26,7 +26,7 @@ class _FollowsCombinedPageState extends State<FollowsCombinedPage>
       };
 
   Future<void> updateTags() async {
-    List<String?> update = (await settings.follows.value).tags;
+    List<String?> update = settings.follows.value.tags;
     if (tags == null) {
       tags = update;
     } else if (!listEquals(tags, update)) {

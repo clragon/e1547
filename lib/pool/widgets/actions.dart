@@ -25,8 +25,8 @@ class PoolFollowButtonState extends State<PoolFollowButton> with LinkingMixin {
         settings.follows: update,
       };
 
-  Future<void> update() async {
-    await settings.follows.value.then((value) => follows = value);
+  void update() {
+    follows = settings.follows.value;
     setState(() {
       following = follows!.any((element) => element.tags == tag);
     });
@@ -45,7 +45,7 @@ class PoolFollowButtonState extends State<PoolFollowButton> with LinkingMixin {
               } else {
                 follows!.add(Follow.fromString(tag));
               }
-              settings.follows.value = Future.value(follows);
+              settings.follows.value = follows!;
             },
             icon: CrossFade(
               showChild: following,

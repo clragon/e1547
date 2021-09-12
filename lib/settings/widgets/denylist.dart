@@ -20,13 +20,7 @@ class _DenyListPageState extends State<DenyListPage> with LinkingMixin {
         settings.denylist: updateDenylist,
       };
 
-  Future<void> updateDenylist() async => settings.denylist.value.then(
-        (value) {
-          if (mounted) {
-            setState(() => denylist = value);
-          }
-        },
-      );
+  void updateDenylist() => setState(() => denylist = settings.denylist.value);
 
   void addTags(BuildContext context, [int? edit]) {
     void submit(String value, [int? edit]) {
@@ -38,11 +32,11 @@ class _DenyListPageState extends State<DenyListPage> with LinkingMixin {
         } else {
           denylist.removeAt(edit);
         }
-        settings.denylist.value = Future.value(denylist);
+        settings.denylist.value = denylist;
       } else {
         if (value.isNotEmpty) {
           denylist.add(value);
-          settings.denylist.value = Future.value(denylist);
+          settings.denylist.value = denylist;
         }
       }
     }
@@ -135,7 +129,7 @@ class _DenyListPageState extends State<DenyListPage> with LinkingMixin {
             onEdit: () => addTags(context, index),
             onDelete: () {
               denylist.removeAt(index);
-              settings.denylist.value = Future.value(denylist);
+              settings.denylist.value = denylist;
             }),
         physics: BouncingScrollPhysics(),
       );
@@ -172,7 +166,7 @@ class _DenyListPageState extends State<DenyListPage> with LinkingMixin {
               List<String> tags = controller.text.split('\n');
               tags = tags.map((e) => e.trim()).toList();
               tags.removeWhere((tag) => tag.isEmpty);
-              settings.denylist.value = Future.value(tags);
+              settings.denylist.value = tags;
               Navigator.of(context).maybePop();
             },
           ),

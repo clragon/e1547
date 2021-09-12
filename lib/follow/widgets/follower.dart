@@ -4,40 +4,35 @@ import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
 
 mixin FollowerMixin<T extends StatefulWidget> on State<T> {
-  bool? safe;
-  List<Follow>? follows;
+  late bool safe;
+  late List<Follow> follows;
 
-  void update() {
-    if (this.mounted) {
-      setState(() {});
-    }
-  }
-
-  Future<void> updateFollows() async {
-    settings.follows.value.then((value) async {
-      follows = value;
-      update();
+  void updateFollows() {
+    setState(() {
+      follows = settings.follows.value;
     });
   }
 
-  Future<void> updateSafety() async {
-    safe = await client.isSafe;
-    update();
+  void updateSafety() {
+    setState(() {
+      safe = client.isSafe;
+    });
   }
 
-  Future<void> initFollows() async {
+  void initFollows() {
     updateFollows();
     updateSafety();
   }
 
-  Future<void> afterFollowInit() async {}
+  void afterFollowInit() {}
 
   @override
   void initState() {
     super.initState();
     settings.host.addListener(updateSafety);
     settings.follows.addListener(updateFollows);
-    initFollows().then((_) => afterFollowInit());
+    initFollows();
+    afterFollowInit();
   }
 
   @override

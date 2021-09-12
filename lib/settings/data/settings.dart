@@ -14,31 +14,38 @@ final Persistence settings = Persistence();
 typedef Serializer<T> = Future<bool> Function(String key, T value);
 typedef Deserializer<T> = T? Function(String key);
 
-typedef GetSetting<T> = Future<T?> Function(
-    SharedPreferences prefs, String key);
-typedef SetSetting<T> = Future<void> Function(
+typedef GetSetting<T> = T? Function(SharedPreferences prefs, String key);
+typedef SetSetting<T> = void Function(
     SharedPreferences prefs, String key, T? value);
 
 class Persistence {
-  late ValueNotifier<Future<String>> host;
-  late ValueNotifier<Future<String?>> customHost;
-  late ValueNotifier<Future<String>> homeTags;
-  late ValueNotifier<Future<Credentials?>> credentials;
-  late ValueNotifier<Future<AppTheme>> theme;
-  late ValueNotifier<Future<List<String>>> denylist;
-  late ValueNotifier<Future<List<Follow>>> follows;
-  late ValueNotifier<Future<bool>> followsSplit;
-  late ValueNotifier<Future<int>> tileSize;
-  late ValueNotifier<Future<GridState>> stagger;
+  late final ValueNotifier<String> host;
+  late final ValueNotifier<String?> customHost;
+  late final ValueNotifier<String> homeTags;
+  late final ValueNotifier<Credentials?> credentials;
+  late final ValueNotifier<AppTheme> theme;
+  late final ValueNotifier<List<String>> denylist;
+  late final ValueNotifier<List<Follow>> follows;
+  late final ValueNotifier<bool> followsSplit;
+  late final ValueNotifier<int> tileSize;
+  late final ValueNotifier<GridState> stagger;
+
+  late final SharedPreferences prefs;
+  late final Future<void> initialized;
 
   Persistence() {
+    initialized = initialize();
+  }
+
+  Future<void> initialize() async {
+    prefs = await SharedPreferences.getInstance();
     host = createSetting(key: 'currentHost', initial: 'e926.net');
     customHost = createSetting(key: 'customHost', initial: null);
     homeTags = createSetting(key: 'homeTags', initial: '');
     credentials = createSetting(
       key: 'credentials',
       initial: null,
-      getSetting: (prefs, key) async {
+      getSetting: (prefs, key) {
         String? value = prefs.getString(key);
         if (value != null) {
           return Credentials.fromJson(value);
@@ -62,7 +69,7 @@ class Persistence {
     follows = createSetting(
         key: 'follows',
         initial: [],
-        getSetting: (prefs, key) async {
+        getSetting: (prefs, key) {
           try {
             List<String>? value = prefs.getStringList(key);
             if (value != null) {
@@ -93,8 +100,6 @@ class Persistence {
   bool typeMatch<T, E>() {
     return T == E || typeify<T?>() == E;
   }
-
-  final Future<SharedPreferences> prefs = SharedPreferences.getInstance();
 
   Deserializer<T>? getDeserializer<T>(SharedPreferences prefs) {
     if (typeMatch<String, T>()) {
@@ -127,27 +132,25 @@ class Persistence {
     }
   }
 
-  ValueNotifier<Future<T>> createSetting<T>({
+  ValueNotifier<T> createSetting<T>({
     required String key,
     required T initial,
     GetSetting<T>? getSetting,
     SetSetting<T>? setSetting,
   }) {
-    ValueNotifier<Future<T>> setting = ValueNotifier<Future<T>>(() async {
-      SharedPreferences prefs = await this.prefs;
+    ValueNotifier<T> setting = ValueNotifier<T>(() {
       T? value;
       if (getSetting == null) {
         Deserializer? deserialize = getDeserializer<T>(prefs);
         value = deserialize?.call(key) as T?;
       } else {
-        value = await getSetting(prefs, key);
+        value = getSetting(prefs, key);
       }
       return value ?? initial;
     }());
 
     setting.addListener(() async {
-      SharedPreferences prefs = await this.prefs;
-      T value = await setting.value;
+      T value = setting.value;
       if (setSetting == null) {
         if (value == null) {
           prefs.remove(key);
@@ -163,7 +166,7 @@ class Persistence {
     return setting;
   }
 
-  ValueNotifier<Future<T>> createStringSetting<T>({
+  ValueNotifier<T> createStringSetting<T>({
     required String key,
     required T initial,
     List<T>? values,
@@ -171,7 +174,7 @@ class Persistence {
       createSetting(
         key: key,
         initial: initial,
-        getSetting: (prefs, key) async {
+        getSetting: (prefs, key) {
           String? value = prefs.getString(key);
           return values!
               .singleWhereOrNull((element) => element.toString() == value);

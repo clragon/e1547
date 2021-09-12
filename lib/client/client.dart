@@ -13,39 +13,27 @@ import 'package:e1547/wiki/wiki.dart';
 
 export 'package:dio/dio.dart' show DioError;
 
-final Client client = Client();
+late final Client client = Client();
 
 class Client {
   late Dio dio;
 
   Future<bool>? initialized;
 
-  Future<String> host = settings.host.value;
-  Future<List<String>> denylist = settings.denylist.value;
-  Future<List<Follow>> following = settings.follows.value;
-  Future<Credentials?> credentials = settings.credentials.value;
-
   Client() {
-    settings.host.addListener(() => host = settings.host.value);
-    settings.credentials
-        .addListener(() => credentials = settings.credentials.value);
-    settings.denylist.addListener(() => denylist = settings.denylist.value);
-    settings.follows.addListener(() => following = settings.follows.value);
-
     settings.host.addListener(initialize);
     settings.credentials.addListener(initialize);
     initialize();
   }
 
-  Future<bool> get isSafe async =>
-      (await settings.host.value) != (await settings.customHost.value);
+  bool get isSafe => settings.host.value != settings.customHost.value;
 
   Future<bool> initialize() async {
     Future<bool> init() async {
-      Credentials? credentials = await settings.credentials.value;
+      Credentials? credentials = settings.credentials.value;
       dio = Dio(
         BaseOptions(
-          baseUrl: 'https://${await host}/',
+          baseUrl: 'https://${settings.host.value}/',
           sendTimeout: 30000,
           connectTimeout: 30000,
           headers: {
@@ -88,7 +76,7 @@ class Client {
   Future<bool> saveLogin(String username, String password) async {
     if (await validateCall(() => tryLogin(username, password))) {
       settings.credentials.value =
-          Future.value(Credentials(username: username, password: password));
+          Credentials(username: username, password: password);
       return true;
     } else {
       return false;
@@ -97,19 +85,19 @@ class Client {
 
   Future<bool> get hasLogin async {
     await initialized;
-    return (await credentials != null);
+    return (settings.credentials.value != null);
   }
 
   Future<void> logout() async {
-    settings.credentials.value = Future.value(null);
+    settings.credentials.value = null;
   }
 
   String? _avatar;
 
   Future<String?> get avatar async {
     if (_avatar == null) {
-      int? postId =
-          (await client.user((await credentials)!.username))['avatar_id'];
+      int? postId = (await client
+          .user(settings.credentials.value!.username))['avatar_id'];
       if (postId != null) {
         Post post = await client.post(postId);
         _avatar = post.sample.url;
@@ -155,7 +143,7 @@ class Client {
     String? username;
 
     if (orderFavorites ?? false) {
-      username = (await credentials)?.username;
+      username = settings.credentials.value?.username;
     }
 
     Map<RegExp, Future<List<Post>> Function(RegExpMatch match, String? result)>
@@ -279,8 +267,9 @@ class Client {
 
   Future<List<Post>> follows(int page, {int attempt = 0}) async {
     List<Post> posts = [];
-    List<String> tags =
-        List<Follow>.from(await following).map<String>((e) => e.tags).toList();
+    List<String> tags = List<Follow>.from(settings.follows.value)
+        .map<String>((e) => e.tags)
+        .toList();
     // ignore meta tags
     tags.removeWhere((tag) => tag.contains(':'));
     // ignore multitag searches
@@ -336,13 +325,13 @@ class Client {
     await initialized;
     Map body = await dio
         .get(
-            'https://${(unsafe ? await settings.customHost.value : await host)}/posts/${postId.toString()}.json',
+            'https://${(unsafe ? settings.customHost.value : settings.host.value)}/posts/${postId.toString()}.json',
             options: Options())
         .then((response) => response.data);
 
     Post post = Post.fromMap(body['post']);
     post.isLoggedIn = await hasLogin;
-    post.isBlacklisted = await post.isDeniedBy(await settings.denylist.value);
+    post.isBlacklisted = await post.isDeniedBy(settings.denylist.value);
     return post;
   }
 

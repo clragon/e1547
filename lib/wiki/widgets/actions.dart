@@ -21,23 +21,16 @@ class _TagListActionsState extends State<TagListActions> with LinkingMixin {
   List<Follow>? follows;
 
   @override
-  Map<ChangeNotifier, VoidCallback> get links => {
+  Map<ChangeNotifier, VoidCallback> get initLinks => {
         settings.denylist: updateLists,
         settings.follows: updateLists,
       };
 
-  Future<void> updateLists() async {
-    denylist = await settings.denylist.value;
-    follows = await settings.follows.value;
-    if (mounted) {
-      setState(() {});
-    }
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    updateLists();
+  void updateLists() {
+    setState(() {
+      denylist = settings.denylist.value;
+      follows = settings.follows.value;
+    });
   }
 
   @override
@@ -58,10 +51,10 @@ class _TagListActionsState extends State<TagListActions> with LinkingMixin {
                   follows!.add(Follow.fromString(widget.tag));
                   if (denied) {
                     denylist!.remove(widget.tag);
-                    settings.denylist.value = Future.value(denylist);
+                    settings.denylist.value = denylist!;
                   }
                 }
-                settings.follows.value = Future.value(follows);
+                settings.follows.value = follows!;
               },
               icon: CrossFade(
                 showChild: following,
@@ -77,13 +70,13 @@ class _TagListActionsState extends State<TagListActions> with LinkingMixin {
               onPressed: () {
                 if (denied) {
                   denylist!.remove(widget.tag);
-                  settings.denylist.value = Future.value(denylist);
+                  settings.denylist.value = denylist!;
                 } else {
                   denylist!.add(widget.tag);
-                  settings.denylist.value = Future.value(denylist);
+                  settings.denylist.value = denylist!;
                   if (following) {
                     follows!.remove(widget.tag);
-                    settings.follows.value = Future.value(follows);
+                    settings.follows.value = follows!;
                   }
                 }
               },

@@ -98,7 +98,7 @@ class _LoadingSnackbarState extends State<LoadingSnackbar> {
                     indicator = indicator * value;
                     return LinearProgressIndicator(
                       value: indicator,
-                      color: Theme.of(context).accentColor,
+                      color: Theme.of(context).colorScheme.secondary,
                     );
                   },
                   tween: Tween<double>(begin: 0, end: progress.toDouble()),

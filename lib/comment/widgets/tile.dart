@@ -1,4 +1,3 @@
-import 'package:e1547/client/client.dart';
 import 'package:e1547/comment/comment.dart';
 import 'package:e1547/dtext/dtext.dart';
 import 'package:e1547/post/post.dart';
@@ -76,28 +75,19 @@ class CommentTile extends StatelessWidget {
               child: DTextField(source: comment.body),
             ),
           ),
-          FutureBuilder<Credentials?>(
-            future: settings.credentials.value,
-            builder: (context, snapshot) {
-              if (snapshot.hasData &&
-                  snapshot.data!.username == comment.creatorName) {
-                return Padding(
-                  padding: EdgeInsets.only(left: 8),
-                  child: InkWell(
-                    customBorder: CircleBorder(),
-                    child: Icon(
-                      Icons.edit,
-                      size: 18,
-                    ),
-                    onTap: () => editComment(
-                        context: context, post: post, comment: comment),
-                  ),
-                );
-              } else {
-                return SizedBox.shrink();
-              }
-            },
-          ),
+          if (settings.credentials.value!.username == comment.creatorName)
+            Padding(
+              padding: EdgeInsets.only(left: 8),
+              child: InkWell(
+                customBorder: CircleBorder(),
+                child: Icon(
+                  Icons.edit,
+                  size: 18,
+                ),
+                onTap: () =>
+                    editComment(context: context, post: post, comment: comment),
+              ),
+            ),
         ],
       );
     }

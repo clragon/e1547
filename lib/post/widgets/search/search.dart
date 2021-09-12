@@ -55,13 +55,13 @@ class _SearchPageState extends State<SearchPage> with LinkingMixin {
             .updateLatest(controller.itemList!.first, foreground: true)
             .then((updated) {
           if (updated) {
-            settings.follows.value = Future.value(follows);
+            settings.follows.value = follows!;
           }
         });
       }
       if (pool != null) {
         if (follow.updatePool(pool!)) {
-          settings.follows.value = Future.value(follows);
+          settings.follows.value = follows!;
         }
       }
       return follow.title;
@@ -83,8 +83,8 @@ class _SearchPageState extends State<SearchPage> with LinkingMixin {
     }
   }
 
-  Future<void> updateFollows() async {
-    follows = await settings.follows.value;
+  void updateFollows() {
+    follows = settings.follows.value;
     updateTitle();
   }
 

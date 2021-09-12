@@ -23,8 +23,7 @@ List<PopupMenuItem<VoidCallback>> postMenuActions(
 
   return [
     PopupMenuTile(
-      value: () async =>
-          Share.share(post.url(await settings.host.value).toString()),
+      value: () async => Share.share(post.url(settings.host.value).toString()),
       title: 'Share',
       icon: Icons.share,
     ),
@@ -35,7 +34,7 @@ List<PopupMenuItem<VoidCallback>> postMenuActions(
         icon: Icons.file_download,
       ),
     PopupMenuTile(
-      value: () async => launch(post.url(await settings.host.value).toString()),
+      value: () async => launch(post.url(settings.host.value).toString()),
       title: 'Browse',
       icon: Icons.open_in_browser,
     )
