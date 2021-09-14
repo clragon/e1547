@@ -16,7 +16,8 @@ abstract class DataUpdater<T> extends ChangeNotifier {
   Completer? completer;
 
   bool error = false;
-  bool restart = false;
+  bool restarting = false;
+  bool canceling = false;
 
   DataUpdater() {
     getRefreshListeners().forEach((element) => element.addListener(refresh));
@@ -33,7 +34,15 @@ abstract class DataUpdater<T> extends ChangeNotifier {
     if (completer?.isCompleted ?? true) {
       update();
     } else {
-      restart = true;
+      restarting = true;
+    }
+    return finish;
+  }
+
+  @mustCallSuper
+  Future<void> cancel() async {
+    if (!(completer?.isCompleted ?? true)) {
+      canceling = true;
     }
     return finish;
   }
@@ -49,15 +58,18 @@ abstract class DataUpdater<T> extends ChangeNotifier {
 
   @mustCallSuper
   bool step({int? progress, bool force = false}) {
-    if (restart) {
+    if (restarting) {
       updateLock.release();
       update(force: force);
       return false;
-    } else {
-      this.progress.value = progress ?? this.progress.value + 1;
-      notifyListeners();
-      return true;
     }
+    if (canceling) {
+      updateLock.release();
+      return false;
+    }
+    this.progress.value = progress ?? this.progress.value + 1;
+    notifyListeners();
+    return true;
   }
 
   @mustCallSuper
@@ -82,7 +94,8 @@ abstract class DataUpdater<T> extends ChangeNotifier {
     }
     await updateLock.acquire();
     progress.value = 0;
-    restart = false;
+    restarting = false;
+    canceling = false;
     error = false;
 
     notifyListeners();

@@ -19,9 +19,12 @@ class SearchPage extends StatefulWidget {
 
 class _SearchPageState extends State<SearchPage> with LinkingMixin {
   late PostController controller = PostController(
-    provider: (tags, page) =>
-        client.posts(tags, page, reversePools: reversePools),
     search: widget.tags,
+    provider: (tags, page) => client.posts(
+      tags,
+      page,
+      reversePools: reversePools,
+    ),
   );
 
   List<Follow>? follows;
@@ -31,6 +34,19 @@ class _SearchPageState extends State<SearchPage> with LinkingMixin {
   bool loading = true;
 
   String title = 'Search';
+
+  void updateTitle() {
+    if (mounted) {
+      setState(() {
+        title = getTitle();
+      });
+    }
+  }
+
+  void updateFollows() {
+    follows = List.from(settings.follows.value);
+    updateTitle();
+  }
 
   @override
   Map<ChangeNotifier, VoidCallback> get initLinks => {
@@ -73,19 +89,6 @@ class _SearchPageState extends State<SearchPage> with LinkingMixin {
       return tagToTitle(controller.search.value);
     }
     return 'Search';
-  }
-
-  Future<void> updateTitle() async {
-    if (mounted) {
-      setState(() {
-        title = getTitle();
-      });
-    }
-  }
-
-  void updateFollows() {
-    follows = settings.follows.value;
-    updateTitle();
   }
 
   Future<void> updatePool() async {

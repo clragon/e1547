@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:collection/collection.dart';
+import 'package:e1547/client/client.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/settings/data/settings.dart';
@@ -37,7 +38,7 @@ class FollowUpdater extends DataUpdater<List<Follow>> with HostableUpdater {
   }
 
   @override
-  Future<List<Follow>> read() async => source.value;
+  Future<List<Follow>> read() async => List.from(source.value);
 
   @override
   Future<void> write(List<Follow>? data) async {
@@ -74,6 +75,11 @@ class FollowUpdater extends DataUpdater<List<Follow>> with HostableUpdater {
         }
       }
       if (!step()) {
+        if (client.isSafe) {
+          follow.safe = FollowStatus();
+        } else {
+          follow.unsafe = FollowStatus();
+        }
         return null;
       }
     }

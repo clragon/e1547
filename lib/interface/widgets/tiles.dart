@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 mixin TileSizeMixin<T extends StatefulWidget> on State<T> {
   double tileHeightFactor = 1.2;
-  int? tileSize;
+  late int tileSize;
 
   void updateTileSize() {
     setState(() {
@@ -13,8 +13,7 @@ mixin TileSizeMixin<T extends StatefulWidget> on State<T> {
   }
 
   int crossAxisCount(double width) {
-    assert(tileSize != null);
-    return notZero(width / tileSize!).round();
+    return notZero(width / tileSize).round();
   }
 
   @override

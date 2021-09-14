@@ -15,13 +15,17 @@ class Main extends StatelessWidget {
         child: ValueListenableBuilder<AppTheme>(
           valueListenable: settings.theme,
           builder: (context, value, child) => ExcludeSemantics(
-            child: AnnotatedRegion<SystemUiOverlayStyle>(
-              value: defaultUIStyle(appThemeMap[value]!),
-              child: MaterialApp(
-                title: appName,
-                theme: appThemeMap[value],
-                navigatorObservers: [routeObserver],
-                routes: routes,
+            child: AnnotatedRegion<SystemUiMode>(
+              value: SystemUiMode.edgeToEdge,
+              child: AnnotatedRegion<SystemUiOverlayStyle>(
+                value: defaultUIStyle(appThemeMap[value]!),
+                child: MaterialApp(
+                  title: appName,
+                  theme: appThemeMap[value],
+                  routes: routes,
+                  navigatorObservers: [routeObserver],
+                  scrollBehavior: DesktopDragScrollBehaviour(),
+                ),
               ),
             ),
           ),

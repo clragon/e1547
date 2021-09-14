@@ -1,3 +1,4 @@
+import 'package:e1547/client/client.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/settings/settings.dart';
@@ -12,9 +13,30 @@ class FollowingPage extends StatefulWidget {
   }
 }
 
-class _FollowingPageState extends State<FollowingPage> with FollowerMixin {
+class _FollowingPageState extends State<FollowingPage> with LinkingMixin {
   SheetActionController sheetController = SheetActionController();
   ScrollController scrollController = ScrollController();
+
+  late List<Follow> follows;
+  late bool safe;
+
+  void updateFollows() {
+    setState(() {
+      follows = List.from(settings.follows.value);
+    });
+  }
+
+  void updateSafety() {
+    setState(() {
+      safe = client.isSafe;
+    });
+  }
+
+  @override
+  Map<ChangeNotifier, VoidCallback> get initLinks => {
+        settings.follows: updateFollows,
+        settings.host: updateSafety,
+      };
 
   void addTags(BuildContext context, [int? edit]) {
     void submit(String value, [int? edit]) {

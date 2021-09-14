@@ -1,5 +1,4 @@
 import 'package:e1547/follow/follow.dart';
-import 'package:e1547/interface/interface.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
 
@@ -13,11 +12,8 @@ class _FollowsPageState extends State<FollowsPage> {
   Widget build(BuildContext context) {
     return ValueListenableBuilder<bool>(
       valueListenable: settings.followsSplit,
-      builder: (context, value, child) => CrossFade(
-        showChild: value,
-        child: FollowsSplitPage(),
-        secondChild: FollowsCombinedPage(),
-      ),
+      builder: (context, value, child) =>
+          value ? FollowsSplitPage() : FollowsCombinedPage(),
     );
   }
 }
