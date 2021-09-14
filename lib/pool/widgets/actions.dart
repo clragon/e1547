@@ -15,56 +15,37 @@ class PoolFollowButton extends StatefulWidget {
   }
 }
 
-class PoolFollowButtonState extends State<PoolFollowButton> with LinkingMixin {
+class PoolFollowButtonState extends State<PoolFollowButton> {
   late String tag = 'pool:${widget.pool.id}';
-  List<Follow>? follows;
-  late bool following;
-
-  @override
-  Map<ChangeNotifier, VoidCallback> get initLinks => {
-        settings.follows: update,
-      };
-
-  void update() {
-    follows = settings.follows.value;
-    setState(() {
-      following = follows!.any((element) => element.tags == tag);
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
-    if (follows != null) {
-      return Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          IconButton(
-            onPressed: () {
-              if (following) {
-                follows!.removeWhere((element) => element.tags == tag);
-              } else {
-                follows!.add(Follow.fromString(tag));
-              }
-              settings.follows.value = follows!;
-            },
-            icon: CrossFade(
-              showChild: following,
-              child: Icon(Icons.turned_in),
-              secondChild: Icon(Icons.turned_in_not),
+    return ValueListenableBuilder<List<Follow>>(
+      valueListenable: settings.follows,
+      builder: (context, value, child) {
+        bool following = value.any((element) => element.tags == tag);
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconButton(
+              onPressed: () {
+                if (following) {
+                  value.removeWhere((element) => element.tags == tag);
+                } else {
+                  value.add(Follow.fromString(tag));
+                }
+                settings.follows.value = List.from(value);
+              },
+              icon: CrossFade(
+                showChild: following,
+                child: Icon(Icons.turned_in),
+                secondChild: Icon(Icons.turned_in_not),
+              ),
+              tooltip: following ? 'unfollow tag' : 'follow tag',
             ),
-            tooltip: following ? 'unfollow tag' : 'follow tag',
-          ),
-        ],
-      );
-    } else {
-      return Row(
-        children: [
-          IconButton(
-            icon: Icon(Icons.turned_in_not),
-            onPressed: null,
-          ),
-        ],
-      );
-    }
+          ],
+        );
+      },
+    );
   }
 }

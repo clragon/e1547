@@ -51,10 +51,10 @@ class _TagListActionsState extends State<TagListActions> with LinkingMixin {
                   follows!.add(Follow.fromString(widget.tag));
                   if (denied) {
                     denylist!.remove(widget.tag);
-                    settings.denylist.value = denylist!;
+                    settings.denylist.value = List.from(denylist!);
                   }
                 }
-                settings.follows.value = follows!;
+                settings.follows.value = List.from(follows!);
               },
               icon: CrossFade(
                 showChild: following,
@@ -70,13 +70,13 @@ class _TagListActionsState extends State<TagListActions> with LinkingMixin {
               onPressed: () {
                 if (denied) {
                   denylist!.remove(widget.tag);
-                  settings.denylist.value = denylist!;
+                  settings.denylist.value = List.from(denylist!);
                 } else {
                   denylist!.add(widget.tag);
-                  settings.denylist.value = denylist!;
+                  settings.denylist.value = List.from(denylist!);
                   if (following) {
                     follows!.remove(widget.tag);
-                    settings.follows.value = follows!;
+                    settings.follows.value = List.from(follows!);
                   }
                 }
               },

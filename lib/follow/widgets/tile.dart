@@ -24,7 +24,7 @@ class FollowTile extends StatefulWidget {
   final bool safe;
 
   FollowTile({required this.follow, required this.safe})
-      : super(key: UniqueKey());
+      : super(key: Key('${follow.hashCode}_$safe'));
 
   @override
   _FollowTileState createState() => _FollowTileState();
@@ -201,7 +201,7 @@ class FollowListTile extends StatefulWidget {
     required this.onRename,
     required this.onType,
     required this.safe,
-  }) : super(key: UniqueKey());
+  }) : super(key: Key('${follow.hashCode}_$safe'));
 
   @override
   _FollowListTileState createState() => _FollowListTileState();

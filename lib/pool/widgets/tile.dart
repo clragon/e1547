@@ -1,5 +1,6 @@
 import 'package:e1547/dtext/dtext.dart';
 import 'package:e1547/pool/pool.dart';
+import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 
 class PoolTile extends StatelessWidget {
@@ -14,43 +15,42 @@ class PoolTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Widget title() {
-      return Row(
-        children: [
-          Expanded(
-            child: Container(
-              padding: EdgeInsets.only(left: 16, top: 8, bottom: 8),
-              child: Text(
-                pool.name.replaceAll('_', ' '),
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontSize: 18,
+      return Padding(
+        padding: EdgeInsets.symmetric(vertical: 8),
+        child: Row(
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            Expanded(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                child: Text(
+                  tagToTitle(pool.name),
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.headline6,
+                  maxLines: 1,
                 ),
               ),
             ),
-          ),
-          Container(
-            margin: EdgeInsets.only(left: 22, top: 8, bottom: 8, right: 12),
-            child: Text(
-              pool.postIds.length.toString(),
-              style: TextStyle(
-                fontSize: 16,
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 12),
+              child: Text(
+                pool.postIds.length.toString(),
+                style: Theme.of(context).textTheme.subtitle2,
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       );
     }
 
     return Card(
       child: InkWell(
         onTap: this.onPressed,
+        onLongPress: () => poolSheet(context, pool),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              height: 42,
-              child: Center(child: title()),
-            ),
+            title(),
             if (pool.description.isNotEmpty)
               Padding(
                 padding: EdgeInsets.only(
@@ -60,7 +60,8 @@ class PoolTile extends StatelessWidget {
                   bottom: 8,
                 ),
                 child: IgnorePointer(
-                    child: DTextField(source: pool.description, dark: true)),
+                  child: DTextField(source: pool.description, dark: true),
+                ),
               ),
           ],
         ),

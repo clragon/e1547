@@ -12,7 +12,8 @@ class FollowMarkReadTile extends StatefulWidget {
 
 class _FollowMarkReadTileState extends State<FollowMarkReadTile>
     with LinkingMixin {
-  int unseen = 0;
+  late List<Follow> follows;
+  late int unseen;
 
   @override
   Map<ChangeNotifier, VoidCallback> get initLinks => {
@@ -21,7 +22,7 @@ class _FollowMarkReadTileState extends State<FollowMarkReadTile>
 
   Future<void> update() async {
     unseen = 0;
-    List<Follow> follows = settings.follows.value;
+    follows = List.from(settings.follows.value);
     for (Follow follow in follows) {
       unseen += (await follow.status).unseen ?? 0;
     }
@@ -47,7 +48,6 @@ class _FollowMarkReadTileState extends State<FollowMarkReadTile>
             )
           : Text('No unseen posts'),
       onTap: () async {
-        List<Follow> follows = settings.follows.value;
         for (Follow follow in follows) {
           (await follow.status).unseen = 0;
         }

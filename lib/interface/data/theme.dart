@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -100,3 +102,8 @@ final Map<AppTheme, ThemeData> appThemeMap = {
     ),
   ),
 };
+
+class DesktopDragScrollBehaviour extends ScrollBehavior {
+  @override
+  Set<PointerDeviceKind> get dragDevices => PointerDeviceKind.values.toSet();
+}

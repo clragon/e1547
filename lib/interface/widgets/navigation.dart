@@ -223,26 +223,37 @@ class _ProfileHeaderState extends State<ProfileHeader> with LinkingMixin {
 
 class UserInfo {
   final String name;
-  final String avatar;
+  final String? avatar;
 
-  UserInfo(this.name, this.avatar);
+  UserInfo({required this.name, this.avatar});
+
+  UserInfo copyWith({String? name, String? avatar}) {
+    return UserInfo(
+      name: name ?? this.name,
+      avatar: avatar ?? this.avatar,
+    );
+  }
 }
 
 final ValueNotifier<UserInfo?> userInfo = ValueNotifier(null);
 
 Future<void> initAvatar([BuildContext? context]) async {
   Credentials? credentials = settings.credentials.value;
-  String? avatar = await client.avatar;
-  if (credentials != null && avatar != null) {
+  if (credentials != null) {
     userInfo.value = UserInfo(
-      credentials.username,
-      avatar,
+      name: credentials.username,
     );
-    if (context != null) {
-      precacheImage(
-        CachedNetworkImageProvider(avatar),
-        context,
+    String? avatar = await client.avatar;
+    if (avatar != null) {
+      userInfo.value = userInfo.value!.copyWith(
+        avatar: avatar,
       );
+      if (context != null) {
+        precacheImage(
+          CachedNetworkImageProvider(avatar),
+          context,
+        );
+      }
     }
   } else {
     userInfo.value = null;
