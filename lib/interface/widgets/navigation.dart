@@ -192,7 +192,7 @@ class _ProfileHeaderState extends State<ProfileHeader> with LinkingMixin {
     Widget userAvatarWidget(String? avatar) {
       return CircleAvatar(
         backgroundImage: (avatar == null
-            ? AssetImage('assets/icon/app/paw.png')
+            ? AssetImage('assets/icon/app/round.png')
             : CachedNetworkImageProvider(avatar)) as ImageProvider<Object>?,
         radius: 36,
       );

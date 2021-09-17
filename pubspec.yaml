@@ -53,16 +53,18 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - assets/icon/paw.png
-
+    - assets/icon/round.png
 
 # flutter pub run flutter_launcher_icons:main
 flutter_icons:
   ios: true
+  remove_alpha_ios: true
   android: "launcher_icon"
-  image_path: "assets/icon/app/paw.png"
+  adaptive_icon_background: "assets/icon/app/background.png"
+  adaptive_icon_foreground: "assets/icon/app/foreground.png"
+  image_path: "assets/icon/app/icon.png"
 
 # flutter pub run flutter_native_splash:create
 flutter_native_splash:
   color: "000000"
-  image: "assets/icon/app/paw.png"
+  image: "assets/icon/app/round.png"

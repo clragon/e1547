@@ -10,6 +10,24 @@ enum AppTheme {
   blue,
 }
 
+final MaterialColor primarySwatch = MaterialColor(
+  0xFFFCB328,
+  <int, Color>{
+    50: Color(0xFFFFF6E5),
+    100: Color(0xFFFEE8BF),
+    200: Color(0xFFFED994),
+    300: Color(0xFFFDCA69),
+    400: Color(0xFFFCBE48),
+    500: Color(0xFFFCB328),
+    600: Color(0xFFFCAC24),
+    700: Color(0xFFFBA31E),
+    800: Color(0xFFFB9A18),
+    900: Color(0xFFFA8B0F),
+  },
+);
+
+final Color accent = Color(0xFFffc107);
+
 SystemUiOverlayStyle defaultUIStyle(ThemeData theme) => SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
       statusBarBrightness: Brightness.dark,
@@ -56,8 +74,8 @@ final Map<AppTheme, ThemeData> appThemeMap = {
   AppTheme.light: prepareTheme(
     ThemeData.from(
       colorScheme: ColorScheme.fromSwatch(
-        primarySwatch: Colors.blue,
-        accentColor: Colors.lightBlue,
+        primarySwatch: primarySwatch,
+        accentColor: accent,
         cardColor: Colors.white,
         backgroundColor: Colors.grey[50],
         brightness: Brightness.light,
@@ -71,10 +89,10 @@ final Map<AppTheme, ThemeData> appThemeMap = {
   AppTheme.dark: prepareTheme(
     ThemeData.from(
       colorScheme: ColorScheme.fromSwatch(
-        primarySwatch: Colors.teal,
-        accentColor: Colors.tealAccent,
-        cardColor: Colors.grey[850],
-        backgroundColor: Colors.grey[900],
+        primarySwatch: primarySwatch,
+        accentColor: accent,
+        cardColor: Colors.grey[900],
+        backgroundColor: Color.fromARGB(255, 20, 20, 20),
         brightness: Brightness.dark,
       ),
     ),
@@ -82,8 +100,8 @@ final Map<AppTheme, ThemeData> appThemeMap = {
   AppTheme.amoled: prepareTheme(
     ThemeData.from(
       colorScheme: ColorScheme.fromSwatch(
-        primarySwatch: Colors.deepPurple,
-        accentColor: Colors.deepPurpleAccent,
+        primarySwatch: primarySwatch,
+        accentColor: accent,
         cardColor: Color.fromARGB(255, 20, 20, 20),
         backgroundColor: Colors.black,
         brightness: Brightness.dark,
@@ -93,8 +111,8 @@ final Map<AppTheme, ThemeData> appThemeMap = {
   AppTheme.blue: prepareTheme(
     ThemeData.from(
       colorScheme: ColorScheme.fromSwatch(
-        primarySwatch: Colors.indigo,
-        accentColor: Colors.indigoAccent,
+        primarySwatch: primarySwatch,
+        accentColor: accent,
         cardColor: Color.fromARGB(255, 21, 47, 86),
         backgroundColor: Color.fromARGB(255, 2, 15, 35),
         brightness: Brightness.dark,

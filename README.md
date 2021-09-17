@@ -2,7 +2,7 @@
 <table>
     <tr>
     <td width="20%">
-    <img src="assets/icon/app/paw.png"/>
+    <img src="assets/icon/app/round.png"/>
     </td>
     <td width="80%">
     <h1>e1547</h1>
