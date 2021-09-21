@@ -105,8 +105,10 @@ abstract class DataUpdater<T> extends ChangeNotifier {
     Future<void> _update() async {
       T data = await read();
       T? result = await run(data, step, force);
-      await write(result);
-      complete();
+      if (!restarting) {
+        await write(result);
+        complete();
+      }
     }
 
     _update();

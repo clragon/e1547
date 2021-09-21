@@ -29,8 +29,8 @@ class _FollowsSplitPageState extends State<FollowsSplitPage>
 
   Future<void> updateRefresh() async {
     if (mounted) {
-      if (refreshController.headerMode!.value == RefreshStatus.idle) {
-        WidgetsBinding.instance!.addPostFrameCallback((_) async {
+      WidgetsBinding.instance!.addPostFrameCallback((_) async {
+        if (refreshController.headerMode!.value == RefreshStatus.idle) {
           await refreshController.requestRefresh(
             needCallback: false,
             duration: Duration(milliseconds: 100),
@@ -41,8 +41,8 @@ class _FollowsSplitPageState extends State<FollowsSplitPage>
           } else {
             refreshController.refreshFailed();
           }
-        });
-      }
+        }
+      });
     }
   }
 

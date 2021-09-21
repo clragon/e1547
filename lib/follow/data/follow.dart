@@ -32,13 +32,13 @@ class Follow {
     this.type = type ?? FollowType.update;
   }
 
-  Future<FollowStatus> get status async => client.isSafe ? safe : unsafe;
+  FollowStatus get status => client.isSafe ? safe : unsafe;
 
-  Future<DateTime?> get updated async => (await status).updated;
+  DateTime? get updated => status.updated;
 
-  Future<String?> get thumbnail async => (await status).thumbnail;
+  String? get thumbnail => status.thumbnail;
 
-  Future<int?> get latest async => (await status).latest;
+  int? get latest => status.latest;
 
   String get title => alias ?? tagToTitle(tags);
 
@@ -72,10 +72,7 @@ class Follow {
     return updated;
   }
 
-  Future<bool> ensureCooldown() async {
-    FollowStatus status = await this.status;
-    return updateTimestamp(status);
-  }
+  Future<bool> ensureCooldown() async => updateTimestamp(status);
 
   Future<bool> updateLatest(Post? post, {bool foreground = false}) async {
     bool updated = false;
