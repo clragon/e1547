@@ -38,7 +38,7 @@ class FollowUpdater extends DataUpdater<List<Follow>> with HostableUpdater {
   }
 
   @override
-  Future<List<Follow>> read() async => List.from(source.value);
+  Future<List<Follow>> read() async => source.value;
 
   @override
   Future<void> write(List<Follow>? data) async {
@@ -49,7 +49,7 @@ class FollowUpdater extends DataUpdater<List<Follow>> with HostableUpdater {
 
   Future<void> sort(List<Follow> data) async {
     data.sortByNew();
-    await write(data);
+    await write(List.from(data));
   }
 
   @override
@@ -64,13 +64,13 @@ class FollowUpdater extends DataUpdater<List<Follow>> with HostableUpdater {
 
     for (Follow follow in data) {
       if (follow.type != FollowType.bookmark) {
-        DateTime? updated = await follow.updated;
+        DateTime? updated = follow.updated;
         if (force || updated == null || now.difference(updated) > stale) {
           if (!await follow.refresh()) {
             fail();
             return null;
           }
-          write(data);
+          await write(data);
           await Future.delayed(Duration(milliseconds: 500));
         }
       }
@@ -83,7 +83,6 @@ class FollowUpdater extends DataUpdater<List<Follow>> with HostableUpdater {
         return null;
       }
     }
-
     await sort(data);
     return data;
   }
