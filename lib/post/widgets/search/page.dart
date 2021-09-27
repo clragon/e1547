@@ -281,6 +281,7 @@ class _PostsPageState extends State<PostsPage>
           floatingActionButton: floatingActionButton(),
           refresh: () => widget.controller.refresh(background: true),
           builder: (BuildContext context) => PagedStaggeredGridView(
+            key: Key('grid_${[tileSize, stagger].join('_')}_key'),
             primary: false,
             scrollController: scrollController,
             addAutomaticKeepAlives: false,
