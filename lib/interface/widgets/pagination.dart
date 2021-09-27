@@ -12,6 +12,7 @@ class PagedStaggeredGridView<PageKeyType, ItemType> extends BoxScrollView {
   final int crossAxisCount;
 
   const PagedStaggeredGridView({
+    Key? key,
     required this.pagingController,
     required this.builderDelegate,
     required this.crossAxisCount,
@@ -23,6 +24,7 @@ class PagedStaggeredGridView<PageKeyType, ItemType> extends BoxScrollView {
     bool shrinkWrap = false,
     EdgeInsets? padding,
   }) : super(
+          key: key,
           shrinkWrap: shrinkWrap,
           physics: physics,
           controller: scrollController,
