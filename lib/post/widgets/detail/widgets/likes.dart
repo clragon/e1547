@@ -78,7 +78,7 @@ class LikeDisplay extends StatelessWidget {
                   Text(post.favCount.toString()),
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 8),
-                    child: FavoriteButton(post: post),
+                    child: Icon(Icons.favorite),
                   ),
                 ],
               ),
