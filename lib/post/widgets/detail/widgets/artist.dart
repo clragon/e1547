@@ -95,7 +95,7 @@ class ArtistDisplay extends StatelessWidget {
                   ]),
                   onTap: () async {
                     String? uploader =
-                        (await client.user(post.uploaderId.toString()))['name'];
+                        (await client.user(post.uploaderId.toString())).name;
                     Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) =>
                             SearchPage(tags: 'user:$uploader')));

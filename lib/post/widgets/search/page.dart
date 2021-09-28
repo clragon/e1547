@@ -222,7 +222,7 @@ class _PostsPageState extends State<PostsPage>
       );
     }
 
-    Widget selectionScope(Widget child) {
+    Widget selectionScope({required Widget child}) {
       return WillPopScope(
         onWillPop: () async {
           if (selections.isNotEmpty) {
@@ -260,43 +260,45 @@ class _PostsPageState extends State<PostsPage>
         return null;
       }
 
-      return selectionScope(PageLoader(
-        isBuilt: [tileSize, stagger].every((element) => element != null),
-        builder: (context) => RefreshablePage(
-          scrollController: scrollController,
-          refreshController: widget.controller.refreshController,
-          appBar: PreferredSize(
-            preferredSize: Size.fromHeight(kToolbarHeight),
-            child: Material(
-              elevation: Theme.of(context).appBarTheme.elevation ?? 4,
-              child: CrossFade(
-                showChild: selections.isEmpty,
-                child: Builder(builder: widget.appBarBuilder),
-                secondChild: selectionAppBar(),
+      return selectionScope(
+        child: PageLoader(
+          isBuilt: [tileSize, stagger].every((element) => element != null),
+          builder: (context) => RefreshablePage(
+            scrollController: scrollController,
+            refreshController: widget.controller.refreshController,
+            appBar: PreferredSize(
+              preferredSize: Size.fromHeight(kToolbarHeight),
+              child: Material(
+                elevation: Theme.of(context).appBarTheme.elevation ?? 4,
+                child: CrossFade(
+                  showChild: selections.isEmpty,
+                  child: Builder(builder: widget.appBarBuilder),
+                  secondChild: selectionAppBar(),
+                ),
+              ),
+            ),
+            drawer: NavigationDrawer(),
+            endDrawer: endDrawer(),
+            floatingActionButton: floatingActionButton(),
+            refresh: () => widget.controller.refresh(background: true),
+            builder: (BuildContext context) => PagedStaggeredGridView(
+              key: Key('grid_${[tileSize, stagger].join('_')}_key'),
+              primary: false,
+              scrollController: scrollController,
+              addAutomaticKeepAlives: false,
+              tileBuilder: tileBuilder,
+              pagingController: widget.controller,
+              crossAxisCount: crossAxisCount(constraints.maxWidth),
+              builderDelegate: defaultPagedChildBuilderDelegate(
+                itemBuilder: itemBuilder,
+                onEmpty: Text('No posts'),
+                onLoading: Text('Loading posts'),
+                onError: Text('Failed to load posts'),
               ),
             ),
           ),
-          drawer: NavigationDrawer(),
-          endDrawer: endDrawer(),
-          floatingActionButton: floatingActionButton(),
-          refresh: () => widget.controller.refresh(background: true),
-          builder: (BuildContext context) => PagedStaggeredGridView(
-            key: Key('grid_${[tileSize, stagger].join('_')}_key'),
-            primary: false,
-            scrollController: scrollController,
-            addAutomaticKeepAlives: false,
-            tileBuilder: tileBuilder,
-            pagingController: widget.controller,
-            crossAxisCount: crossAxisCount(constraints.maxWidth),
-            builderDelegate: defaultPagedChildBuilderDelegate(
-              itemBuilder: itemBuilder,
-              onEmpty: Text('No posts'),
-              onLoading: Text('Loading posts'),
-              onError: Text('Failed to load posts'),
-            ),
-          ),
         ),
-      ));
+      );
     });
   }
 }

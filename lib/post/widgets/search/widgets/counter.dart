@@ -66,10 +66,7 @@ class _DrawerCounterState extends State<DrawerCounter> with LinkingMixin {
             ),
             child: ExpandablePanel(
               header: ListTile(
-                title: Text(
-                  'Tags',
-                  style: Theme.of(context).textTheme.subtitle1,
-                ),
+                title: Text('Tags'),
                 subtitle: null,
                 leading: Icon(Icons.tag),
               ),

@@ -75,10 +75,7 @@ class PoolOrderSwitch extends StatelessWidget {
   Widget build(BuildContext context) {
     return SwitchListTile(
       secondary: Icon(Icons.sort),
-      title: Text(
-        'Pool order',
-        style: Theme.of(context).textTheme.subtitle1,
-      ),
+      title: Text('Pool order'),
       subtitle: Text(reversePool ? 'newest first' : 'oldest first'),
       value: reversePool,
       onChanged: onChange,

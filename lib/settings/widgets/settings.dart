@@ -1,11 +1,11 @@
 import 'dart:async' show Future;
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/settings/settings.dart';
+import 'package:e1547/user/user.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -226,7 +226,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   title: Text('Sign out'),
                   subtitle: Text(value!.username),
                   leading: Icon(Icons.exit_to_app),
-                  trailing: UserAvatar(),
+                  trailing: CurrentUserAvatar(),
                   onTap: logout,
                 ),
                 secondChild: ListTile(
@@ -392,36 +392,4 @@ Future<bool> setCustomHost(BuildContext context) async {
     },
   );
   return success;
-}
-
-class UserAvatar extends StatefulWidget {
-  const UserAvatar();
-
-  @override
-  _UserAvatarState createState() => _UserAvatarState();
-}
-
-class _UserAvatarState extends State<UserAvatar> with LinkingMixin {
-  Future<String?> avatar = client.avatar;
-
-  void updateAvatar() => avatar = client.avatar;
-
-  @override
-  Map<ChangeNotifier, VoidCallback> get links => {
-        settings.credentials: updateAvatar,
-        settings.host: updateAvatar,
-      };
-
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder<String?>(
-      future: avatar,
-      builder: (context, snapshot) => CircleAvatar(
-        backgroundImage: (snapshot.hasData
-                ? CachedNetworkImageProvider(snapshot.data!)
-                : AssetImage('assets/icon/app/round.png'))
-            as ImageProvider<Object>?,
-      ),
-    );
-  }
 }

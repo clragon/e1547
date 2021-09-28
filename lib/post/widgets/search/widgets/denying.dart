@@ -28,10 +28,7 @@ class DrawerDenySwitch extends StatelessWidget {
         return Column(
           children: [
             SwitchListTile(
-                title: Text(
-                  'Blacklist',
-                  style: Theme.of(context).textTheme.subtitle1,
-                ),
+                title: Text('Blacklist'),
                 subtitle: controller.denying.value
                     ? TweenAnimationBuilder(
                         tween: IntTween(begin: 0, end: count),
@@ -137,7 +134,7 @@ class DrawerDenyTile extends StatelessWidget {
       secondary: TweenAnimationBuilder(
         tween: IntTween(begin: 0, end: entry.value.length),
         duration: Duration(milliseconds: 200),
-        builder: (context, int value, child) {
+        builder: (context, value, child) {
           return Text(value.toString(),
               style: Theme.of(context).textTheme.headline6);
         },
