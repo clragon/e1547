@@ -1,7 +1,9 @@
 import 'dart:async' show Future;
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
 import 'package:e1547/client/client.dart';
+import 'package:e1547/follow/follow.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:expandable/expandable.dart';
@@ -188,15 +190,29 @@ class _SettingsPageState extends State<SettingsPage> {
           ),
           Divider(),
           settingsHeader('Listing'),
-          ListTile(
-            title: Text('Blacklist'),
-            leading: Icon(Icons.block),
-            onTap: () => Navigator.pushNamed(context, '/blacklist'),
+          ValueListenableBuilder<List<String>>(
+            valueListenable: settings.denylist,
+            builder: (context, value, child) => ListTile(
+              title: Text('Blacklist'),
+              leading: Icon(Icons.block),
+              subtitle: value.length > 0
+                  ? Text('${value.join(' ').split(' ').where(
+                        (element) => element[0] != '-',
+                      ).length} tags blocked')
+                  : null,
+              onTap: () => Navigator.pushNamed(context, '/blacklist'),
+            ),
           ),
-          ListTile(
-            title: Text('Following'),
-            leading: Icon(Icons.turned_in),
-            onTap: () => Navigator.pushNamed(context, '/following'),
+          ValueListenableBuilder<List<Follow>>(
+            valueListenable: settings.follows,
+            builder: (context, value, child) => ListTile(
+              title: Text('Following'),
+              subtitle: value.length > 0
+                  ? Text('${value.length} searches followed')
+                  : null,
+              leading: Icon(Icons.turned_in),
+              onTap: () => Navigator.pushNamed(context, '/following'),
+            ),
           ),
           Divider(),
           settingsHeader('Account'),
@@ -210,6 +226,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   title: Text('Sign out'),
                   subtitle: Text(value!.username),
                   leading: Icon(Icons.exit_to_app),
+                  trailing: UserAvatar(),
                   onTap: logout,
                 ),
                 secondChild: ListTile(
@@ -375,4 +392,36 @@ Future<bool> setCustomHost(BuildContext context) async {
     },
   );
   return success;
+}
+
+class UserAvatar extends StatefulWidget {
+  const UserAvatar();
+
+  @override
+  _UserAvatarState createState() => _UserAvatarState();
+}
+
+class _UserAvatarState extends State<UserAvatar> with LinkingMixin {
+  Future<String?> avatar = client.avatar;
+
+  void updateAvatar() => avatar = client.avatar;
+
+  @override
+  Map<ChangeNotifier, VoidCallback> get links => {
+        settings.credentials: updateAvatar,
+        settings.host: updateAvatar,
+      };
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<String?>(
+      future: avatar,
+      builder: (context, snapshot) => CircleAvatar(
+        backgroundImage: (snapshot.hasData
+                ? CachedNetworkImageProvider(snapshot.data!)
+                : AssetImage('assets/icon/app/round.png'))
+            as ImageProvider<Object>?,
+      ),
+    );
+  }
 }
