@@ -78,7 +78,7 @@ class LikeDisplay extends StatelessWidget {
                   Text(post.favCount.toString()),
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 8),
-                    child: Icon(Icons.favorite),
+                    child: FavoriteButton(post: post),
                   ),
                 ],
               ),
@@ -87,6 +87,43 @@ class LikeDisplay extends StatelessWidget {
         ),
         Divider(),
       ],
+    );
+  }
+}
+
+class FavoriteButton extends StatelessWidget {
+  final Post post;
+
+  const FavoriteButton({required this.post});
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedSelector(
+      animation: post,
+      selector: () => [post.isFavorited],
+      builder: (context, child) => LikeButton(
+        isLiked: post.isFavorited,
+        circleColor: CircleColor(start: Colors.pink, end: Colors.red),
+        bubblesColor: BubblesColor(
+            dotPrimaryColor: Colors.pink, dotSecondaryColor: Colors.red),
+        likeBuilder: (bool isLiked) => Icon(
+          Icons.favorite,
+          color:
+              isLiked ? Colors.pinkAccent : Theme.of(context).iconTheme.color,
+        ),
+        onTap: (isLiked) async {
+          if (isLiked) {
+            post.tryRemoveFav(context);
+            return false;
+          } else {
+            post.tryAddFav(
+              context,
+              cooldown: Duration(milliseconds: 1000),
+            );
+            return true;
+          }
+        },
+      ),
     );
   }
 }
