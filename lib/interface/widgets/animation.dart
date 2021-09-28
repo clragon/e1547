@@ -142,7 +142,11 @@ class _AnimatedSelectorState extends State<AnimatedSelector> {
       animation: widget.animation,
       builder: (context, child) {
         List<dynamic> selected = widget.selector();
-        if (!DeepCollectionEquality().equals(values, selected)) {
+        bool shouldRebuild = [
+          oldWidget != widget,
+          !DeepCollectionEquality().equals(values, selected),
+        ].any((element) => element);
+        if (shouldRebuild) {
           values = selected;
           oldWidget = widget;
           cache = widget.builder(
