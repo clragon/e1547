@@ -1,4 +1,5 @@
 import 'package:e1547/client/client.dart';
+import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
@@ -13,8 +14,9 @@ class ArtistDisplay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Widget artists() {
-      return AnimatedBuilder(
+      return AnimatedSelector(
         animation: post,
+        selector: () => [post.tags.hashCode],
         builder: (context, child) {
           if (post.artists.isNotEmpty) {
             List<InlineSpan> spans = [];

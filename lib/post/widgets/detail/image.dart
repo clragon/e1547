@@ -162,61 +162,60 @@ class PostDetailImageOverlay extends StatelessWidget {
     }
 
     return AnimatedBuilder(
-        child: child,
-        animation: Listenable.merge([
-          post.controller,
-        ]),
-        builder: (context, child) {
-          Widget fullscreenButton() {
-            if (post.type == PostType.Video && onTap != null) {
-              return CrossFade(
-                showChild: post.file.url != null && post.isVisible,
-                child: Card(
-                  elevation: 0,
-                  color: Colors.black12,
-                  child: InkWell(
-                    child: Padding(
-                      padding: EdgeInsets.all(4),
-                      child: Icon(
-                        Icons.fullscreen,
-                        size: 24,
-                        color: Theme.of(context).iconTheme.color,
-                      ),
+      child: child,
+      animation: Listenable.merge([post.controller]),
+      builder: (context, child) {
+        Widget fullscreenButton() {
+          if (post.type == PostType.Video && onTap != null) {
+            return CrossFade(
+              showChild: post.file.url != null && post.isVisible,
+              child: Card(
+                elevation: 0,
+                color: Colors.black12,
+                child: InkWell(
+                  child: Padding(
+                    padding: EdgeInsets.all(4),
+                    child: Icon(
+                      Icons.fullscreen,
+                      size: 24,
+                      color: Theme.of(context).iconTheme.color,
                     ),
-                    onTap: onTap,
                   ),
+                  onTap: onTap,
                 ),
-              );
-            } else {
-              return SizedBox.shrink();
-            }
-          }
-
-          return Stack(
-            children: [
-              InkWell(
-                onTap: post.type == PostType.Video
-                    ? () => post.controller!.value.isPlaying
-                        ? post.controller!.pause()
-                        : post.controller!.play()
-                    : onTap,
-                child: IgnorePointer(child: child),
               ),
-              Positioned(
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    fullscreenButton(),
-                    PostDetailImageToggle(post: post),
-                  ],
-                ),
-                bottom: 0,
-                right: 5,
-              )
-            ],
-          );
-        });
+            );
+          } else {
+            return SizedBox.shrink();
+          }
+        }
+
+        return Stack(
+          children: [
+            InkWell(
+              onTap: post.type == PostType.Video
+                  ? () => post.controller!.value.isPlaying
+                      ? post.controller!.pause()
+                      : post.controller!.play()
+                  : onTap,
+              child: IgnorePointer(child: child),
+            ),
+            Positioned(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  fullscreenButton(),
+                  PostDetailImageToggle(post: post),
+                ],
+              ),
+              bottom: 0,
+              right: 5,
+            )
+          ],
+        );
+      },
+    );
   }
 }
 

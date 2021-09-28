@@ -1,3 +1,4 @@
+import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 import 'package:like_button/like_button.dart';
@@ -11,8 +12,9 @@ class FavoriteButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(left: 2),
-      child: AnimatedBuilder(
+      child: AnimatedSelector(
         animation: post,
+        selector: () => [post.isFavorited],
         builder: (context, child) => LikeButton(
           isLiked: post.isFavorited,
           circleColor: CircleColor(start: Colors.pink, end: Colors.red),

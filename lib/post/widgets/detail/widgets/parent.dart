@@ -18,8 +18,12 @@ class _ParentDisplayState extends State<ParentDisplay> {
   @override
   Widget build(BuildContext context) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      AnimatedBuilder(
+      AnimatedSelector(
         animation: widget.post,
+        selector: () => [
+          widget.post.relationships.parentId,
+          widget.post.isEditing,
+        ],
         builder: (context, child) {
           return CrossFade(
             showChild: widget.post.relationships.parentId != null ||

@@ -20,7 +20,7 @@ List<CountedTag> countTagsByPosts(List<Post> posts) {
 
   for (Post post in posts) {
     for (String category in categories.keys) {
-      List<String> tags = post.tagMap[category]!;
+      List<String> tags = post.tags[category]!;
       categoryCounts[category] = countTags(tags, categoryCounts[category]);
     }
   }

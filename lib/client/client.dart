@@ -343,7 +343,7 @@ class Client {
 
     List<String> tags(Post post) {
       List<String> tags = [];
-      post.tagMap.forEach((key, value) {
+      post.tags.forEach((key, value) {
         tags.addAll(List<String>.from(value));
       });
       return tags;

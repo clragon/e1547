@@ -34,7 +34,7 @@ class PostData {
   late PostPreviewFile preview;
   late PostSampleFile sample;
   late Score score;
-  late Tags tags;
+  late Map<String, List<String>> tags;
   late List<String>? lockedTags;
   late int? changeSeq;
   late Flags flags;
@@ -64,7 +64,8 @@ class PostData {
     preview = PostPreviewFile.fromMap(json["preview"]);
     sample = PostSampleFile.fromMap(json["sample"]);
     score = Score.fromMap(json["score"]);
-    tags = Tags.fromMap(json["tags"]);
+    tags = Map<String, dynamic>.from(json['tags']).map((key, value) =>
+        MapEntry<String, List<String>>(key, List<String>.from(value)));
     lockedTags = List<String>.from(json["locked_tags"].map((x) => x));
     changeSeq = json["change_seq"];
     flags = Flags.fromMap(json["flags"]);
@@ -90,7 +91,7 @@ class PostData {
         "preview": preview.toMap(),
         "sample": sample.toMap(),
         "score": score.toMap(),
-        "tags": tags.toMap(),
+        "tags": tags,
         "locked_tags": List<dynamic>.from(lockedTags!.map((x) => x)),
         "change_seq": changeSeq,
         "flags": flags.toMap(),
@@ -330,54 +331,6 @@ class Score {
         "up": up,
         "down": down,
         "total": total,
-      };
-}
-
-class Tags {
-  Tags({
-    required this.general,
-    required this.species,
-    required this.character,
-    required this.copyright,
-    required this.artist,
-    required this.invalid,
-    required this.lore,
-    required this.meta,
-  });
-
-  List<String> general;
-  List<String> species;
-  List<String> character;
-  List<String> copyright;
-  List<String> artist;
-  List<String> invalid;
-  List<String> lore;
-  List<String> meta;
-
-  factory Tags.fromJson(String str) => Tags.fromMap(json.decode(str));
-
-  String toJson() => json.encode(toMap());
-
-  factory Tags.fromMap(Map<String, dynamic> json) => Tags(
-        general: List<String>.from(json["general"].map((x) => x)),
-        species: List<String>.from(json["species"].map((x) => x)),
-        character: List<String>.from(json["character"].map((x) => x)),
-        copyright: List<String>.from(json["copyright"].map((x) => x)),
-        artist: List<String>.from(json["artist"].map((x) => x)),
-        invalid: List<String>.from(json["invalid"].map((x) => x)),
-        lore: List<String>.from(json["lore"].map((x) => x)),
-        meta: List<String>.from(json["meta"].map((x) => x)),
-      );
-
-  Map<String, dynamic> toMap() => {
-        "general": List<dynamic>.from(general.map((x) => x)),
-        "species": List<dynamic>.from(species.map((x) => x)),
-        "character": List<dynamic>.from(character.map((x) => x)),
-        "copyright": List<dynamic>.from(copyright.map((x) => x)),
-        "artist": List<dynamic>.from(artist.map((x) => x)),
-        "invalid": List<dynamic>.from(invalid.map((x) => x)),
-        "lore": List<dynamic>.from(lore.map((x) => x)),
-        "meta": List<dynamic>.from(meta.map((x) => x)),
       };
 }
 

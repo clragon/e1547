@@ -10,8 +10,9 @@ class DescriptionDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
+    return AnimatedSelector(
       animation: post,
+      selector: () => [post.description, post.isEditing],
       builder: (context, child) {
         return CrossFade(
           showChild: post.description.isNotEmpty || post.isEditing,
