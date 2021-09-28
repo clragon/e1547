@@ -368,6 +368,9 @@ class DTextField extends StatelessWidget {
         text: resolve(result, state),
       );
     } catch (_) {
+      if (kDebugMode) {
+        rethrow;
+      }
       return Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
