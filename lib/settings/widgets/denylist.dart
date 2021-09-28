@@ -20,7 +20,8 @@ class _DenyListPageState extends State<DenyListPage> with LinkingMixin {
         settings.denylist: updateDenylist,
       };
 
-  void updateDenylist() => setState(() => denylist = settings.denylist.value);
+  void updateDenylist() =>
+      setState(() => denylist = List.from(settings.denylist.value));
 
   void addTags(BuildContext context, [int? edit]) {
     void submit(String value, [int? edit]) {
