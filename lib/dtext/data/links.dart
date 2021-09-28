@@ -18,12 +18,12 @@ String linkToDisplay(String link) {
   List<String> allowed = ['v'];
   Map<String, dynamic> parameters = Map.of(url.queryParameters);
   parameters.removeWhere((key, value) => !allowed.contains(key));
-  url = url.replace(
-    scheme: '',
+  Uri newUrl = Uri(
+    host: url.host,
+    path: url.path,
     queryParameters: parameters.length > 0 ? parameters : null,
-    fragment: null,
   );
-  String display = url.toString();
+  String display = newUrl.toString();
   display = display.replaceAll(RegExp(r'^//'), '');
   display = display.replaceFirst(RegExp(r'^www.'), '');
   return display;
