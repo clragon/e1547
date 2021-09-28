@@ -35,14 +35,14 @@ class TagDisplay extends StatelessWidget {
       return Wrap(
         direction: Axis.horizontal,
         children: [
-          ...post.tagMap[category]!.map(
+          ...post.tags[category]!.map(
             (tag) => TagCard(
               tag: tag,
               category: category,
               controller: provider,
               onRemove: post.isEditing
                   ? () {
-                      post.tagMap[category]!.remove(tag);
+                      post.tags[category]!.remove(tag);
                       post.notifyListeners();
                     }
                   : null,
@@ -77,17 +77,20 @@ class TagDisplay extends StatelessWidget {
       );
     }
 
-    return AnimatedBuilder(
+    return AnimatedSelector(
       animation: post,
-      builder: (context, child) => Column(
-        mainAxisSize: MainAxisSize.min,
-        children: categories.keys
-            .where((category) =>
-                post.tagMap[category]!.isNotEmpty ||
-                post.isEditing && category != 'invalid')
-            .map((category) => categoryTile(post, category))
-            .toList(),
-      ),
+      selector: () => [post.tags.hashCode, post.isEditing],
+      builder: (context, child) {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: categories.keys
+              .where((category) =>
+                  post.tags[category]!.isNotEmpty ||
+                  post.isEditing && category != 'invalid')
+              .map((category) => categoryTile(post, category))
+              .toList(),
+        );
+      },
     );
   }
 }
@@ -103,8 +106,9 @@ Future<bool> onPostTagsEdit(
     return true;
   }
   List<String> tags = value.split(' ');
-  post.tagMap[category]!.addAll(tags);
-  post.tagMap[category]!.toSet().toList().sort();
+  post.tags[category]!.addAll(tags);
+  post.tags[category]!.toSet().toList().sort();
+  post.tags = Map.of(post.tags);
   post.notifyListeners();
   if (category != 'general') {
     () async {
@@ -118,10 +122,11 @@ Future<bool> onPostTagsEdit(
               .firstWhere((k) => validator[0]['category'] == categories[k]);
         }
         if (target != null) {
-          post.tagMap[category]!.remove(tag);
-          post.tagMap[target]!.add(tag);
-          post.tagMap[target] = post.tagMap[target]!.toSet().toList();
-          post.tagMap[target]!.sort();
+          post.tags[category]!.remove(tag);
+          post.tags[target]!.add(tag);
+          post.tags[target] = post.tags[target]!.toSet().toList();
+          post.tags[target]!.sort();
+          post.tags = Map.of(post.tags);
           post.notifyListeners();
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             duration: Duration(milliseconds: 500),

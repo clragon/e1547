@@ -13,17 +13,6 @@ export 'image.dart';
 class Post extends PostData with ChangeNotifier {
   Map json;
 
-  Map<String, List<String>> get tagMap => {
-        "general": tags.general,
-        "species": tags.species,
-        "character": tags.character,
-        "copyright": tags.copyright,
-        "artist": tags.artist,
-        "invalid": tags.invalid,
-        "lore": tags.lore,
-        "meta": tags.meta,
-      };
-
   bool isEditing = false;
   bool isLoggedIn = false;
   bool isBlacklisted = false;
@@ -101,7 +90,7 @@ class Post extends PostData with ChangeNotifier {
       'avoid_posting',
     ];
 
-    return List.from(tags.artist)
+    return List.from(tags['artist']!)
       ..removeWhere((artist) => excluded.contains(artist));
   }
 

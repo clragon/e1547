@@ -80,8 +80,7 @@ extension tagging on Post {
       }
     }
 
-    return tagMap.values
-        .any((category) => category.contains(tag.toLowerCase()));
+    return tags.values.any((category) => category.contains(tag.toLowerCase()));
   }
 }
 

@@ -9,8 +9,9 @@ class PostDetailAppBar extends StatelessWidget with AppBarSize {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
+    return AnimatedSelector(
       animation: post,
+      selector: () => [post.isEditing],
       builder: (context, child) => TransparentAppBar(
         leading: IconButton(
           icon: ShadowIcon(post.isEditing ? Icons.clear : Icons.arrow_back),

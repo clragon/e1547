@@ -1,3 +1,4 @@
+import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 import 'package:like_button/like_button.dart';
@@ -14,8 +15,9 @@ class LikeDisplay extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            AnimatedBuilder(
+            AnimatedSelector(
               animation: post,
+              selector: () => [post.voteStatus],
               builder: (context, child) => Row(
                 children: [
                   LikeButton(
@@ -68,14 +70,18 @@ class LikeDisplay extends StatelessWidget {
                 ],
               ),
             ),
-            Row(
-              children: [
-                Text(post.favCount.toString()),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 8),
-                  child: Icon(Icons.favorite),
-                ),
-              ],
+            AnimatedSelector(
+              animation: post,
+              selector: () => [post.isFavorited],
+              builder: (context, child) => Row(
+                children: [
+                  Text(post.favCount.toString()),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 8),
+                    child: Icon(Icons.favorite),
+                  ),
+                ],
+              ),
             ),
           ],
         ),

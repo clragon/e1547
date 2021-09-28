@@ -1,3 +1,4 @@
+import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 
@@ -20,8 +21,9 @@ class RatingDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
+    return AnimatedSelector(
       animation: post,
+      selector: () => [post.rating],
       builder: (context, child) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,

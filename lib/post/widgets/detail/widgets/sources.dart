@@ -11,8 +11,9 @@ class SourceDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
+    return AnimatedSelector(
       animation: post,
+      selector: () => [post.sources, post.isEditing],
       builder: (context, child) {
         return CrossFade(
           showChild: post.sources.isNotEmpty || post.isEditing,
