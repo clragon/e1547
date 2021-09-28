@@ -26,7 +26,7 @@ class PoolTile extends StatelessWidget {
                 child: Text(
                   tagToTitle(pool.name),
                   overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.headline6,
+                  style: Theme.of(context).textTheme.subtitle1,
                   maxLines: 1,
                 ),
               ),
@@ -35,7 +35,7 @@ class PoolTile extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: 12),
               child: Text(
                 pool.postIds.length.toString(),
-                style: Theme.of(context).textTheme.subtitle2,
+                style: Theme.of(context).textTheme.bodyText2,
               ),
             ),
           ],

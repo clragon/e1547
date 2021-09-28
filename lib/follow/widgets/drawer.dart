@@ -24,7 +24,7 @@ class _FollowMarkReadTileState extends State<FollowMarkReadTile>
     unseen = 0;
     follows = List.from(settings.follows.value);
     for (Follow follow in follows) {
-      unseen += (await follow.status).unseen ?? 0;
+      unseen += follow.status.unseen ?? 0;
     }
     setState(() {});
   }
@@ -34,10 +34,7 @@ class _FollowMarkReadTileState extends State<FollowMarkReadTile>
     return ListTile(
       enabled: unseen != 0,
       leading: Icon(unseen != 0 ? Icons.mark_email_read : Icons.drafts),
-      title: Text(
-        'Unseen posts',
-        style: Theme.of(context).textTheme.subtitle1,
-      ),
+      title: Text('Unseen posts'),
       subtitle: unseen != 0
           ? TweenAnimationBuilder(
               tween: IntTween(begin: 0, end: unseen),
@@ -49,7 +46,7 @@ class _FollowMarkReadTileState extends State<FollowMarkReadTile>
           : Text('No unseen posts'),
       onTap: () async {
         for (Follow follow in follows) {
-          (await follow.status).unseen = 0;
+          follow.status.unseen = 0;
         }
         settings.follows.value = follows;
         Navigator.of(context).maybePop();
@@ -72,10 +69,7 @@ class _FollowSplitSwitchTileState extends State<FollowSplitSwitchTile> {
       valueListenable: settings.followsSplit,
       builder: (context, value, child) => SwitchListTile(
         secondary: Icon(value ? Icons.view_comfy : Icons.view_compact),
-        title: Text(
-          'Split tags',
-          style: Theme.of(context).textTheme.subtitle1,
-        ),
+        title: Text('Split tags'),
         subtitle: value ? Text('Seperated tags') : Text('Mixed tags'),
         value: value,
         onChanged: (value) async {
@@ -94,10 +88,7 @@ class FollowSettingsTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       leading: Icon(Icons.turned_in),
-      title: Text(
-        'Following settings',
-        style: Theme.of(context).textTheme.subtitle1,
-      ),
+      title: Text('Following settings'),
       onTap: () async {
         await Navigator.of(context).maybePop();
         Navigator.of(context).pushNamed('/following');

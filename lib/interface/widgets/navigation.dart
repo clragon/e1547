@@ -1,10 +1,10 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
+import 'package:e1547/user/user.dart';
 import 'package:flutter/material.dart';
 
 final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
@@ -159,7 +159,7 @@ class ProfileHeader extends StatefulWidget {
 class _ProfileHeaderState extends State<ProfileHeader> with LinkingMixin {
   @override
   Map<ChangeNotifier, VoidCallback> get initLinks => {
-        settings.credentials: initAvatar,
+        settings.credentials: () => initAvatar(context),
       };
 
   @override
@@ -189,28 +189,22 @@ class _ProfileHeaderState extends State<ProfileHeader> with LinkingMixin {
       );
     }
 
-    Widget userAvatarWidget(String? avatar) {
-      return CircleAvatar(
-        backgroundImage: (avatar == null
-            ? AssetImage('assets/icon/app/round.png')
-            : CachedNetworkImageProvider(avatar)) as ImageProvider<Object>?,
-        radius: 36,
-      );
-    }
-
     return SizedBox(
-      height: 140,
-      child: ValueListenableBuilder<UserInfo?>(
-        valueListenable: userInfo,
+      child: ValueListenableBuilder<Credentials?>(
+        valueListenable: settings.credentials,
         builder: (context, value, child) => DrawerHeader(
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              userAvatarWidget(value?.avatar),
+              SizedBox(
+                height: 72,
+                width: 72,
+                child: CurrentUserAvatar(),
+              ),
               Expanded(
                 child: Padding(
-                  padding: EdgeInsets.all(20),
-                  child: userNameWidget(value?.name),
+                  padding: EdgeInsets.symmetric(horizontal: 20),
+                  child: userNameWidget(value?.username),
                 ),
               ),
             ],
@@ -218,44 +212,5 @@ class _ProfileHeaderState extends State<ProfileHeader> with LinkingMixin {
         ),
       ),
     );
-  }
-}
-
-class UserInfo {
-  final String name;
-  final String? avatar;
-
-  UserInfo({required this.name, this.avatar});
-
-  UserInfo copyWith({String? name, String? avatar}) {
-    return UserInfo(
-      name: name ?? this.name,
-      avatar: avatar ?? this.avatar,
-    );
-  }
-}
-
-final ValueNotifier<UserInfo?> userInfo = ValueNotifier(null);
-
-Future<void> initAvatar([BuildContext? context]) async {
-  Credentials? credentials = settings.credentials.value;
-  if (credentials != null) {
-    userInfo.value = UserInfo(
-      name: credentials.username,
-    );
-    String? avatar = await client.avatar;
-    if (avatar != null) {
-      userInfo.value = userInfo.value!.copyWith(
-        avatar: avatar,
-      );
-      if (context != null) {
-        precacheImage(
-          CachedNetworkImageProvider(avatar),
-          context,
-        );
-      }
-    }
-  } else {
-    userInfo.value = null;
   }
 }

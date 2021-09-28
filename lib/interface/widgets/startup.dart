@@ -1,8 +1,7 @@
 import 'package:e1547/follow/follow.dart';
+import 'package:e1547/user/user.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
-
-import 'navigation.dart';
 
 final List<Function(BuildContext context)> actions = [
   initAvatar,

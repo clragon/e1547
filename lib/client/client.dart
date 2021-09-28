@@ -9,6 +9,7 @@ import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:e1547/tag/tag.dart';
+import 'package:e1547/user/user.dart';
 import 'package:e1547/wiki/wiki.dart';
 
 export 'package:dio/dio.dart' show DioError;
@@ -54,7 +55,7 @@ class Client {
         }
         return true;
       } else {
-        _avatar = null;
+        _currentAvatar = null;
         return false;
       }
     }
@@ -92,18 +93,17 @@ class Client {
     settings.credentials.value = null;
   }
 
-  String? _avatar;
+  String? _currentAvatar;
 
-  Future<String?> get avatar async {
-    if (_avatar == null) {
-      int? postId = (await client
-          .user(settings.credentials.value!.username))['avatar_id'];
+  Future<String?> get currentAvatar async {
+    if (_currentAvatar == null) {
+      int? postId = (await client.currentUser())?.avatarId;
       if (postId != null) {
         Post post = await client.post(postId);
-        _avatar = post.sample.url;
+        _currentAvatar = post.sample.url;
       }
     }
-    return _avatar;
+    return _currentAvatar;
   }
 
   Future<List<Post>> postsFromJson(List json) async {
@@ -431,6 +431,7 @@ class Client {
   }
 
   Future<List<Wiki>> wiki(String search, int page) async {
+    await initialized;
     List body = await dio.get('wiki_pages.json', queryParameters: {
       'search[title]': search,
       'page': page,
@@ -439,15 +440,41 @@ class Client {
     return body.map((entry) => Wiki.fromMap(entry)).toList();
   }
 
-  Future<Map> user(String name) async {
+  Future<User> user(String name) async {
     await initialized;
-    Map body =
+    Map<String, dynamic> body =
         await dio.get('users/$name.json').then((response) => response.data);
 
-    return body;
+    return User.fromMap(body);
+  }
+
+  Future<CurrentUser?> currentUser() async {
+    if (!await hasLogin) {
+      return null;
+    }
+
+    Map<String, dynamic> body = await dio
+        .get('users/${settings.credentials.value!.username}.json')
+        .then((response) => response.data);
+
+    return CurrentUser.fromMap(body);
+  }
+
+  Future<void> updateBlacklist(List<String> blacklist) async {
+    if (!await hasLogin) {
+      return;
+    }
+
+    Map<String, String?> body = {
+      'user[blacklisted_tags]': blacklist.join('\n'),
+    };
+
+    await dio.put('users/${settings.credentials.value!.username}.json',
+        data: FormData.fromMap(body));
   }
 
   Future<List> tag(String search, {int? category}) async {
+    await initialized;
     var body = await dio.get('tags.json', queryParameters: {
       'search[name_matches]': search,
       'search[category]': category,
@@ -463,6 +490,7 @@ class Client {
   }
 
   Future<List> autocomplete(String search, {int? category}) async {
+    await initialized;
     if (category == null) {
       var body = await dio.get('tags/autocomplete.json', queryParameters: {
         'search[name_matches]': search,
@@ -479,6 +507,7 @@ class Client {
   }
 
   Future<List<Comment>> comments(int postId, String page) async {
+    await initialized;
     var body = await dio.get('comments.json', queryParameters: {
       'group_by': 'comment',
       'search[post_id]': '$postId',
