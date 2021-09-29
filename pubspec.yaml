@@ -39,6 +39,9 @@ dependencies:
   shared_preferences: ^2.0.8
   image_gallery_saver: ^1.7.0
 
+  username_generator:
+    git: git://github.com/clragon/username_generator.git
+
   flutter:
     sdk: flutter
   collection: ^1.15.0-nullsafety.4

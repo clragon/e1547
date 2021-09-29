@@ -9,6 +9,7 @@ import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:e1547/tag/tag.dart';
+import 'package:e1547/topic/topic.dart';
 import 'package:e1547/user/user.dart';
 import 'package:e1547/wiki/wiki.dart';
 
@@ -540,6 +541,46 @@ class Client {
       request = dio.post('comments.json', data: body);
     }
     await request;
+  }
+
+  Future<List<Topic>> topics(int page) async {
+    var body = await dio.get('forum_topics.json', queryParameters: {
+      'page': page,
+    }).then((response) => response.data);
+
+    List<Topic> threads = [];
+    if (body is List) {
+      for (Map<String, dynamic> raw in body) {
+        threads.add(Topic.fromMap(raw));
+      }
+    }
+
+    return threads;
+  }
+
+  Future<Topic> topic(int id) async {
+    Map<String, dynamic> body = await dio
+        .get('forum_topics/$id.json')
+        .then((response) => response.data);
+
+    return Topic.fromMap(body);
+  }
+
+  Future<List<Reply>> replies(int id, String page) async {
+    var body = await dio.get('forum_posts.json', queryParameters: {
+      'commit': 'Search',
+      'search[topic_id]': id,
+      'page': page,
+    }).then((response) => response.data);
+
+    List<Reply> replies = [];
+    if (body is List) {
+      for (Map<String, dynamic> raw in body) {
+        replies.add(Reply.fromMap(raw));
+      }
+    }
+
+    return replies;
   }
 }
 

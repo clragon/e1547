@@ -60,7 +60,7 @@ class _PoolPageState extends State<PoolPage> {
             controller.refresh();
             Navigator.of(context).maybePop();
           },
-        )
+        ),
       ],
     );
   }

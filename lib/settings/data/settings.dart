@@ -29,6 +29,7 @@ class Persistence {
   late final ValueNotifier<bool> followsSplit;
   late final ValueNotifier<int> tileSize;
   late final ValueNotifier<GridState> stagger;
+  late final ValueNotifier<bool> beta;
 
   late final SharedPreferences prefs;
   late final Future<void> initialized;
@@ -93,6 +94,7 @@ class Persistence {
       initial: GridState.square,
       values: GridState.values,
     );
+    beta = createSetting<bool>(key: 'beta', initial: false);
   }
 
   Type typeify<T>() => T;

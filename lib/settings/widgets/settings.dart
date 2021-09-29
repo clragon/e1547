@@ -57,7 +57,7 @@ class _SettingsPageState extends State<SettingsPage> {
         padding: EdgeInsets.all(10.0),
         physics: BouncingScrollPhysics(),
         children: [
-          settingsHeader('Posts'),
+          settingsHeader('Server'),
           GestureDetector(
             behavior: HitTestBehavior.translucent,
             onLongPress: () => setCustomHost(context),
@@ -70,7 +70,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 bool useCustomHost =
                     settings.host.value == settings.customHost.value;
                 return SwitchListTile(
-                  title: Text('Custom host'),
+                  title: Text('Host'),
                   subtitle: Text(settings.host.value),
                   secondary:
                       Icon(useCustomHost ? Icons.warning : Icons.security),
@@ -87,6 +87,29 @@ class _SettingsPageState extends State<SettingsPage> {
                 );
               },
             ),
+          ),
+          ValueListenableBuilder<Credentials?>(
+            valueListenable: settings.credentials,
+            builder: (context, value, child) {
+              return SafeCrossFade(
+                duration: Duration(milliseconds: 200),
+                showChild: value != null,
+                builder: (context) => SeparatedListTile(
+                  title: Text(value!.username),
+                  subtitle: Text('user'),
+                  leading: CurrentUserAvatar(),
+                  separated: IconButton(
+                    icon: Icon(Icons.exit_to_app),
+                    onPressed: logout,
+                  ),
+                ),
+                secondChild: ListTile(
+                  title: Text('Sign in'),
+                  leading: Icon(Icons.person_add),
+                  onTap: () => Navigator.pushNamed(context, '/login'),
+                ),
+              );
+            },
           ),
           Divider(),
           settingsHeader('Display'),
@@ -215,27 +238,16 @@ class _SettingsPageState extends State<SettingsPage> {
             ),
           ),
           Divider(),
-          settingsHeader('Account'),
-          ValueListenableBuilder<Credentials?>(
-            valueListenable: settings.credentials,
-            builder: (context, value, child) {
-              return SafeCrossFade(
-                duration: Duration(milliseconds: 200),
-                showChild: value != null,
-                builder: (context) => ListTile(
-                  title: Text('Sign out'),
-                  subtitle: Text(value!.username),
-                  leading: Icon(Icons.exit_to_app),
-                  trailing: CurrentUserAvatar(),
-                  onTap: logout,
-                ),
-                secondChild: ListTile(
-                  title: Text('Sign in'),
-                  leading: Icon(Icons.person_add),
-                  onTap: () => Navigator.pushNamed(context, '/login'),
-                ),
-              );
-            },
+          settingsHeader('Beta'),
+          ValueListenableBuilder<bool>(
+            valueListenable: settings.beta,
+            builder: (context, value, child) => SwitchListTile(
+              title: Text('Experimental features'),
+              subtitle: Text(value ? 'preview enabled' : 'preview disabled'),
+              secondary: Icon(Icons.auto_awesome),
+              value: value,
+              onChanged: (value) => settings.beta.value = value,
+            ),
           ),
         ],
       ),
