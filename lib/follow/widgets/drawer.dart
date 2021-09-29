@@ -70,7 +70,7 @@ class _FollowSplitSwitchTileState extends State<FollowSplitSwitchTile> {
       builder: (context, value, child) => SwitchListTile(
         secondary: Icon(value ? Icons.view_comfy : Icons.view_compact),
         title: Text('Split tags'),
-        subtitle: value ? Text('Seperated tags') : Text('Mixed tags'),
+        subtitle: value ? Text('Separated tags') : Text('Mixed tags'),
         value: value,
         onChanged: (value) async {
           await Navigator.of(context).maybePop();
