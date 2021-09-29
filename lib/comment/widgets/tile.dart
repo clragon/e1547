@@ -75,19 +75,6 @@ class CommentTile extends StatelessWidget {
               child: DTextField(source: comment.body),
             ),
           ),
-          if (settings.credentials.value!.username == comment.creatorName)
-            Padding(
-              padding: EdgeInsets.only(left: 8),
-              child: InkWell(
-                customBorder: CircleBorder(),
-                child: Icon(
-                  Icons.edit,
-                  size: 18,
-                ),
-                onTap: () =>
-                    editComment(context: context, post: post, comment: comment),
-              ),
-            ),
         ],
       );
     }
@@ -110,6 +97,19 @@ class CommentTile extends StatelessWidget {
                     ],
                   ),
                 ),
+                if (settings.credentials.value!.username == comment.creatorName)
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 8,
+                    ),
+                    child: IconButton(
+                      icon: Icon(
+                        Icons.edit,
+                      ),
+                      onPressed: () => editComment(
+                          context: context, post: post, comment: comment),
+                    ),
+                  ),
               ],
             ),
             onTap: post.isLoggedIn

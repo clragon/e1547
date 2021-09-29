@@ -99,7 +99,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   builder: (context) => SeparatedListTile(
                     title: Text(value!.username),
                     subtitle: snapshot.data?.levelString != null
-                        ? Text(snapshot.data!.levelString)
+                        ? Text(snapshot.data!.levelString.toLowerCase())
                         : null,
                     leading: CurrentUserAvatar(),
                     separated: IconButton(

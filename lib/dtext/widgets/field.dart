@@ -210,9 +210,6 @@ class DTextField extends StatelessWidget {
             RegExp userReg = RegExp(r'/user(s|/show)/(?<id>\d+)');
             RegExpMatch? userMatch = userReg.firstMatch(search);
             if (userMatch != null) {
-              onTap = () => Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) =>
-                      SearchPage(tags: match.namedGroup('name'))));
               int id = int.parse(userMatch.namedGroup('id')!);
               display = usernameGenerator!.generate(id);
             }
