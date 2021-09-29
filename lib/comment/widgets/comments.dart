@@ -46,13 +46,13 @@ class _CommentsPageState extends State<CommentsPage> {
         ),
       ),
       endDrawer: ContextDrawer(
-        title: Text('Replies'),
+        title: Text('Comments'),
         children: [
           ValueListenableBuilder<bool>(
             valueListenable: controller.orderByOldest,
             builder: (context, value, child) => SwitchListTile(
               secondary: Icon(Icons.sort),
-              title: Text('Reply order'),
+              title: Text('Comment order'),
               subtitle: Text(value ? 'oldest first' : 'newest first'),
               value: value,
               onChanged: (value) {

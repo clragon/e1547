@@ -56,7 +56,7 @@ class Client {
         }
         return true;
       } else {
-        _currentAvatar = null;
+        initializeCurrentUser(reset: true);
         return false;
       }
     }
@@ -94,16 +94,37 @@ class Client {
     settings.credentials.value = null;
   }
 
-  String? _currentAvatar;
-
-  Future<String?> get currentAvatar async {
+  Future<void> initializeCurrentUser({bool reset: false}) async {
+    if (reset) {
+      _currentUser = null;
+      _currentAvatar = null;
+    }
+    if (!await hasLogin) {
+      return;
+    }
+    if (_currentUser == null) {
+      _currentUser = await client.authedUser();
+    }
     if (_currentAvatar == null) {
-      int? postId = (await client.currentUser())?.avatarId;
-      if (postId != null) {
-        Post post = await client.post(postId);
+      int? avatarId = _currentUser?.avatarId;
+      if (avatarId != null) {
+        Post post = await client.post(avatarId);
         _currentAvatar = post.sample.url;
       }
     }
+  }
+
+  CurrentUser? _currentUser;
+
+  Future<CurrentUser?> get currentUser async {
+    await initializeCurrentUser();
+    return _currentUser;
+  }
+
+  String? _currentAvatar;
+
+  Future<String?> get currentAvatar async {
+    await initializeCurrentUser();
     return _currentAvatar;
   }
 
@@ -449,7 +470,7 @@ class Client {
     return User.fromMap(body);
   }
 
-  Future<CurrentUser?> currentUser() async {
+  Future<CurrentUser?> authedUser() async {
     if (!await hasLogin) {
       return null;
     }

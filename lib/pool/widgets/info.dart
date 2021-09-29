@@ -37,13 +37,14 @@ class PoolInfo extends StatelessWidget {
                 child: Text(
                   pool.id.toString(),
                 ),
-                onLongPress: () {
+                onLongPress: () async {
                   Clipboard.setData(ClipboardData(
                     text: pool.id.toString(),
                   ));
+                  await Navigator.of(context).maybePop();
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     duration: Duration(seconds: 1),
-                    content: Text('Copied pool ID #${pool.id}'),
+                    content: Text('Copied pool id #${pool.id}'),
                   ));
                 },
               ),

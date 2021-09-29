@@ -31,9 +31,9 @@ class _TopicsPageState extends State<TopicsPage> {
                 ),
               ),
             ),
-            onLoading: Text('Loading threads'),
-            onEmpty: Text('No threads'),
-            onError: Text('Failed to load threads'),
+            onLoading: Text('Loading topics'),
+            onEmpty: Text('No topics'),
+            onError: Text('Failed to load topics'),
           ),
         );
       },

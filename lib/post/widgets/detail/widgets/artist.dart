@@ -79,7 +79,7 @@ class ArtistDisplay extends StatelessWidget {
                         ));
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                           duration: Duration(seconds: 1),
-                          content: Text('Copied post ID #${post.id}'),
+                          content: Text('Copied post id #${post.id}'),
                         ));
                       },
                     );

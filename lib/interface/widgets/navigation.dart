@@ -114,7 +114,7 @@ class NavigationDrawer extends StatelessWidget {
         ),
         if (settings.beta.value)
           ListTile(
-            selected: drawerSelection == DrawerSelection.pools,
+            selected: drawerSelection == DrawerSelection.topics,
             leading: Icon(Icons.forum),
             title: Text('Topics'),
             onTap: () => Navigator.of(context)

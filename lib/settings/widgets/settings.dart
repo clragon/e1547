@@ -91,22 +91,27 @@ class _SettingsPageState extends State<SettingsPage> {
           ValueListenableBuilder<Credentials?>(
             valueListenable: settings.credentials,
             builder: (context, value, child) {
-              return SafeCrossFade(
-                duration: Duration(milliseconds: 200),
-                showChild: value != null,
-                builder: (context) => SeparatedListTile(
-                  title: Text(value!.username),
-                  subtitle: Text('user'),
-                  leading: CurrentUserAvatar(),
-                  separated: IconButton(
-                    icon: Icon(Icons.exit_to_app),
-                    onPressed: logout,
+              return FutureBuilder<CurrentUser?>(
+                future: client.currentUser,
+                builder: (context, snapshot) => SafeCrossFade(
+                  duration: Duration(milliseconds: 200),
+                  showChild: value != null,
+                  builder: (context) => SeparatedListTile(
+                    title: Text(value!.username),
+                    subtitle: snapshot.data?.levelString != null
+                        ? Text(snapshot.data!.levelString)
+                        : null,
+                    leading: CurrentUserAvatar(),
+                    separated: IconButton(
+                      icon: Icon(Icons.exit_to_app),
+                      onPressed: logout,
+                    ),
                   ),
-                ),
-                secondChild: ListTile(
-                  title: Text('Sign in'),
-                  leading: Icon(Icons.person_add),
-                  onTap: () => Navigator.pushNamed(context, '/login'),
+                  secondChild: ListTile(
+                    title: Text('Sign in'),
+                    leading: Icon(Icons.person_add),
+                    onTap: () => Navigator.pushNamed(context, '/login'),
+                  ),
                 ),
               );
             },
