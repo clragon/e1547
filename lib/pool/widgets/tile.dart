@@ -16,7 +16,7 @@ class PoolTile extends StatelessWidget {
   Widget build(BuildContext context) {
     Widget title() {
       return Padding(
-        padding: EdgeInsets.symmetric(vertical: 8),
+        padding: EdgeInsets.symmetric(vertical: 12),
         child: Row(
           mainAxisSize: MainAxisSize.max,
           children: [
@@ -35,7 +35,7 @@ class PoolTile extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: 12),
               child: Text(
                 pool.postIds.length.toString(),
-                style: Theme.of(context).textTheme.bodyText2,
+                style: Theme.of(context).textTheme.subtitle1,
               ),
             ),
           ],

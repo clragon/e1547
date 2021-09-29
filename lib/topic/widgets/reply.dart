@@ -67,7 +67,10 @@ class ReplyTile extends StatelessWidget {
           Expanded(
             child: Padding(
               padding: EdgeInsets.only(bottom: 8),
-              child: DTextField(source: reply.body),
+              child: DTextField(
+                source: reply.body,
+                usernameGenerator: generator,
+              ),
             ),
           ),
         ],

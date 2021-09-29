@@ -28,7 +28,11 @@ class _RepliesPageState extends State<RepliesPage> {
         leading: BackButton(),
         title: Text(widget.topic.title),
         actions: [
-          Container(),
+          IconButton(
+            icon: Icon(Icons.info_outline),
+            tooltip: 'Info',
+            onPressed: () => topicSheet(context, widget.topic),
+          ),
         ],
       ),
       controller: controller,

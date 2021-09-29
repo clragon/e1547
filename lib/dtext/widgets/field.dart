@@ -7,12 +7,14 @@ import 'package:e1547/settings/settings.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:username_generator/username_generator.dart';
 
 class DTextField extends StatelessWidget {
   final String source;
   final bool dark;
+  final UsernameGenerator? usernameGenerator;
 
-  DTextField({required this.source, this.dark = false});
+  DTextField({required this.source, this.dark = false, this.usernameGenerator});
 
   @override
   Widget build(BuildContext context) {
@@ -202,6 +204,19 @@ class DTextField extends StatelessWidget {
 
         if (insite) {
           onTap = () async => launch('https://${settings.host.value}$search');
+
+          // forum topics need generated names
+          if (usernameGenerator != null) {
+            RegExp userReg = RegExp(r'/user(s|/show)/(?<id>\d+)');
+            RegExpMatch? userMatch = userReg.firstMatch(search);
+            if (userMatch != null) {
+              onTap = () => Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) =>
+                      SearchPage(tags: match.namedGroup('name'))));
+              int id = int.parse(userMatch.namedGroup('id')!);
+              display = usernameGenerator!.generate(id);
+            }
+          }
         }
 
         Map<RegExp, Function Function(RegExpMatch match)> links = {
