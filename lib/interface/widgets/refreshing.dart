@@ -9,6 +9,7 @@ class RefreshableControllerPage<T extends RefreshableController>
   final WidgetBuilder? builder;
   final Widget? refreshHeader;
   final Widget? drawer;
+  final Widget? endDrawer;
   final Widget? floatingActionButton;
   final PreferredSizeWidget? appBar;
   final T controller;
@@ -21,6 +22,7 @@ class RefreshableControllerPage<T extends RefreshableController>
     this.scrollController,
     this.refreshHeader,
     this.drawer,
+    this.endDrawer,
     this.floatingActionButton,
   });
 
@@ -30,6 +32,7 @@ class RefreshableControllerPage<T extends RefreshableController>
       builder: builder,
       refreshHeader: refreshHeader,
       drawer: drawer,
+      endDrawer: endDrawer,
       appBar: appBar,
       floatingActionButton: floatingActionButton,
       scrollController: scrollController,

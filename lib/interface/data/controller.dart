@@ -111,14 +111,21 @@ abstract class RawDataController<PageKeyType, ItemType>
 }
 
 abstract class CursorDataController<T> extends RawDataController<String, T> {
-  final String firstPageKey;
   ValueNotifier<bool> orderByOldest = ValueNotifier(true);
 
-  CursorDataController({
-    this.firstPageKey = 'a0',
-  }) : super(firstPageKey: firstPageKey);
+  CursorDataController() : super(firstPageKey: 'a0');
 
   int getId(T item);
+
+  @override
+  Future<void> requestPage(String page) {
+    // firstpagekey cannot be changed
+    // this is a hack around to that
+    if (page == 'a0' && !orderByOldest.value) {
+      page = '1';
+    }
+    return super.requestPage(page);
+  }
 
   @override
   String provideNextPageKey(String current, List<T> items) {
@@ -147,7 +154,7 @@ abstract class CursorDataController<T> extends RawDataController<String, T> {
   @override
   List<T> sort(List<T> items) {
     if (orderByOldest.value) {
-      items.sort((a, b) => getId(b).compareTo(getId(a)));
+      items.sort((a, b) => getId(a).compareTo(getId(b)));
     }
     return items;
   }

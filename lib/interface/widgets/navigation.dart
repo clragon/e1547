@@ -4,6 +4,7 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
+import 'package:e1547/topic/topic.dart';
 import 'package:e1547/user/user.dart';
 import 'package:flutter/material.dart';
 
@@ -19,7 +20,7 @@ enum DrawerSelection {
   favorites,
   follows,
   pools,
-  forum,
+  topics,
 }
 
 Map<String, WidgetBuilder> routes = <String, WidgetBuilder>{
@@ -43,6 +44,10 @@ Map<String, WidgetBuilder> routes = <String, WidgetBuilder>{
   '/pools': (context) => () {
         drawerSelection = DrawerSelection.pools;
         return PoolsPage();
+      }(),
+  '/topics': (context) => () {
+        drawerSelection = DrawerSelection.topics;
+        return TopicsPage();
       }(),
   '/login': (context) => LoginPage(),
   '/settings': (context) => SettingsPage(),
@@ -107,6 +112,14 @@ class NavigationDrawer extends StatelessWidget {
           onTap: () => Navigator.of(context)
               .pushNamedAndRemoveUntil('/pools', (_) => false),
         ),
+        if (settings.beta.value)
+          ListTile(
+            selected: drawerSelection == DrawerSelection.pools,
+            leading: Icon(Icons.forum),
+            title: Text('Topics'),
+            onTap: () => Navigator.of(context)
+                .pushNamedAndRemoveUntil('/topics', (_) => false),
+          ),
         Divider(),
         ListTile(
           leading: Icon(Icons.settings),
@@ -159,7 +172,11 @@ class ProfileHeader extends StatefulWidget {
 class _ProfileHeaderState extends State<ProfileHeader> with LinkingMixin {
   @override
   Map<ChangeNotifier, VoidCallback> get initLinks => {
-        settings.credentials: () => initAvatar(context),
+        settings.credentials: () {
+          if (mounted) {
+            initAvatar(context);
+          }
+        },
       };
 
   @override
