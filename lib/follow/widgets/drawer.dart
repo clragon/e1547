@@ -34,16 +34,16 @@ class _FollowMarkReadTileState extends State<FollowMarkReadTile>
     return ListTile(
       enabled: unseen != 0,
       leading: Icon(unseen != 0 ? Icons.mark_email_read : Icons.drafts),
-      title: Text('Unseen posts'),
+      title: Text('unseen posts'),
       subtitle: unseen != 0
           ? TweenAnimationBuilder(
               tween: IntTween(begin: 0, end: unseen),
               duration: defaultAnimationDuration,
               builder: (context, int value, child) {
-                return Text('Mark $value posts as seen');
+                return Text('mark $value posts as seen');
               },
             )
-          : Text('No unseen posts'),
+          : Text('no unseen posts'),
       onTap: () async {
         for (Follow follow in follows) {
           follow.status.unseen = 0;
@@ -69,8 +69,8 @@ class _FollowSplitSwitchTileState extends State<FollowSplitSwitchTile> {
       valueListenable: settings.followsSplit,
       builder: (context, value, child) => SwitchListTile(
         secondary: Icon(value ? Icons.view_comfy : Icons.view_compact),
-        title: Text('Split tags'),
-        subtitle: value ? Text('Separated tags') : Text('Mixed tags'),
+        title: Text('split tags'),
+        subtitle: value ? Text('separated') : Text('combined'),
         value: value,
         onChanged: (value) async {
           await Navigator.of(context).maybePop();

@@ -108,7 +108,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     ),
                   ),
                   secondChild: ListTile(
-                    title: Text('Sign in'),
+                    title: Text('Login'),
                     leading: Icon(Icons.person_add),
                     onTap: () => Navigator.pushNamed(context, '/login'),
                   ),
@@ -177,10 +177,20 @@ class _SettingsPageState extends State<SettingsPage> {
                 expanded: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    ValueListenableBuilder<bool>(
+                      valueListenable: settings.postInfo,
+                      builder: (context, value, child) => SwitchListTile(
+                        title: Text('Post info'),
+                        subtitle: Text(value ? 'shown' : 'hidden'),
+                        secondary: Icon(Icons.description),
+                        value: value,
+                        onChanged: (value) => settings.postInfo.value = value,
+                      ),
+                    ),
                     ValueListenableBuilder<int>(
                       valueListenable: settings.tileSize,
                       builder: (context, value, child) => ListTile(
-                        title: Text('Post tile size'),
+                        title: Text('Tile size'),
                         subtitle: Text(value.toString()),
                         leading: Icon(Icons.crop),
                         onTap: () => showDialog(

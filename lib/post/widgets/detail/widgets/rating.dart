@@ -3,8 +3,8 @@ import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 
 Map<Rating, IconData> ratingIcons = {
-  Rating.S: Icons.check_circle_outline,
-  Rating.Q: Icons.help_outline,
+  Rating.S: Icons.check,
+  Rating.Q: Icons.help,
   Rating.E: Icons.warning,
 };
 

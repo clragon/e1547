@@ -240,8 +240,8 @@ extension voting on Post {
             voteStatus = VoteStatus.unknown;
           }
         }
-        notifyListeners();
       }
+      notifyListeners();
     } else {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         duration: Duration(seconds: 1),

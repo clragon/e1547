@@ -193,89 +193,98 @@ class _PostDetailState extends State<PostDetail> with LinkingMixin, RouteAware {
       );
     }
 
-    return editorScope(
-      child: Scaffold(
-        extendBodyBehindAppBar: true,
-        appBar: PostDetailAppBar(post: widget.post),
-        floatingActionButton:
-            widget.post.isLoggedIn ? Builder(builder: fab) : null,
-        body: MediaQuery.removeViewInsets(
-          context: context,
-          removeTop: true,
-          child: ListView(
-            physics: BouncingScrollPhysics(),
-            padding: EdgeInsets.only(
-              top: MediaQuery.of(context).padding.top,
-              bottom: kBottomNavigationBarHeight + 24,
-            ),
-            children: [
-              Padding(
-                padding: EdgeInsets.only(bottom: 10),
-                child: PostDetailImageDisplay(
-                  post: widget.post,
-                  onTap: () {
-                    keepPlaying = true;
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => fullscreen(),
-                      ),
-                    );
-                  },
+    return AnimatedSelector(
+      animation: widget.post,
+      selector: () => [widget.post.isEditing],
+      builder: (context, child) {
+        return editorScope(
+          child: Scaffold(
+            extendBodyBehindAppBar: true,
+            appBar: PostDetailAppBar(post: widget.post),
+            floatingActionButton:
+                widget.post.isLoggedIn ? Builder(builder: fab) : null,
+            body: MediaQuery.removeViewInsets(
+              context: context,
+              removeTop: true,
+              child: ListView(
+                physics: BouncingScrollPhysics(),
+                padding: EdgeInsets.only(
+                  top: MediaQuery.of(context).padding.top,
+                  bottom: kBottomNavigationBarHeight + 24,
                 ),
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20),
-                child: Column(
-                  children: [
-                    ArtistDisplay(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(bottom: 10),
+                    child: PostDetailImageDisplay(
                       post: widget.post,
-                      controller: widget.controller,
+                      onTap: () {
+                        keepPlaying = true;
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => fullscreen(),
+                          ),
+                        );
+                      },
                     ),
-                    DescriptionDisplay(post: widget.post),
-                    editorDependant(
-                        child: LikeDisplay(post: widget.post), shown: false),
-                    editorDependant(
-                        child: CommentDisplay(post: widget.post), shown: false),
-                    Builder(
-                      builder: (context) => ParentDisplay(
-                        post: widget.post,
-                        controller: sheetController,
-                      ),
-                    ),
-                    editorDependant(
-                        child: PoolDisplay(post: widget.post), shown: false),
-                    Builder(
-                      builder: (context) => TagDisplay(
-                        post: widget.post,
-                        provider: widget.controller,
-                        submit: (value, category) => onPostTagsEdit(
-                          context,
-                          widget.post,
-                          value,
-                          category,
-                        ),
-                        controller: sheetController,
-                      ),
-                    ),
-                    editorDependant(
-                        child: FileDisplay(
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    child: Column(
+                      children: [
+                        ArtistDisplay(
                           post: widget.post,
                           controller: widget.controller,
                         ),
-                        shown: false),
-                    editorDependant(
-                        child: RatingDisplay(
-                          post: widget.post,
+                        DescriptionDisplay(post: widget.post),
+                        editorDependant(
+                            child: LikeDisplay(post: widget.post),
+                            shown: false),
+                        editorDependant(
+                            child: CommentDisplay(post: widget.post),
+                            shown: false),
+                        Builder(
+                          builder: (context) => ParentDisplay(
+                            post: widget.post,
+                            controller: sheetController,
+                          ),
                         ),
-                        shown: true),
-                    SourceDisplay(post: widget.post),
-                  ],
-                ),
-              )
-            ],
+                        editorDependant(
+                            child: PoolDisplay(post: widget.post),
+                            shown: false),
+                        Builder(
+                          builder: (context) => TagDisplay(
+                            post: widget.post,
+                            provider: widget.controller,
+                            submit: (value, category) => onPostTagsEdit(
+                              context,
+                              widget.post,
+                              value,
+                              category,
+                            ),
+                            controller: sheetController,
+                          ),
+                        ),
+                        editorDependant(
+                            child: FileDisplay(
+                              post: widget.post,
+                              controller: widget.controller,
+                            ),
+                            shown: false),
+                        editorDependant(
+                            child: RatingDisplay(
+                              post: widget.post,
+                            ),
+                            shown: true),
+                        SourceDisplay(post: widget.post),
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

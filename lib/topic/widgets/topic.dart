@@ -45,6 +45,7 @@ class TopicTile extends StatelessWidget {
     return Card(
       child: InkWell(
         onTap: this.onPressed,
+        onLongPress: () => topicSheet(context, topic),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
