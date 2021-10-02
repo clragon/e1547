@@ -36,33 +36,32 @@ class GridSettingsTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      title: Text('Staggered'),
+      title: Text('Quilt'),
       subtitle: Text(getDescription(state)),
       leading: Icon(getIcon(state)),
-      onTap: () {
-        showDialog(
-            context: context,
-            builder: (context) {
-              return SimpleDialog(
-                title: Text('Grid'),
-                children: [
-                  Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: GridState.values
-                        .map((state) => ListTile(
-                              trailing: Icon(getIcon(state)),
-                              title: Text(getDescription(state)),
-                              onTap: () {
-                                onChange!(state);
-                                Navigator.of(context).maybePop();
-                              },
-                            ))
-                        .toList(),
+      onTap: () => showDialog(
+        context: context,
+        builder: (context) => SimpleDialog(
+          title: Text('Grid'),
+          children: [
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: GridState.values
+                  .map(
+                    (state) => ListTile(
+                      trailing: Icon(getIcon(state)),
+                      title: Text(getDescription(state)),
+                      onTap: () {
+                        onChange!(state);
+                        Navigator.of(context).maybePop();
+                      },
+                    ),
                   )
-                ],
-              );
-            });
-      },
+                  .toList(),
+            )
+          ],
+        ),
+      ),
     );
   }
 }
