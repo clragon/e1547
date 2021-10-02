@@ -178,13 +178,20 @@ class _SettingsPageState extends State<SettingsPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     ValueListenableBuilder<bool>(
-                      valueListenable: settings.postInfo,
-                      builder: (context, value, child) => SwitchListTile(
-                        title: Text('Post info'),
-                        subtitle: Text(value ? 'shown' : 'hidden'),
-                        secondary: Icon(Icons.description),
-                        value: value,
-                        onChanged: (value) => settings.postInfo.value = value,
+                      valueListenable: settings.beta,
+                      builder: (context, value, child) => SafeCrossFade(
+                        showChild: value,
+                        builder: (context) => ValueListenableBuilder<bool>(
+                          valueListenable: settings.postInfo,
+                          builder: (context, value, child) => SwitchListTile(
+                            title: Text('Post info'),
+                            subtitle: Text(value ? 'shown' : 'hidden'),
+                            secondary: Icon(Icons.description),
+                            value: value,
+                            onChanged: (value) =>
+                                settings.postInfo.value = value,
+                          ),
+                        ),
                       ),
                     ),
                     ValueListenableBuilder<int>(
@@ -261,7 +268,12 @@ class _SettingsPageState extends State<SettingsPage> {
               subtitle: Text(value ? 'preview enabled' : 'preview disabled'),
               secondary: Icon(Icons.auto_awesome),
               value: value,
-              onChanged: (value) => settings.beta.value = value,
+              onChanged: (value) {
+                settings.beta.value = value;
+                if (!value) {
+                  settings.postInfo.value = false;
+                }
+              },
             ),
           ),
         ],
