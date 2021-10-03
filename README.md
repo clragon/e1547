@@ -116,13 +116,9 @@ I spend alot of time trying to build this app, so all support is welcome.
 
 #### Thanks to:  
 - [Kritanta](https://github.com/KritantaDev) for iOS publishing.
-
-- [CamperGuy](https://github.com/camperguy) for occasional iOS builds.
     
 - [Miyoyo](https://github.com/miyoyo) for performance optimisations.
     
 - [bitWolfy](https://github.com/bitWolfy) for code review.
 
 - [Perlatus](https://github.com/perlatus) for writing the original code base.
-
-- [Font Awesome](https://fontawesome.com/icons/paw?style=solid) for their Paw Icon.
