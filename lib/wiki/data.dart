@@ -1,1 +1,0 @@
-export 'data/wiki.dart';

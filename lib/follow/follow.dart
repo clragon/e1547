@@ -1,2 +1,10 @@
-export 'data.dart';
-export 'widgets.dart';
+// data
+export 'data/actions.dart';
+export 'data/follow.dart';
+export 'data/updater.dart';
+// widgets
+export 'widgets/combined.dart';
+export 'widgets/drawer.dart';
+export 'widgets/split.dart';
+export 'widgets/switcher.dart';
+export 'widgets/tile.dart';

@@ -1,2 +1,9 @@
-export 'data.dart';
-export 'widgets.dart';
+// data
+export 'data/reply.dart';
+export 'data/topic.dart';
+// widgets
+export 'widgets/replies.dart';
+export 'widgets/reply.dart';
+export 'widgets/sheet.dart';
+export 'widgets/topic.dart';
+export 'widgets/topics.dart';

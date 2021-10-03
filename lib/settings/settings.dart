@@ -1,2 +1,12 @@
-export 'data.dart';
-export 'widgets.dart';
+// data
+export 'data/app_info.dart';
+export 'data/grid.dart';
+export 'data/settings.dart';
+export 'data/version.dart';
+// widgets
+export 'widgets/about.dart';
+export 'widgets/denylist.dart';
+export 'widgets/follows.dart';
+export 'widgets/login.dart';
+export 'widgets/separated.dart';
+export 'widgets/settings.dart';
