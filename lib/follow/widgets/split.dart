@@ -11,8 +11,7 @@ class FollowsSplitPage extends StatefulWidget {
   _FollowsSplitPageState createState() => _FollowsSplitPageState();
 }
 
-class _FollowsSplitPageState extends State<FollowsSplitPage>
-    with TileSizeMixin, LinkingMixin {
+class _FollowsSplitPageState extends State<FollowsSplitPage> with LinkingMixin {
   late RefreshController refreshController;
 
   @override
@@ -60,8 +59,11 @@ class _FollowsSplitPageState extends State<FollowsSplitPage>
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) => ValueListenableBuilder<List<Follow>>(
+    return TileLayoutScope(
+      tileBuilder: (tileHeightFactor, crossAxisCount, stagger) =>
+          (index) => StaggeredTile.count(1, 1 * tileHeightFactor),
+      builder: (context, crossAxisCount, tileBuilder) =>
+          ValueListenableBuilder<List<Follow>>(
         valueListenable: settings.follows,
         builder: (context, follows, child) => ValueListenableBuilder(
           valueListenable: settings.host,
@@ -82,14 +84,12 @@ class _FollowsSplitPageState extends State<FollowsSplitPage>
               ),
             ),
             builder: (context) => StaggeredGridView.countBuilder(
-              key: Key('grid_${[tileSize, client.isSafe].join('_')}_key'),
               addAutomaticKeepAlives: false,
-              crossAxisCount: crossAxisCount(constraints.maxWidth),
+              crossAxisCount: crossAxisCount,
               itemCount: follows.length,
               itemBuilder: (context, index) =>
                   FollowTile(follow: follows[index], safe: client.isSafe),
-              staggeredTileBuilder: (index) =>
-                  StaggeredTile.count(1, 1 * tileHeightFactor),
+              staggeredTileBuilder: tileBuilder,
               physics: BouncingScrollPhysics(),
             ),
             appBar: defaultAppBar(title: 'Following'),

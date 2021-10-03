@@ -1,68 +1,55 @@
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
-mixin TileSizeMixin<T extends StatefulWidget> on State<T> {
-  double tileHeightFactor = 1.2;
-  late int tileSize;
+const defaultTileHeightFactor = 1.2;
 
-  void updateTileSize() {
-    setState(() {
-      tileSize = settings.tileSize.value;
-    });
-  }
+class TileLayoutScope extends StatelessWidget {
+  final double tileHeightFactor;
+  final StaggeredTile? Function(int) Function(
+    double tileHeightFactor,
+    int crossAxisCount,
+    GridState stagger,
+  ) tileBuilder;
+  final Widget Function(
+    BuildContext context,
+    int crossAxisCount,
+    StaggeredTile? Function(int) tileBuilder,
+  ) builder;
 
-  int crossAxisCount(double width) {
-    return notZero(width / tileSize).round();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    settings.tileSize.addListener(updateTileSize);
-    updateTileSize();
-  }
-
-  @override
-  void reassemble() {
-    super.reassemble();
-    settings.tileSize.removeListener(updateTileSize);
-    settings.tileSize.addListener(updateTileSize);
-  }
+  const TileLayoutScope({
+    this.tileHeightFactor = defaultTileHeightFactor,
+    required this.tileBuilder,
+    required this.builder,
+  });
 
   @override
-  void dispose() {
-    super.dispose();
-    settings.tileSize.removeListener(updateTileSize);
-  }
-}
-
-mixin TileStaggerMixin<T extends StatefulWidget> on State<T> {
-  GridState? stagger;
-
-  void updateStagger() {
-    setState(() {
-      stagger = settings.stagger.value;
-    });
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    settings.stagger.addListener(updateStagger);
-    updateStagger();
-  }
-
-  @override
-  void reassemble() {
-    super.reassemble();
-    settings.stagger.removeListener(updateStagger);
-    settings.stagger.addListener(updateStagger);
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    settings.stagger.removeListener(updateStagger);
+  Widget build(BuildContext context) {
+    return ValueListenableBuilder<int>(
+      valueListenable: settings.tileSize,
+      builder: (context, tileSize, child) {
+        return ValueListenableBuilder<GridState>(
+          valueListenable: settings.stagger,
+          builder: (context, stagger, child) => LayoutBuilder(
+            builder: (context, constraints) {
+              int crossAxisCount = notZero(constraints.maxWidth / tileSize);
+              return KeyedSubtree(
+                key: Key('tiles_${[tileSize, stagger].join('_')}'),
+                child: builder(
+                  context,
+                  crossAxisCount,
+                  tileBuilder(
+                    tileHeightFactor,
+                    crossAxisCount,
+                    stagger,
+                  ),
+                ),
+              );
+            },
+          ),
+        );
+      },
+    );
   }
 }

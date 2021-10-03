@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
+int notZero(double value) => value < 1 ? 1 : value.round();
+
 class LowercaseTextInputFormatter extends TextInputFormatter {
   @override
   TextEditingValue formatEditUpdate(
@@ -23,5 +25,5 @@ DateFormat getCurrentDateFormat() =>
     DateFormat.yMd(Platform.localeName).add_jm();
 
 extension trimming on List<String> {
-  List<String> trim() => this.map((e) => e.trim()).toList();
+  List<String> trim() => map((e) => e.trim()).toList();
 }
