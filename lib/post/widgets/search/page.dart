@@ -26,8 +26,7 @@ class PostsPage extends StatefulWidget {
   State<StatefulWidget> createState() => _PostsPageState();
 }
 
-class _PostsPageState extends State<PostsPage>
-    with TileSizeMixin, TileStaggerMixin, LinkingMixin {
+class _PostsPageState extends State<PostsPage> with LinkingMixin {
   ScrollController scrollController = ScrollController();
   Set<Post> selections = Set();
 
@@ -47,13 +46,6 @@ class _PostsPageState extends State<PostsPage>
   Map<ChangeNotifier, VoidCallback> get links => {
         widget.controller: updatePage,
       };
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    updateTileSize();
-    updateStagger();
-  }
 
   Widget itemBuilder(BuildContext context, Post item, int index) {
     void select() {
@@ -222,6 +214,34 @@ class _PostsPageState extends State<PostsPage>
       );
     }
 
+    StaggeredTile? Function(int) tileBuilder(
+      double tileHeightFactor,
+      int crossAxisCount,
+      GridState stagger,
+    ) =>
+        (int item) {
+          if (item < widget.controller.itemList!.length) {
+            PostFile image = widget.controller.itemList![item].sample;
+            double widthRatio = image.width / image.height;
+            double heightRatio = image.height / image.width;
+
+            switch (stagger) {
+              case GridState.square:
+                return StaggeredTile.count(1, 1 * tileHeightFactor);
+              case GridState.vertical:
+                return StaggeredTile.count(1, heightRatio);
+              case GridState.omni:
+                if (crossAxisCount == 1) {
+                  return StaggeredTile.count(1, heightRatio);
+                } else {
+                  return StaggeredTile.count(notZero(widthRatio),
+                      notZero(heightRatio) * tileHeightFactor);
+                }
+            }
+          }
+          return null;
+        };
+
     Widget selectionScope({required Widget child}) {
       return WillPopScope(
         onWillPop: () async {
@@ -236,69 +256,43 @@ class _PostsPageState extends State<PostsPage>
       );
     }
 
-    return LayoutBuilder(builder: (context, constraints) {
-      StaggeredTile? tileBuilder(int item) {
-        if (item < widget.controller.itemList!.length) {
-          PostFile image = widget.controller.itemList![item].sample;
-          double widthRatio = image.width / image.height;
-          double heightRatio = image.height / image.width;
-
-          switch (stagger!) {
-            case GridState.square:
-              return StaggeredTile.count(1, 1 * tileHeightFactor);
-            case GridState.vertical:
-              return StaggeredTile.count(1, heightRatio);
-            case GridState.omni:
-              if (crossAxisCount(constraints.maxWidth) == 1) {
-                return StaggeredTile.count(1, heightRatio);
-              } else {
-                return StaggeredTile.count(roundedNotZero(widthRatio),
-                    roundedNotZero(heightRatio) * tileHeightFactor);
-              }
-          }
-        }
-        return null;
-      }
-
-      return selectionScope(
-        child: PageLoader(
-          isBuilt: [tileSize, stagger].every((element) => element != null),
-          builder: (context) => RefreshablePage(
-            scrollController: scrollController,
-            refreshController: widget.controller.refreshController,
-            appBar: PreferredSize(
-              preferredSize: Size.fromHeight(kToolbarHeight),
-              child: Material(
-                elevation: Theme.of(context).appBarTheme.elevation ?? 4,
-                child: CrossFade(
-                  showChild: selections.isEmpty,
-                  child: Builder(builder: widget.appBarBuilder),
-                  secondChild: selectionAppBar(),
-                ),
-              ),
-            ),
-            drawer: NavigationDrawer(),
-            endDrawer: endDrawer(),
-            floatingActionButton: floatingActionButton(),
-            refresh: () => widget.controller.refresh(background: true),
-            builder: (BuildContext context) => PagedStaggeredGridView(
-              key: Key('grid_${[tileSize, stagger].join('_')}_key'),
-              primary: false,
-              scrollController: scrollController,
-              addAutomaticKeepAlives: false,
-              tileBuilder: tileBuilder,
-              pagingController: widget.controller,
-              crossAxisCount: crossAxisCount(constraints.maxWidth),
-              builderDelegate: defaultPagedChildBuilderDelegate(
-                itemBuilder: itemBuilder,
-                onEmpty: Text('No posts'),
-                onLoading: Text('Loading posts'),
-                onError: Text('Failed to load posts'),
+    return TileLayoutScope(
+      tileBuilder: tileBuilder,
+      builder: (context, crossAxisCount, tileBuilder) => selectionScope(
+        child: RefreshablePage(
+          scrollController: scrollController,
+          refreshController: widget.controller.refreshController,
+          appBar: PreferredSize(
+            preferredSize: Size.fromHeight(kToolbarHeight),
+            child: Material(
+              elevation: Theme.of(context).appBarTheme.elevation ?? 4,
+              child: CrossFade(
+                showChild: selections.isEmpty,
+                child: Builder(builder: widget.appBarBuilder),
+                secondChild: selectionAppBar(),
               ),
             ),
           ),
+          drawer: NavigationDrawer(),
+          endDrawer: endDrawer(),
+          floatingActionButton: floatingActionButton(),
+          refresh: () => widget.controller.refresh(background: true),
+          builder: (context) => PagedStaggeredGridView(
+            primary: false,
+            scrollController: scrollController,
+            addAutomaticKeepAlives: false,
+            tileBuilder: tileBuilder,
+            pagingController: widget.controller,
+            crossAxisCount: crossAxisCount,
+            builderDelegate: defaultPagedChildBuilderDelegate(
+              itemBuilder: itemBuilder,
+              onEmpty: Text('No posts'),
+              onLoading: Text('Loading posts'),
+              onError: Text('Failed to load posts'),
+            ),
+          ),
         ),
-      );
-    });
+      ),
+    );
   }
 }
