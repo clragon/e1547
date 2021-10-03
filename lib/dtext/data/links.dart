@@ -14,7 +14,7 @@ enum LinkWord {
 }
 
 String linkToDisplay(String link) {
-  Uri url = Uri.parse(link);
+  Uri url = Uri.parse(link.trim());
   List<String> allowed = ['v'];
   Map<String, dynamic> parameters = Map.of(url.queryParameters);
   parameters.removeWhere((key, value) => !allowed.contains(key));
@@ -24,7 +24,9 @@ String linkToDisplay(String link) {
     queryParameters: parameters.length > 0 ? parameters : null,
   );
   String display = newUrl.toString();
-  display = display.replaceAll(RegExp(r'^//'), '');
-  display = display.replaceFirst(RegExp(r'^www.'), '');
+  List<String> removed = [r'^///?', r'^www.', r'/$'];
+  for (String pattern in removed) {
+    display = display.replaceFirst(RegExp(pattern), '');
+  }
   return display;
 }

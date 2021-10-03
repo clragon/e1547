@@ -2,6 +2,7 @@ import 'dart:async' show Future;
 
 import 'package:dio/dio.dart';
 import 'package:e1547/client/client.dart';
+import 'package:e1547/dtext/dtext.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/settings/settings.dart';
@@ -282,27 +283,21 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 }
 
-Future<bool> setCustomHost(BuildContext context) async {
-  bool success = false;
-  ValueNotifier<bool> isLoading = ValueNotifier<bool>(false);
-  ValueNotifier<String?> error = ValueNotifier<String?>(null);
+Future<void> setCustomHost(BuildContext context) async {
   TextEditingController controller =
       TextEditingController(text: settings.customHost.value);
-  Future<bool> submit(String text) async {
-    error.value = null;
-    isLoading.value = true;
-    String host = text.trim();
-    host = host.replaceAll(RegExp(r'^http(s)?://'), '');
-    host = host.replaceAll(RegExp(r'^(www.)?'), '');
-    host = host.replaceAll(RegExp(r'/$'), '');
+
+  Future<void> submit() async {
+    String? error;
+
+    String host = linkToDisplay(controller.text);
+
     Dio dio = Dio(BaseOptions(
       sendTimeout: 30000,
       connectTimeout: 30000,
     ));
 
     if (host.isEmpty) {
-      success = false;
-      error.value = null;
       settings.customHost.value = null;
     } else {
       await Future.delayed(Duration(seconds: 1));
@@ -311,124 +306,38 @@ Future<bool> setCustomHost(BuildContext context) async {
         switch (host) {
           case 'e621.net':
             settings.customHost.value = host;
-            error.value = null;
-            success = true;
+            error = null;
             break;
           case 'e926.net':
-            error.value = 'default host cannot be custom host';
-            success = false;
+            error = 'default host cannot be custom host';
             break;
           default:
-            error.value = 'Host API incompatible';
-            success = false;
+            error = 'Host API incompatible';
             break;
         }
       } on DioError {
-        error.value = 'Cannot reach host';
+        error = 'Cannot reach host';
       }
     }
 
-    isLoading.value = false;
-    return error.value == null;
+    if (error != null) {
+      throw LoadingDialogException(message: error);
+    }
   }
 
   await showDialog(
     context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: Text('Custom Host'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              children: [
-                ValueListenableBuilder(
-                  valueListenable: isLoading,
-                  builder: (context, bool value, child) => CrossFade(
-                    showChild: value,
-                    child: Padding(
-                      padding: EdgeInsets.only(right: 8),
-                      child: SizedCircularProgressIndicator(size: 16),
-                    ),
-                  ),
-                ),
-                Expanded(
-                    child: ValueListenableBuilder(
-                  valueListenable: error,
-                  builder: (context, String? value, child) {
-                    return Theme(
-                      data: value != null
-                          ? Theme.of(context).copyWith(
-                              colorScheme: ColorScheme.fromSwatch().copyWith(
-                                  secondary: Theme.of(context).errorColor))
-                          : Theme.of(context),
-                      child: TextField(
-                        controller: controller,
-                        keyboardType: TextInputType.url,
-                        autofocus: true,
-                        maxLines: 1,
-                        decoration: InputDecoration(
-                            labelText: 'url', border: UnderlineInputBorder()),
-                        onSubmitted: (_) async {
-                          if (await submit(controller.text)) {
-                            Navigator.of(context).maybePop();
-                          }
-                        },
-                      ),
-                    );
-                  },
-                ))
-              ],
-            ),
-            ValueListenableBuilder(
-              valueListenable: error,
-              builder: (context, String? value, child) {
-                return CrossFade(
-                  duration: Duration(milliseconds: 200),
-                  showChild: value != null,
-                  child: Padding(
-                    padding: EdgeInsets.only(top: 8),
-                    child: Row(
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.only(right: 4),
-                          child: Icon(
-                            Icons.error_outline,
-                            size: 14,
-                            color: Theme.of(context).errorColor,
-                          ),
-                        ),
-                        Text(
-                          value ?? '',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Theme.of(context).errorColor,
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                );
-              },
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            child: Text('CANCEL'),
-            onPressed: Navigator.of(context).maybePop,
-          ),
-          TextButton(
-            child: Text('OK'),
-            onPressed: () async {
-              if (await submit(controller.text)) {
-                Navigator.of(context).maybePop();
-              }
-            },
-          ),
-        ],
-      );
-    },
+    builder: (BuildContext context) => LoadingDialog(
+      submit: submit,
+      title: Text('Custom Host'),
+      builder: (context, submit) => TextField(
+        controller: controller,
+        keyboardType: TextInputType.url,
+        autofocus: true,
+        maxLines: 1,
+        decoration: InputDecoration(labelText: 'url'),
+        onSubmitted: (_) => submit(),
+      ),
+    ),
   );
-  return success;
 }

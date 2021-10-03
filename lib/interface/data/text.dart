@@ -21,3 +21,7 @@ void setFocusToEnd(TextEditingController controller) {
 
 DateFormat getCurrentDateFormat() =>
     DateFormat.yMd(Platform.localeName).add_jm();
+
+extension trimming on List<String> {
+  List<String> trim() => this.map((e) => e.trim()).toList();
+}

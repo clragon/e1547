@@ -161,7 +161,7 @@ class _FollowingPageState extends State<FollowingPage> with LinkingMixin {
             child: Text('OK'),
             onPressed: () {
               List<String> tags = controller.text.split('\n');
-              tags = tags.map((e) => e.trim()).toList();
+              tags = tags.trim();
               tags.removeWhere((tag) => tag.isEmpty);
               settings.follows.value = follows.editWith(tags);
               Navigator.of(context).maybePop();

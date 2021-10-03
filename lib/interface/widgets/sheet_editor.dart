@@ -4,13 +4,19 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 
-typedef Action<ReturnType> = FutureOr<ReturnType> Function();
+typedef ControllerAction = Future<void> Function();
+
+class ControllerException implements Exception {
+  final String message;
+
+  ControllerException({required this.message});
+}
 
 class ActionController extends ChangeNotifier {
-  Action? action;
+  ControllerAction? action;
 
   @mustCallSuper
-  void setAction<ReturnType>(Action<ReturnType> submit) {
+  void setAction(ControllerAction submit) {
     action = submit;
     notifyListeners();
   }
@@ -24,24 +30,20 @@ class SheetActionController extends ActionController {
 
   void close() => sheetController?.close.call();
 
-  FutureOr<T> wrapper<T>(Action<T> submit) async {
+  Future<void> wrapper(ControllerAction submit) async {
     loading = true;
     notifyListeners();
 
-    bool willClose;
-    T result = await submit();
-    if (T is bool) {
-      willClose = result as bool;
-    } else {
-      willClose = true;
+    try {
+      await submit();
+      sheetController!.close();
+    } on ControllerException {
+      // dont close the sheet
+      // display error icon?
     }
 
-    if (willClose) {
-      sheetController!.close();
-    }
     loading = false;
     notifyListeners();
-    return result;
   }
 
   void show(BuildContext context, Widget child) {
@@ -57,10 +59,10 @@ class SheetActionController extends ActionController {
   }
 
   @override
-  void setAction<T>(Action<T> submit) {
+  void setAction(ControllerAction submit) {
     WidgetsBinding.instance!.addPostFrameCallback((_) {
       loading = false;
-      super.setAction<T>(() => wrapper<T>(submit));
+      super.setAction(() => wrapper(submit));
     });
   }
 }
@@ -149,7 +151,8 @@ class _SheetTextWrapperState extends State<SheetTextWrapper> {
     super.initState();
     textController = widget.textController ?? TextEditingController();
     setFocusToEnd(textController);
-    widget.actionController.setAction(() => widget.submit(textController.text));
+    widget.actionController
+        .setAction(() async => widget.submit(textController.text));
   }
 
   @override
@@ -190,7 +193,6 @@ class SheetTextField extends StatelessWidget {
           onSubmitted: submit,
           decoration: InputDecoration(
             labelText: labelText,
-            border: UnderlineInputBorder(),
           ),
         );
       },

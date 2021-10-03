@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:collection/collection.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/interface/interface.dart';
@@ -9,33 +8,13 @@ import 'package:flutter/material.dart';
 
 late final FollowUpdater followUpdater = FollowUpdater(settings.follows);
 
-class FollowUpdater extends DataUpdater<List<Follow>> with HostableUpdater {
+class FollowUpdater extends DataUpdater<List<Follow>>
+    with HostableUpdater, EditableUpdater {
   Duration get stale => Duration(hours: 4);
 
   ValueNotifier<List<Follow>> source;
-  List<String>? tags;
 
-  FollowUpdater(this.source) {
-    source.addListener(updateSource);
-  }
-
-  @override
-  void dispose() {
-    source.removeListener(updateSource);
-    super.dispose();
-  }
-
-  void updateSource() {
-    List<String> update = source.value.tags;
-    if (tags == null) {
-      tags = update;
-    } else {
-      if (!UnorderedIterableEquality().equals(tags, update)) {
-        tags = update;
-        refresh();
-      }
-    }
-  }
+  FollowUpdater(this.source);
 
   @override
   Future<List<Follow>> read() async => source.value;
