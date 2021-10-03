@@ -1,2 +1,12 @@
-export 'data.dart';
-export 'widgets.dart';
+// data
+export 'data/actions.dart';
+export 'data/count.dart';
+export 'data/regex.dart';
+export 'data/set.dart';
+export 'data/tag.dart';
+// widgets
+export 'widgets/card.dart';
+export 'widgets/editor.dart';
+export 'widgets/gesture.dart';
+export 'widgets/input.dart';
+export 'widgets/plus.dart';

@@ -1,2 +1,10 @@
-export 'data.dart';
-export 'widgets.dart';
+// data
+export 'data/actions.dart';
+export 'data/controller.dart';
+export 'data/data.dart';
+export 'data/post.dart';
+// widgets
+export 'widgets/detail.dart';
+export 'widgets/fullscreen.dart';
+export 'widgets/search.dart';
+export 'widgets/widgets.dart';

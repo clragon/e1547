@@ -1,2 +1,10 @@
-export 'data.dart';
-export 'widgets.dart';
+// data
+export 'data/links.dart';
+export 'data/regex.dart';
+export 'data/text.dart';
+// widgets
+export 'widgets/field.dart';
+export 'widgets/plain.dart';
+export 'widgets/quote.dart';
+export 'widgets/section.dart';
+export 'widgets/spoiler.dart';
