@@ -88,11 +88,11 @@ class _RangeDialogState extends State<RangeDialog> with LinkingMixin {
       ),
       actions: [
         TextButton(
-          child: Text('cancel'),
+          child: Text('CANCEL'),
           onPressed: Navigator.of(context).maybePop,
         ),
         TextButton(
-          child: Text('save'),
+          child: Text('OK'),
           onPressed: () => submit(controller.text),
         ),
       ],
