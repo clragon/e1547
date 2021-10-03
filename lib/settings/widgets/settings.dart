@@ -292,10 +292,7 @@ Future<void> setCustomHost(BuildContext context) async {
 
     String host = linkToDisplay(controller.text);
 
-    Dio dio = Dio(BaseOptions(
-      sendTimeout: 30000,
-      connectTimeout: 30000,
-    ));
+    Dio dio = Dio(defaultDioOptions);
 
     if (host.isEmpty) {
       settings.customHost.value = null;

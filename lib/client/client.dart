@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:e1547/comment/comment.dart';
 import 'package:e1547/follow/follow.dart';
+import 'package:e1547/interface/interface.dart';
 import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
@@ -34,10 +35,8 @@ class Client {
     Future<bool> init() async {
       Credentials? credentials = settings.credentials.value;
       dio = Dio(
-        BaseOptions(
+        defaultDioOptions.copyWith(
           baseUrl: 'https://${settings.host.value}/',
-          sendTimeout: 30000,
-          connectTimeout: 30000,
           headers: {
             HttpHeaders.userAgentHeader: '$appName/$appVersion ($developer)',
           },
