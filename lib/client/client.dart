@@ -104,6 +104,7 @@ class Client {
     }
     if (_currentUser == null) {
       _currentUser = await client.authedUser();
+      settings.denylist.value = _currentUser!.blacklistedTags.split('\n');
     }
     if (_currentAvatar == null) {
       int? avatarId = _currentUser?.avatarId;
@@ -482,17 +483,19 @@ class Client {
     return CurrentUser.fromMap(body);
   }
 
-  Future<void> updateBlacklist(List<String> blacklist) async {
+  Future<void> updateBlacklist(List<String> denylist) async {
     if (!await hasLogin) {
       return;
     }
 
     Map<String, String?> body = {
-      'user[blacklisted_tags]': blacklist.join('\n'),
+      'user[blacklisted_tags]': denylist.join('\n'),
     };
 
     await dio.put('users/${settings.credentials.value!.username}.json',
         data: FormData.fromMap(body));
+
+    initializeCurrentUser(reset: true);
   }
 
   Future<List> tag(String search, {int? category}) async {

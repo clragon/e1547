@@ -191,8 +191,7 @@ class _ParentEditorState extends State<ParentEditor> {
       inputFormatters: [
         FilteringTextInputFormatter.allow(RegExp(r'^ ?\d*')),
       ],
-      decoration: InputDecoration(
-          labelText: 'Parent ID', border: UnderlineInputBorder()),
+      decoration: InputDecoration(labelText: 'Parent ID'),
       onSubmitted: (_) => widget.controller!.action!(),
     );
   }

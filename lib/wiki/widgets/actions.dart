@@ -1,3 +1,4 @@
+import 'package:e1547/denylist/denylist.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
@@ -28,8 +29,8 @@ class _TagListActionsState extends State<TagListActions> with LinkingMixin {
 
   void updateLists() {
     setState(() {
-      denylist = settings.denylist.value;
-      follows = settings.follows.value;
+      denylist = List.from(settings.denylist.value);
+      follows = List.from(settings.follows.value);
     });
   }
 
@@ -51,10 +52,14 @@ class _TagListActionsState extends State<TagListActions> with LinkingMixin {
                   follows!.add(Follow.fromString(widget.tag));
                   if (denied) {
                     denylist!.remove(widget.tag);
-                    settings.denylist.value = List.from(denylist!);
+                    updateBlacklist(
+                      context: context,
+                      denylist: denylist!,
+                      immediate: true,
+                    );
                   }
                 }
-                settings.follows.value = List.from(follows!);
+                settings.follows.value = follows!;
               },
               icon: CrossFade(
                 showChild: following,
@@ -70,15 +75,18 @@ class _TagListActionsState extends State<TagListActions> with LinkingMixin {
               onPressed: () {
                 if (denied) {
                   denylist!.remove(widget.tag);
-                  settings.denylist.value = List.from(denylist!);
                 } else {
                   denylist!.add(widget.tag);
-                  settings.denylist.value = List.from(denylist!);
                   if (following) {
                     follows!.remove(widget.tag);
-                    settings.follows.value = List.from(follows!);
+                    settings.follows.value = follows!;
                   }
                 }
+                updateBlacklist(
+                  context: context,
+                  denylist: denylist!,
+                  immediate: true,
+                );
               },
               icon: CrossFade(
                 showChild: denied,

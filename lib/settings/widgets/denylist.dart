@@ -1,7 +1,7 @@
+import 'package:e1547/denylist/denylist.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:e1547/tag/tag.dart';
-import 'package:e1547/wiki/wiki.dart';
 import 'package:flutter/material.dart';
 
 class DenyListPage extends StatefulWidget {
@@ -24,7 +24,7 @@ class _DenyListPageState extends State<DenyListPage> with LinkingMixin {
       setState(() => denylist = List.from(settings.denylist.value));
 
   void addTags(BuildContext context, [int? edit]) {
-    void submit(String value, [int? edit]) {
+    Future<void> submit(String value, [int? edit]) async {
       value = value.trim();
 
       if (edit != null) {
@@ -33,12 +33,11 @@ class _DenyListPageState extends State<DenyListPage> with LinkingMixin {
         } else {
           denylist.removeAt(edit);
         }
-        settings.denylist.value = denylist;
-      } else {
-        if (value.isNotEmpty) {
-          denylist.add(value);
-          settings.denylist.value = denylist;
-        }
+      } else if (value.isNotEmpty) {
+        denylist.add(value);
+      }
+      if (!await updateBlacklist(context: context, denylist: denylist)) {
+        throw ControllerException(message: 'Failed to update blacklist!');
       }
     }
 
@@ -58,59 +57,6 @@ class _DenyListPageState extends State<DenyListPage> with LinkingMixin {
     );
   }
 
-  Widget denyListTile({
-    required String tag,
-    VoidCallback? onEdit,
-    VoidCallback? onDelete,
-  }) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: Wrap(
-                  direction: Axis.horizontal,
-                  children: Tagset.parse(tag)
-                      .map((tag) => DenyListTagCard(tag.toString()))
-                      .toList(),
-                ),
-              ),
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  PopupMenuButton<VoidCallback?>(
-                    icon: Icon(
-                      Icons.more_vert,
-                      color: Theme.of(context).iconTheme.color,
-                    ),
-                    onSelected: (value) => value?.call(),
-                    itemBuilder: (context) => [
-                      PopupMenuTile(
-                        value: onEdit,
-                        title: 'Edit',
-                        icon: Icons.edit,
-                      ),
-                      PopupMenuTile(
-                        value: onDelete,
-                        title: 'Delete',
-                        icon: Icons.delete,
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ],
-          ),
-          Divider()
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     Widget body() {
@@ -125,53 +71,15 @@ class _DenyListPageState extends State<DenyListPage> with LinkingMixin {
         padding:
             EdgeInsets.only(top: 8, bottom: kBottomNavigationBarHeight + 24),
         itemCount: denylist.length,
-        itemBuilder: (context, index) => denyListTile(
+        itemBuilder: (context, index) => DenylistTile(
             tag: denylist[index],
             onEdit: () => addTags(context, index),
             onDelete: () {
               denylist.removeAt(index);
-              settings.denylist.value = denylist;
+              updateBlacklist(
+                  context: context, denylist: denylist, immediate: true);
             }),
         physics: BouncingScrollPhysics(),
-      );
-    }
-
-    Widget editor() {
-      TextEditingController controller = TextEditingController();
-      controller.text = denylist.join('\n');
-      return AlertDialog(
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text('Blacklist'),
-            IconButton(
-              icon: Icon(Icons.help_outline),
-              onPressed: () =>
-                  wikiSheet(context: context, tag: 'e621:blacklist'),
-            )
-          ],
-        ),
-        content: TextField(
-          controller: controller,
-          keyboardType: TextInputType.multiline,
-          maxLines: null,
-        ),
-        actions: [
-          TextButton(
-            child: Text('CANCEL'),
-            onPressed: Navigator.of(context).maybePop,
-          ),
-          TextButton(
-            child: Text('OK'),
-            onPressed: () {
-              List<String> tags = controller.text.split('\n');
-              tags = tags.map((e) => e.trim()).toList();
-              tags.removeWhere((tag) => tag.isEmpty);
-              settings.denylist.value = tags;
-              Navigator.of(context).maybePop();
-            },
-          ),
-        ],
       );
     }
 
@@ -184,7 +92,7 @@ class _DenyListPageState extends State<DenyListPage> with LinkingMixin {
             onPressed: () async {
               showDialog(
                 context: context,
-                builder: (context) => editor(),
+                builder: (context) => DenylistEditor(denylist: denylist),
               );
             },
           ),

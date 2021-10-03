@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:collection/collection.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:mutex/mutex.dart';
@@ -10,7 +11,7 @@ abstract class DataUpdater<T> extends ChangeNotifier {
   final ValueNotifier<int> progress = ValueNotifier(0);
   final Mutex updateLock = Mutex();
 
-  Duration? get stale;
+  Duration? get stale => null;
 
   Future? get finish => completer?.future;
   Completer? completer;
@@ -48,6 +49,19 @@ abstract class DataUpdater<T> extends ChangeNotifier {
   }
 
   @mustCallSuper
+  void fail() {
+    error = true;
+    complete();
+  }
+
+  @mustCallSuper
+  void complete() {
+    updateLock.release();
+    completer!.complete();
+    notifyListeners();
+  }
+
+  @mustCallSuper
   List<ValueNotifier> getRefreshListeners() => [];
 
   Future<T> read();
@@ -72,19 +86,6 @@ abstract class DataUpdater<T> extends ChangeNotifier {
     return true;
   }
 
-  @mustCallSuper
-  void fail() {
-    error = true;
-    complete();
-  }
-
-  @mustCallSuper
-  void complete() {
-    updateLock.release();
-    completer!.complete();
-    notifyListeners();
-  }
-
   Future<void> update({bool force = false}) async {
     if (completer?.isCompleted ?? true) {
       completer = Completer();
@@ -105,7 +106,7 @@ abstract class DataUpdater<T> extends ChangeNotifier {
     Future<void> _update() async {
       T data = await read();
       T? result = await run(data, step, force);
-      if (!restarting) {
+      if (!restarting && !error) {
         await write(result);
         complete();
       }
@@ -121,4 +122,33 @@ mixin HostableUpdater<T> on DataUpdater<T> {
   @override
   List<ValueNotifier> getRefreshListeners() =>
       super.getRefreshListeners()..add(settings.host);
+}
+
+mixin EditableUpdater<T extends Iterable> on DataUpdater<T> {
+  ValueNotifier<T> get source;
+  late EqualityValueNotifier<T> target = EqualityValueNotifier(source);
+
+  @override
+  List<ValueNotifier> getRefreshListeners() =>
+      super.getRefreshListeners()..add(target);
+}
+
+class EqualityValueNotifier<T extends Iterable> extends ValueNotifier<T> {
+  final ValueNotifier<T> source;
+
+  EqualityValueNotifier(this.source) : super(source.value) {
+    source.addListener(updateValue);
+  }
+
+  void updateValue() {
+    if (!UnorderedIterableEquality().equals(value, source.value)) {
+      value = source.value;
+    }
+  }
+
+  @override
+  void dispose() {
+    source.removeListener(updateValue);
+    super.dispose();
+  }
 }

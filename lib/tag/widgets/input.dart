@@ -56,8 +56,7 @@ class _TagInputState extends State<TagInput> {
           LowercaseTextInputFormatter(),
           if (!widget.multiInput) FilteringTextInputFormatter.deny(' '),
         ],
-        decoration: InputDecoration(
-            labelText: widget.labelText, border: UnderlineInputBorder()),
+        decoration: InputDecoration(labelText: widget.labelText),
         onSubmitted: (result) => widget.submit(sortTags(result)),
       ),
       onSuggestionSelected: (dynamic suggestion) {
