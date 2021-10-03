@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:e1547/interface/interface.dart';
 import 'package:flutter/foundation.dart';
 
 import 'app_info.dart';
@@ -63,10 +64,8 @@ List<AppVersion> githubData = [];
 Future<List<AppVersion>> getVersions() async {
   if (kReleaseMode) {
     if (githubData.isEmpty) {
-      Dio dio = Dio(BaseOptions(
+      Dio dio = Dio(defaultDioOptions.copyWith(
         baseUrl: 'https://api.github.com/',
-        sendTimeout: 30000,
-        connectTimeout: 30000,
       ));
       try {
         dio.get('repos/$github/releases').then(
