@@ -93,13 +93,17 @@ class _FollowTileState extends State<FollowTile> {
                 child: ShadowIcon(
                   getFollowIcon(widget.follow.type),
                   size: 16,
+                  color: Colors.white,
                 ),
               ),
             if (status!.unseen != null && status!.unseen! > 0)
               Expanded(
                 child: Text(
                   getStatusText(status),
-                  style: TextStyle(shadows: getTextShadows()),
+                  style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                        shadows: getTextShadows(),
+                        color: Colors.white,
+                      ),
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
@@ -107,10 +111,10 @@ class _FollowTileState extends State<FollowTile> {
         ),
         Text(
           widget.follow.title,
-          style: Theme.of(context)
-              .textTheme
-              .headline6!
-              .copyWith(shadows: getTextShadows()),
+          style: Theme.of(context).textTheme.headline6!.copyWith(
+                shadows: getTextShadows(),
+                color: Colors.white,
+              ),
           overflow: TextOverflow.ellipsis,
           maxLines: 1,
           softWrap: true,
@@ -143,7 +147,7 @@ class _FollowTileState extends State<FollowTile> {
                   gradient: LinearGradient(
                     colors: [
                       Colors.transparent,
-                      Theme.of(context).cardColor.withOpacity(0.8),
+                      Colors.black.withOpacity(0.8),
                     ],
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
@@ -247,6 +251,7 @@ class _FollowListTileState extends State<FollowListTile> {
       return PopupMenuButton<VoidCallback>(
         icon: ShadowIcon(
           Icons.more_vert,
+          color: Colors.white,
         ),
         onSelected: (value) => value(),
         itemBuilder: (context) => [
@@ -312,7 +317,10 @@ class _FollowListTileState extends State<FollowListTile> {
                       child: Text(
                         widget.follow.title,
                         style: thumbnail != null
-                            ? TextStyle(shadows: getTextShadows())
+                            ? TextStyle(
+                                shadows: getTextShadows(),
+                                color: Colors.white,
+                              )
                             : null,
                       ),
                     ),
@@ -336,8 +344,10 @@ class _FollowListTileState extends State<FollowListTile> {
                           showChild: widget.follow.type != FollowType.update,
                           child: Padding(
                             padding: EdgeInsets.all(8.0),
-                            child:
-                                ShadowIcon(getFollowIcon(widget.follow.type)),
+                            child: ShadowIcon(
+                              getFollowIcon(widget.follow.type),
+                              color: Colors.white,
+                            ),
                           ),
                         ),
                         contextMenu(),
