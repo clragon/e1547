@@ -17,7 +17,7 @@ class PostController extends DataController<Post>
   Map<String, List<Post>> denied = {};
   late ValueNotifier<bool> denying;
   late ValueNotifier<String> search;
-  List<Post> posts = [];
+  List<Post>? posts;
   bool canSearch;
   bool canDeny;
 
@@ -58,11 +58,13 @@ class PostController extends DataController<Post>
   }
 
   Future<void> reapplyFilter() async {
-    denied = {};
-    this.value = PagingState(
-      nextPageKey: this.nextPageKey,
-      itemList: await filter(posts),
-    );
+    if (posts != null) {
+      denied = {};
+      value = PagingState(
+        nextPageKey: nextPageKey,
+        itemList: await filter(posts!),
+      );
+    }
   }
 
   @override
@@ -73,7 +75,8 @@ class PostController extends DataController<Post>
     } else {
       nextPage = await client.posts(search.value, page);
     }
-    posts.addAll(nextPage);
+    posts ??= [];
+    posts!.addAll(nextPage);
     return filter(nextPage);
   }
 
