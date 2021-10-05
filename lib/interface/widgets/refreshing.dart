@@ -42,7 +42,7 @@ class RefreshableControllerPage<T extends RefreshableController>
   }
 }
 
-class RefreshablePageLoader extends StatefulWidget {
+class RefreshablePageLoader extends StatelessWidget {
   final WidgetBuilder? builder;
   final bool isLoading;
   final bool isEmpty;
@@ -104,58 +104,40 @@ class RefreshablePageLoader extends StatefulWidget {
         this.floatingActionButton = null;
 
   @override
-  _RefreshablePageLoaderState createState() => _RefreshablePageLoaderState();
-}
-
-class _RefreshablePageLoaderState extends State<RefreshablePageLoader> {
-  late RefreshController refreshController;
-  ScrollController? scrollController;
-
-  @override
-  void initState() {
-    super.initState();
-    scrollController = widget.scrollController ?? ScrollController();
-    refreshController = widget.refreshController ?? RefreshController();
-    if (widget.initial ?? false) {
-      widget.refresh();
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
     return PageLoader(
-      onLoading: widget.onLoading,
-      onEmpty: widget.onEmpty,
-      onError: widget.onError,
-      isLoading: widget.isLoading,
-      isEmpty: widget.isEmpty,
-      isError: widget.isError,
-      isBuilt: widget.isBuilt,
+      onLoading: onLoading,
+      onEmpty: onEmpty,
+      onError: onError,
+      isLoading: isLoading,
+      isEmpty: isEmpty,
+      isError: isError,
+      isBuilt: isBuilt,
       pageBuilder: (child) {
-        if (widget.pageBuilder != null) {
+        if (pageBuilder != null) {
           return RefreshablePage.pageBuilder(
             builder: (context) => child,
             refreshController: refreshController,
             scrollController: scrollController,
-            refreshHeader: widget.refreshHeader,
-            refresh: widget.refresh,
-            pageBuilder: widget.pageBuilder,
+            refreshHeader: refreshHeader,
+            refresh: refresh,
+            pageBuilder: pageBuilder,
           );
         } else {
           return RefreshablePage(
             builder: (context) => child,
             refreshController: refreshController,
             scrollController: scrollController,
-            refreshHeader: widget.refreshHeader,
-            refresh: widget.refresh,
-            appBar: widget.appBar,
-            drawer: widget.drawer,
-            endDrawer: widget.endDrawer,
-            floatingActionButton: widget.floatingActionButton,
+            refreshHeader: refreshHeader,
+            refresh: refresh,
+            appBar: appBar,
+            drawer: drawer,
+            endDrawer: endDrawer,
+            floatingActionButton: floatingActionButton,
           );
         }
       },
-      builder: widget.builder,
+      builder: builder,
     );
   }
 }
