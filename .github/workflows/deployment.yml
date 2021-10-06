@@ -1,0 +1,88 @@
+name: Application Release
+
+
+on:
+  release:
+    types: [ published ]
+
+    
+jobs:
+  ios-build:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v1 
+    
+    - uses: subosito/flutter-action@v1
+      with:
+        channel: 'stable' 
+        
+    - run: flutter build ios --no-codesign
+    
+    - run: |
+        cd build/ios/iphoneos
+        mkdir Payload
+        mv Runner.app Payload/Runner.app
+        zip -9 -r e1547.zip Payload
+        mv e1547.zip ../../../e1547.ipa
+    
+    # Upload generated apk to the artifacts.
+    - uses: actions/upload-artifact@v1
+      with:
+        name: release-ios
+        path: e1547.ipa
+        
+    - name: Upload the release assets — iOS file
+      uses: actions/upload-release-asset@e8f9f06c4b078e705bd2ea027f0926603fc9b4d5
+      with:
+        upload_url: ${{ github.event.release.upload_url }}
+        asset_path: e1547.ipa
+        asset_name: e1547.ipa
+        asset_content_type: application/octet-stream
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    
+  android-build:
+    # This job will run on ubuntu virtual machine
+    runs-on: ubuntu-latest
+    steps:
+  
+    - uses: actions/checkout@v1
+    
+    - uses: actions/setup-java@v1
+      with:
+        java-version: '12.x'
+  
+    - uses: subosito/flutter-action@v1
+      with:
+        channel: 'stable' 
+        
+    # Configure release keys
+    - env:
+        KEYSTORE: ${{ secrets.KEYSTORE }}
+        KEYCONFIG: ${{ secrets.KEYCONFIG }}
+      run: | 
+        mkdir -p android/app/keys
+        echo "$KEYSTORE" | base64 -d > android/app/keys/key.pkcs
+        echo "$KEYCONFIG" | base64 -d > android/app/keys/key.properties
+    
+    # Get flutter dependencies.
+    - run: flutter pub get
+    
+    # Build apk.
+    - run: flutter build apk
+    
+    # Upload generated apk to the artifacts.
+    - uses: actions/upload-artifact@v1
+      with:
+        name: release-apk
+        path: build/app/outputs/apk/release/app-release.apk
+      
+    - name: Upload the release assets — Android file
+      uses: actions/upload-release-asset@e8f9f06c4b078e705bd2ea027f0926603fc9b4d5
+      with:
+        upload_url: ${{ github.event.release.upload_url }}
+        asset_path: build/app/outputs/apk/release/app-release.apk
+        asset_name: e1547.apk
+        asset_content_type: application/java-archive
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
