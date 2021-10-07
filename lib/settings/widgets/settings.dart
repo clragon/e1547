@@ -97,16 +97,22 @@ class _SettingsPageState extends State<SettingsPage> {
                 builder: (context, snapshot) => SafeCrossFade(
                   duration: Duration(milliseconds: 200),
                   showChild: value != null,
-                  builder: (context) => SeparatedListTile(
+                  builder: (context) => DividerListTile(
                     title: Text(value!.username),
                     subtitle: snapshot.data?.levelString != null
                         ? Text(snapshot.data!.levelString.toLowerCase())
                         : null,
                     leading: CurrentUserAvatar(),
-                    separated: IconButton(
-                      icon: Icon(Icons.exit_to_app),
-                      onPressed: logout,
+                    separated: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 12),
+                      child: IgnorePointer(
+                        child: IconButton(
+                          icon: Icon(Icons.exit_to_app),
+                          onPressed: logout,
+                        ),
+                      ),
                     ),
+                    onTapSeparated: logout,
                   ),
                   secondChild: ListTile(
                     title: Text('Login'),
@@ -187,7 +193,7 @@ class _SettingsPageState extends State<SettingsPage> {
                           builder: (context, value, child) => SwitchListTile(
                             title: Text('Post info'),
                             subtitle: Text(value ? 'shown' : 'hidden'),
-                            secondary: Icon(Icons.description),
+                            secondary: Icon(Icons.subtitles),
                             value: value,
                             onChanged: (value) =>
                                 settings.postInfo.value = value,
