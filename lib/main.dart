@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   await settings.initialized;
   runApp(Main());
 }
@@ -15,17 +16,14 @@ class Main extends StatelessWidget {
         child: ValueListenableBuilder<AppTheme>(
           valueListenable: settings.theme,
           builder: (context, value, child) => ExcludeSemantics(
-            child: AnnotatedRegion<SystemUiMode>(
-              value: SystemUiMode.edgeToEdge,
-              child: AnnotatedRegion<SystemUiOverlayStyle>(
-                value: defaultUIStyle(appThemeMap[value]!),
-                child: MaterialApp(
-                  title: appName,
-                  theme: appThemeMap[value],
-                  routes: routes,
-                  navigatorObservers: [routeObserver],
-                  scrollBehavior: DesktopDragScrollBehaviour(),
-                ),
+            child: AnnotatedRegion<SystemUiOverlayStyle>(
+              value: defaultUIStyle(appThemeMap[value]!),
+              child: MaterialApp(
+                title: appName,
+                theme: appThemeMap[value],
+                routes: routes,
+                navigatorObservers: [routeObserver],
+                scrollBehavior: DesktopDragScrollBehaviour(),
               ),
             ),
           ),
