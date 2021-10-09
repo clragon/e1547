@@ -1,5 +1,6 @@
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
+import 'package:e1547/settings/data/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -17,8 +18,8 @@ class PostFullscreenGallery extends StatefulWidget {
 
 class _PostFullscreenGalleryState extends State<PostFullscreenGallery>
     with RouteAware {
-  late FrameController frameController = FrameController(onToggle: toggleFrame);
   late ValueNotifier<int> current = ValueNotifier(widget.index);
+  late FrameController frameController;
 
   Future<void> toggleFrame(bool shown) async {
     if (shown) {
@@ -31,8 +32,12 @@ class _PostFullscreenGalleryState extends State<PostFullscreenGallery>
   @override
   void initState() {
     super.initState();
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
-    current.value = widget.index;
+    if (settings.fullscreen.value) {
+      toggleFrame(false);
+      frameController = FrameController(onToggle: toggleFrame);
+    } else {
+      frameController = FrameController();
+    }
   }
 
   @override
@@ -58,10 +63,19 @@ class _PostFullscreenGalleryState extends State<PostFullscreenGallery>
     // should add Colors.black26 to statusbar
     return ValueListenableBuilder(
       valueListenable: current,
-      builder: (context, int value, child) => PostFullscreenFrame(
-        child: child!,
-        post: widget.posts[value],
-        controller: frameController,
+      builder: (context, int value, child) => Theme(
+        data: Theme.of(context).copyWith(
+          appBarTheme: AppBarTheme(
+            systemOverlayStyle: defaultUIStyle(Theme.of(context)).copyWith(
+              statusBarColor: Colors.black26,
+            ),
+          ),
+        ),
+        child: PostFullscreenFrame(
+          child: child!,
+          post: widget.posts[value],
+          controller: frameController,
+        ),
       ),
       child: PageView.builder(
         itemCount: widget.posts.length,

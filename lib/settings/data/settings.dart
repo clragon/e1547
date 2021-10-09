@@ -31,6 +31,7 @@ class Persistence {
   late final ValueNotifier<GridState> stagger;
   late final ValueNotifier<bool> postInfo;
   late final ValueNotifier<bool> beta;
+  late final ValueNotifier<bool> fullscreen;
 
   late final SharedPreferences prefs;
   late final Future<void> initialized;
@@ -97,6 +98,7 @@ class Persistence {
     );
     postInfo = createSetting<bool>(key: 'postInfo', initial: false);
     beta = createSetting<bool>(key: 'beta', initial: false);
+    fullscreen = createSetting<bool>(key: 'fullscreen', initial: true);
   }
 
   Type typeify<T>() => T;
