@@ -14,7 +14,8 @@ class DTextField extends StatelessWidget {
   final bool dark;
   final UsernameGenerator? usernameGenerator;
 
-  DTextField({required this.source, this.dark = false, this.usernameGenerator});
+  const DTextField(
+      {required this.source, this.dark = false, this.usernameGenerator});
 
   @override
   Widget build(BuildContext context) {
@@ -303,16 +304,15 @@ class DTextField extends StatelessWidget {
           String? tags = match.namedGroup('tags');
           String name = match.namedGroup('name') ?? tags!;
 
-          VoidCallback onTap = () {
-            Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => SearchPage(tags: tags)));
-          };
-
           return plainText(
-              context: context,
-              text: name,
-              state: Map.from(state)..[TextState.link] = true,
-              onTap: onTap);
+            context: context,
+            text: name,
+            state: Map.from(state)..[TextState.link] = true,
+            onTap: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => SearchPage(tags: tags)));
+            },
+          );
         },
         RegExp(r'(^|\n)\*+ '): (match, result) {
           return resolve(
@@ -330,11 +330,12 @@ class DTextField extends StatelessWidget {
             false)): parseLink,
         RegExp(linkWrap(r'(?<link>[-a-zA-Z0-9()@:%_\+.~#?&//=]*)')):
             (match, result) => parseLink(match, result, true),
-        ...Map.fromIterable(LinkWord.values,
-            key: (word) => RegExp(
-                RegExp.escape(describeEnum(word)) + r' #(?<id>\d+)',
-                caseSensitive: false),
-            value: (word) => (match, result) => parseWord(word, match, result)),
+        ...{
+          for (LinkWord word in LinkWord.values)
+            RegExp(RegExp.escape(describeEnum(word)) + r' #(?<id>\d+)',
+                    caseSensitive: false):
+                (match, result) => parseWord(word, match, result)
+        },
       };
 
       for (MapEntry<RegExp, Function(RegExpMatch match, String result)> entry

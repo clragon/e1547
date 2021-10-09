@@ -6,7 +6,7 @@ class TopicTile extends StatelessWidget {
   final Topic topic;
   final VoidCallback? onPressed;
 
-  TopicTile({
+  const TopicTile({
     required this.topic,
     this.onPressed,
   });
@@ -44,7 +44,7 @@ class TopicTile extends StatelessWidget {
 
     return Card(
       child: InkWell(
-        onTap: this.onPressed,
+        onTap: onPressed,
         onLongPress: () => topicSheet(context, topic),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

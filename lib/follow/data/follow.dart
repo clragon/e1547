@@ -52,7 +52,7 @@ class Follow {
 
   bool updatePool(Pool pool) {
     if (alias == null) {
-      this.alias = tagToTitle(pool.name);
+      alias = tagToTitle(pool.name);
       return true;
     }
     if (!pool.isActive && type != FollowType.bookmark) {

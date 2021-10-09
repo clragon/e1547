@@ -247,7 +247,7 @@ class _SettingsPageState extends State<SettingsPage> {
             builder: (context, value, child) => ListTile(
               title: Text('Blacklist'),
               leading: Icon(Icons.block),
-              subtitle: value.length > 0
+              subtitle: value.isNotEmpty
                   ? Text('${value.join(' ').split(' ').where(
                         (element) => element[0] != '-',
                       ).length} tags blocked')
@@ -259,7 +259,7 @@ class _SettingsPageState extends State<SettingsPage> {
             valueListenable: settings.follows,
             builder: (context, value, child) => ListTile(
               title: Text('Following'),
-              subtitle: value.length > 0
+              subtitle: value.isNotEmpty
                   ? Text('${value.length} searches followed')
                   : null,
               leading: Icon(Icons.turned_in),

@@ -7,7 +7,7 @@ class PostTile extends StatelessWidget {
   final Post post;
   final VoidCallback? onPressed;
 
-  PostTile({
+  const PostTile({
     required this.post,
     this.onPressed,
   });
@@ -18,7 +18,7 @@ class PostTile extends StatelessWidget {
       if (post.flags.deleted) {
         return Center(child: Text('deleted'));
       }
-      if (post.type == PostType.Unsupported) {
+      if (post.type == PostType.unsupported) {
         return Center(child: Text('unsupported'));
       }
       if (post.file.url == null) {
@@ -34,7 +34,7 @@ class PostTile extends StatelessWidget {
           child: Icon(Icons.gif),
         );
       }
-      if (post.type == PostType.Video) {
+      if (post.type == PostType.video) {
         return Container(
           color: Colors.black12,
           child: Icon(Icons.play_arrow),

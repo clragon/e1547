@@ -1,14 +1,7 @@
-import 'dart:collection';
-
 import 'package:e1547/tag/tag.dart';
 
-class Tagset extends Object with IterableMixin<Tag> {
-  Tagset(Set<Tag> tags)
-      : _tags = Map.fromIterable(
-          tags,
-          key: (t) => (t as Tag).name,
-          value: ((t) => (t as Tag?)!),
-        );
+class Tagset extends Iterable<Tag> {
+  Tagset(Set<Tag> tags) : _tags = {for (Tag t in tags) t.name: t};
 
   Tagset.parse(String tagString) : _tags = {} {
     for (String ts in tagString.split(RegExp(r'\s+'))) {
@@ -30,8 +23,8 @@ class Tagset extends Object with IterableMixin<Tag> {
       );
 
   @override
-  bool contains(Object? tagName) {
-    return _tags.containsKey(tagName);
+  bool contains(Object? element) {
+    return _tags.containsKey(element);
   }
 
   String? operator [](String? name) {

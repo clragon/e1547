@@ -7,7 +7,7 @@ import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 class CommentsPage extends StatefulWidget {
   final Post post;
 
-  CommentsPage({required this.post});
+  const CommentsPage({required this.post});
 
   @override
   State createState() => _CommentsPageState();

@@ -9,12 +9,11 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 abstract class RawDataController<PageKeyType, ItemType>
     extends PagingController<PageKeyType, ItemType> {
-  final PageKeyType firstPageKey;
   Mutex requestLock = Mutex();
   bool isRefreshing = false;
 
   RawDataController({
-    required this.firstPageKey,
+    required PageKeyType firstPageKey,
   }) : super(firstPageKey: firstPageKey) {
     super.addPageRequestListener(requestPage);
     getRefreshListeners().forEach((element) => element.addListener(refresh));
@@ -161,10 +160,8 @@ abstract class CursorDataController<T> extends RawDataController<String, T> {
 }
 
 abstract class DataController<T> extends RawDataController<int, T> {
-  final int firstPageKey;
-
   DataController({
-    this.firstPageKey = 1,
+    int firstPageKey = 1,
   }) : super(firstPageKey: firstPageKey);
 
   @override
@@ -173,7 +170,7 @@ abstract class DataController<T> extends RawDataController<int, T> {
 
 mixin SearchableController<PageKeyType, ItemType>
     on RawDataController<PageKeyType, ItemType> {
-  ValueNotifier<String> search = ValueNotifier('');
+  ValueNotifier<String> get search => ValueNotifier('');
 
   @override
   List<ValueNotifier> getRefreshListeners() =>

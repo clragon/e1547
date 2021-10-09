@@ -28,11 +28,11 @@ class PostsPage extends StatefulWidget {
 
 class _PostsPageState extends State<PostsPage> with LinkingMixin {
   ScrollController scrollController = ScrollController();
-  Set<Post> selections = Set();
+  Set<Post> selections = {};
 
   void updatePage() {
     WidgetsBinding.instance!.addPostFrameCallback((_) {
-      if (this.mounted) {
+      if (mounted) {
         setState(() {
           if (widget.controller.itemList?.isEmpty ?? true) {
             selections.clear();
@@ -168,7 +168,7 @@ class _PostsPageState extends State<PostsPage> with LinkingMixin {
               return Padding(
                 padding: EdgeInsets.symmetric(horizontal: 4),
                 child: LikeButton(
-                  isLiked: selections.length > 0 &&
+                  isLiked: selections.isNotEmpty &&
                       selections.every((post) => post.isFavorited),
                   circleColor: CircleColor(start: Colors.pink, end: Colors.red),
                   bubblesColor: BubblesColor(

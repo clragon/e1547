@@ -74,7 +74,7 @@ class _FollowsSplitPageState extends State<FollowsSplitPage> with LinkingMixin {
             isError: false,
             isLoading: false,
             isBuilt: true,
-            isEmpty: follows.length == 0,
+            isEmpty: follows.isEmpty,
             refreshController: refreshController,
             refreshHeader: ValueListenableBuilder(
               valueListenable: followUpdater.progress,

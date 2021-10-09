@@ -25,7 +25,7 @@ class FrameController extends ChangeNotifier {
     frameToggler?.cancel();
     void toggle() {
       visible = shown ?? !visible;
-      this.notifyListeners();
+      notifyListeners();
       onToggle?.call(visible);
     }
 
@@ -52,7 +52,7 @@ class PostFullscreenFrame extends StatefulWidget {
   final Widget child;
   final FrameController? controller;
 
-  PostFullscreenFrame({
+  const PostFullscreenFrame({
     required this.child,
     required this.post,
     this.controller,

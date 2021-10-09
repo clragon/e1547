@@ -5,10 +5,11 @@ import 'package:flutter/material.dart';
 
 class PoolController extends DataController<Pool>
     with SearchableController, HostableController, RefreshableController {
+  @override
   late ValueNotifier<String> search;
 
   PoolController({String? search})
-      : this.search = ValueNotifier<String>(search ?? '');
+      : search = ValueNotifier<String>(search ?? '');
 
   @override
   Future<List<Pool>> provide(int page) => client.pools(search.value, page);

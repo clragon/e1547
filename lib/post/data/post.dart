@@ -26,11 +26,11 @@ class Post extends PostData with ChangeNotifier {
     switch (file.ext) {
       case 'mp4':
       case 'webm':
-        return PostType.Video;
+        return PostType.video;
       case 'swf':
-        return PostType.Unsupported;
+        return PostType.unsupported;
       default:
-        return PostType.Image;
+        return PostType.image;
     }
   }
 
@@ -43,7 +43,7 @@ class Post extends PostData with ChangeNotifier {
   }
 
   Future<void> initVideo() async {
-    if (type == PostType.Video && file.url != null) {
+    if (type == PostType.video && file.url != null) {
       if (controller != null) {
         await controller!.pause();
         controller!.removeListener(wakelock);
@@ -56,7 +56,7 @@ class Post extends PostData with ChangeNotifier {
   }
 
   Future<void> loadVideo() async {
-    if (type != PostType.Video || loadedVideos.contains(this)) {
+    if (type != PostType.video || loadedVideos.contains(this)) {
       return;
     }
 
@@ -74,7 +74,7 @@ class Post extends PostData with ChangeNotifier {
     }
 
     loadedVideos.add(this);
-    await this.controller!.initialize();
+    await controller!.initialize();
   }
 
   Future<void> disposeVideo() async {
@@ -95,7 +95,7 @@ class Post extends PostData with ChangeNotifier {
   }
 
   Post.fromMap(this.json) : super.fromMap(json as Map<String, dynamic>) {
-    if (type == PostType.Video && Platform.isIOS) {
+    if (type == PostType.video && Platform.isIOS) {
       file.ext = 'mp4';
       file.url = file.url!.replaceAll('.webm', '.mp4');
     }
@@ -121,7 +121,7 @@ enum VoteStatus {
 }
 
 enum PostType {
-  Image,
-  Video,
-  Unsupported,
+  image,
+  video,
+  unsupported,
 }

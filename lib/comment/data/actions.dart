@@ -37,7 +37,7 @@ Future<bool> writeComment(
     MaterialPageRoute(
       builder: (context) => TextEditor(
         title: '#${post.id} comment',
-        content: text ?? (comment != null ? comment.body : null),
+        content: text ?? (comment?.body),
         validator: (context, text) async {
           if (text.isNotEmpty) {
             try {

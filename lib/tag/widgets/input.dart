@@ -15,7 +15,7 @@ class TagInput extends StatefulWidget {
   final bool multiInput;
   final int? category;
 
-  TagInput({
+  const TagInput({
     required this.labelText,
     required this.submit,
     required this.controller,
@@ -152,7 +152,7 @@ class AdvancedTagInput extends StatefulWidget {
   final SubmitString submit;
   final String? labelText;
 
-  AdvancedTagInput({
+  const AdvancedTagInput({
     required this.submit,
     required this.controller,
     this.labelText,

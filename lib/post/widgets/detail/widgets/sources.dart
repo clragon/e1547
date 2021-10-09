@@ -7,7 +7,7 @@ import 'package:url_launcher/url_launcher.dart';
 class SourceDisplay extends StatelessWidget {
   final Post post;
 
-  SourceDisplay({required this.post});
+  const SourceDisplay({required this.post});
 
   @override
   Widget build(BuildContext context) {

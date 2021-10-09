@@ -74,19 +74,19 @@ class PostData {
     sources = List<String>.from(json["sources"].map((x) => x));
     pools = List<int>.from(json["pools"].map((x) => x));
     relationships = Relationships.fromMap(json["relationships"]);
-    approverId = json["approver_id"] == null ? null : json["approver_id"];
+    approverId = json["approver_id"];
     uploaderId = json["uploader_id"];
     description = json["description"];
     commentCount = json["comment_count"];
     isFavorited = json["is_favorited"];
     hasNotes = json["has_notes"];
-    duration = json["duration"] == null ? null : json["duration"].toDouble();
+    duration = json["duration"]?.toDouble();
   }
 
   Map<String, dynamic> toMap() => {
         "id": id,
         "created_at": createdAt.toIso8601String(),
-        "updated_at": updatedAt == null ? null : updatedAt!.toIso8601String(),
+        "updated_at": updatedAt?.toIso8601String(),
         "file": file.toMap(),
         "preview": preview.toMap(),
         "sample": sample.toMap(),
@@ -100,13 +100,13 @@ class PostData {
         "sources": List<dynamic>.from(sources.map((x) => x)),
         "pools": List<dynamic>.from(pools.map((x) => x)),
         "relationships": relationships.toMap(),
-        "approver_id": approverId == null ? null : approverId,
+        "approver_id": approverId,
         "uploader_id": uploaderId,
         "description": description,
         "comment_count": commentCount,
         "is_favorited": isFavorited,
         "has_notes": hasNotes,
-        "duration": duration == null ? null : duration,
+        "duration": duration,
       };
 }
 
@@ -133,8 +133,11 @@ class PostPreviewFile implements PostFile {
     this.url,
   });
 
+  @override
   int width;
+  @override
   int height;
+  @override
   String? url;
 
   factory PostPreviewFile.fromJson(String str) =>
@@ -146,8 +149,10 @@ class PostPreviewFile implements PostFile {
         url: json["url"],
       );
 
+  @override
   String toJson() => json.encode(toMap());
 
+  @override
   Map<String, dynamic> toMap() => {
         "width": width,
         "height": height,
@@ -165,16 +170,20 @@ class PostSourceFile implements PostFile {
     this.url,
   });
 
+  @override
   int width;
+  @override
   int height;
   String ext;
   int size;
   String md5;
+  @override
   String? url;
 
   factory PostSourceFile.fromJson(String str) =>
       PostSourceFile.fromMap(json.decode(str));
 
+  @override
   String toJson() => json.encode(toMap());
 
   factory PostSourceFile.fromMap(Map<String, dynamic> json) => PostSourceFile(
@@ -186,6 +195,7 @@ class PostSourceFile implements PostFile {
         url: json["url"],
       );
 
+  @override
   Map<String, dynamic> toMap() => {
         "width": width,
         "height": height,
@@ -205,13 +215,17 @@ class PostSampleFile implements PostFile {
   });
 
   bool has;
+  @override
   int height;
+  @override
   int width;
+  @override
   String? url;
 
   factory PostSampleFile.fromJson(String str) =>
       PostSampleFile.fromMap(json.decode(str));
 
+  @override
   String toJson() => json.encode(toMap());
 
   factory PostSampleFile.fromMap(Map<String, dynamic> json) => PostSampleFile(
@@ -221,6 +235,7 @@ class PostSampleFile implements PostFile {
         url: json["url"],
       );
 
+  @override
   Map<String, dynamic> toMap() => {
         "has": has,
         "height": height,
@@ -292,14 +307,14 @@ class Relationships {
   String toJson() => json.encode(toMap());
 
   factory Relationships.fromMap(Map<String, dynamic> json) => Relationships(
-        parentId: json["parent_id"] == null ? null : json["parent_id"],
+        parentId: json["parent_id"],
         hasChildren: json["has_children"],
         hasActiveChildren: json["has_active_children"],
         children: List<int>.from(json["children"].map((x) => x)),
       );
 
   Map<String, dynamic> toMap() => {
-        "parent_id": parentId == null ? null : parentId,
+        "parent_id": parentId,
         "has_children": hasChildren,
         "has_active_children": hasActiveChildren,
         "children": List<dynamic>.from(children.map((x) => x)),
@@ -341,9 +356,7 @@ class EnumValues<T> {
   EnumValues(this.map);
 
   Map<T, String>? get reverse {
-    if (reverseMap == null) {
-      reverseMap = map.map((k, v) => new MapEntry(v, k));
-    }
+    reverseMap ??= map.map((k, v) => MapEntry(v, k));
     return reverseMap;
   }
 }

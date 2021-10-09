@@ -10,7 +10,7 @@ class TagCard extends StatelessWidget {
   final VoidCallback? onRemove;
   final PostController? controller;
 
-  TagCard({
+  const TagCard({
     required this.tag,
     required this.category,
     required this.controller,
@@ -71,7 +71,7 @@ class TagCounterCard extends StatelessWidget {
   final String category;
   final PostController controller;
 
-  TagCounterCard({
+  const TagCounterCard({
     required this.tag,
     required this.category,
     required this.controller,

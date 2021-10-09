@@ -13,7 +13,7 @@ class WikiBody extends StatefulWidget {
   final String tag;
   final PostController? controller;
 
-  WikiBody({required this.tag, this.controller});
+  const WikiBody({required this.tag, this.controller});
 
   @override
   _WikiBodyState createState() => _WikiBodyState();

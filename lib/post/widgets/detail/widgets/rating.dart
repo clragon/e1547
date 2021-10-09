@@ -17,7 +17,7 @@ Map<Rating, String> ratingTexts = {
 class RatingDisplay extends StatelessWidget {
   final Post post;
 
-  RatingDisplay({required this.post});
+  const RatingDisplay({required this.post});
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +70,7 @@ class RatingDisplay extends StatelessWidget {
 class RatingDialog extends StatelessWidget {
   final Function(Rating rating) onTap;
 
-  RatingDialog({required this.onTap});
+  const RatingDialog({required this.onTap});
 
   @override
   Widget build(BuildContext context) {

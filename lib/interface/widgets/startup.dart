@@ -3,7 +3,7 @@ import 'package:e1547/user/user.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
-final List<Function(BuildContext context)> actions = [
+final List<void Function(BuildContext context)> actions = [
   initAvatar,
   (_) => followUpdater.update(),
   (_) => initializeDateFormatting(),
@@ -22,7 +22,9 @@ class _StartupActionsState extends State<StartupActions> {
   @override
   void initState() {
     super.initState();
-    actions.forEach((element) => element(context));
+    for (void Function(BuildContext context) element in actions) {
+      element(context);
+    }
   }
 
   @override

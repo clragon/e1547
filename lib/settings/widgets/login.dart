@@ -272,7 +272,7 @@ class LoginProgressDialog extends StatefulWidget {
   final String? apiKey;
   final Function(bool value) onResult;
 
-  LoginProgressDialog({
+  const LoginProgressDialog({
     required this.username,
     required this.apiKey,
     required this.onResult,
@@ -300,7 +300,7 @@ class _LoginProgressDialogState extends State<LoginProgressDialog> {
         child: Row(children: [
           Padding(
             padding: EdgeInsets.all(4),
-            child: Container(
+            child: SizedBox(
               height: 28,
               width: 28,
               child: CircularProgressIndicator(),

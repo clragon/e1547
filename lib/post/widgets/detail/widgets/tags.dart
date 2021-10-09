@@ -10,7 +10,7 @@ class TagDisplay extends StatelessWidget {
   final Future<bool> Function(String value, String category) submit;
   final SheetActionController controller;
 
-  TagDisplay({
+  const TagDisplay({
     required this.post,
     required this.provider,
     required this.submit,

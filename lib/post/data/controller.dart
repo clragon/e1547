@@ -16,6 +16,7 @@ class PostController extends DataController<Post>
   ValueNotifier<List<String>> allowed = ValueNotifier([]);
   Map<String, List<Post>> denied = {};
   late ValueNotifier<bool> denying;
+  @override
   late ValueNotifier<String> search;
   List<Post>? posts;
   bool canSearch;
@@ -27,10 +28,11 @@ class PostController extends DataController<Post>
     bool denying = true,
     this.canSearch = true,
     this.canDeny = true,
-  }) : this.search = ValueNotifier(sortTags(search ?? '')) {
+  }) : search = ValueNotifier(sortTags(search ?? '')) {
     this.denying = ValueNotifier(denying);
-    [allowed, this.denying, settings.denylist]
-        .forEach((element) => element.addListener(reapplyFilter));
+    for (var element in [allowed, this.denying, settings.denylist]) {
+      element.addListener(reapplyFilter);
+    }
   }
 
   Future<List<Post>> filter(List<Post> items) async {
@@ -88,20 +90,25 @@ class PostController extends DataController<Post>
   }
 
   @override
-  void disposeItems(List<Post> posts) async {
+  void disposeItems(List<Post> items) async {
     if (itemList != null) {
-      itemList!.forEach((post) => post.dispose());
+      for (var post in itemList!) {
+        post.dispose();
+      }
     }
   }
 
   @override
   void dispose() {
-    [allowed, denying, settings.denylist]
-        .forEach((element) => element.removeListener(reapplyFilter));
-    [
+    for (var element in [allowed, denying, settings.denylist]) {
+      element.removeListener(reapplyFilter);
+    }
+    for (var element in [
       allowed,
       denying,
-    ].forEach((element) => element.dispose());
+    ]) {
+      element.dispose();
+    }
     super.dispose();
   }
 }

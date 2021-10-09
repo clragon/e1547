@@ -13,7 +13,7 @@ class RangeDialog extends StatefulWidget {
   final bool strict;
   final Function(int? value) onSubmit;
 
-  RangeDialog({
+  const RangeDialog({
     required this.title,
     required this.onSubmit,
     this.min = 0,

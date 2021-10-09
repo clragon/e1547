@@ -9,8 +9,8 @@ int notZero(double value) => value < 1 ? 1 : value.round();
 class LowercaseTextInputFormatter extends TextInputFormatter {
   @override
   TextEditingValue formatEditUpdate(
-      TextEditingValue prev, TextEditingValue current) {
-    return current.copyWith(text: current.text.toLowerCase());
+      TextEditingValue oldValue, TextEditingValue newValue) {
+    return newValue.copyWith(text: newValue.text.toLowerCase());
   }
 }
 
@@ -24,6 +24,6 @@ void setFocusToEnd(TextEditingController controller) {
 DateFormat getCurrentDateFormat() =>
     DateFormat.yMd(Platform.localeName).add_jm();
 
-extension trimming on List<String> {
+extension Trimming on List<String> {
   List<String> trim() => map((e) => e.trim()).toList();
 }

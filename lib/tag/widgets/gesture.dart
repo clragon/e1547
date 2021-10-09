@@ -19,8 +19,8 @@ class TagGesture extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    VoidCallback sheet =
-        () => wikiSheet(context: context, tag: tag, controller: controller);
+    void sheet() =>
+        wikiSheet(context: context, tag: tag, controller: controller);
 
     return InkWell(
       onTap: () async {

@@ -64,10 +64,10 @@ class Pool {
       };
 }
 
-enum Category { SERIES, COLLECTION }
+enum Category { series, collection }
 
 final categoryValues =
-    EnumValues({"collection": Category.COLLECTION, "series": Category.SERIES});
+    EnumValues({"collection": Category.collection, "series": Category.series});
 
 class EnumValues<T> {
   Map<String, T> map;
@@ -76,9 +76,7 @@ class EnumValues<T> {
   EnumValues(this.map);
 
   Map<T, String>? get reverse {
-    if (reverseMap == null) {
-      reverseMap = map.map((k, v) => new MapEntry(v, k));
-    }
+    reverseMap ??= map.map((k, v) => MapEntry(v, k));
     return reverseMap;
   }
 }

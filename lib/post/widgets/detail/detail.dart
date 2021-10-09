@@ -12,7 +12,7 @@ class PostDetail extends StatefulWidget {
   final PostController? controller;
   final Function(int index)? onPageChanged;
 
-  PostDetail({required this.post, this.controller, this.onPageChanged});
+  const PostDetail({required this.post, this.controller, this.onPageChanged});
 
   @override
   State<StatefulWidget> createState() {
@@ -50,7 +50,7 @@ class _PostDetailState extends State<PostDetail> with LinkingMixin, RouteAware {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (widget.post.type == PostType.Video) {
+    if (widget.post.type == PostType.video) {
       routeObserver.subscribe(this, ModalRoute.of(context) as PageRoute);
     }
     navigator = Navigator.of(context);
@@ -60,18 +60,18 @@ class _PostDetailState extends State<PostDetail> with LinkingMixin, RouteAware {
   @override
   void reassemble() {
     super.reassemble();
-    if (widget.post.type == PostType.Video) {
+    if (widget.post.type == PostType.video) {
       routeObserver.unsubscribe(this);
       routeObserver.subscribe(this, ModalRoute.of(context) as PageRoute);
     }
-    if (widget.post.type == PostType.Image && widget.post.file.url != null) {
+    if (widget.post.type == PostType.image && widget.post.file.url != null) {
       preloadImage(context: context, post: widget.post, size: ImageSize.file);
     }
   }
 
   @override
   void dispose() {
-    if (widget.post.type == PostType.Video) {
+    if (widget.post.type == PostType.video) {
       routeObserver.unsubscribe(this);
     }
     if (widget.post.isEditing) {

@@ -36,9 +36,9 @@ class PostFullscreenImageDisplay extends StatelessWidget {
       post: post,
       builder: (post) {
         switch (post.type) {
-          case PostType.Image:
+          case PostType.image:
             return PostFullscreenImage(post);
-          case PostType.Video:
+          case PostType.video:
             return Center(
               child: Hero(
                 tag: post.hero,
@@ -51,7 +51,7 @@ class PostFullscreenImageDisplay extends StatelessWidget {
                 ),
               ),
             );
-          case PostType.Unsupported:
+          case PostType.unsupported:
           default:
             // this never occurs, it is caught by ImageOverlay
             return SizedBox.shrink();
