@@ -17,6 +17,15 @@ class _TopicsPageState extends State<TopicsPage> {
   Widget build(BuildContext context) {
     return RefreshableControllerPage(
       appBar: AppBar(title: Text('Topics')),
+      floatingActionButton: SheetFloatingActionButton(
+        actionIcon: Icons.search,
+        builder: (context, actionController) => SheetTextField(
+          labelText: 'Topic title',
+          actionController: actionController,
+          textController: TextEditingController(text: controller.search.value),
+          submit: (value) => controller.search.value = value,
+        ),
+      ),
       drawer: NavigationDrawer(),
       controller: controller,
       builder: (context) {
