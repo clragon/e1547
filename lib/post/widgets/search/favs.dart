@@ -46,7 +46,7 @@ class _FavPageState extends State<FavPage> with LinkingMixin {
         controller?.removeListener(updateSwitch);
         controller = PostController(
           provider: (tags, page) =>
-              client.posts(tags, page, orderFavorites: orderFavorites),
+              client.posts(page, search: tags, orderFavorites: orderFavorites),
           search: 'fav:$username',
           canDeny: false,
         );

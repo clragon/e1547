@@ -74,7 +74,8 @@ extension Refreshing on Follow {
 
   Future<bool> refresh() async {
     try {
-      List<Post> posts = await client.postsRaw(tags, 1, limit: checkAmount);
+      List<Post> posts =
+          await client.postsRaw(1, search: tags, limit: checkAmount);
 
       List<String> denylist = settings.denylist.value;
 

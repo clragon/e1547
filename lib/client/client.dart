@@ -145,12 +145,12 @@ class Client {
     return posts;
   }
 
-  Future<List<Post>> postsRaw(String? tags, int page, {int? limit}) async {
+  Future<List<Post>> postsRaw(int page, {String? search, int? limit}) async {
     await initialized;
     Map body = await dio.get(
       'posts.json',
       queryParameters: {
-        'tags': sortTags(tags!),
+        'tags': sortTags(search!),
         'page': page,
         'limit': limit,
       },
@@ -159,8 +159,13 @@ class Client {
     return postsFromJson(body['posts']);
   }
 
-  Future<List<Post>> posts(String? tags, int page,
-      {int? limit, bool? reversePools, bool? orderFavorites}) async {
+  Future<List<Post>> posts(
+    int page, {
+    String? search,
+    int? limit,
+    bool? reversePools,
+    bool? orderFavorites,
+  }) async {
     await initialized;
     String? username;
 
@@ -181,13 +186,13 @@ class Client {
         RegExp,
         Future<List<Post>> Function(
             RegExpMatch match, String? result)> entry in regexes.entries) {
-      RegExpMatch? match = entry.key.firstMatch(tags!.trim());
+      RegExpMatch? match = entry.key.firstMatch(search!.trim());
       if (match != null) {
-        return entry.value(match, tags);
+        return entry.value(match, search);
       }
     }
 
-    return postsRaw(tags, page, limit: limit);
+    return postsRaw(page, search: search, limit: limit);
   }
 
   Future<List<Post>> favorites(int page, {int? limit}) async {
@@ -238,9 +243,9 @@ class Client {
     );
   }
 
-  Future<List<Pool>> pools(String title, int page) async {
+  Future<List<Pool>> pools(int page, {String? search}) async {
     List body = await dio.get('pools.json', queryParameters: {
-      'search[name_matches]': title,
+      'search[name_matches]': search,
       'page': page,
     }).then((response) => response.data);
 
@@ -278,7 +283,7 @@ class Client {
     List<int> pageIds = ids.sublist(lower, upper);
     String filter = 'id:${pageIds.join(',')}';
 
-    List<Post> posts = await client.posts(filter, 1);
+    List<Post> posts = await client.posts(1, search: filter);
     Map<int, Post> table = {for (Post e in posts) e.id: e};
     posts = (pageIds.map((e) => table[e]).toList()
           ..removeWhere((e) => e == null))
@@ -333,7 +338,8 @@ class Client {
       int tagPage = getTagPage(i);
       int end = (length > tagPage * max) ? tagPage * max : length;
       List<String?> tagSet = tags.sublist((tagPage - 1) * max, end);
-      posts.addAll(await client.posts('~${tagSet.join(' ~')}', getSitePage(i)));
+      posts.addAll(
+          await client.posts(getSitePage(i), search: '~${tagSet.join(' ~')}'));
     }
     posts.sort((one, two) => two.id.compareTo(one.id));
     if (posts.isEmpty && attempt < (approx / batches) - 1) {
@@ -451,7 +457,7 @@ class Client {
     }
   }
 
-  Future<List<Wiki>> wiki(String search, int page) async {
+  Future<List<Wiki>> wiki(int page, {String? search}) async {
     await initialized;
     List body = await dio.get('wiki_pages.json', queryParameters: {
       'search[title]': search,
@@ -547,7 +553,7 @@ class Client {
     return comments;
   }
 
-  Future<void> postComment(String text, Post post, {Comment? comment}) async {
+  Future<void> postComment(Post post, String text, {Comment? comment}) async {
     if (!await hasLogin) {
       return;
     }
@@ -565,9 +571,10 @@ class Client {
     await request;
   }
 
-  Future<List<Topic>> topics(int page) async {
+  Future<List<Topic>> topics(int page, {String? search}) async {
     var body = await dio.get('forum_topics.json', queryParameters: {
       'page': page,
+      'search[title_matches]': search,
     }).then((response) => response.data);
 
     List<Topic> threads = [];

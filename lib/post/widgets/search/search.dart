@@ -21,8 +21,8 @@ class _SearchPageState extends State<SearchPage> with LinkingMixin {
   late PostController controller = PostController(
     search: widget.tags,
     provider: (tags, page) => client.posts(
-      tags,
       page,
+      search: tags,
       reversePools: reversePools,
     ),
   );

@@ -41,11 +41,7 @@ Future<bool> writeComment(
         validator: (context, text) async {
           if (text.isNotEmpty) {
             try {
-              if (comment != null) {
-                await client.postComment(text, post, comment: comment);
-              } else {
-                await client.postComment(text, post);
-              }
+              await client.postComment(post, text, comment: comment);
               sent = true;
               return true;
             } on DioError {
