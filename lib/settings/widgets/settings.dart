@@ -1,8 +1,4 @@
-import 'dart:async' show Future;
-
-import 'package:dio/dio.dart';
 import 'package:e1547/client/client.dart';
-import 'package:e1547/dtext/dtext.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/settings/settings.dart';
@@ -19,34 +15,6 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  Future<void> logout() async {
-    String? name = settings.credentials.value?.username;
-    await client.logout();
-
-    String msg = 'Forgot login details';
-    if (name != null) {
-      msg = msg + ' for $name';
-    }
-
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      duration: Duration(seconds: 1),
-      content: Text(msg),
-    ));
-  }
-
-  Widget settingsHeader(String title) {
-    return Padding(
-      padding: EdgeInsets.only(left: 72, bottom: 8, top: 8, right: 16),
-      child: Text(
-        title,
-        style: TextStyle(
-          color: Theme.of(context).colorScheme.secondary,
-          fontSize: 16,
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -58,7 +26,7 @@ class _SettingsPageState extends State<SettingsPage> {
         padding: EdgeInsets.all(10.0),
         physics: BouncingScrollPhysics(),
         children: [
-          settingsHeader('Server'),
+          SettingsHeader(title: 'Server'),
           GestureDetector(
             behavior: HitTestBehavior.translucent,
             onLongPress: () => setCustomHost(context),
@@ -108,11 +76,11 @@ class _SettingsPageState extends State<SettingsPage> {
                       child: IgnorePointer(
                         child: IconButton(
                           icon: Icon(Icons.exit_to_app),
-                          onPressed: logout,
+                          onPressed: () => logout(context),
                         ),
                       ),
                     ),
-                    onTapSeparated: logout,
+                    onTapSeparated: () => logout(context),
                   ),
                   secondChild: ListTile(
                     title: Text('Login'),
@@ -124,7 +92,7 @@ class _SettingsPageState extends State<SettingsPage> {
             },
           ),
           Divider(),
-          settingsHeader('Display'),
+          SettingsHeader(title: 'Display'),
           ValueListenableBuilder<AppTheme>(
             valueListenable: settings.theme,
             builder: (context, value, child) => ListTile(
@@ -184,23 +152,6 @@ class _SettingsPageState extends State<SettingsPage> {
                 expanded: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    ValueListenableBuilder<bool>(
-                      valueListenable: settings.beta,
-                      builder: (context, value, child) => SafeCrossFade(
-                        showChild: value,
-                        builder: (context) => ValueListenableBuilder<bool>(
-                          valueListenable: settings.postInfo,
-                          builder: (context, value, child) => SwitchListTile(
-                            title: Text('Post info'),
-                            subtitle: Text(value ? 'shown' : 'hidden'),
-                            secondary: Icon(Icons.subtitles),
-                            value: value,
-                            onChanged: (value) =>
-                                settings.postInfo.value = value,
-                          ),
-                        ),
-                      ),
-                    ),
                     ValueListenableBuilder<int>(
                       valueListenable: settings.tileSize,
                       builder: (context, value, child) => ListTile(
@@ -241,7 +192,7 @@ class _SettingsPageState extends State<SettingsPage> {
             ),
           ),
           Divider(),
-          settingsHeader('Listing'),
+          SettingsHeader(title: 'Listing'),
           ValueListenableBuilder<List<String>>(
             valueListenable: settings.denylist,
             builder: (context, value, child) => ListTile(
@@ -267,80 +218,18 @@ class _SettingsPageState extends State<SettingsPage> {
             ),
           ),
           Divider(),
-          settingsHeader('Beta'),
-          ValueListenableBuilder<bool>(
-            valueListenable: settings.beta,
-            builder: (context, value, child) => SwitchListTile(
-              title: Text('Experimental features'),
-              subtitle: Text(value ? 'preview enabled' : 'preview disabled'),
-              secondary: Icon(Icons.auto_awesome),
-              value: value,
-              onChanged: (value) {
-                settings.beta.value = value;
-                if (!value) {
-                  settings.postInfo.value = false;
-                }
-              },
+          SettingsHeader(title: 'Other'),
+          ListTile(
+            leading: Icon(Icons.tune),
+            title: Text('Advanced settings'),
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => AdvancedSettingsPage(),
+              ),
             ),
-          ),
+          )
         ],
       ),
     );
   }
-}
-
-Future<void> setCustomHost(BuildContext context) async {
-  TextEditingController controller =
-      TextEditingController(text: settings.customHost.value);
-
-  Future<void> submit() async {
-    String? error;
-
-    String host = linkToDisplay(controller.text);
-
-    Dio dio = Dio(defaultDioOptions);
-
-    if (host.isEmpty) {
-      settings.customHost.value = null;
-    } else {
-      await Future.delayed(Duration(seconds: 1));
-      try {
-        await dio.get('https://$host');
-        switch (host) {
-          case 'e621.net':
-            settings.customHost.value = host;
-            error = null;
-            break;
-          case 'e926.net':
-            error = 'default host cannot be custom host';
-            break;
-          default:
-            error = 'Host API incompatible';
-            break;
-        }
-      } on DioError {
-        error = 'Cannot reach host';
-      }
-    }
-
-    if (error != null) {
-      throw LoadingDialogException(message: error);
-    }
-  }
-
-  await showDialog(
-    context: context,
-    builder: (BuildContext context) => LoadingDialog(
-      submit: submit,
-      title: Text('Custom Host'),
-      builder: (context, submit) => TextField(
-        controller: controller,
-        keyboardType: TextInputType.url,
-        autofocus: true,
-        maxLines: 1,
-        decoration: InputDecoration(labelText: 'url'),
-        onSubmitted: (_) => submit(),
-      ),
-    ),
-  );
 }

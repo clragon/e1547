@@ -315,3 +315,18 @@ class _LoginProgressDialogState extends State<LoginProgressDialog> {
     );
   }
 }
+
+Future<void> logout(BuildContext context) async {
+  String? name = settings.credentials.value?.username;
+  await client.logout();
+
+  String msg = 'Forgot login details';
+  if (name != null) {
+    msg = msg + ' for $name';
+  }
+
+  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+    duration: Duration(seconds: 1),
+    content: Text(msg),
+  ));
+}
