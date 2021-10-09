@@ -79,7 +79,7 @@ class _VideoButtonState extends State<VideoButton>
                         progress: animationController,
                         size: widget.size,
                       ),
-                      secondChild: Container(
+                      secondChild: SizedBox(
                         height: widget.size * 0.7,
                         width: widget.size * 0.7,
                         child: Padding(

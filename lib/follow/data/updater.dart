@@ -10,8 +10,10 @@ late final FollowUpdater followUpdater = FollowUpdater(settings.follows);
 
 class FollowUpdater extends DataUpdater<List<Follow>>
     with HostableUpdater, EditableUpdater {
+  @override
   Duration get stale => Duration(hours: 4);
 
+  @override
   ValueNotifier<List<Follow>> source;
 
   FollowUpdater(this.source);

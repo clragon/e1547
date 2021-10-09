@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 class TagListActions extends StatefulWidget {
   final String tag;
 
-  TagListActions({required this.tag});
+  const TagListActions({required this.tag});
 
   @override
   State<StatefulWidget> createState() {
@@ -37,7 +37,7 @@ class _TagListActionsState extends State<TagListActions> with LinkingMixin {
   @override
   Widget build(BuildContext context) {
     if (follows != null && denylist != null) {
-      bool following = follows!.contains(widget.tag);
+      bool following = follows!.any((element) => element.tags == widget.tag);
       bool denied = denylist!.contains(widget.tag);
       return Row(
         mainAxisSize: MainAxisSize.min,
@@ -78,7 +78,8 @@ class _TagListActionsState extends State<TagListActions> with LinkingMixin {
                 } else {
                   denylist!.add(widget.tag);
                   if (following) {
-                    follows!.remove(widget.tag);
+                    follows!
+                        .removeWhere((element) => element.tags == widget.tag);
                     settings.follows.value = follows!;
                   }
                 }
@@ -177,7 +178,7 @@ class TagSearchActions extends StatelessWidget {
   final String tag;
   final PostController controller;
 
-  TagSearchActions({required this.tag, required this.controller});
+  const TagSearchActions({required this.tag, required this.controller});
 
   @override
   Widget build(BuildContext context) {

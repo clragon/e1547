@@ -42,7 +42,7 @@ class WikiSheet extends StatelessWidget {
   final String tag;
   final PostController? controller;
 
-  WikiSheet({required this.tag, this.controller});
+  const WikiSheet({required this.tag, this.controller});
 
   @override
   Widget build(BuildContext context) {

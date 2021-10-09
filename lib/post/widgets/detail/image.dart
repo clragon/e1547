@@ -156,7 +156,7 @@ class PostDetailImageOverlay extends StatelessWidget {
     VoidCallback? onTap;
 
     if (post.file.url != null && post.isVisible) {
-      onTap = post.type == PostType.Unsupported
+      onTap = post.type == PostType.unsupported
           ? () => launch(post.file.url!)
           : onOpen;
     }
@@ -166,7 +166,7 @@ class PostDetailImageOverlay extends StatelessWidget {
       animation: Listenable.merge([post.controller]),
       builder: (context, child) {
         Widget fullscreenButton() {
-          if (post.type == PostType.Video && onTap != null) {
+          if (post.type == PostType.video && onTap != null) {
             return CrossFade(
               showChild: post.file.url != null && post.isVisible,
               child: Card(
@@ -193,7 +193,7 @@ class PostDetailImageOverlay extends StatelessWidget {
         return Stack(
           children: [
             InkWell(
-              onTap: post.type == PostType.Video
+              onTap: post.type == PostType.video
                   ? () => post.controller!.value.isPlaying
                       ? post.controller!.pause()
                       : post.controller!.play()
@@ -247,7 +247,7 @@ class PostDetailImageDisplay extends StatelessWidget {
               builder: (context) => Center(
                 child: Hero(
                   tag: post.hero,
-                  child: post.type == PostType.Video
+                  child: post.type == PostType.video
                       ? PostDetailVideo(post: post)
                       : PostDetailImage(post: post),
                 ),

@@ -6,7 +6,7 @@ class ImageOverlay extends StatelessWidget {
   final Post post;
   final Widget Function(Post post) builder;
 
-  ImageOverlay({required this.post, required this.builder});
+  const ImageOverlay({required this.post, required this.builder});
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +29,7 @@ class ImageOverlay extends StatelessWidget {
       return centerText('Post is blacklisted');
     }
 
-    if (post.type == PostType.Unsupported) {
+    if (post.type == PostType.unsupported) {
       return Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [

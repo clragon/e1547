@@ -37,7 +37,7 @@ void topicSheet(BuildContext context, Topic topic) {
 class TopicSheet extends StatelessWidget {
   final Topic topic;
 
-  TopicSheet({required this.topic});
+  const TopicSheet({required this.topic});
 
   @override
   Widget build(BuildContext context) {
@@ -84,7 +84,7 @@ class TopicSheet extends StatelessWidget {
 class TopicInfo extends StatelessWidget {
   final Topic topic;
 
-  TopicInfo({required this.topic});
+  const TopicInfo({required this.topic});
 
   @override
   Widget build(BuildContext context) {

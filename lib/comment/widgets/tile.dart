@@ -99,13 +99,9 @@ class CommentTile extends StatelessWidget {
                 ),
                 if (settings.credentials.value!.username == comment.creatorName)
                   Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 8,
-                    ),
+                    padding: EdgeInsets.symmetric(horizontal: 8),
                     child: IconButton(
-                      icon: Icon(
-                        Icons.edit,
-                      ),
+                      icon: Icon(Icons.edit),
                       onPressed: () => editComment(
                           context: context, post: post, comment: comment),
                     ),

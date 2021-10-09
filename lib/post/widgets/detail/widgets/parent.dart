@@ -8,7 +8,7 @@ class ParentDisplay extends StatefulWidget {
   final Post post;
   final SheetActionController controller;
 
-  ParentDisplay({required this.post, required this.controller});
+  const ParentDisplay({required this.post, required this.controller});
 
   @override
   _ParentDisplayState createState() => _ParentDisplayState();
@@ -135,7 +135,7 @@ class ParentEditor extends StatefulWidget {
   final Post post;
   final ActionController? controller;
 
-  ParentEditor({
+  const ParentEditor({
     required this.post,
     this.controller,
   });

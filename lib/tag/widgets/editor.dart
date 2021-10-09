@@ -9,7 +9,7 @@ class TagEditor extends StatefulWidget {
   final Future<bool> Function(String text) submit;
   final ActionController controller;
 
-  TagEditor({
+  const TagEditor({
     required this.post,
     required this.category,
     required this.submit,

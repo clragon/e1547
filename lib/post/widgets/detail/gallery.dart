@@ -9,7 +9,7 @@ class PostDetailGallery extends StatefulWidget {
   final PostController controller;
   final int initialPage;
 
-  PostDetailGallery({required this.controller, this.initialPage = 0});
+  const PostDetailGallery({required this.controller, this.initialPage = 0});
 
   @override
   _PostDetailGalleryState createState() => _PostDetailGalleryState();

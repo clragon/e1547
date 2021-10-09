@@ -11,7 +11,7 @@ import 'package:flutter/material.dart';
 
 class SearchPage extends StatefulWidget {
   final String? tags;
-  SearchPage({this.tags});
+  const SearchPage({this.tags});
 
   @override
   _SearchPageState createState() => _SearchPageState();
@@ -125,7 +125,7 @@ class _SearchPageState extends State<SearchPage> with LinkingMixin {
             children: [
               CrossFade(
                 showChild: !loading &&
-                    Tagset.parse(controller.search.value).length > 0,
+                    Tagset.parse(controller.search.value).isNotEmpty,
                 child: IconButton(
                   icon: Icon(Icons.info_outline),
                   onPressed: pool != null

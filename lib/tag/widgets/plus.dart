@@ -10,7 +10,7 @@ class TagAddCard extends StatefulWidget {
   final Future<bool> Function(String value) submit;
   final SheetActionController controller;
 
-  TagAddCard({
+  const TagAddCard({
     required this.post,
     required this.provider,
     required this.submit,

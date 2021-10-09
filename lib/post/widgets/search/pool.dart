@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 class PoolPage extends StatefulWidget {
   final Pool pool;
 
-  PoolPage({required this.pool});
+  const PoolPage({required this.pool});
 
   @override
   _PoolPageState createState() => _PoolPageState();

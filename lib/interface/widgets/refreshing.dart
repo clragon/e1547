@@ -81,7 +81,7 @@ class RefreshablePageLoader extends StatelessWidget {
     this.drawer,
     this.endDrawer,
     this.floatingActionButton,
-  }) : this.pageBuilder = null;
+  }) : pageBuilder = null;
 
   const RefreshablePageLoader.pageBuilder({
     required this.pageBuilder,
@@ -98,10 +98,10 @@ class RefreshablePageLoader extends StatelessWidget {
     this.onLoading,
     this.onEmpty,
     this.onError,
-  })  : this.appBar = null,
-        this.drawer = null,
-        this.endDrawer = null,
-        this.floatingActionButton = null;
+  })  : appBar = null,
+        drawer = null,
+        endDrawer = null,
+        floatingActionButton = null;
 
   @override
   Widget build(BuildContext context) {
@@ -165,7 +165,7 @@ class RefreshablePage extends StatefulWidget {
     this.drawer,
     this.endDrawer,
     this.floatingActionButton,
-  }) : this.pageBuilder = null;
+  }) : pageBuilder = null;
 
   const RefreshablePage.pageBuilder({
     required this.pageBuilder,
@@ -174,10 +174,10 @@ class RefreshablePage extends StatefulWidget {
     this.refreshController,
     this.scrollController,
     this.refreshHeader,
-  })  : this.appBar = null,
-        this.drawer = null,
-        this.endDrawer = null,
-        this.floatingActionButton = null;
+  })  : appBar = null,
+        drawer = null,
+        endDrawer = null,
+        floatingActionButton = null;
 
   @override
   _RefreshablePageState createState() => _RefreshablePageState();
@@ -241,7 +241,7 @@ class PageLoader extends StatelessWidget {
   final bool isError;
   final bool? isBuilt;
 
-  PageLoader({
+  const PageLoader({
     required this.builder,
     this.isError = false,
     this.isLoading = false,

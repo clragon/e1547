@@ -7,12 +7,12 @@ import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:e1547/tag/tag.dart';
 
-extension utility on List<Follow> {
-  List<String> get tags => this.map((e) => e.tags).toList();
+extension Utility on List<Follow> {
+  List<String> get tags => map((e) => e.tags).toList();
 
   void sortByNew() {
     bool isSafe = client.isSafe;
-    this.sort(
+    sort(
       (a, b) {
         int result = 0;
 
@@ -58,7 +58,7 @@ extension utility on List<Follow> {
   List<Follow> editWith(List<String> update) {
     List<Follow> edited = [];
     for (String tags in update) {
-      Follow? match = this.firstWhereOrNull((follow) => follow.tags == tags);
+      Follow? match = firstWhereOrNull((follow) => follow.tags == tags);
       if (match != null) {
         edited.add(match);
       } else {

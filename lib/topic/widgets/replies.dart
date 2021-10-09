@@ -6,7 +6,7 @@ import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 class RepliesPage extends StatefulWidget {
   final Topic topic;
 
-  RepliesPage({required this.topic});
+  const RepliesPage({required this.topic});
 
   @override
   State createState() => _RepliesPageState();

@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 class DescriptionDisplay extends StatelessWidget {
   final Post post;
 
-  DescriptionDisplay({required this.post});
+  const DescriptionDisplay({required this.post});
 
   @override
   Widget build(BuildContext context) {

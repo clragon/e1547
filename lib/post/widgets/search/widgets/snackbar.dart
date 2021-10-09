@@ -29,7 +29,7 @@ class LoadingSnackbar extends StatefulWidget {
   final Function? onDone;
   final Future<bool> Function(Post post) process;
 
-  LoadingSnackbar(
+  const LoadingSnackbar(
       {required this.items, required this.process, this.timeout, this.onDone});
 
   @override

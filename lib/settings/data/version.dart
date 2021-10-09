@@ -35,15 +35,15 @@ class AppVersion extends Comparable<AppVersion> {
 
   @override
   int compareTo(AppVersion other) {
-    int majorDelta = this.major.compareTo(other.major);
+    int majorDelta = major.compareTo(other.major);
     if (majorDelta != 0) {
       return majorDelta;
     }
-    int minorDelta = this.minor.compareTo(other.minor);
+    int minorDelta = minor.compareTo(other.minor);
     if (minorDelta != 0) {
       return minorDelta;
     }
-    int patchDelta = this.patch.compareTo(other.patch);
+    int patchDelta = patch.compareTo(other.patch);
     if (patchDelta != 0) {
       return patchDelta;
     }

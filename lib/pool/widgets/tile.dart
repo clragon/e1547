@@ -7,7 +7,7 @@ class PoolTile extends StatelessWidget {
   final Pool pool;
   final VoidCallback? onPressed;
 
-  PoolTile({
+  const PoolTile({
     required this.pool,
     this.onPressed,
   });
@@ -45,7 +45,7 @@ class PoolTile extends StatelessWidget {
 
     return Card(
       child: InkWell(
-        onTap: this.onPressed,
+        onTap: onPressed,
         onLongPress: () => poolSheet(context, pool),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

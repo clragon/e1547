@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 
 class PopupMenuTile<T> extends PopupMenuItem<T> {
-  final T value;
   final IconData icon;
   final String title;
 
   PopupMenuTile({
-    required this.value,
+    required T value,
     required this.icon,
     required this.title,
   }) : super(
@@ -19,7 +18,7 @@ class MenuTile extends StatelessWidget {
   final IconData icon;
   final String title;
 
-  MenuTile({required this.icon, required this.title});
+  const MenuTile({required this.icon, required this.title});
 
   @override
   Widget build(BuildContext context) {

@@ -10,7 +10,7 @@ class FileDisplay extends StatelessWidget {
   final Post post;
   final PostController? controller;
 
-  FileDisplay({required this.post, this.controller});
+  const FileDisplay({required this.post, this.controller});
 
   @override
   Widget build(BuildContext context) {

@@ -13,7 +13,7 @@ import 'package:permission_handler/permission_handler.dart';
 
 import 'post.dart';
 
-extension tagging on Post {
+extension Tagging on Post {
   bool hasTag(String tag) {
     if (tag.contains(':')) {
       String identifier = tag.split(':')[0];
@@ -25,7 +25,7 @@ extension tagging on Post {
           }
           break;
         case 'id':
-          if (this.id == int.tryParse(value)) {
+          if (id == int.tryParse(value)) {
             return true;
           }
           break;
@@ -35,7 +35,7 @@ extension tagging on Post {
           }
           break;
         case 'pool':
-          if (this.pools.contains(value)) {
+          if (pools.contains(int.tryParse(value))) {
             return true;
           }
           break;
@@ -84,12 +84,12 @@ extension tagging on Post {
   }
 }
 
-extension denying on Post {
+extension Denying on Post {
   Future<bool> isDeniedBy(List<String> denylist) async =>
       await getDenier(denylist) != null;
 
   Future<String?> getDenier(List<String> denylist) async {
-    if (denylist.length > 0) {
+    if (denylist.isNotEmpty) {
       for (String line in denylist) {
         List<String> deny = [];
         List<String> any = [];
@@ -129,7 +129,7 @@ extension denying on Post {
   }
 }
 
-extension downloading on Post {
+extension Downloading on Post {
   Future<bool> download() async {
     try {
       if (!await Permission.storage.request().isGranted) {
@@ -156,9 +156,9 @@ extension downloading on Post {
   }
 }
 
-extension favoriting on Post {
+extension Favoriting on Post {
   Future<bool> tryRemoveFav(BuildContext context) async {
-    if (await client.removeFavorite(this.id)) {
+    if (await client.removeFavorite(id)) {
       isFavorited = false;
       favCount -= 1;
       notifyListeners();
@@ -170,7 +170,7 @@ extension favoriting on Post {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           duration: Duration(seconds: 1),
-          content: Text('Failed to remove Post #${this.id} from favorites'),
+          content: Text('Failed to remove Post #$id from favorites'),
         ),
       );
       return false;
@@ -178,7 +178,7 @@ extension favoriting on Post {
   }
 
   Future<bool> tryAddFav(BuildContext context, {Duration? cooldown}) async {
-    if (await client.addFavorite(this.id)) {
+    if (await client.addFavorite(id)) {
       // cooldown avoids interference with animation
       await Future.delayed(cooldown ?? Duration(milliseconds: 0));
       isFavorited = true;
@@ -192,7 +192,7 @@ extension favoriting on Post {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           duration: Duration(seconds: 1),
-          content: Text('Failed to add Post #${this.id} to favorites'),
+          content: Text('Failed to add Post #$id to favorites'),
         ),
       );
       return false;
@@ -200,13 +200,13 @@ extension favoriting on Post {
   }
 }
 
-extension voting on Post {
+extension Voting on Post {
   Future<void> tryVote(
       {required BuildContext context,
       required bool upvote,
       required bool replace}) async {
-    if (await client.votePost(this.id, upvote, replace)) {
-      if (this.voteStatus == VoteStatus.unknown) {
+    if (await client.votePost(id, upvote, replace)) {
+      if (voteStatus == VoteStatus.unknown) {
         if (upvote) {
           score.total += 1;
           score.up += 1;
@@ -218,18 +218,18 @@ extension voting on Post {
         }
       } else {
         if (upvote) {
-          if (this.voteStatus == VoteStatus.upvoted) {
+          if (voteStatus == VoteStatus.upvoted) {
             score.total -= 1;
             score.down += 1;
             voteStatus = VoteStatus.unknown;
           } else {
-            this.score.total += 2;
+            score.total += 2;
             score.up += 1;
             score.down -= 1;
-            this.voteStatus = VoteStatus.upvoted;
+            voteStatus = VoteStatus.upvoted;
           }
         } else {
-          if (this.voteStatus == VoteStatus.upvoted) {
+          if (voteStatus == VoteStatus.upvoted) {
             score.total -= 2;
             score.up -= 1;
             score.down *= 1;
@@ -245,39 +245,39 @@ extension voting on Post {
     } else {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         duration: Duration(seconds: 1),
-        content: Text('Failed to vote on Post #${this.id}'),
+        content: Text('Failed to vote on Post #$id'),
       ));
     }
   }
 }
 
-extension editing on Post {
+extension Editing on Post {
   Future<void> resetPost({bool online = false}) async {
     Post reset;
     if (!online) {
-      reset = Post.fromMap(this.json);
+      reset = Post.fromMap(json);
     } else {
-      reset = await client.post(this.id);
-      this.json = reset.json;
+      reset = await client.post(id);
+      json = reset.json;
     }
 
-    this.isFavorited = reset.isFavorited;
-    this.favCount = reset.favCount;
-    this.score = reset.score;
-    this.tags = reset.tags;
-    this.description = reset.description;
-    this.sources = reset.sources;
-    this.rating = reset.rating;
-    this.relationships.parentId = reset.relationships.parentId;
-    this.isEditing = false;
+    isFavorited = reset.isFavorited;
+    favCount = reset.favCount;
+    score = reset.score;
+    tags = reset.tags;
+    description = reset.description;
+    sources = reset.sources;
+    rating = reset.rating;
+    relationships.parentId = reset.relationships.parentId;
+    isEditing = false;
     notifyListeners();
   }
 }
 
-extension transitioning on Post {
+extension Transitioning on Post {
   String get hero => 'image_$id';
 }
 
-extension linking on Post {
+extension Linking on Post {
   Uri url(String host) => Uri(scheme: 'https', host: host, path: '/posts/$id');
 }

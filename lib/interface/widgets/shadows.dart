@@ -20,9 +20,9 @@ class ShadowIcon extends StatelessWidget {
 }
 
 List<Shadow> getTextShadows() {
-  final double blur = 5;
-  final double offset = 2;
-  final Color color = Colors.black38;
+  const double blur = 5;
+  const double offset = 2;
+  const Color color = Colors.black38;
 
   return [
     Shadow(

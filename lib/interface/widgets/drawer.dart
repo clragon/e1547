@@ -4,7 +4,7 @@ class ContextDrawer extends StatelessWidget {
   final Widget title;
   final List<Widget> children;
 
-  ContextDrawer({required this.title, required this.children});
+  const ContextDrawer({required this.title, required this.children});
 
   @override
   Widget build(BuildContext context) {

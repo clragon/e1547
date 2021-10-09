@@ -21,7 +21,7 @@ String linkToDisplay(String link) {
   Uri newUrl = Uri(
     host: url.host,
     path: url.path,
-    queryParameters: parameters.length > 0 ? parameters : null,
+    queryParameters: parameters.isNotEmpty ? parameters : null,
   );
   String display = newUrl.toString();
   List<String> removed = [r'^///?', r'^www.', r'/$'];

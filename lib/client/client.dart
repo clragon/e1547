@@ -93,7 +93,7 @@ class Client {
     settings.credentials.value = null;
   }
 
-  Future<void> initializeCurrentUser({bool reset: false}) async {
+  Future<void> initializeCurrentUser({bool reset = false}) async {
     if (reset) {
       _currentUser = null;
       _currentAvatar = null;
@@ -130,7 +130,7 @@ class Client {
 
   Future<List<Post>> postsFromJson(List json) async {
     List<Post> posts = [];
-    bool loggedIn = await this.hasLogin;
+    bool loggedIn = await hasLogin;
     for (Map raw in json) {
       Post post = Post.fromMap(raw);
       post.isLoggedIn = loggedIn;
@@ -279,8 +279,7 @@ class Client {
     String filter = 'id:${pageIds.join(',')}';
 
     List<Post> posts = await client.posts(filter, 1);
-    Map<int, Post> table =
-        Map.fromIterable(posts, key: (e) => e.id, value: (e) => e);
+    Map<int, Post> table = {for (Post e in posts) e.id: e};
     posts = (pageIds.map((e) => table[e]).toList()
           ..removeWhere((e) => e == null))
         .cast<Post>();
@@ -359,7 +358,7 @@ class Client {
 
   Future<void> updatePost(Post update, Post old, {String? editReason}) async {
     if (!await hasLogin) {
-      return null;
+      return;
     }
     Map<String, String?> body = {};
 
@@ -550,7 +549,7 @@ class Client {
 
   Future<void> postComment(String text, Post post, {Comment? comment}) async {
     if (!await hasLogin) {
-      return null;
+      return;
     }
     Map<String, String> body = {
       'comment[body]': text,

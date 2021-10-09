@@ -9,7 +9,7 @@ class ArtistDisplay extends StatelessWidget {
   final Post post;
   final PostController? controller;
 
-  ArtistDisplay({required this.post, required this.controller});
+  const ArtistDisplay({required this.post, required this.controller});
 
   @override
   Widget build(BuildContext context) {

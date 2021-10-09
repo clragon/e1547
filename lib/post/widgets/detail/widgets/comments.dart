@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 class CommentDisplay extends StatelessWidget {
   final Post post;
 
-  CommentDisplay({required this.post});
+  const CommentDisplay({required this.post});
 
   @override
   Widget build(BuildContext context) {

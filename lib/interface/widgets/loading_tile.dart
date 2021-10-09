@@ -7,7 +7,7 @@ class LoadingTile extends StatefulWidget {
   final Widget? trailing;
   final Function onTap;
 
-  LoadingTile({
+  const LoadingTile({
     required this.title,
     required this.onTap,
     this.leading,
@@ -27,7 +27,7 @@ class _LoadingTileState extends State<LoadingTile> {
       leading: widget.leading,
       title: widget.title,
       trailing: CrossFade(
-        child: Container(
+        child: SizedBox(
           child: Padding(
             padding: EdgeInsets.all(2),
             child: CircularProgressIndicator(),

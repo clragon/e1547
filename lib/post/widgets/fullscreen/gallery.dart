@@ -8,7 +8,7 @@ class PostFullscreenGallery extends StatefulWidget {
   final List<Post> posts;
   final Function(int index)? onPageChanged;
 
-  PostFullscreenGallery(
+  const PostFullscreenGallery(
       {this.index = 0, required this.posts, this.onPageChanged});
 
   @override
