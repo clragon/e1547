@@ -574,7 +574,7 @@ class Client {
   Future<List<Topic>> topics(int page, {String? search}) async {
     var body = await dio.get('forum_topics.json', queryParameters: {
       'page': page,
-      'search[title_matches]': search,
+      'search[title_matches]': search?.isNotEmpty ?? false ? search : null,
     }).then((response) => response.data);
 
     List<Topic> threads = [];
