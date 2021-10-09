@@ -12,5 +12,6 @@ class PoolController extends DataController<Pool>
       : search = ValueNotifier<String>(search ?? '');
 
   @override
-  Future<List<Pool>> provide(int page) => client.pools(search.value, page);
+  Future<List<Pool>> provide(int page) =>
+      client.pools(page, search: search.value);
 }

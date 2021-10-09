@@ -75,7 +75,7 @@ class PostController extends DataController<Post>
     if (provider != null) {
       nextPage = await provider!(search.value, page);
     } else {
-      nextPage = await client.posts(search.value, page);
+      nextPage = await client.posts(page, search: search.value);
     }
     posts ??= [];
     posts!.addAll(nextPage);
