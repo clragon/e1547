@@ -25,7 +25,9 @@ class _CurrentUserAvatarState extends State<CurrentUserAvatar>
     with LinkingMixin {
   Future<String?> avatar = client.currentAvatar;
 
-  void updateAvatar() => avatar = client.currentAvatar;
+  void updateAvatar() => setState(() {
+        avatar = client.currentAvatar;
+      });
 
   @override
   Map<ChangeNotifier, VoidCallback> get links => {

@@ -13,6 +13,7 @@ import 'package:e1547/tag/tag.dart';
 import 'package:e1547/topic/topic.dart';
 import 'package:e1547/user/user.dart';
 import 'package:e1547/wiki/wiki.dart';
+import 'package:mutex/mutex.dart';
 
 export 'package:dio/dio.dart' show DioError;
 
@@ -42,6 +43,7 @@ class Client {
           },
         ),
       );
+      initializeCurrentUser(reset: true);
       if (credentials != null &&
           !dio.options.headers.containsKey(HttpHeaders.authorizationHeader)) {
         dio.options.headers.addEntries(
@@ -55,7 +57,6 @@ class Client {
         }
         return true;
       } else {
-        initializeCurrentUser(reset: true);
         return false;
       }
     }
@@ -93,7 +94,10 @@ class Client {
     settings.credentials.value = null;
   }
 
+  Mutex userInitLock = Mutex();
+
   Future<void> initializeCurrentUser({bool reset = false}) async {
+    await userInitLock.acquire();
     if (reset) {
       _currentUser = null;
       _currentAvatar = null;
@@ -112,6 +116,7 @@ class Client {
         _currentAvatar = post.sample.url;
       }
     }
+    userInitLock.release();
   }
 
   CurrentUser? _currentUser;
