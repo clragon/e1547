@@ -284,8 +284,10 @@ class DTextField extends StatelessWidget {
         RegExp(r'\[\[(?<anchor>#)?(?<tags>.*?)(\|(?<name>.*?))?\]\]'):
             (match, result) {
           bool anchor = match.namedGroup('anchor') != null;
-          String? tags = match.namedGroup('tags');
-          String name = match.namedGroup('name') ?? tags!;
+          String tags = match.namedGroup('tags')!;
+          String name = match.namedGroup('name') ?? tags;
+
+          tags = tags.replaceAll(' ', '_');
 
           VoidCallback? onTap;
 
@@ -295,10 +297,11 @@ class DTextField extends StatelessWidget {
           }
 
           return plainText(
-              context: context,
-              text: name,
-              state: Map.from(state)..[TextState.link] = true,
-              onTap: onTap);
+            context: context,
+            text: name,
+            state: Map.from(state)..[TextState.link] = true,
+            onTap: onTap,
+          );
         },
         RegExp(r'{{(?<tags>.*?)(\|(?<name>.*?))?}}'): (match, result) {
           String? tags = match.namedGroup('tags');
@@ -309,8 +312,9 @@ class DTextField extends StatelessWidget {
             text: name,
             state: Map.from(state)..[TextState.link] = true,
             onTap: () {
-              Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => SearchPage(tags: tags)));
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => SearchPage(tags: tags)),
+              );
             },
           );
         },
