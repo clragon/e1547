@@ -72,7 +72,7 @@ class PostTile extends StatelessWidget {
       child: Stack(
         children: [
           ValueListenableBuilder<bool>(
-            valueListenable: settings.postInfo,
+            valueListenable: settings.showPostInfo,
             builder: (context, value, child) {
               return Column(
                 children: [

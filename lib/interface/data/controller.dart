@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:mutex/mutex.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -64,19 +65,24 @@ abstract class RawDataController<PageKeyType, ItemType>
 
   @override
   Future<void> refresh({bool background = false}) async {
+    String key = UniqueKey().toString();
     // makes sure a singular refresh can be queued up
     if (requestLock.isLocked) {
       if (isRefreshing) {
+        print('$key already refreshing, ignoring this request!');
         return;
       }
+      print('$key waiting for lock to be released');
       isRefreshing = true;
       // waits for the current request to be done
       await requestLock.acquire();
       requestLock.release();
       isRefreshing = false;
+      print('$key lock done, going in!');
     }
     List<ItemType> old = List<ItemType>.from(itemList ?? []);
     if (background) {
+      print('$key background request, loading items!');
       List<ItemType>? items = await loadPage(firstPageKey);
       if (items != null) {
         value = PagingState(
@@ -88,6 +94,7 @@ abstract class RawDataController<PageKeyType, ItemType>
         // disposeItems(old);
       }
     } else {
+      print('$key foreground request, resetting!');
       super.refresh();
       disposeItems(old);
     }

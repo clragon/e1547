@@ -66,7 +66,7 @@ class _FollowSplitSwitchTileState extends State<FollowSplitSwitchTile> {
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder<bool>(
-      valueListenable: settings.followsSplit,
+      valueListenable: settings.splitFollows,
       builder: (context, value, child) => SwitchListTile(
         secondary: Icon(value ? Icons.view_comfy : Icons.view_compact),
         title: Text('split tags'),
@@ -74,7 +74,7 @@ class _FollowSplitSwitchTileState extends State<FollowSplitSwitchTile> {
         value: value,
         onChanged: (value) async {
           await Navigator.of(context).maybePop();
-          settings.followsSplit.value = value;
+          settings.splitFollows.value = value;
         },
       ),
     );

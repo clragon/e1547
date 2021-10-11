@@ -32,7 +32,7 @@ class _PostFullscreenGalleryState extends State<PostFullscreenGallery>
   @override
   void initState() {
     super.initState();
-    if (settings.fullscreen.value) {
+    if (settings.hideSystemUI.value) {
       toggleFrame(false);
       frameController = FrameController(onToggle: toggleFrame);
     } else {
