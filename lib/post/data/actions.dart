@@ -178,12 +178,18 @@ extension Favoriting on Post {
   }
 
   Future<bool> tryAddFav(BuildContext context, {Duration? cooldown}) async {
+    cooldown ??= Duration(milliseconds: 0);
     if (await client.addFavorite(id)) {
       // cooldown avoids interference with animation
-      await Future.delayed(cooldown ?? Duration(milliseconds: 0));
+      await Future.delayed(cooldown);
       isFavorited = true;
       favCount += 1;
       notifyListeners();
+      if (settings.upvoteFavs.value) {
+        Future.delayed(Duration(seconds: 1) - cooldown).then(
+          (_) => tryVote(context: context, upvote: true, replace: true),
+        );
+      }
       return true;
     } else {
       favCount -= 1;

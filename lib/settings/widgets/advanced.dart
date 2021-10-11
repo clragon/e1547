@@ -19,6 +19,18 @@ class _AdvancedSettingsPageState extends State<AdvancedSettingsPage> {
         padding: EdgeInsets.all(10.0),
         physics: BouncingScrollPhysics(),
         children: [
+          SettingsHeader(title: 'Server'),
+          ValueListenableBuilder<bool>(
+            valueListenable: settings.upvoteFavs,
+            builder: (context, value, child) => SwitchListTile(
+              title: Text('Upvote favorites'),
+              subtitle: Text(value ? 'upvote and favorite' : 'favorite only'),
+              secondary: Icon(Icons.arrow_upward),
+              value: value,
+              onChanged: (value) => settings.upvoteFavs.value = value,
+            ),
+          ),
+          Divider(),
           SettingsHeader(title: 'Display'),
           ValueListenableBuilder<bool>(
             valueListenable: settings.showBeta,
