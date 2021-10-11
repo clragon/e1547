@@ -21,44 +21,44 @@ class _AdvancedSettingsPageState extends State<AdvancedSettingsPage> {
         children: [
           SettingsHeader(title: 'Display'),
           ValueListenableBuilder<bool>(
-            valueListenable: settings.beta,
+            valueListenable: settings.showBeta,
             builder: (context, value, child) => SafeCrossFade(
               showChild: value,
               builder: (context) => ValueListenableBuilder<bool>(
-                valueListenable: settings.postInfo,
+                valueListenable: settings.showPostInfo,
                 builder: (context, value, child) => SwitchListTile(
                   title: Text('Post info'),
                   subtitle: Text(value ? 'shown' : 'hidden'),
                   secondary: Icon(Icons.subtitles),
                   value: value,
-                  onChanged: (value) => settings.postInfo.value = value,
+                  onChanged: (value) => settings.showPostInfo.value = value,
                 ),
               ),
             ),
           ),
           ValueListenableBuilder<bool>(
-            valueListenable: settings.fullscreen,
+            valueListenable: settings.hideSystemUI,
             builder: (context, value, child) => SwitchListTile(
               title: Text('Fullscreen'),
               subtitle: Text(value ? 'system ui hidden' : 'system ui shown'),
               secondary: Icon(value ? Icons.fullscreen : Icons.fullscreen_exit),
               value: value,
-              onChanged: (value) => settings.fullscreen.value = value,
+              onChanged: (value) => settings.hideSystemUI.value = value,
             ),
           ),
           Divider(),
           SettingsHeader(title: 'Beta'),
           ValueListenableBuilder<bool>(
-            valueListenable: settings.beta,
+            valueListenable: settings.showBeta,
             builder: (context, value, child) => SwitchListTile(
               title: Text('Experimental features'),
               subtitle: Text(value ? 'preview enabled' : 'preview disabled'),
               secondary: Icon(Icons.auto_awesome),
               value: value,
               onChanged: (value) {
-                settings.beta.value = value;
+                settings.showBeta.value = value;
                 if (!value) {
-                  settings.postInfo.value = false;
+                  settings.showPostInfo.value = false;
                 }
               },
             ),

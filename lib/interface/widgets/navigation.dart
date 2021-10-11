@@ -112,7 +112,7 @@ class NavigationDrawer extends StatelessWidget {
           onTap: () => Navigator.of(context)
               .pushNamedAndRemoveUntil('/pools', (_) => false),
         ),
-        if (settings.beta.value)
+        if (settings.showBeta.value)
           ListTile(
             selected: drawerSelection == DrawerSelection.topics,
             leading: Icon(Icons.forum),

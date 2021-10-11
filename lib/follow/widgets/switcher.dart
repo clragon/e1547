@@ -11,7 +11,7 @@ class _FollowsPageState extends State<FollowsPage> {
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder<bool>(
-      valueListenable: settings.followsSplit,
+      valueListenable: settings.splitFollows,
       builder: (context, value, child) =>
           value ? FollowsSplitPage() : FollowsCombinedPage(),
     );
