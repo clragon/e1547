@@ -63,18 +63,28 @@ abstract class RawDataController<PageKeyType, ItemType>
   Future<List<ItemType>?> loadPage(PageKeyType page) =>
       catchError(() async => sort(await provide(page)));
 
-  @override
-  Future<void> refresh({bool background = false}) async {
-    // makes sure a singular refresh can be queued up
+  @nonVirtual
+  Future<bool> canRefresh() async {
     if (requestLock.isLocked) {
       if (isRefreshing) {
-        return;
+        return false;
       }
       isRefreshing = true;
       // waits for the current request to be done
       await requestLock.acquire();
       requestLock.release();
       isRefreshing = false;
+      return true;
+    } else {
+      return true;
+    }
+  }
+
+  @override
+  Future<void> refresh({bool background = false}) async {
+    // makes sure a singular refresh can be queued up
+    if (!await canRefresh()) {
+      return;
     }
     List<ItemType> old = List<ItemType>.from(itemList ?? []);
     if (background) {

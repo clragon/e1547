@@ -85,10 +85,9 @@ extension Tagging on Post {
 }
 
 extension Denying on Post {
-  Future<bool> isDeniedBy(List<String> denylist) async =>
-      await getDenier(denylist) != null;
+  bool isDeniedBy(List<String> denylist) => getDenier(denylist) != null;
 
-  Future<String?> getDenier(List<String> denylist) async {
+  String? getDenier(List<String> denylist) {
     if (denylist.isNotEmpty) {
       for (String line in denylist) {
         List<String> deny = [];

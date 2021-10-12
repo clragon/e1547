@@ -15,14 +15,15 @@ class DrawerDenySwitch extends StatelessWidget {
       animation: controller,
       builder: (context, child) {
         List<MapEntry<String, List<Post>>> entries = [];
+        Map<String, List<Post>> denied = controller.denied ?? {};
 
-        entries.addAll(controller.denied.entries);
+        entries.addAll(denied.entries);
         entries
             .addAll(controller.allowed.value.map((e) => MapEntry(e, <Post>[])));
 
         entries.sort((a, b) => a.key.compareTo(b.key));
 
-        int count = controller.denied.values.fold(
+        int count = denied.values.fold(
             0, (previousValue, element) => previousValue + element.length);
 
         return Column(
@@ -42,8 +43,8 @@ class DrawerDenySwitch extends StatelessWidget {
                 value: controller.denying.value,
                 onChanged: (value) => controller.denying.value = value),
             CrossFade(
-              showChild: controller.denied.isNotEmpty ||
-                  controller.allowed.value.isNotEmpty,
+              showChild:
+                  denied.isNotEmpty || controller.allowed.value.isNotEmpty,
               child: Column(
                 children: [
                   Divider(),
@@ -65,7 +66,7 @@ class DrawerDenySwitch extends StatelessWidget {
                   builder: (context, value, child) {
                     int count = value.length;
                     if (controller.denying.value) {
-                      count -= controller.denied.keys.length;
+                      count -= denied.keys.length;
                       count -= controller.allowed.value.length;
                     }
                     return CrossFade(
