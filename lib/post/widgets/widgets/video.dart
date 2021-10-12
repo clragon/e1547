@@ -55,9 +55,14 @@ class _VideoButtonState extends State<VideoButton>
       builder: (context, child) {
         bool loading = !widget.videoController.value.isInitialized ||
             widget.videoController.value.isBuffering;
+        bool shown = !widget.videoController.value.isPlaying || loading;
+        if (widget.frameController != null) {
+          shown = widget.frameController!.visible || shown;
+        }
 
-        Widget button() {
-          return Material(
+        return FrameFadeWidget(
+          shown: shown,
+          child: Material(
             shape: CircleBorder(),
             color: Colors.transparent,
             elevation: 8,
@@ -102,18 +107,7 @@ class _VideoButtonState extends State<VideoButton>
                 ),
               ),
             ),
-          );
-        }
-
-        bool shown = !widget.videoController.value.isPlaying || loading;
-        if (widget.frameController != null) {
-          shown = widget.frameController!.visible || shown;
-        }
-
-        return AnimatedOpacity(
-          duration: defaultAnimationDuration,
-          opacity: shown ? 1 : 0,
-          child: IgnorePointer(child: button(), ignoring: !shown),
+          ),
         );
       },
     );
@@ -131,18 +125,16 @@ class VideoBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: AnimatedBuilder(
-        animation: Listenable.merge([
-          videoController,
-          frameController,
-        ]),
+        animation: videoController,
         builder: (context, child) {
           bool shown =
               frameController!.visible && videoController.value.isInitialized;
 
           return SafeCrossFade(
             showChild: shown,
-            builder: (context) => IgnorePointer(
-              ignoring: !shown,
+            builder: (context) => FrameFadeWidget(
+              controller: frameController,
+              shown: shown,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -163,7 +155,7 @@ class VideoBar extends StatelessWidget {
                           value: videoController.value.position.inMilliseconds
                               .toDouble(),
                           onChangeStart: (double value) {
-                            frameController!.cancel();
+                            frameController?.cancel();
                           },
                           onChanged: (double value) {
                             videoController
@@ -171,8 +163,8 @@ class VideoBar extends StatelessWidget {
                           },
                           onChangeEnd: (double value) {
                             if (videoController.value.isPlaying) {
-                              frameController!
-                                  .hideFrame(duration: Duration(seconds: 2));
+                              frameController?.hideFrame(
+                                  duration: Duration(seconds: 2));
                             }
                           },
                         )),

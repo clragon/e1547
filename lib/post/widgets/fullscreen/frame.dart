@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 
@@ -84,52 +83,74 @@ class _PostFullscreenFrameState extends State<PostFullscreenFrame> {
     return AnimatedBuilder(
       animation: controller,
       child: widget.child,
-      builder: (contex, child) {
-        List<Widget> children = [child!];
-
-        if (widget.post.controller != null) {
-          children.addAll([
-            Positioned(
-              bottom: 0,
-              right: 0,
-              left: 0,
-              child: VideoBar(
-                videoController: widget.post.controller!,
-                frameController: controller,
-              ),
-            ),
-            VideoButton(
-              videoController: widget.post.controller!,
-              frameController: controller,
-            )
-          ]);
-        }
-
-        return Scaffold(
-          extendBodyBehindAppBar: true,
-          appBar: PreferredSize(
-            preferredSize: Size.fromHeight(kToolbarHeight),
-            child: CrossFade(
-              showChild: controller.visible,
-              child: PostFullscreenAppBar(post: widget.post),
-            ),
+      builder: (contex, child) => Scaffold(
+        extendBodyBehindAppBar: true,
+        appBar: PreferredSize(
+          preferredSize: Size.fromHeight(kToolbarHeight),
+          child: FrameFadeWidget(
+            controller: controller,
+            child: PostFullscreenAppBar(post: widget.post),
           ),
-          body: GestureDetector(
-            behavior: HitTestBehavior.translucent,
-            onTap: () {
-              controller.toggleFrame();
-              if ((widget.post.controller?.value.isPlaying ?? false) &&
-                  controller.visible) {
-                controller.hideFrame(duration: Duration(seconds: 2));
-              }
-            },
-            child: Stack(
-              alignment: Alignment.center,
-              children: children,
-            ),
+        ),
+        body: GestureDetector(
+          behavior: HitTestBehavior.translucent,
+          onTap: () {
+            controller.toggleFrame();
+            if ((widget.post.controller?.value.isPlaying ?? false) &&
+                controller.visible) {
+              controller.hideFrame(duration: Duration(seconds: 2));
+            }
+          },
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              child!,
+              if (widget.post.controller != null) ...[
+                Positioned(
+                  bottom: 0,
+                  right: 0,
+                  left: 0,
+                  child: VideoBar(
+                    videoController: widget.post.controller!,
+                    frameController: controller,
+                  ),
+                ),
+                VideoButton(
+                  videoController: widget.post.controller!,
+                  frameController: controller,
+                ),
+              ]
+            ],
           ),
-        );
-      },
+        ),
+      ),
+    );
+  }
+}
+
+class FrameFadeWidget extends StatelessWidget {
+  final Duration fadeOutDuration = Duration(milliseconds: 50);
+  final FrameController? controller;
+  final bool? shown;
+  final Widget child;
+
+  FrameFadeWidget({required this.child, this.shown, this.controller});
+
+  @override
+  Widget build(BuildContext context) {
+    bool shown = this.shown ?? controller?.visible ?? true;
+
+    return AnimatedBuilder(
+      child: child,
+      animation: controller ?? AlwaysStoppedAnimation(0),
+      builder: (context, child) => AnimatedOpacity(
+        opacity: shown ? 1 : 0,
+        duration: fadeOutDuration,
+        child: IgnorePointer(
+          ignoring: !shown,
+          child: child,
+        ),
+      ),
     );
   }
 }
