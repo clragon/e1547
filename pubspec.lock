@@ -316,7 +316,7 @@ packages:
       name: image_gallery_saver
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.7.0"
+    version: "1.7.1"
   infinite_scroll_pagination:
     dependency: "direct main"
     description:
