@@ -14,7 +14,7 @@ class PostController extends DataController<Post>
         AccountableController {
   Future<List<Post>> Function(String search, int page)? provider;
   ValueNotifier<List<String>> allowed = ValueNotifier([]);
-  Map<String, List<Post>> denied = {};
+  Map<String, List<Post>>? denied;
   late ValueNotifier<bool> denying;
   @override
   late ValueNotifier<String> search;
@@ -35,7 +35,7 @@ class PostController extends DataController<Post>
     }
   }
 
-  Future<List<Post>> filter(List<Post> items) async {
+  List<Post> filter(List<Post> items) {
     List<String> denylist = [];
     if (denying.value && canDeny) {
       denylist = settings.denylist.value
@@ -43,13 +43,14 @@ class PostController extends DataController<Post>
           .toList();
     }
 
+    denied ??= {};
     for (Post item in items) {
-      String? denier = await item.getDenier(denylist);
+      String? denier = item.getDenier(denylist);
       if (denier != null) {
-        if (denied[denier] == null) {
-          denied[denier] = [];
+        if (denied![denier] == null) {
+          denied![denier] = [];
         }
-        denied[denier]!.add(item);
+        denied![denier]!.add(item);
       }
       item.isBlacklisted = denier != null;
     }
@@ -59,12 +60,12 @@ class PostController extends DataController<Post>
     return newPosts;
   }
 
-  Future<void> reapplyFilter() async {
+  void reapplyFilter() {
     if (posts != null) {
-      denied = {};
+      denied = null;
       value = PagingState(
         nextPageKey: nextPageKey,
-        itemList: await filter(posts!),
+        itemList: filter(posts!),
       );
     }
   }
@@ -84,9 +85,12 @@ class PostController extends DataController<Post>
 
   @override
   Future<void> refresh({bool background = false}) async {
-    posts = [];
-    denied = {};
-    super.refresh(background: background);
+    if (!await canRefresh()) {
+      return;
+    }
+    posts = null;
+    denied = null;
+    await super.refresh(background: background);
   }
 
   @override
