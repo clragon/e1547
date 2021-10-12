@@ -35,7 +35,7 @@ dependencies:
   url_launcher: ^6.0.12
   permission_handler: ^8.1.6
   shared_preferences: ^2.0.8
-  image_gallery_saver: ^1.7.0
+  image_gallery_saver: ^1.7.1
 
   username_generator:
     git: git://github.com/clragon/username_generator.git
