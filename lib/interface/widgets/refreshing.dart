@@ -51,8 +51,10 @@ class RefreshablePageLoader extends StatelessWidget {
   final bool? initial;
   final Widget? refreshHeader;
   final Widget? onEmpty;
-  final Widget? onLoading;
+  final Widget? onEmptyIcon;
   final Widget? onError;
+  final Widget? onErrorIcon;
+  final Widget? onLoading;
   final Widget? drawer;
   final Widget? endDrawer;
   final Widget? floatingActionButton;
@@ -77,7 +79,9 @@ class RefreshablePageLoader extends StatelessWidget {
     this.initial,
     this.onLoading,
     this.onEmpty,
+    this.onEmptyIcon,
     this.onError,
+    this.onErrorIcon,
     this.drawer,
     this.endDrawer,
     this.floatingActionButton,
@@ -97,7 +101,9 @@ class RefreshablePageLoader extends StatelessWidget {
     this.initial,
     this.onLoading,
     this.onEmpty,
+    this.onEmptyIcon,
     this.onError,
+    this.onErrorIcon,
   })  : appBar = null,
         drawer = null,
         endDrawer = null,
@@ -108,7 +114,9 @@ class RefreshablePageLoader extends StatelessWidget {
     return PageLoader(
       onLoading: onLoading,
       onEmpty: onEmpty,
+      onEmptyIcon: onEmptyIcon,
       onError: onError,
+      onErrorIcon: onErrorIcon,
       isLoading: isLoading,
       isEmpty: isEmpty,
       isError: isError,
@@ -235,7 +243,9 @@ class PageLoader extends StatelessWidget {
   final Widget Function(Widget child)? pageBuilder;
   final Widget? onLoading;
   final Widget? onEmpty;
+  final Widget? onEmptyIcon;
   final Widget? onError;
+  final Widget? onErrorIcon;
   final bool isLoading;
   final bool isEmpty;
   final bool isError;
@@ -250,7 +260,9 @@ class PageLoader extends StatelessWidget {
     this.pageBuilder,
     this.onLoading,
     this.onEmpty,
+    this.onEmptyIcon,
     this.onError,
+    this.onErrorIcon,
   });
 
   @override
@@ -276,12 +288,12 @@ class PageLoader extends StatelessWidget {
           );
         case PageLoaderState.error:
           return IconMessage(
-            icon: Icon(Icons.warning_amber_outlined),
+            icon: onErrorIcon ?? Icon(Icons.warning_amber_outlined),
             title: onError ?? Text('Failed to load'),
           );
         case PageLoaderState.empty:
           return IconMessage(
-            icon: Icon(Icons.clear),
+            icon: onEmptyIcon ?? Icon(Icons.clear),
             title: onEmpty ?? Text('Nothing to see here'),
           );
         case PageLoaderState.child:
