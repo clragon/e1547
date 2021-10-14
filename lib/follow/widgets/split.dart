@@ -73,7 +73,6 @@ class _FollowsSplitPageState extends State<FollowsSplitPage> with LinkingMixin {
             onError: Text('Failed to load follows'),
             isError: false,
             isLoading: false,
-            isBuilt: true,
             isEmpty: follows.isEmpty,
             refreshController: refreshController,
             refreshHeader: ValueListenableBuilder(
@@ -84,6 +83,7 @@ class _FollowsSplitPageState extends State<FollowsSplitPage> with LinkingMixin {
               ),
             ),
             builder: (context) => StaggeredGridView.countBuilder(
+              key: joinKeys(['follows', tileBuilder, crossAxisCount]),
               addAutomaticKeepAlives: false,
               crossAxisCount: crossAxisCount,
               itemCount: follows.length,

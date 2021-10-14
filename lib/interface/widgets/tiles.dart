@@ -6,7 +6,6 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 const defaultTileHeightFactor = 1.2;
 
 class TileLayoutScope extends StatelessWidget {
-  final double tileHeightFactor;
   final StaggeredTile? Function(int) Function(
     double tileHeightFactor,
     int crossAxisCount,
@@ -17,11 +16,16 @@ class TileLayoutScope extends StatelessWidget {
     int crossAxisCount,
     StaggeredTile? Function(int) tileBuilder,
   ) builder;
+  final double tileHeightFactor;
+  final int? tileSize;
+  final GridState? stagger;
 
   const TileLayoutScope({
-    this.tileHeightFactor = defaultTileHeightFactor,
     required this.tileBuilder,
     required this.builder,
+    this.tileHeightFactor = defaultTileHeightFactor,
+    this.tileSize,
+    this.stagger,
   });
 
   @override
@@ -29,14 +33,15 @@ class TileLayoutScope extends StatelessWidget {
     return ValueListenableBuilder<int>(
       valueListenable: settings.tileSize,
       builder: (context, tileSize, child) {
+        tileSize = this.tileSize ?? tileSize;
         return ValueListenableBuilder<GridState>(
           valueListenable: settings.stagger,
-          builder: (context, stagger, child) => LayoutBuilder(
-            builder: (context, constraints) {
-              int crossAxisCount = notZero(constraints.maxWidth / tileSize);
-              return KeyedSubtree(
-                key: Key('tiles_${[tileSize, stagger].join('_')}'),
-                child: builder(
+          builder: (context, stagger, child) {
+            stagger = this.stagger ?? stagger;
+            return LayoutBuilder(
+              builder: (context, constraints) {
+                int crossAxisCount = notZero(constraints.maxWidth / tileSize);
+                return builder(
                   context,
                   crossAxisCount,
                   tileBuilder(
@@ -44,10 +49,10 @@ class TileLayoutScope extends StatelessWidget {
                     crossAxisCount,
                     stagger,
                   ),
-                ),
-              );
-            },
-          ),
+                );
+              },
+            );
+          },
         );
       },
     );

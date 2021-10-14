@@ -27,7 +27,6 @@ class PostsPage extends StatefulWidget {
 }
 
 class _PostsPageState extends State<PostsPage> with LinkingMixin {
-  ScrollController scrollController = ScrollController();
   Set<Post> selections = {};
 
   void updatePage() {
@@ -260,7 +259,6 @@ class _PostsPageState extends State<PostsPage> with LinkingMixin {
       tileBuilder: tileBuilder,
       builder: (context, crossAxisCount, tileBuilder) => selectionScope(
         child: RefreshablePage(
-          scrollController: scrollController,
           refreshController: widget.controller.refreshController,
           appBar: PreferredSize(
             preferredSize: Size.fromHeight(kToolbarHeight),
@@ -278,8 +276,7 @@ class _PostsPageState extends State<PostsPage> with LinkingMixin {
           floatingActionButton: floatingActionButton(),
           refresh: () => widget.controller.refresh(background: true),
           builder: (context) => PagedStaggeredGridView(
-            primary: false,
-            scrollController: scrollController,
+            key: joinKeys(['posts', tileBuilder, crossAxisCount]),
             addAutomaticKeepAlives: false,
             tileBuilder: tileBuilder,
             pagingController: widget.controller,
