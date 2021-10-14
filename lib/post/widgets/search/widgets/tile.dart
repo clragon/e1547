@@ -1,6 +1,7 @@
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class PostTile extends StatelessWidget {
@@ -113,68 +114,80 @@ class PostInfoBar extends StatelessWidget {
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              AnimatedSelector(
-                animation: post,
-                selector: () => [post.voteStatus],
-                builder: (context, child) => Row(
+              Expanded(
+                child: Wrap(
+                  alignment: WrapAlignment.spaceEvenly,
+                  direction: Axis.horizontal,
                   children: [
-                    Text(post.score.total.toString()),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 4),
-                      child: Icon(
-                        post.score.total >= 0
-                            ? Icons.arrow_upward
-                            : Icons.arrow_downward,
-                        color: () {
-                          switch (post.voteStatus) {
-                            case VoteStatus.upvoted:
-                              return Colors.deepOrange;
-                            case VoteStatus.downvoted:
-                              return Colors.blue;
-                            case VoteStatus.unknown:
-                              return null;
-                          }
-                        }(),
+                    AnimatedSelector(
+                      animation: post,
+                      selector: () => [post.voteStatus],
+                      builder: (context, child) => Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(post.score.total.toString()),
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 4),
+                            child: Icon(
+                              post.score.total >= 0
+                                  ? Icons.arrow_upward
+                                  : Icons.arrow_downward,
+                              color: () {
+                                switch (post.voteStatus) {
+                                  case VoteStatus.upvoted:
+                                    return Colors.deepOrange;
+                                  case VoteStatus.downvoted:
+                                    return Colors.blue;
+                                  case VoteStatus.unknown:
+                                    return null;
+                                }
+                              }(),
+                            ),
+                          ),
+                        ],
                       ),
+                    ),
+                    AnimatedSelector(
+                      animation: post,
+                      selector: () => [post.isFavorited],
+                      builder: (context, child) => Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(post.favCount.toString()),
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 4),
+                            child: Icon(
+                              Icons.favorite,
+                              color:
+                                  post.isFavorited ? Colors.pinkAccent : null,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(post.commentCount.toString()),
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 4),
+                          child: Icon(Icons.comment),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(ratingValues.reverse![post.rating]!.toUpperCase()),
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 4),
+                          child: Icon(ratingIcons[post.rating]!),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-              ),
-              AnimatedSelector(
-                animation: post,
-                selector: () => [post.isFavorited],
-                builder: (context, child) => Row(
-                  children: [
-                    Text(post.favCount.toString()),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 4),
-                      child: Icon(
-                        Icons.favorite,
-                        color: post.isFavorited ? Colors.pinkAccent : null,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Row(
-                children: [
-                  Text(post.commentCount.toString()),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 4),
-                    child: Icon(Icons.comment),
-                  ),
-                ],
-              ),
-              Row(
-                children: [
-                  Text(ratingValues.reverse![post.rating]!.toUpperCase()),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 4),
-                    child: Icon(ratingIcons[post.rating]!),
-                  ),
-                ],
               ),
             ],
           ),
