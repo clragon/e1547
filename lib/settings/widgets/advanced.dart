@@ -1,4 +1,3 @@
-import 'package:e1547/interface/interface.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
 
@@ -33,19 +32,13 @@ class _AdvancedSettingsPageState extends State<AdvancedSettingsPage> {
           Divider(),
           SettingsHeader(title: 'Display'),
           ValueListenableBuilder<bool>(
-            valueListenable: settings.showBeta,
-            builder: (context, value, child) => SafeCrossFade(
-              showChild: value,
-              builder: (context) => ValueListenableBuilder<bool>(
-                valueListenable: settings.showPostInfo,
-                builder: (context, value, child) => SwitchListTile(
-                  title: Text('Post info'),
-                  subtitle: Text(value ? 'shown' : 'hidden'),
-                  secondary: Icon(Icons.subtitles),
-                  value: value,
-                  onChanged: (value) => settings.showPostInfo.value = value,
-                ),
-              ),
+            valueListenable: settings.showPostInfo,
+            builder: (context, value, child) => SwitchListTile(
+              title: Text('Post info'),
+              subtitle: Text(value ? 'info on post tiles' : 'image tiles only'),
+              secondary: Icon(Icons.subtitles),
+              value: value,
+              onChanged: (value) => settings.showPostInfo.value = value,
             ),
           ),
           ValueListenableBuilder<bool>(
@@ -67,12 +60,7 @@ class _AdvancedSettingsPageState extends State<AdvancedSettingsPage> {
               subtitle: Text(value ? 'preview enabled' : 'preview disabled'),
               secondary: Icon(Icons.auto_awesome),
               value: value,
-              onChanged: (value) {
-                settings.showBeta.value = value;
-                if (!value) {
-                  settings.showPostInfo.value = false;
-                }
-              },
+              onChanged: (value) => settings.showBeta.value = value,
             ),
           ),
         ],
