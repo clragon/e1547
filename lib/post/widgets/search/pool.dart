@@ -37,19 +37,17 @@ class _PoolPageState extends State<PoolPage> {
   Widget build(BuildContext context) {
     return PostsPage(
       controller: controller,
-      appBarBuilder: (context) {
-        return AppBar(
-          title: Text(tagToTitle(widget.pool.name)),
-          leading: BackButton(),
-          actions: [
-            IconButton(
-              icon: Icon(Icons.info_outline),
-              tooltip: 'Info',
-              onPressed: () => poolSheet(context, widget.pool),
-            )
-          ],
-        );
-      },
+      appBarBuilder: (context) => AppBar(
+        title: Text(tagToTitle(widget.pool.name)),
+        leading: BackButton(),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.info_outline),
+            tooltip: 'Info',
+            onPressed: () => poolSheet(context, widget.pool),
+          )
+        ],
+      ),
       drawerActions: [
         PoolOrderSwitch(
           reversePool: reversePool,
