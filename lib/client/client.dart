@@ -363,7 +363,7 @@ class Client {
 
     Post post = Post.fromMap(body['post']);
     post.isLoggedIn = await hasLogin;
-    post.isBlacklisted = await post.isDeniedBy(settings.denylist.value);
+    post.isBlacklisted = post.isDeniedBy(settings.denylist.value);
     return post;
   }
 
@@ -615,6 +615,13 @@ class Client {
     }
 
     return replies;
+  }
+
+  Future<Reply> reply(int id) async {
+    Map<String, dynamic> body =
+        await dio.get('forum_posts/$id.json').then((response) => response.data);
+
+    return Reply.fromMap(body);
   }
 }
 

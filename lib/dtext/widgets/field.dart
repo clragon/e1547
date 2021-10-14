@@ -4,6 +4,8 @@ import 'package:e1547/dtext/dtext.dart';
 import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
+import 'package:e1547/topic/data/topic.dart';
+import 'package:e1547/topic/topic.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -254,17 +256,36 @@ class DTextField extends StatelessWidget {
           // add actual pictures here some day.
           case LinkWord.post:
             onTap = () async {
-              Post p = await client.post(int.parse(match.namedGroup('id')!));
+              Post post = await client.post(int.parse(match.namedGroup('id')!));
               Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                return PostDetail(post: p);
+                return PostDetail(post: post);
               }));
             };
             break;
           case LinkWord.pool:
             onTap = () async {
-              Pool p = await client.pool(int.parse(match.namedGroup('id')!));
+              Pool pool = await client.pool(int.parse(match.namedGroup('id')!));
               Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                return PoolPage(pool: p);
+                return PoolPage(pool: pool);
+              }));
+            };
+            break;
+          case LinkWord.forum:
+            onTap = () async {
+              Reply reply =
+                  await client.reply(int.parse(match.namedGroup('id')!));
+              Topic topic = await client.topic(reply.topicId);
+              Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                return RepliesPage(topic: topic);
+              }));
+            };
+            break;
+          case LinkWord.topic:
+            onTap = () async {
+              Topic topic =
+                  await client.topic(int.parse(match.namedGroup('id')!));
+              Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                return RepliesPage(topic: topic);
               }));
             };
             break;
