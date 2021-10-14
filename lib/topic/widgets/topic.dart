@@ -24,9 +24,7 @@ class TopicTile extends StatelessWidget {
                 padding: EdgeInsets.symmetric(horizontal: 16),
                 child: Text(
                   tagToName(topic.title),
-                  overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.subtitle1,
-                  maxLines: 1,
                 ),
               ),
             ),
