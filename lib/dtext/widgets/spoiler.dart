@@ -1,3 +1,4 @@
+import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
 
 class SpoilerWrap extends StatefulWidget {
@@ -18,6 +19,7 @@ class _SpoilerWrapState extends State<SpoilerWrap> {
       child: Stack(
         children: [
           InkWell(
+            onTap: () => setState(() => visible = !visible),
             child: Padding(
               padding: EdgeInsets.all(8),
               child: Row(
@@ -31,23 +33,26 @@ class _SpoilerWrapState extends State<SpoilerWrap> {
                 ],
               ),
             ),
-            onTap: () => setState(() => visible = !visible),
           ),
           Positioned.fill(
             child: IgnorePointer(
-              child: AnimatedOpacity(
-                opacity: visible ? 0 : 1,
-                duration: Duration(milliseconds: 200),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.black,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Center(
-                    child: Text(
-                      'SPOILER',
-                      style: TextStyle(
-                        color: Colors.white,
+              ignoring: visible,
+              child: InkWell(
+                onTap: () => setState(() => visible = !visible),
+                child: AnimatedOpacity(
+                  opacity: visible ? 0 : 1,
+                  duration: defaultAnimationDuration,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.black,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Center(
+                      child: Text(
+                        'SPOILER',
+                        style: TextStyle(
+                          color: Colors.white,
+                        ),
                       ),
                     ),
                   ),
