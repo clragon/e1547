@@ -35,6 +35,9 @@ class _PostFullscreenGalleryState extends State<PostFullscreenGallery>
     if (settings.hideSystemUI.value) {
       toggleFrame(false);
       frameController = FrameController(onToggle: toggleFrame);
+      SystemChrome.setSystemUIChangeCallback((hidden) async {
+        frameController.toggleFrame(shown: !hidden);
+      });
     } else {
       frameController = FrameController();
     }
@@ -44,6 +47,7 @@ class _PostFullscreenGalleryState extends State<PostFullscreenGallery>
   void dispose() {
     routeObserver.unsubscribe(this);
     frameController.dispose();
+    SystemChrome.setSystemUIChangeCallback(null);
     super.dispose();
   }
 
