@@ -18,56 +18,27 @@ class LikeDisplay extends StatelessWidget {
             AnimatedSelector(
               animation: post,
               selector: () => [post.voteStatus],
-              builder: (context, child) => Row(
-                children: [
-                  LikeButton(
-                    isLiked: post.voteStatus == VoteStatus.upvoted,
-                    likeBuilder: (bool isLiked) => Icon(
-                      Icons.arrow_upward,
-                      color: isLiked
-                          ? Colors.deepOrange
-                          : Theme.of(context).iconTheme.color,
-                    ),
-                    onTap: (isLiked) async {
-                      if (post.isLoggedIn) {
-                        post.tryVote(
-                            context: context, upvote: true, replace: !isLiked);
-                        return !isLiked;
-                      } else {
-                        return false;
-                      }
-                    },
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 8),
-                    child: Text((post.score.total).toString()),
-                  ),
-                  LikeButton(
-                    isLiked: post.voteStatus == VoteStatus.downvoted,
-                    circleColor:
-                        CircleColor(start: Colors.blue, end: Colors.cyanAccent),
-                    bubblesColor: BubblesColor(
-                        dotPrimaryColor: Colors.blue,
-                        dotSecondaryColor: Colors.cyanAccent),
-                    likeBuilder: (bool isLiked) {
-                      return Icon(
-                        Icons.arrow_downward,
-                        color: isLiked
-                            ? Colors.blue
-                            : Theme.of(context).iconTheme.color,
-                      );
-                    },
-                    onTap: (isLiked) async {
-                      if (post.isLoggedIn) {
-                        post.tryVote(
-                            context: context, upvote: false, replace: !isLiked);
-                        return !isLiked;
-                      } else {
-                        return false;
-                      }
-                    },
-                  ),
-                ],
+              builder: (context, child) => VoteDisplay(
+                status: post.voteStatus,
+                score: post.score.total,
+                onUpvote: (isLiked) async {
+                  if (post.isLoggedIn) {
+                    post.tryVote(
+                        context: context, upvote: true, replace: !isLiked);
+                    return !isLiked;
+                  } else {
+                    return false;
+                  }
+                },
+                onDownvote: (isLiked) async {
+                  if (post.isLoggedIn) {
+                    post.tryVote(
+                        context: context, upvote: false, replace: !isLiked);
+                    return !isLiked;
+                  } else {
+                    return false;
+                  }
+                },
               ),
             ),
             AnimatedSelector(

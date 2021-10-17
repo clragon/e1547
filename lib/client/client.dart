@@ -558,6 +558,28 @@ class Client {
     return comments;
   }
 
+  Future<Comment> comment(int id) async {
+    Map<String, dynamic> body = await dio
+        .get('comments.json/$id.json')
+        .then((response) => response.data);
+
+    return Comment.fromMap(body);
+  }
+
+  Future<bool> voteComment(int comment, bool upvote, bool replace) async {
+    if (!await hasLogin) {
+      return false;
+    }
+
+    return validateCall(
+      () => dio
+          .post('comments/${comment.toString()}/votes.json', queryParameters: {
+        'score': upvote ? 1 : -1,
+        'no_unvote': replace,
+      }),
+    );
+  }
+
   Future<void> postComment(Post post, String text, {Comment? comment}) async {
     if (!await hasLogin) {
       return;
