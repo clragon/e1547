@@ -1,11 +1,10 @@
 import 'package:collection/collection.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/dtext/dtext.dart';
+import 'package:e1547/interface/interface.dart';
 import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
-import 'package:e1547/topic/data/topic.dart';
-import 'package:e1547/topic/topic.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -250,44 +249,40 @@ class DTextField extends StatelessWidget {
 
       InlineSpan parseWord(LinkWord? word, RegExpMatch match, String result) {
         VoidCallback? onTap;
+        int id = int.parse(match.namedGroup('id')!);
 
         switch (word) {
           case LinkWord.thumb:
           // add actual pictures here some day.
           case LinkWord.post:
-            onTap = () async {
-              Post post = await client.post(int.parse(match.namedGroup('id')!));
-              Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                return PostDetail(post: post);
-              }));
-            };
+            onTap = () async => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => PostLoadingPage(id: id),
+                  ),
+                );
             break;
           case LinkWord.pool:
-            onTap = () async {
-              Pool pool = await client.pool(int.parse(match.namedGroup('id')!));
-              Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                return PoolPage(pool: pool);
-              }));
-            };
+            onTap = () async => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => PoolLoadingPage(id: id),
+                  ),
+                );
             break;
           case LinkWord.forum:
             onTap = () async {
-              Reply reply =
-                  await client.reply(int.parse(match.namedGroup('id')!));
-              Topic topic = await client.topic(reply.topicId);
-              Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                return RepliesPage(topic: topic);
-              }));
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => ReplyLoadingPage(id: id),
+                ),
+              );
             };
             break;
           case LinkWord.topic:
-            onTap = () async {
-              Topic topic =
-                  await client.topic(int.parse(match.namedGroup('id')!));
-              Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                return RepliesPage(topic: topic);
-              }));
-            };
+            onTap = () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => TopicLoadingPage(id: id),
+                  ),
+                );
             break;
           default:
             break;

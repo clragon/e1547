@@ -12,6 +12,7 @@ export 'widgets/card.dart';
 export 'widgets/dialog.dart';
 export 'widgets/divider_tile.dart';
 export 'widgets/drawer.dart';
+export 'widgets/loading.dart';
 export 'widgets/loading_tile.dart';
 export 'widgets/navigation.dart';
 export 'widgets/notifiers.dart';
