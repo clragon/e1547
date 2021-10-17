@@ -268,7 +268,7 @@ class FuturePageLoader<T> extends StatelessWidget {
         ),
         isLoading: snapshot.connectionState != ConnectionState.done,
         isError: snapshot.hasError,
-        isEmpty: !snapshot.hasData && !snapshot.hasError,
+        isEmpty: !snapshot.hasData,
         isBuilt: isBuilt,
         onLoading: onLoading,
         onEmpty: onEmpty,
