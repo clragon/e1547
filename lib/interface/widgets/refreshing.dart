@@ -232,6 +232,52 @@ class _RefreshablePageState extends State<RefreshablePage> {
   }
 }
 
+class FuturePageLoader<T> extends StatelessWidget {
+  final Widget Function(BuildContext context, T value) builder;
+  final Widget? title;
+  final Widget? onLoading;
+  final Widget? onEmpty;
+  final Widget? onError;
+  final bool? isBuilt;
+  final Future<T> future;
+
+  const FuturePageLoader({
+    required this.future,
+    required this.builder,
+    this.title,
+    this.isBuilt,
+    this.onLoading,
+    this.onEmpty,
+    this.onError,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<T>(
+      future: future,
+      builder: (context, snapshot) => PageLoader(
+        builder: (context) => builder(context, snapshot.data!),
+        loadingBuilder: (child) => Scaffold(
+          appBar: title != null
+              ? AppBar(
+                  leading: CloseButton(),
+                  title: title,
+                )
+              : null,
+          body: child,
+        ),
+        isLoading: snapshot.connectionState != ConnectionState.done,
+        isError: snapshot.hasError,
+        isEmpty: !snapshot.hasData && !snapshot.hasError,
+        isBuilt: isBuilt,
+        onLoading: onLoading,
+        onEmpty: onEmpty,
+        onError: onError,
+      ),
+    );
+  }
+}
+
 enum PageLoaderState {
   loading,
   empty,
@@ -242,6 +288,7 @@ enum PageLoaderState {
 class PageLoader extends StatelessWidget {
   final WidgetBuilder? builder;
   final Widget Function(Widget child)? pageBuilder;
+  final Widget Function(Widget child)? loadingBuilder;
   final Widget? onLoading;
   final Widget? onEmpty;
   final Widget? onEmptyIcon;
@@ -259,6 +306,7 @@ class PageLoader extends StatelessWidget {
     this.isEmpty = false,
     this.isBuilt,
     this.pageBuilder,
+    this.loadingBuilder,
     this.onLoading,
     this.onEmpty,
     this.onEmptyIcon,
@@ -280,7 +328,7 @@ class PageLoader extends StatelessWidget {
       }
     }
 
-    Widget body() {
+    Widget child() {
       switch (state) {
         case PageLoaderState.loading:
           return IconMessage(
@@ -302,8 +350,19 @@ class PageLoader extends StatelessWidget {
       }
     }
 
+    Widget body() {
+      Widget body = child();
+      if (pageBuilder != null) {
+        body = pageBuilder!(body);
+      }
+      if (loadingBuilder != null && state != PageLoaderState.child) {
+        body = loadingBuilder!(body);
+      }
+      return body;
+    }
+
     return Scaffold(
-      body: pageBuilder?.call(body()) ?? body(),
+      body: body(),
     );
   }
 }
