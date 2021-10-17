@@ -282,6 +282,7 @@ class _PostsPageState extends State<PostsPage> with LinkingMixin {
             pagingController: widget.controller,
             crossAxisCount: crossAxisCount,
             builderDelegate: defaultPagedChildBuilderDelegate(
+              pagingController: widget.controller,
               itemBuilder: itemBuilder,
               onEmpty: Text('No posts'),
               onLoading: Text('Loading posts'),

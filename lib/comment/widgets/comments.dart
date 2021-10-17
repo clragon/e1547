@@ -38,6 +38,7 @@ class _CommentsPageState extends State<CommentsPage> {
             EdgeInsets.only(top: 8, bottom: kBottomNavigationBarHeight + 24),
         pagingController: controller,
         builderDelegate: defaultPagedChildBuilderDelegate(
+          pagingController: controller,
           itemBuilder: (context, Comment item, index) =>
               CommentTile(comment: item, post: widget.post),
           onLoading: Text('Loading comments'),

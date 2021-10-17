@@ -32,6 +32,7 @@ class _TopicsPageState extends State<TopicsPage> {
         return PagedListView(
           pagingController: controller,
           builderDelegate: defaultPagedChildBuilderDelegate(
+            pagingController: controller,
             itemBuilder: (context, Topic item, index) => TopicTile(
               topic: item,
               onPressed: () => Navigator.of(context).push(

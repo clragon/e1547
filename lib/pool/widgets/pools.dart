@@ -35,6 +35,7 @@ class _PoolsPageState extends State<PoolsPage> {
         return PagedListView(
           pagingController: controller,
           builderDelegate: defaultPagedChildBuilderDelegate(
+            pagingController: controller,
             itemBuilder: (context, Pool item, index) => PoolTile(
               pool: item,
               onPressed: () => Navigator.of(context).push(

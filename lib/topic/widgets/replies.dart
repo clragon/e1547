@@ -41,6 +41,7 @@ class _RepliesPageState extends State<RepliesPage> {
             EdgeInsets.only(top: 8, bottom: kBottomNavigationBarHeight + 24),
         pagingController: controller,
         builderDelegate: defaultPagedChildBuilderDelegate(
+          pagingController: controller,
           itemBuilder: (context, Reply item, index) =>
               ReplyTile(reply: item, topic: widget.topic),
           onLoading: Text('Loading replies'),
