@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:math';
 
+import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:wakelock/wakelock.dart';
@@ -112,12 +113,6 @@ class Post extends PostData with ChangeNotifier {
     disposeVideo();
     super.dispose();
   }
-}
-
-enum VoteStatus {
-  upvoted,
-  unknown,
-  downvoted,
 }
 
 enum PostType {
