@@ -1,4 +1,5 @@
 import 'package:e1547/interface/interface.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -325,11 +326,14 @@ class IconMessage extends StatelessWidget {
   final Axis direction;
   final Widget title;
   final Widget icon;
+  final Widget? action;
 
-  const IconMessage(
-      {this.direction = Axis.vertical,
-      required this.title,
-      required this.icon});
+  const IconMessage({
+    this.direction = Axis.vertical,
+    required this.title,
+    required this.icon,
+    this.action,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -337,17 +341,19 @@ class IconMessage extends StatelessWidget {
       child: Flex(
         direction: direction,
         mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Theme(
-            data: Theme.of(context).copyWith(
-              iconTheme: Theme.of(context).iconTheme.copyWith(size: 32),
-            ),
-            child: icon,
-          ),
           Padding(
             padding: EdgeInsets.all(20),
-            child: title,
+            child: Theme(
+              data: Theme.of(context).copyWith(
+                iconTheme: Theme.of(context).iconTheme.copyWith(size: 32),
+              ),
+              child: icon,
+            ),
           ),
+          title,
+          if (action != null) action!,
         ],
       ),
     );

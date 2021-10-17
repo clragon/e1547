@@ -73,10 +73,24 @@ class PagedStaggeredGridView<PageKeyType, ItemType> extends BoxScrollView {
 
 PagedChildBuilderDelegate<T> defaultPagedChildBuilderDelegate<T>({
   required ItemWidgetBuilder<T> itemBuilder,
+  PagingController? pagingController,
   Widget? onLoading,
   Widget? onEmpty,
   Widget? onError,
 }) {
+  Widget? retryButton() {
+    if (pagingController == null) {
+      return null;
+    }
+    return Padding(
+      padding: EdgeInsets.all(4),
+      child: TextButton(
+        onPressed: pagingController.retryLastFailedRequest,
+        child: Text('Try again'),
+      ),
+    );
+  }
+
   return PagedChildBuilderDelegate<T>(
     itemBuilder: itemBuilder,
     firstPageProgressIndicatorBuilder: (context) => Column(
@@ -101,11 +115,13 @@ PagedChildBuilderDelegate<T> defaultPagedChildBuilderDelegate<T>({
     firstPageErrorIndicatorBuilder: (context) => IconMessage(
       icon: Icon(Icons.warning_amber_outlined),
       title: onError ?? Text('Failed to load'),
+      action: retryButton(),
     ),
     newPageErrorIndicatorBuilder: (context) => IconMessage(
       direction: Axis.horizontal,
       icon: Icon(Icons.warning_amber_outlined),
       title: onError ?? Text('Failed to load'),
+      action: retryButton(),
     ),
   );
 }
