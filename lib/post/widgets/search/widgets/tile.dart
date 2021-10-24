@@ -32,13 +32,19 @@ class PostTile extends StatelessWidget {
       if (post.file.ext == 'gif') {
         return Container(
           color: Colors.black12,
-          child: Icon(Icons.gif),
+          child: Icon(
+            Icons.gif,
+            color: Colors.white,
+          ),
         );
       }
       if (post.type == PostType.video) {
         return Container(
           color: Colors.black12,
-          child: Icon(Icons.play_arrow),
+          child: Icon(
+            Icons.play_arrow,
+            color: Colors.white,
+          ),
         );
       }
       return SizedBox.shrink();
