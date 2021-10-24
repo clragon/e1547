@@ -11,7 +11,10 @@ class PostFullscreenAppBar extends StatelessWidget with AppBarSize {
   Widget build(BuildContext context) {
     return TransparentAppBar(
       leading: IconButton(
-        icon: ShadowIcon(Icons.arrow_back),
+        icon: ShadowIcon(
+          Icons.arrow_back,
+          color: Colors.white,
+        ),
         onPressed: Navigator.of(context).maybePop,
       ),
       actions: post.isEditing
@@ -20,6 +23,7 @@ class PostFullscreenAppBar extends StatelessWidget with AppBarSize {
               PopupMenuButton<VoidCallback>(
                 icon: ShadowIcon(
                   Icons.more_vert,
+                  color: Colors.white,
                 ),
                 onSelected: (value) => value(),
                 itemBuilder: ((context) => postMenuActions(context, post)),
