@@ -227,11 +227,10 @@ class PostDetailImageDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Size screenSize = MediaQuery.of(context).size;
-
     return AnimatedBuilder(
       animation: post,
       builder: (context, child) {
+        Size screenSize = MediaQuery.of(context).size;
         return PostDetailImageOverlay(
           onOpen: onTap,
           post: post,
