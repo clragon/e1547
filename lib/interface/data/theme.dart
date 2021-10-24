@@ -30,8 +30,10 @@ final Color accent = Color(0xFFffc107);
 
 SystemUiOverlayStyle defaultUIStyle(ThemeData theme) => SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
-      statusBarBrightness: Brightness.dark,
-      statusBarIconBrightness: Brightness.light,
+      statusBarBrightness: theme.brightness,
+      statusBarIconBrightness: theme.brightness == Brightness.light
+          ? Brightness.dark
+          : Brightness.light,
       systemNavigationBarColor: Colors.transparent,
       systemNavigationBarIconBrightness: theme.brightness == Brightness.light
           ? Brightness.dark
