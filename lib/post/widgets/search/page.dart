@@ -88,9 +88,11 @@ class _PostsPageState extends State<PostsPage> with LinkingMixin {
                     color: Colors.black38,
                     child: LayoutBuilder(
                       builder: (context, constraint) => Icon(
-                          Icons.check_circle_outline,
-                          size: min(constraint.maxHeight, constraint.maxWidth) *
-                              0.4),
+                        Icons.check_circle_outline,
+                        color: Colors.white,
+                        size: min(constraint.maxHeight, constraint.maxWidth) *
+                            0.4,
+                      ),
                     ),
                   ),
                 ),
@@ -165,51 +167,47 @@ class _PostsPageState extends State<PostsPage> with LinkingMixin {
             ),
           ),
           Builder(
-            builder: (context) {
-              return Padding(
-                padding: EdgeInsets.symmetric(horizontal: 4),
-                child: LikeButton(
-                  isLiked: selections.isNotEmpty &&
-                      selections.every((post) => post.isFavorited),
-                  circleColor: CircleColor(start: Colors.pink, end: Colors.red),
-                  bubblesColor: BubblesColor(
-                      dotPrimaryColor: Colors.pink,
-                      dotSecondaryColor: Colors.red),
-                  likeBuilder: (bool isLiked) {
-                    return Icon(
-                      Icons.favorite,
-                      color: isLiked
-                          ? Colors.pinkAccent
-                          : Theme.of(context).iconTheme.color,
-                    );
-                  },
-                  onTap: (isLiked) async {
-                    loadingSnackbar(
-                      context: context,
-                      items: Set.from(selections),
-                      process: isLiked
-                          ? (post) async {
-                              if (post.isFavorited) {
-                                return post.tryRemoveFav(context);
-                              } else {
-                                return true;
-                              }
-                            }
-                          : (post) async {
-                              if (!post.isFavorited) {
-                                return post.tryAddFav(context);
-                              } else {
-                                return true;
-                              }
-                            },
-                      timeout: Duration(milliseconds: 300),
-                    );
-                    setState(selections.clear);
-                    return !isLiked;
-                  },
+            builder: (context) => Padding(
+              padding: EdgeInsets.symmetric(horizontal: 4),
+              child: LikeButton(
+                isLiked: selections.isNotEmpty &&
+                    selections.every((post) => post.isFavorited),
+                circleColor: CircleColor(start: Colors.pink, end: Colors.red),
+                bubblesColor: BubblesColor(
+                    dotPrimaryColor: Colors.pink,
+                    dotSecondaryColor: Colors.red),
+                likeBuilder: (bool isLiked) => Icon(
+                  Icons.favorite,
+                  color: isLiked
+                      ? Colors.pinkAccent
+                      : Theme.of(context).iconTheme.color,
                 ),
-              );
-            },
+                onTap: (isLiked) async {
+                  loadingSnackbar(
+                    context: context,
+                    items: Set.from(selections),
+                    process: isLiked
+                        ? (post) async {
+                            if (post.isFavorited) {
+                              return post.tryRemoveFav(context);
+                            } else {
+                              return true;
+                            }
+                          }
+                        : (post) async {
+                            if (!post.isFavorited) {
+                              return post.tryAddFav(context);
+                            } else {
+                              return true;
+                            }
+                          },
+                    timeout: Duration(milliseconds: 300),
+                  );
+                  setState(selections.clear);
+                  return !isLiked;
+                },
+              ),
+            ),
           ),
         ],
       );
@@ -219,29 +217,30 @@ class _PostsPageState extends State<PostsPage> with LinkingMixin {
       double tileHeightFactor,
       int crossAxisCount,
       GridState stagger,
-    ) =>
-        (int item) {
-          if (item < widget.controller.itemList!.length) {
-            PostFile image = widget.controller.itemList![item].sample;
-            double widthRatio = image.width / image.height;
-            double heightRatio = image.height / image.width;
+    ) {
+      return (int item) {
+        if (item < widget.controller.itemList!.length) {
+          PostFile image = widget.controller.itemList![item].sample;
+          double widthRatio = image.width / image.height;
+          double heightRatio = image.height / image.width;
 
-            switch (stagger) {
-              case GridState.square:
-                return StaggeredTile.count(1, 1 * tileHeightFactor);
-              case GridState.vertical:
+          switch (stagger) {
+            case GridState.square:
+              return StaggeredTile.count(1, 1 * tileHeightFactor);
+            case GridState.vertical:
+              return StaggeredTile.count(1, heightRatio);
+            case GridState.omni:
+              if (crossAxisCount == 1) {
                 return StaggeredTile.count(1, heightRatio);
-              case GridState.omni:
-                if (crossAxisCount == 1) {
-                  return StaggeredTile.count(1, heightRatio);
-                } else {
-                  return StaggeredTile.count(notZero(widthRatio),
-                      notZero(heightRatio) * tileHeightFactor);
-                }
-            }
+              } else {
+                return StaggeredTile.count(notZero(widthRatio),
+                    notZero(heightRatio) * tileHeightFactor);
+              }
           }
-          return null;
-        };
+        }
+        return null;
+      };
+    }
 
     Widget selectionScope({required Widget child}) {
       return WillPopScope(
