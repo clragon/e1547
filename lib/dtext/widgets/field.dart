@@ -269,20 +269,24 @@ class DTextField extends StatelessWidget {
                 );
             break;
           case LinkWord.forum:
-            onTap = () async {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => ReplyLoadingPage(id: id),
-                ),
-              );
-            };
-            break;
-          case LinkWord.topic:
-            onTap = () => Navigator.of(context).push(
+            if (settings.showBeta.value) {
+              onTap = () async {
+                Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => TopicLoadingPage(id: id),
+                    builder: (context) => ReplyLoadingPage(id: id),
                   ),
                 );
+              };
+            }
+            break;
+          case LinkWord.topic:
+            if (settings.showBeta.value) {
+              onTap = () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => TopicLoadingPage(id: id),
+                    ),
+                  );
+            }
             break;
           default:
             break;
