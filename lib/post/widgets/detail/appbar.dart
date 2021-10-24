@@ -14,7 +14,10 @@ class PostDetailAppBar extends StatelessWidget with AppBarSize {
       selector: () => [post.isEditing],
       builder: (context, child) => TransparentAppBar(
         leading: IconButton(
-          icon: ShadowIcon(post.isEditing ? Icons.clear : Icons.arrow_back),
+          icon: ShadowIcon(
+            post.isEditing ? Icons.clear : Icons.arrow_back,
+            color: Colors.white,
+          ),
           onPressed: Navigator.of(context).maybePop,
         ),
         actions: post.isEditing
@@ -23,6 +26,7 @@ class PostDetailAppBar extends StatelessWidget with AppBarSize {
                 PopupMenuButton<VoidCallback>(
                   icon: ShadowIcon(
                     Icons.more_vert,
+                    color: Colors.white,
                   ),
                   onSelected: (value) => value(),
                   itemBuilder: ((context) => [
