@@ -71,69 +71,83 @@ class PostDetailImageToggle extends StatefulWidget {
 
 class _PostDetailImageToggleState extends State<PostDetailImageToggle> {
   bool loading = false;
+  Post? replacement;
+
+  Future<void> onToggle() async {
+    setState(() {
+      loading = true;
+    });
+    if (widget.post.file.url == null) {
+      if (settings.customHost.value == null) {
+        await setCustomHost(context);
+      }
+      if (settings.customHost.value != null) {
+        if (replacement == null) {
+          replacement = await client.post(widget.post.id, unsafe: true);
+        }
+        widget.post.file.url = replacement!.file.url;
+        widget.post.preview.url = replacement!.preview.url;
+        widget.post.sample.url = replacement!.sample.url;
+        if (!widget.post.isBlacklisted) {
+          widget.post.isAllowed = !widget.post.isAllowed;
+        }
+        widget.post.notifyListeners();
+      }
+    } else {
+      widget.post.isAllowed = !widget.post.isAllowed;
+      widget.post.controller?.pause();
+      widget.post.notifyListeners();
+    }
+    if (!widget.post.isAllowed && replacement != null) {
+      widget.post.file.url = null;
+      widget.post.preview.url = null;
+      widget.post.sample.url = null;
+      widget.post.notifyListeners();
+    }
+    setState(() {
+      loading = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     if (!widget.post.flags.deleted) {
-      return CrossFade(
-        showChild: (widget.post.file.url == null ||
-            !widget.post.isVisible ||
-            widget.post.isAllowed),
-        duration: Duration(milliseconds: 200),
-        child: Card(
-          color: widget.post.isAllowed ? Colors.black12 : Colors.transparent,
-          elevation: 0,
-          child: InkWell(
-            child: Padding(
-              padding: EdgeInsets.all(8),
-              child: Row(
-                children: [
-                  Icon(
-                    widget.post.isAllowed
-                        ? Icons.visibility_off
-                        : Icons.visibility,
-                    size: 16,
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 5),
-                    child: widget.post.isAllowed ? Text('hide') : Text('show'),
-                  ),
-                  CrossFade(
-                    showChild: loading,
-                    child: SizedCircularProgressIndicator(
-                      size: 12,
+      return AnimatedSelector(
+        animation: widget.post,
+        selector: () => [widget.post.isAllowed, widget.post.file.url],
+        builder: (context, child) => CrossFade(
+          showChild: (widget.post.file.url == null ||
+              !widget.post.isVisible ||
+              widget.post.isAllowed),
+          duration: Duration(milliseconds: 200),
+          child: Card(
+            color: widget.post.isAllowed ? Colors.black12 : Colors.transparent,
+            elevation: 0,
+            child: InkWell(
+              child: Padding(
+                padding: EdgeInsets.all(8),
+                child: Row(
+                  children: [
+                    Icon(
+                        widget.post.isAllowed
+                            ? Icons.visibility_off
+                            : Icons.visibility,
+                        size: 16),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 5),
+                      child: Text(widget.post.isAllowed ? 'hide' : 'show'),
                     ),
-                  ),
-                ],
+                    CrossFade(
+                      showChild: loading,
+                      child: SizedCircularProgressIndicator(
+                        size: 12,
+                      ),
+                    ),
+                  ],
+                ),
               ),
+              onTap: onToggle,
             ),
-            onTap: () async {
-              setState(() {
-                loading = true;
-              });
-
-              if (widget.post.file.url == null) {
-                if (settings.customHost.value == null) {
-                  await setCustomHost(context);
-                }
-                if (settings.customHost.value != null) {
-                  Post replacement;
-                  replacement = await client.post(widget.post.id, unsafe: true);
-                  widget.post.file = replacement.file;
-                  widget.post.preview = replacement.preview;
-                  widget.post.sample = replacement.sample;
-                  widget.post.notifyListeners();
-                }
-              } else {
-                widget.post.isAllowed = !widget.post.isAllowed;
-                widget.post.controller?.pause();
-                widget.post.notifyListeners();
-              }
-
-              setState(() {
-                loading = false;
-              });
-            },
           ),
         ),
       );
@@ -178,7 +192,7 @@ class PostDetailImageOverlay extends StatelessWidget {
                     child: Icon(
                       Icons.fullscreen,
                       size: 24,
-                      color: Theme.of(context).iconTheme.color,
+                      color: Colors.white,
                     ),
                   ),
                   onTap: onTap,
