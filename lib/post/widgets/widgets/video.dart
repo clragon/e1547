@@ -83,6 +83,7 @@ class _VideoButtonState extends State<VideoButton>
                         icon: AnimatedIcons.play_pause,
                         progress: animationController,
                         size: widget.size,
+                        color: Colors.white,
                       ),
                       secondChild: SizedBox(
                         height: widget.size * 0.7,
