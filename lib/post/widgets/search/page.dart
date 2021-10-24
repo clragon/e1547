@@ -139,7 +139,9 @@ class _PostsPageState extends State<PostsPage> with LinkingMixin {
 
     Widget selectionAppBar() {
       return AppBar(
-        title: Text('selected ${selections.length} posts'),
+        title: selections.length == 1
+            ? Text('post #${selections.first.id}')
+            : Text('${selections.length} posts'),
         leading: IconButton(
           icon: Icon(Icons.clear),
           onPressed: () => setState(selections.clear),
