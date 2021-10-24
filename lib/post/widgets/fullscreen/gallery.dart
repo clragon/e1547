@@ -71,6 +71,7 @@ class _PostFullscreenGalleryState extends State<PostFullscreenGallery>
         data: Theme.of(context).copyWith(
           appBarTheme: AppBarTheme(
             systemOverlayStyle: defaultUIStyle(Theme.of(context)).copyWith(
+              statusBarIconBrightness: Brightness.light,
               statusBarColor: Colors.black26,
             ),
           ),
