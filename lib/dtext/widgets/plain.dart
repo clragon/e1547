@@ -13,7 +13,7 @@ String normalize(String text) {
 TextSpan plainText(
     {required BuildContext context,
     required String text,
-    required Map<TextState, bool> state,
+    required TextState state,
     VoidCallback? onTap}) {
   text = normalize(text);
   text = text.replaceAllMapped(RegExp(r'\n{4,}'), (_) => '\n');
@@ -22,24 +22,18 @@ TextSpan plainText(
     text: text,
     recognizer: TapGestureRecognizer()..onTap = onTap,
     style: TextStyle(
-      color: state[TextState.dark]!
+      color: state.dark
           ? Theme.of(context).textTheme.bodyText1!.color!.withOpacity(0.5)
-          : state[TextState.link]!
+          : state.link
               ? Colors.blue[400]
               : Theme.of(context).textTheme.bodyText1!.color!,
-      fontWeight: state[TextState.bold]! ? FontWeight.bold : null,
-      fontStyle: state[TextState.italic]! ? FontStyle.italic : null,
-      fontSize: state[TextState.header]! ? 18 : null,
+      fontWeight: state.bold ? FontWeight.bold : null,
+      fontStyle: state.italic ? FontStyle.italic : null,
+      fontSize: state.header ? 18 : null,
       decoration: TextDecoration.combine([
-        state[TextState.strikeout]!
-            ? TextDecoration.lineThrough
-            : TextDecoration.none,
-        state[TextState.underline]!
-            ? TextDecoration.underline
-            : TextDecoration.none,
-        state[TextState.overline]!
-            ? TextDecoration.overline
-            : TextDecoration.none,
+        state.strikeout ? TextDecoration.lineThrough : TextDecoration.none,
+        state.underline ? TextDecoration.underline : TextDecoration.none,
+        state.overline ? TextDecoration.overline : TextDecoration.none,
       ]),
     ),
   );
