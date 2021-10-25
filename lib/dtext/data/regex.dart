@@ -17,7 +17,7 @@ String blockTag(String wrapped) => singleBrackets(
 
 String stopsAtEndChar(String wrapped) => [
       wrapped,
-      r'(?=([.,!:"\s]|(\? ))?)',
+      r'(?=([.,!:")\s]|(\? ))?)',
     ].join();
 
 String startsWithName(String wrapped, [bool? needsName]) => [

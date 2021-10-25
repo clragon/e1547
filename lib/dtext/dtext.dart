@@ -1,7 +1,8 @@
 // data
-export 'data/links.dart';
+export 'data/link.dart';
 export 'data/regex.dart';
 export 'data/state.dart';
+export 'data/word.dart';
 // widgets
 export 'widgets/field.dart';
 export 'widgets/plain.dart';
