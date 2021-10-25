@@ -157,11 +157,7 @@ class _PostsPageState extends State<PostsPage> with LinkingMixin {
             builder: (context) => IconButton(
               icon: Icon(Icons.file_download),
               onPressed: () {
-                loadingSnackbar(
-                    context: context,
-                    items: Set.from(selections),
-                    process: (post) => post.download(),
-                    timeout: Duration(milliseconds: 100));
+                postDownloadingSnackbar(context, Set.from(selections));
                 setState(selections.clear);
               },
             ),
@@ -183,26 +179,8 @@ class _PostsPageState extends State<PostsPage> with LinkingMixin {
                       : Theme.of(context).iconTheme.color,
                 ),
                 onTap: (isLiked) async {
-                  loadingSnackbar(
-                    context: context,
-                    items: Set.from(selections),
-                    process: isLiked
-                        ? (post) async {
-                            if (post.isFavorited) {
-                              return post.tryRemoveFav(context);
-                            } else {
-                              return true;
-                            }
-                          }
-                        : (post) async {
-                            if (!post.isFavorited) {
-                              return post.tryAddFav(context);
-                            } else {
-                              return true;
-                            }
-                          },
-                    timeout: Duration(milliseconds: 300),
-                  );
+                  postFavoritingSnackbar(
+                      context, Set.from(selections), isLiked);
                   setState(selections.clear);
                   return !isLiked;
                 },
