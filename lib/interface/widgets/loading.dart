@@ -96,7 +96,7 @@ class _ReplyLoadingPageState extends State<ReplyLoadingPage> {
   Widget build(BuildContext context) {
     return FuturePageLoader<Reply>(
       future: reply,
-      builder: (context, value) => TopicLoadingPage(id: value.id),
+      builder: (context, value) => TopicLoadingPage(id: value.topicId),
       title: Text('Reply #${widget.id}'),
       onLoading: Text('Loading reply'),
       onError: Text('Failed to load reply'),
