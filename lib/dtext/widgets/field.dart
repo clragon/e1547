@@ -21,7 +21,7 @@ class DTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // parse string recursively
-    TextSpan resolve(String text, Map<TextState, bool> state) {
+    TextSpan resolve(String text, TextState state) {
       // list of spans that will be returned
       List<InlineSpan> spans = [];
 
@@ -141,26 +141,26 @@ class DTextField extends StatelessWidget {
             resolve(after, state),
           ]);
         } else {
-          Map<TextState, bool> newState = Map.from(state);
+          TextState newState = state.copyWith();
           bool triggered = true;
 
           // add textStyle
           switch (key) {
             case 'b':
-              newState[TextState.bold] = active;
+              newState.bold = active;
               break;
             case 'i':
-              newState[TextState.italic] = active;
+              newState.italic = active;
               break;
             case 'u':
-              newState[TextState.underline] = active;
+              newState.underline = active;
               break;
             case 'o':
               // not supported on the site.
-              // newState[TextState.overline] = active;
+              // newState.overline = active;
               break;
             case 's':
-              newState[TextState.strikeout] = active;
+              newState.strikeout = active;
               break;
             case 'color':
               // I cannot be bothered.
@@ -243,7 +243,7 @@ class DTextField extends StatelessWidget {
         return plainText(
             context: context,
             text: display,
-            state: Map.from(state)..[TextState.link] = true,
+            state: state.copyWith(link: true),
             onTap: onTap);
       }
 
@@ -295,7 +295,7 @@ class DTextField extends StatelessWidget {
         return plainText(
             context: context,
             text: result,
-            state: Map.from(state)..[TextState.link] = true,
+            state: state.copyWith(link: true),
             onTap: onTap);
       }
 
@@ -319,7 +319,7 @@ class DTextField extends StatelessWidget {
           return plainText(
             context: context,
             text: name,
-            state: Map.from(state)..[TextState.link] = true,
+            state: state.copyWith(link: true),
             onTap: onTap,
           );
         },
@@ -330,7 +330,7 @@ class DTextField extends StatelessWidget {
           return plainText(
             context: context,
             text: name,
-            state: Map.from(state)..[TextState.link] = true,
+            state: state.copyWith(link: true),
             onTap: () {
               Navigator.of(context).push(
                 MaterialPageRoute(builder: (context) => SearchPage(tags: tags)),
@@ -346,7 +346,7 @@ class DTextField extends StatelessWidget {
             (match, result) {
           return resolve(
             match.namedGroup('name')!,
-            Map.from(state)..[TextState.header] = true,
+            state.copyWith(header: true),
           );
         },
         RegExp(linkWrap(
@@ -385,17 +385,17 @@ class DTextField extends StatelessWidget {
       return plainText(context: context, text: text, state: state);
     }
 
-    // Map to keep track of textStyle
-    Map<TextState, bool> state = {
-      TextState.bold: false,
-      TextState.italic: false,
-      TextState.strikeout: false,
-      TextState.underline: false,
-      TextState.overline: false,
-      TextState.header: false,
-      TextState.link: false,
-      TextState.dark: dark,
-    };
+    // keep track of textStyle
+    TextState state = TextState(
+      bold: false,
+      italic: false,
+      strikeout: false,
+      underline: false,
+      overline: false,
+      header: false,
+      link: false,
+      dark: dark,
+    );
 
     String result = source.replaceAllMapped(RegExp(r'\r\n'), (_) => '\n');
     result = result.trim();
