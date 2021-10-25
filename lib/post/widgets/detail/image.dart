@@ -97,12 +97,12 @@ class _PostDetailImageToggleState extends State<PostDetailImageToggle> {
       widget.post.isAllowed = !widget.post.isAllowed;
       widget.post.controller?.pause();
       widget.post.notifyListeners();
-    }
-    if (!widget.post.isAllowed && replacement != null) {
-      widget.post.file.url = null;
-      widget.post.preview.url = null;
-      widget.post.sample.url = null;
-      widget.post.notifyListeners();
+      if (!widget.post.isAllowed && replacement != null) {
+        widget.post.file.url = null;
+        widget.post.preview.url = null;
+        widget.post.sample.url = null;
+        widget.post.notifyListeners();
+      }
     }
     setState(() {
       loading = false;
@@ -128,11 +128,14 @@ class _PostDetailImageToggleState extends State<PostDetailImageToggle> {
                 padding: EdgeInsets.all(8),
                 child: Row(
                   children: [
-                    Icon(
-                        widget.post.isAllowed
-                            ? Icons.visibility_off
-                            : Icons.visibility,
-                        size: 16),
+                    Padding(
+                      padding: EdgeInsets.symmetric(vertical: 2),
+                      child: Icon(
+                          widget.post.isAllowed
+                              ? Icons.visibility_off
+                              : Icons.visibility,
+                          size: 16),
+                    ),
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 5),
                       child: Text(widget.post.isAllowed ? 'hide' : 'show'),
