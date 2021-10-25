@@ -6,20 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:share/share.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-List<PopupMenuItem<VoidCallback>> postMenuActions(
+List<PopupMenuItem<VoidCallback>> postMenuPostActions(
     BuildContext context, Post post) {
-  Future<void> download() async {
-    String message;
-    if (await post.download()) {
-      message = 'Saved image #${post.id} to gallery';
-    } else {
-      message = 'Failed to download post ${post.id}';
-    }
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      duration: Duration(seconds: 1),
-      content: Text(message),
-    ));
-  }
+  Future<void> download() async => postDownloadingSnackbar(context, {post});
 
   return [
     PopupMenuTile(

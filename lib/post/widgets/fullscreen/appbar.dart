@@ -26,7 +26,7 @@ class PostFullscreenAppBar extends StatelessWidget with AppBarSize {
                   color: Colors.white,
                 ),
                 onSelected: (value) => value(),
-                itemBuilder: ((context) => postMenuActions(context, post)),
+                itemBuilder: ((context) => postMenuPostActions(context, post)),
               ),
             ],
     );

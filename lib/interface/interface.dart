@@ -24,6 +24,7 @@ export 'widgets/refreshing.dart';
 export 'widgets/refreshing.dart';
 export 'widgets/shadows.dart';
 export 'widgets/sheet_editor.dart';
+export 'widgets/snackbar.dart';
 export 'widgets/startup.dart';
 export 'widgets/text_editor.dart';
 export 'widgets/tiles.dart';

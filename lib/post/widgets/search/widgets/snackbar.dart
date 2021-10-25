@@ -2,117 +2,57 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 
-Future<void> loadingSnackbar({
-  required BuildContext context,
-  required Set<Post> items,
-  required Future<bool> Function(Post post) process,
-  Duration? timeout,
-}) async {
-  late ScaffoldFeatureController controller;
-  controller = ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(
-      content: LoadingSnackbar(
-        items: items,
-        process: process,
-        timeout: timeout,
-        onDone: () => controller.close(),
-      ),
-      duration: Duration(days: 1),
-    ),
-  );
-  return await controller.closed;
-}
-
-class LoadingSnackbar extends StatefulWidget {
-  final Set<Post> items;
-  final Duration? timeout;
-  final Function? onDone;
-  final Future<bool> Function(Post post) process;
-
-  const LoadingSnackbar(
-      {required this.items, required this.process, this.timeout, this.onDone});
-
-  @override
-  _LoadingSnackbarState createState() => _LoadingSnackbarState();
-}
-
-class _LoadingSnackbarState extends State<LoadingSnackbar> {
-  bool cancel = false;
-  bool failure = false;
-  int progress = 0;
-
-  Future<void> run() async {
-    for (Post post in widget.items) {
-      if (await widget.process(post)) {
-        await Future.delayed(widget.timeout ?? defaultAnimationDuration);
-        setState(() {
-          progress++;
-        });
-      } else {
-        setState(() {
-          failure = true;
-          progress = widget.items.length;
-        });
-        break;
-      }
-      if (cancel) {
-        break;
-      }
-    }
-    await Future.delayed(Duration(milliseconds: 600));
-    widget.onDone!();
-    return;
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    run();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Row(
-          children: [
-            Text(
-              progress < widget.items.length
-                  ? 'Post #${widget.items.elementAt(progress).id} ($progress/${widget.items.length})'
-                  : failure
-                      ? 'Failure'
-                      : 'Done',
-              overflow: TextOverflow.visible,
-            ),
-            Flexible(
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8),
-                child: TweenAnimationBuilder(
-                  duration: widget.timeout ?? defaultAnimationDuration,
-                  builder: (context, double value, child) {
-                    double indicator = 1 / widget.items.length;
-                    if (indicator < 0) {
-                      indicator = 1;
-                    }
-                    indicator = indicator * value;
-                    return LinearProgressIndicator(
-                      value: indicator,
-                      color: Theme.of(context).colorScheme.secondary,
-                    );
-                  },
-                  tween: Tween<double>(begin: 0, end: progress.toDouble()),
-                ),
-              ),
-            ),
-            if (progress < widget.items.length && !failure)
-              InkWell(
-                child: Text('CANCEL'),
-                onTap: () => cancel = true,
-              ),
-          ],
-        )
-      ],
+Future<void> postDownloadingSnackbar(
+  BuildContext context,
+  Set<Post> items,
+) async =>
+    loadingSnackbar<Post>(
+      context: context,
+      timeout: Duration(milliseconds: 100),
+      process: (Post item) => item.download(),
+      items: items,
+      onDone: (items) => items.length == 1
+          ? 'Downloaded post #${items.first.id}'
+          : 'Downloaded ${items.length} posts',
+      onProgress: (items, index) => items.length == 1
+          ? 'Downloading Post #${items.first.id}'
+          : 'Downloading Post #${items.elementAt(index).id} ($index/${items.length})',
+      onFailure: (items, index) =>
+          'Failed to download post #${items.elementAt(index).id}',
+      onCancel: (items, index) => 'Cancelled download',
     );
-  }
-}
+
+Future<void> postFavoritingSnackbar(
+  BuildContext context,
+  Set<Post> items,
+  bool isLiked,
+) =>
+    loadingSnackbar<Post>(
+      context: context,
+      items: items,
+      timeout: Duration(milliseconds: 300),
+      process: isLiked
+          ? (post) async {
+              if (post.isFavorited) {
+                return post.tryRemoveFav(context);
+              } else {
+                return true;
+              }
+            }
+          : (post) async {
+              if (!post.isFavorited) {
+                return post.tryAddFav(context);
+              } else {
+                return true;
+              }
+            },
+      onDone: (items) => items.length == 1
+          ? 'Favorited post #${items.first.id}'
+          : 'Favorited ${items.length} posts',
+      onProgress: (items, index) => items.length == 1
+          ? 'Favoriting Post #${items.first.id}'
+          : 'Favoriting Post #${items.elementAt(index).id} ($index/${items.length})',
+      onFailure: (items, index) =>
+          'Failed to favorite post #${items.elementAt(index).id}',
+      onCancel: (items, index) => 'Cancelled favoriting',
+    );
