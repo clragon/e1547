@@ -1,14 +1,12 @@
 import 'package:collection/collection.dart';
-import 'package:e1547/client/client.dart';
 import 'package:e1547/dtext/dtext.dart';
-import 'package:e1547/interface/interface.dart';
-import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
-import 'package:e1547/settings/settings.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:username_generator/username_generator.dart';
+
+typedef DTextParser = InlineSpan Function(
+    RegExpMatch match, String result, TextState state);
 
 class DTextField extends StatelessWidget {
   final String source;
@@ -191,118 +189,9 @@ class DTextField extends StatelessWidget {
         );
       }
 
-      InlineSpan parseLink(RegExpMatch match, String result,
-          [bool insite = false]) {
-        String? display = match.namedGroup('name');
-        String search = match.namedGroup('link')!;
-        String siteMatch = r'((e621|e926)\.net)?';
-        VoidCallback onTap = () => launch(search);
-        int? id = int.tryParse(search.split('/').last.split('?').first);
-
-        if (display == null) {
-          display = match.namedGroup('link');
-          display = linkToDisplay(display!);
-        }
-
-        if (insite) {
-          onTap = () async => launch('https://${settings.host.value}$search');
-
-          // forum topics need generated names
-          if (usernameGenerator != null) {
-            RegExp userReg = RegExp(r'/user(s|/show)/(?<id>\d+)');
-            RegExpMatch? userMatch = userReg.firstMatch(search);
-            if (userMatch != null) {
-              int id = int.parse(userMatch.namedGroup('id')!);
-              display = usernameGenerator!.generate(id);
-            }
-          }
-        }
-
-        Map<RegExp, Function Function(RegExpMatch match)> links = {
-          RegExp(siteMatch + r'/posts/\d+'): (match) => () async {
-                Post p = await client.post(id!);
-                Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => PostDetail(post: p)));
-              },
-          RegExp(siteMatch + r'/pool(s|/show)/\d+'): (match) => () async {
-                Pool p = await client.pool(id!);
-                Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => PoolPage(pool: p)));
-              },
-        };
-
-        for (MapEntry<RegExp, Function(RegExpMatch match)> entry
-            in links.entries) {
-          RegExpMatch? match = entry.key.firstMatch(result);
-          if (match != null) {
-            onTap = entry.value(match);
-            break;
-          }
-        }
-
-        return plainText(
-            context: context,
-            text: display,
-            state: state.copyWith(link: true),
-            onTap: onTap);
-      }
-
-      InlineSpan parseWord(LinkWord? word, RegExpMatch match, String result) {
-        VoidCallback? onTap;
-        int id = int.parse(match.namedGroup('id')!);
-
-        switch (word) {
-          case LinkWord.thumb:
-          // add actual pictures here some day.
-          case LinkWord.post:
-            onTap = () async => Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => PostLoadingPage(id: id),
-                  ),
-                );
-            break;
-          case LinkWord.pool:
-            onTap = () async => Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => PoolLoadingPage(id: id),
-                  ),
-                );
-            break;
-          case LinkWord.forum:
-            if (settings.showBeta.value) {
-              onTap = () async {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => ReplyLoadingPage(id: id),
-                  ),
-                );
-              };
-            }
-            break;
-          case LinkWord.topic:
-            if (settings.showBeta.value) {
-              onTap = () => Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => TopicLoadingPage(id: id),
-                    ),
-                  );
-            }
-            break;
-          default:
-            break;
-        }
-
-        return plainText(
-            context: context,
-            text: result,
-            state: state.copyWith(link: true),
-            onTap: onTap);
-      }
-
-      Map<RegExp, InlineSpan Function(RegExpMatch match, String result)>
-          regexes = {
+      Map<RegExp, DTextParser> regexes = {
         RegExp(r'\[\[(?<anchor>#)?(?<tags>.*?)(\|(?<name>.*?))?\]\]'):
-            (match, result) {
+            (match, result, state) {
           bool anchor = match.namedGroup('anchor') != null;
           String tags = match.namedGroup('tags')!;
           String name = match.namedGroup('name') ?? tags;
@@ -323,7 +212,7 @@ class DTextField extends StatelessWidget {
             onTap: onTap,
           );
         },
-        RegExp(r'{{(?<tags>.*?)(\|(?<name>.*?))?}}'): (match, result) {
+        RegExp(r'{{(?<tags>.*?)(\|(?<name>.*?))?}}'): (match, result, state) {
           String? tags = match.namedGroup('tags');
           String name = match.namedGroup('name') ?? tags!;
 
@@ -338,32 +227,22 @@ class DTextField extends StatelessWidget {
             },
           );
         },
-        RegExp(r'(^|\n)\*+ '): (match, result) {
+        RegExp(r'(^|\n)\*+ '): (match, result, state) {
           return resolve(
               '\n' + '  ' * ('*'.allMatches(result).length - 1) + '• ', state);
         },
         RegExp(r'h[1-6]\.\s?(?<name>.*)', caseSensitive: false):
-            (match, result) {
+            (match, result, state) {
           return resolve(
             match.namedGroup('name')!,
             state.copyWith(header: true),
           );
         },
-        RegExp(linkWrap(
-            r'(?<link>(http(s)?)?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*))',
-            false)): parseLink,
-        RegExp(linkWrap(r'(?<link>[-a-zA-Z0-9()@:%_\+.~#?&//=]*)')):
-            (match, result) => parseLink(match, result, true),
-        ...{
-          for (LinkWord word in LinkWord.values)
-            RegExp(RegExp.escape(describeEnum(word)) + r' #(?<id>\d+)',
-                    caseSensitive: false):
-                (match, result) => parseWord(word, match, result)
-        },
+        ...linkRegexes(context),
+        ...linkWordRegexes(context),
       };
 
-      for (MapEntry<RegExp, Function(RegExpMatch match, String result)> entry
-          in regexes.entries) {
+      for (MapEntry<RegExp, DTextParser> entry in regexes.entries) {
         for (RegExpMatch otherMatch in entry.key.allMatches(text)) {
           String before = text.substring(0, otherMatch.start);
           String result = text.substring(otherMatch.start, otherMatch.end);
@@ -371,7 +250,7 @@ class DTextField extends StatelessWidget {
 
           spans.addAll([
             resolve(before, state),
-            entry.value(otherMatch, result),
+            entry.value(otherMatch, result, state),
             resolve(after, state),
           ]);
 

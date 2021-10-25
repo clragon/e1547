@@ -27,6 +27,7 @@ class Post extends PostData with ChangeNotifier {
     switch (file.ext) {
       case 'mp4':
       case 'webm':
+        if (Platform.isWindows) return PostType.unsupported;
         return PostType.video;
       case 'swf':
         return PostType.unsupported;
