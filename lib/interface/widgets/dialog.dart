@@ -52,12 +52,11 @@ class _LoadingDialogState extends State<LoadingDialog> {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: widget.title,
-      content: SingleChildScrollView(
-        physics: BouncingScrollPhysics(),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Flexible(
+            child: Row(
               children: [
                 CrossFade(
                   showChild: isLoading,
@@ -71,35 +70,35 @@ class _LoadingDialogState extends State<LoadingDialog> {
                 ),
               ],
             ),
-            SafeCrossFade(
-              showChild: error != null,
-              builder: (context) => Padding(
-                padding: EdgeInsets.symmetric(vertical: 8),
-                child: DefaultTextStyle(
-                  style: Theme.of(context).textTheme.bodyText1!.copyWith(
-                        color: Theme.of(context).errorColor,
-                        fontSize: 14,
-                      ),
-                  child: IconTheme(
-                    data: Theme.of(context).iconTheme.copyWith(
-                          color: Theme.of(context).errorColor,
-                          size: 14,
-                        ),
-                    child: Row(
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 4),
-                          child: Icon(Icons.error_outline),
-                        ),
-                        Text(error!.message)
-                      ],
+          ),
+          SafeCrossFade(
+            showChild: error != null,
+            builder: (context) => Padding(
+              padding: EdgeInsets.symmetric(vertical: 8),
+              child: DefaultTextStyle(
+                style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                      color: Theme.of(context).errorColor,
+                      fontSize: 14,
                     ),
+                child: IconTheme(
+                  data: Theme.of(context).iconTheme.copyWith(
+                        color: Theme.of(context).errorColor,
+                        size: 14,
+                      ),
+                  child: Row(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 4),
+                        child: Icon(Icons.error_outline),
+                      ),
+                      Text(error!.message)
+                    ],
                   ),
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
       actions: [
         TextButton(
