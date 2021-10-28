@@ -199,8 +199,8 @@ class _SettingsPageState extends State<SettingsPage> {
               title: Text('Blacklist'),
               leading: Icon(Icons.block),
               subtitle: value.isNotEmpty
-                  ? Text('${value.join(' ').split(' ').where(
-                        (element) => element[0] != '-',
+                  ? Text('${value.join(' ').trim().split(' ').where(
+                        (element) => element.isNotEmpty && element[0] != '-',
                       ).length} tags blocked')
                   : null,
               onTap: () => Navigator.pushNamed(context, '/blacklist'),

@@ -51,31 +51,33 @@ extension Tagging on Post {
           bool greater = value.contains('>');
           bool smaller = value.contains('<');
           bool equal = value.contains('=');
-          int? score = int.tryParse(value.replaceAll(r'[<>=]', ''));
-          if (greater) {
-            if (equal) {
-              if (this.score.total >= score!) {
-                return true;
-              }
-            } else {
-              if (this.score.total > score!) {
-                return true;
-              }
-            }
-          }
-          if (smaller) {
-            if (equal) {
-              if (this.score.total <= score!) {
-                return true;
-              }
-            } else {
-              if (this.score.total < score!) {
-                return true;
+          int? score = int.tryParse(value.replaceAll(RegExp(r'[<>=]'), ''));
+          if (score != null) {
+            if (greater) {
+              if (equal) {
+                if (this.score.total >= score) {
+                  return true;
+                }
+              } else {
+                if (this.score.total > score) {
+                  return true;
+                }
               }
             }
-          }
-          if ((!greater && !smaller) && this.score.total == score) {
-            return true;
+            if (smaller) {
+              if (equal) {
+                if (this.score.total <= score) {
+                  return true;
+                }
+              } else {
+                if (this.score.total < score) {
+                  return true;
+                }
+              }
+            }
+            if ((!greater && !smaller) && this.score.total == score) {
+              return true;
+            }
           }
           break;
       }
