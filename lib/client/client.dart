@@ -107,7 +107,10 @@ class Client {
     }
     if (_currentUser == null) {
       _currentUser = await client.authedUser();
-      settings.denylist.value = _currentUser!.blacklistedTags.split('\n');
+      List<String> updated = _currentUser!.blacklistedTags.split('\n');
+      updated = updated.trim();
+      updated.removeWhere((element) => element.isEmpty);
+      settings.denylist.value = updated;
     }
     if (_currentAvatar == null) {
       int? avatarId = _currentUser?.avatarId;
