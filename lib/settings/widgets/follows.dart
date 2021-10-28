@@ -148,6 +148,7 @@ class _FollowingPageState extends State<FollowingPage> with LinkingMixin {
           ],
         ),
         content: TextField(
+          scrollPhysics: BouncingScrollPhysics(),
           controller: controller,
           keyboardType: TextInputType.multiline,
           maxLines: null,
