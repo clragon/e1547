@@ -124,6 +124,7 @@ class _PostDetailImageToggleState extends State<PostDetailImageToggle> {
             color: widget.post.isAllowed ? Colors.black12 : Colors.transparent,
             elevation: 0,
             child: InkWell(
+              onTap: onToggle,
               child: Padding(
                 padding: EdgeInsets.all(8),
                 child: Row(
@@ -149,7 +150,6 @@ class _PostDetailImageToggleState extends State<PostDetailImageToggle> {
                   ],
                 ),
               ),
-              onTap: onToggle,
             ),
           ),
         ),
@@ -190,6 +190,7 @@ class PostDetailImageOverlay extends StatelessWidget {
                 elevation: 0,
                 color: Colors.black12,
                 child: InkWell(
+                  onTap: onTap,
                   child: Padding(
                     padding: EdgeInsets.all(4),
                     child: Icon(
@@ -198,9 +199,20 @@ class PostDetailImageOverlay extends StatelessWidget {
                       color: Colors.white,
                     ),
                   ),
-                  onTap: onTap,
                 ),
               ),
+            );
+          } else {
+            return SizedBox.shrink();
+          }
+        }
+
+        Widget muteButton() {
+          if (post.type == PostType.video) {
+            return Card(
+              elevation: 0,
+              color: Colors.black12,
+              child: VideoVolumeControl(videoController: post.controller!),
             );
           } else {
             return SizedBox.shrink();
@@ -218,16 +230,20 @@ class PostDetailImageOverlay extends StatelessWidget {
               child: IgnorePointer(child: child),
             ),
             Positioned(
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  fullscreenButton(),
-                  PostDetailImageToggle(post: post),
-                ],
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 4),
+                child: Row(
+                  children: [
+                    muteButton(),
+                    Spacer(),
+                    fullscreenButton(),
+                    PostDetailImageToggle(post: post),
+                  ],
+                ),
               ),
               bottom: 0,
-              right: 5,
+              left: 0,
+              right: 0,
             )
           ],
         );
