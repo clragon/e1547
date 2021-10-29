@@ -260,23 +260,40 @@ class _VideoGestureState extends State<VideoGesture>
             icon: Icon(widget.forward ? Icons.fast_forward : Icons.fast_rewind),
             title: Text('${10 * combo} seconds'),
           ),
-          AnimatedBuilder(
-            animation: fadeAnimation,
-            builder: (context, child) => Container(
-              decoration: BoxDecoration(
-                gradient: RadialGradient(
-                  radius: 1,
-                  colors: [
-                    Colors.white.withOpacity(0.6 * animationController.value),
-                    Colors.transparent,
+          LayoutBuilder(builder: (context, constraints) {
+            double size = constraints.maxHeight * 2;
+            return AnimatedBuilder(
+              animation: fadeAnimation,
+              builder: (context, child) => SizedBox(
+                child: Stack(
+                  alignment: Alignment.center,
+                  clipBehavior: Clip.none,
+                  children: [
+                    Positioned(
+                      right: widget.forward ? null : constraints.maxWidth * 0.2,
+                      left: widget.forward ? constraints.maxWidth * 0.2 : null,
+                      child: Container(
+                        width: size,
+                        height: size,
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).splashColor,
+                          borderRadius: widget.forward
+                              ? BorderRadius.only(
+                                  topLeft: Radius.circular(size),
+                                  bottomLeft: Radius.circular(size),
+                                )
+                              : BorderRadius.only(
+                                  topRight: Radius.circular(size),
+                                  bottomRight: Radius.circular(size),
+                                ),
+                        ),
+                      ),
+                    ),
                   ],
-                  center: widget.forward
-                      ? Alignment.centerRight
-                      : Alignment.centerLeft,
                 ),
               ),
-            ),
-          )
+            );
+          })
         ]),
       ),
     );
