@@ -1,4 +1,4 @@
-import 'dart:async' show Future, Timer;
+import 'dart:async';
 
 import 'package:e1547/client/client.dart';
 import 'package:e1547/settings/settings.dart';
