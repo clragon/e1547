@@ -56,14 +56,12 @@ Map<String, WidgetBuilder> routes = <String, WidgetBuilder>{
   '/following': (context) => FollowingPage(),
 };
 
-ProfileHeader header = ProfileHeader();
-
 class NavigationDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
       child: ListView(physics: BouncingScrollPhysics(), children: [
-        header,
+        ProfileHeader(),
         ListTile(
           selected: drawerSelection == DrawerSelection.home,
           leading: Icon(Icons.home),
