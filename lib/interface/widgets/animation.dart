@@ -3,19 +3,25 @@ import 'package:flutter/material.dart';
 
 final Duration defaultAnimationDuration = Duration(milliseconds: 200);
 
-class SafeBuilder extends StatelessWidget {
-  final bool showChild;
+class FadeBuilder extends StatelessWidget {
   final WidgetBuilder builder;
+  final Duration? duration;
 
-  const SafeBuilder({required this.showChild, required this.builder});
+  const FadeBuilder({
+    required this.builder,
+    this.duration,
+  });
 
   @override
   Widget build(BuildContext context) {
-    if (showChild) {
-      return builder(context);
-    } else {
-      return SizedBox.shrink();
-    }
+    Duration duration = this.duration ?? defaultAnimationDuration;
+    return AnimatedSize(
+      duration: duration,
+      child: AnimatedSwitcher(
+        duration: duration,
+        child: builder(context),
+      ),
+    );
   }
 }
 
@@ -36,12 +42,10 @@ class CrossFade extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedCrossFade(
-        firstChild: child,
-        secondChild: secondChild ?? SizedBox.shrink(),
-        crossFadeState:
-            showChild ? CrossFadeState.showFirst : CrossFadeState.showSecond,
-        duration: duration ?? defaultAnimationDuration);
+    return FadeBuilder(
+      builder: (context) =>
+          showChild ? child : secondChild ?? SizedBox.shrink(),
+    );
   }
 }
 
@@ -62,14 +66,9 @@ class SafeCrossFade extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CrossFade(
-      showChild: showChild,
-      child: SafeBuilder(
-        builder: builder,
-        showChild: showChild,
-      ),
-      secondChild: secondChild,
-      duration: duration,
+    return FadeBuilder(
+      builder:
+          showChild ? builder : (context) => secondChild ?? SizedBox.shrink(),
     );
   }
 }
@@ -91,26 +90,33 @@ class Replacer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        IgnorePointer(
-          ignoring: !showChild,
-          child: AnimatedOpacity(
-            opacity: showChild ? 1 : 0,
-            duration: duration ?? defaultAnimationDuration,
-            child: child,
+    return AnimatedCrossFade(
+      firstChild: child,
+      secondChild: secondChild,
+      crossFadeState:
+          showChild ? CrossFadeState.showFirst : CrossFadeState.showSecond,
+      duration: duration ?? defaultAnimationDuration,
+      layoutBuilder: (topChild, topChildKey, bottomChild, bottomChildKey) =>
+          Stack(
+        clipBehavior: Clip.none,
+        children: <Widget>[
+          Positioned(
+            key: bottomChildKey,
+            child: ExcludeFocus(
+              child: IgnorePointer(
+                child: Opacity(
+                  opacity: 0,
+                  child: bottomChild,
+                ),
+              ),
+            ),
           ),
-        ),
-        IgnorePointer(
-          ignoring: showChild,
-          child: AnimatedOpacity(
-            opacity: showChild ? 0 : 1,
-            duration: duration ?? defaultAnimationDuration,
-            child: secondChild,
+          Positioned(
+            key: topChildKey,
+            child: topChild,
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
