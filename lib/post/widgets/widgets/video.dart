@@ -145,6 +145,9 @@ class VideoBar extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
+                        VideoVolumeControl(
+                          videoController: videoController,
+                        ),
                         Text(videoController.value.position
                             .toString()
                             .substring(2, 7)),
@@ -173,6 +176,7 @@ class VideoBar extends StatelessWidget {
                             .toString()
                             .substring(2, 7)),
                         InkWell(
+                          onTap: Navigator.of(context).maybePop,
                           child: Padding(
                             padding: EdgeInsets.all(4),
                             child: Icon(
@@ -181,7 +185,6 @@ class VideoBar extends StatelessWidget {
                               color: Theme.of(context).iconTheme.color,
                             ),
                           ),
-                          onTap: Navigator.of(context).maybePop,
                         ),
                       ],
                     ),
@@ -390,5 +393,38 @@ class PostVideoWidget extends StatelessWidget {
       );
     }
     return placeholder();
+  }
+}
+
+class VideoVolumeControl extends StatefulWidget {
+  final VideoPlayerController videoController;
+
+  const VideoVolumeControl({required this.videoController});
+
+  @override
+  _VideoVolumeControlState createState() => _VideoVolumeControlState();
+}
+
+class _VideoVolumeControlState extends State<VideoVolumeControl> {
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedSelector(
+      animation: widget.videoController,
+      selector: () => [widget.videoController.value.volume],
+      builder: (context, child) {
+        bool muted = widget.videoController.value.volume == 0;
+        return InkWell(
+          onTap: () => widget.videoController.setVolume(muted ? 1 : 0),
+          child: Padding(
+            padding: EdgeInsets.all(4),
+            child: Icon(
+              muted ? Icons.volume_off : Icons.volume_up,
+              size: 24,
+              color: Colors.white,
+            ),
+          ),
+        );
+      },
+    );
   }
 }
