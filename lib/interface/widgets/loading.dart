@@ -123,10 +123,10 @@ class _UserLoadingPageState extends State<UserLoadingPage> {
     return FuturePageLoader<User>(
       future: user,
       builder: (context, value) => SearchPage(tags: 'user:${value.name}'),
-      title: Text('Post #${widget.id}'),
-      onLoading: Text('Loading post'),
-      onError: Text('Failed to load post'),
-      onEmpty: Text('Invalid post id'),
+      title: Text('User #${widget.id}'),
+      onLoading: Text('Loading user'),
+      onError: Text('Failed to load user'),
+      onEmpty: Text('Invalid user id'),
     );
   }
 }
