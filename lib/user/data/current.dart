@@ -93,7 +93,7 @@ class CurrentUser {
   bool canApprovePosts;
   bool canUploadFree;
   String levelString;
-  int avatarId;
+  int? avatarId;
   bool showAvatars;
   bool blacklistAvatars;
   bool blacklistUsers;
@@ -120,15 +120,15 @@ class CurrentUser {
   DateTime updatedAt;
   String email;
   DateTime lastLoggedInAt;
-  DateTime lastForumReadAt;
-  String recentTags;
+  DateTime? lastForumReadAt;
+  String? recentTags;
   int commentThreshold;
   String defaultImageSize;
-  String favoriteTags;
+  String? favoriteTags;
   String blacklistedTags;
   String timeZone;
   int perPage;
-  String customStyle;
+  String? customStyle;
   int favoriteCount;
   int apiRegenMultiplier;
   int apiBurstLimit;
@@ -262,7 +262,7 @@ class CurrentUser {
         "updated_at": updatedAt.toIso8601String(),
         "email": email,
         "last_logged_in_at": lastLoggedInAt.toIso8601String(),
-        "last_forum_read_at": lastForumReadAt.toIso8601String(),
+        "last_forum_read_at": lastForumReadAt?.toIso8601String(),
         "recent_tags": recentTags,
         "comment_threshold": commentThreshold,
         "default_image_size": defaultImageSize,
