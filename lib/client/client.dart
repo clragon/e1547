@@ -103,6 +103,7 @@ class Client {
       _currentAvatar = null;
     }
     if (!await hasLogin) {
+      userInitLock.release();
       return;
     }
     if (_currentUser == null) {
