@@ -79,11 +79,8 @@ extension Refreshing on Follow {
 
       List<String> denylist = settings.denylist.value;
 
-      await Future.forEach(
-        posts,
-        (Post element) async =>
-            element.isBlacklisted = await element.isDeniedBy(denylist),
-      );
+      posts.map(
+          (element) => element.isBlacklisted = element.isDeniedBy(denylist));
 
       posts.removeWhere((element) => element.isBlacklisted);
       await updateUnseen(posts);

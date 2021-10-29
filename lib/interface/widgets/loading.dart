@@ -3,6 +3,7 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/topic/topic.dart';
+import 'package:e1547/user/user.dart';
 import 'package:flutter/material.dart';
 
 class PostLoadingPage extends StatefulWidget {
@@ -101,6 +102,31 @@ class _ReplyLoadingPageState extends State<ReplyLoadingPage> {
       onLoading: Text('Loading reply'),
       onError: Text('Failed to load reply'),
       onEmpty: Text('Invalid reply id'),
+    );
+  }
+}
+
+class UserLoadingPage extends StatefulWidget {
+  final int id;
+
+  const UserLoadingPage({required this.id});
+
+  @override
+  _UserLoadingPageState createState() => _UserLoadingPageState();
+}
+
+class _UserLoadingPageState extends State<UserLoadingPage> {
+  late Future<User> user = client.user(widget.id.toString());
+
+  @override
+  Widget build(BuildContext context) {
+    return FuturePageLoader<User>(
+      future: user,
+      builder: (context, value) => SearchPage(tags: 'user:${value.name}'),
+      title: Text('Post #${widget.id}'),
+      onLoading: Text('Loading post'),
+      onError: Text('Failed to load post'),
+      onEmpty: Text('Invalid post id'),
     );
   }
 }

@@ -1,4 +1,3 @@
-import 'package:e1547/client/client.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/tag/tag.dart';
@@ -70,20 +69,17 @@ class ArtistDisplay extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Builder(
-                  builder: (BuildContext context) {
-                    return InkWell(
-                      child: Text('#${post.id}'),
-                      onLongPress: () {
-                        Clipboard.setData(ClipboardData(
-                          text: post.id.toString(),
-                        ));
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          duration: Duration(seconds: 1),
-                          content: Text('Copied post id #${post.id}'),
-                        ));
-                      },
-                    );
-                  },
+                  builder: (BuildContext context) => InkWell(
+                    child: Text('#${post.id}'),
+                    onLongPress: () {
+                      Clipboard.setData(
+                          ClipboardData(text: post.id.toString()));
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        duration: Duration(seconds: 1),
+                        content: Text('Copied post id #${post.id}'),
+                      ));
+                    },
+                  ),
                 ),
                 InkWell(
                   child: Row(children: [
@@ -93,13 +89,13 @@ class ArtistDisplay extends StatelessWidget {
                       child: Text(post.uploaderId.toString()),
                     ),
                   ]),
-                  onTap: () async {
-                    String? uploader =
-                        (await client.user(post.uploaderId.toString())).name;
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) =>
-                            SearchPage(tags: 'user:$uploader')));
-                  },
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => UserLoadingPage(
+                        id: post.uploaderId,
+                      ),
+                    ),
+                  ),
                 ),
               ],
             ),
