@@ -128,14 +128,11 @@ class VideoBar extends StatelessWidget {
       child: AnimatedBuilder(
         animation: videoController,
         builder: (context, child) {
-          bool shown =
-              frameController!.visible && videoController.value.isInitialized;
-
           return SafeCrossFade(
-            showChild: shown,
+            showChild: videoController.value.isInitialized,
             builder: (context) => FrameFadeWidget(
               controller: frameController,
-              shown: shown,
+              shown: frameController!.visible,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
