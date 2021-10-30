@@ -84,4 +84,6 @@ class Persistence extends SharedPrefsSerializer {
       createSetting<bool>(key: 'hideSystemUI', initial: true);
   late final ValueNotifier<bool> upvoteFavs =
       createSetting<bool>(key: 'upvoteFavs', initial: false);
+  late final ValueNotifier<bool> muteVideos =
+      createSetting<bool>(key: 'muteVideos', initial: false);
 }

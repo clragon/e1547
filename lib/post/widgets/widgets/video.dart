@@ -142,12 +142,17 @@ class VideoBar extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        VideoVolumeControl(
+                        VideoGlobalVolumeControl(
                           videoController: videoController,
                         ),
-                        Text(videoController.value.position
-                            .toString()
-                            .substring(2, 7)),
+                        SizedBox(
+                          width: 4,
+                        ),
+                        Text(
+                          videoController.value.position
+                              .toString()
+                              .substring(2, 7),
+                        ),
                         Flexible(
                             child: Slider(
                           min: 0,
@@ -169,9 +174,14 @@ class VideoBar extends StatelessWidget {
                             }
                           },
                         )),
-                        Text(videoController.value.duration
-                            .toString()
-                            .substring(2, 7)),
+                        Text(
+                          videoController.value.duration
+                              .toString()
+                              .substring(2, 7),
+                        ),
+                        SizedBox(
+                          width: 4,
+                        ),
                         InkWell(
                           onTap: Navigator.of(context).maybePop,
                           child: Padding(
@@ -424,11 +434,53 @@ class _VideoVolumeControlState extends State<VideoVolumeControl> {
   Widget build(BuildContext context) {
     return AnimatedSelector(
       animation: widget.videoController,
-      selector: () => [widget.videoController.value.volume],
+      selector: () => [
+        widget.videoController.value.volume,
+        widget.videoController.value.isInitialized
+      ],
       builder: (context, child) {
         bool muted = widget.videoController.value.volume == 0;
+        return CrossFade(
+          showChild: widget.videoController.value.isInitialized,
+          child: InkWell(
+            onTap: () => widget.videoController.setVolume(muted ? 1 : 0),
+            child: Padding(
+              padding: EdgeInsets.all(4),
+              child: Icon(
+                muted ? Icons.volume_off : Icons.volume_up,
+                size: 24,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class VideoGlobalVolumeControl extends StatefulWidget {
+  final VideoPlayerController videoController;
+
+  const VideoGlobalVolumeControl({required this.videoController});
+
+  @override
+  _VideoGlobalVolumeControlState createState() =>
+      _VideoGlobalVolumeControlState();
+}
+
+class _VideoGlobalVolumeControlState extends State<VideoGlobalVolumeControl> {
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedSelector(
+      animation: widget.videoController,
+      selector: () => [
+        widget.videoController.value.volume,
+      ],
+      builder: (context, child) {
+        bool muted = Post.muteVideos;
         return InkWell(
-          onTap: () => widget.videoController.setVolume(muted ? 1 : 0),
+          onTap: () => setState(() => Post.muteVideos = !muted),
           child: Padding(
             padding: EdgeInsets.all(4),
             child: Icon(
