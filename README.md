@@ -1,18 +1,18 @@
 
 <table>
-    <tr>
+  <tr>
     <td width="20%">
-    <img src="assets/icon/app/round.png"/>
+      <img src="assets/icon/app/round.png"/>
     </td>
     <td width="80%">
-    <h1>e1547</h1>
-    <h4>A mobile app to browse e621 and e926.</h4>
-    <a href="https://github.com/clragon/e1547/commits/master"><img src="https://badgen.net/github/commits/clragon/e1547"></a>
-    <a href="https://github.com/clragon/e1547/commits/master"><img src="https://badgen.net/github/last-commit/clragon/e1547"></a>
-    <a href="blob/master/LICENSE"><img src="https://img.shields.io/github/license/clragon/e1547"><a>
-    <a href="https://discord.gg/MRwKGqfmUz"><img src="https://img.shields.io/discord/763321712766877727.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2"></a>
+      <h1>e1547</h1>
+      <h4>A mobile app to browse e621 and e926.</h4>
+      <a href="https://github.com/clragon/e1547/commits/master"><img src="https://badgen.net/github/commits/clragon/e1547"></a>
+      <a href="https://github.com/clragon/e1547/commits/master"><img src="https://badgen.net/github/last-commit/clragon/e1547"></a>
+      <a href="blob/master/LICENSE"><img src="https://img.shields.io/github/license/clragon/e1547"><a>
+      <a href="https://discord.gg/MRwKGqfmUz"><img src="https://img.shields.io/discord/763321712766877727.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2"></a>
     </td>
-    </tr>
+  </tr>
 </table>
 
 
@@ -38,7 +38,7 @@
 ## Screenshots  
   
 <p align="center">
-  <img src="assets/screenshots/1547.gif">
+  <img src="assets/screenshots/old/1547.gif">
 </p>
 
 v1.5.2 GIF by [Kritanta](https://github.com/KritantaDev) on iOS
@@ -66,11 +66,6 @@ or
 1. Grab [Cydia Impactor](http://www.cydiaimpactor.com/)
 2. Drag the downloaded .ipa file onto Cydia Impactor after opening it. 
 3. Enter your Apple ID and password. If the password fails, [use an App Specific 2fa Password](https://support.apple.com/en-us/HT204397#sections)
-
-#### Installing on iOS 14
-
-1. Follow the instructions in [Compiling for iOS](#iOS)
-2. Run `flutter run --release` to install the App.
 
 ## Compilation
 
