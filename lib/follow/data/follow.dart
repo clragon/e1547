@@ -51,15 +51,16 @@ class Follow {
   }
 
   bool updatePool(Pool pool) {
+    bool updated = false;
     if (alias == null) {
       alias = tagToTitle(pool.name);
-      return true;
+      updated = true;
     }
     if (!pool.isActive && type != FollowType.bookmark) {
       type = FollowType.bookmark;
-      return true;
+      updated = true;
     }
-    return false;
+    return updated;
   }
 
   Future<bool> updateTimestamp(FollowStatus status) async {
