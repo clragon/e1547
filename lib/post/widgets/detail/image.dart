@@ -212,7 +212,9 @@ class PostDetailImageOverlay extends StatelessWidget {
             return Card(
               elevation: 0,
               color: Colors.black12,
-              child: VideoVolumeControl(videoController: post.controller!),
+              child: VideoGlobalVolumeControl(
+                videoController: post.controller!,
+              ),
             );
           } else {
             return SizedBox.shrink();
