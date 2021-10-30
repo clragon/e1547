@@ -85,12 +85,14 @@ class _VideoButtonState extends State<VideoButton>
                         size: widget.size,
                         color: Colors.white,
                       ),
-                      secondChild: SizedBox(
-                        height: widget.size * 0.7,
-                        width: widget.size * 0.7,
-                        child: Padding(
-                          padding: EdgeInsets.all(8),
-                          child: CircularProgressIndicator(),
+                      secondChild: Center(
+                        child: SizedBox(
+                          height: widget.size * 0.7,
+                          width: widget.size * 0.7,
+                          child: Padding(
+                            padding: EdgeInsets.all(8),
+                            child: CircularProgressIndicator(),
+                          ),
                         ),
                       ),
                     ),
