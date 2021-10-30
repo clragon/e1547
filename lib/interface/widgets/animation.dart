@@ -3,6 +3,11 @@ import 'package:flutter/material.dart';
 
 final Duration defaultAnimationDuration = Duration(milliseconds: 200);
 
+enum FadeAnimationStyle {
+  adjacent,
+  stacked,
+}
+
 class FadeBuilder extends StatelessWidget {
   final WidgetBuilder builder;
   final Duration? duration;
@@ -33,19 +38,34 @@ class CrossFade extends StatelessWidget {
 
   final bool showChild;
 
+  final FadeAnimationStyle style;
+
   const CrossFade({
     required this.showChild,
     required this.child,
     this.secondChild,
     this.duration,
+    this.style = FadeAnimationStyle.adjacent,
   });
 
   @override
   Widget build(BuildContext context) {
-    return FadeBuilder(
-      builder: (context) =>
-          showChild ? child : secondChild ?? SizedBox.shrink(),
-    );
+    Duration duration = this.duration ?? defaultAnimationDuration;
+    switch (style) {
+      case FadeAnimationStyle.stacked:
+        return AnimatedCrossFade(
+          firstChild: child,
+          secondChild: secondChild ?? SizedBox.shrink(),
+          crossFadeState:
+              showChild ? CrossFadeState.showFirst : CrossFadeState.showSecond,
+          duration: duration,
+        );
+      case FadeAnimationStyle.adjacent:
+        return FadeBuilder(
+          builder: (context) =>
+              showChild ? child : secondChild ?? SizedBox.shrink(),
+        );
+    }
   }
 }
 
@@ -57,18 +77,23 @@ class SafeCrossFade extends StatelessWidget {
 
   final bool showChild;
 
+  final FadeAnimationStyle style;
+
   const SafeCrossFade({
     required this.showChild,
     required this.builder,
     this.secondChild,
     this.duration,
+    this.style = FadeAnimationStyle.adjacent,
   });
 
   @override
   Widget build(BuildContext context) {
-    return FadeBuilder(
-      builder:
-          showChild ? builder : (context) => secondChild ?? SizedBox.shrink(),
+    return CrossFade(
+      showChild: showChild,
+      child: showChild ? builder(context) : SizedBox.shrink(),
+      secondChild: secondChild,
+      style: style,
     );
   }
 }
