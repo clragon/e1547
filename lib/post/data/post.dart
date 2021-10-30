@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:e1547/interface/interface.dart';
+import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:wakelock/wakelock.dart';
@@ -39,6 +40,14 @@ class Post extends PostData with ChangeNotifier {
   VideoPlayerController? controller;
 
   static List<Post> loadedVideos = [];
+  static bool _muteVideos = settings.muteVideos.value;
+  static bool get muteVideos => _muteVideos;
+  static set muteVideos(value) {
+    _muteVideos = value;
+    loadedVideos.forEach(
+      (element) => element.controller?.setVolume(muteVideos ? 0 : 1),
+    );
+  }
 
   Future<void> wakelock() async {
     controller!.value.isPlaying ? Wakelock.enable() : Wakelock.disable();
@@ -77,6 +86,7 @@ class Post extends PostData with ChangeNotifier {
 
     loadedVideos.add(this);
     await controller!.initialize();
+    await controller!.setVolume(muteVideos ? 0 : 1);
   }
 
   Future<void> disposeVideo() async {
