@@ -27,32 +27,4 @@ Future<void> postFavoritingSnackbar(
   Set<Post> items,
   bool isLiked,
 ) =>
-    loadingSnackbar<Post>(
-      context: context,
-      items: items,
-      timeout: Duration(milliseconds: 300),
-      process: isLiked
-          ? (post) async {
-              if (post.isFavorited) {
-                return post.tryRemoveFav(context);
-              } else {
-                return true;
-              }
-            }
-          : (post) async {
-              if (!post.isFavorited) {
-                return post.tryAddFav(context);
-              } else {
-                return true;
-              }
-            },
-      onDone: (items) => items.length == 1
-          ? 'Favorited post #${items.first.id}'
-          : 'Favorited ${items.length} posts',
-      onProgress: (items, index) => items.length == 1
-          ? 'Favoriting Post #${items.first.id}'
-          : 'Favoriting Post #${items.elementAt(index).id} ($index/${items.length})',
-      onFailure: (items, index) =>
-          'Failed to favorite post #${items.elementAt(index).id}',
-      onCancel: (items, index) => 'Cancelled favoriting',
-    );
+    Future.value();

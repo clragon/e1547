@@ -142,7 +142,11 @@ extension Downloading on Post {
         String directory =
             '${Platform.environment['EXTERNAL_STORAGE']}/Pictures';
         directory = [directory, appName].join('/');
-        String filename = '${artists.join(', ')} - $id.${file.ext}';
+        String filename = '';
+        if (artists.isNotEmpty) {
+          filename = '${artists.join(', ')} - ';
+        }
+        filename += '$id.${file.ext}';
         String filepath = [directory, filename].join('/');
         await Directory(directory).create();
         await download.copy(filepath);
