@@ -8,8 +8,6 @@ import 'package:url_launcher/url_launcher.dart';
 
 List<PopupMenuItem<VoidCallback>> postMenuPostActions(
     BuildContext context, Post post) {
-  Future<void> download() async => postDownloadingSnackbar(context, {post});
-
   return [
     PopupMenuTile(
       value: () async => Share.share(post.url(settings.host.value).toString()),
@@ -18,7 +16,7 @@ List<PopupMenuItem<VoidCallback>> postMenuPostActions(
     ),
     if (post.file.url != null)
       PopupMenuTile(
-        value: download,
+        value: () => postDownloadingSnackbar(context, {post}),
         title: 'Download',
         icon: Icons.file_download,
       ),

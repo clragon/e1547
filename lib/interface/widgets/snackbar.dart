@@ -11,44 +11,78 @@ Future<void> loadingSnackbar<T>({
   String Function(Set<T> items, int index)? onCancel,
   Duration? timeout,
 }) async {
-  late ScaffoldFeatureController controller;
-  controller = ScaffoldMessenger.of(context).showSnackBar(
+  ValueNotifier<int> progress = ValueNotifier<int>(0);
+  bool cancel = false;
+  bool failed = false;
+
+  ScaffoldFeatureController controller =
+      ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
       content: LoadingSnackbar<T>(
         items: items,
-        process: process,
         timeout: timeout,
-        onDone: onDone,
         onProgress: onProgress,
-        onFailure: onFailure,
-        onCancel: onCancel,
-        onFinish: () => controller.close(),
+        progress: progress,
       ),
       duration: Duration(days: 1),
+      action: SnackBarAction(
+        label: 'CANCEL',
+        onPressed: () => cancel = true,
+      ),
     ),
   );
-  return await controller.closed;
+
+  for (T item in items) {
+    if (await process(item)) {
+      await Future.delayed(timeout ?? defaultAnimationDuration);
+      progress.value++;
+    } else {
+      failed = true;
+      controller.close();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(onFailure?.call(items, progress.value) ??
+              'Failed at Item $progress'),
+          duration: Duration(seconds: 1),
+        ),
+      );
+      break;
+    }
+    if (cancel) {
+      controller.close();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content:
+              Text(onCancel?.call(items, progress.value) ?? 'Cancelled task'),
+          duration: Duration(seconds: 1),
+        ),
+      );
+      break;
+    }
+  }
+
+  if (!failed) {
+    controller.close();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(onDone?.call(items) ?? 'Done'),
+        duration: Duration(seconds: 1),
+      ),
+    );
+  }
 }
 
 class LoadingSnackbar<T> extends StatefulWidget {
   final Set<T> items;
   final Duration? timeout;
-  final Function? onFinish;
-  final String Function(Set<T> items)? onDone;
   final String Function(Set<T> items, int index)? onProgress;
-  final String Function(Set<T> items, int index)? onFailure;
-  final String Function(Set<T> items, int index)? onCancel;
-  final Future<bool> Function(T item) process;
+  final ValueNotifier<int> progress;
 
   const LoadingSnackbar({
     required this.items,
-    required this.process,
-    this.timeout,
-    this.onDone,
+    required this.progress,
     this.onProgress,
-    this.onFailure,
-    this.onCancel,
-    this.onFinish,
+    this.timeout,
   });
 
   @override
@@ -56,94 +90,50 @@ class LoadingSnackbar<T> extends StatefulWidget {
 }
 
 class _LoadingSnackbarState<T> extends State<LoadingSnackbar<T>> {
-  bool cancel = false;
-  bool failure = false;
-  int progress = 0;
-
-  Future<void> run() async {
-    for (T item in widget.items) {
-      if (await widget.process(item)) {
-        await Future.delayed(widget.timeout ?? defaultAnimationDuration);
-        setState(() => progress++);
-      } else {
-        setState(() {
-          failure = true;
-        });
-        break;
-      }
-      if (cancel) {
-        break;
-      }
-    }
-    await Future.delayed(Duration(milliseconds: 1000));
-    widget.onFinish?.call();
-    return;
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    run();
-  }
-
   @override
   Widget build(BuildContext context) {
-    bool stopped = progress == widget.items.length || failure || cancel;
-
-    String status() {
-      if (failure) {
-        return widget.onFailure?.call(widget.items, progress) ??
-            'Failed at Item $progress';
-      }
-      if (cancel) {
-        return widget.onCancel?.call(widget.items, progress) ??
-            'Cancelled task';
-      }
-      if (progress == widget.items.length) {
-        return widget.onDone?.call(widget.items) ?? 'Done';
-      }
-      return widget.onProgress?.call(widget.items, progress) ??
-          'Item $progress/${widget.items.length}';
-    }
-
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Row(
+    return ValueListenableBuilder<int>(
+      valueListenable: widget.progress,
+      builder: (context, value, child) {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
-              status(),
-              overflow: TextOverflow.visible,
-            ),
-            if (!stopped)
-              Flexible(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 8),
-                  child: TweenAnimationBuilder(
-                    duration: widget.timeout ?? defaultAnimationDuration,
-                    builder: (context, double value, child) {
-                      double indicator = 1 / widget.items.length;
-                      if (indicator < 0) {
-                        indicator = 1;
-                      }
-                      indicator = indicator * value;
-                      return LinearProgressIndicator(
-                        value: indicator,
-                        color: Theme.of(context).colorScheme.secondary,
-                      );
-                    },
-                    tween: Tween<double>(begin: 0, end: progress.toDouble()),
+            Row(
+              children: [
+                Text(
+                  widget.onProgress
+                          ?.call(widget.items, widget.progress.value) ??
+                      'Item ${widget.progress.value}/${widget.items.length}',
+                  overflow: TextOverflow.visible,
+                ),
+                Flexible(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 8),
+                    child: TweenAnimationBuilder(
+                      duration: widget.timeout ?? defaultAnimationDuration,
+                      builder: (context, double value, child) {
+                        double indicator = 1 / widget.items.length;
+                        if (indicator < 0) {
+                          indicator = 1;
+                        }
+                        indicator = indicator * value;
+                        return LinearProgressIndicator(
+                          value: indicator,
+                          color: Theme.of(context).colorScheme.secondary,
+                        );
+                      },
+                      tween: Tween<double>(
+                        begin: 0,
+                        end: widget.progress.value.toDouble(),
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            if (!stopped)
-              InkWell(
-                child: Text('CANCEL'),
-                onTap: () => setState(() => cancel = true),
-              ),
+              ],
+            )
           ],
-        )
-      ],
+        );
+      },
     );
   }
 }
