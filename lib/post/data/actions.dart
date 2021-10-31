@@ -149,7 +149,10 @@ extension Downloading on Post {
         filename += '$id.${file.ext}';
         String filepath = [directory, filename].join('/');
         await Directory(directory).create();
-        await download.copy(filepath);
+        File target = File(filepath);
+        if (!await target.exists()) {
+          await download.copy(filepath);
+        }
       } else if (Platform.isIOS) {
         await ImageGallerySaver.saveFile(download.path);
       } else {
