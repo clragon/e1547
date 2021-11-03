@@ -15,8 +15,9 @@ Future<void> loadingSnackbar<T>({
   bool cancel = false;
   bool failed = false;
 
-  ScaffoldFeatureController controller =
-      ScaffoldMessenger.of(context).showSnackBar(
+  ScaffoldMessengerState messenger = ScaffoldMessenger.of(context);
+
+  ScaffoldFeatureController controller = messenger.showSnackBar(
     SnackBar(
       content: LoadingSnackbar<T>(
         items: items,
@@ -35,11 +36,13 @@ Future<void> loadingSnackbar<T>({
   for (T item in items) {
     if (await process(item)) {
       await Future.delayed(timeout ?? defaultAnimationDuration);
-      progress.value++;
+      if (progress.value < items.length - 1) {
+        progress.value++;
+      }
     } else {
       failed = true;
       controller.close();
-      ScaffoldMessenger.of(context).showSnackBar(
+      messenger.showSnackBar(
         SnackBar(
           content: Text(onFailure?.call(items, progress.value) ??
               'Failed at Item $progress'),
@@ -50,7 +53,7 @@ Future<void> loadingSnackbar<T>({
     }
     if (cancel) {
       controller.close();
-      ScaffoldMessenger.of(context).showSnackBar(
+      messenger.showSnackBar(
         SnackBar(
           content:
               Text(onCancel?.call(items, progress.value) ?? 'Cancelled task'),
@@ -63,7 +66,7 @@ Future<void> loadingSnackbar<T>({
 
   if (!failed) {
     controller.close();
-    ScaffoldMessenger.of(context).showSnackBar(
+    messenger.showSnackBar(
       SnackBar(
         content: Text(onDone?.call(items) ?? 'Done'),
         duration: Duration(seconds: 1),
@@ -103,7 +106,7 @@ class _LoadingSnackbarState<T> extends State<LoadingSnackbar<T>> {
                 Text(
                   widget.onProgress
                           ?.call(widget.items, widget.progress.value) ??
-                      'Item ${widget.progress.value}/${widget.items.length}',
+                      'Item ${widget.progress.value + 1}/${widget.items.length}',
                   overflow: TextOverflow.visible,
                 ),
                 Flexible(
@@ -116,7 +119,7 @@ class _LoadingSnackbarState<T> extends State<LoadingSnackbar<T>> {
                         if (indicator < 0) {
                           indicator = 1;
                         }
-                        indicator = indicator * value;
+                        indicator = indicator * (value + 1);
                         return LinearProgressIndicator(
                           value: indicator,
                           color: Theme.of(context).colorScheme.secondary,
