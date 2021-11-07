@@ -595,9 +595,10 @@ class Client {
     };
     Future request;
     if (comment != null) {
-      request = dio.patch('comments/${comment.id}.json', data: body);
+      request = dio.patch('comments/${comment.id}.json',
+          data: FormData.fromMap(body));
     } else {
-      request = dio.post('comments.json', data: body);
+      request = dio.post('comments.json', data: FormData.fromMap(body));
     }
     await request;
   }
