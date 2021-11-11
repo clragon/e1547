@@ -37,14 +37,14 @@ class AboutPage extends StatelessWidget {
                     Padding(
                       padding: EdgeInsets.only(top: 24, bottom: 12),
                       child: Text(
-                        appName,
+                        appInfo.appName,
                         style: TextStyle(
                           fontSize: 22,
                         ),
                       ),
                     ),
                     Text(
-                      appVersion,
+                      appInfo.version,
                       style: TextStyle(
                         fontSize: 16,
                       ),
@@ -65,13 +65,21 @@ class AboutPage extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     IconButton(
-                        icon: FaIcon(FontAwesomeIcons.github),
-                        onPressed: () =>
-                            launch('https://github.com/' + github)),
+                      onPressed: () => launch(
+                          'https://play.google.com/store/apps/details?id=' +
+                              appInfo.packageName),
+                      icon: FaIcon(FontAwesomeIcons.googlePlay),
+                    ),
                     IconButton(
-                        icon: FaIcon(FontAwesomeIcons.discord),
-                        onPressed: () =>
-                            launch('https://discord.com/invite/' + discord)),
+                      icon: FaIcon(FontAwesomeIcons.github),
+                      onPressed: () =>
+                          launch('https://github.com/' + appInfo.github),
+                    ),
+                    IconButton(
+                      icon: FaIcon(FontAwesomeIcons.discord),
+                      onPressed: () => launch(
+                          'https://discord.com/invite/' + appInfo.discord),
+                    ),
                   ],
                 ),
               )),
@@ -94,99 +102,111 @@ class VersionButton extends StatefulWidget {
 }
 
 class _VersionButtonState extends State<VersionButton> {
-  List<AppVersion>? newVersions;
+  Future<List<AppVersion>?> newVersions = getNewVersions();
 
-  @override
-  void initState() {
-    super.initState();
-    getNewVersions().then((value) => setState(() => newVersions = value));
+  Future<void> versionDialog(List<AppVersion>? versions) async {
+    Future<void> dialog(Widget message, List<Widget>? actions) async {
+      return showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text(appInfo.appName),
+          content: message,
+          actions: actions,
+        ),
+      );
+    }
+
+    if (versions == null) {
+      return dialog(
+        Text('Failed to retrieve version information'),
+        [
+          TextButton(
+            child: Text('OK'),
+            onPressed: Navigator.of(context).maybePop,
+          )
+        ],
+      );
+    }
+    if (versions.isEmpty) {
+      return dialog(
+        Text('You have the newest version (${appInfo.version})'),
+        [
+          TextButton(
+            child: Text('OK'),
+            onPressed: Navigator.of(context).maybePop,
+          )
+        ],
+      );
+    } else {
+      return dialog(
+        ConstrainedBox(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height * 0.5,
+          ),
+          child: SingleChildScrollView(
+            physics: BouncingScrollPhysics(),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'A newer version is available: ',
+                  style: TextStyle(
+                    color: Theme.of(context)
+                        .textTheme
+                        .bodyText1!
+                        .color!
+                        .withOpacity(0.5),
+                  ),
+                ),
+                ...versions
+                    .map(
+                      (release) => [
+                        Padding(
+                          padding: EdgeInsets.symmetric(vertical: 8),
+                          child: Text(
+                            '${release.name} (${release.version})',
+                            style: Theme.of(context).textTheme.headline6,
+                          ),
+                        ),
+                        Text(release.description!),
+                      ],
+                    )
+                    .reduce((a, b) => [...a, ...b]),
+              ],
+            ),
+          ),
+        ),
+        [
+          TextButton(
+            child: Text('CANCEL'),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+          TextButton(
+            child: Text('DOWNLOAD'),
+            onPressed: () => launch(
+                'https://github.com/' + appInfo.github + '/releases/latest'),
+          )
+        ],
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return SafeCrossFade(
-      showChild: newVersions != null,
-      builder: (BuildContext context) {
-        return Stack(
+    return FutureBuilder<List<AppVersion>?>(
+      future: newVersions,
+      builder: (context, snapshot) => SafeCrossFade(
+        showChild: snapshot.connectionState == ConnectionState.done,
+        builder: (context) => Stack(
           children: [
             IconButton(
               icon: Icon(Icons.update),
-              onPressed: () {
-                Widget msg;
-                List<Widget> actions = [];
-                if (newVersions!.isEmpty) {
-                  msg = Text("You have the newest version ($appVersion)");
-                  actions.add(TextButton(
-                    child: Text("OK"),
-                    onPressed: Navigator.of(context).maybePop,
-                  ));
-                } else {
-                  msg = ConstrainedBox(
-                    constraints: BoxConstraints(
-                      maxHeight: MediaQuery.of(context).size.height * 0.5,
-                    ),
-                    child: SingleChildScrollView(
-                      physics: BouncingScrollPhysics(),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'A newer version is available: ',
-                            style: TextStyle(
-                              color: Theme.of(context)
-                                  .textTheme
-                                  .bodyText1!
-                                  .color!
-                                  .withOpacity(0.5),
-                            ),
-                          ),
-                          ...newVersions!
-                              .map(
-                                (release) => [
-                                  Padding(
-                                    padding: EdgeInsets.only(top: 8, bottom: 8),
-                                    child: Text(
-                                      '${release.name} (${release.version})',
-                                      style:
-                                          Theme.of(context).textTheme.headline6,
-                                    ),
-                                  ),
-                                  Text(release.description!),
-                                ],
-                              )
-                              .reduce((a, b) => [...a, ...b]),
-                        ],
-                      ),
-                    ),
-                  );
-                  actions.addAll([
-                    TextButton(
-                      child: Text("CANCEL"),
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                    ),
-                    TextButton(
-                      child: Text("DOWNLOAD"),
-                      onPressed: () => launch(
-                          'https://github.com/' + github + '/releases/latest'),
-                    )
-                  ]);
-                }
-                showDialog(
-                  context: context,
-                  builder: (context) {
-                    return AlertDialog(
-                      title: Text(appName),
-                      content: msg,
-                      actions: actions,
-                    );
-                  },
-                );
-              },
+              onPressed: () => versionDialog(snapshot.data),
             ),
-            if (newVersions!.isNotEmpty)
+            if (snapshot.data?.isNotEmpty ?? false)
               Positioned(
                 bottom: 12,
                 left: 12,
@@ -200,9 +220,9 @@ class _VersionButtonState extends State<VersionButton> {
                 ),
               )
           ],
-        );
-      },
-      secondChild: CircularProgressIndicator(),
+        ),
+        secondChild: CircularProgressIndicator(),
+      ),
     );
   }
 }

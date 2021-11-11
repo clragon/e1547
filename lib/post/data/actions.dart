@@ -141,7 +141,7 @@ extension Downloading on Post {
       if (Platform.isAndroid) {
         String directory =
             '${Platform.environment['EXTERNAL_STORAGE']}/Pictures';
-        directory = [directory, appName].join('/');
+        directory = [directory, appInfo.appName].join('/');
         String filename = '';
         if (artists.isNotEmpty) {
           filename = '${artists.join(', ')} - ';

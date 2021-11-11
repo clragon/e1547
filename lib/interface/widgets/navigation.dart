@@ -127,33 +127,7 @@ class NavigationDrawer extends StatelessWidget {
           onTap: () => Navigator.popAndPushNamed(context, '/settings'),
         ),
         ListTile(
-          // this would be better solved with a seperate stateful widget.
-          leading: FutureBuilder<List<AppVersion>>(
-            future: getNewVersions(),
-            builder: (context, snapshot) {
-              if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-                return Stack(
-                  children: [
-                    Icon(Icons.update),
-                    Positioned(
-                      bottom: 0,
-                      left: 0,
-                      child: Container(
-                        height: 10,
-                        width: 10,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.red,
-                        ),
-                      ),
-                    ),
-                  ],
-                );
-              } else {
-                return Icon(Icons.info);
-              }
-            },
-          ),
+          leading: DrawerUpdateIcon(),
           title: Text('About'),
           onTap: () => Navigator.popAndPushNamed(context, '/about'),
         ),
@@ -228,6 +202,45 @@ class _ProfileHeaderState extends State<ProfileHeader> with LinkingMixin {
           ),
         ),
       ),
+    );
+  }
+}
+
+class DrawerUpdateIcon extends StatefulWidget {
+  @override
+  _DrawerUpdateIconState createState() => _DrawerUpdateIconState();
+}
+
+class _DrawerUpdateIconState extends State<DrawerUpdateIcon> {
+  Future<List<AppVersion>?> newVersions = getNewVersions();
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<List<AppVersion>?>(
+      future: newVersions,
+      builder: (context, snapshot) {
+        if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+          return Stack(
+            children: [
+              Icon(Icons.update),
+              Positioned(
+                bottom: 0,
+                left: 0,
+                child: Container(
+                  height: 10,
+                  width: 10,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.red,
+                  ),
+                ),
+              ),
+            ],
+          );
+        } else {
+          return Icon(Icons.info);
+        }
+      },
     );
   }
 }
