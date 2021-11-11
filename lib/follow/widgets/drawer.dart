@@ -49,6 +49,7 @@ class _FollowMarkReadTileState extends State<FollowMarkReadTile>
           follow.status.unseen = 0;
         }
         settings.follows.value = follows;
+        followUpdater.update();
         Navigator.of(context).maybePop();
       },
     );

@@ -13,6 +13,7 @@ class FollowsSplitPage extends StatefulWidget {
 
 class _FollowsSplitPageState extends State<FollowsSplitPage> with LinkingMixin {
   late RefreshController refreshController;
+  ScrollController scrollController = ScrollController();
 
   @override
   Map<ChangeNotifier, VoidCallback> get links => {
@@ -35,6 +36,11 @@ class _FollowsSplitPageState extends State<FollowsSplitPage> with LinkingMixin {
             duration: Duration(milliseconds: 100),
           );
           await followUpdater.finish;
+          scrollController.animateTo(
+            0,
+            duration: defaultAnimationDuration,
+            curve: Curves.easeInOut,
+          );
           if (!followUpdater.error) {
             refreshController.refreshCompleted();
           } else {
@@ -68,6 +74,7 @@ class _FollowsSplitPageState extends State<FollowsSplitPage> with LinkingMixin {
         builder: (context, follows, child) => ValueListenableBuilder(
           valueListenable: settings.host,
           builder: (context, host, child) => RefreshablePageLoader(
+            scrollController: scrollController,
             onEmpty: Text('No follows'),
             onLoading: Text('Loading follows'),
             onError: Text('Failed to load follows'),
