@@ -64,7 +64,7 @@ class Persistence extends SharedPrefsSerializer {
   late final ValueNotifier<String?> customHost =
       createSetting(key: 'customHost', initial: null);
   late final ValueNotifier<String> homeTags =
-      createSetting(key: 'homeTags', initial: '');
+      createSetting(key: 'homeTags', initial: 'score:>=20');
 
   late final ValueNotifier<int> tileSize =
       createSetting(key: 'tileSize', initial: 200);
