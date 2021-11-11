@@ -39,7 +39,8 @@ class Client {
         defaultDioOptions.copyWith(
           baseUrl: 'https://${settings.host.value}/',
           headers: {
-            HttpHeaders.userAgentHeader: '$appName/$appVersion ($developer)',
+            HttpHeaders.userAgentHeader:
+                '${appInfo.appName}/${appInfo.version} (${appInfo.developer})',
           },
         ),
       );

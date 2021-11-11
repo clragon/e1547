@@ -4,10 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 Future<void> main() async {
+  await initialize();
+  runApp(Main());
+}
+
+Future<void> initialize() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   await settings.initialized;
-  runApp(Main());
+  await packageInfoInitialized;
 }
 
 class Main extends StatelessWidget {
@@ -19,7 +24,7 @@ class Main extends StatelessWidget {
             child: AnnotatedRegion<SystemUiOverlayStyle>(
               value: defaultUIStyle(appThemeMap[value]!),
               child: MaterialApp(
-                title: appName,
+                title: appInfo.appName,
                 theme: appThemeMap[value],
                 routes: routes,
                 navigatorObservers: [routeObserver],

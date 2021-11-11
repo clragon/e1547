@@ -51,39 +51,42 @@ class AppVersion extends Comparable<AppVersion> {
   }
 }
 
-Future<List<AppVersion>> getNewVersions() async {
-  List<AppVersion> releases = await getVersions();
-  AppVersion current = AppVersion(version: appVersion);
-  return releases
-      .where((AppVersion release) => release.compareTo(current) == 1)
-      .toList();
-}
+List<AppVersion>? githubData;
 
-List<AppVersion> githubData = [];
-
-Future<List<AppVersion>> getVersions() async {
-  if (kReleaseMode) {
-    if (githubData.isEmpty) {
-      Dio dio = Dio(defaultDioOptions.copyWith(
-        baseUrl: 'https://api.github.com/',
-      ));
-      try {
-        dio.get('repos/$github/releases').then(
-          (response) {
-            for (Map release in response.data) {
-              githubData.add(
-                AppVersion(
-                    version: release['tag_name'],
-                    name: release['name'],
-                    description: release['body']),
-              );
-            }
-          },
+Future<List<AppVersion>?> getVersions() async {
+  if (kDebugMode) {
+    return [];
+  }
+  if (githubData == null) {
+    Dio dio = Dio(defaultDioOptions.copyWith(
+      baseUrl: 'https://api.github.com/',
+    ));
+    try {
+      List<dynamic> releases =
+          (await dio.get('repos/${appInfo.github}/releases')).data;
+      githubData = [];
+      for (Map release in releases) {
+        githubData!.add(
+          AppVersion(
+            version: release['tag_name'],
+            name: release['name'],
+            description: release['body'],
+          ),
         );
-      } on DioError {
-        // failed to get github data
       }
+    } on DioError {
+      githubData = null;
     }
   }
   return githubData;
+}
+
+Future<List<AppVersion>?> getNewVersions() async {
+  List<AppVersion>? releases = await getVersions();
+  if (releases != null) {
+    releases = List.from(releases);
+    AppVersion current = AppVersion(version: appInfo.version);
+    releases.removeWhere((release) => release.compareTo(current) < 1);
+  }
+  return releases;
 }
