@@ -91,27 +91,31 @@ class _TextEditorState extends State<TextEditor>
             hintText: 'type here...',
           ),
           maxLines: null,
+          enabled: !isLoading,
         ),
       ));
     }
 
     Widget preview() {
+      Widget child;
+      if (textController.text.trim().isNotEmpty) {
+        child = DTextField(source: textController.text);
+      } else {
+        child = Text(
+          'your text here',
+          style: TextStyle(
+            color:
+                Theme.of(context).textTheme.bodyText1!.color!.withOpacity(0.35),
+            fontStyle: FontStyle.italic,
+          ),
+        );
+      }
+
       return frame(
         Card(
           child: Padding(
             padding: EdgeInsets.all(16),
-            child: textController.text.trim().isNotEmpty
-                ? DTextField(source: textController.text.trim())
-                : Text(
-                    'your text here',
-                    style: TextStyle(
-                        color: Theme.of(context)
-                            .textTheme
-                            .bodyText1!
-                            .color!
-                            .withOpacity(0.35),
-                        fontStyle: FontStyle.italic),
-                  ),
+            child: child,
           ),
         ),
       );
@@ -124,18 +128,20 @@ class _TextEditorState extends State<TextEditor>
             heroTag: 'float',
             backgroundColor: Theme.of(context).cardColor,
             child: Icon(Icons.check, color: Theme.of(context).iconTheme.color),
-            onPressed: () async {
-              String text = textController.text.trim();
-              setState(() {
-                isLoading = true;
-              });
-              if ((await widget.validator?.call(context, text)) ?? true) {
-                Navigator.of(context).pop();
-              }
-              setState(() {
-                isLoading = false;
-              });
-            },
+            onPressed: isLoading
+                ? null
+                : () async {
+                    String text = textController.text.trim();
+                    setState(() {
+                      isLoading = true;
+                    });
+                    if ((await widget.validator?.call(context, text)) ?? true) {
+                      Navigator.of(context).pop();
+                    }
+                    setState(() {
+                      isLoading = false;
+                    });
+                  },
           );
         },
       );

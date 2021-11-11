@@ -155,30 +155,33 @@ class _ParentEditorState extends State<ParentEditor> {
     widget.controller!.setAction(submit);
   }
 
-  Future<bool> submit() async {
+  void showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      duration: Duration(seconds: 1),
+      content: Text(message),
+      behavior: SnackBarBehavior.floating,
+    ));
+    throw ControllerException(message: message);
+  }
+
+  Future<void> submit() async {
     if (textController.text.trim().isEmpty) {
       widget.post.relationships.parentId = null;
       widget.post.notifyListeners();
-      return true;
+      return;
     }
     try {
       if (int.tryParse(textController.text) != null) {
         Post parent = await client.post(int.parse(textController.text));
         widget.post.relationships.parentId = parent.id;
         widget.post.notifyListeners();
-        return true;
+        return;
       }
     } on DioError {
-      // error is handled below
+      showError('Invalid parent post');
     } on FormatException {
-      // error is handled below
+      showError('Invalid input');
     }
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      duration: Duration(seconds: 1),
-      content: Text('Invalid parent post'),
-      behavior: SnackBarBehavior.floating,
-    ));
-    return false;
   }
 
   @override

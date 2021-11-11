@@ -1,18 +1,33 @@
 import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
 
-class LoadingDialogException implements Exception {
-  final String message;
+class DialogActionController extends ActionController {
+  NavigatorState? navigator;
 
-  LoadingDialogException({required this.message});
+  @override
+  Future<void> execute(ControllerAction submit) async {
+    await super.execute(submit);
+    if (!isError) {
+      await navigator!.maybePop();
+      navigator = null;
+    }
+  }
+
+  Future<void> show(BuildContext context, Widget child) async {
+    return showDialog(context: context, builder: (context) => child);
+  }
+
+  void connect(BuildContext context) {
+    navigator = Navigator.of(context);
+  }
 }
 
 class LoadingDialog extends StatefulWidget {
   final Widget? title;
-  final Future<void> Function() submit;
+  final ControllerAction submit;
   final Widget Function(
     BuildContext context,
-    Future<void> Function() submit,
+    ActionController controller,
   ) builder;
 
   const LoadingDialog({
@@ -26,90 +41,86 @@ class LoadingDialog extends StatefulWidget {
 }
 
 class _LoadingDialogState extends State<LoadingDialog> {
-  bool success = false;
-  bool isLoading = false;
-  LoadingDialogException? error;
+  DialogActionController controller = DialogActionController();
 
-  Future<void> submit() async {
-    setState(() {
-      isLoading = true;
-      error = null;
-    });
-    try {
-      await widget.submit();
-    } on LoadingDialogException catch (e) {
-      error = e;
-    }
-    setState(() {
-      isLoading = false;
-    });
-    if (error == null) {
-      Navigator.of(context).maybePop();
-    }
+  @override
+  void initState() {
+    super.initState();
+    controller.setAction(widget.submit);
+    controller.connect(context);
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      title: widget.title,
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Flexible(
-            child: Row(
-              children: [
-                CrossFade(
-                  showChild: isLoading,
-                  child: Padding(
-                    padding: EdgeInsets.only(right: 8),
-                    child: SizedCircularProgressIndicator(size: 16),
-                  ),
-                ),
-                Expanded(
-                  child: widget.builder(context, submit),
-                ),
-              ],
-            ),
-          ),
-          SafeCrossFade(
-            showChild: error != null,
-            builder: (context) => Padding(
-              padding: EdgeInsets.symmetric(vertical: 8),
-              child: DefaultTextStyle(
-                style: Theme.of(context).textTheme.bodyText1!.copyWith(
-                      color: Theme.of(context).errorColor,
-                      fontSize: 14,
+    return AnimatedBuilder(
+      animation: controller,
+      builder: (context, child) => AlertDialog(
+        title: widget.title,
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: Row(
+                children: [
+                  CrossFade(
+                    showChild: controller.isLoading,
+                    child: Padding(
+                      padding: EdgeInsets.only(right: 8),
+                      child: SizedCircularProgressIndicator(size: 16),
                     ),
-                child: IconTheme(
-                  data: Theme.of(context).iconTheme.copyWith(
+                  ),
+                  Expanded(
+                    child: widget.builder(context, controller),
+                  ),
+                ],
+              ),
+            ),
+            SafeCrossFade(
+              showChild: controller.isError,
+              builder: (context) => Padding(
+                padding: EdgeInsets.symmetric(vertical: 8),
+                child: DefaultTextStyle(
+                  style: Theme.of(context).textTheme.bodyText1!.copyWith(
                         color: Theme.of(context).errorColor,
-                        size: 14,
+                        fontSize: 14,
                       ),
-                  child: Row(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 4),
-                        child: Icon(Icons.error_outline),
-                      ),
-                      Text(error!.message)
-                    ],
+                  child: IconTheme(
+                    data: Theme.of(context).iconTheme.copyWith(
+                          color: Theme.of(context).errorColor,
+                          size: 14,
+                        ),
+                    child: Row(
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 4),
+                          child: Icon(Icons.warning_amber_outlined),
+                        ),
+                        Text(controller.error!.message)
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            child: Text('CANCEL'),
+            onPressed: Navigator.of(context).maybePop,
+          ),
+          TextButton(
+            child: Text('OK'),
+            onPressed: controller.isLoading ? null : controller.action,
           ),
         ],
       ),
-      actions: [
-        TextButton(
-          child: Text('CANCEL'),
-          onPressed: Navigator.of(context).maybePop,
-        ),
-        TextButton(
-          child: Text('OK'),
-          onPressed: submit,
-        ),
-      ],
     );
   }
 }

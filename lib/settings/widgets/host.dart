@@ -39,22 +39,23 @@ Future<void> setCustomHost(BuildContext context) async {
     }
 
     if (error != null) {
-      throw LoadingDialogException(message: error);
+      throw ControllerException(message: error);
     }
   }
 
   await showDialog(
     context: context,
-    builder: (BuildContext context) => LoadingDialog(
+    builder: (context) => LoadingDialog(
       submit: submit,
       title: Text('Custom Host'),
-      builder: (context, submit) => TextField(
+      builder: (context, actionController) => TextField(
         controller: controller,
         keyboardType: TextInputType.url,
         autofocus: true,
         maxLines: 1,
         decoration: InputDecoration(labelText: 'url'),
-        onSubmitted: (_) => submit(),
+        onSubmitted: (_) => actionController.action!(),
+        enabled: !actionController.isLoading,
       ),
     ),
   );

@@ -22,7 +22,7 @@ class _PoolsPageState extends State<PoolsPage> {
       appBar: AppBar(title: Text('Pools')),
       floatingActionButton: SheetFloatingActionButton(
         actionIcon: Icons.search,
-        builder: (context, actionController) => SheetTextField(
+        builder: (context, actionController) => ControlledTextField(
           labelText: 'Pool title',
           actionController: actionController,
           textController: TextEditingController(text: controller.search.value),

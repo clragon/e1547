@@ -38,17 +38,17 @@ class _LoadingTileState extends State<LoadingTile> {
         secondChild: widget.trailing ?? Icon(Icons.arrow_right),
         showChild: isLoading,
       ),
-      onTap: () async {
-        if (!isLoading) {
-          setState(() {
-            isLoading = true;
-          });
-          await widget.onTap();
-          setState(() {
-            isLoading = false;
-          });
-        }
-      },
+      onTap: isLoading
+          ? null
+          : () async {
+              setState(() {
+                isLoading = true;
+              });
+              await widget.onTap();
+              setState(() {
+                isLoading = false;
+              });
+            },
     );
   }
 }

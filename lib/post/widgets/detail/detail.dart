@@ -94,30 +94,30 @@ class _PostDetailState extends State<PostDetail> with LinkingMixin, RouteAware {
     }
   }
 
-  Future<bool> editPost(BuildContext context, String reason) async {
+  Future<void> editPost(BuildContext context, String reason) async {
+    widget.post.isEditing = false;
     try {
       await client.updatePost(widget.post, Post.fromMap(widget.post.json),
           editReason: reason);
-      widget.post.isEditing = false;
-    } on DioError catch (error) {
+      await widget.post.resetPost(online: true);
+    } on DioError {
+      widget.post.isEditing = true;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           duration: Duration(seconds: 1),
-          content: Text(
-              'failed to edit Post #${widget.post.id} with code ${error.response!.statusCode}'),
+          content: Text('failed to edit Post #${widget.post.id}'),
           behavior: SnackBarBehavior.floating,
         ),
       );
+      throw ControllerException(
+          message: 'failed to edit Post #${widget.post.id}');
     }
-    await widget.post.resetPost(online: true);
-    closeSheet();
-    return true;
   }
 
   Future<void> submitEdit(BuildContext context) async {
     sheetController.show(
       context,
-      SheetTextField(
+      ControlledTextField(
         submit: (value) => editPost(context, value),
         actionController: sheetController,
       ),

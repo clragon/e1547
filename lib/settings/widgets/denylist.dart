@@ -46,7 +46,7 @@ class _DenyListPageState extends State<DenyListPage> with LinkingMixin {
 
     sheetController.show(
       context,
-      SheetTextWrapper(
+      ControlledTextWrapper(
         submit: (value) => submit(sortTags(value), edit),
         actionController: sheetController,
         textController:
@@ -55,6 +55,7 @@ class _DenyListPageState extends State<DenyListPage> with LinkingMixin {
           controller: controller,
           labelText: 'Add to blacklist',
           submit: submit,
+          readOnly: sheetController.isLoading,
         ),
       ),
     );
@@ -110,7 +111,9 @@ class _DenyListPageState extends State<DenyListPage> with LinkingMixin {
           animation: sheetController,
           builder: (context, child) => FloatingActionButton(
             child: Icon(sheetController.isShown ? Icons.check : Icons.add),
-            onPressed: sheetController.action ?? () => addTags(context),
+            onPressed: sheetController.isLoading
+                ? null
+                : sheetController.action ?? () => addTags(context),
           ),
         ),
       ),

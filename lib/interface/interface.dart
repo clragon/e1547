@@ -5,7 +5,9 @@ export 'data/keys.dart';
 export 'data/text.dart';
 export 'data/theme.dart';
 export 'data/updater.dart';
+export 'data/action.dart';
 // widgets
+export 'widgets/action.dart';
 export 'widgets/animation.dart';
 export 'widgets/appbar.dart';
 export 'widgets/card.dart';

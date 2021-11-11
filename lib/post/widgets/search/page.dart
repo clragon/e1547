@@ -110,7 +110,7 @@ class _PostsPageState extends State<PostsPage> with LinkingMixin {
       if (widget.controller.canSearch) {
         return SheetFloatingActionButton(
           actionIcon: Icons.search,
-          builder: (context, actionController) => SheetTextWrapper(
+          builder: (context, actionController) => ControlledTextWrapper(
             actionController: actionController,
             textController:
                 TextEditingController(text: widget.controller.search.value),
