@@ -43,6 +43,7 @@ class TagDisplay extends StatelessWidget {
               onRemove: post.isEditing
                   ? () {
                       post.tags[category]!.remove(tag);
+                      post.tags = Map.from(post.tags);
                       post.notifyListeners();
                     }
                   : null,
