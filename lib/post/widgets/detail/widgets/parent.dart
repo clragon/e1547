@@ -133,11 +133,11 @@ class _ParentDisplayState extends State<ParentDisplay> {
 
 class ParentEditor extends StatefulWidget {
   final Post post;
-  final ActionController? controller;
+  final ActionController controller;
 
   const ParentEditor({
     required this.post,
-    this.controller,
+    required this.controller,
   });
 
   @override
@@ -152,7 +152,7 @@ class _ParentEditorState extends State<ParentEditor> {
     super.initState();
     textController.text = widget.post.relationships.parentId?.toString() ?? ' ';
     setFocusToEnd(textController);
-    widget.controller!.setAction(submit);
+    widget.controller.setAction(submit);
   }
 
   void showError(String message) {
@@ -195,7 +195,8 @@ class _ParentEditorState extends State<ParentEditor> {
         FilteringTextInputFormatter.allow(RegExp(r'^ ?\d*')),
       ],
       decoration: InputDecoration(labelText: 'Parent ID'),
-      onSubmitted: (_) => widget.controller!.action!(),
+      onSubmitted: (_) => widget.controller.action!(),
+      enabled: !widget.controller.isLoading,
     );
   }
 }
