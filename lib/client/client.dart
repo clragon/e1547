@@ -467,6 +467,16 @@ class Client {
     }
   }
 
+  Future<void> reportPost(int postId, int reportReason, String reason) async {
+    await initialized;
+    await dio.post('tickets', queryParameters: {
+      'ticket[reason]': reason,
+      'ticket[report_reason]': reportReason,
+      'ticket[disp_id]': postId,
+      'ticket[qtype]': 'post',
+    });
+  }
+
   Future<List<Wiki>> wiki(int page, {String? search}) async {
     await initialized;
     List body = await dio.get('wiki_pages.json', queryParameters: {
