@@ -136,13 +136,14 @@ class _FollowTileState extends State<FollowTile> {
             duration: defaultAnimationDuration,
             child: active ? image() : SizedBox.shrink(),
           ),
-          AnimatedPositioned(
-            bottom: active ? 0 : null,
-            right: active ? 0 : null,
-            left: active ? 0 : null,
+          Positioned(
+            bottom: active ? -1 : null,
+            right: active ? -1 : null,
+            left: active ? -1 : null,
             child: SafeCrossFade(
               showChild: active,
-              builder: (context) => Container(
+              builder: (context) => AnimatedContainer(
+                duration: defaultAnimationDuration,
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
@@ -168,7 +169,6 @@ class _FollowTileState extends State<FollowTile> {
                 ),
               ),
             ),
-            duration: defaultAnimationDuration,
           ),
           Material(
             type: MaterialType.transparency,

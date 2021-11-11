@@ -65,12 +65,6 @@ class AboutPage extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     IconButton(
-                      onPressed: () => launch(
-                          'https://play.google.com/store/apps/details?id=' +
-                              appInfo.packageName),
-                      icon: FaIcon(FontAwesomeIcons.googlePlay),
-                    ),
-                    IconButton(
                       icon: FaIcon(FontAwesomeIcons.github),
                       onPressed: () =>
                           launch('https://github.com/' + appInfo.github),
