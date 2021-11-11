@@ -58,7 +58,7 @@ class _FollowingPageState extends State<FollowingPage> with LinkingMixin {
 
     sheetController.show(
       context,
-      SheetTextWrapper(
+      ControlledTextWrapper(
         submit: (value) => submit(sortTags(value), edit),
         actionController: sheetController,
         textController: TextEditingController(
@@ -87,7 +87,7 @@ class _FollowingPageState extends State<FollowingPage> with LinkingMixin {
 
     sheetController.show(
       context,
-      SheetTextField(
+      ControlledTextField(
         labelText: 'Follow alias',
         actionController: sheetController,
         textController: TextEditingController(text: follows[edit].title),

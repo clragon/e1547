@@ -14,6 +14,7 @@ class TagInput extends StatefulWidget {
   final TextEditingController? controller;
   final bool multiInput;
   final int? category;
+  final bool readOnly;
 
   const TagInput({
     required this.labelText,
@@ -21,6 +22,7 @@ class TagInput extends StatefulWidget {
     required this.controller,
     this.multiInput = true,
     this.category,
+    this.readOnly = false,
   });
 
   @override
@@ -47,6 +49,7 @@ class _TagInputState extends State<TagInput> {
       direction: AxisDirection.up,
       hideOnEmpty: true,
       hideOnError: true,
+      hideKeyboard: widget.readOnly,
       keepSuggestionsOnSuggestionSelected: true,
       textFieldConfiguration: TextFieldConfiguration(
         controller: controller,

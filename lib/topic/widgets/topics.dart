@@ -19,7 +19,7 @@ class _TopicsPageState extends State<TopicsPage> {
       appBar: AppBar(title: Text('Topics')),
       floatingActionButton: SheetFloatingActionButton(
         actionIcon: Icons.search,
-        builder: (context, actionController) => SheetTextField(
+        builder: (context, actionController) => ControlledTextField(
           labelText: 'Topic title',
           actionController: actionController,
           textController: TextEditingController(text: controller.search.value),

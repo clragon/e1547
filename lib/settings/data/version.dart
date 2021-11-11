@@ -62,8 +62,9 @@ Future<List<AppVersion>?> getVersions() async {
       baseUrl: 'https://api.github.com/',
     ));
     try {
-      List<dynamic> releases =
-          (await dio.get('repos/${appInfo.github}/releases')).data;
+      List<dynamic> releases = await dio
+          .get('repos/${appInfo.github}/releases')
+          .then((response) => response.data);
       githubData = [];
       for (Map release in releases) {
         githubData!.add(
