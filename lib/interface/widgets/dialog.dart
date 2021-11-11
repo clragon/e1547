@@ -13,6 +13,12 @@ class DialogActionController extends ActionController {
     }
   }
 
+  @override
+  void reset() {
+    navigator = null;
+    super.reset();
+  }
+
   Future<void> show(BuildContext context, Widget child) async {
     return showDialog(context: context, builder: (context) => child);
   }
