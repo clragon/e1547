@@ -171,12 +171,9 @@ class _ParentEditorState extends State<ParentEditor> {
       return;
     }
     try {
-      if (int.tryParse(textController.text) != null) {
-        Post parent = await client.post(int.parse(textController.text));
-        widget.post.relationships.parentId = parent.id;
-        widget.post.notifyListeners();
-        return;
-      }
+      Post parent = await client.post(int.parse(textController.text));
+      widget.post.relationships.parentId = parent.id;
+      widget.post.notifyListeners();
     } on DioError {
       showError('Invalid parent post');
     } on FormatException {
@@ -196,7 +193,7 @@ class _ParentEditorState extends State<ParentEditor> {
       ],
       decoration: InputDecoration(labelText: 'Parent ID'),
       onSubmitted: (_) => widget.controller.action!(),
-      enabled: !widget.controller.isLoading,
+      readOnly: widget.controller.isLoading,
     );
   }
 }

@@ -5,12 +5,9 @@ class DialogActionController extends ActionController {
   NavigatorState? navigator;
 
   @override
-  Future<void> execute(ControllerAction submit) async {
-    await super.execute(submit);
-    if (!isError) {
-      await navigator!.maybePop();
-      navigator = null;
-    }
+  void onSucess() async {
+    await navigator!.maybePop();
+    navigator = null;
   }
 
   @override
