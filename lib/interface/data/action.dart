@@ -23,7 +23,7 @@ class ActionController extends ChangeNotifier {
     errorTimer?.cancel();
     errorTimer = Timer(
       errorTimeout,
-          () {
+      () {
         isForgiven = true;
         notifyListeners();
       },
@@ -47,6 +47,7 @@ class ActionController extends ChangeNotifier {
     notifyListeners();
     try {
       await submit();
+      onSucess();
     } on ControllerException catch (e) {
       error = e;
       forgive();
@@ -54,6 +55,8 @@ class ActionController extends ChangeNotifier {
     isLoading = false;
     notifyListeners();
   }
+
+  void onSucess() {}
 
   @mustCallSuper
   void setAction(ControllerAction submit) {

@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
 
@@ -9,11 +7,8 @@ class SheetActionController extends ActionController {
   void close() => sheetController?.close.call();
 
   @override
-  Future<void> execute(ControllerAction submit) async {
-    await super.execute(submit);
-    if (!isError) {
-      sheetController!.close();
-    }
+  void onSucess() {
+    sheetController!.close();
   }
 
   @override
