@@ -115,8 +115,8 @@ final Map<AppTheme, ThemeData> appThemeMap = {
       colorScheme: ColorScheme.fromSwatch(
         primarySwatch: primarySwatch,
         accentColor: accent,
-        cardColor: Color.fromARGB(255, 21, 47, 86),
-        backgroundColor: Color.fromARGB(255, 2, 15, 35),
+        cardColor: Color.fromARGB(255, 31, 60, 103),
+        backgroundColor: Color.fromARGB(255, 15, 33, 60),
         brightness: Brightness.dark,
       ),
     ),
