@@ -126,17 +126,23 @@ class _PostsPageState extends State<PostsPage> with LinkingMixin {
     }
 
     Widget? endDrawer() {
-      List<Widget> children = List.from(widget.drawerActions ?? []);
-      if (children.isNotEmpty) {
-        children.add(Divider());
-      }
-      children.add(DrawerCounter(controller: widget.controller));
-      if (widget.controller.canDeny) {
-        children.add(DrawerDenySwitch(controller: widget.controller));
-      }
-      if (children.isNotEmpty) {
-        return ContextDrawer(title: Text('Search'), children: children);
-      }
+      return ContextDrawer(
+        title: Text('Search'),
+        children: [
+          SafeCrossFade(
+            showChild: widget.drawerActions?.isNotEmpty ?? false,
+            builder: (context) => Column(
+              children: [
+                ...widget.drawerActions!,
+                Divider(),
+              ],
+            ),
+          ),
+          DrawerCounter(controller: widget.controller),
+          if (widget.controller.canDeny)
+            DrawerDenySwitch(controller: widget.controller),
+        ],
+      );
     }
 
     Widget selectionAppBar() {
