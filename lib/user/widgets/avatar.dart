@@ -75,12 +75,11 @@ class Avatar extends StatelessWidget {
   Widget build(BuildContext context) {
     return FutureBuilder<String?>(
       future: avatar,
-      builder: (context, snapshot) => CircleAvatar(
-        backgroundImage: (snapshot.hasData
-                ? CachedNetworkImageProvider(snapshot.data!)
-                : AssetImage('assets/icon/app/round.png'))
-            as ImageProvider<Object>?,
-      ),
+      builder: (context, snapshot) => snapshot.hasData
+          ? CircleAvatar(
+              backgroundImage: (CachedNetworkImageProvider(snapshot.data!)),
+            )
+          : AppIcon(),
     );
   }
 }
