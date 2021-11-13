@@ -26,12 +26,16 @@ class _CommentsPageState extends State<CommentsPage> {
           Container(),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        heroTag: 'float',
-        backgroundColor: Theme.of(context).cardColor,
-        child: Icon(Icons.comment, color: Theme.of(context).iconTheme.color),
-        onPressed: () => writeComment(context: context, post: widget.post),
-      ),
+      floatingActionButton: widget.post.isLoggedIn
+          ? FloatingActionButton(
+              heroTag: 'float',
+              backgroundColor: Theme.of(context).cardColor,
+              child:
+                  Icon(Icons.comment, color: Theme.of(context).iconTheme.color),
+              onPressed: () =>
+                  writeComment(context: context, post: widget.post),
+            )
+          : null,
       controller: controller,
       builder: (context) => PagedListView(
         padding:

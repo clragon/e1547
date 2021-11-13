@@ -82,7 +82,7 @@ class CommentTile extends StatelessWidget {
                       ],
                     ),
                   ),
-                  if (settings.credentials.value!.username ==
+                  if (settings.credentials.value?.username ==
                       comment.creatorName)
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 8),
