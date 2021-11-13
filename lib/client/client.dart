@@ -467,11 +467,11 @@ class Client {
     }
   }
 
-  Future<void> reportPost(int postId, int reportReason, String reason) async {
+  Future<void> reportPost(int postId, int reportType, String reason) async {
     await initialized;
     await dio.post('tickets', queryParameters: {
       'ticket[reason]': reason,
-      'ticket[report_reason]': reportReason,
+      'ticket[report_reason]': reportType,
       'ticket[disp_id]': postId,
       'ticket[qtype]': 'post',
     });
