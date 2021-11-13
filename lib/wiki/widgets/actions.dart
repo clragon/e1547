@@ -18,8 +18,8 @@ class TagListActions extends StatefulWidget {
 }
 
 class _TagListActionsState extends State<TagListActions> with LinkingMixin {
-  List<String>? denylist;
-  List<Follow>? follows;
+  late List<String> denylist;
+  late List<Follow> follows;
 
   @override
   Map<ChangeNotifier, VoidCallback> get initLinks => {
@@ -36,83 +36,71 @@ class _TagListActionsState extends State<TagListActions> with LinkingMixin {
 
   @override
   Widget build(BuildContext context) {
-    if (follows != null && denylist != null) {
-      bool following = follows!.any((element) => element.tags == widget.tag);
-      bool denied = denylist!.contains(widget.tag);
-      return Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          CrossFade(
-            showChild: !denied,
-            child: IconButton(
-              onPressed: () {
-                if (following) {
-                  follows!.removeWhere((element) => element.tags == widget.tag);
-                } else {
-                  follows!.add(Follow.fromString(widget.tag));
-                  if (denied) {
-                    denylist!.remove(widget.tag);
-                    updateBlacklist(
-                      context: context,
-                      denylist: denylist!,
-                      immediate: true,
-                    );
-                  }
-                }
-                settings.follows.value = follows!;
-              },
-              icon: CrossFade(
-                showChild: following,
-                child: Icon(Icons.turned_in),
-                secondChild: Icon(Icons.turned_in_not),
-              ),
-              tooltip: following ? 'unfollow tag' : 'follow tag',
-            ),
-          ),
-          CrossFade(
-            showChild: !following,
-            child: IconButton(
-              onPressed: () {
-                if (denied) {
-                  denylist!.remove(widget.tag);
-                } else {
-                  denylist!.add(widget.tag);
-                  if (following) {
-                    follows!
-                        .removeWhere((element) => element.tags == widget.tag);
-                    settings.follows.value = follows!;
-                  }
-                }
-                updateBlacklist(
-                  context: context,
-                  denylist: denylist!,
-                  immediate: true,
-                );
-              },
-              icon: CrossFade(
-                showChild: denied,
-                child: Icon(Icons.check),
-                secondChild: Icon(Icons.block),
-              ),
-              tooltip: denied ? 'unblock tag' : 'block tag',
-            ),
-          ),
-        ],
-      );
-    } else {
-      return Row(
-        children: [
-          IconButton(
-            icon: Icon(Icons.turned_in_not),
-            onPressed: null,
-          ),
-          IconButton(
-            icon: Icon(Icons.block),
-            onPressed: null,
-          ),
-        ],
-      );
+    if (widget.tag.startsWith('e621:')) {
+      return SizedBox.shrink();
     }
+
+    bool following = follows.any((element) => element.tags == widget.tag);
+    bool denied = denylist.contains(widget.tag);
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        CrossFade(
+          showChild: !denied,
+          child: IconButton(
+            onPressed: () {
+              if (following) {
+                follows.removeWhere((element) => element.tags == widget.tag);
+              } else {
+                follows.add(Follow.fromString(widget.tag));
+                if (denied) {
+                  denylist.remove(widget.tag);
+                  updateBlacklist(
+                    context: context,
+                    denylist: denylist,
+                    immediate: true,
+                  );
+                }
+              }
+              settings.follows.value = follows;
+            },
+            icon: CrossFade(
+              showChild: following,
+              child: Icon(Icons.turned_in),
+              secondChild: Icon(Icons.turned_in_not),
+            ),
+            tooltip: following ? 'unfollow tag' : 'follow tag',
+          ),
+        ),
+        CrossFade(
+          showChild: !following,
+          child: IconButton(
+            onPressed: () {
+              if (denied) {
+                denylist.remove(widget.tag);
+              } else {
+                denylist.add(widget.tag);
+                if (following) {
+                  follows.removeWhere((element) => element.tags == widget.tag);
+                  settings.follows.value = follows;
+                }
+              }
+              updateBlacklist(
+                context: context,
+                denylist: denylist,
+                immediate: true,
+              );
+            },
+            icon: CrossFade(
+              showChild: denied,
+              child: Icon(Icons.check),
+              secondChild: Icon(Icons.block),
+            ),
+            tooltip: denied ? 'unblock tag' : 'block tag',
+          ),
+        ),
+      ],
+    );
   }
 }
 
