@@ -222,6 +222,7 @@ class PostDetailImageOverlay extends StatelessWidget {
         }
 
         return Stack(
+          fit: StackFit.passthrough,
           children: [
             InkWell(
               onTap: post.type == PostType.video
@@ -264,32 +265,21 @@ class PostDetailImageDisplay extends StatelessWidget {
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: post,
-      builder: (context, child) {
-        Size screenSize = MediaQuery.of(context).size;
-        return PostDetailImageOverlay(
-          onOpen: onTap,
+      builder: (context, child) => PostDetailImageOverlay(
+        onOpen: onTap,
+        post: post,
+        child: ImageOverlay(
           post: post,
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              minHeight: (screenSize.height / 2),
-              maxHeight: screenSize.width > screenSize.height
-                  ? screenSize.height * 0.8
-                  : double.infinity,
-            ),
-            child: ImageOverlay(
-              post: post,
-              builder: (context) => Center(
-                child: Hero(
-                  tag: post.hero,
-                  child: post.type == PostType.video
-                      ? PostDetailVideo(post: post)
-                      : PostDetailImage(post: post),
-                ),
-              ),
+          builder: (context) => Center(
+            child: Hero(
+              tag: post.hero,
+              child: post.type == PostType.video
+                  ? PostDetailVideo(post: post)
+                  : PostDetailImage(post: post),
             ),
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 }

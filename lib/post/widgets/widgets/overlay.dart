@@ -30,29 +30,34 @@ class ImageOverlay extends StatelessWidget {
     }
 
     if (post.type == PostType.unsupported) {
-      return Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Padding(
-                padding: EdgeInsets.all(8),
-                child: Text(
-                  '${post.file.ext} files are not supported',
-                  textAlign: TextAlign.center,
+      return Padding(
+        padding: EdgeInsets.all(16),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: EdgeInsets.all(8),
+                  child: Text(
+                    '${post.file.ext} files are not supported',
+                    textAlign: TextAlign.center,
+                  ),
                 ),
-              ),
-              Card(
-                child: InkWell(
-                  child:
-                      Padding(padding: EdgeInsets.all(8), child: Text('Open')),
-                  onTap: () async => launch(post.file.url!),
-                ),
-              )
-            ],
-          )
-        ],
+                Card(
+                  child: InkWell(
+                    child: Padding(
+                        padding: EdgeInsets.all(8), child: Text('Open')),
+                    onTap: () async => launch(post.file.url!),
+                  ),
+                )
+              ],
+            ),
+          ],
+        ),
       );
     }
     return builder(post);
