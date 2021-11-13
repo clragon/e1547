@@ -4,6 +4,25 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+class AppIcon extends StatelessWidget {
+  final double radius;
+
+  const AppIcon({this.radius = 20});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+      ),
+      clipBehavior: Clip.antiAlias,
+      width: radius * 2,
+      height: radius * 2,
+      child: Image.asset('assets/icon/round.png'),
+    );
+  }
+}
+
 class AboutPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -30,9 +49,8 @@ class AboutPage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    CircleAvatar(
-                      backgroundImage: AssetImage('assets/icon/round.png'),
-                      radius: 44.0,
+                    AppIcon(
+                      radius: 64,
                     ),
                     Padding(
                       padding: EdgeInsets.only(top: 24, bottom: 12),
