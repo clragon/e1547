@@ -30,13 +30,12 @@ class DrawerDenySwitch extends StatelessWidget {
           children: [
             SwitchListTile(
                 title: Text('Blacklist'),
-                subtitle: controller.denying.value
+                subtitle: controller.denying.value && count > 0
                     ? TweenAnimationBuilder(
                         tween: IntTween(begin: 0, end: count),
-                        duration: Duration(milliseconds: 200),
-                        builder: (context, int value, child) {
-                          return Text('blocked $value posts');
-                        },
+                        duration: defaultAnimationDuration,
+                        builder: (context, int value, child) =>
+                            Text('blocked $value posts'),
                       )
                     : null,
                 secondary: Icon(Icons.block),
