@@ -8,13 +8,12 @@ import 'package:username_generator/username_generator.dart';
 typedef DTextParser = InlineSpan Function(
     RegExpMatch match, String result, TextState state);
 
-class DTextField extends StatelessWidget {
+class DText extends StatelessWidget {
   final String source;
   final bool dark;
   final UsernameGenerator? usernameGenerator;
 
-  const DTextField(
-      {required this.source, this.dark = false, this.usernameGenerator});
+  const DText(this.source, {this.dark = false, this.usernameGenerator});
 
   @override
   Widget build(BuildContext context) {

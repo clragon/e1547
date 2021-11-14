@@ -99,7 +99,7 @@ class _TextEditorState extends State<TextEditor>
     Widget preview() {
       Widget child;
       if (textController.text.trim().isNotEmpty) {
-        child = DTextField(source: textController.text);
+        child = DText(textController.text);
       } else {
         child = Text(
           'your text here',

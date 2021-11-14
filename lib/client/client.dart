@@ -467,13 +467,22 @@ class Client {
     }
   }
 
-  Future<void> reportPost(int postId, int reportType, String reason) async {
+  Future<void> reportPost(int postId, int reportId, String reason) async {
     await initialized;
     await dio.post('tickets', queryParameters: {
       'ticket[reason]': reason,
-      'ticket[report_reason]': reportType,
+      'ticket[report_reason]': reportId,
       'ticket[disp_id]': postId,
       'ticket[qtype]': 'post',
+    });
+  }
+
+  Future<void> flagPost(int postId, String flag, {int? parent}) async {
+    await initialized;
+    await dio.post('post_flags', queryParameters: {
+      'post_flag[post_id]': postId,
+      'post_flag[reason_name]': flag,
+      if (flag == 'inferior' && parent != null) 'post_flag[parent_id]': parent,
     });
   }
 

@@ -60,7 +60,7 @@ class PoolTile extends StatelessWidget {
                   bottom: 8,
                 ),
                 child: IgnorePointer(
-                  child: DTextField(source: pool.description, dark: true),
+                  child: DText(pool.description, dark: true),
                 ),
               ),
           ],

@@ -21,6 +21,8 @@ class _TagListActionsState extends State<TagListActions> with LinkingMixin {
   late List<String> denylist;
   late List<Follow> follows;
 
+  final List<String> actionless = ['help:', 'e621:'];
+
   @override
   Map<ChangeNotifier, VoidCallback> get initLinks => {
         settings.denylist: updateLists,
@@ -36,7 +38,7 @@ class _TagListActionsState extends State<TagListActions> with LinkingMixin {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.tag.startsWith('e621:')) {
+    if (actionless.any((prefix) => widget.tag.startsWith(prefix))) {
       return SizedBox.shrink();
     }
 
