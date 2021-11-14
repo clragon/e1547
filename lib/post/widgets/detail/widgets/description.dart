@@ -52,14 +52,13 @@ class DescriptionDisplay extends StatelessWidget {
                 ),
               ),
               Row(
-                mainAxisSize: MainAxisSize.max,
                 children: [
                   Expanded(
                     child: Card(
                       child: Padding(
                         padding: EdgeInsets.all(16),
                         child: post.description.isNotEmpty
-                            ? DTextField(source: post.description)
+                            ? DText(post.description)
                             : Text(
                                 'no description',
                                 style: TextStyle(

@@ -36,7 +36,7 @@ class PoolDialog extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               pool.description.isNotEmpty
-                  ? DTextField(source: pool.description)
+                  ? DText(pool.description)
                   : Text(
                       'no description',
                       style: TextStyle(fontStyle: FontStyle.italic),

@@ -74,7 +74,7 @@ class PoolSheet extends StatelessWidget {
             Padding(
               padding: EdgeInsets.all(16),
               child: pool.description.isNotEmpty
-                  ? DTextField(source: pool.description)
+                  ? DText(pool.description)
                   : Text(
                       'no description',
                       style: TextStyle(fontStyle: FontStyle.italic),

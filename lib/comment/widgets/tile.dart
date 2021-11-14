@@ -56,7 +56,7 @@ class CommentTile extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(
-            child: DTextField(source: comment.body),
+            child: DText(comment.body),
           ),
         ],
       );
