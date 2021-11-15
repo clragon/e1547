@@ -19,10 +19,6 @@ class DefaultAppBar extends StatelessWidget with AppBarSize {
   final double? toolbarHeight;
   final bool automaticallyImplyLeading;
 
-  @override
-  Size get preferredSize =>
-      Size.fromHeight(toolbarHeight ?? defaultAppBarHeight);
-
   const DefaultAppBar({
     this.leading,
     this.actions,
@@ -91,7 +87,7 @@ class FloatingAppBarFrame extends StatelessWidget {
 
 mixin AppBarSize on Widget implements PreferredSizeWidget {
   @override
-  Size get preferredSize => Size.fromHeight(kToolbarHeight);
+  Size get preferredSize => Size.fromHeight(defaultAppBarHeight);
 }
 
 class ScrollToTop extends StatelessWidget with AppBarSize {
