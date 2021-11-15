@@ -21,7 +21,10 @@ class _HotPageState extends State<HotPage> {
   @override
   Widget build(BuildContext context) {
     return PostsPage(
-      appBarBuilder: defaultAppBarBuilder('Hot'),
+      appBarBuilder: (context) => DefaultAppBar(
+        title: Text('Hot'),
+        actions: [SizedBox.shrink()],
+      ),
       controller: controller,
     );
   }

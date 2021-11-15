@@ -19,7 +19,12 @@ class _PoolsPageState extends State<PoolsPage> {
   @override
   Widget build(BuildContext context) {
     return RefreshableControllerPage(
-      appBar: AppBar(title: Text('Pools')),
+      appBar: DefaultAppBar(
+        title: Text('Pools'),
+        actions: [
+          ContextDrawerButton(),
+        ],
+      ),
       floatingActionButton: SheetFloatingActionButton(
         actionIcon: Icons.search,
         builder: (context, actionController) => ControlledTextField(
@@ -31,25 +36,24 @@ class _PoolsPageState extends State<PoolsPage> {
       ),
       drawer: NavigationDrawer(),
       controller: controller,
-      builder: (context) {
-        return PagedListView(
+      builder: (context) => PagedListView(
+        padding: defaultListPadding,
+        pagingController: controller,
+        builderDelegate: defaultPagedChildBuilderDelegate(
           pagingController: controller,
-          builderDelegate: defaultPagedChildBuilderDelegate(
-            pagingController: controller,
-            itemBuilder: (context, Pool item, index) => PoolTile(
-              pool: item,
-              onPressed: () => Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => PoolPage(pool: item),
-                ),
+          itemBuilder: (context, Pool item, index) => PoolTile(
+            pool: item,
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => PoolPage(pool: item),
               ),
             ),
-            onLoading: Text('Loading pools'),
-            onEmpty: Text('No pools'),
-            onError: Text('Failed to load pools'),
           ),
-        );
-      },
+          onLoading: Text('Loading pools'),
+          onEmpty: Text('No pools'),
+          onError: Text('Failed to load pools'),
+        ),
+      ),
     );
   }
 }

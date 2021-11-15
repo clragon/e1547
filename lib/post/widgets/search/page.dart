@@ -138,15 +138,15 @@ class _PostsPageState extends State<PostsPage> with LinkingMixin {
               ],
             ),
           ),
-          DrawerCounter(controller: widget.controller),
           if (widget.controller.canDeny)
             DrawerDenySwitch(controller: widget.controller),
+          DrawerCounter(controller: widget.controller),
         ],
       );
     }
 
-    Widget selectionAppBar() {
-      return AppBar(
+    PreferredSizeWidget selectionAppBar() {
+      return DefaultAppBar(
         title: selections.length == 1
             ? Text('post #${selections.first.id}')
             : Text('${selections.length} posts'),
@@ -245,22 +245,15 @@ class _PostsPageState extends State<PostsPage> with LinkingMixin {
       builder: (context, crossAxisCount, tileBuilder) => selectionScope(
         child: RefreshablePage(
           refreshController: widget.controller.refreshController,
-          appBar: PreferredSize(
-            preferredSize: Size.fromHeight(kToolbarHeight),
-            child: Material(
-              elevation: Theme.of(context).appBarTheme.elevation ?? 4,
-              child: CrossFade(
-                showChild: selections.isEmpty,
-                child: Builder(builder: widget.appBarBuilder),
-                secondChild: selectionAppBar(),
-              ),
-            ),
-          ),
+          appBar: selections.isEmpty
+              ? widget.appBarBuilder(context)
+              : selectionAppBar(),
           drawer: NavigationDrawer(),
           endDrawer: endDrawer(),
           floatingActionButton: floatingActionButton(),
           refresh: () => widget.controller.refresh(background: true),
           builder: (context) => PagedStaggeredGridView(
+            padding: defaultListPadding,
             key: joinKeys(['posts', tileBuilder, crossAxisCount]),
             addAutomaticKeepAlives: false,
             tileBuilder: tileBuilder,
@@ -272,7 +265,7 @@ class _PostsPageState extends State<PostsPage> with LinkingMixin {
               onEmpty: Text('No posts'),
               onLoading: Text('Loading posts'),
               onError: Text('Failed to load posts'),
-            ),
+                ),
           ),
         ),
       ),

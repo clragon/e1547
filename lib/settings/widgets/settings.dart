@@ -18,12 +18,12 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      appBar: DefaultAppBar(
         title: Text('Settings'),
         leading: BackButton(),
       ),
       body: ListView(
-        padding: EdgeInsets.all(10.0),
+        padding: defaultActionListPadding,
         physics: BouncingScrollPhysics(),
         children: [
           SettingsHeader(title: 'Server'),

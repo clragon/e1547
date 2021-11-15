@@ -39,7 +39,12 @@ class _FollowsCombinedPageState extends State<FollowsCombinedPage>
   Widget build(BuildContext context) {
     return PostsPage(
       controller: provider,
-      appBarBuilder: defaultAppBarBuilder('Following'),
+      appBarBuilder: (context) => DefaultAppBar(
+        title: Text('Following'),
+        actions: [
+          ContextDrawerButton(),
+        ],
+      ),
       drawerActions: [
         FollowSplitSwitchTile(),
         FollowSettingsTile(),

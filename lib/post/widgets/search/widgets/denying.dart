@@ -2,6 +2,7 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:e1547/tag/tag.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class DrawerDenySwitch extends StatelessWidget {
@@ -56,25 +57,25 @@ class DrawerDenySwitch extends StatelessWidget {
                 ],
               ),
             ),
-            Divider(),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ValueListenableBuilder<List<String>>(
-                  valueListenable: settings.denylist,
-                  builder: (context, value, child) {
-                    int count = value.length;
-                    if (controller.denying.value) {
-                      count -= denied.keys.length;
-                      count -= controller.allowed.value.length;
-                    }
-                    return CrossFade(
-                      showChild: 0 < count,
-                      child: TweenAnimationBuilder(
-                        tween: IntTween(begin: 0, end: count),
-                        duration: defaultAnimationDuration,
-                        builder: (context, int value, child) {
-                          return Text(
+            Padding(
+              padding: EdgeInsets.only(top: 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ValueListenableBuilder<List<String>>(
+                    valueListenable: settings.denylist,
+                    builder: (context, value, child) {
+                      int count = value.length;
+                      if (controller.denying.value) {
+                        count -= denied.keys.length;
+                        count -= controller.allowed.value.length;
+                      }
+                      return CrossFade(
+                        showChild: 0 < count,
+                        child: TweenAnimationBuilder(
+                          tween: IntTween(begin: 0, end: count),
+                          duration: defaultAnimationDuration,
+                          builder: (context, int value, child) => Text(
                             '$value inactive entries',
                             style: TextStyle(
                               fontStyle: FontStyle.italic,
@@ -84,14 +85,15 @@ class DrawerDenySwitch extends StatelessWidget {
                                   .color!
                                   .withOpacity(0.35),
                             ),
-                          );
-                        },
-                      ),
-                    );
-                  },
-                ),
-              ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
             ),
+            Divider(),
           ],
         );
       },
@@ -108,37 +110,42 @@ class DrawerDenyTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CheckboxListTile(
-      value: !controller.allowed.value.contains(entry.key),
-      onChanged: (value) {
-        if (value!) {
-          controller.allowed.value.remove(entry.key);
-        } else {
-          controller.allowed.value.add(entry.key);
-        }
-        controller.allowed.value = List.from(controller.allowed.value);
-      },
-      title: Row(
-        children: [
-          Expanded(
-            child: Wrap(
-              direction: Axis.horizontal,
-              children: entry.key
-                  .split(' ')
-                  .where((tag) => tag.isNotEmpty)
-                  .map((tag) => DenyListTagCard(tag))
-                  .toList(),
+        value: !controller.allowed.value.contains(entry.key),
+        onChanged: (value) {
+          if (value!) {
+            controller.allowed.value.remove(entry.key);
+          } else {
+            controller.allowed.value.add(entry.key);
+          }
+          controller.allowed.value = List.from(controller.allowed.value);
+        },
+        title: Row(
+          children: [
+            Expanded(
+              child: Wrap(
+                direction: Axis.horizontal,
+                children: entry.key
+                    .split(' ')
+                    .where((tag) => tag.isNotEmpty)
+                    .map((tag) => DenyListTagCard(tag))
+                    .toList(),
+              ),
+            ),
+          ],
+        ),
+        secondary: ConstrainedBox(
+          constraints: BoxConstraints(
+            minWidth: 24,
+          ),
+          child: TweenAnimationBuilder(
+            tween: IntTween(begin: 0, end: entry.value.length),
+            duration: Duration(milliseconds: 200),
+            builder: (context, value, child) => Text(
+              value.toString(),
+              style: Theme.of(context).textTheme.headline6,
+              textAlign: TextAlign.center,
             ),
           ),
-        ],
-      ),
-      secondary: TweenAnimationBuilder(
-        tween: IntTween(begin: 0, end: entry.value.length),
-        duration: Duration(milliseconds: 200),
-        builder: (context, value, child) {
-          return Text(value.toString(),
-              style: Theme.of(context).textTheme.headline6);
-        },
-      ),
-    );
+        ));
   }
 }

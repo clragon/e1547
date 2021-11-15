@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:e1547/client/client.dart';
+import 'package:e1547/interface/interface.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -198,60 +199,62 @@ class _LoginPageState extends State<LoginPage> {
     }
 
     return Scaffold(
-      appBar: AppBar(
+      appBar: DefaultAppBar(
         leading: CloseButton(),
         elevation: 0,
       ),
-      body: LayoutBuilder(
-        builder: (context, constraints) => ListView(
-          padding: EdgeInsets.all(16),
-          physics: BouncingScrollPhysics(),
-          children: [
-            ConstrainedBox(
-              constraints: BoxConstraints(
-                maxHeight: constraints.maxHeight * 0.4,
-              ),
-              child: Center(
-                child: AppIcon(
-                  radius: 64,
+      body: Form(
+        child: LayoutBuilder(
+          builder: (context, constraints) => ListView(
+            padding: EdgeInsets.all(16),
+            physics: BouncingScrollPhysics(),
+            children: [
+              ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxHeight: constraints.maxHeight * 0.4,
+                ),
+                child: Center(
+                  child: AppIcon(
+                    radius: 64,
+                  ),
                 ),
               ),
-            ),
-            Padding(
-              padding: EdgeInsets.only(left: 32, right: 32, bottom: 12),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Login',
-                    style: TextStyle(
-                      fontSize: 20,
+              Padding(
+                padding: EdgeInsets.only(left: 32, right: 32, bottom: 12),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Login',
+                      style: TextStyle(
+                        fontSize: 20,
+                      ),
                     ),
-                  ),
-                  IconButton(
-                    onPressed: () {
-                      if (usernameController.text.isNotEmpty) {
-                        launch(
-                            'https://${settings.host.value}/users/${usernameController.text}/api_key');
-                      } else {
-                        launch('https://${settings.host.value}/session/new');
-                      }
-                    },
-                    icon: Icon(Icons.launch),
-                    color: Colors.grey,
-                  ),
+                    IconButton(
+                      onPressed: () {
+                        if (usernameController.text.isNotEmpty) {
+                          launch(
+                              'https://${settings.host.value}/users/${usernameController.text}/api_key');
+                        } else {
+                          launch('https://${settings.host.value}/session/new');
+                        }
+                      },
+                      icon: Icon(Icons.launch),
+                      color: Colors.grey,
+                    ),
+                  ],
+                ),
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  usernameField(),
+                  apiKeyField(),
+                  loginButton(),
                 ],
               ),
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                usernameField(),
-                apiKeyField(),
-                loginButton(),
-              ],
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

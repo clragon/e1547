@@ -8,6 +8,9 @@ class PostDetailAppBar extends StatelessWidget with AppBarSize {
   PostDetailAppBar({required this.post});
 
   @override
+  Size get preferredSize => Size.fromHeight(defaultAppBarHeight);
+
+  @override
   Widget build(BuildContext context) {
     return AnimatedSelector(
       animation: post,

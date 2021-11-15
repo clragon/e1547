@@ -75,7 +75,8 @@ class PostTile extends StatelessWidget {
       );
     }
 
-    return FakeCard(
+    return Card(
+      clipBehavior: Clip.antiAlias,
       child: Stack(
         children: [
           ValueListenableBuilder<bool>(

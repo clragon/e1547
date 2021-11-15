@@ -24,7 +24,7 @@ class _RepliesPageState extends State<RepliesPage> {
   @override
   Widget build(BuildContext context) {
     return RefreshableControllerPage(
-      appBar: AppBar(
+      appBar: DefaultAppBar(
         leading: BackButton(),
         title: Text(widget.topic.title),
         actions: [
@@ -33,12 +33,12 @@ class _RepliesPageState extends State<RepliesPage> {
             tooltip: 'Info',
             onPressed: () => topicSheet(context, widget.topic),
           ),
+          ContextDrawerButton(),
         ],
       ),
       controller: controller,
       builder: (context) => PagedListView(
-        padding:
-            EdgeInsets.only(top: 8, bottom: kBottomNavigationBarHeight + 24),
+        padding: defaultActionListPadding,
         pagingController: controller,
         builderDelegate: defaultPagedChildBuilderDelegate(
           pagingController: controller,

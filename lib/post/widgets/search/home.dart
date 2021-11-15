@@ -1,6 +1,7 @@
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -31,7 +32,10 @@ class _HomePageState extends State<HomePage> with LinkingMixin {
   @override
   Widget build(BuildContext context) {
     return PostsPage(
-      appBarBuilder: defaultAppBarBuilder('Home'),
+      appBarBuilder: (context) => DefaultAppBar(
+        title: Text('Home'),
+        actions: [SizedBox.shrink()],
+      ),
       controller: controller,
     );
   }

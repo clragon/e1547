@@ -112,7 +112,7 @@ class _SearchPageState extends State<SearchPage> with LinkingMixin {
   @override
   Widget build(BuildContext context) {
     PreferredSizeWidget appbar(BuildContext context) {
-      return AppBar(
+      return DefaultAppBar(
         title: AnimatedSwitcher(
           key: Key(title),
           child: Text(title),
@@ -120,24 +120,28 @@ class _SearchPageState extends State<SearchPage> with LinkingMixin {
         ),
         leading: BackButton(),
         actions: [
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CrossFade(
-                showChild: !loading &&
-                    Tagset.parse(controller.search.value).isNotEmpty,
-                child: IconButton(
-                  icon: Icon(Icons.info_outline),
-                  onPressed: pool != null
-                      ? () => poolSheet(context, pool!)
-                      : () => wikiSheet(
-                            context: context,
-                            tag: controller.search.value,
-                            controller: controller,
-                          ),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 8),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                CrossFade(
+                  showChild: !loading &&
+                      Tagset.parse(controller.search.value).isNotEmpty,
+                  child: IconButton(
+                    icon: Icon(Icons.info_outline),
+                    onPressed: pool != null
+                        ? () => poolSheet(context, pool!)
+                        : () => wikiSheet(
+                              context: context,
+                              tag: controller.search.value,
+                              controller: controller,
+                            ),
+                  ),
                 ),
-              ),
-            ],
+                ContextDrawerButton(),
+              ],
+            ),
           ),
         ],
       );

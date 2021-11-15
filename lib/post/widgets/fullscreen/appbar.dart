@@ -8,6 +8,9 @@ class PostFullscreenAppBar extends StatelessWidget with AppBarSize {
   PostFullscreenAppBar({required this.post});
 
   @override
+  Size get preferredSize => Size.fromHeight(defaultAppBarHeight);
+
+  @override
   Widget build(BuildContext context) {
     return TransparentAppBar(
       leading: IconButton(

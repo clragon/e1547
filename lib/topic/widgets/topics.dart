@@ -16,7 +16,7 @@ class _TopicsPageState extends State<TopicsPage> {
   @override
   Widget build(BuildContext context) {
     return RefreshableControllerPage(
-      appBar: AppBar(title: Text('Topics')),
+      appBar: DefaultAppBar(title: Text('Topics')),
       floatingActionButton: SheetFloatingActionButton(
         actionIcon: Icons.search,
         builder: (context, actionController) => ControlledTextField(
@@ -28,25 +28,24 @@ class _TopicsPageState extends State<TopicsPage> {
       ),
       drawer: NavigationDrawer(),
       controller: controller,
-      builder: (context) {
-        return PagedListView(
+      builder: (context) => PagedListView(
+        padding: defaultListPadding,
+        pagingController: controller,
+        builderDelegate: defaultPagedChildBuilderDelegate(
           pagingController: controller,
-          builderDelegate: defaultPagedChildBuilderDelegate(
-            pagingController: controller,
-            itemBuilder: (context, Topic item, index) => TopicTile(
-              topic: item,
-              onPressed: () => Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => RepliesPage(topic: item),
-                ),
+          itemBuilder: (context, Topic item, index) => TopicTile(
+            topic: item,
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => RepliesPage(topic: item),
               ),
             ),
-            onLoading: Text('Loading topics'),
-            onEmpty: Text('No topics'),
-            onError: Text('Failed to load topics'),
           ),
-        );
-      },
+          onLoading: Text('Loading topics'),
+          onEmpty: Text('No topics'),
+          onError: Text('Failed to load topics'),
+        ),
+      ),
     );
   }
 }

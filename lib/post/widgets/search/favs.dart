@@ -76,7 +76,18 @@ class _FavPageState extends State<FavPage> with LinkingMixin {
       onError: IconMessage(
           icon: Icon(Icons.login), title: Text('You are not logged in')),
       builder: (context) => PostsPage(
-        appBarBuilder: defaultAppBarBuilder('Favorites'),
+        appBarBuilder: (context) => DefaultAppBar(
+          title: Text('Favorites'),
+          actions: [
+            Padding(
+              padding: EdgeInsets.only(right: 8),
+              child: IconButton(
+                icon: Icon(Icons.filter_list),
+                onPressed: () => Scaffold.of(context).openEndDrawer(),
+              ),
+            ),
+          ],
+        ),
         controller: controller!,
         drawerActions: [
           if (showSwitch)

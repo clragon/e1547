@@ -91,6 +91,7 @@ class _FollowsSplitPageState extends State<FollowsSplitPage> with LinkingMixin {
             ),
             builder: (context) => StaggeredGridView.countBuilder(
               key: joinKeys(['follows', tileBuilder, crossAxisCount]),
+              padding: defaultListPadding,
               addAutomaticKeepAlives: false,
               crossAxisCount: crossAxisCount,
               itemCount: follows.length,
@@ -99,7 +100,12 @@ class _FollowsSplitPageState extends State<FollowsSplitPage> with LinkingMixin {
               staggeredTileBuilder: tileBuilder,
               physics: BouncingScrollPhysics(),
             ),
-            appBar: defaultAppBar(title: 'Following'),
+            appBar: DefaultAppBar(
+              title: Text('Following'),
+              actions: [
+                ContextDrawerButton(),
+              ],
+            ),
             refresh: () async {
               if (await validateCall(() => refreshFollows(force: true))) {
                 refreshController.refreshCompleted();
