@@ -26,8 +26,8 @@ class AppIcon extends StatelessWidget {
 class AboutPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    AppBar appBarWidget() {
-      return AppBar(
+    PreferredSizeWidget appBarWidget() {
+      return DefaultAppBar(
         title: Text('About'),
         leading: BackButton(),
         actions: [

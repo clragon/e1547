@@ -1,3 +1,4 @@
+import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
 
 import 'actions.dart';
@@ -12,7 +13,7 @@ class WikiPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      appBar: DefaultAppBar(
         title: Flexible(
           child: Text(
             tag.replaceAll('_', ' '),

@@ -1,3 +1,4 @@
+import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
 
 class ContextDrawer extends StatelessWidget {
@@ -12,12 +13,12 @@ class ContextDrawer extends StatelessWidget {
       child: ListTileTheme(
         style: ListTileStyle.list,
         child: Scaffold(
-          appBar: AppBar(
+          appBar: DefaultAppBar(
             elevation: 0,
             title: title,
+            automaticallyImplyLeading: false,
           ),
           body: ListView(
-            padding: EdgeInsets.only(top: 8),
             physics: BouncingScrollPhysics(),
             children: children,
           ),
@@ -27,10 +28,21 @@ class ContextDrawer extends StatelessWidget {
   }
 }
 
-AppBar defaultAppBar({required String title}) => AppBar(
-      title: Text(title),
-      actions: [SizedBox.shrink()],
-    );
+class ContextDrawerButton extends StatelessWidget {
+  final IconData? icon;
 
-AppBar Function(BuildContext context) defaultAppBarBuilder(String title) =>
-    (context) => defaultAppBar(title: title);
+  const ContextDrawerButton({this.icon});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(right: 4),
+      child: Builder(
+        builder: (context) => IconButton(
+          icon: Icon(icon ?? Icons.filter_list),
+          onPressed: () => Scaffold.of(context).openEndDrawer(),
+        ),
+      ),
+    );
+  }
+}

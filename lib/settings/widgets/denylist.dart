@@ -79,8 +79,7 @@ class _DenyListPageState extends State<DenyListPage> with LinkingMixin {
       ),
       builder: (context) => ListView.builder(
         physics: BouncingScrollPhysics(),
-        padding:
-            EdgeInsets.only(top: 8, bottom: kBottomNavigationBarHeight + 24),
+        padding: defaultActionListPadding,
         itemCount: denylist.length,
         itemBuilder: (context, index) => DenylistTile(
           tag: denylist[index],
@@ -92,7 +91,7 @@ class _DenyListPageState extends State<DenyListPage> with LinkingMixin {
           },
         ),
       ),
-      appBar: AppBar(
+      appBar: DefaultAppBar(
         title: Text('Blacklist'),
         actions: [
           IconButton(

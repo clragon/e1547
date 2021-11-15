@@ -1,6 +1,8 @@
 import 'package:e1547/tag/tag.dart';
 import 'package:e1547/topic/topic.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:timeago/timeago.dart';
 
 class TopicTile extends StatelessWidget {
   final Topic topic;
@@ -15,7 +17,7 @@ class TopicTile extends StatelessWidget {
   Widget build(BuildContext context) {
     Widget title() {
       return Padding(
-        padding: EdgeInsets.symmetric(vertical: 12),
+        padding: EdgeInsets.symmetric(vertical: 6),
         child: Row(
           mainAxisSize: MainAxisSize.max,
           children: [
@@ -30,9 +32,20 @@ class TopicTile extends StatelessWidget {
             ),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 12),
-              child: Text(
-                topic.responseCount.toString(),
-                style: Theme.of(context).textTheme.subtitle1,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    topic.responseCount.toString(),
+                    style: Theme.of(context).textTheme.subtitle1,
+                  ),
+                  Text(
+                    format(topic.updatedAt),
+                    style: TextStyle(
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
               ),
             ),
           ],

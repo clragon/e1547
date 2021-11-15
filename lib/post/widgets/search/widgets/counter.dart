@@ -58,7 +58,7 @@ class _DrawerCounterState extends State<DrawerCounter> with LinkingMixin {
     return Column(
       children: [
         ExpandableNotifier(
-          initialExpanded: false,
+          initialExpanded: true,
           child: ExpandableTheme(
             data: ExpandableThemeData(
               headerAlignment: ExpandablePanelHeaderAlignment.center,
@@ -67,7 +67,6 @@ class _DrawerCounterState extends State<DrawerCounter> with LinkingMixin {
             child: ExpandablePanel(
               header: ListTile(
                 title: Text('Tags'),
-                subtitle: null,
                 leading: Icon(Icons.tag),
               ),
               expanded: Column(
@@ -75,18 +74,32 @@ class _DrawerCounterState extends State<DrawerCounter> with LinkingMixin {
                   Divider(),
                   SafeCrossFade(
                     showChild: children != null,
-                    builder: (context) => Padding(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Wrap(
-                              direction: Axis.horizontal,
-                              children: children!,
-                            ),
-                          )
-                        ],
+                    builder: (context) => CrossFade(
+                      showChild: children!.isNotEmpty,
+                      child: Padding(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Wrap(
+                                direction: Axis.horizontal,
+                                children: children!,
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                      secondChild: Text(
+                        'no tags',
+                        style: TextStyle(
+                          fontStyle: FontStyle.italic,
+                          color: Theme.of(context)
+                              .textTheme
+                              .bodyText1!
+                              .color!
+                              .withOpacity(0.35),
+                        ),
                       ),
                     ),
                     secondChild: Row(
@@ -106,7 +119,6 @@ class _DrawerCounterState extends State<DrawerCounter> with LinkingMixin {
             ),
           ),
         ),
-        Divider(),
       ],
     );
   }

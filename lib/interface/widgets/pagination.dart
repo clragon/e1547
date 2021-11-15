@@ -10,6 +10,8 @@ class PagedStaggeredGridView<PageKeyType, ItemType> extends BoxScrollView {
   final StaggeredTile? Function(int) tileBuilder;
   final bool addAutomaticKeepAlives;
   final int crossAxisCount;
+  final double mainAxisSpacing;
+  final double crossAxisSpacing;
 
   const PagedStaggeredGridView({
     Key? key,
@@ -18,6 +20,8 @@ class PagedStaggeredGridView<PageKeyType, ItemType> extends BoxScrollView {
     required this.crossAxisCount,
     required this.tileBuilder,
     this.addAutomaticKeepAlives = true,
+    this.mainAxisSpacing = 0,
+    this.crossAxisSpacing = 0,
     ScrollController? scrollController,
     ScrollPhysics? physics,
     bool? primary,
@@ -46,6 +50,8 @@ class PagedStaggeredGridView<PageKeyType, ItemType> extends BoxScrollView {
             gridDelegate: SliverStaggeredGridDelegateWithFixedCrossAxisCount(
               staggeredTileBuilder: tileBuilder,
               crossAxisCount: crossAxisCount,
+              mainAxisSpacing: mainAxisSpacing,
+              crossAxisSpacing: crossAxisSpacing,
             ),
             delegate: SliverChildBuilderDelegate(
               itemBuilder,

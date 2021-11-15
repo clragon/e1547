@@ -1,4 +1,5 @@
 import 'package:e1547/client/client.dart';
+import 'package:e1547/interface/interface.dart';
 import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/tag/tag.dart';
@@ -37,7 +38,7 @@ class _PoolPageState extends State<PoolPage> {
   Widget build(BuildContext context) {
     return PostsPage(
       controller: controller,
-      appBarBuilder: (context) => AppBar(
+      appBarBuilder: (context) => DefaultAppBar(
         title: Text(tagToTitle(widget.pool.name)),
         leading: BackButton(),
         actions: [
@@ -45,7 +46,8 @@ class _PoolPageState extends State<PoolPage> {
             icon: Icon(Icons.info_outline),
             tooltip: 'Info',
             onPressed: () => poolSheet(context, widget.pool),
-          )
+          ),
+          ContextDrawerButton(),
         ],
       ),
       drawerActions: [

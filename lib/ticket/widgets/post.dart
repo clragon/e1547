@@ -87,7 +87,7 @@ class _PostReportScreenState extends State<PostReportScreen> {
   Widget build(BuildContext context) {
     return Form(
       child: Scaffold(
-        appBar: AppBar(
+        appBar: DefaultAppBar(
           elevation: 0,
           title: Text('Report #${widget.post.id}'),
           leading: CloseButton(),
@@ -243,7 +243,7 @@ class _PostFlagScreenState extends State<PostFlagScreen> {
   Widget build(BuildContext context) {
     return Form(
       child: Scaffold(
-        appBar: AppBar(
+        appBar: DefaultAppBar(
           elevation: 0,
           title: Text('Flag #${widget.post.id}'),
           leading: CloseButton(),

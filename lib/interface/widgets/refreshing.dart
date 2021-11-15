@@ -157,6 +157,7 @@ class RefreshablePage extends StatefulWidget {
   final Widget? drawer;
   final Widget? endDrawer;
   final Widget? floatingActionButton;
+  final bool extendBodyBehindAppBar;
   final PreferredSizeWidget? appBar;
   final RefreshController? refreshController;
   final ScrollController? scrollController;
@@ -174,6 +175,7 @@ class RefreshablePage extends StatefulWidget {
     this.drawer,
     this.endDrawer,
     this.floatingActionButton,
+    this.extendBodyBehindAppBar = false,
   }) : pageBuilder = null;
 
   const RefreshablePage.pageBuilder({
@@ -183,7 +185,9 @@ class RefreshablePage extends StatefulWidget {
     this.refreshController,
     this.scrollController,
     this.refreshHeader,
-  })  : appBar = null,
+  })
+      : appBar = null,
+        extendBodyBehindAppBar = false,
         drawer = null,
         endDrawer = null,
         floatingActionButton = null;
@@ -217,6 +221,7 @@ class _RefreshablePageState extends State<RefreshablePage> {
     } else {
       return LayoutBuilder(builder: (context, constraints) {
         return Scaffold(
+          extendBodyBehindAppBar: widget.extendBodyBehindAppBar,
           appBar: ScrollToTop(
             child: widget.appBar!,
             controller: scrollController,
@@ -259,7 +264,7 @@ class FuturePageLoader<T> extends StatelessWidget {
         builder: (context) => builder(context, snapshot.data!),
         loadingBuilder: (child) => Scaffold(
           appBar: title != null
-              ? AppBar(
+              ? DefaultAppBar(
                   leading: CloseButton(),
                   title: title,
                 )
@@ -370,6 +375,7 @@ class PageLoader extends StatelessWidget {
 class RefreshablePageDefaultHeader extends StatelessWidget {
   final String? refreshingText;
   final String? completeText;
+
   const RefreshablePageDefaultHeader({this.completeText, this.refreshingText});
 
   @override

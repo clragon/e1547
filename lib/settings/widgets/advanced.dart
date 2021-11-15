@@ -1,3 +1,4 @@
+import 'package:e1547/interface/interface.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
 
@@ -10,12 +11,12 @@ class _AdvancedSettingsPageState extends State<AdvancedSettingsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      appBar: DefaultAppBar(
         title: Text('Advanced settings'),
         leading: BackButton(),
       ),
       body: ListView(
-        padding: EdgeInsets.all(10.0),
+        padding: defaultActionListPadding,
         physics: BouncingScrollPhysics(),
         children: [
           SettingsHeader(title: 'Server'),
@@ -27,7 +28,7 @@ class _AdvancedSettingsPageState extends State<AdvancedSettingsPage> {
               secondary: Icon(Icons.arrow_upward),
               value: value,
               onChanged: (value) => settings.upvoteFavs.value = value,
-            ),
+                ),
           ),
           Divider(),
           SettingsHeader(title: 'Display'),

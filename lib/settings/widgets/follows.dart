@@ -175,7 +175,7 @@ class _FollowingPageState extends State<FollowingPage> with LinkingMixin {
     return Scaffold(
       appBar: ScrollToTop(
         controller: scrollController,
-        child: AppBar(
+        child: DefaultAppBar(
           title: Text('Following'),
           actions: [
             IconButton(

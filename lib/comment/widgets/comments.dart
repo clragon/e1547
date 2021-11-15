@@ -19,11 +19,11 @@ class _CommentsPageState extends State<CommentsPage> {
   @override
   Widget build(BuildContext context) {
     return RefreshableControllerPage(
-      appBar: AppBar(
+      appBar: DefaultAppBar(
         leading: BackButton(),
         title: Text('#${widget.post.id} comments'),
         actions: [
-          Container(),
+          ContextDrawerButton(),
         ],
       ),
       floatingActionButton: widget.post.isLoggedIn
@@ -38,8 +38,7 @@ class _CommentsPageState extends State<CommentsPage> {
           : null,
       controller: controller,
       builder: (context) => PagedListView(
-        padding:
-            EdgeInsets.only(top: 8, bottom: kBottomNavigationBarHeight + 24),
+        padding: defaultActionListPadding.copyWith(top: 8),
         pagingController: controller,
         builderDelegate: defaultPagedChildBuilderDelegate(
           pagingController: controller,
