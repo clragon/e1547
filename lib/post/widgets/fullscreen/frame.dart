@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 
@@ -86,7 +87,7 @@ class _PostFullscreenFrameState extends State<PostFullscreenFrame> {
       builder: (contex, child) => Scaffold(
         extendBodyBehindAppBar: true,
         appBar: PreferredSize(
-          preferredSize: Size.fromHeight(kToolbarHeight),
+          preferredSize: Size.fromHeight(defaultAppBarHeight),
           child: FrameFadeWidget(
             controller: controller,
             child: PostFullscreenAppBar(post: widget.post),

@@ -40,6 +40,14 @@ class _TopicsPageState extends State<TopicsPage> {
                 builder: (context) => RepliesPage(topic: item),
               ),
             ),
+            onCountPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => RepliesPage(
+                  topic: item,
+                  orderByOldest: false,
+                ),
+              ),
+            ),
           ),
           onLoading: Text('Loading topics'),
           onEmpty: Text('No topics'),

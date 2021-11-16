@@ -5,15 +5,17 @@ import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
 class RepliesPage extends StatefulWidget {
   final Topic topic;
+  final bool orderByOldest;
 
-  const RepliesPage({required this.topic});
+  const RepliesPage({required this.topic, this.orderByOldest = true});
 
   @override
   State createState() => _RepliesPageState();
 }
 
 class _RepliesPageState extends State<RepliesPage> {
-  late ReplyController controller = ReplyController(topicId: widget.topic.id);
+  late ReplyController controller = ReplyController(
+      topicId: widget.topic.id, orderByOldest: widget.orderByOldest);
 
   @override
   void dispose() {
