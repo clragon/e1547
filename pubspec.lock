@@ -320,10 +320,12 @@ packages:
   infinite_scroll_pagination:
     dependency: "direct main"
     description:
-      name: infinite_scroll_pagination
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "3.1.0"
+      path: "."
+      ref: "268945f"
+      resolved-ref: "268945f249caf808173afbf6a567fb615ab24992"
+      url: "git://github.com/EdsonBueno/infinite_scroll_pagination"
+    source: git
+    version: "4.0.0"
   intl:
     dependency: "direct main"
     description:
@@ -666,7 +668,7 @@ packages:
     source: hosted
     version: "0.5.0"
   sliver_tools:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: sliver_tools
       url: "https://pub.dartlang.org"

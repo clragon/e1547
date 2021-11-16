@@ -9,7 +9,7 @@ class TileLayoutScope extends StatelessWidget {
   final StaggeredTile? Function(int) Function(
     double tileHeightFactor,
     int crossAxisCount,
-    GridState stagger,
+    GridQuilt stagger,
   ) tileBuilder;
   final Widget Function(
     BuildContext context,
@@ -18,7 +18,7 @@ class TileLayoutScope extends StatelessWidget {
   ) builder;
   final double tileHeightFactor;
   final int? tileSize;
-  final GridState? stagger;
+  final GridQuilt? stagger;
 
   const TileLayoutScope({
     required this.tileBuilder,
@@ -34,8 +34,8 @@ class TileLayoutScope extends StatelessWidget {
       valueListenable: settings.tileSize,
       builder: (context, tileSize, child) {
         tileSize = this.tileSize ?? tileSize;
-        return ValueListenableBuilder<GridState>(
-          valueListenable: settings.stagger,
+        return ValueListenableBuilder<GridQuilt>(
+          valueListenable: settings.quilt,
           builder: (context, stagger, child) {
             stagger = this.stagger ?? stagger;
             return LayoutBuilder(

@@ -123,27 +123,25 @@ class _TextEditorState extends State<TextEditor>
 
     Widget fab() {
       return Builder(
-        builder: (context) {
-          return FloatingActionButton(
-            heroTag: 'float',
-            backgroundColor: Theme.of(context).cardColor,
-            child: Icon(Icons.check, color: Theme.of(context).iconTheme.color),
-            onPressed: isLoading
-                ? null
-                : () async {
-                    String text = textController.text.trim();
-                    setState(() {
-                      isLoading = true;
-                    });
-                    if ((await widget.validator?.call(context, text)) ?? true) {
-                      Navigator.of(context).pop();
-                    }
-                    setState(() {
-                      isLoading = false;
-                    });
-                  },
-          );
-        },
+        builder: (context) => FloatingActionButton(
+          heroTag: 'float',
+          backgroundColor: Theme.of(context).cardColor,
+          child: Icon(Icons.check, color: Theme.of(context).iconTheme.color),
+          onPressed: isLoading
+              ? null
+              : () async {
+                  String text = textController.text.trim();
+                  setState(() {
+                    isLoading = true;
+                  });
+                  if ((await widget.validator?.call(context, text)) ?? true) {
+                    Navigator.of(context).pop();
+                  }
+                  setState(() {
+                    isLoading = false;
+                  });
+                },
+        ),
       );
     }
 
