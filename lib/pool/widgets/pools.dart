@@ -21,9 +21,6 @@ class _PoolsPageState extends State<PoolsPage> {
     return RefreshableControllerPage(
       appBar: DefaultAppBar(
         title: Text('Pools'),
-        actions: [
-          ContextDrawerButton(),
-        ],
       ),
       floatingActionButton: SheetFloatingActionButton(
         actionIcon: Icons.search,

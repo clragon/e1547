@@ -2,31 +2,31 @@ import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
 
 class GridSettingsTile extends StatelessWidget {
-  final GridState state;
-  final void Function(GridState state)? onChange;
+  final GridQuilt state;
+  final void Function(GridQuilt state)? onChange;
 
   const GridSettingsTile({required this.state, this.onChange});
 
-  String getDescription(GridState state) {
+  String getDescription(GridQuilt state) {
     switch (state) {
-      case GridState.square:
+      case GridQuilt.square:
         return 'tiles are quadratic';
-      case GridState.vertical:
+      case GridQuilt.vertical:
         return 'tiles expand vertically';
-      case GridState.omni:
+      case GridQuilt.omni:
         return 'tiles adapt their size';
       default:
         return '???';
     }
   }
 
-  IconData getIcon(GridState state) {
+  IconData getIcon(GridQuilt state) {
     switch (state) {
-      case GridState.square:
+      case GridQuilt.square:
         return Icons.view_module;
-      case GridState.vertical:
+      case GridQuilt.vertical:
         return Icons.view_column;
-      case GridState.omni:
+      case GridQuilt.omni:
         return Icons.view_quilt;
       default:
         return Icons.help_outline;
@@ -46,7 +46,7 @@ class GridSettingsTile extends StatelessWidget {
           children: [
             Column(
               mainAxisSize: MainAxisSize.min,
-              children: GridState.values
+              children: GridQuilt.values
                   .map(
                     (state) => ListTile(
                       trailing: Icon(getIcon(state)),

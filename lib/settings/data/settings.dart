@@ -68,10 +68,10 @@ class Persistence extends SharedPrefsSerializer {
 
   late final ValueNotifier<int> tileSize =
       createSetting(key: 'tileSize', initial: 200);
-  late final ValueNotifier<GridState> stagger = createStringSetting(
-    key: 'stagger',
-    initial: GridState.square,
-    values: GridState.values,
+  late final ValueNotifier<GridQuilt> quilt = createStringSetting(
+    key: 'quilt',
+    initial: GridQuilt.square,
+    values: GridQuilt.values,
   );
 
   late final ValueNotifier<bool> splitFollows =

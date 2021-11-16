@@ -5,6 +5,7 @@ import 'package:e1547/tag/tag.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
 class PostsPage extends StatefulWidget {
   final bool canSelect;
@@ -122,7 +123,7 @@ class _PostsPageState extends State<PostsPage> with LinkingMixin {
     StaggeredTile? Function(int) tileBuilder(
       double tileHeightFactor,
       int crossAxisCount,
-      GridState stagger,
+      GridQuilt stagger,
     ) {
       return (int item) {
         if (item < widget.controller.itemList!.length) {
@@ -131,11 +132,11 @@ class _PostsPageState extends State<PostsPage> with LinkingMixin {
           double heightRatio = image.height / image.width;
 
           switch (stagger) {
-            case GridState.square:
+            case GridQuilt.square:
               return StaggeredTile.count(1, 1 * tileHeightFactor);
-            case GridState.vertical:
+            case GridQuilt.vertical:
               return StaggeredTile.count(1, heightRatio);
-            case GridState.omni:
+            case GridQuilt.omni:
               if (crossAxisCount == 1) {
                 return StaggeredTile.count(1, heightRatio);
               } else {
@@ -166,18 +167,25 @@ class _PostsPageState extends State<PostsPage> with LinkingMixin {
           floatingActionButton: floatingActionButton(),
           refresh: () => widget.controller.refresh(background: true),
           builder: (context) => PagedStaggeredGridView(
-            key: joinKeys(['posts', tileBuilder, crossAxisCount]),
+            key: joinKeys(['posts', crossAxisCount]),
+            showNewPageErrorIndicatorAsGridChild: false,
+            showNewPageProgressIndicatorAsGridChild: false,
+            showNoMoreItemsIndicatorAsGridChild: false,
             padding: defaultListPadding,
             addAutomaticKeepAlives: false,
-            tileBuilder: tileBuilder,
             pagingController: widget.controller,
-            crossAxisCount: crossAxisCount,
             builderDelegate: defaultPagedChildBuilderDelegate(
               pagingController: widget.controller,
               itemBuilder: itemBuilder,
               onEmpty: Text('No posts'),
               onLoading: Text('Loading posts'),
               onError: Text('Failed to load posts'),
+            ),
+            gridDelegateBuilder: (childCount) =>
+                SliverStaggeredGridDelegateWithFixedCrossAxisCount(
+              staggeredTileBuilder: tileBuilder,
+              crossAxisCount: crossAxisCount,
+              staggeredTileCount: widget.controller.itemList?.length,
             ),
           ),
         ),

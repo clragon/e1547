@@ -1,4 +1,4 @@
-enum GridState {
+enum GridQuilt {
   square,
   vertical,
   omni,

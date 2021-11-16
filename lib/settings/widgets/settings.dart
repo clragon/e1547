@@ -176,12 +176,12 @@ class _SettingsPageState extends State<SettingsPage> {
                         ),
                       ),
                     ),
-                    ValueListenableBuilder<GridState>(
-                      valueListenable: settings.stagger,
+                    ValueListenableBuilder<GridQuilt>(
+                      valueListenable: settings.quilt,
                       builder: (context, value, child) => GridSettingsTile(
                         state: value,
                         onChange: (state) => setState(() {
-                          settings.stagger.value = state;
+                          settings.quilt.value = state;
                         }),
                       ),
                     ),

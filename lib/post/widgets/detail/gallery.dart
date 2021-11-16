@@ -17,8 +17,8 @@ class PostDetailGallery extends StatefulWidget {
 
 class _PostDetailGalleryState extends State<PostDetailGallery> {
   late int lastIndex = widget.initialPage;
-  late PageController controller = PageController(
-      initialPage: widget.initialPage, viewportFraction: 1.000000000001);
+  late PageController pageController =
+      PageController(initialPage: widget.initialPage);
   bool hasRequestedNextPage = false;
 
   void updateStatus(PagingStatus status) {
@@ -36,7 +36,7 @@ class _PostDetailGalleryState extends State<PostDetailGallery> {
   @override
   void dispose() {
     widget.controller.removeStatusListener(updateStatus);
-    controller.dispose();
+    pageController.dispose();
     super.dispose();
   }
 
@@ -45,7 +45,7 @@ class _PostDetailGalleryState extends State<PostDetailGallery> {
     return AnimatedBuilder(
       animation: widget.controller,
       builder: (context, child) {
-        Widget pageBuilder(BuildContext context, int index) {
+        Widget pageBuilder(BuildContext context, Post post, int index) {
           if (!hasRequestedNextPage) {
             int newPageRequestTriggerIndex =
                 max(0, widget.controller.itemList?.length ?? 0 - 3);
@@ -61,19 +61,61 @@ class _PostDetailGalleryState extends State<PostDetailGallery> {
           }
 
           return PostDetail(
-            post: widget.controller.itemList![index],
+            post: post,
             controller: widget.controller,
             onPageChanged: (index) => ModalRoute.of(context)!.isCurrent
-                ? controller.animateToPage(index,
+                ? pageController.animateToPage(index,
                     duration: defaultAnimationDuration, curve: Curves.easeInOut)
-                : controller.jumpToPage(index),
+                : pageController.jumpToPage(index),
           );
         }
 
-        return PageView.builder(
-          controller: controller,
-          itemBuilder: pageBuilder,
-          itemCount: widget.controller.itemList?.length ?? 0,
+        return PagedPageView(
+          addAutomaticKeepAlives: false,
+          builderDelegate: PagedChildBuilderDelegate<Post>(
+            itemBuilder: pageBuilder,
+            firstPageProgressIndicatorBuilder: (context) => Material(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedCircularProgressIndicator(size: 28),
+                  Padding(
+                    padding: EdgeInsets.all(20),
+                    child: Text('Loading posts'),
+                  ),
+                ],
+              ),
+            ),
+            newPageProgressIndicatorBuilder: (context) => Material(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedCircularProgressIndicator(size: 28),
+                  Padding(
+                    padding: EdgeInsets.all(20),
+                    child: Text('Loading posts'),
+                  ),
+                ],
+              ),
+            ),
+            noItemsFoundIndicatorBuilder: (context) => IconMessage(
+              icon: Icon(Icons.clear),
+              title: Text('No posts'),
+            ),
+            firstPageErrorIndicatorBuilder: (context) => IconMessage(
+              icon: Icon(Icons.warning_amber_outlined),
+              title: Text('Failed to load posts'),
+              action: PagedChildBuilderRetryButton(widget.controller),
+            ),
+            newPageErrorIndicatorBuilder: (context) => IconMessage(
+              direction: Axis.horizontal,
+              icon: Icon(Icons.warning_amber_outlined),
+              title: Text('Failed to load posts'),
+              action: PagedChildBuilderRetryButton(widget.controller),
+            ),
+          ),
+          pagingController: widget.controller,
+          pageController: pageController,
           onPageChanged: (index) {
             if (widget.controller.itemList!.isNotEmpty) {
               Post lastPost = widget.controller.itemList![lastIndex];
