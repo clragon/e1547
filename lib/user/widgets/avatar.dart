@@ -77,7 +77,7 @@ class Avatar extends StatelessWidget {
       future: avatar,
       builder: (context, snapshot) => snapshot.hasData
           ? CircleAvatar(
-              backgroundImage: (CachedNetworkImageProvider(snapshot.data!)),
+              foregroundImage: (CachedNetworkImageProvider(snapshot.data!)),
             )
           : AppIcon(),
     );

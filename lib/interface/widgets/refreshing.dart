@@ -18,8 +18,8 @@ class RefreshableControllerPage<T extends RefreshableController>
 
   const RefreshableControllerPage({
     required this.builder,
-    required this.appBar,
     required this.controller,
+    this.appBar,
     this.scrollController,
     this.refreshHeader,
     this.drawer,
@@ -69,10 +69,10 @@ class RefreshablePageLoader extends StatelessWidget {
   const RefreshablePageLoader({
     required this.refresh,
     required this.builder,
-    required this.appBar,
     required this.isLoading,
     required this.isEmpty,
     required this.isError,
+    this.appBar,
     this.isBuilt,
     this.refreshController,
     this.scrollController,
@@ -168,7 +168,7 @@ class RefreshablePage extends StatefulWidget {
   const RefreshablePage({
     required this.refresh,
     required this.builder,
-    required this.appBar,
+    this.appBar,
     this.refreshController,
     this.scrollController,
     this.refreshHeader,
@@ -185,8 +185,7 @@ class RefreshablePage extends StatefulWidget {
     this.refreshController,
     this.scrollController,
     this.refreshHeader,
-  })
-      : appBar = null,
+  })  : appBar = null,
         extendBodyBehindAppBar = false,
         drawer = null,
         endDrawer = null,
@@ -222,10 +221,12 @@ class _RefreshablePageState extends State<RefreshablePage> {
       return LayoutBuilder(builder: (context, constraints) {
         return Scaffold(
           extendBodyBehindAppBar: widget.extendBodyBehindAppBar,
-          appBar: ScrollToTop(
-            child: widget.appBar!,
-            controller: scrollController,
-          ),
+          appBar: widget.appBar != null
+              ? ScrollToTop(
+                  child: widget.appBar!,
+                  controller: scrollController,
+                )
+              : null,
           body: body(),
           drawer: widget.drawer,
           endDrawer: widget.endDrawer,

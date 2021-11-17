@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sliver_tools/sliver_tools.dart';
 
 const double kContentPadding = 4;
 
@@ -15,8 +16,6 @@ class DefaultAppBar extends StatelessWidget with AppBarSize {
   final List<Widget>? actions;
   final Widget? title;
   final double? elevation;
-  final Color? backgroundColor;
-  final double? toolbarHeight;
   final bool automaticallyImplyLeading;
 
   const DefaultAppBar({
@@ -24,15 +23,12 @@ class DefaultAppBar extends StatelessWidget with AppBarSize {
     this.actions,
     this.title,
     this.elevation,
-    this.backgroundColor,
-    this.toolbarHeight,
     this.automaticallyImplyLeading = true,
   });
 
   @override
   Widget build(BuildContext context) {
     return FloatingAppBarFrame(
-      backgroundColor: backgroundColor,
       elevation: elevation,
       child: MediaQuery.removePadding(
         context: context,
@@ -42,8 +38,6 @@ class DefaultAppBar extends StatelessWidget with AppBarSize {
           actions: actions,
           title: title,
           elevation: elevation,
-          backgroundColor: backgroundColor,
-          toolbarHeight: toolbarHeight,
           automaticallyImplyLeading: automaticallyImplyLeading,
         ),
       ),
@@ -54,26 +48,21 @@ class DefaultAppBar extends StatelessWidget with AppBarSize {
 class FloatingAppBarFrame extends StatelessWidget {
   final Widget child;
   final double? elevation;
-  final EdgeInsets? padding;
-  final Color? backgroundColor;
 
   const FloatingAppBarFrame({
     required this.child,
     this.elevation,
-    this.padding,
-    this.backgroundColor,
   });
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: padding ??
-          EdgeInsets.symmetric(horizontal: kContentPadding).add(
-            EdgeInsets.only(top: MediaQuery.of(context).padding.top),
-          ),
+      padding: EdgeInsets.symmetric(horizontal: kContentPadding).add(
+        EdgeInsets.only(top: MediaQuery.of(context).padding.top),
+      ),
       child: Card(
         margin: EdgeInsets.all(kContentPadding),
-        color: backgroundColor ?? Theme.of(context).canvasColor,
+        color: Theme.of(context).appBarTheme.backgroundColor,
         clipBehavior: Clip.antiAlias,
         elevation: elevation ?? 5,
         child: Column(
@@ -133,14 +122,91 @@ class TransparentAppBar extends StatelessWidget {
     return Theme(
       data: Theme.of(context).copyWith(
         iconTheme: transparent ? IconThemeData(color: Colors.white) : null,
+        appBarTheme: Theme.of(context).appBarTheme.copyWith(
+              backgroundColor: transparent ? Colors.transparent : null,
+            ),
       ),
       child: DefaultAppBar(
         leading: leading,
         elevation: 0,
-        backgroundColor: transparent ? Colors.transparent : null,
         title: title,
         actions: actions,
       ),
+    );
+  }
+}
+
+class DefaultSliverAppBar extends StatelessWidget {
+  final Widget? leading;
+  final List<Widget>? actions;
+  final Widget? title;
+  final double? elevation;
+  final bool automaticallyImplyLeading;
+  final double? expandedHeight;
+  final Widget? flexibleSpace;
+  final bool floating;
+  final bool pinned;
+  final bool snap;
+
+  const DefaultSliverAppBar({
+    this.leading,
+    this.actions,
+    this.title,
+    this.elevation,
+    this.expandedHeight,
+    this.flexibleSpace,
+    this.floating = false,
+    this.pinned = false,
+    this.snap = false,
+    this.automaticallyImplyLeading = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SliverStack(
+      children: [
+        SliverPositioned.fill(
+          child: SliverPinnedHeader(
+            child: Container(
+              height: defaultAppBarHeight,
+              color: Theme.of(context).appBarTheme.backgroundColor,
+            ),
+          ),
+        ),
+        MultiSliver(
+          children: [
+            SliverPadding(
+              padding: EdgeInsets.only(
+                top: kContentPadding,
+              ),
+            ),
+            SliverPadding(
+              padding: EdgeInsets.symmetric(
+                horizontal: kContentPadding * 2,
+              ),
+              sliver: SliverAppBar(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(4)),
+                ),
+                collapsedHeight: kToolbarHeight,
+                expandedHeight: expandedHeight,
+                leading: leading,
+                automaticallyImplyLeading: automaticallyImplyLeading,
+                floating: floating,
+                pinned: true,
+                snap: snap,
+                actions: actions,
+                flexibleSpace: flexibleSpace,
+              ),
+            ),
+            SliverPadding(
+              padding: EdgeInsets.only(
+                top: kContentPadding,
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }

@@ -127,8 +127,10 @@ class _FollowTileState extends State<FollowTile> {
   Widget build(BuildContext context) {
     bool active = status?.thumbnail != null;
 
-    return FakeCard(
+    return Card(
+      clipBehavior: Clip.antiAlias,
       child: Stack(
+        clipBehavior: Clip.none,
         alignment: Alignment.center,
         children: [
           AnimatedOpacity(
