@@ -81,16 +81,14 @@ class PostTile extends StatelessWidget {
         children: [
           ValueListenableBuilder<bool>(
             valueListenable: settings.showPostInfo,
-            builder: (context, value, child) {
-              return Column(
-                children: [
-                  Expanded(
-                    child: image(),
-                  ),
-                  if (value) PostInfoBar(post: post),
-                ],
-              );
-            },
+            builder: (context, value, child) => Column(
+              children: [
+                Expanded(
+                  child: image(),
+                ),
+                if (value) PostInfoBar(post: post),
+              ],
+            ),
           ),
           Positioned(top: 0, right: 0, child: tag()),
           Material(

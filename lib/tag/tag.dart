@@ -10,3 +10,4 @@ export 'widgets/editor.dart';
 export 'widgets/gesture.dart';
 export 'widgets/input.dart';
 export 'widgets/plus.dart';
+export 'widgets/drawer.dart';
