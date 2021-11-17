@@ -504,6 +504,15 @@ class Client {
     return User.fromMap(body);
   }
 
+  Future<void> reportUser(int userId, String reason) async {
+    await initialized;
+    await dio.post('tickets', queryParameters: {
+      'ticket[reason]': reason,
+      'ticket[disp_id]': userId,
+      'ticket[qtype]': 'user',
+    });
+  }
+
   Future<CurrentUser?> authedUser() async {
     if (!await hasLogin) {
       return null;
@@ -621,6 +630,15 @@ class Client {
       request = dio.post('comments.json', data: FormData.fromMap(body));
     }
     await request;
+  }
+
+  Future<void> reportComment(int commentId, String reason) async {
+    await initialized;
+    await dio.post('tickets', queryParameters: {
+      'ticket[reason]': reason,
+      'ticket[disp_id]': commentId,
+      'ticket[qtype]': 'comment',
+    });
   }
 
   Future<List<Topic>> topics(int page, {String? search}) async {
