@@ -30,16 +30,12 @@ class DefaultAppBar extends StatelessWidget with AppBarSize {
   Widget build(BuildContext context) {
     return FloatingAppBarFrame(
       elevation: elevation,
-      child: MediaQuery.removePadding(
-        context: context,
-        removeTop: true,
-        child: AppBar(
-          leading: leading,
-          actions: actions,
-          title: title,
-          elevation: elevation,
-          automaticallyImplyLeading: automaticallyImplyLeading,
-        ),
+      child: AppBar(
+        leading: leading,
+        actions: actions,
+        title: title,
+        elevation: elevation,
+        automaticallyImplyLeading: automaticallyImplyLeading,
       ),
     );
   }
@@ -67,7 +63,13 @@ class FloatingAppBarFrame extends StatelessWidget {
         elevation: elevation ?? 5,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [child],
+          children: [
+            MediaQuery.removePadding(
+              context: context,
+              removeTop: true,
+              child: child,
+            ),
+          ],
         ),
       ),
     );
@@ -122,9 +124,9 @@ class TransparentAppBar extends StatelessWidget {
     return Theme(
       data: Theme.of(context).copyWith(
         iconTheme: transparent ? IconThemeData(color: Colors.white) : null,
-        appBarTheme: Theme.of(context).appBarTheme.copyWith(
-              backgroundColor: transparent ? Colors.transparent : null,
-            ),
+        appBarTheme: AppBarTheme(
+          backgroundColor: transparent ? Colors.transparent : null,
+        ),
       ),
       child: DefaultAppBar(
         leading: leading,
@@ -165,38 +167,47 @@ class DefaultSliverAppBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return SliverStack(
       children: [
-        SliverPositioned.fill(
-          child: SliverPinnedHeader(
-            child: Container(
-              height: defaultAppBarHeight,
-              color: Theme.of(context).appBarTheme.backgroundColor,
-            ),
-          ),
+        SliverAppBar(
+          elevation: 0,
+          backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+          collapsedHeight: defaultAppBarHeight,
+          expandedHeight: expandedHeight != null
+              ? expandedHeight! + kContentPadding * 2
+              : null,
+          automaticallyImplyLeading: false,
+          floating: floating,
+          pinned: pinned,
+          snap: snap,
         ),
         MultiSliver(
           children: [
             SliverPadding(
               padding: EdgeInsets.only(
-                top: kContentPadding,
+                top: kContentPadding + MediaQuery.of(context).padding.top,
               ),
             ),
             SliverPadding(
               padding: EdgeInsets.symmetric(
                 horizontal: kContentPadding * 2,
               ),
-              sliver: SliverAppBar(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(4)),
+              sliver: MediaQuery.removePadding(
+                context: context,
+                removeTop: true,
+                child: SliverAppBar(
+                  elevation: elevation,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(4)),
+                  ),
+                  collapsedHeight: kToolbarHeight,
+                  expandedHeight: expandedHeight,
+                  leading: leading,
+                  automaticallyImplyLeading: automaticallyImplyLeading,
+                  floating: floating,
+                  pinned: pinned,
+                  snap: snap,
+                  actions: actions,
+                  flexibleSpace: flexibleSpace,
                 ),
-                collapsedHeight: kToolbarHeight,
-                expandedHeight: expandedHeight,
-                leading: leading,
-                automaticallyImplyLeading: automaticallyImplyLeading,
-                floating: floating,
-                pinned: true,
-                snap: snap,
-                actions: actions,
-                flexibleSpace: flexibleSpace,
               ),
             ),
             SliverPadding(
