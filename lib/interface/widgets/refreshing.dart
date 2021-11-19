@@ -1,6 +1,7 @@
 import 'package:e1547/interface/interface.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_scroll_to_top/flutter_scroll_to_top.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 export 'package:e1547/client/client.dart' show validateCall;
@@ -221,13 +222,15 @@ class _RefreshablePageState extends State<RefreshablePage> {
       return LayoutBuilder(builder: (context, constraints) {
         return Scaffold(
           extendBodyBehindAppBar: widget.extendBodyBehindAppBar,
-          appBar: widget.appBar != null
-              ? ScrollToTop(
-                  child: widget.appBar!,
-                  controller: scrollController,
-                )
-              : null,
-          body: body(),
+          appBar: widget.appBar,
+          body: ScrollWrapper(
+            scrollToTopDuration: defaultAnimationDuration,
+            scrollController: scrollController,
+            promptTheme: PromptButtonTheme(
+              elevation: 4,
+            ),
+            child: body(),
+          ),
           drawer: widget.drawer,
           endDrawer: widget.endDrawer,
           drawerEdgeDragWidth: defaultDrawerEdge(constraints.maxWidth),

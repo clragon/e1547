@@ -46,20 +46,18 @@ class _ParentDisplayState extends State<ParentDisplay> {
                       widget.post.relationships.parentId?.toString() ?? 'none'),
                   trailing: widget.post.isEditing
                       ? Builder(
-                          builder: (BuildContext context) {
-                            return IconButton(
-                              icon: Icon(Icons.edit),
-                              onPressed: () {
-                                widget.controller.show(
-                                  context,
-                                  ParentEditor(
-                                    post: widget.post,
-                                    controller: widget.controller,
-                                  ),
-                                );
-                              },
-                            );
-                          },
+                          builder: (context) => IconButton(
+                            icon: Icon(Icons.edit),
+                            onPressed: () {
+                              widget.controller.show(
+                                context,
+                                ParentEditor(
+                                  post: widget.post,
+                                  controller: widget.controller,
+                                ),
+                              );
+                            },
+                          ),
                         )
                       : null,
                   onTap: () async {
@@ -67,10 +65,11 @@ class _ParentDisplayState extends State<ParentDisplay> {
                       try {
                         Post post = await client
                             .post(widget.post.relationships.parentId!);
-                        Navigator.of(context)
-                            .push(MaterialPageRoute(builder: (context) {
-                          return PostDetail(post: post);
-                        }));
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => PostDetail(post: post),
+                          ),
+                        );
                       } on DioError {
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                           duration: Duration(seconds: 1),

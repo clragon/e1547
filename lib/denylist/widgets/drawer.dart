@@ -52,7 +52,6 @@ class _DrawerMultiDenySwitchState extends State<DrawerMultiDenySwitch> {
   void initState() {
     super.initState();
     updateDenying(denying);
-    updateAllowedList(allowedList);
   }
 
   @override
