@@ -44,20 +44,20 @@ VoidCallback? getLinkWordTap(BuildContext context, LinkWord word, int id) {
     case LinkWord.post:
       return () => Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (context) => PostLoadingPage(id: id),
+              builder: (context) => PostLoadingPage(id),
             ),
           );
     case LinkWord.pool:
       return () => Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (context) => PoolLoadingPage(id: id),
+              builder: (context) => PoolLoadingPage(id),
             ),
           );
     case LinkWord.forum:
       if (settings.showBeta.value) {
         return () => Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => ReplyLoadingPage(id: id),
+                builder: (context) => ReplyLoadingPage(id),
               ),
             );
       }
@@ -66,7 +66,7 @@ VoidCallback? getLinkWordTap(BuildContext context, LinkWord word, int id) {
       if (settings.showBeta.value) {
         return () => Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => TopicLoadingPage(id: id),
+                builder: (context) => TopicLoadingPage(id),
               ),
             );
       }

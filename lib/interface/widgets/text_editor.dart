@@ -166,8 +166,8 @@ class _TextEditorState extends State<TextEditor>
     }
 
     Map<Widget, Widget> tabs = {
-      Tab(text: 'WRITE'): editor(),
-      Tab(text: 'PREVIEW'): preview(),
+      Tab(text: 'Write'): editor(),
+      Tab(text: 'Preview'): preview(),
     };
 
     return Scaffold(
@@ -179,7 +179,7 @@ class _TextEditorState extends State<TextEditor>
               : null,
       body: NestedScrollView(
         headerSliverBuilder: (context, innerBoxIsScrolled) => [
-          SliverAppBar(
+          DefaultSliverAppBar(
             floating: true,
             leading: CloseButton(),
             title: Text(widget.title),

@@ -81,31 +81,6 @@ mixin AppBarSize on Widget implements PreferredSizeWidget {
   Size get preferredSize => Size.fromHeight(defaultAppBarHeight);
 }
 
-class ScrollToTop extends StatelessWidget with AppBarSize {
-  final ScrollController? controller;
-  final PreferredSizeWidget child;
-
-  @override
-  Size get preferredSize => child.preferredSize;
-
-  const ScrollToTop({required this.child, this.controller});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onDoubleTap: controller != null
-          ? () => controller!.animateTo(
-                controller!.position.minScrollExtent,
-                duration: Duration(milliseconds: 500),
-                curve: Curves.easeOut,
-              )
-          : null,
-      behavior: HitTestBehavior.translucent,
-      child: child,
-    );
-  }
-}
-
 class TransparentAppBar extends StatelessWidget {
   final Widget? title;
   final Widget? leading;
@@ -143,9 +118,12 @@ class DefaultSliverAppBar extends StatelessWidget {
   final List<Widget>? actions;
   final Widget? title;
   final double? elevation;
+  final bool forceElevated;
   final bool automaticallyImplyLeading;
   final double? expandedHeight;
-  final Widget? flexibleSpace;
+  final PreferredSizeWidget? bottom;
+  final Widget Function(BuildContext context, bool collapsed)?
+      flexibleSpaceBuilder;
   final bool floating;
   final bool pinned;
   final bool snap;
@@ -155,67 +133,93 @@ class DefaultSliverAppBar extends StatelessWidget {
     this.actions,
     this.title,
     this.elevation,
+    this.flexibleSpaceBuilder,
     this.expandedHeight,
-    this.flexibleSpace,
+    this.bottom,
     this.floating = false,
     this.pinned = false,
     this.snap = false,
     this.automaticallyImplyLeading = false,
+    this.forceElevated = false,
   });
 
   @override
   Widget build(BuildContext context) {
+    double bottomHeight = bottom?.preferredSize.height ?? 0;
+
     return SliverStack(
       children: [
         SliverAppBar(
           elevation: 0,
-          backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
-          collapsedHeight: defaultAppBarHeight,
+          toolbarHeight: defaultAppBarHeight,
           expandedHeight: expandedHeight != null
               ? expandedHeight! + kContentPadding * 2
+              : null,
+          bottom: bottom != null
+              ? PreferredSize(
+                  preferredSize: bottom!.preferredSize,
+                  child: Container(),
+                )
               : null,
           automaticallyImplyLeading: false,
           floating: floating,
           pinned: pinned,
           snap: snap,
         ),
-        MultiSliver(
-          children: [
-            SliverPadding(
-              padding: EdgeInsets.only(
-                top: kContentPadding + MediaQuery.of(context).padding.top,
-              ),
-            ),
-            SliverPadding(
-              padding: EdgeInsets.symmetric(
-                horizontal: kContentPadding * 2,
-              ),
-              sliver: MediaQuery.removePadding(
-                context: context,
-                removeTop: true,
-                child: SliverAppBar(
-                  elevation: elevation,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(4)),
-                  ),
-                  collapsedHeight: kToolbarHeight,
-                  expandedHeight: expandedHeight,
-                  leading: leading,
-                  automaticallyImplyLeading: automaticallyImplyLeading,
-                  floating: floating,
-                  pinned: pinned,
-                  snap: snap,
-                  actions: actions,
-                  flexibleSpace: flexibleSpace,
+        SliverOverlapAbsorber(
+          handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
+          sliver: MultiSliver(
+            children: [
+              SliverPadding(
+                padding: EdgeInsets.only(
+                  top: kContentPadding + MediaQuery.of(context).padding.top,
                 ),
               ),
-            ),
-            SliverPadding(
-              padding: EdgeInsets.only(
-                top: kContentPadding,
+              SliverPadding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: kContentPadding * 2,
+                ),
+                sliver: MediaQuery.removePadding(
+                  context: context,
+                  removeTop: true,
+                  child: SliverAppBar(
+                    title: title,
+                    automaticallyImplyLeading: automaticallyImplyLeading,
+                    elevation: elevation,
+                    forceElevated: forceElevated,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(4)),
+                    ),
+                    toolbarHeight: kToolbarHeight,
+                    expandedHeight: expandedHeight,
+                    leading: leading,
+                    floating: floating,
+                    pinned: pinned,
+                    snap: snap,
+                    actions: actions,
+                    flexibleSpace: flexibleSpaceBuilder != null
+                        ? LayoutBuilder(
+                            builder: (context, constraints) => Padding(
+                              padding: EdgeInsets.only(bottom: bottomHeight),
+                              child: flexibleSpaceBuilder!(
+                                context,
+                                constraints.maxHeight ==
+                                    kToolbarHeight + bottomHeight,
+                              ),
+                            ),
+                          )
+                        : null,
+                    bottom: bottom,
+                  ),
+                ),
               ),
-            ),
-          ],
+              SliverPadding(
+                padding: EdgeInsets.only(
+                  top: kContentPadding,
+                ),
+              ),
+            ],
+          ),
         ),
       ],
     );

@@ -14,8 +14,6 @@ class PostReportImage extends StatelessWidget {
   final bool isLoading;
   final double height;
 
-  final double minImageHeight = 300;
-
   const PostReportImage({
     required this.post,
     required this.height,
@@ -26,8 +24,8 @@ class PostReportImage extends StatelessWidget {
   Widget build(BuildContext context) {
     return ConstrainedBox(
       constraints: BoxConstraints(
-        minHeight: minImageHeight,
-        maxHeight: max(height * 0.5, minImageHeight),
+        minHeight: defaultFormTargetHeight,
+        maxHeight: max(height * 0.5, defaultFormTargetHeight),
       ),
       child: Padding(
         padding: EdgeInsets.all(24),
@@ -144,76 +142,27 @@ class _PostReportScreenState extends State<PostReportScreen> {
                 height: constraints.maxHeight,
                 isLoading: isLoading,
               ),
-              Padding(
-                padding: EdgeInsets.only(left: 32, right: 32, bottom: 12),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Report',
-                      style: TextStyle(
-                        fontSize: 20,
-                      ),
-                    ),
-                    IconButton(
-                      onPressed: () {
-                        wikiSheet(context: context, tag: 'e621:report_post');
-                      },
-                      icon: Icon(Icons.info_outline),
-                      color: Colors.grey,
-                    ),
-                  ],
+              ReportFormHeader(
+                title: Text('Report'),
+                icon: IconButton(
+                  onPressed: () =>
+                      wikiSheet(context: context, tag: 'e621:report_post'),
+                  icon: Icon(Icons.info_outline),
                 ),
               ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                child: DropdownButtonFormField<ReportType>(
-                  isExpanded: true,
-                  decoration: InputDecoration(
-                    labelText: 'Type',
-                    border: OutlineInputBorder(),
-                  ),
-                  isDense: true,
-                  value: type,
-                  onChanged: isLoading
-                      ? null
-                      : (value) {
-                          setState(() {
-                            type = value;
-                          });
-                        },
-                  validator: (value) {
-                    if (value == null) {
-                      return 'Type cannot be empty';
-                    }
-                    return null;
-                  },
-                  items: ReportType.values
-                      .map<DropdownMenuItem<ReportType>>((ReportType value) {
-                    return DropdownMenuItem<ReportType>(
-                      value: value,
-                      child: Text(reportTypes[value]!),
-                    );
-                  }).toList(),
-                ),
+              ReportFormDropdown<ReportType?>(
+                type: type,
+                types: reportTypes,
+                onChanged: (value) {
+                  setState(() {
+                    type = value;
+                  });
+                },
+                isLoading: isLoading,
               ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                child: TextFormField(
-                  enabled: !isLoading,
-                  controller: reasonController,
-                  decoration: InputDecoration(
-                    labelText: 'Reason',
-                    border: OutlineInputBorder(),
-                  ),
-                  maxLines: null,
-                  validator: (value) {
-                    if (value!.trim().isEmpty) {
-                      return 'Reason cannot be empty';
-                    }
-                    return null;
-                  },
-                ),
+              ReportFormReason(
+                controller: reasonController,
+                isLoading: isLoading,
               ),
             ],
           ),
@@ -300,60 +249,23 @@ class _PostFlagScreenState extends State<PostFlagScreen> {
                 height: constraints.maxHeight,
                 isLoading: isLoading,
               ),
-              Padding(
-                padding: EdgeInsets.only(left: 32, right: 32, bottom: 12),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Flag',
-                      style: TextStyle(
-                        fontSize: 20,
-                      ),
-                    ),
-                    IconButton(
-                      onPressed: () {
-                        wikiSheet(
-                            context: context, tag: 'e621:flag_for_deletion');
-                      },
-                      icon: Icon(Icons.info_outline),
-                      color: Colors.grey,
-                    ),
-                  ],
+              ReportFormHeader(
+                title: Text('Flag'),
+                icon: IconButton(
+                  onPressed: () => wikiSheet(
+                      context: context, tag: 'e621:flag_for_deletion'),
+                  icon: Icon(Icons.info_outline),
                 ),
               ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                child: DropdownButtonFormField<FlagType>(
-                  isExpanded: true,
-                  decoration: InputDecoration(
-                    labelText: 'Type',
-                    border: OutlineInputBorder(),
-                  ),
-                  isDense: true,
-                  value: type,
-                  onChanged: isLoading
-                      ? null
-                      : (value) {
-                          setState(() {
-                            type = value;
-                          });
-                        },
-                  validator: (value) {
-                    if (value == null) {
-                      return 'Type cannot be empty';
-                    }
-                    return null;
-                  },
-                  items: FlagType.values
-                      .map<DropdownMenuItem<FlagType>>(
-                        (FlagType value) => DropdownMenuItem<FlagType>(
-                          value: value,
-                          child: Text(flagTypes[value]!),
-                        ),
-                      )
-                      .toList(),
-                ),
+              ReportFormDropdown<FlagType?>(
+                type: type,
+                types: flagTypes,
+                onChanged: (value) {
+                  setState(() {
+                    type = value;
+                  });
+                },
+                isLoading: isLoading,
               ),
               SafeCrossFade(
                 showChild: type == FlagType.Inferior,

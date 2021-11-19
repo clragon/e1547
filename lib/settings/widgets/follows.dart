@@ -5,6 +5,7 @@ import 'package:e1547/settings/settings.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_scroll_to_top/flutter_scroll_to_top.dart';
 
 class FollowingPage extends StatefulWidget {
   @override
@@ -173,22 +174,26 @@ class _FollowingPageState extends State<FollowingPage> with LinkingMixin {
     }
 
     return Scaffold(
-      appBar: ScrollToTop(
-        controller: scrollController,
-        child: DefaultAppBar(
-          title: Text('Following'),
-          actions: [
-            IconButton(
-              icon: Icon(Icons.edit),
-              onPressed: () async => showDialog(
-                context: context,
-                builder: (context) => editor(),
-              ),
+      appBar: DefaultAppBar(
+        title: Text('Following'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.edit),
+            onPressed: () async => showDialog(
+              context: context,
+              builder: (context) => editor(),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
-      body: body(),
+      body: ScrollWrapper(
+        scrollToTopDuration: defaultAnimationDuration,
+        scrollController: scrollController,
+        promptTheme: PromptButtonTheme(
+          elevation: 4,
+        ),
+        child: body(),
+      ),
       floatingActionButton: Builder(
         builder: (context) => AnimatedBuilder(
           animation: sheetController,

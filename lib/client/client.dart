@@ -118,7 +118,7 @@ class Client {
       int? avatarId = _currentUser?.avatarId;
       if (avatarId != null) {
         Post post = await client.post(avatarId);
-        _currentAvatar = post.sample.url;
+        _currentAvatar = post;
       }
     }
     userInitLock.release();
@@ -131,9 +131,9 @@ class Client {
     return _currentUser;
   }
 
-  String? _currentAvatar;
+  Post? _currentAvatar;
 
-  Future<String?> get currentAvatar async {
+  Future<Post?> get currentAvatar async {
     await initializeCurrentUser();
     return _currentAvatar;
   }

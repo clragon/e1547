@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 class PostLoadingPage extends StatefulWidget {
   final int id;
 
-  const PostLoadingPage({required this.id});
+  const PostLoadingPage(this.id);
 
   @override
   _PostLoadingPageState createState() => _PostLoadingPageState();
@@ -34,7 +34,7 @@ class _PostLoadingPageState extends State<PostLoadingPage> {
 class PoolLoadingPage extends StatefulWidget {
   final int id;
 
-  const PoolLoadingPage({required this.id});
+  const PoolLoadingPage(this.id);
 
   @override
   _PoolLoadingPageState createState() => _PoolLoadingPageState();
@@ -59,7 +59,7 @@ class _PoolLoadingPageState extends State<PoolLoadingPage> {
 class TopicLoadingPage extends StatefulWidget {
   final int id;
 
-  const TopicLoadingPage({required this.id});
+  const TopicLoadingPage(this.id);
 
   @override
   _TopicLoadingPageState createState() => _TopicLoadingPageState();
@@ -84,7 +84,7 @@ class _TopicLoadingPageState extends State<TopicLoadingPage> {
 class ReplyLoadingPage extends StatefulWidget {
   final int id;
 
-  const ReplyLoadingPage({required this.id});
+  const ReplyLoadingPage(this.id);
 
   @override
   _ReplyLoadingPageState createState() => _ReplyLoadingPageState();
@@ -97,7 +97,7 @@ class _ReplyLoadingPageState extends State<ReplyLoadingPage> {
   Widget build(BuildContext context) {
     return FuturePageLoader<Reply>(
       future: reply,
-      builder: (context, value) => TopicLoadingPage(id: value.topicId),
+      builder: (context, value) => TopicLoadingPage(value.topicId),
       title: Text('Reply #${widget.id}'),
       onLoading: Text('Loading reply'),
       onError: Text('Failed to load reply'),
@@ -109,7 +109,7 @@ class _ReplyLoadingPageState extends State<ReplyLoadingPage> {
 class UserLoadingPage extends StatefulWidget {
   final int id;
 
-  const UserLoadingPage({required this.id});
+  const UserLoadingPage(this.id);
 
   @override
   _UserLoadingPageState createState() => _UserLoadingPageState();
@@ -122,7 +122,7 @@ class _UserLoadingPageState extends State<UserLoadingPage> {
   Widget build(BuildContext context) {
     return FuturePageLoader<User>(
       future: user,
-      builder: (context, value) => SearchPage(tags: 'user:${value.name}'),
+      builder: (context, value) => UserPage(user: value),
       title: Text('User #${widget.id}'),
       onLoading: Text('Loading user'),
       onError: Text('Failed to load user'),

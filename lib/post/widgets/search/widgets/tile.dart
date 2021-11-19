@@ -15,19 +15,6 @@ class PostTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget overlay({required Widget child}) {
-      if (post.flags.deleted) {
-        return Center(child: Text('deleted'));
-      }
-      if (post.type == PostType.unsupported) {
-        return Center(child: Text('unsupported'));
-      }
-      if (post.file.url == null) {
-        return Center(child: Text('unsafe'));
-      }
-      return child;
-    }
-
     Widget tag() {
       if (post.file.ext == 'gif') {
         return Container(
@@ -57,7 +44,8 @@ class PostTile extends StatelessWidget {
           Expanded(
             child: AnimatedBuilder(
               animation: post,
-              builder: (context, value) => overlay(
+              builder: (context, value) => PostTileOverlay(
+                post: post,
                 child: Hero(
                   tag: post.hero,
                   child: PostImageWidget(
@@ -100,6 +88,27 @@ class PostTile extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+class PostTileOverlay extends StatelessWidget {
+  final Post post;
+  final Widget child;
+
+  const PostTileOverlay({required this.post, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    if (post.flags.deleted) {
+      return Center(child: Text('deleted'));
+    }
+    if (post.type == PostType.unsupported) {
+      return Center(child: Text('unsupported'));
+    }
+    if (post.file.url == null) {
+      return Center(child: Text('unsafe'));
+    }
+    return child;
   }
 }
 

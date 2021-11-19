@@ -266,8 +266,16 @@ class _VideoGestureState extends State<VideoGesture>
         opacity: fadeAnimation,
         child: Stack(children: [
           IconMessage(
-            icon: Icon(widget.forward ? Icons.fast_forward : Icons.fast_rewind),
-            title: Text('${10 * combo} seconds'),
+            icon: Icon(
+              widget.forward ? Icons.fast_forward : Icons.fast_rewind,
+              color: Colors.white,
+            ),
+            title: Text(
+              '${10 * combo} seconds',
+              style: TextStyle(
+                color: Colors.white,
+              ),
+            ),
           ),
           LayoutBuilder(builder: (context, constraints) {
             double size = constraints.maxHeight * 2;

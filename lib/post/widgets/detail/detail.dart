@@ -28,9 +28,11 @@ class _PostDetailState extends State<PostDetail> with LinkingMixin, RouteAware {
   late ModalRoute route;
 
   Future<void> onPageChange() async {
-    if (route.isActive &&
+    if (route.isCurrent) {
+      navigator.maybePop();
+    } else if (route.isActive &&
         !(widget.controller!.itemList?.contains(widget.post) ?? false)) {
-      navigator.pop(route);
+      navigator.removeRoute(route);
     }
   }
 

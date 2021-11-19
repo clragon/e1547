@@ -89,7 +89,7 @@ class FavoriteButton extends StatelessWidget {
           } else {
             post.tryAddFav(
               context,
-              cooldown: Duration(milliseconds: 1000),
+              cooldown: Duration(seconds: 1),
             );
             return true;
           }
