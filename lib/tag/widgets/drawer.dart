@@ -98,28 +98,28 @@ class DrawerCounterBody extends StatelessWidget {
                         padding:
                             EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                         child: Row(
-                              children: [
-                                Expanded(
-                                  child: Wrap(
-                                    direction: Axis.horizontal,
+                          children: [
+                            Expanded(
+                              child: Wrap(
+                                direction: Axis.horizontal,
                                 children: children,
                               ),
-                                )
-                              ],
-                            ),
-                          ),
-                          secondChild: Text(
-                            'no tags',
-                            style: TextStyle(
-                              fontStyle: FontStyle.italic,
-                              color: Theme.of(context)
-                                  .textTheme
-                                  .bodyText1!
-                                  .color!
-                                  .withOpacity(0.35),
-                            ),
-                          ),
+                            )
+                          ],
                         ),
+                      ),
+                      secondChild: Text(
+                        'no tags',
+                        style: TextStyle(
+                          fontStyle: FontStyle.italic,
+                          color: Theme.of(context)
+                              .textTheme
+                              .bodyText1!
+                              .color!
+                              .withOpacity(0.35),
+                        ),
+                      ),
+                    ),
                     secondChild: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,

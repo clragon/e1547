@@ -29,8 +29,8 @@ class _PostsPageState extends State<PostsPage> with LinkingMixin {
 
   @override
   Map<ChangeNotifier, VoidCallback> get links => {
-    widget.controller: updatePage,
-  };
+        widget.controller: updatePage,
+      };
 
   void updatePage() {
     WidgetsBinding.instance!.addPostFrameCallback((_) {
@@ -53,7 +53,7 @@ class _PostsPageState extends State<PostsPage> with LinkingMixin {
           builder: (context, actionController) => ControlledTextWrapper(
             actionController: actionController,
             textController:
-            TextEditingController(text: widget.controller.search.value),
+                TextEditingController(text: widget.controller.search.value),
             submit: (value) => widget.controller.search.value = sortTags(value),
             builder: (context, controller, submit) => AdvancedTagInput(
               labelText: 'Tags',
@@ -102,14 +102,14 @@ class _PostsPageState extends State<PostsPage> with LinkingMixin {
           ),
           Positioned.fill(
               child: PostSelectionOverlay(
-                post: item,
-                selections: selections,
-                select: (Post post) {
-                  if (widget.canSelect) {
-                    setState(() {
-                      if (selections.contains(item)) {
-                        selections.remove(item);
-                      } else {
+            post: item,
+            selections: selections,
+            select: (Post post) {
+              if (widget.canSelect) {
+                setState(() {
+                  if (selections.contains(item)) {
+                    selections.remove(item);
+                  } else {
                     selections.add(item);
                   }
                 });
@@ -122,11 +122,8 @@ class _PostsPageState extends State<PostsPage> with LinkingMixin {
 
     TileLayoutTileBuilder tileBuilder = defaultStaggerTileBuilder(
       (index) {
-        if (index < widget.controller.itemList!.length) {
-          PostFile image = widget.controller.itemList![index].sample;
-          return Size(image.width.toDouble(), image.height.toDouble());
-        }
-        return null;
+        PostFile image = widget.controller.itemList![index].sample;
+        return Size(image.width.toDouble(), image.height.toDouble());
       },
     );
 
@@ -143,24 +140,24 @@ class _PostsPageState extends State<PostsPage> with LinkingMixin {
                   selections: selections,
                   onChanged: (value) => setState(() => selections = value),
                   onSelectAll: () => widget.controller.itemList!.toSet()),
-              drawer: NavigationDrawer(),
-              endDrawer: endDrawer(),
-              floatingActionButton: floatingActionButton(),
-              refresh: () => widget.controller.refresh(background: true),
-              builder: (context) => PagedStaggeredGridView(
-                key: joinKeys(['posts', crossAxisCount]),
-                showNewPageErrorIndicatorAsGridChild: false,
-                showNewPageProgressIndicatorAsGridChild: false,
-                showNoMoreItemsIndicatorAsGridChild: false,
-                padding: defaultListPadding,
-                addAutomaticKeepAlives: false,
-                pagingController: widget.controller,
-                builderDelegate: defaultPagedChildBuilderDelegate(
-                  pagingController: widget.controller,
-                  itemBuilder: itemBuilder,
-                  onEmpty: Text('No posts'),
-                  onLoading: Text('Loading posts'),
-                  onError: Text('Failed to load posts'),
+          drawer: NavigationDrawer(),
+          endDrawer: endDrawer(),
+          floatingActionButton: floatingActionButton(),
+          refresh: () => widget.controller.refresh(background: true),
+          builder: (context) => PagedStaggeredGridView(
+            key: joinKeys(['posts', crossAxisCount]),
+            showNewPageErrorIndicatorAsGridChild: false,
+            showNewPageProgressIndicatorAsGridChild: false,
+            showNoMoreItemsIndicatorAsGridChild: false,
+            padding: defaultListPadding,
+            addAutomaticKeepAlives: false,
+            pagingController: widget.controller,
+            builderDelegate: defaultPagedChildBuilderDelegate(
+              pagingController: widget.controller,
+              itemBuilder: itemBuilder,
+              onEmpty: Text('No posts'),
+              onLoading: Text('Loading posts'),
+              onError: Text('Failed to load posts'),
             ),
             gridDelegateBuilder: (childCount) =>
                 SliverStaggeredGridDelegateWithFixedCrossAxisCount(
@@ -190,11 +187,8 @@ class _PostsPageHeadlessState extends State<PostsPageHeadless> {
     return TileLayoutScope(
       tileBuilder: defaultStaggerTileBuilder(
         (index) {
-          if (index < widget.controller.itemList!.length) {
-            PostFile image = widget.controller.itemList![index].sample;
-            return Size(image.width.toDouble(), image.height.toDouble());
-          }
-          return null;
+          PostFile image = widget.controller.itemList![index].sample;
+          return Size(image.width.toDouble(), image.height.toDouble());
         },
       ),
       builder: (context, crossAxisCount, tileBuilder) => PagedStaggeredGridView(

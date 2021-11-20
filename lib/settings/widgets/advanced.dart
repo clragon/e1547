@@ -28,7 +28,7 @@ class _AdvancedSettingsPageState extends State<AdvancedSettingsPage> {
               secondary: Icon(Icons.arrow_upward),
               value: value,
               onChanged: (value) => settings.upvoteFavs.value = value,
-                ),
+            ),
           ),
           Divider(),
           SettingsHeader(title: 'Display'),
