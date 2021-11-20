@@ -22,7 +22,10 @@ String linkToDisplay(String link) {
   return display;
 }
 
-Map<RegExp, DTextParser> linkRegexes(BuildContext context) {
+Map<RegExp, DTextParser> linkRegexes(
+  BuildContext context,
+  UsernameGenerator? usernameGenerator,
+) {
   return {
     RegExp(
       linkWrap(
@@ -34,17 +37,19 @@ Map<RegExp, DTextParser> linkRegexes(BuildContext context) {
           match: match,
           result: result,
           state: state,
+          usernameGenerator: usernameGenerator,
         ),
     RegExp(
       linkWrap(
         r'(?<link>[-a-zA-Z0-9()@:%_\+.~#?&//=]*)',
       ),
     ): (match, result, state) => parseLink(
-          context: context,
+      context: context,
           match: match,
           result: result,
           state: state,
           insite: true,
+          usernameGenerator: usernameGenerator,
         ),
   };
 }
