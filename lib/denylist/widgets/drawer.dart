@@ -59,14 +59,14 @@ class _DrawerMultiDenySwitchState extends State<DrawerMultiDenySwitch> {
     return AnimatedBuilder(
       animation: Listenable.merge(widget.controllers),
       builder: (context, child) {
-        Map<String, List<Post>> denied = widget.controllers.fold(
-          {},
-          (previousValue, element) =>
-              previousValue..addAll(element.denied ?? {}),
-        );
-        List<String> allowedList = widget.controllers
-            .map((e) => e.allowed.value)
-            .reduce((a, b) => [...a, ...b]);
+        Map<String, List<Post>> denied = {};
+        List<String> allowedList = [];
+        for (PostController controller in widget.controllers) {
+          if (controller.denied != null) {
+            denied.addAll(controller.denied!);
+          }
+          allowedList.addAll(controller.allowed.value);
+        }
         allowedList = allowedList.toSet().toList();
 
         return DrawerDenySwitchBody(

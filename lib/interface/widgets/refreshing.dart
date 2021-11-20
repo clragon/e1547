@@ -224,6 +224,7 @@ class _RefreshablePageState extends State<RefreshablePage> {
           extendBodyBehindAppBar: widget.extendBodyBehindAppBar,
           appBar: widget.appBar,
           body: ScrollWrapper(
+            promptScrollOffset: 2000,
             scrollToTopDuration: defaultAnimationDuration,
             scrollController: scrollController,
             promptTheme: PromptButtonTheme(

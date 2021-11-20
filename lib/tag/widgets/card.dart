@@ -69,7 +69,7 @@ class TagCounterCard extends StatelessWidget {
   final String tag;
   final int count;
   final String category;
-  final PostController controller;
+  final PostController? controller;
 
   const TagCounterCard({
     required this.tag,

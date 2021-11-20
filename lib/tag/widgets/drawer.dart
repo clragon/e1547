@@ -3,58 +3,75 @@ import 'package:e1547/post/post.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
-import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
-class DrawerCounter extends StatefulWidget {
+class DrawerCounter extends StatelessWidget {
   final PostController controller;
 
   const DrawerCounter({required this.controller});
 
   @override
-  _DrawerCounterState createState() => _DrawerCounterState();
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: controller,
+      builder: (context, child) => DrawerCounterBody(
+        posts: controller.itemList,
+        controller: controller,
+      ),
+    );
+  }
 }
 
-class _DrawerCounterState extends State<DrawerCounter> with LinkingMixin {
-  final int limit = 15;
-  List<Widget>? children;
+class DrawerMultiCounter extends StatelessWidget {
+  final List<PostController> controllers;
 
-  @override
-  Map<ChangeNotifier, VoidCallback> get initLinks => {
-        widget.controller: updateTags,
-      };
-
-  Future<void> updateTags() async {
-    if (mounted) {
-      setState(() {
-        children = null;
-      });
-    }
-
-    if (widget.controller.value.status == PagingStatus.loadingFirstPage) {
-      return;
-    }
-    List<CountedTag> counts = countTagsByPosts(widget.controller.itemList!);
-    counts.sort((a, b) => b.count.compareTo(a.count));
-
-    List<Widget> cards = [];
-    for (CountedTag tag in counts.take(limit)) {
-      cards.add(TagCounterCard(
-        tag: tag.tag,
-        count: tag.count,
-        category: tag.category,
-        controller: widget.controller,
-      ));
-    }
-
-    if (mounted) {
-      setState(() {
-        children = cards;
-      });
-    }
-  }
+  const DrawerMultiCounter({required this.controllers});
 
   @override
   Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: Listenable.merge(controllers),
+      builder: (context, child) {
+        List<Post>? posts;
+        for (PostController controller in controllers) {
+          if (controller.itemList == null) {
+            posts = null;
+            break;
+          }
+          posts ??= [];
+          posts.addAll(controller.itemList!);
+        }
+        return DrawerCounterBody(posts: posts);
+      },
+    );
+  }
+}
+
+class DrawerCounterBody extends StatelessWidget {
+  final int limit;
+  final List<Post>? posts;
+  final PostController? controller;
+
+  const DrawerCounterBody(
+      {required this.posts, this.limit = 15, this.controller});
+
+  @override
+  Widget build(BuildContext context) {
+    List<Widget>? children;
+
+    if (posts != null) {
+      List<CountedTag> tags = countTagsByPosts(posts!);
+      tags.sort((a, b) => b.count.compareTo(a.count));
+      children = [];
+      for (CountedTag tag in tags.take(limit)) {
+        children.add(TagCounterCard(
+          tag: tag.tag,
+          count: tag.count,
+          category: tag.category,
+          controller: controller,
+        ));
+      }
+    }
+
     return Column(
       children: [
         ExpandableNotifier(
@@ -69,6 +86,7 @@ class _DrawerCounterState extends State<DrawerCounter> with LinkingMixin {
                 title: Text('Tags'),
                 leading: Icon(Icons.tag),
               ),
+              collapsed: SizedBox.shrink(),
               expanded: Column(
                 children: [
                   Divider(),
@@ -80,28 +98,28 @@ class _DrawerCounterState extends State<DrawerCounter> with LinkingMixin {
                         padding:
                             EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                         child: Row(
-                          children: [
-                            Expanded(
-                              child: Wrap(
-                                direction: Axis.horizontal,
-                                children: children!,
+                              children: [
+                                Expanded(
+                                  child: Wrap(
+                                    direction: Axis.horizontal,
+                                children: children,
                               ),
-                            )
-                          ],
+                                )
+                              ],
+                            ),
+                          ),
+                          secondChild: Text(
+                            'no tags',
+                            style: TextStyle(
+                              fontStyle: FontStyle.italic,
+                              color: Theme.of(context)
+                                  .textTheme
+                                  .bodyText1!
+                                  .color!
+                                  .withOpacity(0.35),
+                            ),
+                          ),
                         ),
-                      ),
-                      secondChild: Text(
-                        'no tags',
-                        style: TextStyle(
-                          fontStyle: FontStyle.italic,
-                          color: Theme.of(context)
-                              .textTheme
-                              .bodyText1!
-                              .color!
-                              .withOpacity(0.35),
-                        ),
-                      ),
-                    ),
                     secondChild: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -115,7 +133,6 @@ class _DrawerCounterState extends State<DrawerCounter> with LinkingMixin {
                   ),
                 ],
               ),
-              collapsed: SizedBox.shrink(),
             ),
           ),
         ),
