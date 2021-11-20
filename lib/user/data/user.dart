@@ -51,7 +51,7 @@ class User {
   bool canApprovePosts;
   bool canUploadFree;
   String levelString;
-  int avatarId;
+  int? avatarId;
 
   factory User.fromJson(String str) => User.fromMap(json.decode(str));
 
