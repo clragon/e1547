@@ -237,7 +237,7 @@ class DText extends StatelessWidget {
             state.copyWith(header: true),
           );
         },
-        ...linkRegexes(context),
+        ...linkRegexes(context, usernameGenerator),
         ...linkWordRegexes(context),
       };
 
