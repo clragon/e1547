@@ -108,6 +108,9 @@ class PostTileOverlay extends StatelessWidget {
     if (post.file.url == null) {
       return Center(child: Text('unsafe'));
     }
+    if (post.isBlacklisted) {
+      return Center(child: Text('blacklisted'));
+    }
     return child;
   }
 }
