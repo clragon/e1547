@@ -79,7 +79,7 @@ class _TagInputState extends State<TagInput> {
         controller.text = tags.join(' ') + ' ';
         setFocusToEnd(controller);
       },
-      itemBuilder: (BuildContext context, dynamic itemData) {
+      itemBuilder: (context, dynamic itemData) {
         String count = itemData['post_count'].toString();
         return Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -112,22 +112,20 @@ class _TagInputState extends State<TagInput> {
                     : count.toString(),
                 style: TextStyle(fontSize: 16),
               ),
-            )
+            ),
           ],
         );
       },
-      loadingBuilder: (BuildContext context) => Container(height: 0),
-      noItemsFoundBuilder: (BuildContext context) {
-        return ListTile(
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SizedCircularProgressIndicator(size: 20),
-            ],
-          ),
-        );
-      },
-      suggestionsCallback: (String pattern) async {
+      loadingBuilder: (context) => Container(height: 0),
+      noItemsFoundBuilder: (context) => ListTile(
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedCircularProgressIndicator(size: 20),
+          ],
+        ),
+      ),
+      suggestionsCallback: (pattern) async {
         List<String> tags = controller.text.split(' ');
         List<String> before = [];
         int selection = 0;

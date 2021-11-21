@@ -38,7 +38,6 @@ class _UserPageState extends State<UserPage>
       PostController(search: 'fav:${widget.user.name}', canSearch: false);
   late PostController uploadPostController =
       PostController(search: 'user:${widget.user.name}', canSearch: false);
-  ScrollController scrollController = ScrollController();
   RefreshController refreshController = RefreshController();
   late TabController tabController;
 
@@ -120,7 +119,6 @@ class _UserPageState extends State<UserPage>
         ],
       ),
       body: NestedScrollView(
-        controller: scrollController,
         physics: BouncingScrollPhysics(),
         headerSliverBuilder: (context, innerBoxIsScrolled) => [
           DefaultSliverAppBar(
@@ -190,16 +188,12 @@ class _UserPageState extends State<UserPage>
           ),
         ],
         body: ScrollWrapper(
-          promptScrollOffset: 2200,
-          scrollToTopDuration: defaultAnimationDuration,
-          scrollController: scrollController,
-          promptTheme: PromptButtonTheme(
-            elevation: 4,
-          ),
-          child: TabBarView(
+          builder: (context, config) => TabBarView(
             controller: tabController,
             children: tabs.values.toList(),
           ),
+          enabledAtOffset: 1000,
+          scrollToTopDuration: defaultAnimationDuration,
         ),
       ),
     );
