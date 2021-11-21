@@ -20,7 +20,7 @@ dependencies:
   flutter_typeahead: ^3.2.1
   cached_network_image: ^3.0.0
   font_awesome_flutter: ^9.0.0
-  flutter_scroll_to_top: ^1.1.0
+  flutter_scroll_to_top: ^1.2.0
   flutter_cache_manager: ^3.0.1
   flutter_staggered_grid_view: ^0.4.1
 
