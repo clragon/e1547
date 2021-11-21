@@ -1,5 +1,6 @@
 import 'package:e1547/comment/comment.dart';
 import 'package:e1547/dtext/dtext.dart';
+import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
@@ -35,7 +36,7 @@ class CommentTile extends StatelessWidget {
                 onTap: () => Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (context) =>
-                        SearchPage(tags: 'user:${comment.creatorName}'),
+                        UserLoadingPage(comment.creatorId.toString()),
                   ),
                 ),
               ),

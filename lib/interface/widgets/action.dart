@@ -36,10 +36,13 @@ class _ControlledTextWrapperState extends State<ControlledTextWrapper> {
 
   @override
   Widget build(BuildContext context) {
-    return widget.builder(
-      context,
-      textController,
-      (_) => widget.actionController.action!(),
+    return AnimatedBuilder(
+      animation: widget.actionController,
+      builder: (context, child) => widget.builder(
+        context,
+        textController,
+        (_) => widget.actionController.action!(),
+      ),
     );
   }
 }

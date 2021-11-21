@@ -115,7 +115,7 @@ class _FollowsSplitPageState extends State<FollowsSplitPage> with LinkingMixin {
             },
             drawer: NavigationDrawer(),
             endDrawer: ContextDrawer(
-              title: Text('Options'),
+              title: Text('Follows'),
               children: [
                 FollowSplitSwitchTile(),
                 FollowMarkReadTile(),

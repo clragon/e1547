@@ -67,7 +67,7 @@ class _PostsPageState extends State<PostsPage> with LinkingMixin {
 
     Widget? endDrawer() {
       return ContextDrawer(
-        title: Text('Search'),
+        title: Text('Posts'),
         children: [
           SafeCrossFade(
             showChild: widget.drawerActions?.isNotEmpty ?? false,

@@ -177,7 +177,10 @@ class _FollowTileState extends State<FollowTile> {
             child: InkWell(
               onTap: () => Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (context) => SearchPage(tags: widget.follow.tags),
+                  builder: (context) => SearchPage(
+                    tags: widget.follow.tags,
+                    reversePools: (status?.unseen ?? 0) > 0,
+                  ),
                 ),
               ),
               onLongPress: () => wikiSheet(

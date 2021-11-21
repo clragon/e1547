@@ -58,8 +58,9 @@ class _PoolLoadingPageState extends State<PoolLoadingPage> {
 
 class TopicLoadingPage extends StatefulWidget {
   final int id;
+  final bool orderByOldest;
 
-  const TopicLoadingPage(this.id);
+  const TopicLoadingPage(this.id, {this.orderByOldest = true});
 
   @override
   _TopicLoadingPageState createState() => _TopicLoadingPageState();
@@ -72,7 +73,10 @@ class _TopicLoadingPageState extends State<TopicLoadingPage> {
   Widget build(BuildContext context) {
     return FuturePageLoader<Topic>(
       future: topic,
-      builder: (context, value) => RepliesPage(topic: value),
+      builder: (context, value) => RepliesPage(
+        topic: value,
+        orderByOldest: widget.orderByOldest,
+      ),
       title: Text('Topic #${widget.id}'),
       onLoading: Text('Loading topic'),
       onError: Text('Failed to load topic'),
@@ -107,9 +111,15 @@ class _ReplyLoadingPageState extends State<ReplyLoadingPage> {
 }
 
 class UserLoadingPage extends StatefulWidget {
-  final int id;
+  final String id;
+  final Post? avatar;
+  final UserPageSection initalPage;
 
-  const UserLoadingPage(this.id);
+  const UserLoadingPage(
+    this.id, {
+    this.avatar,
+    this.initalPage = UserPageSection.Favorites,
+  });
 
   @override
   _UserLoadingPageState createState() => _UserLoadingPageState();
@@ -122,7 +132,11 @@ class _UserLoadingPageState extends State<UserLoadingPage> {
   Widget build(BuildContext context) {
     return FuturePageLoader<User>(
       future: user,
-      builder: (context, value) => UserPage(user: value),
+      builder: (context, value) => UserPage(
+        user: value,
+        avatar: widget.avatar,
+        initialPage: widget.initalPage,
+      ),
       title: Text('User #${widget.id}'),
       onLoading: Text('Loading user'),
       onError: Text('Failed to load user'),

@@ -33,12 +33,10 @@ class DrawerMultiCounter extends StatelessWidget {
       builder: (context, child) {
         List<Post>? posts;
         for (PostController controller in controllers) {
-          if (controller.itemList == null) {
-            posts = null;
-            break;
+          if (controller.itemList != null) {
+            posts ??= [];
+            posts.addAll(controller.itemList!);
           }
-          posts ??= [];
-          posts.addAll(controller.itemList!);
         }
         return DrawerCounterBody(posts: posts);
       },

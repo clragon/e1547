@@ -9,6 +9,7 @@ enum LinkWord {
   forum,
   topic,
   comment,
+  user,
   blip,
   pool,
   set,
@@ -51,6 +52,12 @@ VoidCallback? getLinkWordTap(BuildContext context, LinkWord word, int id) {
       return () => Navigator.of(context).push(
             MaterialPageRoute(
               builder: (context) => PoolLoadingPage(id),
+            ),
+          );
+    case LinkWord.user:
+      return () => Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => UserLoadingPage(id.toString()),
             ),
           );
     case LinkWord.forum:

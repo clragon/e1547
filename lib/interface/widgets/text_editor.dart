@@ -25,13 +25,22 @@ class _TextEditorState extends State<TextEditor>
     with TickerProviderStateMixin, LinkingMixin {
   bool showBar = true;
   bool isLoading = false;
-  TabController? tabController;
-  TextEditingController textController = TextEditingController();
+  late TextEditingController textController =
+      TextEditingController(text: widget.content);
+  late TabController tabController;
 
-  @override
-  Map<ChangeNotifier, VoidCallback> get links => {
-        textController: () => setState(() {}),
-      };
+  void onTabChange() {
+    if (tabController.index == 0) {
+      setState(() {
+        showBar = true;
+      });
+    } else {
+      FocusScope.of(context).unfocus();
+      setState(() {
+        showBar = false;
+      });
+    }
+  }
 
   @override
   void initState() {
@@ -40,24 +49,19 @@ class _TextEditorState extends State<TextEditor>
       vsync: this,
       length: 2,
     );
-    textController.text = widget.content ?? '';
-    tabController!.addListener(() {
-      if (tabController!.index == 0) {
-        setState(() {
-          showBar = true;
-        });
-      } else {
-        FocusScope.of(context).unfocus();
-        setState(() {
-          showBar = false;
-        });
-      }
-    });
+    tabController.addListener(onTabChange);
+  }
+
+  @override
+  void dispose() {
+    tabController.removeListener(onTabChange);
+    tabController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    Widget frame(Widget child) {
+    Widget scrollView(Widget child) {
       return SingleChildScrollView(
         physics: BouncingScrollPhysics(),
         child: Padding(
@@ -66,7 +70,6 @@ class _TextEditorState extends State<TextEditor>
             mainAxisSize: MainAxisSize.min,
             children: [
               Row(
-                mainAxisSize: MainAxisSize.max,
                 children: [
                   Expanded(
                     child: child,
@@ -80,9 +83,8 @@ class _TextEditorState extends State<TextEditor>
     }
 
     Widget editor() {
-      return frame(Padding(
-        padding: EdgeInsets.symmetric(horizontal: 8),
-        child: TextField(
+      return scrollView(
+        TextField(
           controller: textController,
           keyboardType: TextInputType.multiline,
           autofocus: true,
@@ -93,29 +95,34 @@ class _TextEditorState extends State<TextEditor>
           maxLines: null,
           enabled: !isLoading,
         ),
-      ));
+      );
     }
 
     Widget preview() {
-      Widget child;
-      if (textController.text.trim().isNotEmpty) {
-        child = DText(textController.text);
-      } else {
-        child = Text(
-          'your text here',
-          style: TextStyle(
-            color:
-                Theme.of(context).textTheme.bodyText1!.color!.withOpacity(0.35),
-            fontStyle: FontStyle.italic,
-          ),
-        );
-      }
-
-      return frame(
+      return scrollView(
         Card(
           child: Padding(
             padding: EdgeInsets.all(16),
-            child: child,
+            child: AnimatedBuilder(
+              animation: textController,
+              builder: (context, child) {
+                if (textController.text.trim().isNotEmpty) {
+                  return DText(textController.text);
+                } else {
+                  return Text(
+                    'your text here',
+                    style: TextStyle(
+                      color: Theme.of(context)
+                          .textTheme
+                          .bodyText1!
+                          .color!
+                          .withOpacity(0.35),
+                      fontStyle: FontStyle.italic,
+                    ),
+                  );
+                }
+              },
+            ),
           ),
         ),
       );
@@ -147,7 +154,7 @@ class _TextEditorState extends State<TextEditor>
 
     Widget loadingBar() {
       return Padding(
-        padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 16),
+        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 16),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -194,7 +201,7 @@ class _TextEditorState extends State<TextEditor>
           ),
         ],
         body: Padding(
-          padding: EdgeInsets.only(bottom: 42),
+          padding: defaultActionListPadding,
           child: widget.richEditor
               ? TabBarView(
                   controller: tabController,
@@ -222,19 +229,33 @@ class _EditorBarState extends State<EditorBar> {
   @override
   Widget build(BuildContext context) {
     void enclose(String blockTag, {String? endTag}) {
-      String before = widget.controller.text
-          .substring(0, widget.controller.selection.baseOffset);
-      String block = widget.controller.text.substring(
-          widget.controller.selection.baseOffset,
-          widget.controller.selection.extentOffset);
-      String after = widget.controller.text
-          .substring(widget.controller.selection.extentOffset);
-      int pos = before.length + block.length + '[$blockTag]'.length;
-      block = '[$blockTag]$block[/${endTag ?? blockTag}]';
+      int base = widget.controller.selection.baseOffset;
+      int extent = widget.controller.selection.extentOffset;
+
+      int start;
+      int end;
+      if (base <= extent) {
+        start = base;
+        end = extent;
+      } else {
+        start = extent;
+        end = base;
+      }
+
+      String before = widget.controller.text.substring(0, start);
+      String block = widget.controller.text.substring(start, end);
+      String after = widget.controller.text.substring(end);
+
+      String blockStart = '[$blockTag]$block';
+      String blockEnd = '[/${endTag ?? blockTag}]';
+      int cursorOffset = before.length + blockStart.length;
+
+      block = blockStart + blockEnd;
       widget.controller.text = '$before$block$after';
+
       widget.controller.selection = TextSelection(
-        baseOffset: pos,
-        extentOffset: pos,
+        baseOffset: cursorOffset,
+        extentOffset: cursorOffset,
       );
     }
 
@@ -313,12 +334,11 @@ class _EditorBarState extends State<EditorBar> {
         int rowSize = (constraints.maxWidth / 40).round();
         bool showAll = rowSize > 10;
         return Padding(
-          padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10),
+          padding: EdgeInsets.only(left: 10, right: 10, bottom: 10),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               Row(
-                mainAxisSize: MainAxisSize.max,
                 children: [
                   CrossFade(
                       showChild: showAll || showBlocks, child: blockButtons()),

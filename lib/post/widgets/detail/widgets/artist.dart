@@ -1,6 +1,7 @@
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/tag/tag.dart';
+import 'package:e1547/user/user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -91,7 +92,10 @@ class ArtistDisplay extends StatelessWidget {
                   ]),
                   onTap: () => Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (context) => UserLoadingPage(post.uploaderId),
+                      builder: (context) => UserLoadingPage(
+                        post.uploaderId.toString(),
+                        initalPage: UserPageSection.Uploads,
+                      ),
                     ),
                   ),
                 ),

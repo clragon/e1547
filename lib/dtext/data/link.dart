@@ -44,7 +44,7 @@ Map<RegExp, DTextParser> linkRegexes(
         r'(?<link>[-a-zA-Z0-9()@:%_\+.~#?&//=]*)',
       ),
     ): (match, result, state) => parseLink(
-      context: context,
+          context: context,
           match: match,
           result: result,
           state: state,
@@ -91,6 +91,8 @@ InlineSpan parseLink({
           getLinkWordTap(context, LinkWord.post, id),
       RegExp(siteMatch + r'/pool(s|/show)/\d+'): (match) =>
           getLinkWordTap(context, LinkWord.pool, id),
+      RegExp(siteMatch + r'/user(s|/show)/\d+'): (match) =>
+          getLinkWordTap(context, LinkWord.user, id),
       if (settings.showBeta.value) ...{
         RegExp(siteMatch + r'/forum_topics/\d+'): (match) =>
             getLinkWordTap(context, LinkWord.topic, id),

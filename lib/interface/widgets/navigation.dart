@@ -184,21 +184,30 @@ class _ProfileHeaderState extends State<ProfileHeader> with LinkingMixin {
       child: ValueListenableBuilder<Credentials?>(
         valueListenable: settings.credentials,
         builder: (context, value, child) => DrawerHeader(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              SizedBox(
-                height: 72,
-                width: 72,
-                child: CurrentUserAvatar(),
-              ),
-              Expanded(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20),
-                  child: userNameWidget(value?.username),
+          child: GestureDetector(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                SizedBox(
+                  height: 72,
+                  width: 72,
+                  child: CurrentUserAvatar(),
                 ),
-              ),
-            ],
+                Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    child: userNameWidget(value?.username),
+                  ),
+                ),
+              ],
+            ),
+            onTap: value?.username != null
+                ? () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => UserLoadingPage(value!.username),
+                      ),
+                    )
+                : null,
           ),
         ),
       ),
