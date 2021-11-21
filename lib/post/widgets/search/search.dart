@@ -11,13 +11,16 @@ import 'package:flutter/material.dart';
 
 class SearchPage extends StatefulWidget {
   final String? tags;
-  const SearchPage({this.tags});
+  final bool reversePools;
+
+  const SearchPage({this.tags, this.reversePools = false});
 
   @override
   _SearchPageState createState() => _SearchPageState();
 }
 
 class _SearchPageState extends State<SearchPage> with LinkingMixin {
+  late bool reversePools = widget.reversePools;
   late PostController controller = PostController(
     search: widget.tags,
     provider: (tags, page) => client.posts(
@@ -26,13 +29,9 @@ class _SearchPageState extends State<SearchPage> with LinkingMixin {
       reversePools: reversePools,
     ),
   );
-
   List<Follow>? follows;
   Pool? pool;
-
-  bool reversePools = false;
   bool loading = true;
-
   String title = 'Search';
 
   void updateTitle() {
@@ -50,10 +49,10 @@ class _SearchPageState extends State<SearchPage> with LinkingMixin {
 
   @override
   Map<ChangeNotifier, VoidCallback> get initLinks => {
-        controller: updateTitle,
-        controller.search: updatePool,
-        settings.follows: updateFollows,
-      };
+    controller: updateTitle,
+    controller.search: updatePool,
+    settings.follows: updateFollows,
+  };
 
   @override
   void dispose() {
@@ -133,10 +132,10 @@ class _SearchPageState extends State<SearchPage> with LinkingMixin {
                     onPressed: pool != null
                         ? () => poolSheet(context, pool!)
                         : () => wikiSheet(
-                              context: context,
-                              tag: controller.search.value,
-                              controller: controller,
-                            ),
+                      context: context,
+                      tag: controller.search.value,
+                      controller: controller,
+                    ),
                   ),
                 ),
                 ContextDrawerButton(),

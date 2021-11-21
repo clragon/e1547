@@ -10,7 +10,7 @@ import 'widgets.dart';
 class PostDetail extends StatefulWidget {
   final Post post;
   final PostController? controller;
-  final Function(int index)? onPageChanged;
+  final void Function(int index)? onPageChanged;
 
   const PostDetail({required this.post, this.controller, this.onPageChanged});
 
@@ -28,11 +28,12 @@ class _PostDetailState extends State<PostDetail> with LinkingMixin, RouteAware {
   late ModalRoute route;
 
   Future<void> onPageChange() async {
-    if (route.isCurrent) {
-      navigator.maybePop();
-    } else if (route.isActive &&
-        !(widget.controller!.itemList?.contains(widget.post) ?? false)) {
-      navigator.removeRoute(route);
+    if (!(widget.controller!.itemList?.contains(widget.post) ?? false)) {
+      if (route.isCurrent) {
+        navigator.maybePop();
+      } else if (route.isActive) {
+        navigator.removeRoute(route);
+      }
     }
   }
 
@@ -119,6 +120,7 @@ class _PostDetailState extends State<PostDetail> with LinkingMixin, RouteAware {
     sheetController.show(
       context,
       ControlledTextField(
+        labelText: 'Reason',
         submit: (value) => editPost(context, value),
         actionController: sheetController,
       ),

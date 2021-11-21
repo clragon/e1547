@@ -80,6 +80,11 @@ class _SettingsPageState extends State<SettingsPage> {
                         ),
                       ),
                     ),
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => UserLoadingPage(value.username),
+                      ),
+                    ),
                     onTapSeparated: () => logout(context),
                   ),
                   secondChild: ListTile(

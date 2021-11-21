@@ -44,6 +44,7 @@ class ActionController extends ChangeNotifier {
     error = null;
     isForgiven = false;
     isLoading = true;
+    print('loading should be true now!');
     notifyListeners();
     try {
       await submit();

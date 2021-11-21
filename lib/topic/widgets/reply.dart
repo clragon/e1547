@@ -1,9 +1,8 @@
 import 'package:e1547/dtext/dtext.dart';
-import 'package:e1547/settings/data/settings.dart';
+import 'package:e1547/interface/interface.dart';
 import 'package:e1547/topic/topic.dart';
 import 'package:flutter/material.dart';
 import 'package:timeago/timeago.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:username_generator/username_generator.dart';
 
 class ReplyTile extends StatelessWidget {
@@ -39,8 +38,12 @@ class ReplyTile extends StatelessWidget {
                       .withOpacity(0.35),
                 ),
               ),
-              onTap: () async => launch(
-                  'https://${settings.host.value}/users/${reply.creatorId}'),
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) =>
+                      UserLoadingPage(reply.creatorId.toString()),
+                ),
+              ),
             ),
           ),
           Text(

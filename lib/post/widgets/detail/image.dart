@@ -208,17 +208,16 @@ class PostDetailImageOverlay extends StatelessWidget {
         }
 
         Widget muteButton() {
-          if (post.type == PostType.video) {
-            return Card(
+          return SafeCrossFade(
+            showChild: post.type == PostType.video && post.file.url != null,
+            builder: (context) => Card(
               elevation: 0,
               color: Colors.black12,
               child: VideoGlobalVolumeControl(
                 videoController: post.controller!,
               ),
-            );
-          } else {
-            return SizedBox.shrink();
-          }
+            ),
+          );
         }
 
         return Stack(
