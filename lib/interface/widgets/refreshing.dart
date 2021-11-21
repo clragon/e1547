@@ -64,8 +64,7 @@ class RefreshablePageLoader extends StatelessWidget {
   final RefreshController? refreshController;
   final ScrollController? scrollController;
   final VoidCallback refresh;
-  final Scaffold Function(BuildContext context, Widget child,
-      ScrollController? scrollController)? pageBuilder;
+  final Scaffold Function(BuildContext context, Widget child)? pageBuilder;
 
   const RefreshablePageLoader({
     required this.refresh,
@@ -163,8 +162,7 @@ class RefreshablePage extends StatefulWidget {
   final RefreshController? refreshController;
   final ScrollController? scrollController;
   final VoidCallback refresh;
-  final Scaffold Function(BuildContext context, Widget child,
-      ScrollController? scrollController)? pageBuilder;
+  final Scaffold Function(BuildContext context, Widget child)? pageBuilder;
 
   const RefreshablePage({
     required this.refresh,
@@ -199,15 +197,11 @@ class RefreshablePage extends StatefulWidget {
 class _RefreshablePageState extends State<RefreshablePage> {
   late RefreshController refreshController =
       widget.refreshController ?? RefreshController();
-  late ScrollController scrollController =
-      widget.scrollController ?? ScrollController();
 
   @override
   Widget build(BuildContext context) {
     Widget body() {
       return SmartRefresher(
-        primary: false,
-        scrollController: scrollController,
         controller: refreshController,
         onRefresh: widget.refresh,
         physics: BouncingScrollPhysics(),
@@ -217,20 +211,16 @@ class _RefreshablePageState extends State<RefreshablePage> {
     }
 
     if (widget.pageBuilder != null) {
-      return widget.pageBuilder!(context, body(), scrollController);
+      return widget.pageBuilder!(context, body());
     } else {
       return LayoutBuilder(builder: (context, constraints) {
         return Scaffold(
           extendBodyBehindAppBar: widget.extendBodyBehindAppBar,
           appBar: widget.appBar,
           body: ScrollWrapper(
-            promptScrollOffset: 2000,
+            builder: (context, config) => body(),
+            enabledAtOffset: 1000,
             scrollToTopDuration: defaultAnimationDuration,
-            scrollController: scrollController,
-            promptTheme: PromptButtonTheme(
-              elevation: 4,
-            ),
-            child: body(),
           ),
           drawer: widget.drawer,
           endDrawer: widget.endDrawer,

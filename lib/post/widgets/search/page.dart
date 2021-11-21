@@ -202,6 +202,9 @@ class _PostsPageHeadlessState extends State<PostsPageHeadless> {
         pagingController: widget.controller,
         builderDelegate: defaultPagedChildBuilderDelegate<Post>(
           pagingController: widget.controller,
+          onEmpty: Text('No posts'),
+          onLoading: Text('Loading posts'),
+          onError: Text('Failed to load posts'),
           itemBuilder: (context, item, index) => PostTile(
             post: item,
             onPressed: () {
@@ -215,9 +218,6 @@ class _PostsPageHeadlessState extends State<PostsPageHeadless> {
               );
             },
           ),
-          onEmpty: Text('No posts'),
-          onLoading: Text('Loading posts'),
-          onError: Text('Failed to load posts'),
         ),
         gridDelegateBuilder: (childCount) =>
             SliverStaggeredGridDelegateWithFixedCrossAxisCount(

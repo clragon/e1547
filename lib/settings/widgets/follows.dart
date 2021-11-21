@@ -16,7 +16,6 @@ class FollowingPage extends StatefulWidget {
 
 class _FollowingPageState extends State<FollowingPage> with LinkingMixin {
   SheetActionController sheetController = SheetActionController();
-  ScrollController scrollController = ScrollController();
 
   late List<Follow> follows;
   late bool safe;
@@ -108,7 +107,6 @@ class _FollowingPageState extends State<FollowingPage> with LinkingMixin {
       }
 
       return ListView.builder(
-        controller: scrollController,
         physics: BouncingScrollPhysics(),
         padding:
             EdgeInsets.only(top: 8, bottom: kBottomNavigationBarHeight + 24),
@@ -187,12 +185,9 @@ class _FollowingPageState extends State<FollowingPage> with LinkingMixin {
         ],
       ),
       body: ScrollWrapper(
+        builder: (context, config) => body(),
         scrollToTopDuration: defaultAnimationDuration,
-        scrollController: scrollController,
-        promptTheme: PromptButtonTheme(
-          elevation: 4,
-        ),
-        child: body(),
+        enabledAtOffset: 1000,
       ),
       floatingActionButton: Builder(
         builder: (context) => AnimatedBuilder(
