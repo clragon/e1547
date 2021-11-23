@@ -113,7 +113,7 @@ class TopicInfo extends StatelessWidget {
               Text('id'),
               InkWell(
                 child: Text(
-                  topic.id.toString(),
+                  '#${topic.id}',
                 ),
                 onLongPress: () async {
                   Clipboard.setData(ClipboardData(

@@ -35,7 +35,7 @@ class PoolInfo extends StatelessWidget {
               Text('id'),
               InkWell(
                 child: Text(
-                  pool.id.toString(),
+                  '#${pool.id}',
                 ),
                 onLongPress: () async {
                   Clipboard.setData(ClipboardData(

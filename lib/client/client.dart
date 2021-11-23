@@ -86,9 +86,11 @@ class Client {
     }
   }
 
-  Future<bool> get hasLogin async {
+  bool get hasLogin => (settings.credentials.value != null);
+
+  Future<bool> get isLoggedIn async {
     await initialized;
-    return (settings.credentials.value != null);
+    return hasLogin;
   }
 
   Future<void> logout() async {
@@ -103,7 +105,7 @@ class Client {
       _currentUser = null;
       _currentAvatar = null;
     }
-    if (!await hasLogin) {
+    if (!await isLoggedIn) {
       userInitLock.release();
       return;
     }
@@ -140,10 +142,8 @@ class Client {
 
   Future<List<Post>> postsFromJson(List json) async {
     List<Post> posts = [];
-    bool loggedIn = await hasLogin;
-    for (Map raw in json) {
+    for (Map<String, dynamic> raw in json) {
       Post post = Post.fromMap(raw);
-      post.isLoggedIn = loggedIn;
       if (post.file.url == null && !post.flags.deleted) {
         continue;
       }
@@ -220,7 +220,7 @@ class Client {
   }
 
   Future<bool> addFavorite(int post) async {
-    if (!await hasLogin) {
+    if (!await isLoggedIn) {
       return false;
     }
     return validateCall(
@@ -231,7 +231,7 @@ class Client {
   }
 
   Future<bool> removeFavorite(int post) async {
-    if (!await hasLogin) {
+    if (!await isLoggedIn) {
       return false;
     }
 
@@ -241,7 +241,7 @@ class Client {
   }
 
   Future<bool> votePost(int post, bool upvote, bool replace) async {
-    if (!await hasLogin) {
+    if (!await isLoggedIn) {
       return false;
     }
 
@@ -367,13 +367,12 @@ class Client {
         .then((response) => response.data);
 
     Post post = Post.fromMap(body['post']);
-    post.isLoggedIn = await hasLogin;
     post.isBlacklisted = post.isDeniedBy(settings.denylist.value);
     return post;
   }
 
   Future<void> updatePost(Post update, Post old, {String? editReason}) async {
-    if (!await hasLogin) {
+    if (!await isLoggedIn) {
       return;
     }
     Map<String, String?> body = {};
@@ -514,7 +513,7 @@ class Client {
   }
 
   Future<CurrentUser?> authedUser() async {
-    if (!await hasLogin) {
+    if (!await isLoggedIn) {
       return null;
     }
 
@@ -526,7 +525,7 @@ class Client {
   }
 
   Future<void> updateBlacklist(List<String> denylist) async {
-    if (!await hasLogin) {
+    if (!await isLoggedIn) {
       return;
     }
 
@@ -600,7 +599,7 @@ class Client {
   }
 
   Future<bool> voteComment(int comment, bool upvote, bool replace) async {
-    if (!await hasLogin) {
+    if (!await isLoggedIn) {
       return false;
     }
 
@@ -613,13 +612,13 @@ class Client {
     );
   }
 
-  Future<void> postComment(Post post, String text, {Comment? comment}) async {
-    if (!await hasLogin) {
+  Future<void> postComment(int postId, String text, {Comment? comment}) async {
+    if (!await isLoggedIn) {
       return;
     }
     Map<String, String> body = {
       'comment[body]': text,
-      'comment[post_id]': post.id.toString(),
+      'comment[post_id]': postId.toString(),
       'commit': 'Submit',
     };
     Future request;

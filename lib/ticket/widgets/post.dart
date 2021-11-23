@@ -32,31 +32,19 @@ class PostReportImage extends StatelessWidget {
         child: Center(
           child: Card(
             clipBehavior: Clip.antiAlias,
-            child: Stack(
-              children: [
-                ImageOverlay(
-                  post: post,
-                  builder: (context) => Hero(
-                    tag: post.hero,
-                    child: PostImageWidget(
-                      post: post,
-                      size: ImageSize.sample,
-                      fit: BoxFit.cover,
-                    ),
+            child: ReportLoadingOverlay(
+              isLoading: isLoading,
+              child: ImageOverlay(
+                post: post,
+                builder: (context) => Hero(
+                  tag: post.hero,
+                  child: PostImageWidget(
+                    post: post,
+                    size: ImageSize.sample,
+                    fit: BoxFit.cover,
                   ),
                 ),
-                Positioned.fill(
-                  child: CrossFade(
-                    showChild: isLoading,
-                    child: Container(
-                      color: Colors.black54,
-                      child: Center(
-                        child: CircularProgressIndicator(),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+              ),
             ),
           ),
         ),
@@ -87,7 +75,7 @@ class _PostReportScreenState extends State<PostReportScreen> {
       child: Scaffold(
         appBar: DefaultAppBar(
           elevation: 0,
-          title: Text('Report #${widget.post.id}'),
+          title: Text('Post #${widget.post.id}'),
           leading: CloseButton(),
         ),
         floatingActionButton: Builder(
@@ -194,7 +182,7 @@ class _PostFlagScreenState extends State<PostFlagScreen> {
       child: Scaffold(
         appBar: DefaultAppBar(
           elevation: 0,
-          title: Text('Flag #${widget.post.id}'),
+          title: Text('Post #${widget.post.id}'),
           leading: CloseButton(),
         ),
         floatingActionButton: Builder(

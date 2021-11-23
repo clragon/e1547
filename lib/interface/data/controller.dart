@@ -8,13 +8,13 @@ import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:mutex/mutex.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-abstract class RawDataController<PageKeyType, ItemType>
-    extends PagingController<PageKeyType, ItemType> {
+abstract class RawDataController<KeyType, ItemType>
+    extends PagingController<KeyType, ItemType> {
   Mutex requestLock = Mutex();
   bool isRefreshing = false;
 
   RawDataController({
-    required PageKeyType firstPageKey,
+    required KeyType firstPageKey,
   }) : super(firstPageKey: firstPageKey) {
     super.addPageRequestListener(requestPage);
     getRefreshListeners().forEach((element) => element.addListener(refresh));
@@ -51,16 +51,16 @@ abstract class RawDataController<PageKeyType, ItemType>
   @mustCallSuper
   List<ValueNotifier> getRefreshListeners() => [];
 
-  Future<List<ItemType>> provide(PageKeyType page);
+  Future<List<ItemType>> provide(KeyType page);
 
   List<ItemType> sort(List<ItemType> items) => items;
 
-  PageKeyType provideNextPageKey(PageKeyType current, List<ItemType> items);
+  KeyType provideNextPageKey(KeyType current, List<ItemType> items);
 
   void disposeItems(List<ItemType> items) {}
 
   @nonVirtual
-  Future<List<ItemType>?> loadPage(PageKeyType page) =>
+  Future<List<ItemType>?> loadPage(KeyType page) =>
       catchError(() async => sort(await provide(page)));
 
   @nonVirtual
@@ -82,7 +82,7 @@ abstract class RawDataController<PageKeyType, ItemType>
 
   @override
   Future<void> refresh({bool background = false}) async {
-    // makes sure a singular refresh can be queued up
+    // ensures a singular refresh can be queued up
     if (!await canRefresh()) {
       return;
     }
@@ -105,7 +105,7 @@ abstract class RawDataController<PageKeyType, ItemType>
     success();
   }
 
-  Future<void> requestPage(PageKeyType page) async {
+  Future<void> requestPage(KeyType page) async {
     await requestLock.acquire();
     List<ItemType>? items = await loadPage(page);
     if (items != null) {

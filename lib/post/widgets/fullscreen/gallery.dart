@@ -3,14 +3,18 @@ import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/data/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
 class PostFullscreenGallery extends StatefulWidget {
-  final int index;
-  final List<Post> posts;
+  final int initialPage;
+  final PostController controller;
   final Function(int index)? onPageChanged;
 
-  const PostFullscreenGallery(
-      {this.index = 0, required this.posts, this.onPageChanged});
+  const PostFullscreenGallery({
+    required this.controller,
+    this.initialPage = 0,
+    this.onPageChanged,
+  });
 
   @override
   _PostFullscreenGalleryState createState() => _PostFullscreenGalleryState();
@@ -18,7 +22,9 @@ class PostFullscreenGallery extends StatefulWidget {
 
 class _PostFullscreenGalleryState extends State<PostFullscreenGallery>
     with RouteAware {
-  late ValueNotifier<int> current = ValueNotifier(widget.index);
+  late PageController pageController =
+      PageController(initialPage: widget.initialPage);
+  late ValueNotifier<int> current = ValueNotifier(widget.initialPage);
   late FrameController frameController;
 
   Future<void> toggleFrame(bool shown) async {
@@ -64,7 +70,6 @@ class _PostFullscreenGalleryState extends State<PostFullscreenGallery>
 
   @override
   Widget build(BuildContext context) {
-    // should add Colors.black26 to statusbar
     return ValueListenableBuilder(
       valueListenable: current,
       builder: (context, int value, child) => Theme(
@@ -76,26 +81,72 @@ class _PostFullscreenGalleryState extends State<PostFullscreenGallery>
             ),
           ),
         ),
-        child: PostFullscreenFrame(
-          child: child!,
-          post: widget.posts[value],
-          controller: frameController,
-        ),
+        child: widget.controller.posts != null
+            ? PostFullscreenFrame(
+                child: child!,
+                post: widget.controller.posts![value],
+                controller: frameController,
+              )
+            : SizedBox.shrink(),
       ),
-      child: PageView.builder(
-        itemCount: widget.posts.length,
-        controller: PageController(initialPage: widget.index),
-        itemBuilder: (context, int index) =>
-            PostFullscreenImageDisplay(post: widget.posts[index]),
+      child: PagedPageView(
+        addAutomaticKeepAlives: false,
+        builderDelegate: PagedChildBuilderDelegate<Post>(
+          itemBuilder: (context, post, index) =>
+              PostFullscreenImageDisplay(post: post),
+          firstPageProgressIndicatorBuilder: (context) => Material(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedCircularProgressIndicator(size: 28),
+                Padding(
+                  padding: EdgeInsets.all(20),
+                  child: Text('Loading posts'),
+                ),
+              ],
+            ),
+          ),
+          newPageProgressIndicatorBuilder: (context) => Material(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedCircularProgressIndicator(size: 28),
+                Padding(
+                  padding: EdgeInsets.all(20),
+                  child: Text('Loading posts'),
+                ),
+              ],
+            ),
+          ),
+          noItemsFoundIndicatorBuilder: (context) => IconMessage(
+            icon: Icon(Icons.clear),
+            title: Text('No posts'),
+          ),
+          firstPageErrorIndicatorBuilder: (context) => IconMessage(
+            icon: Icon(Icons.warning_amber_outlined),
+            title: Text('Failed to load posts'),
+            action: PagedChildBuilderRetryButton(widget.controller),
+          ),
+          newPageErrorIndicatorBuilder: (context) => IconMessage(
+            direction: Axis.horizontal,
+            icon: Icon(Icons.warning_amber_outlined),
+            title: Text('Failed to load posts'),
+            action: PagedChildBuilderRetryButton(widget.controller),
+          ),
+        ),
+        pagingController: widget.controller,
+        pageController: pageController,
         onPageChanged: (index) {
           current.value = index;
-          widget.onPageChanged!(index);
-          preloadImages(
-            context: context,
-            index: index,
-            posts: widget.posts,
-            size: ImageSize.file,
-          );
+          widget.onPageChanged?.call(index);
+          if (widget.controller.posts != null) {
+            preloadImages(
+              context: context,
+              index: index,
+              posts: widget.controller.posts!,
+              size: ImageSize.file,
+            );
+          }
         },
       ),
     );

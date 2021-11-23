@@ -3,17 +3,31 @@ import 'package:e1547/dtext/dtext.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart';
 import 'package:username_generator/username_generator.dart';
 
 typedef DTextParser = InlineSpan Function(
     RegExpMatch match, String result, TextState state);
 
 class DText extends StatelessWidget {
-  final String source;
+  final int? maxLines;
+  final TextOverflow overflow;
+  final String data;
+  final TextAlign textAlign;
+  final bool softWrap;
+
   final bool dark;
   final UsernameGenerator? usernameGenerator;
 
-  const DText(this.source, {this.dark = false, this.usernameGenerator});
+  const DText(
+    this.data, {
+    this.dark = false,
+    this.usernameGenerator,
+    this.maxLines,
+    this.overflow = TextOverflow.clip,
+    this.textAlign = TextAlign.start,
+    this.softWrap = true,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -275,12 +289,16 @@ class DText extends StatelessWidget {
       dark: dark,
     );
 
-    String result = source.replaceAllMapped(RegExp(r'\r\n'), (_) => '\n');
+    String result = data.replaceAllMapped(RegExp(r'\r\n'), (_) => '\n');
     result = result.trim();
 
     try {
       return RichText(
         text: resolve(result, state),
+        maxLines: maxLines,
+        overflow: overflow,
+        textAlign: textAlign,
+        softWrap: softWrap,
       );
     } catch (_) {
       if (kDebugMode) {

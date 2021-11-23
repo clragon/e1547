@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'padding.dart';
+
 class ReportFormHeader extends StatelessWidget {
   final Widget title;
   final Widget? icon;
@@ -9,7 +11,8 @@ class ReportFormHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(left: 32, right: 32, bottom: 12),
+      padding: defaultFormPadding
+          .add(EdgeInsets.only(left: 8, right: 8, bottom: 12)),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [

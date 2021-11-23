@@ -1,6 +1,16 @@
 import 'dart:convert';
 
-class Comment {
+import 'package:e1547/interface/interface.dart';
+import 'package:flutter/material.dart';
+
+class Comment with ChangeNotifier {
+  VoteStatus voteStatus = VoteStatus.unknown;
+
+  @override
+  void notifyListeners() {
+    super.notifyListeners();
+  }
+
   Comment({
     required this.id,
     required this.createdAt,
