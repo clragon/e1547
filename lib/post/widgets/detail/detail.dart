@@ -50,11 +50,6 @@ class _PostDetailState extends State<PostDetail> with LinkingMixin, RouteAware {
   }
 
   @override
-  void didUpdateWidget(covariant PostDetail oldWidget) {
-    super.didUpdateWidget(oldWidget);
-  }
-
-  @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (widget.post.type == PostType.video) {

@@ -88,23 +88,26 @@ class _PostFullscreenGalleryState extends State<PostFullscreenGallery>
               )
             : SizedBox.shrink(),
       ),
-      child: PageView.builder(
-        itemCount: widget.controller.itemList?.length,
-        controller: pageController,
-        itemBuilder: (context, index) => PostFullscreenImageDisplay(
-            post: widget.controller.itemList![index]),
-        onPageChanged: (index) {
-          current.value = index;
-          widget.onPageChanged?.call(index);
-          if (widget.controller.posts != null) {
-            preloadImages(
-              context: context,
-              index: index,
-              posts: widget.controller.posts!,
-              size: ImageSize.file,
-            );
-          }
-        },
+      child: AnimatedBuilder(
+        animation: widget.controller,
+        builder: (context, child) => PageView.builder(
+          itemCount: widget.controller.itemList?.length,
+          controller: pageController,
+          itemBuilder: (context, index) => PostFullscreenImageDisplay(
+              post: widget.controller.itemList![index]),
+          onPageChanged: (index) {
+            current.value = index;
+            widget.onPageChanged?.call(index);
+            if (widget.controller.posts != null) {
+              preloadImages(
+                context: context,
+                index: index,
+                posts: widget.controller.posts!,
+                size: ImageSize.file,
+              );
+            }
+          },
+        ),
       ),
     );
   }

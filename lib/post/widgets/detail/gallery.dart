@@ -25,32 +25,35 @@ class _PostDetailGalleryState extends State<PostDetailGallery> {
 
   @override
   Widget build(BuildContext context) {
-    return PageView.builder(
-      controller: pageController,
-      itemBuilder: (context, index) => PostDetail(
-        post: widget.controller.itemList![index],
-        controller: widget.controller,
-        onPageChanged: (index) => ModalRoute.of(context)!.isCurrent
-            ? pageController.animateToPage(index,
-                duration: defaultAnimationDuration, curve: Curves.easeInOut)
-            : pageController.jumpToPage(index),
-      ),
-      itemCount: widget.controller.itemList?.length ?? 0,
-      onPageChanged: (index) {
-        if (widget.controller.itemList!.isNotEmpty) {
-          Post lastPost = widget.controller.itemList![lastIndex];
-          if (lastPost.isEditing) {
-            lastPost.resetPost();
+    return AnimatedBuilder(
+      animation: widget.controller,
+      builder: (context, child) => PageView.builder(
+        controller: pageController,
+        itemBuilder: (context, index) => PostDetail(
+          post: widget.controller.itemList![index],
+          controller: widget.controller,
+          onPageChanged: (index) => ModalRoute.of(context)!.isCurrent
+              ? pageController.animateToPage(index,
+                  duration: defaultAnimationDuration, curve: Curves.easeInOut)
+              : pageController.jumpToPage(index),
+        ),
+        itemCount: widget.controller.itemList?.length ?? 0,
+        onPageChanged: (index) {
+          if (widget.controller.itemList!.isNotEmpty) {
+            Post lastPost = widget.controller.itemList![lastIndex];
+            if (lastPost.isEditing) {
+              lastPost.resetPost();
+            }
           }
-        }
-        lastIndex = index;
-        preloadImages(
-          context: context,
-          index: index,
-          posts: widget.controller.itemList!,
-          size: ImageSize.sample,
-        );
-      },
+          lastIndex = index;
+          preloadImages(
+            context: context,
+            index: index,
+            posts: widget.controller.itemList!,
+            size: ImageSize.sample,
+          );
+        },
+      ),
     );
   }
 }
