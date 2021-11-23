@@ -71,13 +71,27 @@ class ReplyTile extends StatelessWidget {
       return Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          picture(),
           Expanded(
-            child: Padding(
-              padding: EdgeInsets.only(bottom: 8),
-              child: DText(
-                reply.body,
-                usernameGenerator: generator,
-              ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                title(),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.only(bottom: 8),
+                        child: DText(
+                          reply.body,
+                          usernameGenerator: generator,
+                        ),
+                      ),
+                    ),
+                  ],
+                )
+              ],
             ),
           ),
         ],
@@ -88,20 +102,12 @@ class ReplyTile extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: 8),
       child: Column(
         children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              picture(),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    title(),
-                    body(),
-                  ],
-                ),
-              ),
-            ],
+          Hero(
+            tag: reply.hero,
+            child: Material(
+              type: MaterialType.transparency,
+              child: body(),
+            ),
           ),
           Divider(),
         ],

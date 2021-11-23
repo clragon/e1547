@@ -7,6 +7,7 @@ import 'package:e1547/tag/tag.dart';
 import 'package:e1547/ticket/ticket.dart';
 import 'package:e1547/user/user.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_scroll_to_top/flutter_scroll_to_top.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -192,7 +193,6 @@ class _UserPageState extends State<UserPage>
             controller: tabController,
             children: tabs.values.toList(),
           ),
-          enabledAtOffset: 1000,
           scrollToTopDuration: defaultAnimationDuration,
         ),
       ),
@@ -207,7 +207,7 @@ class UserInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget info(IconData icon, String tag, String value) {
+    Widget info(IconData icon, String tag, Widget value) {
       return IconTheme(
         data: IconThemeData(
           color: Colors.grey,
@@ -227,7 +227,7 @@ class UserInfo extends StatelessWidget {
               Spacer(),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 8),
-                child: Text(value),
+                child: value,
               ),
             ],
           ),
@@ -239,12 +239,25 @@ class UserInfo extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: 24, vertical: 24),
       child: Column(
         children: [
-          info(Icons.tag, 'id', '#${user.id}'),
-          info(Icons.shield, 'rank', user.levelString.toLowerCase()),
-          info(Icons.upload, 'posts', user.postUploadCount.toString()),
-          info(Icons.edit, 'edits', user.postUpdateCount.toString()),
-          info(Icons.comment, 'comments', user.commentCount.toString()),
-          info(Icons.forum, 'forum', user.forumPostCount.toString()),
+          info(
+            Icons.tag,
+            'id',
+            InkWell(
+              onLongPress: () {
+                Clipboard.setData(ClipboardData(text: user.id.toString()));
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  duration: Duration(seconds: 1),
+                  content: Text('Copied user id #${user.id}'),
+                ));
+              },
+              child: Text('#${user.id}'),
+            ),
+          ),
+          info(Icons.shield, 'rank', Text(user.levelString.toLowerCase())),
+          info(Icons.upload, 'posts', Text(user.postUploadCount.toString())),
+          info(Icons.edit, 'edits', Text(user.postUpdateCount.toString())),
+          info(Icons.comment, 'comments', Text(user.commentCount.toString())),
+          info(Icons.forum, 'forum', Text(user.forumPostCount.toString())),
         ],
       ),
     );

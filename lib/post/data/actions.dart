@@ -269,11 +269,11 @@ extension Voting on Post {
 extension Editing on Post {
   Future<void> resetPost({bool online = false}) async {
     Post reset;
-    if (!online) {
-      reset = Post.fromMap(json);
-    } else {
+    if (online) {
       reset = await client.post(id);
-      json = reset.json;
+      raw = reset.raw;
+    } else {
+      reset = Post.fromMap(raw);
     }
 
     isFavorited = reset.isFavorited;

@@ -1,14 +1,13 @@
 import 'package:e1547/client/client.dart';
 import 'package:e1547/interface/interface.dart';
-import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 
 import 'comment.dart';
 
-Future<bool> replyComment(
-    {required BuildContext context,
-    required Post post,
-    required Comment comment}) {
+Future<bool> replyComment({
+  required BuildContext context,
+  required Comment comment,
+}) {
   String body = comment.body;
   body = body
       .replaceFirstMapped(
@@ -18,30 +17,28 @@ Future<bool> replyComment(
       .trim();
   body =
       '[quote]"${comment.creatorName}":/users/${comment.creatorId} said:\n$body[/quote]\n';
-  return writeComment(context: context, post: post, text: body);
+  return writeComment(context: context, postId: comment.postId, text: body);
 }
 
 Future<bool> editComment(
-        {required BuildContext context,
-        required Post post,
-        required Comment comment}) =>
-    writeComment(context: context, post: post, comment: comment);
+        {required BuildContext context, required Comment comment}) =>
+    writeComment(postId: comment.postId, context: context, comment: comment);
 
 Future<bool> writeComment(
     {required BuildContext context,
-    required Post post,
+    required int postId,
     String? text,
     Comment? comment}) async {
   bool sent = false;
   await Navigator.of(context).push(
     MaterialPageRoute(
       builder: (context) => TextEditor(
-        title: '#${post.id} comment',
+        title: '#$postId comment',
         content: text ?? (comment?.body),
         validator: (context, text) async {
           if (text.isNotEmpty) {
             try {
-              await client.postComment(post, text, comment: comment);
+              await client.postComment(postId, text, comment: comment);
               sent = true;
               return true;
             } on DioError {
@@ -59,4 +56,51 @@ Future<bool> writeComment(
     ),
   );
   return sent;
+}
+
+extension Voting on Comment {
+  Future<void> tryVote(
+      {required BuildContext context,
+      required bool upvote,
+      required bool replace}) async {
+    if (await client.voteComment(id, upvote, replace)) {
+      if (voteStatus == VoteStatus.unknown) {
+        if (upvote) {
+          score += 1;
+          voteStatus = VoteStatus.upvoted;
+        } else {
+          score -= 1;
+          voteStatus = VoteStatus.downvoted;
+        }
+      } else {
+        if (upvote) {
+          if (voteStatus == VoteStatus.upvoted) {
+            score -= 1;
+            voteStatus = VoteStatus.unknown;
+          } else {
+            score += 2;
+            voteStatus = VoteStatus.upvoted;
+          }
+        } else {
+          if (voteStatus == VoteStatus.upvoted) {
+            score -= 2;
+            voteStatus = VoteStatus.downvoted;
+          } else {
+            score += 1;
+            voteStatus = VoteStatus.unknown;
+          }
+        }
+      }
+      notifyListeners();
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        duration: Duration(seconds: 1),
+        content: Text('Failed to vote on comment #$id'),
+      ));
+    }
+  }
+}
+
+extension Transitioning on Comment {
+  String get hero => 'comment_$id';
 }

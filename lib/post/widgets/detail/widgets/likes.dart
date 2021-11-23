@@ -1,3 +1,4 @@
+import 'package:e1547/client/client.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +23,7 @@ class LikeDisplay extends StatelessWidget {
                 status: post.voteStatus,
                 score: post.score.total,
                 onUpvote: (isLiked) async {
-                  if (post.isLoggedIn) {
+                  if (client.hasLogin) {
                     post.tryVote(
                         context: context, upvote: true, replace: !isLiked);
                     return !isLiked;
@@ -31,7 +32,7 @@ class LikeDisplay extends StatelessWidget {
                   }
                 },
                 onDownvote: (isLiked) async {
-                  if (post.isLoggedIn) {
+                  if (client.hasLogin) {
                     post.tryVote(
                         context: context, upvote: false, replace: !isLiked);
                     return !isLiked;
@@ -80,7 +81,7 @@ class FavoriteButton extends StatelessWidget {
         likeBuilder: (bool isLiked) => Icon(
           Icons.favorite,
           color:
-              isLiked ? Colors.pinkAccent : Theme.of(context).iconTheme.color,
+          isLiked ? Colors.pinkAccent : Theme.of(context).iconTheme.color,
         ),
         onTap: (isLiked) async {
           if (isLiked) {

@@ -219,7 +219,6 @@ class _RefreshablePageState extends State<RefreshablePage> {
           appBar: widget.appBar,
           body: ScrollWrapper(
             builder: (context, config) => body(),
-            enabledAtOffset: 1000,
             scrollToTopDuration: defaultAnimationDuration,
           ),
           drawer: widget.drawer,

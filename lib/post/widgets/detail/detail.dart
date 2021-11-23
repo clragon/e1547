@@ -30,7 +30,7 @@ class _PostDetailState extends State<PostDetail> with LinkingMixin, RouteAware {
   Future<void> onPageChange() async {
     if (!(widget.controller!.itemList?.contains(widget.post) ?? false)) {
       if (route.isCurrent) {
-        navigator.maybePop();
+        navigator.pop();
       } else if (route.isActive) {
         navigator.removeRoute(route);
       }
@@ -47,6 +47,11 @@ class _PostDetailState extends State<PostDetail> with LinkingMixin, RouteAware {
     if (!widget.post.isEditing) {
       sheetController.close();
     }
+  }
+
+  @override
+  void didUpdateWidget(covariant PostDetail oldWidget) {
+    super.didUpdateWidget(oldWidget);
   }
 
   @override
@@ -99,7 +104,7 @@ class _PostDetailState extends State<PostDetail> with LinkingMixin, RouteAware {
   Future<void> editPost(BuildContext context, String reason) async {
     widget.post.isEditing = false;
     try {
-      await client.updatePost(widget.post, Post.fromMap(widget.post.json),
+      await client.updatePost(widget.post, Post.fromMap(widget.post.raw),
           editReason: reason);
       await widget.post.resetPost(online: true);
     } on DioError {
@@ -150,30 +155,17 @@ class _PostDetailState extends State<PostDetail> with LinkingMixin, RouteAware {
   @override
   Widget build(BuildContext context) {
     Widget fullscreen() {
-      Widget gallery(List<Post> posts) {
+      if (widget.post.isEditing || widget.controller == null) {
+        return PostFullscreenFrame(
+          child: PostFullscreenImageDisplay(post: widget.post),
+          post: widget.post,
+        );
+      } else {
         return PostFullscreenGallery(
-          index: posts.indexOf(widget.post),
-          posts: posts,
+          controller: widget.controller!,
+          initialPage: widget.controller!.itemList!.indexOf(widget.post),
           onPageChanged: widget.onPageChanged,
         );
-      }
-
-      List<Post> posts;
-      if (widget.post.isEditing) {
-        posts = [widget.post];
-      } else {
-        posts = widget.controller?.itemList ?? [widget.post];
-      }
-
-      if (widget.controller != null) {
-        return AnimatedBuilder(
-          animation: widget.controller!,
-          builder: (context, child) {
-            return gallery(posts);
-          },
-        );
-      } else {
-        return gallery(posts);
       }
     }
 
@@ -205,7 +197,7 @@ class _PostDetailState extends State<PostDetail> with LinkingMixin, RouteAware {
             extendBodyBehindAppBar: true,
             appBar: PostDetailAppBar(post: widget.post),
             floatingActionButton:
-                widget.post.isLoggedIn ? Builder(builder: fab) : null,
+                client.hasLogin ? Builder(builder: fab) : null,
             body: MediaQuery.removeViewInsets(
               context: context,
               removeTop: true,

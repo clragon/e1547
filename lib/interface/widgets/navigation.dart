@@ -89,7 +89,7 @@ class NavigationDrawer extends StatelessWidget {
           leading: Icon(Icons.favorite),
           title: Text('Favorites'),
           onTap: () async {
-            if (await client.hasLogin) {
+            if (await client.isLoggedIn) {
               Navigator.of(context)
                   .pushNamedAndRemoveUntil('/fav', (_) => false);
             } else {

@@ -5,4 +5,4 @@ export 'data/controller.dart';
 
 // widgets
 export 'widgets/comments.dart';
-export 'widgets/tile.dart';
+export 'widgets/comment.dart';

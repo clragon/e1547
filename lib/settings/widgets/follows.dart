@@ -187,7 +187,6 @@ class _FollowingPageState extends State<FollowingPage> with LinkingMixin {
       body: ScrollWrapper(
         builder: (context, config) => body(),
         scrollToTopDuration: defaultAnimationDuration,
-        enabledAtOffset: 1000,
       ),
       floatingActionButton: Builder(
         builder: (context) => AnimatedBuilder(

@@ -9,7 +9,7 @@ Future<bool> updateBlacklist({
 }) async {
   bool success = true;
 
-  if (await client.hasLogin) {
+  if (await client.isLoggedIn) {
     List<String> old = List.from(settings.denylist.value);
     if (immediate) {
       settings.denylist.value = denylist;
