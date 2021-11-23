@@ -1,7 +1,6 @@
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
-import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
 class PostDetailGallery extends StatefulWidget {
   final PostController controller;
@@ -26,59 +25,17 @@ class _PostDetailGalleryState extends State<PostDetailGallery> {
 
   @override
   Widget build(BuildContext context) {
-    return PagedPageView(
-      addAutomaticKeepAlives: false,
-      builderDelegate: PagedChildBuilderDelegate<Post>(
-        itemBuilder: (context, post, index) => PostDetail(
-          post: post,
-          controller: widget.controller,
-          onPageChanged: (index) => ModalRoute.of(context)!.isCurrent
-              ? pageController.animateToPage(index,
-                  duration: defaultAnimationDuration, curve: Curves.easeInOut)
-              : pageController.jumpToPage(index),
-        ),
-        firstPageProgressIndicatorBuilder: (context) => Material(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SizedCircularProgressIndicator(size: 28),
-              Padding(
-                padding: EdgeInsets.all(20),
-                child: Text('Loading posts'),
-              ),
-            ],
-          ),
-        ),
-        newPageProgressIndicatorBuilder: (context) => Material(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SizedCircularProgressIndicator(size: 28),
-              Padding(
-                padding: EdgeInsets.all(20),
-                child: Text('Loading posts'),
-              ),
-            ],
-          ),
-        ),
-        noItemsFoundIndicatorBuilder: (context) => IconMessage(
-          icon: Icon(Icons.clear),
-          title: Text('No posts'),
-        ),
-        firstPageErrorIndicatorBuilder: (context) => IconMessage(
-          icon: Icon(Icons.warning_amber_outlined),
-          title: Text('Failed to load posts'),
-          action: PagedChildBuilderRetryButton(widget.controller),
-        ),
-        newPageErrorIndicatorBuilder: (context) => IconMessage(
-          direction: Axis.horizontal,
-          icon: Icon(Icons.warning_amber_outlined),
-          title: Text('Failed to load posts'),
-          action: PagedChildBuilderRetryButton(widget.controller),
-        ),
+    return PageView.builder(
+      controller: pageController,
+      itemBuilder: (context, index) => PostDetail(
+        post: widget.controller.itemList![index],
+        controller: widget.controller,
+        onPageChanged: (index) => ModalRoute.of(context)!.isCurrent
+            ? pageController.animateToPage(index,
+                duration: defaultAnimationDuration, curve: Curves.easeInOut)
+            : pageController.jumpToPage(index),
       ),
-      pagingController: widget.controller,
-      pageController: pageController,
+      itemCount: widget.controller.itemList?.length ?? 0,
       onPageChanged: (index) {
         if (widget.controller.itemList!.isNotEmpty) {
           Post lastPost = widget.controller.itemList![lastIndex];
