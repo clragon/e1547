@@ -169,53 +169,51 @@ class CommentTile extends StatelessWidget {
                       color: dark,
                     ),
                     onSelected: (value) => value(),
-                    itemBuilder: ((context) => [
-                          if (settings.credentials.value?.username ==
-                              comment.creatorName)
-                            PopupMenuTile(
-                              value: () => editComment(
-                                context: context,
+                    itemBuilder: (context) => [
+                      if (settings.credentials.value?.username ==
+                          comment.creatorName)
+                        PopupMenuTile(
+                          value: () => editComment(
+                            context: context,
+                            comment: comment,
+                          ),
+                          title: 'Edit',
+                          icon: Icons.edit,
+                        ),
+                      PopupMenuTile(
+                        value: () => replyComment(
+                          context: context,
+                          comment: comment,
+                        ),
+                        title: 'Reply',
+                        icon: Icons.reply,
+                      ),
+                      PopupMenuTile(
+                        value: () async {
+                          Clipboard.setData(
+                              ClipboardData(text: comment.id.toString()));
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            duration: Duration(seconds: 1),
+                            content: Text('Copied comment id #${comment.id}'),
+                          ));
+                        },
+                        title: 'Copy ID',
+                        icon: Icons.tag,
+                      ),
+                      PopupMenuTile(
+                        value: () async {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => CommentReportScreen(
                                 comment: comment,
                               ),
-                              title: 'Edit',
-                              icon: Icons.edit,
                             ),
-                          PopupMenuTile(
-                            value: () => replyComment(
-                              context: context,
-                              comment: comment,
-                            ),
-                            title: 'Reply',
-                            icon: Icons.reply,
-                          ),
-                          PopupMenuTile(
-                            value: () async {
-                              Clipboard.setData(
-                                  ClipboardData(text: comment.id.toString()));
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(SnackBar(
-                                duration: Duration(seconds: 1),
-                                content:
-                                    Text('Copied comment id #${comment.id}'),
-                              ));
-                            },
-                            title: 'Copy ID',
-                            icon: Icons.tag,
-                          ),
-                          PopupMenuTile(
-                            value: () async {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) => CommentReportScreen(
-                                    comment: comment,
-                                  ),
-                                ),
-                              );
-                            },
-                            title: 'Report',
-                            icon: Icons.report,
-                          ),
-                        ]),
+                          );
+                        },
+                        title: 'Report',
+                        icon: Icons.report,
+                      ),
+                    ],
                   )
                 ],
               ),

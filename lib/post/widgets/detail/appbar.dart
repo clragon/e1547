@@ -32,10 +32,10 @@ class PostDetailAppBar extends StatelessWidget with AppBarSize {
                     color: Colors.white,
                   ),
                   onSelected: (value) => value(),
-                  itemBuilder: ((context) => [
-                        ...postMenuPostActions(context, post),
-                        ...postMenuUserActions(context, post),
-                      ]),
+                  itemBuilder: (context) => [
+                    ...postMenuPostActions(context, post),
+                    ...postMenuUserActions(context, post),
+                  ],
                 ),
               ],
       ),
