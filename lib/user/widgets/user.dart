@@ -162,28 +162,28 @@ class _UserPageState extends State<UserPage>
               PopupMenuButton<VoidCallback>(
                 icon: Icon(Icons.more_vert),
                 onSelected: (value) => value(),
-                itemBuilder: ((context) => [
-                      PopupMenuTile(
-                        value: () async => launch(
-                            widget.user.url(settings.host.value).toString()),
-                        title: 'Browse',
-                        icon: Icons.open_in_browser,
-                      ),
-                      PopupMenuTile(
-                        value: () async {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => UserReportScreen(
-                                user: widget.user,
-                                avatar: avatar,
-                              ),
-                            ),
-                          );
-                        },
-                        title: 'Report',
-                        icon: Icons.report,
-                      ),
-                    ]),
+                itemBuilder: (context) => [
+                  PopupMenuTile(
+                    value: () async =>
+                        launch(widget.user.url(settings.host.value).toString()),
+                    title: 'Browse',
+                    icon: Icons.open_in_browser,
+                  ),
+                  PopupMenuTile(
+                    value: () async {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => UserReportScreen(
+                            user: widget.user,
+                            avatar: avatar,
+                          ),
+                        ),
+                      );
+                    },
+                    title: 'Report',
+                    icon: Icons.report,
+                  ),
+                ],
               ),
             ],
           ),
