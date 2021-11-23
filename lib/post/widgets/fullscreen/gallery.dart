@@ -3,7 +3,6 @@ import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/data/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
 class PostFullscreenGallery extends StatefulWidget {
   final int initialPage;
@@ -89,53 +88,11 @@ class _PostFullscreenGalleryState extends State<PostFullscreenGallery>
               )
             : SizedBox.shrink(),
       ),
-      child: PagedPageView(
-        addAutomaticKeepAlives: false,
-        builderDelegate: PagedChildBuilderDelegate<Post>(
-          itemBuilder: (context, post, index) =>
-              PostFullscreenImageDisplay(post: post),
-          firstPageProgressIndicatorBuilder: (context) => Material(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SizedCircularProgressIndicator(size: 28),
-                Padding(
-                  padding: EdgeInsets.all(20),
-                  child: Text('Loading posts'),
-                ),
-              ],
-            ),
-          ),
-          newPageProgressIndicatorBuilder: (context) => Material(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SizedCircularProgressIndicator(size: 28),
-                Padding(
-                  padding: EdgeInsets.all(20),
-                  child: Text('Loading posts'),
-                ),
-              ],
-            ),
-          ),
-          noItemsFoundIndicatorBuilder: (context) => IconMessage(
-            icon: Icon(Icons.clear),
-            title: Text('No posts'),
-          ),
-          firstPageErrorIndicatorBuilder: (context) => IconMessage(
-            icon: Icon(Icons.warning_amber_outlined),
-            title: Text('Failed to load posts'),
-            action: PagedChildBuilderRetryButton(widget.controller),
-          ),
-          newPageErrorIndicatorBuilder: (context) => IconMessage(
-            direction: Axis.horizontal,
-            icon: Icon(Icons.warning_amber_outlined),
-            title: Text('Failed to load posts'),
-            action: PagedChildBuilderRetryButton(widget.controller),
-          ),
-        ),
-        pagingController: widget.controller,
-        pageController: pageController,
+      child: PageView.builder(
+        itemCount: widget.controller.itemList?.length,
+        controller: pageController,
+        itemBuilder: (context, index) => PostFullscreenImageDisplay(
+            post: widget.controller.itemList![index]),
         onPageChanged: (index) {
           current.value = index;
           widget.onPageChanged?.call(index);
