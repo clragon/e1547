@@ -1,4 +1,3 @@
-import 'package:e1547/client/client.dart';
 import 'package:e1547/comment/comment.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
@@ -8,7 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:share/share.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-List<PopupMenuItem<VoidCallback>> postMenuPostActions(BuildContext context, Post post) {
+List<PopupMenuItem<VoidCallback>> postMenuPostActions(
+    BuildContext context, Post post) {
   return [
     PopupMenuTile(
       value: () async => Share.share(post.url(settings.host.value).toString()),
@@ -29,28 +29,38 @@ List<PopupMenuItem<VoidCallback>> postMenuPostActions(BuildContext context, Post
   ];
 }
 
-List<PopupMenuItem<VoidCallback>> postMenuUserActions(BuildContext context, Post post) {
-  return client.hasLogin
-      ? [
-          PopupMenuTile(
-            value: () {
-              post.isEditing = true;
-              post.notifyListeners();
-            },
-            title: 'Edit',
-            icon: Icons.edit,
-          ),
-          PopupMenuTile(
-            value: () async {
-        if (await writeComment(context: context, postId: post.id)) {
-                post.commentCount++;
-                post.notifyListeners();
-              }
-            },
-      title: 'Comment',
-      icon: Icons.comment,
+List<PopupMenuItem<VoidCallback>> postMenuUserActions(
+    BuildContext context, Post post) {
+  return [
+    PopupMenuTile(
+      title: 'Edit',
+      icon: Icons.edit,
+      value: () => guardWithLogin(
+        context: context,
+        callback: () {
+          post.isEditing = true;
+          post.notifyListeners();
+        },
+        error: 'You must be logged in to edit posts!',
+      ),
     ),
     PopupMenuTile(
+      title: 'Comment',
+      icon: Icons.comment,
+      value: () => guardWithLogin(
+        context: context,
+        callback: () async {
+          if (await writeComment(context: context, postId: post.id)) {
+            post.commentCount++;
+            post.notifyListeners();
+          }
+        },
+        error: 'You must be logged in to comment!',
+      ),
+    ),
+    PopupMenuTile(
+      title: 'Report',
+      icon: Icons.report,
       value: () async {
         Navigator.of(context).push(
           MaterialPageRoute(
@@ -58,20 +68,21 @@ List<PopupMenuItem<VoidCallback>> postMenuUserActions(BuildContext context, Post
           ),
         );
       },
-      title: 'Report',
-      icon: Icons.report,
     ),
     PopupMenuTile(
-      value: () async {
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => PostFlagScreen(post: post),
-          ),
-        );
-      },
       title: 'Flag',
       icon: Icons.flag,
+      value: () => guardWithLogin(
+        context: context,
+        callback: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => PostFlagScreen(post: post),
+            ),
+          );
+        },
+        error: 'You must be logged in to flag posts!',
+      ),
     ),
-  ]
-      : [];
+  ];
 }

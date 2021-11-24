@@ -88,14 +88,12 @@ class NavigationDrawer extends StatelessWidget {
           selected: drawerSelection == DrawerSelection.favorites,
           leading: Icon(Icons.favorite),
           title: Text('Favorites'),
-          onTap: () async {
-            if (await client.isLoggedIn) {
-              Navigator.of(context)
-                  .pushNamedAndRemoveUntil('/fav', (_) => false);
-            } else {
-              Navigator.popAndPushNamed(context, '/login');
-            }
-          },
+          onTap: () => guardWithLogin(
+            context: context,
+            callback: () => Navigator.of(context)
+                .pushNamedAndRemoveUntil('/fav', (_) => false),
+            error: 'You must be logged in to see your favorites',
+          ),
         ),
         ListTile(
           selected: drawerSelection == DrawerSelection.follows,
