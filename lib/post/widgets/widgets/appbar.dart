@@ -61,13 +61,15 @@ List<PopupMenuItem<VoidCallback>> postMenuUserActions(
     PopupMenuTile(
       title: 'Report',
       icon: Icons.report,
-      value: () async {
-        Navigator.of(context).push(
+      value: () => guardWithLogin(
+        context: context,
+        callback: () => Navigator.of(context).push(
           MaterialPageRoute(
             builder: (context) => PostReportScreen(post: post),
           ),
-        );
-      },
+        ),
+        error: 'You must be logged in to report posts!',
+      ),
     ),
     PopupMenuTile(
       title: 'Flag',
