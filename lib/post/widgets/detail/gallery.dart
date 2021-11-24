@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +15,7 @@ class PostDetailGallery extends StatefulWidget {
 }
 
 class _PostDetailGalleryState extends State<PostDetailGallery> {
+  bool hasRequestedNextPage = false;
   late int lastIndex = widget.initialPage;
   late PageController pageController =
       PageController(initialPage: widget.initialPage);
@@ -29,14 +32,30 @@ class _PostDetailGalleryState extends State<PostDetailGallery> {
       animation: widget.controller,
       builder: (context, child) => PageView.builder(
         controller: pageController,
-        itemBuilder: (context, index) => PostDetail(
-          post: widget.controller.itemList![index],
-          controller: widget.controller,
-          onPageChanged: (index) => ModalRoute.of(context)!.isCurrent
-              ? pageController.animateToPage(index,
-                  duration: defaultAnimationDuration, curve: Curves.easeInOut)
-              : pageController.jumpToPage(index),
-        ),
+        itemBuilder: (context, index) {
+          if (!hasRequestedNextPage) {
+            int newPageRequestTriggerIndex =
+                max(0, widget.controller.itemList?.length ?? 0 - 3);
+
+            if (widget.controller.nextPageKey != null &&
+                index >= newPageRequestTriggerIndex) {
+              WidgetsBinding.instance?.addPostFrameCallback((_) {
+                widget.controller
+                    .notifyPageRequestListeners(widget.controller.nextPageKey!);
+              });
+              hasRequestedNextPage = true;
+            }
+          }
+
+          return PostDetail(
+            post: widget.controller.itemList![index],
+            controller: widget.controller,
+            onPageChanged: (index) => ModalRoute.of(context)!.isCurrent
+                ? pageController.animateToPage(index,
+                    duration: defaultAnimationDuration, curve: Curves.easeInOut)
+                : pageController.jumpToPage(index),
+          );
+        },
         itemCount: widget.controller.itemList?.length ?? 0,
         onPageChanged: (index) {
           if (widget.controller.itemList!.isNotEmpty) {
