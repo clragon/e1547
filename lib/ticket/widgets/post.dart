@@ -122,7 +122,7 @@ class _PostReportScreenState extends State<PostReportScreen> {
         body: LayoutBuilder(
           builder: (context, constraints) => ListView(
             controller: scrollController,
-            padding: EdgeInsets.all(16),
+            padding: defaultFormScreenPadding,
             physics: BouncingScrollPhysics(),
             children: [
               PostReportImage(
@@ -229,7 +229,7 @@ class _PostFlagScreenState extends State<PostFlagScreen> {
         body: LayoutBuilder(
           builder: (context, constraints) => ListView(
             controller: scrollController,
-            padding: EdgeInsets.all(16),
+            padding: defaultFormScreenPadding,
             physics: BouncingScrollPhysics(),
             children: [
               PostReportImage(

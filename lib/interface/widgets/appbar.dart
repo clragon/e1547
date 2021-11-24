@@ -7,9 +7,10 @@ double defaultAppBarHeight = kToolbarHeight + (kContentPadding * 2);
 
 EdgeInsets defaultListPadding = EdgeInsets.all(kContentPadding);
 
-EdgeInsets defaultActionListPadding = defaultListPadding.copyWith(
-  bottom: kBottomNavigationBarHeight + 24,
-);
+double defaultActionListBottomHeight = kBottomNavigationBarHeight + 24;
+
+EdgeInsets defaultActionListPadding =
+    defaultListPadding.copyWith(bottom: defaultActionListBottomHeight);
 
 class DefaultAppBar extends StatelessWidget with AppBarSize {
   final Widget? leading;
@@ -162,6 +163,9 @@ class DefaultSliverAppBar extends StatelessWidget {
                 )
               : null,
           automaticallyImplyLeading: false,
+          actions: [
+            SizedBox.shrink(),
+          ],
           floating: floating,
           pinned: pinned,
           snap: snap,
