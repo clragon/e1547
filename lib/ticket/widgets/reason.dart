@@ -104,7 +104,7 @@ class _ReasonReportScreenState extends State<ReasonReportScreen> {
         body: LayoutBuilder(
           builder: (context, constraints) => ListView(
             controller: scrollController,
-            padding: EdgeInsets.all(16),
+            padding: defaultFormScreenPadding,
             physics: BouncingScrollPhysics(),
             children: [
               ConstrainedBox(
