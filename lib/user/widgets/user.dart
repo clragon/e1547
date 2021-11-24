@@ -164,24 +164,28 @@ class _UserPageState extends State<UserPage>
                 onSelected: (value) => value(),
                 itemBuilder: (context) => [
                   PopupMenuTile(
-                    value: () async =>
-                        launch(widget.user.url(settings.host.value).toString()),
                     title: 'Browse',
                     icon: Icons.open_in_browser,
+                    value: () async =>
+                        launch(widget.user.url(settings.host.value).toString()),
                   ),
                   PopupMenuTile(
-                    value: () async {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => UserReportScreen(
-                            user: widget.user,
-                            avatar: avatar,
-                          ),
-                        ),
-                      );
-                    },
                     title: 'Report',
                     icon: Icons.report,
+                    value: () => guardWithLogin(
+                      context: context,
+                      callback: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => UserReportScreen(
+                              user: widget.user,
+                              avatar: avatar,
+                            ),
+                          ),
+                        );
+                      },
+                      error: 'You must be logged in to report users!',
+                    ),
                   ),
                 ],
               ),

@@ -113,7 +113,7 @@ class CommentTile extends StatelessWidget {
               ),
             ),
           ),
-          if (hasActions && client.hasLogin)
+          if (hasActions)
             Padding(
               padding: EdgeInsets.only(left: 24),
               child: Row(
@@ -169,26 +169,33 @@ class CommentTile extends StatelessWidget {
                       color: dark,
                     ),
                     onSelected: (value) => value(),
-                    itemBuilder: (context) => [
+                    itemBuilder: (context) =>
+                    [
                       if (settings.credentials.value?.username ==
                           comment.creatorName)
                         PopupMenuTile(
+                          title: 'Edit',
+                          icon: Icons.edit,
                           value: () => editComment(
                             context: context,
                             comment: comment,
                           ),
-                          title: 'Edit',
-                          icon: Icons.edit,
                         ),
                       PopupMenuTile(
-                        value: () => replyComment(
-                          context: context,
-                          comment: comment,
-                        ),
                         title: 'Reply',
                         icon: Icons.reply,
+                        value: () => guardWithLogin(
+                          context: context,
+                          callback: () => replyComment(
+                            context: context,
+                            comment: comment,
+                          ),
+                          error: 'You must be logged in to reply to comments!',
+                        ),
                       ),
                       PopupMenuTile(
+                        title: 'Copy ID',
+                        icon: Icons.tag,
                         value: () async {
                           Clipboard.setData(
                               ClipboardData(text: comment.id.toString()));
@@ -197,21 +204,21 @@ class CommentTile extends StatelessWidget {
                             content: Text('Copied comment id #${comment.id}'),
                           ));
                         },
-                        title: 'Copy ID',
-                        icon: Icons.tag,
                       ),
                       PopupMenuTile(
-                        value: () async {
-                          Navigator.of(context).push(
+                        title: 'Report',
+                        icon: Icons.report,
+                        value: () => guardWithLogin(
+                          context: context,
+                          callback: () => Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (context) => CommentReportScreen(
                                 comment: comment,
                               ),
                             ),
-                          );
-                        },
-                        title: 'Report',
-                        icon: Icons.report,
+                          ),
+                          error: 'You must be logged in to report comments!',
+                        ),
                       ),
                     ],
                   )

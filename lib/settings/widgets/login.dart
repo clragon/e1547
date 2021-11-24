@@ -330,3 +330,18 @@ Future<void> logout(BuildContext context) async {
     content: Text(msg),
   ));
 }
+
+Future<void> guardWithLogin(
+    {required BuildContext context,
+    required VoidCallback callback,
+    String? error}) async {
+  if (client.hasLogin) {
+    callback();
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      duration: Duration(seconds: 1),
+      content: Text(error ?? 'You must be logged in to do that!'),
+    ));
+    Navigator.pushNamed(context, '/login');
+  }
+}
