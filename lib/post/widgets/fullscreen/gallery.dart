@@ -91,10 +91,10 @@ class _PostFullscreenGalleryState extends State<PostFullscreenGallery>
       child: AnimatedBuilder(
         animation: widget.controller,
         builder: (context, child) => PageView.builder(
-          itemCount: widget.controller.itemList?.length,
+          itemCount: widget.controller.posts?.length,
           controller: pageController,
-          itemBuilder: (context, index) => PostFullscreenImageDisplay(
-              post: widget.controller.itemList![index]),
+          itemBuilder: (context, index) =>
+              PostFullscreenImageDisplay(post: widget.controller.posts![index]),
           onPageChanged: (index) {
             current.value = index;
             widget.onPageChanged?.call(index);

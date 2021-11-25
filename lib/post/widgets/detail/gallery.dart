@@ -26,6 +26,22 @@ class _PostDetailGalleryState extends State<PostDetailGallery> {
     super.dispose();
   }
 
+  void loadNextPage(int index) {
+    if (!hasRequestedNextPage) {
+      int newPageRequestTriggerIndex =
+          max(0, widget.controller.posts?.length ?? 0 - 3);
+
+      if (widget.controller.nextPageKey != null &&
+          index >= newPageRequestTriggerIndex) {
+        WidgetsBinding.instance?.addPostFrameCallback((_) {
+          widget.controller
+              .notifyPageRequestListeners(widget.controller.nextPageKey!);
+        });
+        hasRequestedNextPage = true;
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
@@ -33,22 +49,9 @@ class _PostDetailGalleryState extends State<PostDetailGallery> {
       builder: (context, child) => PageView.builder(
         controller: pageController,
         itemBuilder: (context, index) {
-          if (!hasRequestedNextPage) {
-            int newPageRequestTriggerIndex =
-                max(0, widget.controller.itemList?.length ?? 0 - 3);
-
-            if (widget.controller.nextPageKey != null &&
-                index >= newPageRequestTriggerIndex) {
-              WidgetsBinding.instance?.addPostFrameCallback((_) {
-                widget.controller
-                    .notifyPageRequestListeners(widget.controller.nextPageKey!);
-              });
-              hasRequestedNextPage = true;
-            }
-          }
-
+          loadNextPage(index);
           return PostDetail(
-            post: widget.controller.itemList![index],
+            post: widget.controller.posts![index],
             controller: widget.controller,
             onPageChanged: (index) => ModalRoute.of(context)!.isCurrent
                 ? pageController.animateToPage(index,
@@ -56,10 +59,10 @@ class _PostDetailGalleryState extends State<PostDetailGallery> {
                 : pageController.jumpToPage(index),
           );
         },
-        itemCount: widget.controller.itemList?.length ?? 0,
+        itemCount: widget.controller.posts?.length ?? 0,
         onPageChanged: (index) {
-          if (widget.controller.itemList!.isNotEmpty) {
-            Post lastPost = widget.controller.itemList![lastIndex];
+          if (widget.controller.posts!.isNotEmpty) {
+            Post lastPost = widget.controller.posts![lastIndex];
             if (lastPost.isEditing) {
               lastPost.resetPost();
             }
@@ -68,11 +71,11 @@ class _PostDetailGalleryState extends State<PostDetailGallery> {
           preloadImages(
             context: context,
             index: index,
-            posts: widget.controller.itemList!,
+            posts: widget.controller.posts!,
             size: ImageSize.sample,
           );
-        },
-      ),
+            },
+          ),
     );
   }
 }
