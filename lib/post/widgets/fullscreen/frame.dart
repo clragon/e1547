@@ -68,7 +68,11 @@ class _PostFullscreenFrameState extends State<PostFullscreenFrame> {
   @override
   void didUpdateWidget(PostFullscreenFrame oldWidget) {
     super.didUpdateWidget(oldWidget);
-    controller.cancel();
+    if (oldWidget.controller == widget.controller) {
+      controller.cancel();
+    } else {
+      controller = widget.controller ?? FrameController();
+    }
   }
 
   @override
