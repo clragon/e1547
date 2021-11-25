@@ -29,7 +29,7 @@ class _PostDetailGalleryState extends State<PostDetailGallery> {
   void loadNextPage(int index) {
     if (!hasRequestedNextPage) {
       int newPageRequestTriggerIndex =
-          max(0, widget.controller.posts?.length ?? 0 - 3);
+          max(0, widget.controller.itemList?.length ?? 0 - 3);
 
       if (widget.controller.nextPageKey != null &&
           index >= newPageRequestTriggerIndex) {
@@ -51,7 +51,7 @@ class _PostDetailGalleryState extends State<PostDetailGallery> {
         itemBuilder: (context, index) {
           loadNextPage(index);
           return PostDetail(
-            post: widget.controller.posts![index],
+            post: widget.controller.itemList![index],
             controller: widget.controller,
             onPageChanged: (index) => ModalRoute.of(context)!.isCurrent
                 ? pageController.animateToPage(index,
@@ -59,10 +59,10 @@ class _PostDetailGalleryState extends State<PostDetailGallery> {
                 : pageController.jumpToPage(index),
           );
         },
-        itemCount: widget.controller.posts?.length ?? 0,
+        itemCount: widget.controller.itemList?.length ?? 0,
         onPageChanged: (index) {
-          if (widget.controller.posts!.isNotEmpty) {
-            Post lastPost = widget.controller.posts![lastIndex];
+          if (widget.controller.itemList!.isNotEmpty) {
+            Post lastPost = widget.controller.itemList![lastIndex];
             if (lastPost.isEditing) {
               lastPost.resetPost();
             }
@@ -71,7 +71,7 @@ class _PostDetailGalleryState extends State<PostDetailGallery> {
           preloadImages(
             context: context,
             index: index,
-            posts: widget.controller.posts!,
+            posts: widget.controller.itemList!,
             size: ImageSize.sample,
           );
             },
