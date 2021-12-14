@@ -15,7 +15,7 @@ class UserReportScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return ReasonReportScreen(
       title: Text('User #${user.id}'),
-      onReport: (reason) => validateCall(
+      onReport: (reason) => validateRawCall(
         () => client.reportUser(
           user.id,
           reason,

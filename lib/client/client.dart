@@ -727,3 +727,12 @@ Future<bool> validateCall(Future<void> Function() call) async {
     return false;
   }
 }
+
+Future<bool> validateRawCall(Future<void> Function() call) async {
+  try {
+    await call();
+    return true;
+  } on DioError catch (e) {
+    return e.response?.statusCode == 302;
+  }
+}
