@@ -4,8 +4,6 @@ import 'package:e1547/tag/tag.dart';
 import 'package:filesize/filesize.dart';
 import 'package:flutter/material.dart';
 
-import 'rating.dart';
-
 class FileDisplay extends StatelessWidget {
   final Post post;
   final PostController? controller;
