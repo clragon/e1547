@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:mutex/mutex.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';

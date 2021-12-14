@@ -4,8 +4,6 @@ import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 
 import 'appbar.dart';
-import 'image.dart';
-import 'widgets.dart';
 
 class PostDetail extends StatefulWidget {
   final Post post;

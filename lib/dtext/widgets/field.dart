@@ -3,7 +3,6 @@ import 'package:e1547/dtext/dtext.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
 import 'package:username_generator/username_generator.dart';
 
 typedef DTextParser = InlineSpan Function(

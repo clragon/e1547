@@ -1,5 +1,4 @@
 import 'package:e1547/interface/interface.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_scroll_to_top/flutter_scroll_to_top.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
