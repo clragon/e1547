@@ -84,7 +84,7 @@ class Post with ChangeNotifier {
 
     while (true) {
       if (loadedVideos.fold<int>(
-          0, (current, post) => current += post.file.size) <
+              0, (current, post) => current += post.file.size) <
           2 * pow(10, 8)) {
         break;
       }
@@ -92,8 +92,8 @@ class Post with ChangeNotifier {
     }
 
     loadedVideos.add(this);
-    await controller!.initialize();
     await controller!.setVolume(muteVideos ? 0 : 1);
+    await controller!.initialize();
   }
 
   Future<void> disposeVideo() async {
