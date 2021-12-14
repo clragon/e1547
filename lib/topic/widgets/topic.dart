@@ -22,7 +22,7 @@ class TopicTile extends StatelessWidget {
         children: [
           Expanded(
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: Text(
                 tagToName(topic.title),
                 style: Theme.of(context).textTheme.subtitle1,
