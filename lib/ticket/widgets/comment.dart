@@ -12,11 +12,12 @@ class CommentReportScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return ReasonReportScreen(
       title: Text('Comment #${comment.id}'),
-      onReport: (reason) => validateRawCall(
+      onReport: (reason) => validateCall(
         () => client.reportComment(
           comment.id,
           reason,
         ),
+        allowRedirect: true,
       ),
       onSuccess: 'Reported comment #${comment.id}',
       onFailure: 'Failed to report user #${comment.id}',

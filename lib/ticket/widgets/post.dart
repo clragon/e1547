@@ -93,12 +93,13 @@ class _PostReportScreenState extends State<PostReportScreen> {
                         duration: defaultAnimationDuration,
                         curve: Curves.easeInOut,
                       );
-                      if (await validateRawCall(
+                      if (await validateCall(
                         () => client.reportPost(
                           widget.post.id,
                           reportIds[type!]!,
                           reasonController.text.trim(),
                         ),
+                        allowRedirect: true,
                       )) {
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                           duration: Duration(seconds: 1),
@@ -201,12 +202,13 @@ class _PostFlagScreenState extends State<PostFlagScreen> {
                         duration: defaultAnimationDuration,
                         curve: Curves.easeInOut,
                       );
-                      if (await validateRawCall(
+                      if (await validateCall(
                         () => client.flagPost(
                           widget.post.id,
                           flagName[type]!,
                           parent: int.tryParse(parentController.text),
                         ),
+                        allowRedirect: true,
                       )) {
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                           duration: Duration(seconds: 1),
