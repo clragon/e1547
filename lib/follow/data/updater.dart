@@ -11,7 +11,7 @@ late final FollowUpdater followUpdater = FollowUpdater(settings.follows);
 class FollowUpdater extends DataUpdater<List<Follow>>
     with HostableUpdater, EditableUpdater {
   @override
-  Duration get stale => Duration(hours: 4);
+  Duration get stale => getFollowRefreshRate(source.value.length);
 
   @override
   ValueNotifier<List<Follow>> source;
@@ -36,7 +36,6 @@ class FollowUpdater extends DataUpdater<List<Follow>>
   @override
   Future<List<Follow>?> run(
     List<Follow> data,
-    StepCallback step,
     bool force,
   ) async {
     await sort(data);
@@ -47,12 +46,12 @@ class FollowUpdater extends DataUpdater<List<Follow>>
       if (follow.type != FollowType.bookmark) {
         DateTime? updated = follow.updated;
         if (force || updated == null || now.difference(updated) > stale) {
-          if (!await follow.refresh()) {
+          if (await follow.refresh()) {
+            await write(data);
+            await Future.delayed(Duration(milliseconds: 500));
+          } else {
             fail();
-            return null;
           }
-          await write(data);
-          await Future.delayed(Duration(milliseconds: 500));
         }
       }
       if (!step()) {

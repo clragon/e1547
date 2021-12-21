@@ -5,16 +5,14 @@ import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:mutex/mutex.dart';
 
-typedef StepCallback = bool Function([int? progress]);
-
 abstract class DataUpdater<T> extends ChangeNotifier {
   final ValueNotifier<int> progress = ValueNotifier(0);
   final Mutex updateLock = Mutex();
 
   Duration? get stale => null;
 
-  Future? get finish => completer?.future;
-  Completer? completer;
+  Future get finish => completer.future;
+  Completer completer = Completer();
 
   bool error = false;
   bool restarting = false;
@@ -32,7 +30,7 @@ abstract class DataUpdater<T> extends ChangeNotifier {
 
   @mustCallSuper
   Future<void> refresh() async {
-    if (completer?.isCompleted ?? true) {
+    if (completer.isCompleted) {
       update();
     } else {
       restarting = true;
@@ -42,22 +40,41 @@ abstract class DataUpdater<T> extends ChangeNotifier {
 
   @mustCallSuper
   Future<void> cancel() async {
-    if (!(completer?.isCompleted ?? true)) {
+    if (!(completer.isCompleted)) {
       canceling = true;
     }
     return finish;
   }
 
   @mustCallSuper
-  void fail() {
-    error = true;
-    complete();
+  Future<void> fail() async {
+    if (!completer.isCompleted) {
+      error = true;
+    }
+    return finish;
+  }
+
+  @mustCallSuper
+  void uncomplete() {
+    if (completer.isCompleted) {
+      completer = Completer();
+    }
   }
 
   @mustCallSuper
   void complete() {
     updateLock.release();
-    completer!.complete();
+    completer.complete();
+    notifyListeners();
+  }
+
+  @mustCallSuper
+  void reset() {
+    uncomplete();
+    progress.value = 0;
+    restarting = false;
+    canceling = false;
+    error = false;
     notifyListeners();
   }
 
@@ -68,17 +85,11 @@ abstract class DataUpdater<T> extends ChangeNotifier {
 
   Future<void> write(T? data);
 
-  Future<T?> run(T data, StepCallback step, bool force);
+  Future<T?> run(T data, bool force);
 
   @mustCallSuper
-  bool step({int? progress, bool force = false}) {
-    if (restarting) {
-      updateLock.release();
-      update(force: force);
-      return false;
-    }
-    if (canceling) {
-      updateLock.release();
+  bool step([int? progress]) {
+    if (restarting || canceling || error) {
       return false;
     }
     this.progress.value = progress ?? this.progress.value + 1;
@@ -86,34 +97,26 @@ abstract class DataUpdater<T> extends ChangeNotifier {
     return true;
   }
 
-  Future<void> update({bool force = false}) async {
-    if (completer?.isCompleted ?? true) {
-      completer = Completer();
+  Future<void> wrapper({bool force = false}) async {
+    T data = await read();
+    T? result = await run(data, force);
+    if (restarting) {
+      updateLock.release();
+      update(force: force);
+      return;
     }
+    await write(result);
+    complete();
+  }
+
+  Future<void> update({bool force = false}) async {
+    uncomplete();
     if (updateLock.isLocked) {
       return finish;
     }
     await updateLock.acquire();
-    progress.value = 0;
-    restarting = false;
-    canceling = false;
-    error = false;
-
-    notifyListeners();
-
-    bool step([int? progress]) => this.step(progress: progress, force: force);
-
-    Future<void> _update() async {
-      T data = await read();
-      T? result = await run(data, step, force);
-      if (!restarting && !error) {
-        await write(result);
-        complete();
-      }
-    }
-
-    _update();
-
+    reset();
+    wrapper(force: force);
     return finish;
   }
 }

@@ -47,6 +47,12 @@ class _FollowTileState extends State<FollowTile> {
     update();
   }
 
+  @override
+  void didUpdateWidget(covariant FollowTile oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    update();
+  }
+
   String getStatusText(FollowStatus? status) {
     if (status == null) {
       return '';
@@ -199,7 +205,8 @@ class FollowListTile extends StatefulWidget {
   final VoidCallback onEdit;
   final VoidCallback onDelete;
   final VoidCallback onRename;
-  final VoidCallback onType;
+  final void Function(bool enabled) onChangeBookmark;
+  final void Function(bool enabled) onChangeNotify;
   final Follow follow;
   final bool? safe;
 
@@ -208,7 +215,8 @@ class FollowListTile extends StatefulWidget {
     required this.onEdit,
     required this.onDelete,
     required this.onRename,
-    required this.onType,
+    required this.onChangeBookmark,
+    required this.onChangeNotify,
     required this.safe,
   }) : super(key: UniqueKey());
 
@@ -234,25 +242,34 @@ class _FollowListTileState extends State<FollowListTile> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    Widget cardWidget(String tag) {
-      return FakeCard(
-        child: TagGesture(
-          tag: tag,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-                child: Text(tagToTitle(tag)),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
+  void didUpdateWidget(covariant FollowListTile oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    update();
+  }
 
+  Widget cardWidget(String tag) {
+    return FakeCard(
+      child: TagGesture(
+        tag: tag,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+              child: Text(tagToTitle(tag)),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
     Widget contextMenu() {
+      bool notified = widget.follow.type == FollowType.notify;
+      bool bookmarked = widget.follow.type == FollowType.bookmark;
+
       return PopupMenuButton<VoidCallback>(
         icon: ShadowIcon(
           Icons.more_vert,
@@ -260,15 +277,23 @@ class _FollowListTileState extends State<FollowListTile> {
         ),
         onSelected: (value) => value(),
         itemBuilder: (context) => [
-          PopupMenuTile(
-            value: widget.onType,
-            title: widget.follow.type == FollowType.update
-                ? 'Disable updates'
-                : 'Enable updates',
-            icon: widget.follow.type == FollowType.update
-                ? Icons.update_disabled
-                : Icons.update,
-          ),
+          /*
+          if (!bookmarked)
+            PopupMenuTile(
+              value: () => widget.onChangeNotify(notified),
+              title:
+                  notified ? 'Disable notifications' : 'Enable notifications',
+              icon: notified
+                  ? Icons.notifications_off
+                  : Icons.notifications_active,
+            ),
+           */
+          if (!notified)
+            PopupMenuTile(
+              value: () => widget.onChangeBookmark(bookmarked),
+              title: bookmarked ? 'Enable updates' : 'Disable updates',
+              icon: bookmarked ? Icons.update : Icons.update_disabled,
+            ),
           if (widget.follow.tags.split(' ').length > 1)
             PopupMenuTile(
               value: widget.onRename,

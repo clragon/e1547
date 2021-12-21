@@ -99,3 +99,6 @@ extension Refreshing on Follow {
     }
   }
 }
+
+Duration getFollowRefreshRate(int items) =>
+    Duration(hours: (items * 0.04).clamp(0.5, 4).toInt());
