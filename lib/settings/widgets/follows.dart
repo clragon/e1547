@@ -22,6 +22,7 @@ class _FollowingPageState extends State<FollowingPage> with LinkingMixin {
   void updateFollows() {
     setState(() {
       follows = List.from(settings.follows.value);
+      sheetController.close();
     });
   }
 
@@ -110,7 +111,7 @@ class _FollowingPageState extends State<FollowingPage> with LinkingMixin {
         padding:
             EdgeInsets.only(top: 8, bottom: kBottomNavigationBarHeight + 24),
         itemCount: follows.length,
-        itemBuilder: (BuildContext context, int index) => FollowListTile(
+        itemBuilder: (context, index) => FollowListTile(
           safe: safe,
           follow: follows[index],
           onRename: () => editAlias(context, index),
@@ -119,15 +120,19 @@ class _FollowingPageState extends State<FollowingPage> with LinkingMixin {
             follows.removeAt(index);
             settings.follows.value = follows;
           },
-          onType: () {
-            switch (follows[index].type) {
-              case FollowType.notify:
-              case FollowType.update:
-                follows[index].type = FollowType.bookmark;
-                break;
-              case FollowType.bookmark:
-                follows[index].type = FollowType.update;
-                break;
+          onChangeNotify: (enabled) {
+            if (enabled) {
+              follows[index].type = FollowType.update;
+            } else {
+              follows[index].type = FollowType.notify;
+            }
+            settings.follows.value = follows;
+          },
+          onChangeBookmark: (enabled) {
+            if (enabled) {
+              follows[index].type = FollowType.bookmark;
+            } else {
+              follows[index].type = FollowType.update;
             }
             settings.follows.value = follows;
           },
