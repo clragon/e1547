@@ -398,13 +398,17 @@ class Client {
   }) async {
     await initialized;
     Map body = await dio
-        .get('posts.json',
-            queryParameters: {
-              'tags': tag,
-              'page': 1,
-              'limit': limit,
-            },
-            options: buildCacheOptions(age, forceRefresh: force))
+        .getWithCache(
+          'posts.json',
+          cacheManager,
+          queryParameters: {
+            'tags': tag,
+            'page': 1,
+            'limit': limit,
+          },
+          forceRefresh: force,
+          maxAge: age,
+        )
         .then(
           (response) => response.data,
         );
