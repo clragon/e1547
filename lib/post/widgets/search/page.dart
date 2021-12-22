@@ -141,7 +141,8 @@ class _PostsPageState extends State<PostsPage> with LinkingMixin {
           drawer: NavigationDrawer(),
           endDrawer: endDrawer(),
           floatingActionButton: floatingActionButton(),
-          refresh: () => widget.controller.refresh(background: true),
+          refresh: () =>
+              widget.controller.refresh(background: true, force: true),
           builder: (context) => PagedStaggeredGridView(
             key: joinKeys(['posts', crossAxisCount]),
             showNewPageErrorIndicatorAsGridChild: false,

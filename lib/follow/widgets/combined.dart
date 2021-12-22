@@ -16,7 +16,7 @@ class _FollowsCombinedPageState extends State<FollowsCombinedPage>
   List<String?>? tags;
 
   PostController provider = PostController(
-    provider: (tags, page) => client.follows(page),
+    provider: (tags, page, force) => client.follows(page, force: force),
     canSearch: false,
   );
 

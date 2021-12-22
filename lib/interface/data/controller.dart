@@ -1,28 +1,31 @@
+import 'dart:async';
 import 'dart:math';
 
-import 'package:e1547/client/client.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:flutter/foundation.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
-import 'package:mutex/mutex.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 abstract class RawDataController<KeyType, ItemType>
     extends PagingController<KeyType, ItemType> {
-  Mutex requestLock = Mutex();
+  Future<void>? request;
+  bool isRequesting = false;
   bool isRefreshing = false;
+  bool isForceRefreshing = false;
+
+  late List<ValueNotifier> refreshListeners = getRefreshListeners();
 
   RawDataController({
     required KeyType firstPageKey,
   }) : super(firstPageKey: firstPageKey) {
     super.addPageRequestListener(requestPage);
-    getRefreshListeners().forEach((element) => element.addListener(refresh));
+    refreshListeners.forEach((element) => element.addListener(refresh));
   }
 
   @override
   void dispose() {
     super.removePageRequestListener(requestPage);
-    getRefreshListeners().forEach((element) => element.removeListener(refresh));
+    refreshListeners.forEach((element) => element.removeListener(refresh));
     if (itemList != null) {
       disposeItems(itemList!);
     }
@@ -37,20 +40,10 @@ abstract class RawDataController<KeyType, ItemType>
   @mustCallSuper
   void success() {}
 
-  Future<List<ItemType>?> catchError(
-      Future<List<ItemType>> Function() provider) async {
-    try {
-      return await provider();
-    } on DioError catch (error) {
-      failure(error);
-      return null;
-    }
-  }
-
   @mustCallSuper
   List<ValueNotifier> getRefreshListeners() => [];
 
-  Future<List<ItemType>> provide(KeyType page);
+  Future<List<ItemType>> provide(KeyType page, bool force);
 
   List<ItemType> sort(List<ItemType> items) => items;
 
@@ -59,19 +52,14 @@ abstract class RawDataController<KeyType, ItemType>
   void disposeItems(List<ItemType> items) {}
 
   @nonVirtual
-  Future<List<ItemType>?> loadPage(KeyType page) =>
-      catchError(() async => sort(await provide(page)));
-
-  @nonVirtual
   Future<bool> canRefresh() async {
-    if (requestLock.isLocked) {
+    if (isRequesting) {
       if (isRefreshing) {
         return false;
       }
       isRefreshing = true;
       // waits for the current request to be done
-      await requestLock.acquire();
-      requestLock.release();
+      await request;
       isRefreshing = false;
       return true;
     } else {
@@ -80,42 +68,70 @@ abstract class RawDataController<KeyType, ItemType>
   }
 
   @override
-  Future<void> refresh({bool background = false}) async {
+  Future<void> refresh({bool force = false, bool background = false}) async {
     // ensures a singular refresh can be queued up
     if (!await canRefresh()) {
       return;
     }
+    isForceRefreshing = force;
     List<ItemType> old = List<ItemType>.from(itemList ?? []);
     if (background) {
-      List<ItemType>? items = await loadPage(firstPageKey);
-      if (items != null) {
-        value = PagingState(
-          nextPageKey: provideNextPageKey(firstPageKey, items),
-          itemList: items,
-        );
-        // disposing these breaks everything
-        // TODO: figure out how to dispose items while replacing them
-        // disposeItems(old);
-      }
+      await backgroundRefresh();
+      // disposing these breaks everything
+      // TODO: figure out how to dispose items after replacing them
+      // disposeItems(old);
     } else {
       super.refresh();
       disposeItems(old);
     }
-    success();
+  }
+
+  Future<void> loadPage(Future<void> Function() provider) async {
+    if (isRequesting) {
+      await request;
+    }
+    if (isRequesting) {
+      return;
+    }
+    isRequesting = true;
+    Completer completer = Completer();
+    request = completer.future;
+    try {
+      await provider();
+      success();
+    } on Exception catch (error) {
+      failure(error);
+    } finally {
+      isForceRefreshing = false;
+      isRequesting = false;
+      completer.complete();
+    }
+  }
+
+  Future<void> backgroundRefresh() async {
+    return loadPage(
+      () async {
+        List<ItemType> items = await provide(firstPageKey, isForceRefreshing);
+        value = PagingState(
+          nextPageKey: provideNextPageKey(firstPageKey, items),
+          itemList: items,
+          error: null,
+        );
+      },
+    );
   }
 
   Future<void> requestPage(KeyType page) async {
-    await requestLock.acquire();
-    List<ItemType>? items = await loadPage(page);
-    if (items != null) {
-      if (items.isEmpty) {
-        appendLastPage(items);
-      } else {
-        appendPage(items, provideNextPageKey(page, items));
-      }
-    }
-    success();
-    requestLock.release();
+    return loadPage(
+      () async {
+        List<ItemType> items = await provide(page, isForceRefreshing);
+        if (items.isEmpty) {
+          appendLastPage(items);
+        } else {
+          appendPage(items, provideNextPageKey(page, items));
+        }
+      },
+    );
   }
 }
 
@@ -129,7 +145,7 @@ abstract class CursorDataController<T> extends RawDataController<String, T> {
   @override
   Future<void> requestPage(String page) {
     // firstpagekey cannot be changed
-    // this is a hack around to that
+    // this is a hack around that
     if (page == 'a0' && !orderByOldest.value) {
       page = '1';
     }

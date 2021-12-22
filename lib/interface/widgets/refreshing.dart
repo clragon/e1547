@@ -1,6 +1,5 @@
 import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_scroll_to_top/flutter_scroll_to_top.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 export 'package:e1547/client/client.dart' show validateCall;
@@ -38,7 +37,7 @@ class RefreshableControllerPage<T extends RefreshableController>
       floatingActionButton: floatingActionButton,
       scrollController: scrollController,
       refreshController: controller.refreshController,
-      refresh: () => controller.refresh(background: true),
+      refresh: () => controller.refresh(background: true, force: true),
     );
   }
 }
@@ -216,10 +215,7 @@ class _RefreshablePageState extends State<RefreshablePage> {
         return Scaffold(
           extendBodyBehindAppBar: widget.extendBodyBehindAppBar,
           appBar: widget.appBar,
-          body: ScrollWrapper(
-            builder: (context, config) => body(),
-            scrollToTopDuration: defaultAnimationDuration,
-          ),
+          body: body(),
           drawer: widget.drawer,
           endDrawer: widget.endDrawer,
           drawerEdgeDragWidth: defaultDrawerEdge(constraints.maxWidth),

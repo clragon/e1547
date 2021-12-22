@@ -12,6 +12,6 @@ class TopicController extends DataController<Topic>
       : search = ValueNotifier<String>(search ?? '');
 
   @override
-  Future<List<Topic>> provide(int page) =>
-      client.topics(page, search: search.value);
+  Future<List<Topic>> provide(int page, bool force) =>
+      client.topics(page, search: search.value, force: force);
 }

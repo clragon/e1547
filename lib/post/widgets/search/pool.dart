@@ -22,8 +22,8 @@ class _PoolPageState extends State<PoolPage> {
   void initState() {
     super.initState();
     controller = PostController(
-      provider: (tags, page) =>
-          client.poolPosts(widget.pool.id, page, reverse: reversePool),
+      provider: (tags, page, force) => client.poolPosts(widget.pool.id, page,
+          reverse: reversePool, force: force),
       canSearch: false,
     );
   }

@@ -12,7 +12,7 @@ class PostController extends DataController<Post>
         HostableController,
         RefreshableController,
         AccountableController {
-  Future<List<Post>> Function(String search, int page)? provider;
+  Future<List<Post>> Function(String search, int page, bool force)? provider;
   ValueNotifier<List<String>> allowed = ValueNotifier([]);
   Map<String, List<Post>>? denied;
   late ValueNotifier<bool> denying;
@@ -71,12 +71,12 @@ class PostController extends DataController<Post>
   }
 
   @override
-  Future<List<Post>> provide(int page) async {
+  Future<List<Post>> provide(int page, bool force) async {
     List<Post> nextPage;
     if (provider != null) {
-      nextPage = await provider!(search.value, page);
+      nextPage = await provider!(search.value, page, force);
     } else {
-      nextPage = await client.posts(page, search: search.value);
+      nextPage = await client.posts(page, search: search.value, force: force);
     }
     posts ??= [];
     posts!.addAll(nextPage);
@@ -84,21 +84,19 @@ class PostController extends DataController<Post>
   }
 
   @override
-  Future<void> refresh({bool background = false}) async {
+  Future<void> refresh({bool force = false, bool background = false}) async {
     if (!await canRefresh()) {
       return;
     }
     posts = null;
     denied = null;
-    await super.refresh(background: background);
+    await super.refresh(force: force, background: background);
   }
 
   @override
-  void disposeItems(List<Post> items) async {
-    if (itemList != null) {
-      for (var post in itemList!) {
-        post.dispose();
-      }
+  void disposeItems(List<Post> items) {
+    for (var post in items) {
+      post.dispose();
     }
   }
 

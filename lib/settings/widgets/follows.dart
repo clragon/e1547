@@ -4,7 +4,6 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_scroll_to_top/flutter_scroll_to_top.dart';
 
 class FollowingPage extends StatefulWidget {
   @override
@@ -188,10 +187,7 @@ class _FollowingPageState extends State<FollowingPage> with LinkingMixin {
           ),
         ],
       ),
-      body: ScrollWrapper(
-        builder: (context, config) => body(),
-        scrollToTopDuration: defaultAnimationDuration,
-      ),
+      body: body(),
       floatingActionButton: Builder(
         builder: (context) => AnimatedBuilder(
           animation: sheetController,
