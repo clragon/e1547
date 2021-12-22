@@ -90,9 +90,6 @@ abstract class RawDataController<KeyType, ItemType>
     if (isRequesting) {
       await request;
     }
-    if (isRequesting) {
-      return;
-    }
     isRequesting = true;
     Completer completer = Completer();
     request = completer.future;
