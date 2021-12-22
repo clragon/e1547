@@ -74,8 +74,8 @@ class _PostDetailGalleryState extends State<PostDetailGallery> {
             posts: widget.controller.itemList!,
             size: ImageSize.sample,
           );
-            },
-          ),
+        },
+      ),
     );
   }
 }

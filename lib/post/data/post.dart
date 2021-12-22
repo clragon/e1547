@@ -52,7 +52,7 @@ class Post with ChangeNotifier {
   static set muteVideos(value) {
     _muteVideos = value;
     loadedVideos.forEach(
-          (element) => element.controller?.setVolume(muteVideos ? 0 : 1),
+      (element) => element.controller?.setVolume(muteVideos ? 0 : 1),
     );
   }
 

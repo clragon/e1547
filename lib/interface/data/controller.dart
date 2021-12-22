@@ -111,7 +111,8 @@ abstract class RawDataController<KeyType, ItemType>
   Future<void> backgroundRefresh() async {
     return loadPage(
       () async {
-        List<ItemType> items = await provide(firstPageKey, isForceRefreshing);
+        List<ItemType> items =
+            sort(await provide(firstPageKey, isForceRefreshing));
         value = PagingState(
           nextPageKey: provideNextPageKey(firstPageKey, items),
           itemList: items,
@@ -124,7 +125,7 @@ abstract class RawDataController<KeyType, ItemType>
   Future<void> requestPage(KeyType page) async {
     return loadPage(
       () async {
-        List<ItemType> items = await provide(page, isForceRefreshing);
+        List<ItemType> items = sort(await provide(page, isForceRefreshing));
         if (items.isEmpty) {
           appendLastPage(items);
         } else {
