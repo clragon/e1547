@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:dio_http_cache/dio_http_cache.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/comment/comment.dart';
 import 'package:e1547/follow/follow.dart';
@@ -21,6 +22,7 @@ late final Client client = Client();
 
 class Client {
   late Dio dio;
+  late DioCacheManager cacheManager;
 
   Future<bool>? initialized;
 
@@ -34,21 +36,23 @@ class Client {
 
   Future<bool> initialize() async {
     Future<bool> init() async {
+      String host = 'https://${settings.host.value}/';
       Credentials? credentials = settings.credentials.value;
       dio = Dio(
         defaultDioOptions.copyWith(
-          baseUrl: 'https://${settings.host.value}/',
+          baseUrl: host,
           headers: {
             HttpHeaders.userAgentHeader:
                 '${appInfo.appName}/${appInfo.version} (${appInfo.developer})',
+            if (credentials != null)
+              HttpHeaders.authorizationHeader: credentials.toAuth(),
           },
         ),
       );
       initializeCurrentUser(reset: true);
-      if (credentials != null &&
-          !dio.options.headers.containsKey(HttpHeaders.authorizationHeader)) {
-        dio.options.headers.addEntries(
-            [MapEntry(HttpHeaders.authorizationHeader, credentials.toAuth())]);
+      cacheManager = DioCacheManager(CacheConfig(baseUrl: host));
+      dio.interceptors.add(cacheManager.interceptor);
+      if (credentials != null) {
         try {
           await tryLogin(credentials.username, credentials.password);
         } on DioError catch (e) {
@@ -155,16 +159,25 @@ class Client {
     return posts;
   }
 
-  Future<List<Post>> postsRaw(int page, {String? search, int? limit}) async {
+  Future<List<Post>> postsRaw(int page,
+      {String? search, int? limit, bool force = false}) async {
     await initialized;
-    Map body = await dio.get(
-      'posts.json',
-      queryParameters: {
-        'tags': sortTags(search!),
-        'page': page,
-        'limit': limit,
-      },
-    ).then((response) => response.data);
+    String? tags = search != null ? sortTags(search) : '';
+    Map body = await dio
+        .getWithCache(
+          'posts.json',
+          cacheManager,
+          queryParameters: {
+            'tags': tags,
+            'page': page,
+            'limit': limit,
+          },
+          primaryKeyExtras: {
+            'tags': tags,
+          },
+          forceRefresh: force,
+        )
+        .then((response) => response.data);
 
     return postsFromJson(body['posts']);
   }
@@ -175,6 +188,7 @@ class Client {
     int? limit,
     bool? reversePools,
     bool? orderFavorites,
+    bool? force,
   }) async {
     await initialized;
     String? username;
@@ -187,7 +201,7 @@ class Client {
         regexes = {
       poolRegex(): (match, result) => poolPosts(
           int.parse(match.namedGroup('id')!), page,
-          reverse: reversePools),
+          reverse: reversePools ?? false),
       if (username != null)
         favRegex(username): (match, result) => favorites(page, limit: limit),
     };
@@ -202,19 +216,22 @@ class Client {
       }
     }
 
-    return postsRaw(page, search: search, limit: limit);
+    return postsRaw(page, search: search, limit: limit, force: force ?? false);
   }
 
-  Future<List<Post>> favorites(int page, {int? limit}) async {
+  Future<List<Post>> favorites(int page, {int? limit, bool? force}) async {
     await initialized;
-
-    Map body = await dio.get(
-      'favorites.json',
-      queryParameters: {
-        'page': page,
-        'limit': limit,
-      },
-    ).then((response) => response.data);
+    Map body = await dio
+        .getWithCache(
+          'favorites.json',
+          cacheManager,
+          queryParameters: {
+            'page': page,
+            'limit': limit,
+          },
+          forceRefresh: force,
+        )
+        .then((response) => response.data);
 
     return (postsFromJson(body['posts']));
   }
@@ -253,11 +270,21 @@ class Client {
     );
   }
 
-  Future<List<Pool>> pools(int page, {String? search}) async {
-    List body = await dio.get('pools.json', queryParameters: {
-      'search[name_matches]': search,
-      'page': page,
-    }).then((response) => response.data);
+  Future<List<Pool>> pools(int page, {String? search, bool? force}) async {
+    List body = await dio
+        .getWithCache(
+          'pools.json',
+          cacheManager,
+          queryParameters: {
+            'search[name_matches]': search,
+            'page': page,
+          },
+          primaryKeyExtras: {
+            'search[name_matches]': search,
+          },
+          forceRefresh: force,
+        )
+        .then((response) => response.data);
 
     List<Pool> pools = [];
     for (Map<String, dynamic> rawPool in body) {
@@ -268,17 +295,22 @@ class Client {
     return pools;
   }
 
-  Future<Pool> pool(int poolId) async {
-    Map<String, dynamic> body =
-        await dio.get('pools/$poolId.json').then((response) => response.data);
+  Future<Pool> pool(int poolId, {bool? force}) async {
+    Map<String, dynamic> body = await dio
+        .getWithCache(
+          'pools/$poolId.json',
+          cacheManager,
+          forceRefresh: force,
+        )
+        .then((response) => response.data);
 
     return Pool.fromMap(body);
   }
 
-  Future<List<Post>> poolPosts(int poolId, int page, {bool? reverse}) async {
+  Future<List<Post>> poolPosts(int poolId, int page,
+      {bool reverse = false, bool? force}) async {
     Pool pool = await client.pool(poolId);
-    List<int> ids =
-        reverse ?? false ? pool.postIds.reversed.toList() : pool.postIds;
+    List<int> ids = reverse ? pool.postIds.reversed.toList() : pool.postIds;
     int limit = 80;
     int lower = ((page - 1) * limit);
     int upper = lower + limit;
@@ -293,7 +325,7 @@ class Client {
     List<int> pageIds = ids.sublist(lower, upper);
     String filter = 'id:${pageIds.join(',')}';
 
-    List<Post> posts = await client.posts(1, search: filter);
+    List<Post> posts = await client.posts(1, search: filter, force: force);
     Map<int, Post> table = {for (Post e in posts) e.id: e};
     posts = (pageIds.map((e) => table[e]).toList()
           ..removeWhere((e) => e == null))
@@ -301,7 +333,7 @@ class Client {
     return posts;
   }
 
-  Future<List<Post>> follows(int page, {int attempt = 0}) async {
+  Future<List<Post>> follows(int page, {int attempt = 0, bool? force}) async {
     List<Post> posts = [];
     List<String> tags = List<Follow>.from(settings.follows.value)
         .map<String>((e) => e.tags)
@@ -348,8 +380,8 @@ class Client {
       int tagPage = getTagPage(i);
       int end = (length > tagPage * max) ? tagPage * max : length;
       List<String?> tagSet = tags.sublist((tagPage - 1) * max, end);
-      posts.addAll(
-          await client.posts(getSitePage(i), search: '~${tagSet.join(' ~')}'));
+      posts.addAll(await client.posts(getSitePage(i),
+          search: '~${tagSet.join(' ~')}', force: force));
     }
     posts.sort((one, two) => two.id.compareTo(one.id));
     if (posts.isEmpty && attempt < (approx / batches) - 1) {
@@ -358,12 +390,36 @@ class Client {
     return posts;
   }
 
-  Future<Post> post(int postId, {bool unsafe = false}) async {
+  Future<List<Post>> follow(
+    String tag, {
+    bool? force,
+    Duration age = const Duration(hours: 1),
+    int limit = 5,
+  }) async {
     await initialized;
     Map body = await dio
-        .get(
-            'https://${(unsafe ? settings.customHost.value : settings.host.value)}/posts/${postId.toString()}.json',
-            options: Options())
+        .get('posts.json',
+            queryParameters: {
+              'tags': tag,
+              'page': 1,
+              'limit': limit,
+            },
+            options: buildCacheOptions(age, forceRefresh: force))
+        .then(
+          (response) => response.data,
+        );
+
+    return postsFromJson(body['posts']);
+  }
+
+  Future<Post> post(int postId, {bool unsafe = false, bool? force}) async {
+    await initialized;
+    Map body = await dio
+        .getWithCache(
+          'https://${(unsafe ? settings.customHost.value : settings.host.value)}/posts/${postId.toString()}.json',
+          cacheManager,
+          forceRefresh: force,
+        )
         .then((response) => response.data);
 
     Post post = Post.fromMap(body['post']);
@@ -485,20 +541,35 @@ class Client {
     });
   }
 
-  Future<List<Wiki>> wiki(int page, {String? search}) async {
+  Future<List<Wiki>> wikis(int page, {String? search, bool? force}) async {
     await initialized;
-    List body = await dio.get('wiki_pages.json', queryParameters: {
-      'search[title]': search,
-      'page': page,
-    }).then((response) => response.data);
+    List body = await dio
+        .getWithCache(
+          'wiki_pages.json',
+          cacheManager,
+          queryParameters: {
+            'search[title]': search,
+            'page': page,
+          },
+          forceRefresh: force,
+          primaryKeyExtras: {
+            'search[title]': search,
+          },
+        )
+        .then((response) => response.data);
 
     return body.map((entry) => Wiki.fromMap(entry)).toList();
   }
 
-  Future<User> user(String name) async {
+  Future<User> user(String name, {bool? force}) async {
     await initialized;
-    Map<String, dynamic> body =
-        await dio.get('users/$name.json').then((response) => response.data);
+    Map<String, dynamic> body = await dio
+        .getWithCache(
+          'users/$name.json',
+          cacheManager,
+          forceRefresh: force,
+        )
+        .then((response) => response.data);
 
     return User.fromMap(body);
   }
@@ -539,28 +610,42 @@ class Client {
     initializeCurrentUser(reset: true);
   }
 
-  Future<List> tag(String search, {int? category}) async {
+  Future<List> tag(String search, {int? category, bool? force}) async {
     await initialized;
-    var body = await dio.get('tags.json', queryParameters: {
-      'search[name_matches]': search,
-      'search[category]': category,
-      'search[order]': 'count',
-      'limit': 3,
-    }).then((response) => response.data);
+    var body = await dio
+        .getWithCache(
+          'tags.json',
+          cacheManager,
+          queryParameters: {
+            'search[name_matches]': search,
+            'search[category]': category,
+            'search[order]': 'count',
+            'limit': 3,
+          },
+          forceRefresh: force,
+        )
+        .then((response) => response.data);
     List tags = [];
     if (body is List) {
       tags = body;
     }
-    tags = tags.take(3).toList();
     return tags;
   }
 
-  Future<List> autocomplete(String search, {int? category}) async {
+  Future<List> autocomplete(String search, {int? category, bool? force}) async {
     await initialized;
     if (category == null) {
-      var body = await dio.get('tags/autocomplete.json', queryParameters: {
-        'search[name_matches]': search,
-      }).then((response) => response.data);
+      var body = await dio
+          .getWithCache(
+            'tags/autocomplete.json',
+            cacheManager,
+            queryParameters: {
+              'search[name_matches]': search,
+            },
+            maxAge: Duration(days: 1),
+            forceRefresh: force,
+          )
+          .then((response) => response.data);
       List tags = [];
       if (body is List) {
         tags = body;
@@ -568,17 +653,27 @@ class Client {
       tags = tags.take(3).toList();
       return tags;
     } else {
-      return tag(search + '*', category: category);
+      return tag(search + '*', category: category, force: force);
     }
   }
 
-  Future<List<Comment>> comments(int postId, String page) async {
+  Future<List<Comment>> comments(int postId, String page, {bool? force}) async {
     await initialized;
-    var body = await dio.get('comments.json', queryParameters: {
-      'group_by': 'comment',
-      'search[post_id]': '$postId',
-      'page': page,
-    }).then((response) => response.data);
+    var body = await dio
+        .getWithCache(
+          'comments.json',
+          cacheManager,
+          queryParameters: {
+            'group_by': 'comment',
+            'search[post_id]': postId,
+            'page': page,
+          },
+          forceRefresh: force,
+          primaryKeyExtras: {
+            'search[post_id]': postId,
+          },
+        )
+        .then((response) => response.data);
 
     List<Comment> comments = [];
     if (body is List) {
@@ -590,9 +685,13 @@ class Client {
     return comments;
   }
 
-  Future<Comment> comment(int id) async {
+  Future<Comment> comment(int id, {bool? force}) async {
     Map<String, dynamic> body = await dio
-        .get('comments.json/$id.json')
+        .getWithCache(
+          'comments.json/$id.json',
+          cacheManager,
+          forceRefresh: force,
+        )
         .then((response) => response.data);
 
     return Comment.fromMap(body);
@@ -640,11 +739,26 @@ class Client {
     });
   }
 
-  Future<List<Topic>> topics(int page, {String? search}) async {
-    var body = await dio.get('forum_topics.json', queryParameters: {
-      'page': page,
-      'search[title_matches]': search?.isNotEmpty ?? false ? search : null,
-    }).then((response) => response.data);
+  Future<List<Topic>> topics(
+    int page, {
+    String? search,
+    bool? force,
+  }) async {
+    String? title = search?.isNotEmpty ?? false ? search : null;
+    var body = await dio
+        .getWithCache(
+          'forum_topics.json',
+          cacheManager,
+          queryParameters: {
+            'page': page,
+            'search[title_matches]': title,
+          },
+          forceRefresh: force,
+          primaryKeyExtras: {
+            'search[title_matches]': title,
+          },
+        )
+        .then((response) => response.data);
 
     List<Topic> threads = [];
     if (body is List) {
@@ -656,20 +770,34 @@ class Client {
     return threads;
   }
 
-  Future<Topic> topic(int id) async {
+  Future<Topic> topic(int id, {bool? force}) async {
     Map<String, dynamic> body = await dio
-        .get('forum_topics/$id.json')
+        .getWithCache(
+          'forum_topics/$id.json',
+          cacheManager,
+          forceRefresh: force,
+        )
         .then((response) => response.data);
 
     return Topic.fromMap(body);
   }
 
-  Future<List<Reply>> replies(int id, String page) async {
-    var body = await dio.get('forum_posts.json', queryParameters: {
-      'commit': 'Search',
-      'search[topic_id]': id,
-      'page': page,
-    }).then((response) => response.data);
+  Future<List<Reply>> replies(int id, String page, {bool? force}) async {
+    var body = await dio
+        .getWithCache(
+          'forum_posts.json',
+          cacheManager,
+          queryParameters: {
+            'commit': 'Search',
+            'search[topic_id]': id,
+            'page': page,
+          },
+          forceRefresh: force,
+          primaryKeyExtras: {
+            'search[topic_id]': id,
+          },
+        )
+        .then((response) => response.data);
 
     List<Reply> replies = [];
     if (body is List) {
@@ -681,9 +809,14 @@ class Client {
     return replies;
   }
 
-  Future<Reply> reply(int id) async {
-    Map<String, dynamic> body =
-        await dio.get('forum_posts/$id.json').then((response) => response.data);
+  Future<Reply> reply(int id, {bool? force}) async {
+    Map<String, dynamic> body = await dio
+        .getWithCache(
+          'forum_posts/$id.json',
+          cacheManager,
+          forceRefresh: force,
+        )
+        .then((response) => response.data);
 
     return Reply.fromMap(body);
   }

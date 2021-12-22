@@ -23,10 +23,11 @@ class _SearchPageState extends State<SearchPage> with LinkingMixin {
   late bool reversePools = widget.reversePools;
   late PostController controller = PostController(
     search: widget.tags,
-    provider: (tags, page) => client.posts(
+    provider: (tags, page, force) => client.posts(
       page,
       search: tags,
       reversePools: reversePools,
+      force: force,
     ),
   );
   List<Follow>? follows;
@@ -49,10 +50,10 @@ class _SearchPageState extends State<SearchPage> with LinkingMixin {
 
   @override
   Map<ChangeNotifier, VoidCallback> get initLinks => {
-    controller: updateTitle,
-    controller.search: updatePool,
-    settings.follows: updateFollows,
-  };
+        controller: updateTitle,
+        controller.search: updatePool,
+        settings.follows: updateFollows,
+      };
 
   @override
   void dispose() {
@@ -132,10 +133,10 @@ class _SearchPageState extends State<SearchPage> with LinkingMixin {
                     onPressed: pool != null
                         ? () => poolSheet(context, pool!)
                         : () => wikiSheet(
-                      context: context,
-                      tag: controller.search.value,
-                      controller: controller,
-                    ),
+                              context: context,
+                              tag: controller.search.value,
+                              controller: controller,
+                            ),
                   ),
                 ),
                 ContextDrawerButton(),

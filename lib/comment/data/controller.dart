@@ -10,7 +10,8 @@ class CommentController extends CursorDataController<Comment>
   CommentController({required this.postId});
 
   @override
-  Future<List<Comment>> provide(String page) => client.comments(postId, page);
+  Future<List<Comment>> provide(String page, bool force) =>
+      client.comments(postId, page, force: force);
 
   @override
   int getId(Comment item) => item.id;

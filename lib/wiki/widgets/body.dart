@@ -88,7 +88,7 @@ class _WikiTagDisplayState extends State<WikiTagDisplay> {
   late Future<Wiki?> wiki = retrieveWiki();
 
   Future<Wiki?> retrieveWiki() async {
-    List<Wiki> results = await client.wiki(1, search: tagToName(widget.tag));
+    List<Wiki> results = await client.wikis(1, search: tagToName(widget.tag));
     if (results.isNotEmpty) {
       return results.first;
     }

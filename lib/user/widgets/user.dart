@@ -8,7 +8,6 @@ import 'package:e1547/ticket/ticket.dart';
 import 'package:e1547/user/user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_scroll_to_top/flutter_scroll_to_top.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -192,12 +191,9 @@ class _UserPageState extends State<UserPage>
             ],
           ),
         ],
-        body: ScrollWrapper(
-          builder: (context, config) => TabBarView(
-            controller: tabController,
-            children: tabs.values.toList(),
-          ),
-          scrollToTopDuration: defaultAnimationDuration,
+        body: TabBarView(
+          controller: tabController,
+          children: tabs.values.toList(),
         ),
       ),
     );
