@@ -168,8 +168,7 @@ class CommentTile extends StatelessWidget {
                       color: dark,
                     ),
                     onSelected: (value) => value(),
-                    itemBuilder: (context) =>
-                    [
+                    itemBuilder: (context) => [
                       if (settings.credentials.value?.username ==
                           comment.creatorName)
                         PopupMenuTile(

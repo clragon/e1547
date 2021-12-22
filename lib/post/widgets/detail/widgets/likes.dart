@@ -81,7 +81,7 @@ class FavoriteButton extends StatelessWidget {
         likeBuilder: (bool isLiked) => Icon(
           Icons.favorite,
           color:
-          isLiked ? Colors.pinkAccent : Theme.of(context).iconTheme.color,
+              isLiked ? Colors.pinkAccent : Theme.of(context).iconTheme.color,
         ),
         onTap: (isLiked) async {
           if (isLiked) {
