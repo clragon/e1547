@@ -1,3 +1,4 @@
+import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
 import 'package:sliver_tools/sliver_tools.dart';
 
@@ -12,12 +13,18 @@ double defaultActionListBottomHeight = kBottomNavigationBarHeight + 24;
 EdgeInsets defaultActionListPadding =
     defaultListPadding.copyWith(bottom: defaultActionListBottomHeight);
 
+mixin AppBarSize on Widget implements PreferredSizeWidget {
+  @override
+  Size get preferredSize => Size.fromHeight(defaultAppBarHeight);
+}
+
 class DefaultAppBar extends StatelessWidget with AppBarSize {
   final Widget? leading;
   final List<Widget>? actions;
   final Widget? title;
   final double? elevation;
   final bool automaticallyImplyLeading;
+  final ScrollController? scrollController;
 
   const DefaultAppBar({
     this.leading,
@@ -25,18 +32,24 @@ class DefaultAppBar extends StatelessWidget with AppBarSize {
     this.title,
     this.elevation,
     this.automaticallyImplyLeading = true,
+    this.scrollController,
   });
 
   @override
   Widget build(BuildContext context) {
     return FloatingAppBarFrame(
       elevation: elevation,
-      child: AppBar(
-        leading: leading,
-        actions: actions,
-        title: title,
-        elevation: elevation,
-        automaticallyImplyLeading: automaticallyImplyLeading,
+      child: ScrollToTopScope(
+        height: kToolbarHeight,
+        controller: scrollController,
+        builder: (context, child) => AppBar(
+          leading: leading,
+          actions: actions,
+          title: title,
+          elevation: elevation,
+          automaticallyImplyLeading: automaticallyImplyLeading,
+          flexibleSpace: child,
+        ),
       ),
     );
   }
@@ -77,9 +90,63 @@ class FloatingAppBarFrame extends StatelessWidget {
   }
 }
 
-mixin AppBarSize on Widget implements PreferredSizeWidget {
+class ScrollToTopScope extends StatelessWidget {
+  final ScrollController? controller;
+  final bool primary;
+  final Widget Function(BuildContext context, Widget child)? builder;
+  final Widget? child;
+  final double? height;
+
+  const ScrollToTopScope({
+    this.builder,
+    this.child,
+    this.controller,
+    this.height,
+    this.primary = true,
+  });
+
   @override
-  Size get preferredSize => Size.fromHeight(defaultAppBarHeight);
+  Widget build(BuildContext context) {
+    Widget tapWrapper(Widget? child) {
+      ScrollController? controller = this.controller ??
+          (primary ? PrimaryScrollController.of(context) : null);
+      return GestureDetector(
+        child: Container(
+          height: height,
+          // color: Colors.transparent,
+          child: child != null
+              ? Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: Row(
+                        children: [
+                          Expanded(child: child),
+                        ],
+                      ),
+                    )
+                  ],
+                )
+              : null,
+        ),
+        onDoubleTap: controller != null
+            ? () => controller.animateTo(
+                  0,
+                  duration: defaultAnimationDuration,
+                  curve: Curves.easeOut,
+                )
+            : null,
+      );
+    }
+
+    Widget Function(BuildContext context, Widget child) builder =
+        this.builder ?? (context, child) => child;
+
+    return builder(
+      context,
+      tapWrapper(child),
+    );
+  }
 }
 
 class TransparentAppBar extends StatelessWidget {
@@ -128,6 +195,7 @@ class DefaultSliverAppBar extends StatelessWidget {
   final bool floating;
   final bool pinned;
   final bool snap;
+  final ScrollController? scrollController;
 
   const DefaultSliverAppBar({
     this.leading,
@@ -142,6 +210,7 @@ class DefaultSliverAppBar extends StatelessWidget {
     this.snap = false,
     this.automaticallyImplyLeading = false,
     this.forceElevated = false,
+    this.scrollController,
   });
 
   @override
@@ -158,9 +227,9 @@ class DefaultSliverAppBar extends StatelessWidget {
               : null,
           bottom: bottom != null
               ? PreferredSize(
-                  preferredSize: bottom!.preferredSize,
-                  child: Container(),
-                )
+            preferredSize: bottom!.preferredSize,
+            child: Container(),
+          )
               : null,
           automaticallyImplyLeading: false,
           actions: [
@@ -203,15 +272,18 @@ class DefaultSliverAppBar extends StatelessWidget {
                     actions: actions,
                     flexibleSpace: flexibleSpaceBuilder != null
                         ? LayoutBuilder(
-                            builder: (context, constraints) => Padding(
-                              padding: EdgeInsets.only(bottom: bottomHeight),
-                              child: flexibleSpaceBuilder!(
-                                context,
-                                constraints.maxHeight ==
-                                    kToolbarHeight + bottomHeight,
+                      builder: (context, constraints) => Padding(
+                        padding: EdgeInsets.only(bottom: bottomHeight),
+                              child: ScrollToTopScope(
+                                controller: scrollController,
+                                child: flexibleSpaceBuilder!(
+                                  context,
+                                  constraints.maxHeight ==
+                                      kToolbarHeight + bottomHeight,
+                                ),
                               ),
                             ),
-                          )
+                    )
                         : null,
                     bottom: bottom,
                   ),
