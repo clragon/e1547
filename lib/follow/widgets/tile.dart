@@ -280,7 +280,7 @@ class _FollowListTileState extends State<FollowListTile> {
           /*
           if (!bookmarked)
             PopupMenuTile(
-              value: () => widget.onChangeNotify(notified),
+              value: () => widget.onChangeNotify(!notified),
               title:
                   notified ? 'Disable notifications' : 'Enable notifications',
               icon: notified
@@ -290,7 +290,7 @@ class _FollowListTileState extends State<FollowListTile> {
            */
           if (!notified)
             PopupMenuTile(
-              value: () => widget.onChangeBookmark(bookmarked),
+              value: () => widget.onChangeBookmark(!bookmarked),
               title: bookmarked ? 'Enable updates' : 'Disable updates',
               icon: bookmarked ? Icons.update : Icons.update_disabled,
             ),
