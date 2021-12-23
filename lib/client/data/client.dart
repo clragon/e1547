@@ -408,6 +408,7 @@ class Client {
           },
           forceRefresh: force,
           maxAge: age,
+          maxStale: Duration(hours: 4),
         )
         .then(
           (response) => response.data,

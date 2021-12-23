@@ -36,11 +36,13 @@ class _FollowsSplitPageState extends State<FollowsSplitPage> with LinkingMixin {
             duration: Duration(milliseconds: 100),
           );
           await followUpdater.finish;
-          scrollController.animateTo(
-            0,
-            duration: defaultAnimationDuration,
-            curve: Curves.easeInOut,
-          );
+          if (scrollController.hasClients) {
+            scrollController.animateTo(
+              0,
+              duration: defaultAnimationDuration,
+              curve: Curves.easeInOut,
+            );
+          }
           if (!followUpdater.error) {
             refreshController.refreshCompleted();
           } else {

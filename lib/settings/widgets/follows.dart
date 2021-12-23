@@ -121,9 +121,9 @@ class _FollowingPageState extends State<FollowingPage> with LinkingMixin {
           },
           onChangeNotify: (enabled) {
             if (enabled) {
-              follows[index].type = FollowType.update;
-            } else {
               follows[index].type = FollowType.notify;
+            } else {
+              follows[index].type = FollowType.update;
             }
             settings.follows.value = follows;
           },
@@ -140,8 +140,8 @@ class _FollowingPageState extends State<FollowingPage> with LinkingMixin {
     }
 
     Widget editor() {
-      TextEditingController controller = TextEditingController();
-      controller.text = follows.tags.join('\n');
+      TextEditingController controller =
+          TextEditingController(text: follows.tags.join('\n'));
       return AlertDialog(
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
