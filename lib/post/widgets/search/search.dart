@@ -113,11 +113,7 @@ class _SearchPageState extends State<SearchPage> with LinkingMixin {
   Widget build(BuildContext context) {
     PreferredSizeWidget appbar(BuildContext context) {
       return DefaultAppBar(
-        title: AnimatedSwitcher(
-          key: Key(title),
-          child: Text(title),
-          duration: defaultAnimationDuration,
-        ),
+        title: Text(title),
         leading: BackButton(),
         actions: [
           Padding(
