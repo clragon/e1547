@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'appbar.dart';
 
 class FrameController extends ChangeNotifier {
-  final Duration defaultFrameDuration = Duration(seconds: 1);
   final void Function(bool shown)? onToggle;
   Timer? frameToggler;
   bool visible;
@@ -21,9 +20,13 @@ class FrameController extends ChangeNotifier {
       toggleFrame(shown: false, duration: duration);
 
   void toggleFrame({bool? shown, Duration? duration}) {
+    bool result = shown ?? !visible;
+    if (result == visible) {
+      return;
+    }
     frameToggler?.cancel();
     void toggle() {
-      visible = shown ?? !visible;
+      visible = result;
       notifyListeners();
       onToggle?.call(visible);
     }
@@ -144,17 +147,25 @@ class FrameFadeWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     bool shown = this.shown ?? controller?.visible ?? true;
 
-    return AnimatedBuilder(
-      child: child,
-      animation: controller ?? AlwaysStoppedAnimation(0),
-      builder: (context, child) => AnimatedOpacity(
+    Widget body() {
+      return AnimatedOpacity(
         opacity: shown ? 1 : 0,
         duration: fadeOutDuration,
         child: IgnorePointer(
           ignoring: !shown,
           child: child,
         ),
-      ),
-    );
+      );
+    }
+
+    if (controller != null) {
+      return AnimatedBuilder(
+        child: child,
+        animation: controller!,
+        builder: (context, child) => body(),
+      );
+    } else {
+      return body();
+    }
   }
 }

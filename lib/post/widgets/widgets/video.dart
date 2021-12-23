@@ -127,82 +127,88 @@ class VideoBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: AnimatedBuilder(
-        animation: videoController,
-        builder: (context, child) {
-          return SafeCrossFade(
-            showChild: videoController.value.isInitialized,
-            builder: (context) => FrameFadeWidget(
-              controller: frameController,
-              shown: frameController!.visible,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        VideoGlobalVolumeControl(
-                          videoController: videoController,
-                        ),
-                        SizedBox(
-                          width: 4,
-                        ),
-                        Text(
-                          videoController.value.position
-                              .toString()
-                              .substring(2, 7),
-                        ),
-                        Flexible(
-                            child: Slider(
-                          min: 0,
-                          max: videoController.value.duration.inMilliseconds
-                              .toDouble(),
-                          value: videoController.value.position.inMilliseconds
-                              .toDouble(),
-                          onChangeStart: (double value) {
-                            frameController?.cancel();
-                          },
-                          onChanged: (double value) {
-                            videoController
-                                .seekTo(Duration(milliseconds: value.toInt()));
-                          },
-                          onChangeEnd: (double value) {
-                            if (videoController.value.isPlaying) {
-                              frameController?.hideFrame(
-                                  duration: Duration(seconds: 2));
-                            }
-                          },
-                        )),
-                        Text(
-                          videoController.value.duration
-                              .toString()
-                              .substring(2, 7),
-                        ),
-                        SizedBox(
-                          width: 4,
-                        ),
-                        InkWell(
-                          onTap: Navigator.of(context).maybePop,
-                          child: Padding(
-                            padding: EdgeInsets.all(4),
-                            child: Icon(
-                              Icons.fullscreen_exit,
-                              size: 24,
-                              color: Theme.of(context).iconTheme.color,
+      child: FrameFadeWidget(
+        controller: frameController,
+        child: AnimatedBuilder(
+          animation: videoController,
+          builder: (context, child) {
+            return SafeCrossFade(
+              showChild: videoController.value.isInitialized,
+              builder: (context) {
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          VideoGlobalVolumeControl(
+                            videoController: videoController,
+                          ),
+                          SizedBox(
+                            width: 4,
+                          ),
+                          Text(
+                            videoController.value.position
+                                .toString()
+                                .substring(2, 7),
+                          ),
+                          Flexible(
+                              child: Slider(
+                            min: 0,
+                            max: videoController.value.duration.inMilliseconds
+                                .toDouble(),
+                            value: videoController.value.position.inMilliseconds
+                                .toDouble()
+                                .clamp(
+                                  0,
+                                  videoController.value.duration.inMilliseconds
+                                      .toDouble(),
+                                ),
+                            onChangeStart: (double value) {
+                              frameController?.cancel();
+                            },
+                            onChanged: (double value) {
+                              videoController.seekTo(
+                                  Duration(milliseconds: value.toInt()));
+                            },
+                            onChangeEnd: (double value) {
+                              if (videoController.value.isPlaying) {
+                                frameController?.hideFrame(
+                                    duration: Duration(seconds: 2));
+                              }
+                            },
+                          )),
+                          Text(
+                            videoController.value.duration
+                                .toString()
+                                .substring(2, 7),
+                          ),
+                          SizedBox(
+                            width: 4,
+                          ),
+                          InkWell(
+                            onTap: Navigator.of(context).maybePop,
+                            child: Padding(
+                              padding: EdgeInsets.all(4),
+                              child: Icon(
+                                Icons.fullscreen_exit,
+                                size: 24,
+                                color: Theme.of(context).iconTheme.color,
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
+                  ],
+                );
+              },
+            );
+          },
+        ),
       ),
     );
   }
