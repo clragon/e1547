@@ -138,11 +138,11 @@ class TopicInfo extends StatelessWidget {
           ),
           textInfoRow(
             'created',
-            getCurrentDateFormat().format(topic.createdAt.toLocal()),
+            getCurrentDateTimeFormat().format(topic.createdAt.toLocal()),
           ),
           textInfoRow(
             'updated',
-            getCurrentDateFormat().format(
+            getCurrentDateTimeFormat().format(
               topic.updatedAt.toLocal(),
             ),
           ),

@@ -12,6 +12,7 @@ dependencies:
   expandable: ^5.0.1
   like_button: ^2.0.4
   photo_view: ^0.13.0
+  grouped_list: ^4.1.0
   video_player: ^2.2.5
   sliver_tools: ^0.2.5
   sliding_sheet: ^0.5.0

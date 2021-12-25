@@ -290,9 +290,14 @@ extension Editing on Post {
 }
 
 extension Transitioning on Post {
-  String get hero => 'image_$id';
+  String get hero => getPostHero(id);
 }
 
 extension Linking on Post {
-  Uri url(String host) => Uri(scheme: 'https', host: host, path: '/posts/$id');
+  Uri get url => getPostUri(id);
 }
+
+Uri getPostUri(int postId) =>
+    Uri(scheme: 'https', host: settings.host.value, path: '/posts/$postId');
+
+String getPostHero(int? postId) => 'image_$postId';

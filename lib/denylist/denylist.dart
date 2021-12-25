@@ -4,3 +4,4 @@ export 'data/actions.dart';
 export 'widgets/editor.dart';
 export 'widgets/tile.dart';
 export 'widgets/drawer.dart';
+export 'widgets/settings.dart';

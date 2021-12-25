@@ -197,6 +197,14 @@ class _RefreshablePageState extends State<RefreshablePage> {
       widget.refreshController ?? RefreshController();
 
   @override
+  void didUpdateWidget(covariant RefreshablePage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.refreshController != widget.refreshController) {
+      refreshController = widget.refreshController ?? RefreshController();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     Widget body() {
       return SmartRefresher(

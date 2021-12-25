@@ -73,30 +73,29 @@ extension Refreshing on Follow {
   int get checkAmount => 5;
 
   Future<bool> refresh() async {
-    try {
-      List<Post> posts =
-          await client.postsRaw(1, search: tags, limit: checkAmount);
+    return validateCall(
+      () async {
+        List<Post> posts =
+            await client.postsRaw(1, search: tags, limit: checkAmount);
 
-      List<String> denylist = settings.denylist.value;
+        List<String> denylist = settings.denylist.value;
 
-      posts.forEach(
-          (element) => element.isBlacklisted = element.isDeniedBy(denylist));
+        posts.forEach(
+            (element) => element.isBlacklisted = element.isDeniedBy(denylist));
 
-      posts.removeWhere((element) => element.isBlacklisted);
-      await updateUnseen(posts);
+        posts.removeWhere((element) => element.isBlacklisted);
+        await updateUnseen(posts);
 
-      if (!tags.contains(' ') && alias == null) {
-        RegExpMatch? match = poolRegex().firstMatch(tags);
-        if (match != null) {
-          client
-              .pool(int.parse(match.namedGroup('id')!))
-              .then((value) => updatePool(value));
+        if (!tags.contains(' ') && alias == null) {
+          RegExpMatch? match = poolRegex().firstMatch(tags);
+          if (match != null) {
+            client
+                .pool(int.parse(match.namedGroup('id')!))
+                .then((value) => updatePool(value));
+          }
         }
-      }
-      return true;
-    } on DioError {
-      return false;
-    }
+      },
+    );
   }
 }
 
