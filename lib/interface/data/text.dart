@@ -21,8 +21,18 @@ void setFocusToEnd(TextEditingController controller) {
   );
 }
 
-DateFormat getCurrentDateFormat() =>
+DateFormat getCurrentDateTimeFormat() =>
     DateFormat.yMd(Platform.localeName).add_jm();
+
+DateFormat getCurrentDateFormat() => DateFormat.yMd(Platform.localeName);
+
+DateFormat getCurrentTimeFormat() => DateFormat.jm(Platform.localeName);
+
+extension days on DateTime {
+  DateTime stripTime() {
+    return DateTime(year, month, day);
+  }
+}
 
 extension Trimming on List<String> {
   List<String> trim() => map((e) => e.trim()).toList();

@@ -8,3 +8,4 @@ export 'widgets/drawer.dart';
 export 'widgets/split.dart';
 export 'widgets/switcher.dart';
 export 'widgets/tile.dart';
+export 'widgets/settings.dart';

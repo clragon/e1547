@@ -34,9 +34,8 @@ class _PostsPageState extends State<PostsPage> with LinkingMixin {
     WidgetsBinding.instance!.addPostFrameCallback((_) {
       if (mounted) {
         setState(() {
-          if (widget.controller.itemList?.isEmpty ?? true) {
-            selections.clear();
-          }
+          selections.removeWhere((element) =>
+              !(widget.controller.itemList?.contains(element) ?? true));
         });
       }
     });
@@ -84,37 +83,16 @@ class _PostsPageState extends State<PostsPage> with LinkingMixin {
     }
 
     Widget itemBuilder(BuildContext context, Post item, int index) {
-      return Stack(
-        alignment: Alignment.center,
-        children: [
-          PostTile(
-            post: item,
-            onPressed: () {
-              Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => PostDetailGallery(
-                  controller: widget.controller,
-                  initialPage: index,
-                ),
-              ));
-            },
-          ),
-          Positioned.fill(
-              child: PostSelectionOverlay(
-            post: item,
-            selections: selections,
-            select: (Post post) {
-              if (widget.canSelect) {
-                setState(() {
-                  if (selections.contains(item)) {
-                    selections.remove(item);
-                  } else {
-                    selections.add(item);
-                  }
-                });
-              }
-            },
-          )),
-        ],
+      return PostTile(
+        post: item,
+        onPressed: () {
+          Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => PostDetailGallery(
+              controller: widget.controller,
+              initialPage: index,
+            ),
+          ));
+        },
       );
     }
 
@@ -129,14 +107,13 @@ class _PostsPageState extends State<PostsPage> with LinkingMixin {
       tileBuilder: tileBuilder,
       builder: (context, crossAxisCount, tileBuilder) => SelectionScope<Post>(
         selections: selections,
-        onChanged: (value) => setState(() => selections = value),
-        child: RefreshablePage(
+        builder: (context, selections, onChanged) => RefreshablePage(
           refreshController: widget.controller.refreshController,
           appBar: selections.isEmpty
               ? widget.appBarBuilder(context)
               : PostSelectionAppBar(
                   selections: selections,
-                  onChanged: (value) => setState(() => selections = value),
+                  onChanged: onChanged,
                   onSelectAll: () => widget.controller.itemList!.toSet()),
           drawer: NavigationDrawer(),
           endDrawer: endDrawer(),
@@ -153,7 +130,14 @@ class _PostsPageState extends State<PostsPage> with LinkingMixin {
             pagingController: widget.controller,
             builderDelegate: defaultPagedChildBuilderDelegate(
               pagingController: widget.controller,
-              itemBuilder: itemBuilder,
+              itemBuilder: (context, Post item, index) => SelectionItemOverlay(
+                enabled: widget.canSelect,
+                padding: EdgeInsets.all(4),
+                child: itemBuilder(context, item, index),
+                item: item,
+                selections: selections,
+                onChanged: onChanged,
+              ),
               onEmpty: Text('No posts'),
               onLoading: Text('Loading posts'),
               onError: Text('Failed to load posts'),

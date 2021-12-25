@@ -34,6 +34,8 @@ class Client {
 
   bool get isSafe => settings.host.value != settings.customHost.value;
 
+  String get host => settings.host.value;
+
   Future<bool> initialize() async {
     Future<bool> init() async {
       String host = 'https://${settings.host.value}/';

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
 import 'package:sliver_tools/sliver_tools.dart';
@@ -11,7 +13,7 @@ EdgeInsets defaultListPadding = EdgeInsets.all(kContentPadding);
 double defaultActionListBottomHeight = kBottomNavigationBarHeight + 24;
 
 EdgeInsets defaultActionListPadding =
-    defaultListPadding.copyWith(bottom: defaultActionListBottomHeight);
+defaultListPadding.copyWith(bottom: defaultActionListBottomHeight);
 
 mixin AppBarSize on Widget implements PreferredSizeWidget {
   @override
@@ -45,7 +47,7 @@ class DefaultAppBar extends StatelessWidget with AppBarSize {
         builder: (context, child) => AppBar(
           leading: leading,
           actions: actions,
-          title: title,
+          title: IgnorePointer(child: title),
           elevation: elevation,
           automaticallyImplyLeading: automaticallyImplyLeading,
           flexibleSpace: child,
@@ -113,7 +115,7 @@ class ScrollToTopScope extends StatelessWidget {
       return GestureDetector(
         child: Container(
           height: height,
-          // color: Colors.transparent,
+          color: Colors.transparent,
           child: child != null
               ? Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -125,16 +127,16 @@ class ScrollToTopScope extends StatelessWidget {
                         ],
                       ),
                     )
-                  ],
-                )
+            ],
+          )
               : null,
         ),
         onDoubleTap: controller != null
             ? () => controller.animateTo(
-                  0,
-                  duration: defaultAnimationDuration,
-                  curve: Curves.easeOut,
-                )
+          0,
+          duration: defaultAnimationDuration,
+          curve: Curves.easeOut,
+        )
             : null,
       );
     }
@@ -191,7 +193,7 @@ class DefaultSliverAppBar extends StatelessWidget {
   final double? expandedHeight;
   final PreferredSizeWidget? bottom;
   final Widget Function(BuildContext context, bool collapsed)?
-      flexibleSpaceBuilder;
+  flexibleSpaceBuilder;
   final bool floating;
   final bool pinned;
   final bool snap;
@@ -227,9 +229,9 @@ class DefaultSliverAppBar extends StatelessWidget {
               : null,
           bottom: bottom != null
               ? PreferredSize(
-            preferredSize: bottom!.preferredSize,
-            child: Container(),
-          )
+                  preferredSize: bottom!.preferredSize,
+                  child: Container(),
+                )
               : null,
           automaticallyImplyLeading: false,
           actions: [
@@ -256,7 +258,7 @@ class DefaultSliverAppBar extends StatelessWidget {
                   context: context,
                   removeTop: true,
                   child: SliverAppBar(
-                    title: title,
+                    title: IgnorePointer(child: title),
                     automaticallyImplyLeading: automaticallyImplyLeading,
                     elevation: elevation,
                     forceElevated: forceElevated,
@@ -272,8 +274,8 @@ class DefaultSliverAppBar extends StatelessWidget {
                     actions: actions,
                     flexibleSpace: flexibleSpaceBuilder != null
                         ? LayoutBuilder(
-                      builder: (context, constraints) => Padding(
-                        padding: EdgeInsets.only(bottom: bottomHeight),
+                            builder: (context, constraints) => Padding(
+                              padding: EdgeInsets.only(bottom: bottomHeight),
                               child: ScrollToTopScope(
                                 controller: scrollController,
                                 child: flexibleSpaceBuilder!(
@@ -283,7 +285,7 @@ class DefaultSliverAppBar extends StatelessWidget {
                                 ),
                               ),
                             ),
-                    )
+                          )
                         : null,
                     bottom: bottom,
                   ),
@@ -299,5 +301,160 @@ class DefaultSliverAppBar extends StatelessWidget {
         ),
       ],
     );
+  }
+}
+
+class SelectionScope<T> extends StatefulWidget {
+  final Widget Function(
+    BuildContext context,
+    Set<T> selections,
+    void Function(Set<T> selections) onChanged,
+  ) builder;
+  final Set<T>? selections;
+
+  const SelectionScope({required this.builder, this.selections});
+
+  @override
+  _SelectionScopeState<T> createState() => _SelectionScopeState<T>();
+}
+
+class _SelectionScopeState<T> extends State<SelectionScope<T>> {
+  late Set<T> selections = widget.selections ?? {};
+
+  @override
+  void didUpdateWidget(covariant SelectionScope<T> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.selections != widget.selections) {
+      onChanged(widget.selections ?? {});
+    }
+  }
+
+  void onChanged(Set<T> selections) => setState(() {
+        this.selections.clear();
+        this.selections.addAll(selections);
+      });
+
+  @override
+  Widget build(BuildContext context) {
+    return WillPopScope(
+      child: widget.builder(
+        context,
+        selections,
+        onChanged,
+      ),
+      onWillPop: () async {
+        if (selections.isNotEmpty) {
+          onChanged({});
+          return false;
+        } else {
+          return true;
+        }
+      },
+    );
+  }
+}
+
+class SelectionAppBar<T> extends StatelessWidget {
+  final Set<T> Function()? onSelectAll;
+  final void Function(Set<T> selections) onChanged;
+  final Set<T> selections;
+  final List<Widget> actions;
+
+  final WidgetBuilder? titleBuilder;
+
+  const SelectionAppBar({
+    required this.selections,
+    required this.onChanged,
+    required this.actions,
+    this.titleBuilder,
+    this.onSelectAll,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return DefaultAppBar(
+      title: titleBuilder?.call(context) ?? Text('${selections.length} items'),
+      leading: IconButton(
+        icon: Icon(Icons.clear),
+        onPressed: () => onChanged({}),
+      ),
+      actions: [
+        if (onSelectAll != null)
+          IconButton(
+            icon: Icon(Icons.select_all),
+            onPressed: () {
+              onChanged(onSelectAll!());
+            },
+          ),
+        ...actions,
+      ],
+    );
+  }
+}
+
+class SelectionItemOverlay<T> extends StatelessWidget {
+  final Widget child;
+  final T item;
+  final Set<T> selections;
+  final void Function(Set<T> selections) onChanged;
+  final bool enabled;
+  final EdgeInsets? padding;
+
+  const SelectionItemOverlay({
+    required this.child,
+    required this.item,
+    required this.selections,
+    required this.onChanged,
+    this.enabled = true,
+    this.padding,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    void select() {
+      Set<T> updated = Set.from(selections);
+      if (updated.contains(item)) {
+        updated.remove(item);
+      } else {
+        updated.add(item);
+      }
+      onChanged(updated);
+    }
+
+    if (enabled) {
+      return Stack(
+        fit: StackFit.passthrough,
+        children: [
+          child,
+          Positioned.fill(
+            child: GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onTap: selections.isNotEmpty ? select : null,
+              onLongPress: select,
+              child: IgnorePointer(
+                child: AnimatedOpacity(
+                  duration: defaultAnimationDuration,
+                  opacity: selections.contains(item) ? 1 : 0,
+                  child: Container(
+                    margin: padding,
+                    color: Colors.black38,
+                    child: LayoutBuilder(
+                      builder: (context, constraint) => Icon(
+                        Icons.check_circle_outline,
+                        color: Colors.white,
+                        size: min(constraint.maxHeight, constraint.maxWidth) *
+                            0.4,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      );
+    } else {
+      return child;
+    }
   }
 }

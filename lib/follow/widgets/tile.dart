@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
+import 'package:e1547/settings/settings.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:e1547/wiki/wiki.dart';
 import 'package:flutter/material.dart';
@@ -75,7 +76,7 @@ class _FollowTileState extends State<FollowTile> {
       children: [
         Expanded(
           child: Hero(
-            tag: 'image_${status!.latest}',
+            tag: getPostHero(status!.latest),
             child: CachedNetworkImage(
               imageUrl: status!.thumbnail!,
               errorWidget: defaultErrorBuilder,
@@ -314,82 +315,93 @@ class _FollowListTileState extends State<FollowListTile> {
       );
     }
 
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16),
-      child: Column(
-        children: [
-          Stack(
-            alignment: Alignment.center,
+    String getStatusText(FollowStatus? status) {
+      if (status == null) {
+        return '';
+      }
+      String text = status.unseen.toString();
+      if (status.unseen == widget.follow.checkAmount) {
+        text += '+';
+      }
+      text += ' new post';
+      if (status.unseen! > 1) {
+        text += 's';
+      }
+      return text;
+    }
+
+    return PostPresenterTile(
+      postId: widget.follow.latest,
+      thumbnail: thumbnail,
+      onTap: () => Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => SearchPage(tags: widget.follow.tags))),
+      onLongPress: () => wikiSheet(context: context, tag: widget.follow.tags),
+      child: ListTile(
+        title: Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Text(
+            widget.follow.title,
+            style: Theme.of(context).textTheme.headline6?.copyWith(
+                  shadows: getTextShadows(),
+                  color: Colors.white,
+                ),
+          ),
+        ),
+        subtitle: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 8.0),
+          child: Column(
             children: [
-              Positioned.fill(
-                child: thumbnail != null
-                    ? Opacity(
-                        opacity: 0.8,
-                        child: CachedNetworkImage(
-                          imageUrl: thumbnail!,
-                          errorWidget: defaultErrorBuilder,
-                          fit: BoxFit.cover,
-                        ),
-                      )
-                    : SizedBox.shrink(),
-              ),
-              Material(
-                type: MaterialType.transparency,
-                child: InkWell(
-                  onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) =>
-                          SearchPage(tags: widget.follow.tags))),
-                  onLongPress: () =>
-                      wikiSheet(context: context, tag: widget.follow.tags),
-                  child: ListTile(
-                    title: Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Text(
-                        widget.follow.title,
-                        style: thumbnail != null
-                            ? TextStyle(
-                                shadows: getTextShadows(),
-                                color: Colors.white,
-                              )
-                            : null,
-                      ),
-                    ),
-                    subtitle: (widget.follow.tags.split(' ').length > 1)
-                        ? Row(children: [
-                            Expanded(
-                              child: Wrap(
-                                direction: Axis.horizontal,
-                                children: widget.follow.tags
-                                    .split(' ')
-                                    .map((tag) => cardWidget(tag))
-                                    .toList(),
-                              ),
-                            ),
-                          ])
-                        : null,
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        CrossFade(
-                          showChild: widget.follow.type != FollowType.update,
-                          child: Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: ShadowIcon(
-                              getFollowIcon(widget.follow.type),
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                        contextMenu(),
-                      ],
+              if (widget.follow.tags.split(' ').length > 1)
+                Row(children: [
+                  Expanded(
+                    child: Wrap(
+                      direction: Axis.horizontal,
+                      children: widget.follow.tags
+                          .split(' ')
+                          .map((tag) => cardWidget(tag))
+                          .toList(),
                     ),
                   ),
+                ]),
+              Padding(
+                padding: EdgeInsets.all(4),
+                child: Row(
+                  children: [
+                    if (widget.follow.status.unseen != null &&
+                        widget.follow.status.unseen! > 0)
+                      Expanded(
+                        child: Text(
+                          getStatusText(widget.follow.status),
+                          style:
+                              Theme.of(context).textTheme.bodyText1!.copyWith(
+                                    shadows: getTextShadows(),
+                                    color: Colors.white,
+                                  ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                  ],
                 ),
-              )
+              ),
             ],
           ),
-          Divider()
-        ],
+        ),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CrossFade(
+              showChild: widget.follow.type != FollowType.update,
+              child: Padding(
+                padding: EdgeInsets.all(8.0),
+                child: ShadowIcon(
+                  getFollowIcon(widget.follow.type),
+                  color: Colors.white,
+                ),
+              ),
+            ),
+            contextMenu(),
+          ],
+        ),
       ),
     );
   }

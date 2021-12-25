@@ -1,4 +1,5 @@
 import 'package:e1547/client/client.dart';
+import 'package:e1547/history/history.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
@@ -25,6 +26,12 @@ class _PostDetailState extends State<PostDetail> with LinkingMixin, RouteAware {
   late NavigatorState navigator;
   late ModalRoute route;
 
+  @override
+  Map<ChangeNotifier, VoidCallback> get links => {
+        widget.post: closeSheet,
+        if (widget.controller != null) widget.controller!: onPageChange,
+      };
+
   Future<void> onPageChange() async {
     if (!(widget.controller!.itemList?.contains(widget.post) ?? false)) {
       if (route.isCurrent) {
@@ -35,12 +42,6 @@ class _PostDetailState extends State<PostDetail> with LinkingMixin, RouteAware {
     }
   }
 
-  @override
-  Map<ChangeNotifier, VoidCallback> get links => {
-        widget.post: closeSheet,
-        if (widget.controller != null) widget.controller!: onPageChange,
-      };
-
   void closeSheet() {
     if (!widget.post.isEditing) {
       sheetController.close();
@@ -48,11 +49,15 @@ class _PostDetailState extends State<PostDetail> with LinkingMixin, RouteAware {
   }
 
   @override
+  void initState() {
+    super.initState();
+    addPostToHistory(widget.post);
+  }
+
+  @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (widget.post.type == PostType.video) {
-      routeObserver.subscribe(this, ModalRoute.of(context) as PageRoute);
-    }
+    routeObserver.subscribe(this, ModalRoute.of(context) as PageRoute);
     navigator = Navigator.of(context);
     route = ModalRoute.of(context)!;
   }
@@ -60,10 +65,8 @@ class _PostDetailState extends State<PostDetail> with LinkingMixin, RouteAware {
   @override
   void reassemble() {
     super.reassemble();
-    if (widget.post.type == PostType.video) {
-      routeObserver.unsubscribe(this);
-      routeObserver.subscribe(this, ModalRoute.of(context) as PageRoute);
-    }
+    routeObserver.unsubscribe(this);
+    routeObserver.subscribe(this, ModalRoute.of(context) as PageRoute);
     if (widget.post.type == PostType.image && widget.post.file.url != null) {
       preloadImage(context: context, post: widget.post, size: ImageSize.file);
     }
@@ -71,9 +74,7 @@ class _PostDetailState extends State<PostDetail> with LinkingMixin, RouteAware {
 
   @override
   void dispose() {
-    if (widget.post.type == PostType.video) {
-      routeObserver.unsubscribe(this);
-    }
+    routeObserver.unsubscribe(this);
     if (widget.post.isEditing) {
       widget.post.resetPost();
     }

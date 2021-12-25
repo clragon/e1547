@@ -41,14 +41,15 @@ class Pool {
         creatorId: json["creator_id"],
         description: json["description"],
         isActive: json["is_active"],
-        category: categoryValues.map[json["category"]]!,
+        category: Category.values.asNameMap()[json["category"]]!,
         isDeleted: json["is_deleted"],
         postIds: List<int>.from(json["post_ids"].map((x) => x)),
         creatorName: json["creator_name"],
         postCount: json["post_count"],
       );
 
-  Map<String, dynamic> toMap() => {
+  Map<String, dynamic> toMap() =>
+      {
         "id": id,
         "name": name,
         "created_at": createdAt.toIso8601String(),
@@ -56,7 +57,7 @@ class Pool {
         "creator_id": creatorId,
         "description": description,
         "is_active": isActive,
-        "category": categoryValues.reverse![category],
+        "category": category.name,
         "is_deleted": isDeleted,
         "post_ids": List<dynamic>.from(postIds.map((x) => x)),
         "creator_name": creatorName,
@@ -65,18 +66,3 @@ class Pool {
 }
 
 enum Category { series, collection }
-
-final categoryValues =
-    EnumValues({"collection": Category.collection, "series": Category.series});
-
-class EnumValues<T> {
-  Map<String, T> map;
-  Map<T, String>? reverseMap;
-
-  EnumValues(this.map);
-
-  Map<T, String>? get reverse {
-    reverseMap ??= map.map((k, v) => MapEntry(v, k));
-    return reverseMap;
-  }
-}
