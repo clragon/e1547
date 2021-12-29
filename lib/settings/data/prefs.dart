@@ -254,7 +254,7 @@ abstract class SharedSettings {
     SetSetting<T>? setSetting,
   }) {
     ValueNotifier<T> setting =
-    ValueNotifier<T>(_readSetting(key, initialValue, getSetting));
+        ValueNotifier<T>(_readSetting(key, initialValue, getSetting));
     setting.addListener(() => _writeSetting(key, setting.value, setSetting));
     _settings.add(_SharedSetting<T>(
       key: key,

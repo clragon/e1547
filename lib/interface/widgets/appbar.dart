@@ -13,7 +13,7 @@ EdgeInsets defaultListPadding = EdgeInsets.all(kContentPadding);
 double defaultActionListBottomHeight = kBottomNavigationBarHeight + 24;
 
 EdgeInsets defaultActionListPadding =
-defaultListPadding.copyWith(bottom: defaultActionListBottomHeight);
+    defaultListPadding.copyWith(bottom: defaultActionListBottomHeight);
 
 mixin AppBarSize on Widget implements PreferredSizeWidget {
   @override
@@ -127,16 +127,16 @@ class ScrollToTopScope extends StatelessWidget {
                         ],
                       ),
                     )
-            ],
-          )
+                  ],
+                )
               : null,
         ),
         onDoubleTap: controller != null
             ? () => controller.animateTo(
-          0,
-          duration: defaultAnimationDuration,
-          curve: Curves.easeOut,
-        )
+                  0,
+                  duration: defaultAnimationDuration,
+                  curve: Curves.easeOut,
+                )
             : null,
       );
     }
@@ -193,7 +193,7 @@ class DefaultSliverAppBar extends StatelessWidget {
   final double? expandedHeight;
   final PreferredSizeWidget? bottom;
   final Widget Function(BuildContext context, bool collapsed)?
-  flexibleSpaceBuilder;
+      flexibleSpaceBuilder;
   final bool floating;
   final bool pinned;
   final bool snap;
