@@ -9,10 +9,10 @@ import 'package:flutter/foundation.dart' show ValueNotifier;
 
 final Persistence settings = Persistence();
 
-class Persistence extends SharedPrefsSerializer {
+class Persistence extends SharedSettings {
   late final ValueNotifier<Credentials?> credentials = createSetting(
     key: 'credentials',
-    initial: null,
+    initialValue: null,
     getSetting: (prefs, key) {
       String? value = prefs.getString(key);
       if (value != null) {
@@ -30,16 +30,17 @@ class Persistence extends SharedPrefsSerializer {
     },
   );
 
-  late final ValueNotifier<AppTheme> theme = createStringSetting(
-      key: 'theme',
-      initial: appThemeMap.keys.elementAt(1),
-      values: AppTheme.values);
+  late final ValueNotifier<AppTheme> theme = createEnumSetting(
+    key: 'theme',
+    initialValue: appThemeMap.keys.elementAt(1),
+    values: AppTheme.values,
+  );
 
   late final ValueNotifier<List<String>> denylist =
-  createSetting(key: 'blacklist', initial: []);
+      createSetting(key: 'blacklist', initialValue: []);
   late final ValueNotifier<List<Follow>> follows = createSetting(
     key: 'follows',
-    initial: [],
+    initialValue: [],
     getSetting: (prefs, key) {
       try {
         List<String>? value = prefs.getStringList(key);
@@ -57,14 +58,14 @@ class Persistence extends SharedPrefsSerializer {
     },
     setSetting: (prefs, key, value) async => prefs.setStringList(
       key,
-      value!.map((e) => e.toJson()).toList(),
+      value.map((e) => e.toJson()).toList(),
     ),
   );
 
   late final ValueNotifier<Map<String, List<HistoryEntry>>> history =
       createSetting(
-    key: 'history',
-    initial: {},
+        key: 'history',
+    initialValue: {},
     getSetting: (prefs, key) {
       String? value = prefs.getString(key);
       if (value != null) {
@@ -82,7 +83,7 @@ class Persistence extends SharedPrefsSerializer {
     },
     setSetting: (prefs, key, value) async {
       Map<String, dynamic> raw = {};
-      for (MapEntry<String, List<HistoryEntry>> entry in value!.entries) {
+      for (MapEntry<String, List<HistoryEntry>> entry in value.entries) {
         raw[entry.key] = entry.value.map((e) => e.toJson()).toList();
       }
       await prefs.setString(
@@ -92,33 +93,33 @@ class Persistence extends SharedPrefsSerializer {
     },
   );
   late final ValueNotifier<bool> writeHistory =
-      createSetting(key: 'writeHistory', initial: true);
+      createSetting(key: 'writeHistory', initialValue: true);
 
   late final ValueNotifier<String> host =
-      createSetting(key: 'currentHost', initial: 'e926.net');
+      createSetting(key: 'currentHost', initialValue: 'e926.net');
   late final ValueNotifier<String?> customHost =
-      createSetting(key: 'customHost', initial: null);
+      createSetting(key: 'customHost', initialValue: null);
   late final ValueNotifier<String> homeTags =
-      createSetting(key: 'homeTags', initial: 'score:>=20');
+      createSetting(key: 'homeTags', initialValue: 'score:>=20');
 
   late final ValueNotifier<int> tileSize =
-      createSetting(key: 'tileSize', initial: 200);
-  late final ValueNotifier<GridQuilt> quilt = createStringSetting(
+      createSetting(key: 'tileSize', initialValue: 200);
+  late final ValueNotifier<GridQuilt> quilt = createEnumSetting(
     key: 'quilt',
-    initial: GridQuilt.square,
+    initialValue: GridQuilt.square,
     values: GridQuilt.values,
   );
 
   late final ValueNotifier<bool> splitFollows =
-  createSetting(key: 'splitFollows', initial: true);
+      createSetting(key: 'splitFollows', initialValue: true);
   late final ValueNotifier<bool> showPostInfo =
-  createSetting<bool>(key: 'showPostInfo', initial: false);
+      createSetting<bool>(key: 'showPostInfo', initialValue: false);
   late final ValueNotifier<bool> showBeta =
-  createSetting<bool>(key: 'showBeta', initial: false);
+      createSetting<bool>(key: 'showBeta', initialValue: false);
   late final ValueNotifier<bool> hideSystemUI =
-  createSetting<bool>(key: 'hideSystemUI', initial: true);
+      createSetting<bool>(key: 'hideSystemUI', initialValue: true);
   late final ValueNotifier<bool> upvoteFavs =
-  createSetting<bool>(key: 'upvoteFavs', initial: false);
+      createSetting<bool>(key: 'upvoteFavs', initialValue: false);
   late final ValueNotifier<bool> muteVideos =
-  createSetting<bool>(key: 'muteVideos', initial: true);
+      createSetting<bool>(key: 'muteVideos', initialValue: true);
 }
