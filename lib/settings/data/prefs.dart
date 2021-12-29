@@ -14,7 +14,7 @@ typedef _SharedPrefsReader<T> = T? Function(String key);
 class SharedSettingsReadError<T> extends Error {
   @override
   String toString() {
-    return "Exception: SharedSettings failed to read $T because it wasn't String, int, double, bool or List<String>.\nPlease provide a custom GetSetting Function to read your setting.";
+    return "Error: SharedSettings failed to read $T because it wasn't String, int, double, bool or List<String>.\nPlease provide a value for GetSetting.";
   }
 }
 
@@ -24,7 +24,7 @@ class SharedSettingsReadError<T> extends Error {
 class SharedSettingsWriteError<T> extends Error {
   @override
   String toString() {
-    return "Exception: SharedSettings failed to write $T because it wasn't String, int, double, bool or List<String>.\nPlease provide a custom SetSetting Function to write your setting.";
+    return "Error: SharedSettings failed to write $T because it wasn't String, int, double, bool or List<String>.\nPlease provide a value for SetSetting.";
   }
 }
 
