@@ -12,8 +12,8 @@ Future<void> main() async {
 Future<void> initialize() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-  await settings.initialized;
-  await packageInfoInitialized;
+  await settings.initialize();
+  await initializePackageInfo();
   initializeDesktopCache();
 }
 

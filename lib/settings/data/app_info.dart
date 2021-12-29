@@ -2,7 +2,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 
 late AppInfo appInfo;
 
-Future<void> packageInfoInitialized =
+Future<void> initializePackageInfo() async =>
     AppInfo.fromPlatform().then((value) => appInfo = value);
 
 class AppInfo extends PackageInfo {
