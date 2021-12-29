@@ -246,6 +246,7 @@ abstract class SharedSettings {
   /// - If your type is nullable and initially null, provide null for [initialValue].
   ///
   /// - It is possible to not use the [SharedPreferences] object passed to [getSetting] and [setSetting] and instead write your own logic for storing a Setting.
+  @protected
   ValueNotifier<T> createSetting<T>({
     required String key,
     required T initialValue,
@@ -253,7 +254,7 @@ abstract class SharedSettings {
     SetSetting<T>? setSetting,
   }) {
     ValueNotifier<T> setting =
-        ValueNotifier<T>(_readSetting(key, initialValue, getSetting));
+    ValueNotifier<T>(_readSetting(key, initialValue, getSetting));
     setting.addListener(() => _writeSetting(key, setting.value, setSetting));
     _settings.add(_SharedSetting<T>(
       key: key,
@@ -266,6 +267,7 @@ abstract class SharedSettings {
 
   /// Creates an Enum Setting.
   /// The enum value is stored and read as by its `name` property.
+  @protected
   ValueNotifier<T> createEnumSetting<T extends Enum>({
     required String key,
     required T initialValue,
