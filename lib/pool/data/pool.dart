@@ -48,8 +48,7 @@ class Pool {
         postCount: json["post_count"],
       );
 
-  Map<String, dynamic> toMap() =>
-      {
+  Map<String, dynamic> toMap() => {
         "id": id,
         "name": name,
         "created_at": createdAt.toIso8601String(),

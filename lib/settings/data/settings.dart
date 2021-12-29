@@ -64,7 +64,7 @@ class Persistence extends SharedSettings {
 
   late final ValueNotifier<Map<String, List<HistoryEntry>>> history =
       createSetting(
-        key: 'history',
+    key: 'history',
     initialValue: {},
     getSetting: (prefs, key) {
       String? value = prefs.getString(key);
