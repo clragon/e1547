@@ -9,7 +9,7 @@
       <h4>A mobile app to browse e621 and e926.</h4>
       <a href="https://github.com/clragon/e1547/commits/master"><img src="https://badgen.net/github/commits/clragon/e1547"></a>
       <a href="https://github.com/clragon/e1547/commits/master"><img src="https://badgen.net/github/last-commit/clragon/e1547"></a>
-      <a href="blob/master/LICENSE"><img src="https://img.shields.io/github/license/clragon/e1547"><a>
+      <a href="blob/master/LICENSE"><img src="https://img.shields.io/github/license/clragon/e1547"></a>
       <a href="https://discord.gg/MRwKGqfmUz"><img src="https://img.shields.io/discord/763321712766877727.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2"></a>
     </td>
   </tr>
@@ -43,14 +43,24 @@
 
 v1.5.2 GIF by [Kritanta](https://github.com/KritantaDev) on iOS
 
+## Download
 
-## Download  
-  
-APK and IPA files can be found over at the [releases](https://github.com/clragon/e1547/releases/latest).  
+APK and IPA files can be found over at
+the [releases](https://github.com/clragon/e1547/releases/latest).
+
+You can also find the app on the Google PlayStore:
+
+<a href="https://play.google.com/store/apps/details?id=net.e1547">
+    <img src="https://github.com/steverichey/google-play-badge-svg/blob/master/img/en_get.svg" width="35%"/>
+</a>
 
 ## Installation
 
 ### Installing on Android
+
+- Install through the [Google PlayStore](https://play.google.com/store/apps/details?id=net.e1547)
+
+or
 
 1. Download the latest APK
 2. Open it on your Android device
