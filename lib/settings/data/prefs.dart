@@ -199,6 +199,15 @@ abstract class SharedSettings {
     throw SharedSettingsWriteError<T>();
   }
 
+  void _writeSetting<T>(String key, T value, SetSetting<T>? setSetting) async {
+    if (setSetting != null) {
+      setSetting(_prefs, key, value);
+    } else {
+      _SharedPrefsWriter<T>? serialize = _getReader<T>(_prefs);
+      await serialize?.call(key, value);
+    }
+  }
+
   _SharedPrefsWriter<T>? _getReader<T>(SharedPreferences prefs) {
     if (_typeMatch<String, T>()) {
       return prefs.setStringOrNull as _SharedPrefsWriter<T>;
@@ -224,15 +233,6 @@ abstract class SharedSettings {
       value = deserialize?.call(key);
     }
     return value ?? initialValue;
-  }
-
-  void _writeSetting<T>(String key, T value, SetSetting<T>? setSetting) async {
-    if (setSetting != null) {
-      setSetting(_prefs, key, value);
-    } else {
-      _SharedPrefsWriter<T>? serialize = _getReader<T>(_prefs);
-      await serialize?.call(key, value);
-    }
   }
 
   /// Creates a new Setting of type [T].
