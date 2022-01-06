@@ -11,12 +11,13 @@ class FollowsSplitPage extends StatefulWidget {
   _FollowsSplitPageState createState() => _FollowsSplitPageState();
 }
 
-class _FollowsSplitPageState extends State<FollowsSplitPage> with LinkingMixin {
+class _FollowsSplitPageState extends State<FollowsSplitPage>
+    with ListenerCallbackMixin {
   late RefreshController refreshController;
   ScrollController scrollController = ScrollController();
 
   @override
-  Map<ChangeNotifier, VoidCallback> get links => {
+  Map<ChangeNotifier, VoidCallback> get listeners => {
         followUpdater: updateRefresh,
       };
 

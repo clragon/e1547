@@ -22,7 +22,7 @@ class TextEditor extends StatefulWidget {
 }
 
 class _TextEditorState extends State<TextEditor>
-    with TickerProviderStateMixin, LinkingMixin {
+    with TickerProviderStateMixin, ListenerCallbackMixin {
   bool showBar = true;
   bool isLoading = false;
   late TextEditingController textController =

@@ -12,7 +12,7 @@ class FollowsCombinedPage extends StatefulWidget {
 }
 
 class _FollowsCombinedPageState extends State<FollowsCombinedPage>
-    with LinkingMixin {
+    with ListenerCallbackMixin {
   List<String?>? tags;
 
   PostController provider = PostController(
@@ -21,7 +21,7 @@ class _FollowsCombinedPageState extends State<FollowsCombinedPage>
   );
 
   @override
-  Map<ChangeNotifier, VoidCallback> get initLinks => {
+  Map<ChangeNotifier, VoidCallback> get initListeners => {
         settings.follows: updateTags,
       };
 

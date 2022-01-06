@@ -19,7 +19,7 @@ class SearchPage extends StatefulWidget {
   _SearchPageState createState() => _SearchPageState();
 }
 
-class _SearchPageState extends State<SearchPage> with LinkingMixin {
+class _SearchPageState extends State<SearchPage> with ListenerCallbackMixin {
   late bool reversePools = widget.reversePools;
   late PostController controller = PostController(
     search: widget.tags,
@@ -49,7 +49,7 @@ class _SearchPageState extends State<SearchPage> with LinkingMixin {
   }
 
   @override
-  Map<ChangeNotifier, VoidCallback> get initLinks => {
+  Map<ChangeNotifier, VoidCallback> get initListeners => {
         controller: updateTitle,
         controller.search: updatePool,
         settings.follows: updateFollows,

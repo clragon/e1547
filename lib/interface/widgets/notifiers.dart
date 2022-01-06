@@ -1,24 +1,24 @@
 import 'package:flutter/material.dart';
 
-mixin LinkingMixin<T extends StatefulWidget> on State<T> {
-  final Map<ChangeNotifier, VoidCallback> links = {};
-  final Map<ChangeNotifier, VoidCallback> initLinks = {};
+mixin ListenerCallbackMixin<T extends StatefulWidget> on State<T> {
+  final Map<Listenable, VoidCallback> listeners = {};
+  final Map<Listenable, VoidCallback> initListeners = {};
 
   @override
   void initState() {
     super.initState();
-    for (MapEntry<ChangeNotifier, VoidCallback> entry in initLinks.entries) {
+    for (MapEntry<Listenable, VoidCallback> entry in initListeners.entries) {
       entry.value();
       entry.key.addListener(entry.value);
     }
-    for (MapEntry<ChangeNotifier, VoidCallback> entry in links.entries) {
+    for (MapEntry<Listenable, VoidCallback> entry in listeners.entries) {
       entry.key.addListener(entry.value);
     }
   }
 
   @override
   void dispose() {
-    for (MapEntry<ChangeNotifier, VoidCallback> entry in initLinks.entries) {
+    for (MapEntry<Listenable, VoidCallback> entry in initListeners.entries) {
       entry.key.removeListener(entry.value);
     }
     super.dispose();

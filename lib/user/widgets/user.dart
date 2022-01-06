@@ -33,7 +33,7 @@ class UserPage extends StatefulWidget {
 }
 
 class _UserPageState extends State<UserPage>
-    with TickerProviderStateMixin, LinkingMixin {
+    with TickerProviderStateMixin, ListenerCallbackMixin {
   late PostController favoritePostController =
       PostController(search: 'fav:${widget.user.name}', canSearch: false);
   late PostController uploadPostController =
@@ -55,7 +55,7 @@ class _UserPageState extends State<UserPage>
   }
 
   @override
-  Map<ChangeNotifier, VoidCallback> get initLinks => {
+  Map<ChangeNotifier, VoidCallback> get initListeners => {
         settings.customHost: () => maybeAvatar = getAvatar(),
       };
 

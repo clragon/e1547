@@ -27,12 +27,12 @@ class RangeDialog extends StatefulWidget {
   _RangeDialogState createState() => _RangeDialogState();
 }
 
-class _RangeDialogState extends State<RangeDialog> with LinkingMixin {
+class _RangeDialogState extends State<RangeDialog> with ListenerCallbackMixin {
   final TextEditingController controller = TextEditingController();
   late int value = widget.value;
 
   @override
-  Map<ChangeNotifier, VoidCallback> get links => {
+  Map<ChangeNotifier, VoidCallback> get listeners => {
         controller: updateValue,
       };
 
