@@ -23,7 +23,7 @@ class CurrentUserAvatar extends StatefulWidget {
 }
 
 class _CurrentUserAvatarState extends State<CurrentUserAvatar>
-    with LinkingMixin {
+    with ListenerCallbackMixin {
   Future<Post?> avatar = client.currentAvatar;
 
   void updateAvatar() {
@@ -35,7 +35,7 @@ class _CurrentUserAvatarState extends State<CurrentUserAvatar>
   }
 
   @override
-  Map<ChangeNotifier, VoidCallback> get links => {
+  Map<ChangeNotifier, VoidCallback> get listeners => {
         settings.credentials: updateAvatar,
         settings.host: updateAvatar,
       };
@@ -55,7 +55,7 @@ class UserAvatar extends StatefulWidget {
   _UserAvatarState createState() => _UserAvatarState();
 }
 
-class _UserAvatarState extends State<UserAvatar> with LinkingMixin {
+class _UserAvatarState extends State<UserAvatar> with ListenerCallbackMixin {
   late Future<Post?> avatar = getAvatar();
 
   Future<Post?> getAvatar() async => await client.post(widget.id);

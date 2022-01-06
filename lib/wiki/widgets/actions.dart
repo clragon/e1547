@@ -17,14 +17,15 @@ class TagListActions extends StatefulWidget {
   }
 }
 
-class _TagListActionsState extends State<TagListActions> with LinkingMixin {
+class _TagListActionsState extends State<TagListActions>
+    with ListenerCallbackMixin {
   late List<String> denylist;
   late List<Follow> follows;
 
   final List<String> actionless = ['help:', 'e621:'];
 
   @override
-  Map<ChangeNotifier, VoidCallback> get initLinks => {
+  Map<ChangeNotifier, VoidCallback> get initListeners => {
         settings.denylist: updateLists,
         settings.follows: updateLists,
       };

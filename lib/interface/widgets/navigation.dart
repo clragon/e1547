@@ -144,9 +144,10 @@ class ProfileHeader extends StatefulWidget {
   }
 }
 
-class _ProfileHeaderState extends State<ProfileHeader> with LinkingMixin {
+class _ProfileHeaderState extends State<ProfileHeader>
+    with ListenerCallbackMixin {
   @override
-  Map<ChangeNotifier, VoidCallback> get initLinks => {
+  Map<ChangeNotifier, VoidCallback> get initListeners => {
         settings.credentials: () {
           if (mounted) {
             initAvatar(context);

@@ -22,11 +22,11 @@ class PostsPage extends StatefulWidget {
   State<StatefulWidget> createState() => _PostsPageState();
 }
 
-class _PostsPageState extends State<PostsPage> with LinkingMixin {
+class _PostsPageState extends State<PostsPage> with ListenerCallbackMixin {
   Set<Post> selections = {};
 
   @override
-  Map<ChangeNotifier, VoidCallback> get links => {
+  Map<ChangeNotifier, VoidCallback> get listeners => {
         widget.controller: updatePage,
       };
 

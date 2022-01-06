@@ -19,7 +19,8 @@ class PostDetail extends StatefulWidget {
   }
 }
 
-class _PostDetailState extends State<PostDetail> with LinkingMixin, RouteAware {
+class _PostDetailState extends State<PostDetail>
+    with ListenerCallbackMixin, RouteAware {
   SheetActionController sheetController = SheetActionController();
   bool keepPlaying = false;
 
@@ -27,7 +28,7 @@ class _PostDetailState extends State<PostDetail> with LinkingMixin, RouteAware {
   late ModalRoute route;
 
   @override
-  Map<ChangeNotifier, VoidCallback> get links => {
+  Map<ChangeNotifier, VoidCallback> get listeners => {
         widget.post: closeSheet,
         if (widget.controller != null) widget.controller!: onPageChange,
       };

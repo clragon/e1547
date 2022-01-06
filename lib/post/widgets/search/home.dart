@@ -11,11 +11,11 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> with LinkingMixin {
+class _HomePageState extends State<HomePage> with ListenerCallbackMixin {
   PostController controller = PostController(search: settings.homeTags.value);
 
   @override
-  Map<ChangeNotifier, VoidCallback> get links => {
+  Map<ChangeNotifier, VoidCallback> get listeners => {
         controller: update,
       };
 

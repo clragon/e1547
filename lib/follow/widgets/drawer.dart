@@ -11,12 +11,12 @@ class FollowMarkReadTile extends StatefulWidget {
 }
 
 class _FollowMarkReadTileState extends State<FollowMarkReadTile>
-    with LinkingMixin {
+    with ListenerCallbackMixin {
   late List<Follow> follows;
   late int unseen;
 
   @override
-  Map<ChangeNotifier, VoidCallback> get initLinks => {
+  Map<ChangeNotifier, VoidCallback> get initListeners => {
         settings.follows: update,
       };
 

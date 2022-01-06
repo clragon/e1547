@@ -13,13 +13,14 @@ class DenyListPage extends StatefulWidget {
   }
 }
 
-class _DenyListPageState extends State<DenyListPage> with LinkingMixin {
+class _DenyListPageState extends State<DenyListPage>
+    with ListenerCallbackMixin {
   List<String> denylist = [];
   SheetActionController sheetController = SheetActionController();
   RefreshController refreshController = RefreshController();
 
   @override
-  Map<ChangeNotifier, VoidCallback> get initLinks => {
+  Map<ChangeNotifier, VoidCallback> get initListeners => {
         settings.denylist: updateDenylist,
       };
 

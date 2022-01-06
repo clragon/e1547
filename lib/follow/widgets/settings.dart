@@ -12,7 +12,8 @@ class FollowingPage extends StatefulWidget {
   }
 }
 
-class _FollowingPageState extends State<FollowingPage> with LinkingMixin {
+class _FollowingPageState extends State<FollowingPage>
+    with ListenerCallbackMixin {
   SheetActionController sheetController = SheetActionController();
 
   late List<Follow> follows;
@@ -32,7 +33,7 @@ class _FollowingPageState extends State<FollowingPage> with LinkingMixin {
   }
 
   @override
-  Map<ChangeNotifier, VoidCallback> get initLinks => {
+  Map<ChangeNotifier, VoidCallback> get initListeners => {
         settings.follows: updateFollows,
         settings.host: updateSafety,
       };

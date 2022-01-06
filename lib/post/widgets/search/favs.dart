@@ -12,7 +12,7 @@ class FavPage extends StatefulWidget {
   _FavPageState createState() => _FavPageState();
 }
 
-class _FavPageState extends State<FavPage> with LinkingMixin {
+class _FavPageState extends State<FavPage> with ListenerCallbackMixin {
   bool orderFavorites = false;
   bool showSwitch = false;
   bool error = false;
@@ -21,7 +21,7 @@ class _FavPageState extends State<FavPage> with LinkingMixin {
   String? username;
 
   @override
-  Map<ChangeNotifier, VoidCallback> get initLinks => {
+  Map<ChangeNotifier, VoidCallback> get initListeners => {
         settings.credentials: updateUsername,
       };
 
