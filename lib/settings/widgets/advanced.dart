@@ -55,7 +55,7 @@ class _AdvancedSettingsPageState extends State<AdvancedSettingsPage> {
           ValueListenableBuilder<bool>(
             valueListenable: settings.muteVideos,
             builder: (context, value, child) => SwitchListTile(
-              title: Text('Mute videos'),
+              title: Text('Video volume'),
               subtitle: Text(value ? 'muted' : 'with sound'),
               secondary: Icon(value ? Icons.volume_off : Icons.volume_up),
               value: value,
