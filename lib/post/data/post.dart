@@ -424,7 +424,7 @@ class Flags {
 
 enum Rating { E, S, Q }
 
-final ratingValues = EnumValues({"e": Rating.E, "q": Rating.Q, "s": Rating.S});
+final ratingValues = EnumValues({"e": Rating.E, "q": Rating.Q, "s": Rating.S, "explicit": Rating.E, "questionable": Rating.Q, "safe": Rating.S});
 
 class Relationships {
   Relationships({
