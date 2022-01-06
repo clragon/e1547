@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:crypto/crypto.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
@@ -10,6 +11,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart'
     show DefaultCacheManager;
 import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:media_scanner/media_scanner.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import 'post.dart';
@@ -150,8 +152,12 @@ extension Downloading on Post {
         String filepath = [directory, filename].join('/');
         await Directory(directory).create();
         File target = File(filepath);
-        if (!await target.exists()) {
+
+        if (!await target.exists() ||
+            md5.convert(await download.readAsBytes()) !=
+                md5.convert(await target.readAsBytes())) {
           await download.copy(filepath);
+          MediaScanner.loadMedia(path: directory);
         }
       } else if (Platform.isIOS) {
         await ImageGallerySaver.saveFile(download.path);
