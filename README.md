@@ -41,7 +41,7 @@
   <img src="assets/screenshots/old/1547.gif">
 </p>
 
-v1.5.2 GIF by [Kritanta](https://github.com/KritantaDev) on iOS
+v1.5.2 GIF by [cynder](https://github.com/cxnder) on iOS
 
 ## Download
 
@@ -51,7 +51,7 @@ the [releases](https://github.com/clragon/e1547/releases/latest).
 You can also find the app on the Google PlayStore:
 
 <a href="https://play.google.com/store/apps/details?id=net.e1547">
-    <img src="https://github.com/steverichey/google-play-badge-svg/blob/master/img/en_get.svg" width="35%"/>
+    <img src="https://github.com/steverichey/google-play-badge-svg/blob/master/img/en_get.svg" width="30%"/>
 </a>
 
 ## Installation
@@ -120,7 +120,7 @@ I spend alot of time trying to build this app, so all support is welcome.
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/Q5Q22W6FW)
 
 #### Thanks to:  
-- [Kritanta](https://github.com/KritantaDev) for iOS publishing.
+- [cynder](https://github.com/cxnder) for iOS publishing.
     
 - [Miyoyo](https://github.com/miyoyo) for performance optimisations.
     
