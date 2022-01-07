@@ -103,7 +103,7 @@ class _SettingsPageState extends State<SettingsPage> {
             valueListenable: settings.theme,
             builder: (context, value, child) => ListTile(
               title: Text('Theme'),
-              subtitle: Text(describeEnum(value)),
+              subtitle: Text(value.name),
               leading: Icon(Icons.brightness_6),
               onTap: () {
                 showDialog(
@@ -116,7 +116,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         children: appThemeMap.keys
                             .map(
                               (theme) => ListTile(
-                                title: Text(describeEnum(theme)),
+                                title: Text(theme.name),
                                 trailing: Container(
                                   height: 28,
                                   width: 28,

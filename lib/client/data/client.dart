@@ -146,7 +146,7 @@ class Client {
     return _currentAvatar;
   }
 
-  Future<List<Post>> postsFromJson(List json) async {
+  Future<List<Post>> postsFromJson(List<dynamic> json) async {
     List<Post> posts = [];
     for (Map<String, dynamic> raw in json) {
       Post post = Post.fromMap(raw);
@@ -174,7 +174,7 @@ class Client {
             'page': page,
             'limit': limit,
           },
-          primaryKeyExtras: {
+      keyExtras: {
             'tags': tags,
           },
           forceRefresh: force,
@@ -202,10 +202,14 @@ class Client {
     Map<RegExp, Future<List<Post>> Function(RegExpMatch match, String? result)>
         regexes = {
       poolRegex(): (match, result) => poolPosts(
-          int.parse(match.namedGroup('id')!), page,
-          reverse: reversePools ?? false),
+            int.parse(match.namedGroup('id')!),
+            page,
+            reverse: reversePools ?? false,
+            force: force,
+          ),
       if (username != null)
-        favRegex(username): (match, result) => favorites(page, limit: limit),
+        favRegex(username): (match, result) =>
+            favorites(page, limit: limit, force: force),
     };
 
     for (MapEntry<
@@ -238,34 +242,50 @@ class Client {
     return (postsFromJson(body['posts']));
   }
 
-  Future<bool> addFavorite(int post) async {
+  Future<bool> addFavorite(int postId) async {
     if (!await isLoggedIn) {
       return false;
     }
+
+    await dio.clearCacheKey(
+      'posts/$postId.json',
+      cacheManager,
+    );
+
     return validateCall(
       () => dio.post('favorites.json', queryParameters: {
-        'post_id': post,
+        'post_id': postId,
       }),
     );
   }
 
-  Future<bool> removeFavorite(int post) async {
+  Future<bool> removeFavorite(int postId) async {
     if (!await isLoggedIn) {
       return false;
     }
 
+    await dio.clearCacheKey(
+      'posts/$postId.json',
+      cacheManager,
+    );
+
     return validateCall(
-      () => dio.delete('favorites/${post.toString()}.json'),
+      () => dio.delete('favorites/$postId.json'),
     );
   }
 
-  Future<bool> votePost(int post, bool upvote, bool replace) async {
+  Future<bool> votePost(int postId, bool upvote, bool replace) async {
     if (!await isLoggedIn) {
       return false;
     }
 
+    await dio.clearCacheKey(
+      'posts/$postId.json',
+      cacheManager,
+    );
+
     return validateCall(
-      () => dio.post('posts/${post.toString()}/votes.json', queryParameters: {
+      () => dio.post('posts/$postId/votes.json', queryParameters: {
         'score': upvote ? 1 : -1,
         'no_unvote': replace,
       }),
@@ -281,7 +301,7 @@ class Client {
             'search[name_matches]': search,
             'page': page,
           },
-          primaryKeyExtras: {
+      keyExtras: {
             'search[name_matches]': search,
           },
           forceRefresh: force,
@@ -309,8 +329,12 @@ class Client {
     return Pool.fromMap(body);
   }
 
-  Future<List<Post>> poolPosts(int poolId, int page,
-      {bool reverse = false, bool? force}) async {
+  Future<List<Post>> poolPosts(
+    int poolId,
+    int page, {
+    bool reverse = false,
+    bool? force,
+  }) async {
     Pool pool = await client.pool(poolId);
     List<int> ids = reverse ? pool.postIds.reversed.toList() : pool.postIds;
     int limit = 80;
@@ -423,7 +447,8 @@ class Client {
     await initialized;
     Map body = await dio
         .getWithCache(
-          'https://${(unsafe ? settings.customHost.value : settings.host.value)}/posts/${postId.toString()}.json',
+          (unsafe ? 'https://${settings.customHost.value}/' : '') +
+              'posts/$postId.json',
           cacheManager,
           forceRefresh: force,
         )
@@ -525,6 +550,11 @@ class Client {
         ]);
       }
 
+      await dio.clearCacheKey(
+        'posts/${update.id}.json',
+        cacheManager,
+      );
+
       await dio.put('posts/${update.id}.json', data: FormData.fromMap(body));
     }
   }
@@ -559,7 +589,7 @@ class Client {
             'page': page,
           },
           forceRefresh: force,
-          primaryKeyExtras: {
+      keyExtras: {
             'search[title]': search,
           },
         )
@@ -676,7 +706,7 @@ class Client {
             'page': page,
           },
           forceRefresh: force,
-          primaryKeyExtras: {
+      keyExtras: {
             'search[post_id]': postId,
           },
         )
@@ -692,10 +722,10 @@ class Client {
     return comments;
   }
 
-  Future<Comment> comment(int id, {bool? force}) async {
+  Future<Comment> comment(int commentId, {bool? force}) async {
     Map<String, dynamic> body = await dio
         .getWithCache(
-          'comments.json/$id.json',
+          'comments.json/$commentId.json',
           cacheManager,
           forceRefresh: force,
         )
@@ -704,17 +734,19 @@ class Client {
     return Comment.fromMap(body);
   }
 
-  Future<bool> voteComment(int comment, bool upvote, bool replace) async {
+  Future<bool> voteComment(int commentId, bool upvote, bool replace) async {
     if (!await isLoggedIn) {
       return false;
     }
 
     return validateCall(
-      () => dio
-          .post('comments/${comment.toString()}/votes.json', queryParameters: {
-        'score': upvote ? 1 : -1,
-        'no_unvote': replace,
-      }),
+      () => dio.post(
+        'comments/$commentId/votes.json',
+        queryParameters: {
+          'score': upvote ? 1 : -1,
+          'no_unvote': replace,
+        },
+      ),
     );
   }
 
@@ -722,13 +754,24 @@ class Client {
     if (!await isLoggedIn) {
       return;
     }
-    Map<String, String> body = {
+
+    await dio.clearCacheKey(
+      'comments.json',
+      cacheManager,
+      keyExtras: {
+        'search[post_id]': postId,
+      },
+    );
+
+    Map<String, dynamic> body = {
       'comment[body]': text,
-      'comment[post_id]': postId.toString(),
+      'comment[post_id]': postId,
       'commit': 'Submit',
     };
     Future request;
     if (comment != null) {
+      await dio.clearCacheKey('comments.json/${comment.id}.json', cacheManager);
+
       request = dio.patch('comments/${comment.id}.json',
           data: FormData.fromMap(body));
     } else {
@@ -761,7 +804,7 @@ class Client {
             'search[title_matches]': title,
           },
           forceRefresh: force,
-          primaryKeyExtras: {
+      keyExtras: {
             'search[title_matches]': title,
           },
         )
@@ -777,10 +820,10 @@ class Client {
     return threads;
   }
 
-  Future<Topic> topic(int id, {bool? force}) async {
+  Future<Topic> topic(int topicId, {bool? force}) async {
     Map<String, dynamic> body = await dio
         .getWithCache(
-          'forum_topics/$id.json',
+          'forum_topics/$topicId.json',
           cacheManager,
           forceRefresh: force,
         )
@@ -789,19 +832,19 @@ class Client {
     return Topic.fromMap(body);
   }
 
-  Future<List<Reply>> replies(int id, String page, {bool? force}) async {
+  Future<List<Reply>> replies(int topicId, String page, {bool? force}) async {
     var body = await dio
         .getWithCache(
           'forum_posts.json',
           cacheManager,
           queryParameters: {
             'commit': 'Search',
-            'search[topic_id]': id,
+            'search[topic_id]': topicId,
             'page': page,
           },
           forceRefresh: force,
-          primaryKeyExtras: {
-            'search[topic_id]': id,
+          keyExtras: {
+            'search[topic_id]': topicId,
           },
         )
         .then((response) => response.data);
@@ -816,10 +859,10 @@ class Client {
     return replies;
   }
 
-  Future<Reply> reply(int id, {bool? force}) async {
+  Future<Reply> reply(int replyId, {bool? force}) async {
     Map<String, dynamic> body = await dio
         .getWithCache(
-          'forum_posts/$id.json',
+          'forum_posts/$replyId.json',
           cacheManager,
           forceRefresh: force,
         )

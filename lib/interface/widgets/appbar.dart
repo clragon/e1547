@@ -6,7 +6,7 @@ import 'package:sliver_tools/sliver_tools.dart';
 
 const double kContentPadding = 4;
 
-double defaultAppBarHeight = kToolbarHeight + (kContentPadding * 2);
+double defaultAppBarHeight = kToolbarHeight + (kContentPadding);
 
 EdgeInsets defaultListPadding = EdgeInsets.all(kContentPadding);
 
@@ -39,53 +39,28 @@ class DefaultAppBar extends StatelessWidget with AppBarSize {
 
   @override
   Widget build(BuildContext context) {
-    return FloatingAppBarFrame(
-      elevation: elevation,
-      child: ScrollToTopScope(
-        height: kToolbarHeight,
-        controller: scrollController,
-        builder: (context, child) => AppBar(
-          leading: leading,
-          actions: actions,
-          title: IgnorePointer(child: title),
-          elevation: elevation,
-          automaticallyImplyLeading: automaticallyImplyLeading,
-          flexibleSpace: child,
-        ),
-      ),
-    );
-  }
-}
-
-class FloatingAppBarFrame extends StatelessWidget {
-  final Widget child;
-  final double? elevation;
-
-  const FloatingAppBarFrame({
-    required this.child,
-    this.elevation,
-  });
-
-  @override
-  Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: kContentPadding).add(
-        EdgeInsets.only(top: MediaQuery.of(context).padding.top),
+      padding: EdgeInsets.symmetric(horizontal: kContentPadding * 2).add(
+        EdgeInsets.only(
+            top: MediaQuery.of(context).padding.top + kContentPadding),
       ),
-      child: Card(
-        margin: EdgeInsets.all(kContentPadding),
-        color: Theme.of(context).appBarTheme.backgroundColor,
-        clipBehavior: Clip.antiAlias,
-        elevation: elevation ?? 5,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            MediaQuery.removePadding(
-              context: context,
-              removeTop: true,
-              child: child,
+      child: MediaQuery.removePadding(
+        context: context,
+        removeTop: true,
+        child: ScrollToTopScope(
+          height: kToolbarHeight,
+          controller: scrollController,
+          builder: (context, child) => AppBar(
+            leading: leading,
+            actions: actions,
+            title: IgnorePointer(child: title),
+            elevation: elevation,
+            automaticallyImplyLeading: automaticallyImplyLeading,
+            flexibleSpace: child,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(4)),
             ),
-          ],
+          ),
         ),
       ),
     );
@@ -224,9 +199,8 @@ class DefaultSliverAppBar extends StatelessWidget {
         SliverAppBar(
           elevation: 0,
           toolbarHeight: defaultAppBarHeight,
-          expandedHeight: expandedHeight != null
-              ? expandedHeight! + kContentPadding * 2
-              : null,
+          expandedHeight:
+              expandedHeight != null ? expandedHeight! + kContentPadding : null,
           bottom: bottom != null
               ? PreferredSize(
                   preferredSize: bottom!.preferredSize,
@@ -289,11 +263,6 @@ class DefaultSliverAppBar extends StatelessWidget {
                         : null,
                     bottom: bottom,
                   ),
-                ),
-              ),
-              SliverPadding(
-                padding: EdgeInsets.only(
-                  top: kContentPadding,
                 ),
               ),
             ],

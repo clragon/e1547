@@ -16,13 +16,16 @@ class PostDetailAppBar extends StatelessWidget with AppBarSize {
       animation: post,
       selector: () => [post.isEditing],
       builder: (context, child) => TransparentAppBar(
-        leading: IconButton(
-          icon: ShadowIcon(
-            post.isEditing ? Icons.clear : Icons.arrow_back,
-            color: Colors.white,
-          ),
-          onPressed: Navigator.of(context).maybePop,
-        ),
+        leading: post.isEditing
+            ? IconButton(
+                onPressed: Navigator.of(context).maybePop,
+                tooltip: 'Stop editing',
+                icon: ShadowIcon(
+                  Icons.clear,
+                  color: Colors.white,
+                ),
+              )
+            : ShadowBackButton(),
         actions: post.isEditing
             ? null
             : [

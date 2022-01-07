@@ -1,5 +1,6 @@
 import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
+import 'package:sliding_sheet/sliding_sheet.dart';
 
 class SheetActionController extends ActionController {
   PersistentBottomSheetController? sheetController;
@@ -131,4 +132,25 @@ class _SheetFloatingActionButtonState extends State<SheetFloatingActionButton> {
       ),
     );
   }
+}
+
+SlidingSheetDialog defaultSlidingSheetDialog(
+    BuildContext context, SheetBuilder builder) {
+  return SlidingSheetDialog(
+    duration: Duration(milliseconds: 400),
+    avoidStatusBar: true,
+    isBackdropInteractable: true,
+    cornerRadius: 16,
+    cornerRadiusOnFullscreen: 0,
+    minHeight: MediaQuery.of(context).size.height * 0.6,
+    builder: builder,
+    snapSpec: SnapSpec(
+      snap: true,
+      positioning: SnapPositioning.relativeToAvailableSpace,
+      snappings: [
+        0.6,
+        SnapSpec.expanded,
+      ],
+    ),
+  );
 }

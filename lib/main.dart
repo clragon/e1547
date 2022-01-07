@@ -14,7 +14,7 @@ Future<void> initialize() async {
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   await settings.initialize();
   await initializePackageInfo();
-  initializeDesktopCache();
+  initializeHttpCache();
 }
 
 class Main extends StatelessWidget {

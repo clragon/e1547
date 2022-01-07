@@ -72,7 +72,7 @@ class _TagListActionsState extends State<TagListActions>
               child: Icon(Icons.turned_in),
               secondChild: Icon(Icons.turned_in_not),
             ),
-            tooltip: following ? 'unfollow tag' : 'follow tag',
+            tooltip: following ? 'Unfollow tag' : 'Follow tag',
           ),
         ),
         CrossFade(
@@ -99,7 +99,7 @@ class _TagListActionsState extends State<TagListActions>
               child: Icon(Icons.check),
               secondChild: Icon(Icons.block),
             ),
-            tooltip: denied ? 'unblock tag' : 'block tag',
+            tooltip: denied ? 'Unblock tag' : 'Block tag',
           ),
         ),
       ],

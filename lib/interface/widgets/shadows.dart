@@ -19,6 +19,33 @@ class ShadowIcon extends StatelessWidget {
   }
 }
 
+IconData getPlatformBackIcon(BuildContext context) {
+  switch (Theme.of(context).platform) {
+    case TargetPlatform.android:
+    case TargetPlatform.fuchsia:
+    case TargetPlatform.linux:
+    case TargetPlatform.windows:
+      return Icons.arrow_back;
+    case TargetPlatform.iOS:
+    case TargetPlatform.macOS:
+      return Icons.arrow_back_ios;
+  }
+}
+
+class ShadowBackButton extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      onPressed: Navigator.of(context).maybePop,
+      tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+      icon: ShadowIcon(
+        getPlatformBackIcon(context),
+        color: Colors.white,
+      ),
+    );
+  }
+}
+
 List<Shadow> getTextShadows() {
   const double blur = 5;
   const double offset = 2;

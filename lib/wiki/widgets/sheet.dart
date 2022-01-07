@@ -1,3 +1,4 @@
+import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
@@ -13,28 +14,13 @@ void wikiSheet({
 }) {
   showSlidingBottomSheet(
     context,
-    builder: (BuildContext context) {
-      return SlidingSheetDialog(
-        duration: Duration(milliseconds: 400),
-        isBackdropInteractable: true,
-        cornerRadius: 16,
-        minHeight: MediaQuery.of(context).size.height * 0.6,
-        builder: (context, sheetState) {
-          return WikiSheet(
-            tag: tag,
-            controller: controller,
-          );
-        },
-        snapSpec: SnapSpec(
-          snap: true,
-          positioning: SnapPositioning.relativeToAvailableSpace,
-          snappings: [
-            0.6,
-            SnapSpec.expanded,
-          ],
-        ),
-      );
-    },
+    builder: (context) => defaultSlidingSheetDialog(
+      context,
+      (context, sheetState) => WikiSheet(
+        tag: tag,
+        controller: controller,
+      ),
+    ),
   );
 }
 

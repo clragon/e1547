@@ -1,4 +1,5 @@
 import 'package:e1547/dtext/dtext.dart';
+import 'package:e1547/interface/interface.dart';
 import 'package:e1547/pool/pool.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:e1547/tag/tag.dart';
@@ -12,27 +13,12 @@ import 'info.dart';
 void poolSheet(BuildContext context, Pool pool) {
   showSlidingBottomSheet(
     context,
-    builder: (BuildContext context) {
-      return SlidingSheetDialog(
-        duration: Duration(milliseconds: 400),
-        isBackdropInteractable: true,
-        cornerRadius: 16,
-        minHeight: MediaQuery.of(context).size.height * 0.6,
-        builder: (context, sheetState) {
-          return PoolSheet(
-            pool: pool,
-          );
-        },
-        snapSpec: SnapSpec(
-          snap: true,
-          positioning: SnapPositioning.relativeToAvailableSpace,
-          snappings: [
-            0.6,
-            SnapSpec.expanded,
-          ],
-        ),
-      );
-    },
+    builder: (context) => defaultSlidingSheetDialog(
+      context,
+      (context, sheetState) => PoolSheet(
+        pool: pool,
+      ),
+    ),
   );
 }
 

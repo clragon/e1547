@@ -13,13 +13,7 @@ class PostFullscreenAppBar extends StatelessWidget with AppBarSize {
   @override
   Widget build(BuildContext context) {
     return TransparentAppBar(
-      leading: IconButton(
-        icon: ShadowIcon(
-          Icons.arrow_back,
-          color: Colors.white,
-        ),
-        onPressed: Navigator.of(context).maybePop,
-      ),
+      leading: ShadowBackButton(),
       actions: post.isEditing
           ? null
           : [
