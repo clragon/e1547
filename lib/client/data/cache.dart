@@ -26,7 +26,6 @@ extension Caching on Dio {
     String? primaryKey;
     if (keyExtras != null) {
       primaryKey = RequestOptions(path: path).uri.host;
-      print(primaryKey);
       List<String> extras = [];
       for (MapEntry<String, dynamic> entry in keyExtras.entries) {
         if (entry.value != null) {
