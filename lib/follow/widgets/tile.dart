@@ -7,25 +7,11 @@ import 'package:e1547/tag/tag.dart';
 import 'package:e1547/wiki/wiki.dart';
 import 'package:flutter/material.dart';
 
-IconData getFollowIcon(FollowType type) {
-  switch (type) {
-    case FollowType.update:
-      return Icons.update;
-    case FollowType.notify:
-      return Icons.notifications_active;
-    case FollowType.bookmark:
-      return Icons.update_disabled;
-    default:
-      return Icons.warning;
-  }
-}
-
 class FollowTile extends StatefulWidget {
   final Follow follow;
   final bool safe;
 
-  FollowTile({required this.follow, required this.safe})
-      : super(key: UniqueKey());
+  FollowTile({required this.follow, required this.safe});
 
   @override
   _FollowTileState createState() => _FollowTileState();
@@ -219,7 +205,7 @@ class FollowListTile extends StatefulWidget {
     required this.onChangeBookmark,
     required this.onChangeNotify,
     required this.safe,
-  }) : super(key: UniqueKey());
+  });
 
   @override
   _FollowListTileState createState() => _FollowListTileState();
@@ -338,7 +324,7 @@ class _FollowListTileState extends State<FollowListTile> {
       onLongPress: () => wikiSheet(context: context, tag: widget.follow.tags),
       child: ListTile(
         title: Padding(
-          padding: EdgeInsets.all(8.0),
+          padding: EdgeInsets.all(8),
           child: Text(
             widget.follow.title,
             style: Theme.of(context).textTheme.headline6?.copyWith(
@@ -348,7 +334,7 @@ class _FollowListTileState extends State<FollowListTile> {
           ),
         ),
         subtitle: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 8.0),
+          padding: EdgeInsets.symmetric(horizontal: 8),
           child: Column(
             children: [
               if (widget.follow.tags.split(' ').length > 1)
@@ -392,7 +378,7 @@ class _FollowListTileState extends State<FollowListTile> {
             CrossFade(
               showChild: widget.follow.type != FollowType.update,
               child: Padding(
-                padding: EdgeInsets.all(8.0),
+                padding: EdgeInsets.all(8),
                 child: ShadowIcon(
                   getFollowIcon(widget.follow.type),
                   color: Colors.white,

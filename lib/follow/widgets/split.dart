@@ -14,7 +14,6 @@ class FollowsSplitPage extends StatefulWidget {
 class _FollowsSplitPageState extends State<FollowsSplitPage>
     with ListenerCallbackMixin {
   late RefreshController refreshController;
-  ScrollController scrollController = ScrollController();
 
   @override
   Map<ChangeNotifier, VoidCallback> get listeners => {
@@ -29,16 +28,18 @@ class _FollowsSplitPageState extends State<FollowsSplitPage>
   }
 
   Future<void> updateRefresh() async {
-    if (mounted) {
-      WidgetsBinding.instance!.addPostFrameCallback((_) async {
+    WidgetsBinding.instance!.addPostFrameCallback((_) async {
+      if (mounted) {
         if (refreshController.headerMode!.value == RefreshStatus.idle) {
           await refreshController.requestRefresh(
             needCallback: false,
             duration: Duration(milliseconds: 100),
           );
           await followUpdater.finish;
-          if (scrollController.hasClients) {
-            scrollController.animateTo(
+          ScrollController? scrollController =
+              PrimaryScrollController.of(context);
+          if (scrollController?.hasClients ?? false) {
+            scrollController?.animateTo(
               0,
               duration: defaultAnimationDuration,
               curve: Curves.easeInOut,
@@ -50,8 +51,8 @@ class _FollowsSplitPageState extends State<FollowsSplitPage>
             refreshController.refreshFailed();
           }
         }
-      });
-    }
+      }
+    });
   }
 
   @override
@@ -76,55 +77,57 @@ class _FollowsSplitPageState extends State<FollowsSplitPage>
         valueListenable: settings.follows,
         builder: (context, follows, child) => ValueListenableBuilder(
           valueListenable: settings.host,
-          builder: (context, host, child) => RefreshablePageLoader(
-            scrollController: scrollController,
-            onEmpty: Text('No follows'),
-            onLoading: Text('Loading follows'),
-            onError: Text('Failed to load follows'),
-            isError: false,
-            isLoading: false,
-            isEmpty: follows.isEmpty,
-            refreshController: refreshController,
-            refreshHeader: ValueListenableBuilder(
-              valueListenable: followUpdater.progress,
-              builder: (context, progress, child) =>
-                  RefreshablePageDefaultHeader(
-                refreshingText: 'Refreshing $progress / ${follows.length}...',
+          builder: (context, host, child) => AnimatedBuilder(
+            animation: followUpdater,
+            builder: (context, child) => RefreshablePageLoader(
+              onEmpty: Text('No follows'),
+              onLoading: Text('Loading follows'),
+              onError: Text('Failed to load follows'),
+              isError: false,
+              isLoading: false,
+              isEmpty: follows.isEmpty,
+              refreshController: refreshController,
+              refreshHeader: ValueListenableBuilder(
+                valueListenable: followUpdater.progress,
+                builder: (context, progress, child) =>
+                    RefreshablePageDefaultHeader(
+                  refreshingText: 'Refreshing $progress / ${follows.length}...',
+                ),
               ),
-            ),
-            builder: (context) => StaggeredGridView.countBuilder(
-              key: joinKeys(['follows', tileBuilder, crossAxisCount]),
-              padding: defaultListPadding,
-              addAutomaticKeepAlives: false,
-              crossAxisCount: crossAxisCount,
-              itemCount: follows.length,
-              itemBuilder: (context, index) =>
-                  FollowTile(follow: follows[index], safe: client.isSafe),
-              staggeredTileBuilder: tileBuilder,
-              physics: BouncingScrollPhysics(),
-            ),
-            appBar: DefaultAppBar(
-              title: Text('Following'),
-              actions: [
-                ContextDrawerButton(),
-              ],
-            ),
-            refresh: () async {
-              if (await validateCall(() => refreshFollows(force: true))) {
-                refreshController.refreshCompleted();
-              } else {
-                refreshController.refreshFailed();
-              }
-            },
-            drawer: NavigationDrawer(),
-            endDrawer: ContextDrawer(
-              title: Text('Follows'),
-              children: [
-                FollowSplitSwitchTile(),
-                FollowMarkReadTile(),
-                Divider(),
-                FollowSettingsTile(),
-              ],
+              builder: (context) => StaggeredGridView.countBuilder(
+                key: joinKeys(['follows', tileBuilder, crossAxisCount]),
+                padding: defaultListPadding,
+                addAutomaticKeepAlives: false,
+                crossAxisCount: crossAxisCount,
+                itemCount: follows.length,
+                itemBuilder: (context, index) =>
+                    FollowTile(follow: follows[index], safe: client.isSafe),
+                staggeredTileBuilder: tileBuilder,
+                physics: BouncingScrollPhysics(),
+              ),
+              appBar: DefaultAppBar(
+                title: Text('Following'),
+                actions: [
+                  ContextDrawerButton(),
+                ],
+              ),
+              refresh: () async {
+                if (await validateCall(() => refreshFollows(force: true))) {
+                  refreshController.refreshCompleted();
+                } else {
+                  refreshController.refreshFailed();
+                }
+              },
+              drawer: NavigationDrawer(),
+              endDrawer: ContextDrawer(
+                title: Text('Follows'),
+                children: [
+                  FollowSplitSwitchTile(),
+                  FollowMarkReadTile(),
+                  Divider(),
+                  FollowSettingsTile(),
+                ],
+              ),
             ),
           ),
         ),

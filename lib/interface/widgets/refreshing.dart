@@ -35,7 +35,6 @@ class RefreshableControllerPage<T extends RefreshableController>
       endDrawer: endDrawer,
       appBar: appBar,
       floatingActionButton: floatingActionButton,
-      scrollController: scrollController,
       refreshController: controller.refreshController,
       refresh: () => controller.refresh(background: true, force: true),
     );
@@ -125,7 +124,6 @@ class RefreshablePageLoader extends StatelessWidget {
           return RefreshablePage.pageBuilder(
             builder: (context) => child,
             refreshController: refreshController,
-            scrollController: scrollController,
             refreshHeader: refreshHeader,
             refresh: refresh,
             pageBuilder: pageBuilder,
@@ -134,7 +132,6 @@ class RefreshablePageLoader extends StatelessWidget {
           return RefreshablePage(
             builder: (context) => child,
             refreshController: refreshController,
-            scrollController: scrollController,
             refreshHeader: refreshHeader,
             refresh: refresh,
             appBar: appBar,
@@ -158,7 +155,6 @@ class RefreshablePage extends StatefulWidget {
   final bool extendBodyBehindAppBar;
   final PreferredSizeWidget? appBar;
   final RefreshController? refreshController;
-  final ScrollController? scrollController;
   final VoidCallback refresh;
   final Scaffold Function(BuildContext context, Widget child)? pageBuilder;
 
@@ -167,7 +163,6 @@ class RefreshablePage extends StatefulWidget {
     required this.builder,
     this.appBar,
     this.refreshController,
-    this.scrollController,
     this.refreshHeader,
     this.drawer,
     this.endDrawer,
@@ -180,7 +175,6 @@ class RefreshablePage extends StatefulWidget {
     required this.refresh,
     this.builder,
     this.refreshController,
-    this.scrollController,
     this.refreshHeader,
   })  : appBar = null,
         extendBodyBehindAppBar = false,

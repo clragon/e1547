@@ -188,7 +188,10 @@ class _FollowingPageState extends State<FollowingPage>
           ),
         ],
       ),
-      body: body(),
+      body: AnimatedBuilder(
+        animation: followUpdater,
+        builder: (context, child) => body(),
+      ),
       floatingActionButton: Builder(
         builder: (context) => AnimatedBuilder(
           animation: sheetController,
