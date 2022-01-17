@@ -50,7 +50,7 @@ the [releases](https://github.com/clragon/e1547/releases/latest).
 
 You can also find the app on the Google PlayStore:
 
-<a href="https://play.google.com/store/apps/details?id=net.e1547">
+<a href="https://play.google.com/store/apps/details?id=net.e1547&referrer=utm_source%3Dgithub%26utm_medium%3Dbutton%26utm_campaign%3Dgithub%2520readme%2520button">
     <img src="https://github.com/steverichey/google-play-badge-svg/blob/master/img/en_get.svg" width="30%"/>
 </a>
 
@@ -58,7 +58,7 @@ You can also find the app on the Google PlayStore:
 
 ### Installing on Android
 
-- Install through the [Google PlayStore](https://play.google.com/store/apps/details?id=net.e1547)
+- Install through the [Google PlayStore](https://play.google.com/store/apps/details?id=net.e1547&referrer=utm_source%3Dgithub%26utm_medium%3Dbutton%26utm_campaign%3Dgithub%2520readme%2520instructions)
 
 or
 
