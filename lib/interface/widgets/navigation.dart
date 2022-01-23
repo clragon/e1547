@@ -13,8 +13,8 @@ import 'package:flutter/material.dart';
 final NavigationController navigationController =
     NavigationController(destinations: destinations);
 
-NavigationDrawer defaultNavigationDrawer() => NavigationDrawer(
-    controller: navigationController, header: currentProfileHeader);
+NavigationDrawer defaultNavigationDrawer() =>
+    NavigationDrawer(controller: navigationController);
 
 double defaultDrawerEdge(double screenWidth) => screenWidth * 0.1;
 
@@ -168,16 +168,13 @@ List<NavigationDestination<DrawerSelection>> destinations = [
 
 class NavigationDrawer<UniqueRoute extends Enum> extends StatelessWidget {
   final NavigationController<UniqueRoute> controller;
-  final Widget? header;
 
-  const NavigationDrawer({required this.controller, this.header});
+  const NavigationDrawer({required this.controller});
 
   @override
   Widget build(BuildContext context) {
     List<Widget> children = [];
-    if (header != null) {
-      children.add(header!);
-    }
+    children.add(ProfileHeader());
 
     String? currentGroup = controller.destinations.first.group;
 
@@ -211,8 +208,6 @@ class NavigationDrawer<UniqueRoute extends Enum> extends StatelessWidget {
     );
   }
 }
-
-ProfileHeader currentProfileHeader = ProfileHeader();
 
 class ProfileHeader extends StatefulWidget {
   @override
