@@ -49,17 +49,18 @@ class _PostFullscreenGalleryState extends State<PostFullscreenGallery>
   }
 
   @override
-  void dispose() {
-    routeObserver.unsubscribe(this);
-    frameController.dispose();
-    SystemChrome.setSystemUIChangeCallback(null);
-    super.dispose();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    navigationController.routeObserver
+        .subscribe(this, ModalRoute.of(context) as PageRoute);
   }
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    routeObserver.subscribe(this, ModalRoute.of(context) as PageRoute);
+  void dispose() {
+    navigationController.routeObserver.unsubscribe(this);
+    frameController.dispose();
+    SystemChrome.setSystemUIChangeCallback(null);
+    super.dispose();
   }
 
   @override

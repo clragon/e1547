@@ -115,7 +115,7 @@ class _PostsPageState extends State<PostsPage> with ListenerCallbackMixin {
                   selections: selections,
                   onChanged: onChanged,
                   onSelectAll: () => widget.controller.itemList!.toSet()),
-          drawer: NavigationDrawer(),
+          drawer: defaultNavigationDrawer(),
           endDrawer: endDrawer(),
           floatingActionButton: floatingActionButton(),
           refresh: () =>

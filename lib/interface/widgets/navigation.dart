@@ -10,11 +10,58 @@ import 'package:e1547/topic/topic.dart';
 import 'package:e1547/user/user.dart';
 import 'package:flutter/material.dart';
 
-final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
+final NavigationController navigationController =
+    NavigationController(destinations: destinations);
+
+NavigationDrawer defaultNavigationDrawer() => NavigationDrawer(
+    controller: navigationController, header: currentProfileHeader);
 
 double defaultDrawerEdge(double screenWidth) => screenWidth * 0.1;
 
-DrawerSelection drawerSelection = DrawerSelection.home;
+class NavigationDestination<UniqueRoute extends Enum> {
+  final String path;
+  final WidgetBuilder builder;
+  final UniqueRoute? route;
+  final String? name;
+  final Widget? icon;
+  final String? group;
+
+  const NavigationDestination({
+    this.name,
+    this.icon,
+    this.group,
+    required this.path,
+    required this.builder,
+    this.route,
+  });
+}
+
+class NavigationController<UniqueRoute extends Enum> {
+  final List<NavigationDestination<UniqueRoute>> destinations;
+  late final Map<String, WidgetBuilder> routes;
+
+  final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
+
+  late UniqueRoute drawerSelection;
+
+  NavigationController({required this.destinations}) {
+    drawerSelection =
+        destinations.singleWhere((element) => element.path == '/').route!;
+    routes = Map.fromEntries(
+      destinations.map(
+        (e) => MapEntry(
+          e.path,
+          e.route != null
+              ? (context) {
+                  drawerSelection = e.route!;
+                  return e.builder(context);
+                }
+              : e.builder,
+        ),
+      ),
+    );
+  }
+}
 
 enum DrawerSelection {
   home,
@@ -25,119 +72,147 @@ enum DrawerSelection {
   topics,
 }
 
-Map<String, WidgetBuilder> routes = <String, WidgetBuilder>{
-  '/': (context) => () {
-        drawerSelection = DrawerSelection.home;
-        return HomePage();
-      }(),
-  '/hot': (context) => () {
-        drawerSelection = DrawerSelection.hot;
-        return HotPage();
-      }(),
-  '/search': (context) => SearchPage(),
-  '/fav': (context) => () {
-        drawerSelection = DrawerSelection.favorites;
-        return FavPage();
-      }(),
-  '/follows': (context) => () {
-        drawerSelection = DrawerSelection.follows;
-        return FollowsPage();
-      }(),
-  '/pools': (context) => () {
-        drawerSelection = DrawerSelection.pools;
-        return PoolsPage();
-      }(),
-  '/topics': (context) => () {
-        drawerSelection = DrawerSelection.topics;
-        return TopicsPage();
-      }(),
-  '/login': (context) => LoginPage(),
-  '/settings': (context) => SettingsPage(),
-  '/about': (context) => AboutPage(),
-  '/blacklist': (context) => DenyListPage(),
-  '/following': (context) => FollowingPage(),
-  '/history': (context) => HistoryPage(),
-};
+enum DrawerGroup {
+  search,
+  collection,
+  settings,
+}
 
-ProfileHeader header = ProfileHeader();
+List<NavigationDestination<DrawerSelection>> destinations = [
+  NavigationDestination(
+    path: '/',
+    name: 'Home',
+    icon: Icon(Icons.home),
+    builder: (context) => HomePage(),
+    route: DrawerSelection.home,
+    group: DrawerGroup.search.name,
+  ),
+  NavigationDestination(
+    path: '/hot',
+    name: 'Hot',
+    icon: Icon(Icons.whatshot),
+    builder: (context) => HotPage(),
+    route: DrawerSelection.hot,
+    group: DrawerGroup.search.name,
+  ),
+  NavigationDestination(
+    path: '/search',
+    name: 'Search',
+    icon: Icon(Icons.search),
+    builder: (context) => SearchPage(),
+    group: DrawerGroup.search.name,
+  ),
+  NavigationDestination(
+    path: '/fav',
+    name: 'Favorites',
+    icon: Icon(Icons.favorite),
+    builder: (context) => FavPage(),
+    route: DrawerSelection.favorites,
+    group: DrawerGroup.collection.name,
+  ),
+  NavigationDestination(
+    path: '/follows',
+    name: 'Follows',
+    icon: Icon(Icons.turned_in),
+    builder: (context) => FollowsPage(),
+    route: DrawerSelection.follows,
+    group: DrawerGroup.collection.name,
+  ),
+  NavigationDestination(
+    path: '/pools',
+    name: 'Pools',
+    icon: Icon(Icons.collections),
+    builder: (context) => PoolsPage(),
+    route: DrawerSelection.pools,
+    group: DrawerGroup.collection.name,
+  ),
+  NavigationDestination(
+    path: '/topics',
+    name: 'Forum',
+    icon: Icon(Icons.forum),
+    builder: (context) => TopicsPage(),
+    route: DrawerSelection.topics,
+    group: DrawerGroup.collection.name,
+  ),
+  NavigationDestination(
+    path: '/settings',
+    name: 'Settings',
+    icon: Icon(Icons.settings),
+    builder: (context) => SettingsPage(),
+    group: DrawerGroup.settings.name,
+  ),
+  NavigationDestination(
+    path: '/about',
+    name: 'About',
+    icon: DrawerUpdateIcon(),
+    builder: (context) => AboutPage(),
+    group: DrawerGroup.settings.name,
+  ),
+  NavigationDestination(
+    path: '/login',
+    builder: (context) => LoginPage(),
+  ),
+  NavigationDestination(
+    path: '/blacklist',
+    builder: (context) => DenyListPage(),
+  ),
+  NavigationDestination(
+    path: '/following',
+    builder: (context) => FollowingPage(),
+  ),
+  NavigationDestination(
+    path: '/history',
+    builder: (context) => HistoryPage(),
+  ),
+];
 
-class NavigationDrawer extends StatelessWidget {
+class NavigationDrawer<UniqueRoute extends Enum> extends StatelessWidget {
+  final NavigationController<UniqueRoute> controller;
+  final Widget? header;
+
+  const NavigationDrawer({required this.controller, this.header});
+
   @override
   Widget build(BuildContext context) {
+    List<Widget> children = [];
+    if (header != null) {
+      children.add(header!);
+    }
+
+    String? currentGroup = controller.destinations.first.group;
+
+    for (var destination in controller.destinations) {
+      if (destination.name == null) {
+        break;
+      }
+      if (destination.group != currentGroup) {
+        currentGroup = destination.group;
+        children.add(const Divider());
+      }
+      children.add(ListTile(
+        selected: destination.route != null &&
+            destination.route == controller.drawerSelection,
+        title: Text(destination.name!),
+        leading: destination.icon != null ? destination.icon : null,
+        onTap: destination.route != null
+            ? () => Navigator.of(context)
+                .pushNamedAndRemoveUntil(destination.path, (_) => false)
+            : () => Navigator.of(context).popAndPushNamed(destination.path),
+      ));
+    }
+
     return Drawer(
-      child: ListView(
-        children: [
-          header,
-          ListTile(
-            selected: drawerSelection == DrawerSelection.home,
-            leading: Icon(Icons.home),
-            title: Text('Home'),
-            onTap: () => Navigator.of(context)
-                .pushNamedAndRemoveUntil('/', (_) => false),
-          ),
-          ListTile(
-            selected: drawerSelection == DrawerSelection.hot,
-            leading: Icon(Icons.whatshot),
-            title: Text('Hot'),
-            onTap: () => Navigator.of(context)
-                .pushNamedAndRemoveUntil('/hot', (_) => false),
-          ),
-          ListTile(
-            leading: Icon(Icons.search),
-            title: Text("Search"),
-            onTap: () => Navigator.popAndPushNamed(context, '/search'),
-          ),
-          Divider(),
-          ListTile(
-            selected: drawerSelection == DrawerSelection.favorites,
-            leading: Icon(Icons.favorite),
-            title: Text('Favorites'),
-            onTap: () => guardWithLogin(
-              context: context,
-              callback: () => Navigator.of(context)
-                  .pushNamedAndRemoveUntil('/fav', (_) => false),
-              error: 'You must be logged in to see your favorites',
-            ),
-          ),
-          ListTile(
-            selected: drawerSelection == DrawerSelection.follows,
-            leading: Icon(Icons.turned_in),
-            title: Text('Following'),
-            onTap: () => Navigator.of(context)
-                .pushNamedAndRemoveUntil('/follows', (_) => false),
-          ),
-          // Divider(),
-          ListTile(
-            selected: drawerSelection == DrawerSelection.pools,
-            leading: Icon(Icons.collections),
-            title: Text('Pools'),
-            onTap: () => Navigator.of(context)
-                .pushNamedAndRemoveUntil('/pools', (_) => false),
-          ),
-          if (settings.showBeta.value)
-            ListTile(
-              selected: drawerSelection == DrawerSelection.topics,
-              leading: Icon(Icons.forum),
-              title: Text('Topics'),
-              onTap: () => Navigator.of(context)
-                  .pushNamedAndRemoveUntil('/topics', (_) => false),
-            ),
-          Divider(),
-          ListTile(
-            leading: Icon(Icons.settings),
-            title: Text('Settings'),
-            onTap: () => Navigator.popAndPushNamed(context, '/settings'),
-          ),
-          ListTile(
-            leading: DrawerUpdateIcon(),
-            title: Text('About'),
-            onTap: () => Navigator.popAndPushNamed(context, '/about'),
-          ),
-        ],
+      child: PrimaryScrollController(
+        controller: ScrollController(),
+        child: ListView(
+          children: children,
+        ),
       ),
     );
   }
 }
+
+ProfileHeader currentProfileHeader = ProfileHeader();
 
 class ProfileHeader extends StatefulWidget {
   @override
@@ -184,35 +259,33 @@ class _ProfileHeaderState extends State<ProfileHeader>
       );
     }
 
-    return SizedBox(
-      child: ValueListenableBuilder<Credentials?>(
-        valueListenable: settings.credentials,
-        builder: (context, value, child) => DrawerHeader(
-          child: GestureDetector(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                SizedBox(
-                  height: 72,
-                  width: 72,
-                  child: CurrentUserAvatar(),
+    return ValueListenableBuilder<Credentials?>(
+      valueListenable: settings.credentials,
+      builder: (context, value, child) => DrawerHeader(
+        child: GestureDetector(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              SizedBox(
+                height: 72,
+                width: 72,
+                child: CurrentUserAvatar(),
+              ),
+              Expanded(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20),
+                  child: userNameWidget(value?.username),
                 ),
-                Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20),
-                    child: userNameWidget(value?.username),
-                  ),
-                ),
-              ],
-            ),
-            onTap: value?.username != null
-                ? () => Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => UserLoadingPage(value!.username),
-                      ),
-                    )
-                : null,
+              ),
+            ],
           ),
+          onTap: value?.username != null
+              ? () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => UserLoadingPage(value!.username),
+                    ),
+                  )
+              : null,
         ),
       ),
     );

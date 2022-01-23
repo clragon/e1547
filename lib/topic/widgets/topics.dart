@@ -26,7 +26,7 @@ class _TopicsPageState extends State<TopicsPage> {
           submit: (value) => controller.search.value = value,
         ),
       ),
-      drawer: NavigationDrawer(),
+      drawer: defaultNavigationDrawer(),
       controller: controller,
       builder: (context) => PagedListView(
         padding: defaultListPadding,

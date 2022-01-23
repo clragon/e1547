@@ -10,18 +10,21 @@ class ContextDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      child: ListTileTheme(
-        style: ListTileStyle.list,
-        child: Scaffold(
-          appBar: title != null
-              ? DefaultAppBar(
-                  elevation: 0,
-                  title: title,
-                  automaticallyImplyLeading: false,
-                )
-              : null,
-          body: ListView(
-            children: children,
+      child: PrimaryScrollController(
+        controller: ScrollController(),
+        child: ListTileTheme(
+          style: ListTileStyle.list,
+          child: Scaffold(
+            appBar: title != null
+                ? DefaultAppBar(
+                    elevation: 0,
+                    title: title,
+                    automaticallyImplyLeading: false,
+                  )
+                : null,
+            body: ListView(
+              children: children,
+            ),
           ),
         ),
       ),

@@ -31,7 +31,7 @@ class _PoolsPageState extends State<PoolsPage> {
           submit: (value) => controller.search.value = value,
         ),
       ),
-      drawer: NavigationDrawer(),
+      drawer: defaultNavigationDrawer(),
       controller: controller,
       builder: (context) => PagedListView(
         padding: defaultListPadding,

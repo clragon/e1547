@@ -28,8 +28,8 @@ class Main extends StatelessWidget {
               child: MaterialApp(
                 title: appInfo.appName,
                 theme: appThemeMap[value],
-                routes: routes,
-                navigatorObservers: [routeObserver],
+                routes: navigationController.routes,
+                navigatorObservers: [navigationController.routeObserver],
                 scrollBehavior: BouncingScrollBehaviour(),
               ),
             ),

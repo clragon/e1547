@@ -100,7 +100,7 @@ class _UserPageState extends State<UserPage>
     };
 
     return Scaffold(
-      drawer: NavigationDrawer(),
+      drawer: defaultNavigationDrawer(),
       endDrawer: ContextDrawer(
         title: Text('Posts'),
         children: [
