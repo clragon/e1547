@@ -175,7 +175,6 @@ class _PostsPageHeadlessState extends State<PostsPageHeadless> {
         },
       ),
       builder: (context, crossAxisCount, tileBuilder) => PagedStaggeredGridView(
-        physics: BouncingScrollPhysics(),
         key: joinKeys(['posts', crossAxisCount]),
         showNewPageErrorIndicatorAsGridChild: false,
         showNewPageProgressIndicatorAsGridChild: false,

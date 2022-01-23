@@ -17,7 +17,6 @@ class _AdvancedSettingsPageState extends State<AdvancedSettingsPage> {
       ),
       body: ListView(
         padding: defaultActionListPadding,
-        physics: BouncingScrollPhysics(),
         children: [
           SettingsHeader(title: 'Server'),
           ValueListenableBuilder<bool>(

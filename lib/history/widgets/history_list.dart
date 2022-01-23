@@ -46,7 +46,6 @@ class _HistoryPageState extends State<HistoryPage> {
             body: GroupedListView<HistoryEntry, DateTime>(
               elements: history,
               order: GroupedListOrder.DESC,
-              physics: BouncingScrollPhysics(),
               controller: PrimaryScrollController.of(context),
               groupBy: (element) => element.visitedAt.stripTime(),
               groupHeaderBuilder: (element) {

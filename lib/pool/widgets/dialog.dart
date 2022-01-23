@@ -48,7 +48,6 @@ class PoolDialog extends StatelessWidget {
               PoolInfo(pool: pool),
             ],
           ),
-          physics: BouncingScrollPhysics(),
         ),
       );
     }

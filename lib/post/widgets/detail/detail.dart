@@ -198,7 +198,6 @@ class _PostDetailState extends State<PostDetail>
               removeTop: true,
               child: LayoutBuilder(
                 builder: (context, constraints) => ListView(
-                  physics: BouncingScrollPhysics(),
                   padding: EdgeInsets.only(
                     top: MediaQuery.of(context).padding.top,
                     bottom: kBottomNavigationBarHeight + 24,

@@ -123,7 +123,21 @@ final Map<AppTheme, ThemeData> appThemeMap = {
   ),
 };
 
-class DesktopDragScrollBehaviour extends ScrollBehavior {
+class BouncingScrollBehaviour extends ScrollBehavior {
   @override
   Set<PointerDeviceKind> get dragDevices => PointerDeviceKind.values.toSet();
+
+  @override
+  ScrollPhysics getScrollPhysics(BuildContext context) {
+    switch (getPlatform(context)) {
+      case TargetPlatform.iOS:
+      case TargetPlatform.macOS:
+      case TargetPlatform.android:
+      case TargetPlatform.windows:
+        return const BouncingScrollPhysics();
+      case TargetPlatform.fuchsia:
+      case TargetPlatform.linux:
+        return const ClampingScrollPhysics();
+    }
+  }
 }

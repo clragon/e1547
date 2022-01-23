@@ -174,7 +174,7 @@ class Client {
             'page': page,
             'limit': limit,
           },
-      keyExtras: {
+          keyExtras: {
             'tags': tags,
           },
           forceRefresh: force,

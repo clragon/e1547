@@ -119,7 +119,6 @@ class _UserPageState extends State<UserPage>
         ],
       ),
       body: NestedScrollView(
-        physics: BouncingScrollPhysics(),
         headerSliverBuilder: (context, innerBoxIsScrolled) => [
           DefaultSliverAppBar(
             pinned: true,

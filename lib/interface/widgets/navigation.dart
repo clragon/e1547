@@ -65,74 +65,76 @@ class NavigationDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      child: ListView(physics: BouncingScrollPhysics(), children: [
-        header,
-        ListTile(
-          selected: drawerSelection == DrawerSelection.home,
-          leading: Icon(Icons.home),
-          title: Text('Home'),
-          onTap: () =>
-              Navigator.of(context).pushNamedAndRemoveUntil('/', (_) => false),
-        ),
-        ListTile(
-          selected: drawerSelection == DrawerSelection.hot,
-          leading: Icon(Icons.whatshot),
-          title: Text('Hot'),
-          onTap: () => Navigator.of(context)
-              .pushNamedAndRemoveUntil('/hot', (_) => false),
-        ),
-        ListTile(
-          leading: Icon(Icons.search),
-          title: Text("Search"),
-          onTap: () => Navigator.popAndPushNamed(context, '/search'),
-        ),
-        Divider(),
-        ListTile(
-          selected: drawerSelection == DrawerSelection.favorites,
-          leading: Icon(Icons.favorite),
-          title: Text('Favorites'),
-          onTap: () => guardWithLogin(
-            context: context,
-            callback: () => Navigator.of(context)
-                .pushNamedAndRemoveUntil('/fav', (_) => false),
-            error: 'You must be logged in to see your favorites',
-          ),
-        ),
-        ListTile(
-          selected: drawerSelection == DrawerSelection.follows,
-          leading: Icon(Icons.turned_in),
-          title: Text('Following'),
-          onTap: () => Navigator.of(context)
-              .pushNamedAndRemoveUntil('/follows', (_) => false),
-        ),
-        // Divider(),
-        ListTile(
-          selected: drawerSelection == DrawerSelection.pools,
-          leading: Icon(Icons.collections),
-          title: Text('Pools'),
-          onTap: () => Navigator.of(context)
-              .pushNamedAndRemoveUntil('/pools', (_) => false),
-        ),
-        if (settings.showBeta.value)
+      child: ListView(
+        children: [
+          header,
           ListTile(
-            selected: drawerSelection == DrawerSelection.topics,
-            leading: Icon(Icons.forum),
-            title: Text('Topics'),
+            selected: drawerSelection == DrawerSelection.home,
+            leading: Icon(Icons.home),
+            title: Text('Home'),
             onTap: () => Navigator.of(context)
-                .pushNamedAndRemoveUntil('/topics', (_) => false),
+                .pushNamedAndRemoveUntil('/', (_) => false),
           ),
-        Divider(),
-        ListTile(
-          leading: Icon(Icons.settings),
-          title: Text('Settings'),
-          onTap: () => Navigator.popAndPushNamed(context, '/settings'),
-        ),
-        ListTile(
-          leading: DrawerUpdateIcon(),
-          title: Text('About'),
-          onTap: () => Navigator.popAndPushNamed(context, '/about'),
-        ),
-      ]),
+          ListTile(
+            selected: drawerSelection == DrawerSelection.hot,
+            leading: Icon(Icons.whatshot),
+            title: Text('Hot'),
+            onTap: () => Navigator.of(context)
+                .pushNamedAndRemoveUntil('/hot', (_) => false),
+          ),
+          ListTile(
+            leading: Icon(Icons.search),
+            title: Text("Search"),
+            onTap: () => Navigator.popAndPushNamed(context, '/search'),
+          ),
+          Divider(),
+          ListTile(
+            selected: drawerSelection == DrawerSelection.favorites,
+            leading: Icon(Icons.favorite),
+            title: Text('Favorites'),
+            onTap: () => guardWithLogin(
+              context: context,
+              callback: () => Navigator.of(context)
+                  .pushNamedAndRemoveUntil('/fav', (_) => false),
+              error: 'You must be logged in to see your favorites',
+            ),
+          ),
+          ListTile(
+            selected: drawerSelection == DrawerSelection.follows,
+            leading: Icon(Icons.turned_in),
+            title: Text('Following'),
+            onTap: () => Navigator.of(context)
+                .pushNamedAndRemoveUntil('/follows', (_) => false),
+          ),
+          // Divider(),
+          ListTile(
+            selected: drawerSelection == DrawerSelection.pools,
+            leading: Icon(Icons.collections),
+            title: Text('Pools'),
+            onTap: () => Navigator.of(context)
+                .pushNamedAndRemoveUntil('/pools', (_) => false),
+          ),
+          if (settings.showBeta.value)
+            ListTile(
+              selected: drawerSelection == DrawerSelection.topics,
+              leading: Icon(Icons.forum),
+              title: Text('Topics'),
+              onTap: () => Navigator.of(context)
+                  .pushNamedAndRemoveUntil('/topics', (_) => false),
+            ),
+          Divider(),
+          ListTile(
+            leading: Icon(Icons.settings),
+            title: Text('Settings'),
+            onTap: () => Navigator.popAndPushNamed(context, '/settings'),
+          ),
+          ListTile(
+            leading: DrawerUpdateIcon(),
+            title: Text('About'),
+            onTap: () => Navigator.popAndPushNamed(context, '/about'),
+          ),
+        ],
+      ),
     );
   }
 }

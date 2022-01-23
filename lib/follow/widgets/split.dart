@@ -103,7 +103,6 @@ class _FollowsSplitPageState extends State<FollowsSplitPage>
                 itemBuilder: (context, index) =>
                     FollowTile(follow: follows[index], safe: client.isSafe),
                 staggeredTileBuilder: tileBuilder,
-                physics: BouncingScrollPhysics(),
               ),
               appBar: DefaultAppBar(
                 title: Text('Following'),

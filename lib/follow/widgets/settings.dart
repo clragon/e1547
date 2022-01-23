@@ -107,7 +107,6 @@ class _FollowingPageState extends State<FollowingPage>
       }
 
       return ListView.builder(
-        physics: BouncingScrollPhysics(),
         padding:
             EdgeInsets.only(top: 8, bottom: kBottomNavigationBarHeight + 24),
         itemCount: follows.length,
@@ -151,7 +150,6 @@ class _FollowingPageState extends State<FollowingPage>
           ],
         ),
         content: TextField(
-          scrollPhysics: BouncingScrollPhysics(),
           controller: controller,
           keyboardType: TextInputType.multiline,
           maxLines: null,

@@ -156,7 +156,6 @@ class _VersionButtonState extends State<VersionButton> {
             maxHeight: MediaQuery.of(context).size.height * 0.5,
           ),
           child: SingleChildScrollView(
-            physics: BouncingScrollPhysics(),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,

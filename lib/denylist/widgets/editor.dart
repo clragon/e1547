@@ -24,7 +24,6 @@ class DenylistEditor extends StatelessWidget {
         ],
       ),
       builder: (context, submit) => TextField(
-        scrollPhysics: BouncingScrollPhysics(),
         controller: controller,
         keyboardType: TextInputType.multiline,
         maxLines: null,

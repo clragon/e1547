@@ -105,7 +105,6 @@ class _WikiTagDisplayState extends State<WikiTagDisplay> {
           if (snapshot.hasData) {
             return SingleChildScrollView(
               child: DText(snapshot.data!.body),
-              physics: BouncingScrollPhysics(),
             );
           } else if (snapshot.hasError) {
             return IconMessage(

@@ -25,7 +25,6 @@ class _SettingsPageState extends State<SettingsPage> {
       ),
       body: ListView(
         padding: defaultActionListPadding,
-        physics: BouncingScrollPhysics(),
         children: [
           SettingsHeader(title: 'Server'),
           GestureDetector(
