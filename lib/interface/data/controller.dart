@@ -13,7 +13,7 @@ abstract class RawDataController<KeyType, ItemType>
   bool isRefreshing = false;
   bool isForceRefreshing = false;
 
-  late List<ValueNotifier> refreshListeners = getRefreshListeners();
+  late List<Listenable> refreshListeners = getRefreshListeners();
 
   RawDataController({
     required KeyType firstPageKey,
@@ -41,7 +41,7 @@ abstract class RawDataController<KeyType, ItemType>
   void success() {}
 
   @mustCallSuper
-  List<ValueNotifier> getRefreshListeners() => [];
+  List<Listenable> getRefreshListeners() => [];
 
   Future<List<ItemType>> provide(KeyType page, bool force);
 
@@ -133,6 +133,15 @@ abstract class RawDataController<KeyType, ItemType>
   }
 }
 
+abstract class DataController<T> extends RawDataController<int, T> {
+  DataController({
+    int firstPageKey = 1,
+  }) : super(firstPageKey: firstPageKey);
+
+  @override
+  int provideNextPageKey(int current, List<T> items) => current + 1;
+}
+
 abstract class CursorDataController<T> extends RawDataController<String, T> {
   ValueNotifier<bool> orderByOldest = ValueNotifier(true);
 
@@ -171,7 +180,7 @@ abstract class CursorDataController<T> extends RawDataController<String, T> {
   }
 
   @override
-  List<ValueNotifier> getRefreshListeners() =>
+  List<Listenable> getRefreshListeners() =>
       super.getRefreshListeners()..add(orderByOldest);
 
   @override
@@ -183,35 +192,26 @@ abstract class CursorDataController<T> extends RawDataController<String, T> {
   }
 }
 
-abstract class DataController<T> extends RawDataController<int, T> {
-  DataController({
-    int firstPageKey = 1,
-  }) : super(firstPageKey: firstPageKey);
-
-  @override
-  int provideNextPageKey(int current, List<T> items) => current + 1;
-}
-
 mixin SearchableController<PageKeyType, ItemType>
     on RawDataController<PageKeyType, ItemType> {
   ValueNotifier<String> get search => ValueNotifier('');
 
   @override
-  List<ValueNotifier> getRefreshListeners() =>
+  List<Listenable> getRefreshListeners() =>
       super.getRefreshListeners()..add(search);
 }
 
 mixin HostableController<PageKeyType, ItemType>
     on RawDataController<PageKeyType, ItemType> {
   @override
-  List<ValueNotifier> getRefreshListeners() =>
+  List<Listenable> getRefreshListeners() =>
       super.getRefreshListeners()..add(settings.host);
 }
 
 mixin AccountableController<PageKeyType, ItemType>
     on RawDataController<PageKeyType, ItemType> {
   @override
-  List<ValueNotifier> getRefreshListeners() =>
+  List<Listenable> getRefreshListeners() =>
       super.getRefreshListeners()..add(settings.credentials);
 }
 
