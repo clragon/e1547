@@ -112,7 +112,7 @@ List<NavigationDestination<DrawerSelection>> destinations = [
   ),
   NavigationDestination(
     path: '/follows',
-    name: 'Follows',
+    name: 'Following',
     icon: Icon(Icons.turned_in),
     builder: (context) => FollowsPage(),
     route: DrawerSelection.follows,
