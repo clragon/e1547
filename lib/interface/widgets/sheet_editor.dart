@@ -137,6 +137,9 @@ class _SheetFloatingActionButtonState extends State<SheetFloatingActionButton> {
 SlidingSheetDialog defaultSlidingSheetDialog(
     BuildContext context, SheetBuilder builder) {
   return SlidingSheetDialog(
+    scrollSpec: ScrollSpec(
+      physics: const ClampingScrollPhysics(),
+    ),
     duration: Duration(milliseconds: 400),
     avoidStatusBar: true,
     isBackdropInteractable: true,
