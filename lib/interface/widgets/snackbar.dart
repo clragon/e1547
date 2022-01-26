@@ -1,139 +1,173 @@
 import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
 
-Future<void> loadingSnackbar<T>({
+enum LoadingNotificationStatus {
+  loading,
+  cancelled,
+  failed,
+  done,
+}
+
+class LoadingNotificationController extends ChangeNotifier {
+  LoadingNotificationStatus _status = LoadingNotificationStatus.loading;
+
+  LoadingNotificationStatus get status => _status;
+
+  set status(value) {
+    _status = value;
+    notifyListeners();
+  }
+
+  int _progress = 0;
+
+  int get progress => _progress;
+
+  set progress(int value) {
+    _progress = value;
+    notifyListeners();
+  }
+}
+
+Future<void> loadingNotification<T>({
   required BuildContext context,
   required Set<T> items,
   required Future<bool> Function(T item) process,
-  String Function(Set<T> items)? onDone,
   String Function(Set<T> items, int index)? onProgress,
   String Function(Set<T> items, int index)? onFailure,
   String Function(Set<T> items, int index)? onCancel,
+  String Function(Set<T> items)? onDone,
   Duration? timeout,
+  Widget? icon,
 }) async {
-  ValueNotifier<int> progress = ValueNotifier<int>(0);
-  bool cancel = false;
-  bool failed = false;
-
   ScaffoldMessengerState messenger = ScaffoldMessenger.of(context);
+  LoadingNotificationController controller = LoadingNotificationController();
 
-  ScaffoldFeatureController controller = messenger.showSnackBar(
-    SnackBar(
-      content: LoadingSnackbar<T>(
-        items: items,
-        timeout: timeout,
-        onProgress: onProgress,
-        progress: progress,
+  messenger.showMaterialBanner(
+    MaterialBanner(
+      content: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        child: LoadingNotification<T>(
+          items: items,
+          controller: controller,
+          onProgress: onProgress,
+          onFailure: onFailure,
+          onCancel: onCancel,
+          onDone: onDone,
+          timeout: timeout,
+          icon: icon,
+        ),
       ),
-      duration: Duration(days: 1),
-      action: SnackBarAction(
-        label: 'CANCEL',
-        onPressed: () => cancel = true,
-      ),
+      leading: icon,
+      padding: EdgeInsets.all(8),
+      leadingPadding: EdgeInsets.all(8),
+      backgroundColor: Theme.of(context).canvasColor,
+      actions: [
+        TextButton(
+          onPressed: () =>
+              controller.status = LoadingNotificationStatus.cancelled,
+          child: Text('CANCEL'),
+        ),
+      ],
     ),
   );
 
   for (T item in items) {
     if (await process(item)) {
       await Future.delayed(timeout ?? defaultAnimationDuration);
-      if (progress.value < items.length - 1) {
-        progress.value++;
+      if (controller.progress < items.length - 1) {
+        controller.progress++;
       }
     } else {
-      failed = true;
-      controller.close();
-      messenger.showSnackBar(
-        SnackBar(
-          content: Text(onFailure?.call(items, progress.value) ??
-              'Failed at Item $progress'),
-          duration: Duration(seconds: 1),
-        ),
-      );
+      controller.status = LoadingNotificationStatus.failed;
       break;
     }
-    if (cancel) {
-      controller.close();
-      messenger.showSnackBar(
-        SnackBar(
-          content:
-              Text(onCancel?.call(items, progress.value) ?? 'Cancelled task'),
-          duration: Duration(seconds: 1),
-        ),
-      );
+    if (controller.status == LoadingNotificationStatus.cancelled) {
       break;
     }
+  }
+  if (controller.status == LoadingNotificationStatus.loading) {
+    controller.status = LoadingNotificationStatus.done;
   }
 
-  if (!failed) {
-    controller.close();
-    messenger.showSnackBar(
-      SnackBar(
-        content: Text(onDone?.call(items) ?? 'Done'),
-        duration: Duration(seconds: 1),
-      ),
-    );
-  }
+  await Future.delayed(Duration(milliseconds: 1000));
+  messenger.hideCurrentMaterialBanner();
 }
 
-class LoadingSnackbar<T> extends StatefulWidget {
+class LoadingNotification<T> extends StatelessWidget {
+  final LoadingNotificationController controller;
   final Set<T> items;
-  final Duration? timeout;
+  final String Function(Set<T> items)? onDone;
   final String Function(Set<T> items, int index)? onProgress;
-  final ValueNotifier<int> progress;
+  final String Function(Set<T> items, int index)? onFailure;
+  final String Function(Set<T> items, int index)? onCancel;
+  final Duration? timeout;
+  final Widget? icon;
 
-  const LoadingSnackbar({
+  const LoadingNotification({
+    required this.controller,
     required this.items,
-    required this.progress,
+    this.onDone,
     this.onProgress,
+    this.onFailure,
+    this.onCancel,
+    this.icon,
     this.timeout,
   });
 
   @override
-  _LoadingSnackbarState<T> createState() => _LoadingSnackbarState<T>();
-}
-
-class _LoadingSnackbarState<T> extends State<LoadingSnackbar<T>> {
-  @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder<int>(
-      valueListenable: widget.progress,
-      builder: (context, value, child) {
+    return AnimatedBuilder(
+      animation: controller,
+      builder: (context, child) {
+        String getStatus() {
+          switch (controller.status) {
+            case LoadingNotificationStatus.loading:
+              return onProgress?.call(items, controller.progress) ??
+                  'Item ${controller.progress + 1}/${items.length}';
+            case LoadingNotificationStatus.cancelled:
+              return onCancel?.call(items, controller.progress) ??
+                  'Cancelled task';
+            case LoadingNotificationStatus.failed:
+              return onFailure?.call(items, controller.progress) ??
+                  'Failed at Item ${controller.progress}';
+            case LoadingNotificationStatus.done:
+              return onDone?.call(items) ?? 'Done';
+          }
+        }
+
         return Column(
-          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                Text(
-                  widget.onProgress
-                          ?.call(widget.items, widget.progress.value) ??
-                      'Item ${widget.progress.value + 1}/${widget.items.length}',
-                  overflow: TextOverflow.visible,
-                ),
-                Flexible(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 8),
-                    child: TweenAnimationBuilder(
-                      duration: widget.timeout ?? defaultAnimationDuration,
-                      builder: (context, double value, child) {
-                        double indicator = 1 / widget.items.length;
-                        if (indicator < 0) {
-                          indicator = 1;
-                        }
-                        indicator = indicator * (value + 1);
-                        return LinearProgressIndicator(
-                          value: indicator,
-                          color: Theme.of(context).colorScheme.secondary,
-                        );
-                      },
-                      tween: Tween<double>(
-                        begin: 0,
-                        end: widget.progress.value.toDouble(),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            )
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Text(
+                getStatus(),
+                overflow: TextOverflow.visible,
+              ),
+            ),
+            TweenAnimationBuilder<double>(
+              tween: Tween<double>(
+                begin: 0,
+                end: controller.status != LoadingNotificationStatus.loading
+                    ? items.length.toDouble()
+                    : controller.progress.toDouble(),
+              ),
+              duration: timeout ?? defaultAnimationDuration,
+              builder: (context, value, child) {
+                double? indicator = 1 / items.length;
+                if (indicator < 0) {
+                  indicator = 1;
+                }
+                indicator = indicator * value;
+                if (indicator == 0) {
+                  indicator = null;
+                }
+                return LinearProgressIndicator(
+                  value: indicator,
+                  color: Theme.of(context).colorScheme.secondary,
+                );
+              },
+            ),
           ],
         );
       },

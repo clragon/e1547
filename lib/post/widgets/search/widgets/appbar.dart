@@ -24,7 +24,7 @@ class PostSelectionAppBar extends StatelessWidget with AppBarSize {
         IconButton(
           icon: Icon(Icons.file_download),
           onPressed: () {
-            postDownloadingSnackbar(context, Set.from(selections));
+            postDownloadingNotification(context, Set.from(selections));
             onChanged({});
           },
         ),
@@ -43,7 +43,7 @@ class PostSelectionAppBar extends StatelessWidget with AppBarSize {
                   : Theme.of(context).iconTheme.color,
             ),
             onTap: (isLiked) async {
-              postFavoritingSnackbar(context, Set.from(selections), isLiked);
+              postFavoritingNotification(context, Set.from(selections), isLiked);
               onChanged({});
               return !isLiked;
             },

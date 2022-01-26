@@ -25,7 +25,7 @@ class _FavPageState extends State<FavPage> with ListenerCallbackMixin {
         settings.credentials: updateUsername,
       };
 
-  Future<void> updateSwitch() async {
+  void updateSwitch() {
     setState(() {
       if (controller != null &&
           username != null &&
@@ -37,7 +37,7 @@ class _FavPageState extends State<FavPage> with ListenerCallbackMixin {
     });
   }
 
-  Future<void> updateUsername() async {
+  void updateUsername() {
     Credentials? credentials = settings.credentials.value;
     if (credentials != null) {
       setState(() {
@@ -102,6 +102,14 @@ class _FavPageState extends State<FavPage> with ListenerCallbackMixin {
               },
             ),
         ],
+      ),
+      loadingBuilder: (context, child) => Scaffold(
+        appBar: DefaultAppBar(
+          title: Text('Favorites'),
+        ),
+        body: Center(
+          child: child,
+        ),
       ),
     );
   }

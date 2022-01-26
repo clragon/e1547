@@ -58,7 +58,7 @@ class _FollowsSplitPageState extends State<FollowsSplitPage>
   @override
   void initState() {
     super.initState();
-    refreshFollows();
+    Future.delayed(Duration(milliseconds: 500), refreshFollows);
   }
 
   @override
@@ -75,7 +75,7 @@ class _FollowsSplitPageState extends State<FollowsSplitPage>
       builder: (context, crossAxisCount, tileBuilder) =>
           ValueListenableBuilder<List<Follow>>(
         valueListenable: settings.follows,
-        builder: (context, follows, child) => ValueListenableBuilder(
+        builder: (context, follows, child) => ValueListenableBuilder<String>(
           valueListenable: settings.host,
           builder: (context, host, child) => AnimatedBuilder(
             animation: followUpdater,
@@ -87,7 +87,7 @@ class _FollowsSplitPageState extends State<FollowsSplitPage>
               isLoading: false,
               isEmpty: follows.isEmpty,
               refreshController: refreshController,
-              refreshHeader: ValueListenableBuilder(
+              refreshHeader: ValueListenableBuilder<int>(
                 valueListenable: followUpdater.progress,
                 builder: (context, progress, child) =>
                     RefreshablePageDefaultHeader(

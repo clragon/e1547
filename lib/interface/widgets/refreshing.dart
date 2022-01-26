@@ -119,7 +119,7 @@ class RefreshablePageLoader extends StatelessWidget {
       isEmpty: isEmpty,
       isError: isError,
       isBuilt: isBuilt,
-      pageBuilder: (child) {
+      pageBuilder: (context, child) {
         if (pageBuilder != null) {
           return RefreshablePage.pageBuilder(
             builder: (context) => child,
@@ -253,7 +253,7 @@ class FuturePageLoader<T> extends StatelessWidget {
       future: future,
       builder: (context, snapshot) => PageLoader(
         builder: (context) => builder(context, snapshot.data!),
-        loadingBuilder: (child) => Scaffold(
+        loadingBuilder: (context, child) => Scaffold(
           appBar: title != null
               ? DefaultAppBar(
                   leading: CloseButton(),
@@ -283,8 +283,8 @@ enum PageLoaderState {
 
 class PageLoader extends StatelessWidget {
   final WidgetBuilder? builder;
-  final Widget Function(Widget child)? pageBuilder;
-  final Widget Function(Widget child)? loadingBuilder;
+  final Widget Function(BuildContext context, Widget child)? pageBuilder;
+  final Widget Function(BuildContext context, Widget child)? loadingBuilder;
   final Widget? onLoading;
   final Widget? onEmpty;
   final Widget? onEmptyIcon;
@@ -349,16 +349,16 @@ class PageLoader extends StatelessWidget {
     Widget body() {
       Widget body = child();
       if (pageBuilder != null) {
-        body = pageBuilder!(body);
+        body = pageBuilder!(context, body);
       }
       if (loadingBuilder != null && state != PageLoaderState.child) {
-        body = loadingBuilder!(body);
+        body = loadingBuilder!(context, body);
       }
       return body;
     }
 
-    return Scaffold(
-      body: body(),
+    return Material(
+      child: body(),
     );
   }
 }

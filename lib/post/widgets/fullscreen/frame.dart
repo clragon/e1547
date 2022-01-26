@@ -87,47 +87,49 @@ class _PostFullscreenFrameState extends State<PostFullscreenFrame> {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: controller,
-      child: widget.child,
-      builder: (contex, child) => Scaffold(
-        extendBodyBehindAppBar: true,
-        appBar: PreferredSize(
-          preferredSize: Size.fromHeight(defaultAppBarHeight),
-          child: FrameFadeWidget(
-            controller: controller,
-            child: PostFullscreenAppBar(post: widget.post),
+    return Scaffold(
+      body: AnimatedBuilder(
+        animation: controller,
+        child: widget.child,
+        builder: (contex, child) => Scaffold(
+          extendBodyBehindAppBar: true,
+          appBar: PreferredSize(
+            preferredSize: Size.fromHeight(defaultAppBarHeight),
+            child: FrameFadeWidget(
+              controller: controller,
+              child: PostFullscreenAppBar(post: widget.post),
+            ),
           ),
-        ),
-        body: GestureDetector(
-          behavior: HitTestBehavior.translucent,
-          onTap: () {
-            controller.toggleFrame();
-            if ((widget.post.controller?.value.isPlaying ?? false) &&
-                controller.visible) {
-              controller.hideFrame(duration: Duration(seconds: 2));
-            }
-          },
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              child!,
-              if (widget.post.controller != null) ...[
-                Positioned(
-                  bottom: 0,
-                  right: 0,
-                  left: 0,
-                  child: VideoBar(
+          body: GestureDetector(
+            behavior: HitTestBehavior.translucent,
+            onTap: () {
+              controller.toggleFrame();
+              if ((widget.post.controller?.value.isPlaying ?? false) &&
+                  controller.visible) {
+                controller.hideFrame(duration: Duration(seconds: 2));
+              }
+            },
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                child!,
+                if (widget.post.controller != null) ...[
+                  Positioned(
+                    bottom: 0,
+                    right: 0,
+                    left: 0,
+                    child: VideoBar(
+                      videoController: widget.post.controller!,
+                      frameController: controller,
+                    ),
+                  ),
+                  VideoButton(
                     videoController: widget.post.controller!,
                     frameController: controller,
                   ),
-                ),
-                VideoButton(
-                  videoController: widget.post.controller!,
-                  frameController: controller,
-                ),
-              ]
-            ],
+                ]
+              ],
+            ),
           ),
         ),
       ),
