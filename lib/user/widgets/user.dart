@@ -87,18 +87,18 @@ class _UserPageState extends State<UserPage>
     super.dispose();
   }
 
+  late Map<Widget, Widget> tabs = {
+    Tab(text: 'Favorites'): PostsPageHeadless(
+      controller: favoritePostController,
+    ),
+    Tab(text: 'Uploads'): PostsPageHeadless(
+      controller: uploadPostController,
+    ),
+    Tab(text: 'About'): UserInfo(user: widget.user),
+  };
+
   @override
   Widget build(BuildContext context) {
-    Map<Widget, Widget> tabs = {
-      Tab(text: 'Favorites'): PostsPageHeadless(
-        controller: favoritePostController,
-      ),
-      Tab(text: 'Uploads'): PostsPageHeadless(
-        controller: uploadPostController,
-      ),
-      Tab(text: 'About'): UserInfo(user: widget.user),
-    };
-
     return Scaffold(
       drawer: defaultNavigationDrawer(),
       endDrawer: ContextDrawer(
@@ -121,74 +121,76 @@ class _UserPageState extends State<UserPage>
       body: NestedScrollView(
         physics: BouncingScrollPhysics(),
         headerSliverBuilder: (context, innerBoxIsScrolled) => [
-          DefaultSliverAppBar(
-            pinned: true,
-            leading: BackButton(),
-            expandedHeight: 250,
-            flexibleSpaceBuilder: (context, collapsed) => FlexibleSpaceBar(
-              collapseMode: CollapseMode.pin,
-              title: AnimatedOpacity(
-                duration: defaultAnimationDuration,
-                opacity: collapsed ? 1 : 0,
-                child: Text(widget.user.name),
-                  ),
-                  background: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SizedBox(
-                        height: 100,
-                        width: 100,
-                        child: AvatarLoader(maybeAvatar),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(top: 16, bottom: 32),
-                        child: Text(
-                          widget.user.name,
-                          style: Theme.of(context).textTheme.headline6,
-                        ),
-                      ),
-                    ],
-                  ),
+          SliverOverlapAbsorber(
+            handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
+            sliver: DefaultSliverAppBar(
+              pinned: true,
+              leading: BackButton(),
+              expandedHeight: 250,
+              flexibleSpaceBuilder: (context, collapse) => FlexibleSpaceBar(
+                collapseMode: CollapseMode.pin,
+                title: Opacity(
+                  opacity: 1 - (collapse * 6).clamp(0, 1),
+                  child: Text(widget.user.name),
                 ),
-            bottom: TabBar(
-              controller: tabController,
-              labelColor: Theme.of(context).iconTheme.color,
-              indicatorColor: Theme.of(context).iconTheme.color,
-              padding: EdgeInsets.symmetric(horizontal: kContentPadding * 2),
-              tabs: tabs.keys.toList(),
-            ),
-            actions: [
-              PopupMenuButton<VoidCallback>(
-                icon: Icon(Icons.more_vert),
-                onSelected: (value) => value(),
-                itemBuilder: (context) => [
-                  PopupMenuTile(
-                    title: 'Browse',
-                    icon: Icons.open_in_browser,
-                    value: () async =>
-                        launch(widget.user.url(settings.host.value).toString()),
-                  ),
-                  PopupMenuTile(
-                    title: 'Report',
-                    icon: Icons.report,
-                    value: () => guardWithLogin(
-                      context: context,
-                      callback: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => UserReportScreen(
-                              user: widget.user,
-                              avatar: avatar,
-                            ),
-                          ),
-                        );
-                      },
-                      error: 'You must be logged in to report users!',
+                background: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      height: 100,
+                      width: 100,
+                      child: AvatarLoader(maybeAvatar),
                     ),
-                  ),
-                ],
+                    Padding(
+                      padding: EdgeInsets.only(top: 16, bottom: 32),
+                      child: Text(
+                        widget.user.name,
+                        style: Theme.of(context).textTheme.headline6,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ],
+              bottom: TabBar(
+                controller: tabController,
+                labelColor: Theme.of(context).iconTheme.color,
+                indicatorColor: Theme.of(context).iconTheme.color,
+                padding: EdgeInsets.symmetric(horizontal: kContentPadding * 2),
+                tabs: tabs.keys.toList(),
+              ),
+              actions: [
+                PopupMenuButton<VoidCallback>(
+                  icon: Icon(Icons.more_vert),
+                  onSelected: (value) => value(),
+                  itemBuilder: (context) => [
+                    PopupMenuTile(
+                      title: 'Browse',
+                      icon: Icons.open_in_browser,
+                      value: () async => launch(
+                          widget.user.url(settings.host.value).toString()),
+                    ),
+                    PopupMenuTile(
+                      title: 'Report',
+                      icon: Icons.report,
+                      value: () => guardWithLogin(
+                        context: context,
+                        callback: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => UserReportScreen(
+                                user: widget.user,
+                                avatar: avatar,
+                              ),
+                            ),
+                          );
+                        },
+                        error: 'You must be logged in to report users!',
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ],
         body: TabBarView(

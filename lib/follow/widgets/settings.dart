@@ -119,24 +119,24 @@ class _FollowingPageState extends State<FollowingPage>
           onDelete: () {
             follows.removeAt(index);
             settings.follows.value = follows;
-              },
-              onChangeNotify: (enabled) {
-                if (enabled) {
-                  follows[index].type = FollowType.notify;
-                } else {
-                  follows[index].type = FollowType.update;
-                }
-                settings.follows.value = follows;
-              },
-              onChangeBookmark: (enabled) {
-                if (enabled) {
-                  follows[index].type = FollowType.bookmark;
-                } else {
-                  follows[index].type = FollowType.update;
-                }
-                settings.follows.value = follows;
-              },
-            ),
+          },
+          onChangeNotify: (enabled) {
+            if (enabled) {
+              follows[index].type = FollowType.notify;
+            } else {
+              follows[index].type = FollowType.update;
+            }
+            settings.follows.value = follows;
+          },
+          onChangeBookmark: (enabled) {
+            if (enabled) {
+              follows[index].type = FollowType.bookmark;
+            } else {
+              follows[index].type = FollowType.update;
+            }
+            settings.follows.value = follows;
+          },
+        ),
       );
     }
 

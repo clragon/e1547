@@ -301,7 +301,7 @@ class Client {
             'search[name_matches]': search,
             'page': page,
           },
-      keyExtras: {
+          keyExtras: {
             'search[name_matches]': search,
           },
           forceRefresh: force,

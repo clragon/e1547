@@ -176,16 +176,16 @@ class _VersionButtonState extends State<VersionButton> {
                 ...versions
                     .map(
                       (release) => [
-                    Padding(
-                      padding: EdgeInsets.symmetric(vertical: 8),
-                      child: Text(
-                        '${release.name} (${release.version})',
-                        style: Theme.of(context).textTheme.headline6,
-                      ),
-                    ),
-                    Text(release.description!),
-                  ],
-                )
+                        Padding(
+                          padding: EdgeInsets.symmetric(vertical: 8),
+                          child: Text(
+                            '${release.name} (${release.version})',
+                            style: Theme.of(context).textTheme.headline6,
+                          ),
+                        ),
+                        Text(release.description!),
+                      ],
+                    )
                     .reduce((a, b) => [...a, ...b]),
               ],
             ),

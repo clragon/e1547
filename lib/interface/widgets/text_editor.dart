@@ -137,7 +137,7 @@ class _TextEditorState extends State<TextEditor>
           onPressed: isLoading
               ? null
               : () async {
-            String text = textController.text.trim();
+                  String text = textController.text.trim();
                   setState(() {
                     isLoading = true;
                   });

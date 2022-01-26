@@ -202,6 +202,7 @@ class NavigationDrawer<UniqueRoute extends Enum> extends StatelessWidget {
       child: PrimaryScrollController(
         controller: ScrollController(),
         child: ListView(
+          physics: BouncingScrollPhysics(),
           children: children,
         ),
       ),

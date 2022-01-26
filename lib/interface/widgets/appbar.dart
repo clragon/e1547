@@ -167,7 +167,7 @@ class DefaultSliverAppBar extends StatelessWidget {
   final bool automaticallyImplyLeading;
   final double? expandedHeight;
   final PreferredSizeWidget? bottom;
-  final Widget Function(BuildContext context, bool collapsed)?
+  final Widget Function(BuildContext context, double collapse)?
       flexibleSpaceBuilder;
   final bool floating;
   final bool pinned;
@@ -192,80 +192,59 @@ class DefaultSliverAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double bottomHeight = bottom?.preferredSize.height ?? 0;
-
-    return SliverStack(
+    return MultiSliver(
       children: [
-        SliverAppBar(
-          elevation: 0,
-          toolbarHeight: defaultAppBarHeight,
-          expandedHeight:
-              expandedHeight != null ? expandedHeight! + kContentPadding : null,
-          bottom: bottom != null
-              ? PreferredSize(
-                  preferredSize: bottom!.preferredSize,
-                  child: Container(),
-                )
-              : null,
-          automaticallyImplyLeading: false,
-          actions: [
-            SizedBox.shrink(),
-          ],
-          floating: floating,
-          pinned: pinned,
-          snap: snap,
+        SliverPadding(
+          padding: EdgeInsets.only(
+            top: kContentPadding + MediaQuery.of(context).padding.top,
+          ),
         ),
-        SliverOverlapAbsorber(
-          handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
-          sliver: MultiSliver(
-            children: [
-              SliverPadding(
-                padding: EdgeInsets.only(
-                  top: kContentPadding + MediaQuery.of(context).padding.top,
-                ),
+        SliverPadding(
+          padding: EdgeInsets.symmetric(
+            horizontal: kContentPadding * 2,
+          ),
+          sliver: MediaQuery.removePadding(
+            context: context,
+            removeTop: true,
+            child: SliverAppBar(
+              title: IgnorePointer(child: title),
+              automaticallyImplyLeading: automaticallyImplyLeading,
+              elevation: elevation,
+              forceElevated: forceElevated,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(4)),
               ),
-              SliverPadding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: kContentPadding * 2,
-                ),
-                sliver: MediaQuery.removePadding(
-                  context: context,
-                  removeTop: true,
-                  child: SliverAppBar(
-                    title: IgnorePointer(child: title),
-                    automaticallyImplyLeading: automaticallyImplyLeading,
-                    elevation: elevation,
-                    forceElevated: forceElevated,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(4)),
-                    ),
-                    toolbarHeight: kToolbarHeight,
-                    expandedHeight: expandedHeight,
-                    leading: leading,
-                    floating: floating,
-                    pinned: pinned,
-                    snap: snap,
-                    actions: actions,
-                    flexibleSpace: flexibleSpaceBuilder != null
-                        ? LayoutBuilder(
-                            builder: (context, constraints) => Padding(
-                              padding: EdgeInsets.only(bottom: bottomHeight),
-                              child: ScrollToTopScope(
-                                controller: scrollController,
-                                child: flexibleSpaceBuilder!(
-                                  context,
-                                  constraints.maxHeight ==
-                                      kToolbarHeight + bottomHeight,
-                                ),
-                              ),
+              toolbarHeight: kToolbarHeight,
+              expandedHeight: expandedHeight,
+              leading: leading,
+              floating: floating,
+              pinned: pinned,
+              snap: snap,
+              actions: actions,
+              bottom: bottom,
+              flexibleSpace: flexibleSpaceBuilder != null
+                  ? LayoutBuilder(
+                      builder: (context, constraints) {
+                        double bottomHeight = bottom?.preferredSize.height ?? 0;
+                        double minHeight = (kToolbarHeight + bottomHeight);
+                        double maxHeight =
+                            (expandedHeight ?? kToolbarHeight) - minHeight;
+                        double currentHeight =
+                            constraints.maxHeight - minHeight;
+                        return ScrollToTopScope(
+                          controller: scrollController,
+                          child: Padding(
+                            padding: EdgeInsets.only(bottom: bottomHeight),
+                            child: flexibleSpaceBuilder!(
+                              context,
+                              currentHeight / maxHeight,
                             ),
-                          )
-                        : null,
-                    bottom: bottom,
-                  ),
-                ),
-              ),
-            ],
+                          ),
+                        );
+                      },
+                    )
+                  : null,
+            ),
           ),
         ),
       ],
