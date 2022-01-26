@@ -8,26 +8,6 @@ enum LoadingNotificationStatus {
   done,
 }
 
-class LoadingNotificationController extends ChangeNotifier {
-  LoadingNotificationStatus _status = LoadingNotificationStatus.loading;
-
-  LoadingNotificationStatus get status => _status;
-
-  set status(value) {
-    _status = value;
-    notifyListeners();
-  }
-
-  int _progress = 0;
-
-  int get progress => _progress;
-
-  set progress(int value) {
-    _progress = value;
-    notifyListeners();
-  }
-}
-
 Future<void> loadingNotification<T>({
   required BuildContext context,
   required Set<T> items,
@@ -39,32 +19,55 @@ Future<void> loadingNotification<T>({
   Duration? timeout,
   Widget? icon,
 }) async {
+  String getStatus(LoadingNotificationStatus status, int progress) {
+    switch (status) {
+      case LoadingNotificationStatus.loading:
+        return onProgress?.call(items, progress) ??
+            'Item ${progress + 1}/${items.length}';
+      case LoadingNotificationStatus.cancelled:
+        return onCancel?.call(items, progress) ?? 'Cancelled task';
+      case LoadingNotificationStatus.failed:
+        return onFailure?.call(items, progress) ?? 'Failed at Item $progress';
+      case LoadingNotificationStatus.done:
+        return onDone?.call(items) ?? 'Done';
+    }
+  }
+
+  IconData getStatusIcon(LoadingNotificationStatus status) {
+    switch (status) {
+      case LoadingNotificationStatus.loading:
+        return Icons.download;
+      case LoadingNotificationStatus.cancelled:
+        return Icons.cancel;
+      case LoadingNotificationStatus.failed:
+        return Icons.warning_amber_outlined;
+      case LoadingNotificationStatus.done:
+        return Icons.check;
+    }
+  }
+
+  LoadingNotificationStatus status = LoadingNotificationStatus.loading;
+  final ValueNotifier<int> progress = ValueNotifier(0);
+
   ScaffoldMessengerState messenger = ScaffoldMessenger.of(context);
-  LoadingNotificationController controller = LoadingNotificationController();
 
   messenger.showMaterialBanner(
     MaterialBanner(
       content: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8),
-        child: LoadingNotification<T>(
-          items: items,
-          controller: controller,
-          onProgress: onProgress,
-          onFailure: onFailure,
-          onCancel: onCancel,
-          onDone: onDone,
-          timeout: timeout,
-          icon: icon,
+        child: LoadingNotification(
+          messageBuilder: (context, value) => Text(getStatus(status, value)),
+          max: items.length,
+          progress: progress,
+          animationDuration: timeout,
         ),
       ),
       leading: icon,
       padding: EdgeInsets.all(8),
       leadingPadding: EdgeInsets.all(8),
-      backgroundColor: Theme.of(context).canvasColor,
       actions: [
         TextButton(
-          onPressed: () =>
-              controller.status = LoadingNotificationStatus.cancelled,
+          onPressed: () => status = LoadingNotificationStatus.cancelled,
           child: Text('CANCEL'),
         ),
       ],
@@ -74,87 +77,76 @@ Future<void> loadingNotification<T>({
   for (T item in items) {
     if (await process(item)) {
       await Future.delayed(timeout ?? defaultAnimationDuration);
-      if (controller.progress < items.length - 1) {
-        controller.progress++;
+      if (progress.value < items.length - 1) {
+        progress.value++;
       }
     } else {
-      controller.status = LoadingNotificationStatus.failed;
+      status = LoadingNotificationStatus.failed;
       break;
     }
-    if (controller.status == LoadingNotificationStatus.cancelled) {
+    if (status == LoadingNotificationStatus.cancelled) {
       break;
     }
   }
-  if (controller.status == LoadingNotificationStatus.loading) {
-    controller.status = LoadingNotificationStatus.done;
+  if (status == LoadingNotificationStatus.loading) {
+    status = LoadingNotificationStatus.done;
   }
+  messenger.hideCurrentMaterialBanner();
+  messenger.showMaterialBanner(
+    MaterialBanner(
+      content: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        child: Text(getStatus(status, progress.value)),
+      ),
+      leading: Icon(getStatusIcon(status)),
+      padding: EdgeInsets.all(8),
+      leadingPadding: EdgeInsets.all(8),
+      actions: [
+        TextButton(
+          onPressed: messenger.hideCurrentMaterialBanner,
+          child: Text('DISMISS'),
+        ),
+      ],
+    ),
+  );
 
-  await Future.delayed(Duration(milliseconds: 1000));
+  await Future.delayed(Duration(seconds: 3));
   messenger.hideCurrentMaterialBanner();
 }
 
-class LoadingNotification<T> extends StatelessWidget {
-  final LoadingNotificationController controller;
-  final Set<T> items;
-  final String Function(Set<T> items)? onDone;
-  final String Function(Set<T> items, int index)? onProgress;
-  final String Function(Set<T> items, int index)? onFailure;
-  final String Function(Set<T> items, int index)? onCancel;
-  final Duration? timeout;
-  final Widget? icon;
+class LoadingNotification extends StatelessWidget {
+  final int max;
+  final ValueNotifier<int> progress;
+  final Duration? animationDuration;
+  final Widget Function(BuildContext context, int progress) messageBuilder;
 
   const LoadingNotification({
-    required this.controller,
-    required this.items,
-    this.onDone,
-    this.onProgress,
-    this.onFailure,
-    this.onCancel,
-    this.icon,
-    this.timeout,
+    required this.messageBuilder,
+    required this.progress,
+    required this.max,
+    this.animationDuration,
   });
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: controller,
-      builder: (context, child) {
-        String getStatus() {
-          switch (controller.status) {
-            case LoadingNotificationStatus.loading:
-              return onProgress?.call(items, controller.progress) ??
-                  'Item ${controller.progress + 1}/${items.length}';
-            case LoadingNotificationStatus.cancelled:
-              return onCancel?.call(items, controller.progress) ??
-                  'Cancelled task';
-            case LoadingNotificationStatus.failed:
-              return onFailure?.call(items, controller.progress) ??
-                  'Failed at Item ${controller.progress}';
-            case LoadingNotificationStatus.done:
-              return onDone?.call(items) ?? 'Done';
-          }
-        }
-
+    return ValueListenableBuilder<int>(
+      valueListenable: progress,
+      builder: (context, value, child) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
               padding: const EdgeInsets.only(bottom: 8),
-              child: Text(
-                getStatus(),
-                overflow: TextOverflow.visible,
-              ),
+              child: messageBuilder(context, value),
             ),
             TweenAnimationBuilder<double>(
               tween: Tween<double>(
                 begin: 0,
-                end: controller.status != LoadingNotificationStatus.loading
-                    ? items.length.toDouble()
-                    : controller.progress.toDouble(),
+                end: value.toDouble(),
               ),
-              duration: timeout ?? defaultAnimationDuration,
+              duration: animationDuration ?? defaultAnimationDuration,
               builder: (context, value, child) {
-                double? indicator = 1 / items.length;
+                double? indicator = 1 / max;
                 if (indicator < 0) {
                   indicator = 1;
                 }
@@ -167,7 +159,7 @@ class LoadingNotification<T> extends StatelessWidget {
                   color: Theme.of(context).colorScheme.secondary,
                 );
               },
-            ),
+            )
           ],
         );
       },

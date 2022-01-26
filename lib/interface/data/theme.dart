@@ -70,6 +70,9 @@ ThemeData prepareTheme(ThemeData theme) => theme.copyWith(
         color: theme.canvasColor,
         foregroundColor: theme.iconTheme.color,
       ),
+      bannerTheme: MaterialBannerThemeData(
+        backgroundColor: theme.canvasColor,
+      ),
     );
 
 final Map<AppTheme, ThemeData> appThemeMap = {
