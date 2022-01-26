@@ -125,6 +125,7 @@ class _PostReportScreenState extends State<PostReportScreen> {
           builder: (context, constraints) => ListView(
             controller: scrollController,
             padding: defaultFormScreenPadding,
+            physics: BouncingScrollPhysics(),
             children: [
               PostReportImage(
                 post: widget.post,
@@ -233,6 +234,7 @@ class _PostFlagScreenState extends State<PostFlagScreen> {
           builder: (context, constraints) => ListView(
             controller: scrollController,
             padding: defaultFormScreenPadding,
+            physics: BouncingScrollPhysics(),
             children: [
               PostReportImage(
                 post: widget.post,

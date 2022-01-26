@@ -30,7 +30,7 @@ class Main extends StatelessWidget {
                 theme: appThemeMap[value],
                 routes: navigationController.routes,
                 navigatorObservers: [navigationController.routeObserver],
-                scrollBehavior: BouncingScrollBehaviour(),
+                scrollBehavior: DesktopScrollBehaviour(),
               ),
             ),
           ),

@@ -37,7 +37,7 @@ class DescriptionDisplay extends StatelessWidget {
                               return TextEditor(
                                 title: '#${post.id} description',
                                 content: post.description,
-                                validator: (context, text) async {
+                                validate: (context, text) async {
                                   post.description = text;
                                   post.notifyListeners();
                                   return true;

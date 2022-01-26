@@ -206,6 +206,7 @@ class _LoginPageState extends State<LoginPage> {
       body: Form(
         child: LayoutBuilder(
           builder: (context, constraints) => ListView(
+            physics: BouncingScrollPhysics(),
             padding: EdgeInsets.all(16),
             children: [
               ConstrainedBox(
@@ -341,6 +342,6 @@ Future<void> guardWithLogin(
       duration: Duration(seconds: 1),
       content: Text(error ?? 'You must be logged in to do that!'),
     ));
-    Navigator.pushNamed(context, '/login');
+    Navigator.of(context).pushNamed('/login');
   }
 }

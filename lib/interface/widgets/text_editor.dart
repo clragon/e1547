@@ -6,12 +6,12 @@ class TextEditor extends StatefulWidget {
   final String title;
   final String? content;
   final bool richEditor;
-  final Future<bool> Function(BuildContext context, String text)? validator;
+  final Future<bool> Function(BuildContext context, String text)? validate;
 
   const TextEditor({
     required this.title,
+    required this.validate,
     this.content,
-    required this.validator,
     this.richEditor = true,
   });
 
@@ -63,6 +63,7 @@ class _TextEditorState extends State<TextEditor>
   Widget build(BuildContext context) {
     Widget scrollView(Widget child) {
       return SingleChildScrollView(
+        physics: BouncingScrollPhysics(),
         child: Padding(
           padding: EdgeInsets.all(8),
           child: Column(
@@ -136,12 +137,12 @@ class _TextEditorState extends State<TextEditor>
           onPressed: isLoading
               ? null
               : () async {
-                  String text = textController.text.trim();
+            String text = textController.text.trim();
                   setState(() {
                     isLoading = true;
                   });
-                  if ((await widget.validator?.call(context, text)) ?? true) {
-                    Navigator.of(context).pop();
+                  if ((await widget.validate?.call(context, text)) ?? true) {
+                    Navigator.of(context).maybePop();
                   }
                   setState(() {
                     isLoading = false;

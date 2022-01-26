@@ -43,7 +43,7 @@ class SourceDisplay extends StatelessWidget {
                             title: '#${post.id} sources',
                             content: post.sources.join('\n'),
                             richEditor: false,
-                            validator: (context, text) async {
+                            validate: (context, text) async {
                               post.sources = text.trim().split('\n');
                               post.notifyListeners();
                               return true;

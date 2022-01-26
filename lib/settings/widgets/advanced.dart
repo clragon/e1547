@@ -16,6 +16,7 @@ class _AdvancedSettingsPageState extends State<AdvancedSettingsPage> {
         leading: BackButton(),
       ),
       body: ListView(
+        physics: BouncingScrollPhysics(),
         padding: defaultActionListPadding,
         children: [
           SettingsHeader(title: 'Server'),
@@ -27,7 +28,7 @@ class _AdvancedSettingsPageState extends State<AdvancedSettingsPage> {
               secondary: Icon(Icons.arrow_upward),
               value: value,
               onChanged: (value) => settings.upvoteFavs.value = value,
-            ),
+                ),
           ),
           Divider(),
           SettingsHeader(title: 'Display'),

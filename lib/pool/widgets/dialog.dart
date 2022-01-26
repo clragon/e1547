@@ -31,6 +31,7 @@ class PoolDialog extends StatelessWidget {
           maxHeight: MediaQuery.of(context).size.height * 0.5,
         ),
         child: SingleChildScrollView(
+          physics: BouncingScrollPhysics(),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,

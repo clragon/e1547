@@ -122,6 +122,7 @@ class _PostsPageState extends State<PostsPage> with ListenerCallbackMixin {
               widget.controller.refresh(background: true, force: true),
           builder: (context) => PagedStaggeredGridView(
             key: joinKeys(['posts', crossAxisCount]),
+            physics: BouncingScrollPhysics(),
             showNewPageErrorIndicatorAsGridChild: false,
             showNewPageProgressIndicatorAsGridChild: false,
             showNoMoreItemsIndicatorAsGridChild: false,

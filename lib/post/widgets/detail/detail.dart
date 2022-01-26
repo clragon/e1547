@@ -200,6 +200,7 @@ class _PostDetailState extends State<PostDetail>
               removeTop: true,
               child: LayoutBuilder(
                 builder: (context, constraints) => ListView(
+                  physics: BouncingScrollPhysics(),
                   padding: EdgeInsets.only(
                     top: MediaQuery.of(context).padding.top,
                     bottom: kBottomNavigationBarHeight + 24,
@@ -211,9 +212,9 @@ class _PostDetailState extends State<PostDetail>
                         constraints: BoxConstraints(
                           minHeight: (constraints.maxHeight / 2),
                           maxHeight:
-                              constraints.maxWidth > constraints.maxHeight
-                                  ? constraints.maxHeight * 0.8
-                                  : double.infinity,
+                          constraints.maxWidth > constraints.maxHeight
+                              ? constraints.maxHeight * 0.8
+                              : double.infinity,
                         ),
                         child: AnimatedSize(
                           duration: defaultAnimationDuration,

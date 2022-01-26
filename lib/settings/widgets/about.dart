@@ -40,38 +40,40 @@ class AboutPage extends StatelessWidget {
       return Stack(
         alignment: Alignment.center,
         children: [
-          Row(children: [
-            Flexible(
-              child: Center(
-                  child: Padding(
-                padding: EdgeInsets.only(bottom: 100),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    AppIcon(
-                      radius: 64,
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 24, bottom: 12),
-                      child: Text(
-                        appInfo.appName,
-                        style: TextStyle(
-                          fontSize: 22,
+          Row(
+            children: [
+              Flexible(
+                child: Center(
+                    child: Padding(
+                  padding: EdgeInsets.only(bottom: 100),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      AppIcon(
+                        radius: 64,
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(top: 24, bottom: 12),
+                        child: Text(
+                          appInfo.appName,
+                          style: TextStyle(
+                            fontSize: 22,
+                          ),
                         ),
                       ),
-                    ),
-                    Text(
-                      appInfo.version,
-                      style: TextStyle(
-                        fontSize: 16,
+                      Text(
+                        appInfo.version,
+                        style: TextStyle(
+                          fontSize: 16,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              )),
-            ),
-          ]),
+                    ],
+                  ),
+                )),
+              ),
+            ],
+          ),
           Align(
               alignment: Alignment.bottomCenter,
               child: Material(
@@ -156,6 +158,7 @@ class _VersionButtonState extends State<VersionButton> {
             maxHeight: MediaQuery.of(context).size.height * 0.5,
           ),
           child: SingleChildScrollView(
+            physics: BouncingScrollPhysics(),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -173,16 +176,16 @@ class _VersionButtonState extends State<VersionButton> {
                 ...versions
                     .map(
                       (release) => [
-                        Padding(
-                          padding: EdgeInsets.symmetric(vertical: 8),
-                          child: Text(
-                            '${release.name} (${release.version})',
-                            style: Theme.of(context).textTheme.headline6,
-                          ),
-                        ),
-                        Text(release.description!),
-                      ],
-                    )
+                    Padding(
+                      padding: EdgeInsets.symmetric(vertical: 8),
+                      child: Text(
+                        '${release.name} (${release.version})',
+                        style: Theme.of(context).textTheme.headline6,
+                      ),
+                    ),
+                    Text(release.description!),
+                  ],
+                )
                     .reduce((a, b) => [...a, ...b]),
               ],
             ),

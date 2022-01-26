@@ -107,6 +107,7 @@ class _FollowingPageState extends State<FollowingPage>
       }
 
       return ListView.builder(
+        physics: BouncingScrollPhysics(),
         padding:
             EdgeInsets.only(top: 8, bottom: kBottomNavigationBarHeight + 24),
         itemCount: follows.length,
@@ -118,24 +119,24 @@ class _FollowingPageState extends State<FollowingPage>
           onDelete: () {
             follows.removeAt(index);
             settings.follows.value = follows;
-          },
-          onChangeNotify: (enabled) {
-            if (enabled) {
-              follows[index].type = FollowType.notify;
-            } else {
-              follows[index].type = FollowType.update;
-            }
-            settings.follows.value = follows;
-          },
-          onChangeBookmark: (enabled) {
-            if (enabled) {
-              follows[index].type = FollowType.bookmark;
-            } else {
-              follows[index].type = FollowType.update;
-            }
-            settings.follows.value = follows;
-          },
-        ),
+              },
+              onChangeNotify: (enabled) {
+                if (enabled) {
+                  follows[index].type = FollowType.notify;
+                } else {
+                  follows[index].type = FollowType.update;
+                }
+                settings.follows.value = follows;
+              },
+              onChangeBookmark: (enabled) {
+                if (enabled) {
+                  follows[index].type = FollowType.bookmark;
+                } else {
+                  follows[index].type = FollowType.update;
+                }
+                settings.follows.value = follows;
+              },
+            ),
       );
     }
 
@@ -150,6 +151,7 @@ class _FollowingPageState extends State<FollowingPage>
           ],
         ),
         content: TextField(
+          scrollPhysics: BouncingScrollPhysics(),
           controller: controller,
           keyboardType: TextInputType.multiline,
           maxLines: null,

@@ -119,6 +119,7 @@ class _UserPageState extends State<UserPage>
         ],
       ),
       body: NestedScrollView(
+        physics: BouncingScrollPhysics(),
         headerSliverBuilder: (context, innerBoxIsScrolled) => [
           DefaultSliverAppBar(
             pinned: true,
@@ -130,25 +131,25 @@ class _UserPageState extends State<UserPage>
                 duration: defaultAnimationDuration,
                 opacity: collapsed ? 1 : 0,
                 child: Text(widget.user.name),
-              ),
-              background: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    height: 100,
-                    width: 100,
-                    child: AvatarLoader(maybeAvatar),
                   ),
-                  Padding(
-                    padding: EdgeInsets.only(top: 16, bottom: 32),
-                    child: Text(
-                      widget.user.name,
-                      style: Theme.of(context).textTheme.headline6,
-                    ),
+                  background: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        height: 100,
+                        width: 100,
+                        child: AvatarLoader(maybeAvatar),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(top: 16, bottom: 32),
+                        child: Text(
+                          widget.user.name,
+                          style: Theme.of(context).textTheme.headline6,
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ),
+                ),
             bottom: TabBar(
               controller: tabController,
               labelColor: Theme.of(context).iconTheme.color,

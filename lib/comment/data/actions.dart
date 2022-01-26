@@ -35,7 +35,7 @@ Future<bool> writeComment(
       builder: (context) => TextEditor(
         title: '#$postId comment',
         content: text ?? (comment?.body),
-        validator: (context, text) async {
+        validate: (context, text) async {
           if (text.isNotEmpty) {
             try {
               await client.postComment(postId, text, comment: comment);

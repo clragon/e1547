@@ -5,7 +5,6 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:e1547/user/user.dart';
 import 'package:expandable/expandable.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'grid.dart';
@@ -24,6 +23,7 @@ class _SettingsPageState extends State<SettingsPage> {
         leading: BackButton(),
       ),
       body: ListView(
+        physics: BouncingScrollPhysics(),
         padding: defaultActionListPadding,
         children: [
           SettingsHeader(title: 'Server'),
@@ -42,7 +42,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   title: Text('Host'),
                   subtitle: Text(settings.host.value),
                   secondary:
-                      Icon(useCustomHost ? Icons.warning : Icons.security),
+                  Icon(useCustomHost ? Icons.warning : Icons.security),
                   value: useCustomHost,
                   onChanged: (value) async {
                     if (settings.customHost.value == null) {
@@ -50,7 +50,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     }
                     if (settings.customHost.value != null) {
                       settings.host.value =
-                          value ? settings.customHost.value! : 'e926.net';
+                      value ? settings.customHost.value! : 'e926.net';
                     }
                   },
                 );
@@ -115,24 +115,24 @@ class _SettingsPageState extends State<SettingsPage> {
                         children: appThemeMap.keys
                             .map(
                               (theme) => ListTile(
-                                title: Text(theme.name),
-                                trailing: Container(
-                                  height: 28,
-                                  width: 28,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: appThemeMap[theme]!.cardColor,
-                                    border: Border.all(
-                                      color: Theme.of(context).iconTheme.color!,
-                                    ),
-                                  ),
+                            title: Text(theme.name),
+                            trailing: Container(
+                              height: 28,
+                              width: 28,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: appThemeMap[theme]!.cardColor,
+                                border: Border.all(
+                                  color: Theme.of(context).iconTheme.color!,
                                 ),
-                                onTap: () {
-                                  settings.theme.value = theme;
-                                  Navigator.of(context).maybePop();
-                                },
                               ),
-                            )
+                            ),
+                            onTap: () {
+                              settings.theme.value = theme;
+                              Navigator.of(context).maybePop();
+                            },
+                          ),
+                        )
                             .toList(),
                       )
                     ],
@@ -229,8 +229,8 @@ class _SettingsPageState extends State<SettingsPage> {
               leading: Icon(Icons.block),
               subtitle: value.isNotEmpty
                   ? Text('${value.join(' ').trim().split(' ').where(
-                        (element) => element.isNotEmpty && element[0] != '-',
-                      ).length} tags blocked')
+                    (element) => element.isNotEmpty && element[0] != '-',
+              ).length} tags blocked')
                   : null,
               onTap: () => Navigator.pushNamed(context, '/blacklist'),
             ),

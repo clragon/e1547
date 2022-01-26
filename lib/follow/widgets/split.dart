@@ -97,6 +97,7 @@ class _FollowsSplitPageState extends State<FollowsSplitPage>
               builder: (context) => StaggeredGridView.countBuilder(
                 key: joinKeys(['follows', tileBuilder, crossAxisCount]),
                 padding: defaultListPadding,
+                physics: BouncingScrollPhysics(),
                 addAutomaticKeepAlives: false,
                 crossAxisCount: crossAxisCount,
                 itemCount: follows.length,

@@ -127,15 +127,3 @@ class DesktopScrollBehaviour extends ScrollBehavior {
   @override
   Set<PointerDeviceKind> get dragDevices => PointerDeviceKind.values.toSet();
 }
-
-class BouncingScrollBehaviour extends DesktopScrollBehaviour {
-  @override
-  ScrollPhysics getScrollPhysics(BuildContext context) =>
-      const BouncingScrollPhysics();
-}
-
-class ClampingScrollBehaviour extends DesktopScrollBehaviour {
-  @override
-  ScrollPhysics getScrollPhysics(BuildContext context) =>
-      const ClampingScrollPhysics();
-}
