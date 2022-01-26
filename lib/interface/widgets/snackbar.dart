@@ -88,9 +88,11 @@ Future<void> loadingNotification<T>({
       break;
     }
   }
+
   if (status == LoadingNotificationStatus.loading) {
     status = LoadingNotificationStatus.done;
   }
+
   messenger.hideCurrentMaterialBanner();
   messenger.showMaterialBanner(
     MaterialBanner(
@@ -110,7 +112,7 @@ Future<void> loadingNotification<T>({
     ),
   );
 
-  await Future.delayed(Duration(seconds: 3));
+  await Future.delayed(Duration(seconds: 2));
   messenger.hideCurrentMaterialBanner();
 }
 
