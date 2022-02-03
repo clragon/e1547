@@ -74,23 +74,20 @@ class RatingDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
+    return SimpleDialog(
       title: Text('Rating'),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: ratingTexts.entries
-            .map(
-              (entry) => ListTile(
-                title: Text(entry.value),
-                leading: Icon(ratingIcons[entry.key]),
-                onTap: () {
-                  onTap(entry.key);
-                  Navigator.of(context).pop();
-                },
-              ),
-            )
-            .toList(),
-      ),
+      children: ratingTexts.entries
+          .map(
+            (entry) => ListTile(
+              title: Text(entry.value),
+              leading: Icon(ratingIcons[entry.key]),
+              onTap: () {
+                onTap(entry.key);
+                Navigator.of(context).pop();
+              },
+            ),
+          )
+          .toList(),
     );
   }
 }
