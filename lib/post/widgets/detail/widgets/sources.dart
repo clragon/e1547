@@ -29,12 +29,14 @@ class SourceDisplay extends StatelessWidget {
                     color: Colors.grey,
                   ),
                 ),
-              Padding(
-                padding: EdgeInsets.all(6),
-                child: Text(
-                  linkToDisplay(url),
-                  style: TextStyle(
-                    color: Colors.blue[400],
+              Flexible(
+                child: Padding(
+                  padding: EdgeInsets.all(6),
+                  child: Text(
+                    linkToDisplay(url),
+                    style: TextStyle(
+                      color: Colors.blue[400],
+                    ),
                   ),
                 ),
               ),

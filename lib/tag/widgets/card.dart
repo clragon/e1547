@@ -165,9 +165,16 @@ class DenyListTagCard extends StatelessWidget {
                     bottomLeft: Radius.circular(5)),
               ),
             ),
-            Padding(
-              padding: EdgeInsets.only(top: 4, bottom: 4, right: 8, left: 6),
-              child: Text(tagToCard(tag)),
+            Flexible(
+              child: Padding(
+                padding: EdgeInsets.only(top: 4, bottom: 4, right: 8, left: 6),
+                child: Text(
+                  tagToCard(tag),
+                  softWrap: false,
+                  maxLines: 1,
+                  overflow: TextOverflow.fade,
+                ),
+              ),
             ),
           ],
         ),

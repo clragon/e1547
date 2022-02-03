@@ -81,6 +81,7 @@ class AboutPage extends StatelessWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  const SizedBox(width: 8),
                   if (appInfo.github != null)
                     IconButton(
                       icon: FaIcon(FontAwesomeIcons.github),
@@ -93,6 +94,7 @@ class AboutPage extends StatelessWidget {
                       onPressed: () => launch(
                           'https://discord.com/invite/' + appInfo.discord!),
                     ),
+                  const SizedBox(width: 8),
                 ],
               ),
             ),
