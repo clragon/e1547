@@ -114,7 +114,7 @@ class _TextEditorState extends State<TextEditor>
                     style: TextStyle(
                       color: Theme.of(context)
                           .textTheme
-                          .bodyText1!
+                          .bodyText2!
                           .color!
                           .withOpacity(0.35),
                       fontStyle: FontStyle.italic,

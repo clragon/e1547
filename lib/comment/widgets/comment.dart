@@ -19,8 +19,6 @@ class CommentTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Color dark =
-        Theme.of(context).textTheme.bodyText1!.color!.withOpacity(0.35);
     final double iconSize = 18;
 
     Widget picture() {
@@ -32,7 +30,7 @@ class CommentTile extends StatelessWidget {
 
     Widget title() {
       return DefaultTextStyle(
-        style: TextStyle(color: dark),
+        style: TextStyle(color: dimTextColor(context)),
         child: Row(
           children: [
             Padding(
@@ -119,12 +117,12 @@ class CommentTile extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   DefaultTextStyle(
-                    style: Theme.of(context).textTheme.bodyText1!.copyWith(
-                          color: dark,
+                    style: Theme.of(context).textTheme.bodyText2!.copyWith(
+                          color: dimTextColor(context),
                         ),
                     child: IconTheme(
                       data: Theme.of(context).iconTheme.copyWith(
-                            color: dark,
+                            color: dimTextColor(context),
                             size: iconSize,
                           ),
                       child: AnimatedSelector(
@@ -165,7 +163,7 @@ class CommentTile extends StatelessWidget {
                     icon: Icon(
                       Icons.more_vert,
                       size: iconSize,
-                      color: dark,
+                      color: dimTextColor(context),
                     ),
                     onSelected: (value) => value(),
                     itemBuilder: (context) => [

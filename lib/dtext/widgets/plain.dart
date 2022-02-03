@@ -23,11 +23,7 @@ TextSpan plainText({
     text: text,
     recognizer: TapGestureRecognizer()..onTap = onTap,
     style: TextStyle(
-      color: state.dark
-          ? Theme.of(context).textTheme.bodyText1!.color!.withOpacity(0.5)
-          : state.link
-              ? Colors.blue[400]
-              : null,
+      color: state.link ? Colors.blue[400] : null,
       fontWeight: state.bold ? FontWeight.bold : null,
       fontStyle: state.italic ? FontStyle.italic : null,
       fontSize: state.header ? 18 : null,

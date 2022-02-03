@@ -119,7 +119,7 @@ class _WikiTagDisplayState extends State<WikiTagDisplay> {
                 style: TextStyle(
                   color: Theme.of(context)
                       .textTheme
-                      .bodyText1!
+                      .bodyText2!
                       .color!
                       .withOpacity(0.5),
                   fontStyle: FontStyle.italic,

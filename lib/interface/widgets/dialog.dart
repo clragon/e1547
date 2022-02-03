@@ -89,7 +89,7 @@ class _LoadingDialogState extends State<LoadingDialog> {
               builder: (context) => Padding(
                 padding: EdgeInsets.symmetric(vertical: 8),
                 child: DefaultTextStyle(
-                  style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                  style: Theme.of(context).textTheme.bodyText2!.copyWith(
                         color: Theme.of(context).errorColor,
                         fontSize: 14,
                       ),

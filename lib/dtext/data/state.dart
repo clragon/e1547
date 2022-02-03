@@ -6,7 +6,6 @@ class TextState {
   bool overline;
   bool header;
   bool link;
-  bool dark;
 
   TextState({
     required this.bold,
@@ -16,7 +15,6 @@ class TextState {
     required this.overline,
     required this.header,
     required this.link,
-    required this.dark,
   });
 
   TextState copyWith({
@@ -37,6 +35,5 @@ class TextState {
         overline: overline ?? this.overline,
         header: header ?? this.header,
         link: link ?? this.link,
-        dark: dark ?? this.dark,
       );
 }

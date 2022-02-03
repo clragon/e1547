@@ -170,7 +170,7 @@ class _VersionButtonState extends State<VersionButton> {
                   style: TextStyle(
                     color: Theme.of(context)
                         .textTheme
-                        .bodyText1!
+                        .bodyText2!
                         .color!
                         .withOpacity(0.5),
                   ),

@@ -18,7 +18,7 @@ class ReportFormHeader extends StatelessWidget {
         children: [
           DefaultTextStyle(
             child: title,
-            style: Theme.of(context).textTheme.bodyText1!.copyWith(
+            style: Theme.of(context).textTheme.bodyText2!.copyWith(
                   fontSize: 20,
                 ),
           ),

@@ -70,7 +70,7 @@ class FollowTile extends StatelessWidget {
                 Expanded(
                   child: Text(
                     getStatusText(status),
-                    style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                    style: Theme.of(context).textTheme.bodyText2!.copyWith(
                           shadows: getTextShadows(),
                           color: Colors.white,
                         ),
@@ -311,7 +311,7 @@ class FollowListTile extends StatelessWidget {
                         child: Text(
                           getStatusText(status),
                           style:
-                              Theme.of(context).textTheme.bodyText1!.copyWith(
+                              Theme.of(context).textTheme.bodyText2!.copyWith(
                                     shadows: getTextShadows(),
                                     color: Colors.white,
                                   ),

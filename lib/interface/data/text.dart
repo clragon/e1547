@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
+Color dimTextColor(BuildContext context) =>
+    Theme.of(context).textTheme.bodyText2!.color!.withOpacity(0.35);
+
 int notZero(double value) => value < 1 ? 1 : value.round();
 
 class LowercaseTextInputFormatter extends TextInputFormatter {

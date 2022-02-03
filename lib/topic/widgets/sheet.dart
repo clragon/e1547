@@ -101,7 +101,7 @@ class TopicInfo extends StatelessWidget {
     return DefaultTextStyle(
       style: TextStyle(
           color:
-              Theme.of(context).textTheme.bodyText1!.color!.withOpacity(0.35)),
+              Theme.of(context).textTheme.bodyText2!.color!.withOpacity(0.35)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,

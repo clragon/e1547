@@ -15,12 +15,10 @@ class DText extends StatelessWidget {
   final TextAlign textAlign;
   final bool softWrap;
 
-  final bool dark;
   final UsernameGenerator? usernameGenerator;
 
   const DText(
     this.data, {
-    this.dark = false,
     this.usernameGenerator,
     this.maxLines,
     this.overflow = TextOverflow.clip,
@@ -277,7 +275,6 @@ class DText extends StatelessWidget {
       overline: false,
       header: false,
       link: false,
-      dark: dark,
     );
 
     String result = data.replaceAllMapped(RegExp(r'\r\n'), (_) => '\n');
