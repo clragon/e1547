@@ -237,31 +237,30 @@ class UserInfo extends StatelessWidget {
       );
     }
 
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 24, vertical: 24),
-      child: Column(
-        children: [
-          info(
-            Icons.tag,
-            'id',
-            InkWell(
-              onLongPress: () {
-                Clipboard.setData(ClipboardData(text: user.id.toString()));
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  duration: Duration(seconds: 1),
-                  content: Text('Copied user id #${user.id}'),
-                ));
-              },
-              child: Text('#${user.id}'),
-            ),
+    return ListView(
+      physics: BouncingScrollPhysics(),
+      padding: defaultListPadding,
+      children: [
+        info(
+          Icons.tag,
+          'id',
+          InkWell(
+            onLongPress: () {
+              Clipboard.setData(ClipboardData(text: user.id.toString()));
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                duration: Duration(seconds: 1),
+                content: Text('Copied user id #${user.id}'),
+              ));
+            },
+            child: Text('#${user.id}'),
           ),
-          info(Icons.shield, 'rank', Text(user.levelString.toLowerCase())),
-          info(Icons.upload, 'posts', Text(user.postUploadCount.toString())),
-          info(Icons.edit, 'edits', Text(user.postUpdateCount.toString())),
-          info(Icons.comment, 'comments', Text(user.commentCount.toString())),
-          info(Icons.forum, 'forum', Text(user.forumPostCount.toString())),
-        ],
-      ),
+        ),
+        info(Icons.shield, 'rank', Text(user.levelString.toLowerCase())),
+        info(Icons.upload, 'posts', Text(user.postUploadCount.toString())),
+        info(Icons.edit, 'edits', Text(user.postUpdateCount.toString())),
+        info(Icons.comment, 'comments', Text(user.commentCount.toString())),
+        info(Icons.forum, 'forum', Text(user.forumPostCount.toString())),
+      ],
     );
   }
 }
