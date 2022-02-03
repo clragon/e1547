@@ -7,9 +7,16 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:flutter/foundation.dart' show ValueNotifier;
 
-final Persistence settings = Persistence();
+late final Settings settings;
 
-class Persistence extends SharedSettings {
+Future<void> initializeSettings() async {
+  settings = Settings();
+  await settings.initialize();
+}
+
+// TODO: rewrite settings as ChangeNotifier with getters and setters
+// TODO: create settings interface that reads / writes json, replace sharedprefs.
+class Settings extends SharedSettings {
   late final ValueNotifier<Credentials?> credentials = createSetting(
     key: 'credentials',
     initialValue: null,

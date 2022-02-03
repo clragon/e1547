@@ -12,9 +12,7 @@ class AppIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-      ),
+      decoration: BoxDecoration(shape: BoxShape.circle),
       clipBehavior: Clip.antiAlias,
       width: radius * 2,
       height: radius * 2,
@@ -44,59 +42,61 @@ class AboutPage extends StatelessWidget {
             children: [
               Flexible(
                 child: Center(
-                    child: Padding(
-                  padding: EdgeInsets.only(bottom: 100),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      AppIcon(
-                        radius: 64,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(top: 24, bottom: 12),
-                        child: Text(
-                          appInfo.appName,
-                          style: TextStyle(
-                            fontSize: 22,
+                  child: Padding(
+                    padding: EdgeInsets.only(bottom: 100),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        AppIcon(radius: 64),
+                        Padding(
+                          padding: EdgeInsets.only(top: 24, bottom: 12),
+                          child: Text(
+                            appInfo.appName,
+                            style: TextStyle(
+                              fontSize: 22,
+                            ),
                           ),
                         ),
-                      ),
-                      Text(
-                        appInfo.version,
-                        style: TextStyle(
-                          fontSize: 16,
+                        Text(
+                          appInfo.version,
+                          style: TextStyle(
+                            fontSize: 16,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                )),
+                ),
               ),
             ],
           ),
           Align(
-              alignment: Alignment.bottomCenter,
-              child: Material(
-                borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(5), topRight: Radius.circular(5)),
-                color: Theme.of(context).cardColor,
-                elevation: 6,
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
+            alignment: Alignment.bottomCenter,
+            child: Material(
+              borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(5), topRight: Radius.circular(5)),
+              color: Theme.of(context).cardColor,
+              elevation: 6,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (appInfo.github != null)
                     IconButton(
                       icon: FaIcon(FontAwesomeIcons.github),
                       onPressed: () =>
-                          launch('https://github.com/' + appInfo.github),
+                          launch('https://github.com/' + appInfo.github!),
                     ),
+                  if (appInfo.discord != null)
                     IconButton(
                       icon: FaIcon(FontAwesomeIcons.discord),
                       onPressed: () => launch(
-                          'https://discord.com/invite/' + appInfo.discord),
+                          'https://discord.com/invite/' + appInfo.discord!),
                     ),
-                  ],
-                ),
-              )),
+                ],
+              ),
+            ),
+          ),
         ],
       );
     }
@@ -201,7 +201,7 @@ class _VersionButtonState extends State<VersionButton> {
           TextButton(
             child: Text('DOWNLOAD'),
             onPressed: () => launch(
-                'https://github.com/' + appInfo.github + '/releases/latest'),
+                'https://github.com/' + appInfo.github! + '/releases/latest'),
           )
         ],
       );

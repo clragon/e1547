@@ -13,7 +13,7 @@ class FollowsSplitPage extends StatefulWidget {
 
 class _FollowsSplitPageState extends State<FollowsSplitPage>
     with ListenerCallbackMixin {
-  late RefreshController refreshController;
+  RefreshController refreshController = RefreshController();
 
   @override
   Map<ChangeNotifier, VoidCallback> get listeners => {
@@ -62,12 +62,6 @@ class _FollowsSplitPageState extends State<FollowsSplitPage>
   }
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    refreshController = RefreshController();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return TileLayoutScope(
       tileBuilder: (tileHeightFactor, crossAxisCount, stagger) =>
@@ -101,8 +95,10 @@ class _FollowsSplitPageState extends State<FollowsSplitPage>
                 addAutomaticKeepAlives: false,
                 crossAxisCount: crossAxisCount,
                 itemCount: follows.length,
-                itemBuilder: (context, index) =>
-                    FollowTile(follow: follows[index], safe: client.isSafe),
+                itemBuilder: (context, index) => FollowTile(
+                  follow: follows[index],
+                  host: client.host,
+                ),
                 staggeredTileBuilder: tileBuilder,
               ),
               appBar: DefaultAppBar(

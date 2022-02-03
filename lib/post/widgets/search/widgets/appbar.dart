@@ -43,7 +43,8 @@ class PostSelectionAppBar extends StatelessWidget with AppBarSize {
                   : Theme.of(context).iconTheme.color,
             ),
             onTap: (isLiked) async {
-              postFavoritingNotification(context, Set.from(selections), isLiked);
+              postFavoritingNotification(
+                  context, Set.from(selections), isLiked);
               onChanged({});
               return !isLiked;
             },

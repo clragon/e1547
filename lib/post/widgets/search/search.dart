@@ -21,6 +21,9 @@ class SearchPage extends StatefulWidget {
 
 class _SearchPageState extends State<SearchPage> with ListenerCallbackMixin {
   late bool reversePools = widget.reversePools;
+  bool loading = true;
+  Pool? pool;
+
   late PostController controller = PostController(
     search: widget.tags,
     provider: (tags, page, force) => client.posts(
@@ -30,56 +33,17 @@ class _SearchPageState extends State<SearchPage> with ListenerCallbackMixin {
       force: force,
     ),
   );
-  List<Follow>? follows;
-  Pool? pool;
-  bool loading = true;
-  String title = 'Search';
-
-  void updateTitle() {
-    if (mounted) {
-      setState(() {
-        title = getTitle();
-      });
-    }
-  }
-
-  void updateFollows() {
-    follows = List.from(settings.follows.value);
-    updateTitle();
-  }
 
   @override
   Map<ChangeNotifier, VoidCallback> get initListeners => {
-        controller: updateTitle,
         controller.search: updatePool,
-        settings.follows: updateFollows,
+        settings.follows: updateFollow,
       };
 
-  @override
-  void dispose() {
-    super.dispose();
-    // call super first, to disconnect mixin listeners
-    controller.dispose();
-  }
-
   String getTitle() {
-    Follow? follow = follows
-        ?.singleWhereOrNull((follow) => follow.tags == controller.search.value);
+    Follow? follow = settings.follows.value
+        .singleWhereOrNull((follow) => follow.tags == controller.search.value);
     if (follow != null) {
-      if (controller.itemList?.isNotEmpty ?? false) {
-        follow
-            .updateLatest(controller.itemList!.first, foreground: true)
-            .then((updated) {
-          if (updated) {
-            settings.follows.value = follows!;
-          }
-        });
-      }
-      if (pool != null) {
-        if (follow.updatePool(pool!)) {
-          settings.follows.value = follows!;
-        }
-      }
       return follow.title;
     }
     if (pool != null) {
@@ -91,29 +55,54 @@ class _SearchPageState extends State<SearchPage> with ListenerCallbackMixin {
     return 'Search';
   }
 
+  Future<void> updateFollow() async {
+    List<Follow> follows = List.from(settings.follows.value);
+    Follow? follow = follows.singleWhereOrNull(
+      (follow) => follow.tags == controller.search.value,
+    );
+    if (follow != null) {
+      if (controller.itemList?.isNotEmpty ?? false) {
+        bool updated = await follow.updateLatest(
+          settings.host.value,
+          controller.itemList!.first,
+          foreground: true,
+        );
+        if (updated) {
+          settings.follows.value = follows;
+        }
+      }
+      if (pool != null) {
+        if (follow.updatePool(pool!)) {
+          settings.follows.value = follows;
+        }
+      }
+    }
+  }
+
   Future<void> updatePool() async {
     setState(() {
       loading = true;
     });
-    pool = null;
-    Tagset input = Tagset.parse(controller.search.value);
-    if (input.length == 1) {
-      RegExpMatch? match = poolRegex().firstMatch(input.toString());
-      if (match != null) {
-        pool = await client.pool(int.parse(match.namedGroup('id')!));
-      }
+    String input = Tagset.parse(controller.search.value).toString();
+    RegExpMatch? match = poolRegex().firstMatch(input);
+    if (input.length == 1 &&
+        match != null &&
+        match.namedGroup('id')! != pool?.id.toString()) {
+      pool = await client.pool(int.parse(match.namedGroup('id')!));
+    } else {
+      pool = null;
     }
     setState(() {
       loading = false;
     });
-    updateTitle();
   }
 
   @override
   Widget build(BuildContext context) {
-    PreferredSizeWidget appbar(BuildContext context) {
-      return DefaultAppBar(
-        title: Text(title),
+    return PostsPage(
+      controller: controller,
+      appBarBuilder: (context) => DefaultAppBar(
+        title: Text(getTitle()),
         leading: BackButton(),
         actions: [
           Padding(
@@ -140,12 +129,7 @@ class _SearchPageState extends State<SearchPage> with ListenerCallbackMixin {
             ),
           ),
         ],
-      );
-    }
-
-    return PostsPage(
-      appBarBuilder: appbar,
-      controller: controller,
+      ),
       drawerActions: [
         if (pool != null)
           PoolOrderSwitch(

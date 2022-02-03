@@ -10,11 +10,12 @@ String normalize(String text) {
   return text.replaceAll('\\[', '[').replaceAll('\\]', ']');
 }
 
-TextSpan plainText(
-    {required BuildContext context,
-    required String text,
-    required TextState state,
-    VoidCallback? onTap}) {
+TextSpan plainText({
+  required BuildContext context,
+  required String text,
+  required TextState state,
+  VoidCallback? onTap,
+}) {
   text = normalize(text);
   text = text.replaceAllMapped(RegExp(r'\n{4,}'), (_) => '\n');
 
@@ -26,7 +27,7 @@ TextSpan plainText(
           ? Theme.of(context).textTheme.bodyText1!.color!.withOpacity(0.5)
           : state.link
               ? Colors.blue[400]
-              : Theme.of(context).textTheme.bodyText1!.color!,
+              : null,
       fontWeight: state.bold ? FontWeight.bold : null,
       fontStyle: state.italic ? FontStyle.italic : null,
       fontSize: state.header ? 18 : null,

@@ -11,7 +11,7 @@ import 'package:e1547/user/user.dart';
 import 'package:flutter/material.dart';
 
 final NavigationController navigationController =
-    NavigationController(destinations: destinations);
+    NavigationController(destinations: topLevelDestinations);
 
 NavigationDrawer defaultNavigationDrawer() =>
     NavigationDrawer(controller: navigationController);
@@ -22,18 +22,34 @@ class NavigationDestination<UniqueRoute extends Enum> {
   final String path;
   final WidgetBuilder builder;
   final UniqueRoute? route;
-  final String? name;
-  final Widget? icon;
-  final String? group;
 
   const NavigationDestination({
-    this.name,
-    this.icon,
-    this.group,
     required this.path,
     required this.builder,
     this.route,
   });
+}
+
+class NavigationDrawerDestination<UniqueRoute extends Enum>
+    extends NavigationDestination<UniqueRoute> {
+  final String name;
+  final bool Function(BuildContext context)? visible;
+  final Widget? icon;
+  final String? group;
+
+  const NavigationDrawerDestination({
+    required this.name,
+    this.icon,
+    this.group,
+    this.visible,
+    required String path,
+    required WidgetBuilder builder,
+    UniqueRoute? route,
+  }) : super(
+          path: path,
+          builder: builder,
+          route: route,
+        );
 }
 
 class NavigationController<UniqueRoute extends Enum> {
@@ -78,8 +94,8 @@ enum DrawerGroup {
   settings,
 }
 
-List<NavigationDestination<DrawerSelection>> destinations = [
-  NavigationDestination(
+final List<NavigationDestination<DrawerSelection>> topLevelDestinations = [
+  NavigationDrawerDestination(
     path: '/',
     name: 'Home',
     icon: Icon(Icons.home),
@@ -87,7 +103,7 @@ List<NavigationDestination<DrawerSelection>> destinations = [
     route: DrawerSelection.home,
     group: DrawerGroup.search.name,
   ),
-  NavigationDestination(
+  NavigationDrawerDestination(
     path: '/hot',
     name: 'Hot',
     icon: Icon(Icons.whatshot),
@@ -95,14 +111,14 @@ List<NavigationDestination<DrawerSelection>> destinations = [
     route: DrawerSelection.hot,
     group: DrawerGroup.search.name,
   ),
-  NavigationDestination(
+  NavigationDrawerDestination(
     path: '/search',
     name: 'Search',
     icon: Icon(Icons.search),
     builder: (context) => SearchPage(),
     group: DrawerGroup.search.name,
   ),
-  NavigationDestination(
+  NavigationDrawerDestination(
     path: '/fav',
     name: 'Favorites',
     icon: Icon(Icons.favorite),
@@ -110,7 +126,7 @@ List<NavigationDestination<DrawerSelection>> destinations = [
     route: DrawerSelection.favorites,
     group: DrawerGroup.collection.name,
   ),
-  NavigationDestination(
+  NavigationDrawerDestination(
     path: '/follows',
     name: 'Following',
     icon: Icon(Icons.turned_in),
@@ -118,7 +134,7 @@ List<NavigationDestination<DrawerSelection>> destinations = [
     route: DrawerSelection.follows,
     group: DrawerGroup.collection.name,
   ),
-  NavigationDestination(
+  NavigationDrawerDestination(
     path: '/pools',
     name: 'Pools',
     icon: Icon(Icons.collections),
@@ -126,22 +142,23 @@ List<NavigationDestination<DrawerSelection>> destinations = [
     route: DrawerSelection.pools,
     group: DrawerGroup.collection.name,
   ),
-  NavigationDestination(
+  NavigationDrawerDestination(
     path: '/topics',
     name: 'Forum',
     icon: Icon(Icons.forum),
     builder: (context) => TopicsPage(),
+    visible: (context) => settings.showBeta.value,
     route: DrawerSelection.topics,
     group: DrawerGroup.collection.name,
   ),
-  NavigationDestination(
+  NavigationDrawerDestination(
     path: '/settings',
     name: 'Settings',
     icon: Icon(Icons.settings),
     builder: (context) => SettingsPage(),
     group: DrawerGroup.settings.name,
   ),
-  NavigationDestination(
+  NavigationDrawerDestination(
     path: '/about',
     name: 'About',
     icon: DrawerUpdateIcon(),
@@ -176,11 +193,17 @@ class NavigationDrawer<UniqueRoute extends Enum> extends StatelessWidget {
     List<Widget> children = [];
     children.add(ProfileHeader());
 
-    String? currentGroup = controller.destinations.first.group;
+    List<NavigationDrawerDestination<UniqueRoute>> destinations = controller
+        .destinations
+        .where((e) => e is NavigationDrawerDestination<UniqueRoute>)
+        .toList()
+        .cast<NavigationDrawerDestination<UniqueRoute>>();
 
-    for (var destination in controller.destinations) {
-      if (destination.name == null) {
-        break;
+    String? currentGroup = destinations.first.group;
+
+    for (final destination in destinations) {
+      if (!(destination.visible?.call(context) ?? true)) {
+        continue;
       }
       if (destination.group != currentGroup) {
         currentGroup = destination.group;
@@ -189,7 +212,7 @@ class NavigationDrawer<UniqueRoute extends Enum> extends StatelessWidget {
       children.add(ListTile(
         selected: destination.route != null &&
             destination.route == controller.drawerSelection,
-        title: Text(destination.name!),
+        title: Text(destination.name),
         leading: destination.icon != null ? destination.icon : null,
         onTap: destination.route != null
             ? () => Navigator.of(context)

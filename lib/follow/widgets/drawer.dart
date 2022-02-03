@@ -12,46 +12,44 @@ class FollowMarkReadTile extends StatefulWidget {
 
 class _FollowMarkReadTileState extends State<FollowMarkReadTile>
     with ListenerCallbackMixin {
-  late List<Follow> follows;
-  late int unseen;
-
-  @override
-  Map<ChangeNotifier, VoidCallback> get initListeners => {
-        settings.follows: update,
-      };
-
-  Future<void> update() async {
-    unseen = 0;
-    follows = List.from(settings.follows.value);
-    for (Follow follow in follows) {
-      unseen += follow.status.unseen ?? 0;
-    }
-    setState(() {});
-  }
-
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      enabled: unseen != 0,
-      leading: Icon(unseen != 0 ? Icons.mark_email_read : Icons.drafts),
-      title: Text('unseen posts'),
-      subtitle: unseen != 0
-          ? TweenAnimationBuilder(
-              tween: IntTween(begin: 0, end: unseen),
-              duration: defaultAnimationDuration,
-              builder: (context, int value, child) {
-                return Text('mark $value posts as seen');
-              },
-            )
-          : Text('no unseen posts'),
-      onTap: () async {
-        for (Follow follow in follows) {
-          follow.status.unseen = 0;
-        }
-        settings.follows.value = follows;
-        followUpdater.update();
-        Navigator.of(context).maybePop();
-      },
+    return ValueListenableBuilder(
+      valueListenable: settings.host,
+      builder: (context, host, child) => ValueListenableBuilder<List<Follow>>(
+        valueListenable: settings.follows,
+        builder: (context, follows, child) {
+          int unseen = follows.fold<int>(
+            0,
+            (previousValue, element) =>
+                previousValue + (element.statuses[host]?.unseen ?? 0),
+          );
+          return ListTile(
+            enabled: unseen != 0,
+            leading: Icon(unseen != 0 ? Icons.mark_email_read : Icons.drafts),
+            title: Text('unseen posts'),
+            subtitle: unseen != 0
+                ? TweenAnimationBuilder(
+                    tween: IntTween(begin: 0, end: unseen),
+                    duration: defaultAnimationDuration,
+                    builder: (context, int value, child) {
+                      return Text('mark $value posts as seen');
+                    },
+                  )
+                : Text('no unseen posts'),
+            onTap: () async {
+              for (Follow follow in follows) {
+                FollowStatus? status = follow.statuses[host];
+                if (status != null) {
+                  status.unseen = 0;
+                }
+              }
+              settings.follows.value = List.from(follows);
+              Navigator.of(context).maybePop();
+            },
+          );
+        },
+      ),
     );
   }
 }

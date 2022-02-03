@@ -69,6 +69,7 @@ class CrossFade extends StatelessWidget {
   }
 }
 
+// TODO: replace with CrossFade.builder
 class SafeCrossFade extends StatelessWidget {
   final WidgetBuilder builder;
 

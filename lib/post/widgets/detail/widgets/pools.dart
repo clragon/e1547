@@ -30,18 +30,18 @@ class PoolDisplay extends StatelessWidget {
             ),
           ),
           ...post.pools.map(
-            (pool) => LoadingTile(
+            (id) => LoadingTile(
               leading: Icon(Icons.group),
-              title: Text(pool.toString()),
+              title: Text(id.toString()),
               onTap: () async {
-                Pool p = await client.pool(pool);
+                Pool pool = await client.pool(id);
                 try {
                   Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => PoolPage(pool: p)));
+                      builder: (context) => PoolPage(pool: pool)));
                 } on DioError {
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     duration: Duration(seconds: 1),
-                    content: Text('Coulnd\'t retrieve Pool #${p.id}'),
+                    content: Text('Coulnd\'t retrieve Pool #${pool.id}'),
                   ));
                 }
               },

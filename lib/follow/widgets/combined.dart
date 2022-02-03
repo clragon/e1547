@@ -15,7 +15,7 @@ class _FollowsCombinedPageState extends State<FollowsCombinedPage>
     with ListenerCallbackMixin {
   List<String?>? tags;
 
-  PostController provider = PostController(
+  PostController controller = PostController(
     provider: (tags, page, force) => client.follows(page, force: force),
     canSearch: false,
   );
@@ -30,7 +30,7 @@ class _FollowsCombinedPageState extends State<FollowsCombinedPage>
     if (tags == null) {
       tags = update;
     } else if (!listEquals(tags, update)) {
-      provider.refresh();
+      controller.refresh();
       tags = update;
     }
   }
@@ -38,7 +38,7 @@ class _FollowsCombinedPageState extends State<FollowsCombinedPage>
   @override
   Widget build(BuildContext context) {
     return PostsPage(
-      controller: provider,
+      controller: controller,
       appBarBuilder: (context) => DefaultAppBar(
         title: Text('Following'),
         actions: [

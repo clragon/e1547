@@ -29,7 +29,7 @@ class FollowUpdater extends DataUpdater<List<Follow>>
   }
 
   Future<void> sort(List<Follow> data) async {
-    data.sortByNew();
+    data.sortByNew(client.host);
     await write(List.from(data));
   }
 
@@ -44,7 +44,7 @@ class FollowUpdater extends DataUpdater<List<Follow>>
 
     for (Follow follow in data) {
       if (follow.type != FollowType.bookmark) {
-        DateTime? updated = follow.updated;
+        DateTime? updated = follow.statuses[client.host]?.updated;
         if (force || updated == null || now.difference(updated) > stale) {
           if (await follow.refresh()) {
             await write(data);
@@ -55,11 +55,6 @@ class FollowUpdater extends DataUpdater<List<Follow>>
         }
       }
       if (!step()) {
-        if (client.isSafe) {
-          follow.safe = FollowStatus();
-        } else {
-          follow.unsafe = FollowStatus();
-        }
         return null;
       }
     }

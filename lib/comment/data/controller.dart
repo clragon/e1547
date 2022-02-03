@@ -19,7 +19,7 @@ class CommentController extends CursorDataController<Comment>
   @override
   void disposeItems(List<Comment> items) async {
     if (itemList != null) {
-      for (var comment in itemList!) {
+      for (final comment in itemList!) {
         comment.dispose();
       }
     }

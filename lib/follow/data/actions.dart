@@ -10,39 +10,19 @@ import 'package:e1547/tag/tag.dart';
 extension Utility on List<Follow> {
   List<String> get tags => map((e) => e.tags).toList();
 
-  void sortByNew() {
-    bool isSafe = client.isSafe;
+  void sortByNew(String host) {
     sort(
       (a, b) {
         int result = 0;
 
-        int? unseenA;
-        int? unseenB;
-        if (isSafe) {
-          unseenB = b.safe.unseen;
-          unseenA = a.safe.unseen;
-        } else {
-          unseenB = b.unsafe.unseen;
-          unseenA = a.unsafe.unseen;
-        }
-        unseenB ??= -1;
-        unseenA ??= -1;
+        int unseenA = a.statuses[host]?.unseen ?? -1;
+        int unseenB = b.statuses[host]?.unseen ?? -1;
+
         result = unseenB.compareTo(unseenA);
 
         if (result == 0) {
-          int? latestA;
-          int? latestB;
-
-          if (isSafe) {
-            latestB = b.safe.latest;
-            latestA = a.safe.latest;
-          } else {
-            latestB = b.unsafe.latest;
-            latestA = a.unsafe.latest;
-          }
-
-          latestB ??= -1;
-          latestA ??= -1;
+          int latestA = a.statuses[host]?.latest ?? -1;
+          int latestB = b.statuses[host]?.latest ?? -1;
 
           result = latestB.compareTo(latestA);
         }
@@ -84,7 +64,7 @@ extension Refreshing on Follow {
             (element) => element.isBlacklisted = element.isDeniedBy(denylist));
 
         posts.removeWhere((element) => element.isBlacklisted);
-        await updateUnseen(posts);
+        await updateUnseen(client.host, posts);
 
         if (!tags.contains(' ') && alias == null) {
           RegExpMatch? match = poolRegex().firstMatch(tags);

@@ -7,118 +7,91 @@ import 'package:e1547/tag/tag.dart';
 import 'package:e1547/wiki/wiki.dart';
 import 'package:flutter/material.dart';
 
-class FollowTile extends StatefulWidget {
+class FollowTile extends StatelessWidget {
   final Follow follow;
-  final bool safe;
+  final String host;
 
-  FollowTile({required this.follow, required this.safe});
-
-  @override
-  _FollowTileState createState() => _FollowTileState();
-}
-
-class _FollowTileState extends State<FollowTile> {
-  FollowStatus? status;
-
-  void update() {
-    if (widget.safe) {
-      status = widget.follow.safe;
-    } else {
-      status = widget.follow.unsafe;
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    update();
-  }
-
-  @override
-  void didUpdateWidget(covariant FollowTile oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    update();
-  }
-
-  String getStatusText(FollowStatus? status) {
-    if (status == null) {
-      return '';
-    }
-    String text = status.unseen.toString();
-    if (status.unseen == widget.follow.checkAmount) {
-      text += '+';
-    }
-    text += ' new post';
-    if (status.unseen! > 1) {
-      text += 's';
-    }
-    return text;
-  }
-
-  Widget image() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Expanded(
-          child: Hero(
-            tag: getPostHero(status!.latest),
-            child: CachedNetworkImage(
-              imageUrl: status!.thumbnail!,
-              errorWidget: defaultErrorBuilder,
-              fit: BoxFit.cover,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget info() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            if (widget.follow.type != FollowType.update)
-              Padding(
-                padding: EdgeInsets.only(right: 4),
-                child: ShadowIcon(
-                  getFollowIcon(widget.follow.type),
-                  size: 16,
-                  color: Colors.white,
-                ),
-              ),
-            if (status!.unseen != null && status!.unseen! > 0)
-              Expanded(
-                child: Text(
-                  getStatusText(status),
-                  style: Theme.of(context).textTheme.bodyText1!.copyWith(
-                        shadows: getTextShadows(),
-                        color: Colors.white,
-                      ),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-          ],
-        ),
-        Text(
-          widget.follow.title,
-          style: Theme.of(context).textTheme.headline6!.copyWith(
-                shadows: getTextShadows(),
-                color: Colors.white,
-              ),
-          overflow: TextOverflow.ellipsis,
-          maxLines: 1,
-          softWrap: true,
-        ),
-      ],
-    );
-  }
-
+  FollowTile({required this.follow, required this.host});
   @override
   Widget build(BuildContext context) {
+    FollowStatus? status = follow.statuses[host];
     bool active = status?.thumbnail != null;
+
+    String getStatusText(FollowStatus? status) {
+      if (status == null) {
+        return '';
+      }
+      String text = status.unseen.toString();
+      if (status.unseen == follow.checkAmount) {
+        text += '+';
+      }
+      text += ' new post';
+      if (status.unseen! > 1) {
+        text += 's';
+      }
+      return text;
+    }
+
+    Widget image(FollowStatus status) {
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Expanded(
+            child: Hero(
+              tag: getPostHero(status.latest),
+              child: CachedNetworkImage(
+                imageUrl: status.thumbnail!,
+                errorWidget: defaultErrorBuilder,
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+
+    Widget info(FollowStatus status) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              if (follow.type != FollowType.update)
+                Padding(
+                  padding: EdgeInsets.only(right: 4),
+                  child: ShadowIcon(
+                    getFollowIcon(follow.type),
+                    size: 16,
+                    color: Colors.white,
+                  ),
+                ),
+              if (status.unseen != null && status.unseen! > 0)
+                Expanded(
+                  child: Text(
+                    getStatusText(status),
+                    style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                          shadows: getTextShadows(),
+                          color: Colors.white,
+                        ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+            ],
+          ),
+          Text(
+            follow.title,
+            style: Theme.of(context).textTheme.headline6!.copyWith(
+                  shadows: getTextShadows(),
+                  color: Colors.white,
+                ),
+            overflow: TextOverflow.ellipsis,
+            maxLines: 1,
+            softWrap: true,
+          ),
+        ],
+      );
+    }
 
     return Card(
       clipBehavior: Clip.antiAlias,
@@ -129,7 +102,7 @@ class _FollowTileState extends State<FollowTile> {
           AnimatedOpacity(
             opacity: active ? 1 : 0,
             duration: defaultAnimationDuration,
-            child: active ? image() : SizedBox.shrink(),
+            child: active ? image(status!) : SizedBox.shrink(),
           ),
           Positioned(
             bottom: active ? -1 : null,
@@ -151,13 +124,13 @@ class _FollowTileState extends State<FollowTile> {
                 ),
                 child: Padding(
                   padding: EdgeInsets.all(8),
-                  child: info(),
+                  child: info(status!),
                 ),
               ),
               secondChild: Padding(
                 padding: EdgeInsets.all(8),
                 child: Text(
-                  widget.follow.title,
+                  follow.title,
                   style: Theme.of(context).textTheme.headline6,
                   overflow: TextOverflow.ellipsis,
                   softWrap: true,
@@ -171,14 +144,14 @@ class _FollowTileState extends State<FollowTile> {
               onTap: () => Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (context) => SearchPage(
-                    tags: widget.follow.tags,
+                    tags: follow.tags,
                     reversePools: (status?.unseen ?? 0) > 0,
                   ),
                 ),
               ),
               onLongPress: () => wikiSheet(
                 context: context,
-                tag: widget.follow.tags,
+                tag: follow.tags,
               ),
             ),
           ),
@@ -188,74 +161,49 @@ class _FollowTileState extends State<FollowTile> {
   }
 }
 
-class FollowListTile extends StatefulWidget {
+class FollowListTile extends StatelessWidget {
   final VoidCallback onEdit;
   final VoidCallback onDelete;
   final VoidCallback onRename;
+  final Follow follow;
+  final String? host;
   final void Function(bool enabled) onChangeBookmark;
   final void Function(bool enabled) onChangeNotify;
-  final Follow follow;
-  final bool? safe;
 
   FollowListTile({
     required this.follow,
+    required this.host,
     required this.onEdit,
     required this.onDelete,
     required this.onRename,
     required this.onChangeBookmark,
     required this.onChangeNotify,
-    required this.safe,
   });
 
   @override
-  _FollowListTileState createState() => _FollowListTileState();
-}
-
-class _FollowListTileState extends State<FollowListTile> {
-  String? thumbnail;
-
-  void update() {
-    if (widget.safe!) {
-      thumbnail = widget.follow.safe.thumbnail;
-    } else {
-      thumbnail = widget.follow.unsafe.thumbnail;
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    update();
-  }
-
-  @override
-  void didUpdateWidget(covariant FollowListTile oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    update();
-  }
-
-  Widget cardWidget(String tag) {
-    return FakeCard(
-      child: TagGesture(
-        tag: tag,
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-              child: Text(tagToTitle(tag)),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  @override
   Widget build(BuildContext context) {
+    FollowStatus? status = follow.statuses[host];
+
+    Widget cardWidget(String tag) {
+      return FakeCard(
+        child: TagGesture(
+          tag: tag,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                child: Text(tagToTitle(tag)),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     Widget contextMenu() {
-      bool notified = widget.follow.type == FollowType.notify;
-      bool bookmarked = widget.follow.type == FollowType.bookmark;
+      bool notified = follow.type == FollowType.notify;
+      bool bookmarked = follow.type == FollowType.bookmark;
 
       return PopupMenuButton<VoidCallback>(
         icon: ShadowIcon(
@@ -267,7 +215,7 @@ class _FollowListTileState extends State<FollowListTile> {
           /*
           if (!bookmarked)
             PopupMenuTile(
-              value: () => widget.onChangeNotify(!notified),
+              value: () => onChangeNotify(!notified),
               title:
                   notified ? 'Disable notifications' : 'Enable notifications',
               icon: notified
@@ -277,23 +225,23 @@ class _FollowListTileState extends State<FollowListTile> {
            */
           if (!notified)
             PopupMenuTile(
-              value: () => widget.onChangeBookmark(!bookmarked),
+              value: () => onChangeBookmark(!bookmarked),
               title: bookmarked ? 'Enable updates' : 'Disable updates',
               icon: bookmarked ? Icons.update : Icons.update_disabled,
             ),
-          if (widget.follow.tags.split(' ').length > 1)
+          if (follow.tags.split(' ').length > 1)
             PopupMenuTile(
-              value: widget.onRename,
+              value: onRename,
               title: 'Rename',
               icon: Icons.label,
             ),
           PopupMenuTile(
-            value: widget.onEdit,
+            value: onEdit,
             title: 'Edit',
             icon: Icons.edit,
           ),
           PopupMenuTile(
-            value: widget.onDelete,
+            value: onDelete,
             title: 'Delete',
             icon: Icons.delete,
           ),
@@ -306,7 +254,7 @@ class _FollowListTileState extends State<FollowListTile> {
         return '';
       }
       String text = status.unseen.toString();
-      if (status.unseen == widget.follow.checkAmount) {
+      if (status.unseen == follow.checkAmount) {
         text += '+';
       }
       text += ' new post';
@@ -317,16 +265,19 @@ class _FollowListTileState extends State<FollowListTile> {
     }
 
     return PostPresenterTile(
-      postId: widget.follow.latest,
-      thumbnail: thumbnail,
-      onTap: () => Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => SearchPage(tags: widget.follow.tags))),
-      onLongPress: () => wikiSheet(context: context, tag: widget.follow.tags),
+      postId: status?.latest,
+      thumbnail: status?.thumbnail,
+      onTap: () => Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => SearchPage(tags: follow.tags),
+        ),
+      ),
+      onLongPress: () => wikiSheet(context: context, tag: follow.tags),
       child: ListTile(
         title: Padding(
           padding: EdgeInsets.all(8),
           child: Text(
-            widget.follow.title,
+            follow.title,
             style: Theme.of(context).textTheme.headline6?.copyWith(
                   shadows: getTextShadows(),
                   color: Colors.white,
@@ -337,27 +288,28 @@ class _FollowListTileState extends State<FollowListTile> {
           padding: EdgeInsets.symmetric(horizontal: 8),
           child: Column(
             children: [
-              if (widget.follow.tags.split(' ').length > 1)
-                Row(children: [
-                  Expanded(
-                    child: Wrap(
-                      direction: Axis.horizontal,
-                      children: widget.follow.tags
-                          .split(' ')
-                          .map((tag) => cardWidget(tag))
-                          .toList(),
+              if (follow.tags.split(' ').length > 1)
+                Row(
+                  children: [
+                    Expanded(
+                      child: Wrap(
+                        direction: Axis.horizontal,
+                        children: follow.tags
+                            .split(' ')
+                            .map((tag) => cardWidget(tag))
+                            .toList(),
+                      ),
                     ),
-                  ),
-                ]),
+                  ],
+                ),
               Padding(
                 padding: EdgeInsets.all(4),
                 child: Row(
                   children: [
-                    if (widget.follow.status.unseen != null &&
-                        widget.follow.status.unseen! > 0)
+                    if (status?.unseen != null && status!.unseen! > 0)
                       Expanded(
                         child: Text(
-                          getStatusText(widget.follow.status),
+                          getStatusText(status),
                           style:
                               Theme.of(context).textTheme.bodyText1!.copyWith(
                                     shadows: getTextShadows(),
@@ -376,11 +328,11 @@ class _FollowListTileState extends State<FollowListTile> {
           mainAxisSize: MainAxisSize.min,
           children: [
             CrossFade(
-              showChild: widget.follow.type != FollowType.update,
+              showChild: follow.type != FollowType.update,
               child: Padding(
                 padding: EdgeInsets.all(8),
                 child: ShadowIcon(
-                  getFollowIcon(widget.follow.type),
+                  getFollowIcon(follow.type),
                   color: Colors.white,
                 ),
               ),

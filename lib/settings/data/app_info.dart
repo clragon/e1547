@@ -1,16 +1,28 @@
 import 'package:package_info_plus/package_info_plus.dart';
 
-late AppInfo appInfo;
+late final AppInfo appInfo;
 
-Future<void> initializePackageInfo() async =>
-    AppInfo.fromPlatform().then((value) => appInfo = value);
+Future<void> initializeAppInfo() async => appInfo = await AppInfo.fromPlatform(
+      developer: 'binaryfloof',
+      github: 'clragon/e1547',
+      discord: 'MRwKGqfmUz',
+    );
 
-class AppInfo extends PackageInfo {
-  final String developer = 'binaryfloof';
-  final String github = 'clragon/e1547';
-  final String discord = 'MRwKGqfmUz';
+abstract class AppDeveloper {
+  String get developer;
+  String? get github;
+  String? get discord;
+}
+
+class AppInfo extends PackageInfo with AppDeveloper {
+  final String developer;
+  final String? github;
+  final String? discord;
 
   AppInfo({
+    required this.developer,
+    required this.github,
+    required this.discord,
     required String appName,
     required String packageName,
     required String version,
@@ -24,9 +36,16 @@ class AppInfo extends PackageInfo {
           buildSignature: buildNumber,
         );
 
-  static Future<AppInfo> fromPlatform() async {
+  static Future<AppInfo> fromPlatform({
+    required String developer,
+    required String github,
+    required String discord,
+  }) async {
     PackageInfo info = await PackageInfo.fromPlatform();
     return AppInfo(
+      developer: developer,
+      github: github,
+      discord: discord,
       appName: info.appName,
       packageName: info.packageName,
       version: info.version,

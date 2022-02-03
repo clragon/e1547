@@ -65,7 +65,7 @@ InlineSpan parseLink({
   String? display = match.namedGroup('name');
   String search = match.namedGroup('link')!;
   String siteMatch = r'((e621|e926)\.net)?';
-  VoidCallback onTap = () => launch(search);
+  VoidCallback? onTap = () => launch(search);
   int? id = int.tryParse(search.split('/').last.split('?').first);
 
   if (display == null) {
@@ -86,7 +86,7 @@ InlineSpan parseLink({
   }
 
   if (id != null) {
-    Map<RegExp, Function? Function(RegExpMatch match)> links = {
+    Map<RegExp, VoidCallback? Function(RegExpMatch match)> links = {
       RegExp(siteMatch + r'/post(s|/show)/\d+'): (match) =>
           getLinkWordTap(context, LinkWord.post, id),
       RegExp(siteMatch + r'/pool(s|/show)/\d+'): (match) =>
@@ -101,7 +101,7 @@ InlineSpan parseLink({
       }
     };
 
-    for (MapEntry<RegExp, Function(RegExpMatch match)> entry in links.entries) {
+    for (final entry in links.entries) {
       RegExpMatch? match = entry.key.firstMatch(result);
       if (match != null) {
         onTap = entry.value(match);

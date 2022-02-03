@@ -109,31 +109,23 @@ class DText extends StatelessWidget {
           switch (key) {
             case 'spoiler':
               blocked = SpoilerWrap(
-                child: RichText(
-                  text: resolve(between, state),
-                ),
+                child: Text.rich(resolve(between, state)),
               );
               break;
             case 'code':
               blocked = QuoteWrap(
-                child: RichText(
-                  text:
-                      plainText(context: context, text: between, state: state),
-                ),
+                child: Text.rich(
+                    plainText(context: context, text: between, state: state)),
               );
               break;
             case 'quote':
               blocked = QuoteWrap(
-                child: RichText(
-                  text: resolve(between, state),
-                ),
+                child: Text.rich(resolve(between, state)),
               );
               break;
             case 'section':
               blocked = SectionWrap(
-                  child: RichText(
-                    text: resolve(between, state),
-                  ),
+                  child: Text.rich(resolve(between, state)),
                   title: value,
                   expanded: expanded);
               break;
@@ -254,7 +246,7 @@ class DText extends StatelessWidget {
         ...linkWordRegexes(context),
       };
 
-      for (MapEntry<RegExp, DTextParser> entry in regexes.entries) {
+      for (final entry in regexes.entries) {
         for (RegExpMatch otherMatch in entry.key.allMatches(text)) {
           String before = text.substring(0, otherMatch.start);
           String result = text.substring(otherMatch.start, otherMatch.end);
@@ -292,8 +284,8 @@ class DText extends StatelessWidget {
     result = result.trim();
 
     try {
-      return RichText(
-        text: resolve(result, state),
+      return Text.rich(
+        resolve(result, state),
         maxLines: maxLines,
         overflow: overflow,
         textAlign: textAlign,

@@ -21,6 +21,9 @@ mixin ListenerCallbackMixin<T extends StatefulWidget> on State<T> {
     for (MapEntry<Listenable, VoidCallback> entry in initListeners.entries) {
       entry.key.removeListener(entry.value);
     }
+    for (MapEntry<Listenable, VoidCallback> entry in listeners.entries) {
+      entry.key.removeListener(entry.value);
+    }
     super.dispose();
   }
 }

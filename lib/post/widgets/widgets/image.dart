@@ -124,12 +124,5 @@ class PostImageWidget extends StatelessWidget {
   }
 }
 
-Widget defaultErrorBuilder(context, url, error) =>
+Widget defaultErrorBuilder(BuildContext context, String url, dynamic error) =>
     Center(child: Icon(Icons.warning_amber_outlined));
-
-Widget defaultProgressIndicatorBuilder(context, url, progress) => Center(
-      child: SizedCircularProgressIndicator(
-        size: 26,
-        value: progress.progress,
-      ),
-    );

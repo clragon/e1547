@@ -77,9 +77,8 @@ abstract class RawDataController<KeyType, ItemType>
     List<ItemType> old = List<ItemType>.from(itemList ?? []);
     if (background) {
       await backgroundRefresh();
-      // disposing these breaks everything
-      // TODO: figure out how to dispose items after replacing them
-      // disposeItems(old);
+      await Future.delayed(Duration.zero);
+      disposeItems(old);
     } else {
       super.refresh();
       disposeItems(old);

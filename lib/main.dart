@@ -13,7 +13,7 @@ Future<void> initialize() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   await settings.initialize();
-  await initializePackageInfo();
+  await initializeAppInfo();
   initializeHttpCache();
 }
 

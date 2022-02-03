@@ -14,48 +14,26 @@ class FavPage extends StatefulWidget {
 
 class _FavPageState extends State<FavPage> with ListenerCallbackMixin {
   bool orderFavorites = false;
-  bool showSwitch = false;
-  bool error = false;
-
   PostController? controller;
-  String? username;
 
   @override
   Map<ChangeNotifier, VoidCallback> get initListeners => {
         settings.credentials: updateUsername,
       };
 
-  void updateSwitch() {
-    setState(() {
-      if (controller != null &&
-          username != null &&
-          favRegex(username!).hasMatch(controller!.search.value)) {
-        showSwitch = true;
-      } else {
-        showSwitch = false;
-      }
-    });
-  }
-
   void updateUsername() {
     Credentials? credentials = settings.credentials.value;
     if (credentials != null) {
       setState(() {
-        error = false;
-        username = credentials.username;
-        controller?.removeListener(updateSwitch);
         controller = PostController(
           provider: (tags, page, force) => client.posts(page,
               search: tags, orderFavorites: orderFavorites, force: force),
-          search: 'fav:$username',
+          search: 'fav:${credentials.username}',
           canDeny: false,
         );
-        controller!.addListener(updateSwitch);
       });
     } else {
       setState(() {
-        error = true;
-        username = null;
         controller = null;
       });
     }
@@ -63,52 +41,64 @@ class _FavPageState extends State<FavPage> with ListenerCallbackMixin {
 
   @override
   void dispose() {
-    controller?.removeListener(updateSwitch);
     controller?.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return PageLoader(
-      isBuilt: controller != null,
-      isError: error,
-      onError: IconMessage(
-          icon: Icon(Icons.login), title: Text('You are not logged in')),
-      builder: (context) => PostsPage(
-        appBarBuilder: (context) => DefaultAppBar(
-          title: Text('Favorites'),
-          actions: [
-            ContextDrawerButton(),
+    return ValueListenableBuilder<Credentials?>(
+      valueListenable: settings.credentials,
+      builder: (context, credentials, child) => PageLoader(
+        isEmpty: credentials == null,
+        isError: credentials == null,
+        onError: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Text('You are not logged in'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pushNamed('/login'),
+              child: Text('LOGIN'),
+            ),
           ],
         ),
-        controller: controller!,
-        drawerActions: [
-          if (showSwitch)
-            SwitchListTile(
-              secondary: Icon(Icons.sort),
-              title: Text(
-                'Favorite order',
-                style: Theme.of(context).textTheme.subtitle1,
-              ),
-              subtitle: Text(orderFavorites ? 'added order' : 'id order'),
-              value: orderFavorites,
-              onChanged: (value) {
-                setState(() {
-                  orderFavorites = !orderFavorites;
-                });
-                controller!.refresh();
-                Navigator.of(context).maybePop();
-              },
-            ),
-        ],
-      ),
-      loadingBuilder: (context, child) => Scaffold(
-        appBar: DefaultAppBar(
-          title: Text('Favorites'),
+        onErrorIcon: Icon(Icons.login),
+        loadingBuilder: (context, child) => Scaffold(
+          appBar: DefaultAppBar(title: Text('Favorites')),
+          body: Center(child: child),
+          drawer: defaultNavigationDrawer(),
         ),
-        body: Center(
-          child: child,
+        builder: (context) => ValueListenableBuilder<String>(
+          valueListenable: controller!.search,
+          builder: (context, value, child) => PostsPage(
+            controller: controller!,
+            appBarBuilder: (context) => DefaultAppBar(
+              title: Text('Favorites'),
+              actions: [ContextDrawerButton()],
+            ),
+            drawerActions: [
+              if (favRegex(credentials!.username)
+                  .hasMatch(controller!.search.value))
+                SwitchListTile(
+                  secondary: Icon(Icons.sort),
+                  title: Text(
+                    'Favorite order',
+                    style: Theme.of(context).textTheme.subtitle1,
+                  ),
+                  subtitle: Text(orderFavorites ? 'added order' : 'id order'),
+                  value: orderFavorites,
+                  onChanged: (value) {
+                    setState(() {
+                      orderFavorites = !orderFavorites;
+                    });
+                    controller!.refresh();
+                    Navigator.of(context).maybePop();
+                  },
+                ),
+            ],
+          ),
         ),
       ),
     );

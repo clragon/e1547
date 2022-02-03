@@ -30,7 +30,7 @@ class PostController extends DataController<Post>
     this.canDeny = true,
   }) : search = ValueNotifier(sortTags(search ?? '')) {
     this.denying = ValueNotifier(denying);
-    for (var element in [allowed, this.denying, settings.denylist]) {
+    for (final element in [allowed, this.denying, settings.denylist]) {
       element.addListener(reapplyFilter);
     }
   }
@@ -95,17 +95,17 @@ class PostController extends DataController<Post>
 
   @override
   void disposeItems(List<Post> items) {
-    for (var post in items) {
+    for (final post in items) {
       post.dispose();
     }
   }
 
   @override
   void dispose() {
-    for (var element in [allowed, denying, settings.denylist]) {
+    for (final element in [allowed, denying, settings.denylist]) {
       element.removeListener(reapplyFilter);
     }
-    for (var element in [
+    for (final element in [
       allowed,
       denying,
     ]) {
