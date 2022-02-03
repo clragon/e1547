@@ -6,6 +6,7 @@ export 'data/text.dart';
 export 'data/theme.dart';
 export 'data/updater.dart';
 export 'data/action.dart';
+export 'data/hosts.dart';
 // widgets
 export 'widgets/action.dart';
 export 'widgets/animation.dart';
