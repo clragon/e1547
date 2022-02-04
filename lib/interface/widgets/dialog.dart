@@ -27,7 +27,7 @@ class DialogActionController extends ActionController {
 
 class LoadingDialog extends StatefulWidget {
   final Widget? title;
-  final ControllerAction submit;
+  final ActionControllerCallback submit;
   final Widget Function(
     BuildContext context,
     ActionController controller,

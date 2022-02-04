@@ -16,24 +16,24 @@ Map<Rating, String> ratingTexts = {
 
 class RatingDisplay extends StatelessWidget {
   final Post post;
+  final PostEditingController? editingController;
 
-  const RatingDisplay({required this.post});
+  const RatingDisplay({required this.post, this.editingController});
 
   @override
   Widget build(BuildContext context) {
     return AnimatedSelector(
-      animation: post,
-      selector: () => [post.rating],
+      animation: Listenable.merge([editingController]),
+      selector: () => [editingController?.isEditing, editingController?.rating],
       builder: (context, child) {
+        Rating rating = editingController?.rating ?? post.rating;
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: EdgeInsets.only(
-                right: 4,
-                left: 4,
-                top: 2,
-                bottom: 2,
+              padding: EdgeInsets.symmetric(
+                horizontal: 4,
+                vertical: 2,
               ),
               child: Text(
                 'Rating',
@@ -43,19 +43,16 @@ class RatingDisplay extends StatelessWidget {
               ),
             ),
             ListTile(
-              title: Text(ratingTexts[post.rating]!),
-              leading: Icon(!post.flags.ratingLocked
-                  ? ratingIcons[post.rating]
-                  : Icons.lock),
-              onTap: !post.flags.ratingLocked
+              title: Text(ratingTexts[rating]!),
+              leading: Icon(
+                  !post.flags.ratingLocked ? ratingIcons[rating] : Icons.lock),
+              onTap: (editingController?.isEditing ?? false) &&
+                      !post.flags.ratingLocked
                   ? () => showDialog(
                         context: context,
-                        builder: (BuildContext context) {
-                          return RatingDialog(onTap: (rating) {
-                            post.rating = rating;
-                            post.notifyListeners();
-                          });
-                        },
+                        builder: (context) => RatingDialog(
+                          onTap: (value) => editingController!.rating = value,
+                        ),
                       )
                   : null,
             ),
@@ -68,7 +65,7 @@ class RatingDisplay extends StatelessWidget {
 }
 
 class RatingDialog extends StatelessWidget {
-  final Function(Rating rating) onTap;
+  final void Function(Rating rating) onTap;
 
   const RatingDialog({required this.onTap});
 
@@ -83,7 +80,7 @@ class RatingDialog extends StatelessWidget {
               leading: Icon(ratingIcons[entry.key]),
               onTap: () {
                 onTap(entry.key);
-                Navigator.of(context).pop();
+                Navigator.of(context).maybePop();
               },
             ),
           )

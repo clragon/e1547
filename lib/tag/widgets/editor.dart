@@ -1,16 +1,13 @@
 import 'package:e1547/interface/interface.dart';
-import 'package:e1547/post/post.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 
 class TagEditor extends StatefulWidget {
-  final Post post;
   final String? category;
   final Future<bool> Function(String text) submit;
   final ActionController controller;
 
   const TagEditor({
-    required this.post,
     required this.category,
     required this.submit,
     required this.controller,
@@ -33,6 +30,7 @@ class _TagEditorState extends State<TagEditor> {
   Widget build(BuildContext context) {
     return TagInput(
       labelText: widget.category,
+      textInputAction: TextInputAction.done,
       submit: (_) => widget.controller.action!(),
       controller: controller,
       category: categories[widget.category!],

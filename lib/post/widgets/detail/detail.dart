@@ -21,6 +21,8 @@ class PostDetail extends StatefulWidget {
 
 class _PostDetailState extends State<PostDetail>
     with ListenerCallbackMixin, RouteAware {
+  late PostEditingController editingController =
+      PostEditingController(widget.post);
   SheetActionController sheetController = SheetActionController();
   bool keepPlaying = false;
 
@@ -29,7 +31,7 @@ class _PostDetailState extends State<PostDetail>
 
   @override
   Map<ChangeNotifier, VoidCallback> get listeners => {
-        widget.post: closeSheet,
+        editingController: closeSheet,
         if (widget.controller != null) widget.controller!: onPageChange,
       };
 
@@ -44,7 +46,7 @@ class _PostDetailState extends State<PostDetail>
   }
 
   void closeSheet() {
-    if (!widget.post.isEditing) {
+    if (!editingController.isEditing) {
       sheetController.close();
     }
   }
@@ -58,10 +60,9 @@ class _PostDetailState extends State<PostDetail>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    navigationController.routeObserver
-        .subscribe(this, ModalRoute.of(context) as PageRoute);
     navigator = Navigator.of(context);
     route = ModalRoute.of(context)!;
+    navigationController.routeObserver.subscribe(this, route as PageRoute);
   }
 
   @override
@@ -78,9 +79,6 @@ class _PostDetailState extends State<PostDetail>
   @override
   void dispose() {
     navigationController.routeObserver.unsubscribe(this);
-    if (widget.post.isEditing) {
-      widget.post.resetPost();
-    }
     widget.post.controller?.pause();
     if (widget.controller == null) {
       widget.post.dispose();
@@ -98,23 +96,27 @@ class _PostDetailState extends State<PostDetail>
     }
   }
 
-  Future<void> editPost(BuildContext context, String reason) async {
-    widget.post.isEditing = false;
-    try {
-      await client.updatePost(widget.post, Post.fromMap(widget.post.raw),
-          editReason: reason);
-      await widget.post.resetPost(online: true);
-    } on DioError {
-      widget.post.isEditing = true;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          duration: Duration(seconds: 1),
-          content: Text('failed to edit Post #${widget.post.id}'),
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
-      throw ControllerException(
-          message: 'failed to edit Post #${widget.post.id}');
+  Future<void> editPost(
+      BuildContext context, PostEditingController controller) async {
+    controller.isLoading = true;
+    Map<String, String?>? body = controller.compile();
+    if (body != null) {
+      try {
+        await client.updatePost(controller.post.id, body);
+        await widget.post.resetPost(online: true);
+        controller.isEditing = false;
+      } on DioError {
+        controller.isLoading = false;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            duration: Duration(seconds: 1),
+            content: Text('failed to edit Post #${widget.post.id}'),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+        throw ActionControllerException(
+            message: 'failed to edit Post #${widget.post.id}');
+      }
     }
   }
 
@@ -123,7 +125,7 @@ class _PostDetailState extends State<PostDetail>
       context,
       ControlledTextField(
         labelText: 'Reason',
-        submit: (value) => editPost(context, value),
+        submit: (value) => editPost(context, editingController),
         actionController: sheetController,
       ),
     );
@@ -136,10 +138,10 @@ class _PostDetailState extends State<PostDetail>
         heroTag: null,
         backgroundColor: Theme.of(context).cardColor,
         foregroundColor: Theme.of(context).iconTheme.color,
-        onPressed: widget.post.isEditing
+        onPressed: editingController.isEditing
             ? sheetController.action ?? () => submitEdit(context)
             : () {},
-        child: widget.post.isEditing
+        child: editingController.isEditing
             ? Icon(sheetController.isShown ? Icons.add : Icons.check)
             : Padding(
                 padding: EdgeInsets.only(left: 2),
@@ -152,7 +154,7 @@ class _PostDetailState extends State<PostDetail>
   @override
   Widget build(BuildContext context) {
     Widget fullscreen() {
-      if (widget.post.isEditing || widget.controller == null) {
+      if (editingController.isEditing || widget.controller == null) {
         return PostFullscreenFrame(
           child: PostFullscreenImageDisplay(post: widget.post),
           post: widget.post,
@@ -167,7 +169,10 @@ class _PostDetailState extends State<PostDetail>
     }
 
     Widget editorDependant({required Widget child, required bool shown}) =>
-        CrossFade(showChild: shown == widget.post.isEditing, child: child);
+        CrossFade(
+          showChild: shown == editingController.isEditing,
+          child: child,
+        );
 
     Widget editorScope({required Widget child}) {
       return WillPopScope(
@@ -175,8 +180,8 @@ class _PostDetailState extends State<PostDetail>
           if (sheetController.isShown) {
             return true;
           }
-          if (widget.post.isEditing) {
-            widget.post.resetPost();
+          if (editingController.isEditing) {
+            editingController.isEditing = false;
             return false;
           }
           return true;
@@ -187,13 +192,16 @@ class _PostDetailState extends State<PostDetail>
 
     return Scaffold(
       body: AnimatedSelector(
-        animation: widget.post,
-        selector: () => [widget.post.isEditing],
+        animation: editingController,
+        selector: () => [editingController.isEditing],
         builder: (context, child) {
           return editorScope(
             child: Scaffold(
               extendBodyBehindAppBar: true,
-              appBar: PostDetailAppBar(post: widget.post),
+              appBar: PostDetailAppBar(
+                post: widget.post,
+                editingController: editingController,
+              ),
               floatingActionButton:
                   client.hasLogin ? Builder(builder: fab) : null,
               body: MediaQuery.removeViewInsets(
@@ -240,8 +248,12 @@ class _PostDetailState extends State<PostDetail>
                             ArtistDisplay(
                               post: widget.post,
                               controller: widget.controller,
+                              editingController: editingController,
                             ),
-                            DescriptionDisplay(post: widget.post),
+                            DescriptionDisplay(
+                              post: widget.post,
+                              editingController: editingController,
+                            ),
                             editorDependant(
                                 child: LikeDisplay(post: widget.post),
                                 shown: false),
@@ -251,7 +263,8 @@ class _PostDetailState extends State<PostDetail>
                             Builder(
                               builder: (context) => ParentDisplay(
                                 post: widget.post,
-                                controller: sheetController,
+                                actionController: sheetController,
+                                editingController: editingController,
                               ),
                             ),
                             editorDependant(
@@ -260,14 +273,9 @@ class _PostDetailState extends State<PostDetail>
                             Builder(
                               builder: (context) => TagDisplay(
                                 post: widget.post,
-                                provider: widget.controller,
-                                submit: (value, category) => onPostTagsEdit(
-                                  context,
-                                  widget.post,
-                                  value,
-                                  category,
-                                ),
-                                controller: sheetController,
+                                controller: widget.controller,
+                                actionController: sheetController,
+                                editingController: editingController,
                               ),
                             ),
                             editorDependant(
@@ -279,9 +287,13 @@ class _PostDetailState extends State<PostDetail>
                             editorDependant(
                                 child: RatingDisplay(
                                   post: widget.post,
+                                  editingController: editingController,
                                 ),
                                 shown: true),
-                            SourceDisplay(post: widget.post),
+                            SourceDisplay(
+                              post: widget.post,
+                              editingController: editingController,
+                            ),
                           ],
                         ),
                       )

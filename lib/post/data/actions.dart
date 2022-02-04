@@ -145,6 +145,7 @@ extension Downloading on Post {
             '${Platform.environment['EXTERNAL_STORAGE']}/Pictures';
         directory = [directory, appInfo.appName].join('/');
         String filename = '';
+        List<String> artists = filterArtists(tags['artist']!);
         if (artists.isNotEmpty) {
           filename = '${artists.join(', ')} - ';
         }
@@ -274,14 +275,7 @@ extension Voting on Post {
 
 extension Editing on Post {
   Future<void> resetPost({bool online = false}) async {
-    Post reset;
-    if (online) {
-      reset = await client.post(id);
-      raw = reset.raw;
-    } else {
-      reset = Post.fromMap(raw);
-    }
-
+    Post reset = await client.post(id);
     isFavorited = reset.isFavorited;
     favCount = reset.favCount;
     score = reset.score;
@@ -290,7 +284,6 @@ extension Editing on Post {
     sources = reset.sources;
     rating = reset.rating;
     relationships.parentId = reset.relationships.parentId;
-    isEditing = false;
     notifyListeners();
   }
 }
@@ -307,3 +300,14 @@ Uri getPostUri(int postId) =>
     Uri(scheme: 'https', host: settings.host.value, path: '/posts/$postId');
 
 String getPostHero(int? postId) => 'image_$postId';
+
+List<String> filterArtists(List<String> artists) {
+  List<String> excluded = [
+    'epilepsy_warning',
+    'conditional_dnp',
+    'sound_warning',
+    'avoid_posting',
+  ];
+
+  return List.from(artists)..removeWhere((artist) => excluded.contains(artist));
+}

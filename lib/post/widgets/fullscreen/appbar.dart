@@ -4,8 +4,9 @@ import 'package:flutter/material.dart';
 
 class PostFullscreenAppBar extends StatelessWidget with AppBarSize {
   final Post post;
+  final bool isEditing;
 
-  PostFullscreenAppBar({required this.post});
+  PostFullscreenAppBar({required this.post, this.isEditing = false});
 
   @override
   Size get preferredSize => Size.fromHeight(defaultAppBarHeight);
@@ -14,7 +15,7 @@ class PostFullscreenAppBar extends StatelessWidget with AppBarSize {
   Widget build(BuildContext context) {
     return TransparentAppBar(
       leading: ShadowBackButton(),
-      actions: post.isEditing
+      actions: isEditing
           ? null
           : [
               PopupMenuButton<VoidCallback>(

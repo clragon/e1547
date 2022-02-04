@@ -31,11 +31,7 @@ class ReplyTile extends StatelessWidget {
               child: Text(
                 generator.generate(reply.creatorId),
                 style: TextStyle(
-                  color: Theme.of(context)
-                      .textTheme
-                      .bodyText2!
-                      .color!
-                      .withOpacity(0.35),
+                  color: dimTextColor(context),
                 ),
               ),
               onTap: () => Navigator.of(context).push(
@@ -56,11 +52,7 @@ class ReplyTile extends StatelessWidget {
               return time;
             }(),
             style: TextStyle(
-              color: Theme.of(context)
-                  .textTheme
-                  .bodyText2!
-                  .color!
-                  .withOpacity(0.35),
+              color: dimTextColor(context),
               fontSize: 12,
             ),
           ),

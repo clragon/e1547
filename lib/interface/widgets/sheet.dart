@@ -19,7 +19,7 @@ class SheetActionController extends ActionController {
   }
 
   @override
-  void setAction(ControllerAction submit) {
+  void setAction(ActionControllerCallback submit) {
     WidgetsBinding.instance!.addPostFrameCallback((_) {
       super.setAction(submit);
     });

@@ -53,6 +53,7 @@ class _PostsPageState extends State<PostsPage> with ListenerCallbackMixin {
                 TextEditingController(text: widget.controller.search.value),
             submit: (value) => widget.controller.search.value = sortTags(value),
             builder: (context, controller, submit) => AdvancedTagInput(
+              textInputAction: TextInputAction.search,
               labelText: 'Tags',
               controller: controller,
               submit: submit,

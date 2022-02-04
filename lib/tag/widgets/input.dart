@@ -15,6 +15,7 @@ class TagInput extends StatefulWidget {
   final bool multiInput;
   final int? category;
   final bool readOnly;
+  final TextInputAction? textInputAction;
 
   const TagInput({
     required this.labelText,
@@ -23,6 +24,7 @@ class TagInput extends StatefulWidget {
     this.multiInput = true,
     this.category,
     this.readOnly = false,
+    this.textInputAction,
   });
 
   @override
@@ -61,6 +63,7 @@ class _TagInputState extends State<TagInput> {
         ],
         decoration: InputDecoration(labelText: widget.labelText),
         onSubmitted: (result) => widget.submit(sortTags(result)),
+        textInputAction: widget.textInputAction,
       ),
       onSuggestionSelected: (dynamic suggestion) {
         List<String> tags = sortTags(controller.text).split(' ');
@@ -152,11 +155,13 @@ class AdvancedTagInput extends StatefulWidget {
   final TextEditingController? controller;
   final SubmitString submit;
   final String? labelText;
+  final TextInputAction? textInputAction;
 
   const AdvancedTagInput({
     required this.submit,
     required this.controller,
     this.labelText,
+    this.textInputAction,
   });
 
   @override
@@ -321,6 +326,7 @@ class _AdvancedTagInputState extends State<AdvancedTagInput> {
           labelText: widget.labelText,
           controller: controller,
           submit: widget.submit,
+          textInputAction: widget.textInputAction,
         ),
         Padding(
           padding: EdgeInsets.symmetric(vertical: 10),

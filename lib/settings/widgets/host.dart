@@ -39,7 +39,7 @@ Future<void> setCustomHost(BuildContext context) async {
     }
 
     if (error != null) {
-      throw ControllerException(message: error);
+      throw ActionControllerException(message: error);
     }
   }
 

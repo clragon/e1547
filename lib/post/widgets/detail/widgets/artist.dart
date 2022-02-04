@@ -8,20 +8,29 @@ import 'package:flutter/services.dart';
 class ArtistDisplay extends StatelessWidget {
   final Post post;
   final PostController? controller;
+  final PostEditingController? editingController;
 
-  const ArtistDisplay({required this.post, required this.controller});
+  const ArtistDisplay({
+    required this.post,
+    this.controller,
+    this.editingController,
+  });
 
   @override
   Widget build(BuildContext context) {
     Widget artists() {
       return AnimatedSelector(
-        animation: post,
-        selector: () => [post.tags.hashCode],
+        animation: Listenable.merge([editingController]),
+        selector: () => [
+          editingController?.tags.hashCode,
+        ],
         builder: (context, child) {
-          if (post.artists.isNotEmpty) {
+          List<String> artists =
+              filterArtists((editingController?.tags ?? post.tags)['artist']!);
+          if (artists.isNotEmpty) {
             List<InlineSpan> spans = [];
-            for (String artist in post.artists) {
-              if (artist != post.artists.first && post.artists.length > 1) {
+            for (String artist in artists) {
+              if (artist != artists.first && artists.length > 1) {
                 spans.add(TextSpan(text: ', '));
               }
               spans.add(
@@ -83,13 +92,15 @@ class ArtistDisplay extends StatelessWidget {
                   ),
                 ),
                 InkWell(
-                  child: Row(children: [
-                    Icon(Icons.person, size: 14.0),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 4),
-                      child: Text(post.uploaderId.toString()),
-                    ),
-                  ]),
+                  child: Row(
+                    children: [
+                      Icon(Icons.person, size: 14),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 4),
+                        child: Text(post.uploaderId.toString()),
+                      ),
+                    ],
+                  ),
                   onTap: () => Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (context) => UserLoadingPage(

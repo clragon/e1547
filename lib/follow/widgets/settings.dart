@@ -46,6 +46,7 @@ class _FollowingPageState extends State<FollowingPage> {
                   text: edit != null ? follows[edit].tags : null),
               builder: (context, controller, submit) => TagInput(
                 controller: controller,
+                textInputAction: TextInputAction.done,
                 labelText: edit != null ? 'Edit follow' : 'Add to follows',
                 submit: submit,
               ),

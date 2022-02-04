@@ -36,7 +36,8 @@ class _DenyListPageState extends State<DenyListPage> {
               denylist.add(value);
             }
             if (!await updateBlacklist(context: context, denylist: denylist)) {
-              throw ControllerException(message: 'Failed to update blacklist!');
+              throw ActionControllerException(
+                  message: 'Failed to update blacklist!');
             }
           }
 
@@ -49,6 +50,7 @@ class _DenyListPageState extends State<DenyListPage> {
                   text: edit != null ? denylist[edit] : null),
               builder: (context, controller, submit) => TagInput(
                 controller: controller,
+                textInputAction: TextInputAction.done,
                 labelText: 'Add to blacklist',
                 submit: submit,
                 readOnly: sheetController.isLoading,

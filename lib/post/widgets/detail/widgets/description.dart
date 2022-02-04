@@ -5,22 +5,28 @@ import 'package:flutter/material.dart';
 
 class DescriptionDisplay extends StatelessWidget {
   final Post post;
+  final PostEditingController? editingController;
 
-  const DescriptionDisplay({required this.post});
+  const DescriptionDisplay({required this.post, this.editingController});
 
   @override
   Widget build(BuildContext context) {
     return AnimatedSelector(
-      animation: post,
-      selector: () => [post.description, post.isEditing],
+      animation: Listenable.merge([editingController]),
+      selector: () => [
+        editingController?.description,
+        editingController?.isEditing,
+      ],
       builder: (context, child) {
+        bool editing = (editingController?.isEditing ?? false);
+        String description = editingController?.description ?? post.description;
         return CrossFade(
-          showChild: post.description.isNotEmpty || post.isEditing,
+          showChild: description.isNotEmpty || editing,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               CrossFade(
-                showChild: post.isEditing,
+                showChild: editing,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -30,23 +36,18 @@ class DescriptionDisplay extends StatelessWidget {
                     ),
                     IconButton(
                       icon: Icon(Icons.edit),
-                      onPressed: () async {
-                        await Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) {
-                              return TextEditor(
-                                title: '#${post.id} description',
-                                content: post.description,
-                                validate: (context, text) async {
-                                  post.description = text;
-                                  post.notifyListeners();
-                                  return true;
-                                },
-                              );
+                      onPressed: () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => TextEditor(
+                            title: '#${post.id} description',
+                            content: editingController!.description,
+                            validate: (context, text) async {
+                              editingController!.description = text;
+                              return true;
                             },
                           ),
-                        );
-                      },
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -57,17 +58,14 @@ class DescriptionDisplay extends StatelessWidget {
                     child: Card(
                       child: Padding(
                         padding: EdgeInsets.all(16),
-                        child: post.description.isNotEmpty
-                            ? DText(post.description)
+                        child: description.isNotEmpty
+                            ? DText(description)
                             : Text(
                                 'no description',
                                 style: TextStyle(
-                                    color: Theme.of(context)
-                                        .textTheme
-                                        .bodyText2!
-                                        .color!
-                                        .withOpacity(0.35),
-                                    fontStyle: FontStyle.italic),
+                                  color: dimTextColor(context),
+                                  fontStyle: FontStyle.italic,
+                                ),
                               ),
                       ),
                     ),

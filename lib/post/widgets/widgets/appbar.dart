@@ -30,20 +30,18 @@ List<PopupMenuItem<VoidCallback>> postMenuPostActions(
 }
 
 List<PopupMenuItem<VoidCallback>> postMenuUserActions(
-    BuildContext context, Post post) {
+    BuildContext context, Post post, PostEditingController? editingController) {
   return [
-    PopupMenuTile(
-      title: 'Edit',
-      icon: Icons.edit,
-      value: () => guardWithLogin(
-        context: context,
-        callback: () {
-          post.isEditing = true;
-          post.notifyListeners();
-        },
-        error: 'You must be logged in to edit posts!',
+    if (editingController != null)
+      PopupMenuTile(
+        title: 'Edit',
+        icon: Icons.edit,
+        value: () => guardWithLogin(
+          context: context,
+          callback: () => editingController.isEditing = true,
+          error: 'You must be logged in to edit posts!',
+        ),
       ),
-    ),
     PopupMenuTile(
       title: 'Comment',
       icon: Icons.comment,
@@ -76,13 +74,11 @@ List<PopupMenuItem<VoidCallback>> postMenuUserActions(
       icon: Icons.flag,
       value: () => guardWithLogin(
         context: context,
-        callback: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => PostFlagScreen(post: post),
-            ),
-          );
-        },
+        callback: () => Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => PostFlagScreen(post: post),
+          ),
+        ),
         error: 'You must be logged in to flag posts!',
       ),
     ),

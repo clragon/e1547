@@ -112,11 +112,7 @@ class _TextEditorState extends State<TextEditor>
                   return Text(
                     'your text here',
                     style: TextStyle(
-                      color: Theme.of(context)
-                          .textTheme
-                          .bodyText2!
-                          .color!
-                          .withOpacity(0.35),
+                      color: dimTextColor(context),
                       fontStyle: FontStyle.italic,
                     ),
                   );

@@ -19,9 +19,6 @@ enum PostType {
 
 class Post with ChangeNotifier {
   // start of custom code
-  Map<String, dynamic> raw;
-
-  bool isEditing = false;
   bool isBlacklisted = false;
   bool isAllowed = false;
 
@@ -101,18 +98,6 @@ class Post with ChangeNotifier {
     loadedVideos.remove(this);
   }
 
-  List<String> get artists {
-    List<String> excluded = [
-      'epilepsy_warning',
-      'conditional_dnp',
-      'sound_warning',
-      'avoid_posting',
-    ];
-
-    return List.from(tags['artist']!)
-      ..removeWhere((artist) => excluded.contains(artist));
-  }
-
   @override
   void notifyListeners() {
     super.notifyListeners();
@@ -150,8 +135,6 @@ class Post with ChangeNotifier {
     required this.isFavorited,
     required this.hasNotes,
     this.duration,
-    // start of custom code
-    required this.raw,
   }) {
     if (type == PostType.video && Platform.isIOS) {
       file.ext = 'mp4';
@@ -191,7 +174,6 @@ class Post with ChangeNotifier {
 
   factory Post.fromMap(Map<String, dynamic> json) {
     return Post(
-      raw: json,
       id: json["id"],
       createdAt: DateTime.parse(json["created_at"]),
       updatedAt: json["updated_at"] == null

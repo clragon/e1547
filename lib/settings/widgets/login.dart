@@ -71,6 +71,7 @@ class _LoginPageState extends State<LoginPage> {
           ),
           maxLines: 1,
           autofillHints: [AutofillHints.username],
+          textInputAction: TextInputAction.next,
           onChanged: (value) {
             authFailed = false;
           },
@@ -150,6 +151,7 @@ class _LoginPageState extends State<LoginPage> {
               FilteringTextInputFormatter.deny(' '),
             ],
             autofillHints: [AutofillHints.password],
+            textInputAction: TextInputAction.done,
             onChanged: (value) {
               authFailed = false;
             },

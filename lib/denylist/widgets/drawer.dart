@@ -215,11 +215,7 @@ class DrawerDenySwitchBody extends StatelessWidget {
                         '$value inactive entries',
                         style: TextStyle(
                           fontStyle: FontStyle.italic,
-                          color: Theme.of(context)
-                              .textTheme
-                              .bodyText2!
-                              .color!
-                              .withOpacity(0.35),
+                          color: dimTextColor(context),
                         ),
                       ),
                     ),

@@ -456,104 +456,16 @@ class Client {
     return post;
   }
 
-  Future<void> updatePost(Post update, Post old, {String? editReason}) async {
+  Future<void> updatePost(int postId, Map<String, String?> body) async {
     if (!await isLoggedIn) {
       return;
     }
-    Map<String, String?> body = {};
+    await dio.clearCacheKey(
+      'posts/$postId.json',
+      cacheManager,
+    );
 
-    List<String> tags(Post post) {
-      List<String> tags = [];
-      post.tags.forEach((key, value) {
-        tags.addAll(List<String>.from(value));
-      });
-      return tags;
-    }
-
-    List<String> oldTags = tags(old);
-    List<String> newTags = tags(update);
-    List<String> removedTags =
-        oldTags.where((element) => !newTags.contains(element)).toList();
-    removedTags = removedTags.map((t) => '-$t').toList();
-    List<String> addedTags =
-        newTags.where((element) => !oldTags.contains(element)).toList();
-    List<String> tagDiff = [];
-    tagDiff.addAll(removedTags);
-    tagDiff.addAll(addedTags);
-
-    if (tagDiff.isNotEmpty) {
-      body.addEntries([
-        MapEntry(
-          'post[tag_string_diff]',
-          tagDiff.join(' '),
-        ),
-      ]);
-    }
-
-    List<String> removedSource = old.sources
-        .where((element) => !update.sources.contains(element))
-        .toList();
-    removedSource = removedSource.map((s) => '-$s').toList();
-    List<String> addedSource = update.sources
-        .where((element) => !old.sources.contains(element))
-        .toList();
-    List<String> sourceDiff = [];
-    sourceDiff.addAll(removedSource);
-    sourceDiff.addAll(addedSource);
-
-    if (sourceDiff.isNotEmpty) {
-      body.addEntries([
-        MapEntry(
-          'post[source_diff]',
-          sourceDiff.join(' '),
-        ),
-      ]);
-    }
-
-    if (old.relationships.parentId != update.relationships.parentId) {
-      body.addEntries([
-        MapEntry(
-          'post[parent_id]',
-          update.relationships.parentId?.toString() ?? '',
-        ),
-      ]);
-    }
-
-    if (old.description != update.description) {
-      body.addEntries([
-        MapEntry(
-          'post[description]',
-          update.description,
-        ),
-      ]);
-    }
-
-    if (old.rating != update.rating) {
-      body.addEntries([
-        MapEntry(
-          'post[rating]',
-          ratingValues.reverse![update.rating],
-        ),
-      ]);
-    }
-
-    if (body.isNotEmpty) {
-      if (editReason!.trim().isNotEmpty) {
-        body.addEntries([
-          MapEntry(
-            'post[edit_reason]',
-            editReason.trim(),
-          ),
-        ]);
-      }
-
-      await dio.clearCacheKey(
-        'posts/${update.id}.json',
-        cacheManager,
-      );
-
-      await dio.put('posts/${update.id}.json', data: FormData.fromMap(body));
-    }
+    await dio.put('posts/$postId.json', data: FormData.fromMap(body));
   }
 
   Future<void> reportPost(int postId, int reportId, String reason) async {

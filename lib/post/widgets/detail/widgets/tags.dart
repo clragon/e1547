@@ -6,89 +6,95 @@ import 'package:flutter/material.dart';
 
 class TagDisplay extends StatelessWidget {
   final Post post;
-  final PostController? provider;
-  final Future<bool> Function(String value, String category) submit;
-  final SheetActionController controller;
+  final PostController? controller;
+  final SheetActionController? actionController;
+  final PostEditingController? editingController;
 
   const TagDisplay({
     required this.post,
-    required this.provider,
-    required this.submit,
     required this.controller,
+    this.actionController,
+    this.editingController,
   });
 
   @override
   Widget build(BuildContext context) {
-    Widget title(String category) {
-      return Padding(
-        padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-        child: Text(
-          '${category[0].toUpperCase()}${category.substring(1)}',
-          style: TextStyle(
-            fontSize: 16,
-          ),
-        ),
-      );
-    }
-
-    Widget tags(Post post, String category) {
-      return Wrap(
-        direction: Axis.horizontal,
-        children: [
-          ...post.tags[category]!.map(
-            (tag) => TagCard(
-              tag: tag,
-              category: category,
-              controller: provider,
-              onRemove: post.isEditing
-                  ? () {
-                      post.tags[category]!.remove(tag);
-                      post.tags = Map.from(post.tags);
-                      post.notifyListeners();
-                    }
-                  : null,
-            ),
-          ),
-          CrossFade(
-            showChild: post.isEditing,
-            child: TagAddCard(
-              post: post,
-              provider: provider,
-              category: category,
-              submit: (value) => submit(value, category),
-              controller: controller,
-            ),
-          ),
-        ],
-      );
-    }
-
-    Widget categoryTile(Post post, String category) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          title(category),
-          Row(children: [
-            Expanded(
-              child: tags(post, category),
-            )
-          ]),
-          Divider(),
-        ],
-      );
-    }
-
     return AnimatedSelector(
-      animation: post,
-      selector: () => [post.tags.hashCode, post.isEditing],
+      animation: Listenable.merge([editingController]),
+      selector: () =>
+          [editingController?.isEditing, editingController?.tags.hashCode],
       builder: (context, child) {
+        bool isEditing =
+            (editingController?.isEditing ?? false) && actionController != null;
+        Map<String, List<String>>? tags = editingController?.tags ?? post.tags;
+
+        Widget title(String category) {
+          return Padding(
+            padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+            child: Text(
+              '${category[0].toUpperCase()}${category.substring(1)}',
+              style: TextStyle(
+                fontSize: 16,
+              ),
+            ),
+          );
+        }
+
+        Widget tagCategory(String category) {
+          return Wrap(
+            direction: Axis.horizontal,
+            children: [
+              ...tags[category]!.map(
+                (tag) => TagCard(
+                  tag: tag,
+                  category: category,
+                  controller: controller,
+                  onRemove: isEditing
+                      ? () {
+                          Map<String, List<String>> edited =
+                              Map.from(editingController!.tags!);
+                          edited[category]!.remove(tag);
+                          editingController!.tags = edited;
+                        }
+                      : null,
+                ),
+              ),
+              if (category != 'invalid')
+                CrossFade(
+                  showChild: isEditing,
+                  child: TagAddCard(
+                    category: category,
+                    submit: (value) => onPostTagsEdit(
+                      context,
+                      editingController!,
+                      value,
+                      category,
+                    ),
+                    controller: actionController!,
+                  ),
+                ),
+            ],
+          );
+        }
+
+        Widget categoryTile(String category) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              title(category),
+              Row(children: [Expanded(child: tagCategory(category))]),
+              Divider(),
+            ],
+          );
+        }
+
         return Column(
           mainAxisSize: MainAxisSize.min,
           children: categories.keys
               .where((category) =>
-                  post.tags[category]!.isNotEmpty ||
-                  post.isEditing && category != 'invalid')
-              .map((category) => categoryTile(post, category))
+                  tags[category]!.isNotEmpty ||
+                  (isEditing && category != 'invalid'))
+              .map((category) => categoryTile(category))
               .toList(),
         );
       },
@@ -98,7 +104,7 @@ class TagDisplay extends StatelessWidget {
 
 Future<bool> onPostTagsEdit(
   BuildContext context,
-  Post post,
+  PostEditingController controller,
   String value,
   String category,
 ) async {
@@ -106,14 +112,15 @@ Future<bool> onPostTagsEdit(
   if (value.isEmpty) {
     return true;
   }
-  List<String> tags = value.split(' ');
-  post.tags[category]!.addAll(tags);
-  post.tags[category]!.toSet().toList().sort();
-  post.tags = Map.of(post.tags);
-  post.notifyListeners();
+  List<String> edited = value.split(' ');
+  Map<String, List<String>> tags = Map.from(controller.tags!);
+  tags[category]!.addAll(edited);
+  tags[category] = tags[category]!.toSet().toList();
+  tags[category]!.sort();
+  controller.tags = tags;
   if (category != 'general') {
     () async {
-      for (String tag in tags) {
+      for (String tag in edited) {
         List validator = await client.tag(tag);
         String? target;
         if (validator.isEmpty) {
@@ -123,12 +130,12 @@ Future<bool> onPostTagsEdit(
               .firstWhere((k) => validator[0]['category'] == categories[k]);
         }
         if (target != null) {
-          post.tags[category]!.remove(tag);
-          post.tags[target]!.add(tag);
-          post.tags[target] = post.tags[target]!.toSet().toList();
-          post.tags[target]!.sort();
-          post.tags = Map.of(post.tags);
-          post.notifyListeners();
+          Map<String, List<String>> tags = Map.from(controller.tags!);
+          tags[category]!.remove(tag);
+          tags[target]!.add(tag);
+          tags[target] = tags[target]!.toSet().toList();
+          tags[target]!.sort();
+          controller.tags = tags;
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             duration: Duration(milliseconds: 500),
             content: Text('Moved $tag to $target tags'),

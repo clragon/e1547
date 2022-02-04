@@ -16,7 +16,6 @@ class PostDetailGallery extends StatefulWidget {
 
 class _PostDetailGalleryState extends State<PostDetailGallery> {
   bool hasRequestedNextPage = false;
-  late int lastIndex = widget.initialPage;
   late PageController pageController =
       PageController(initialPage: widget.initialPage);
 
@@ -61,13 +60,6 @@ class _PostDetailGalleryState extends State<PostDetailGallery> {
         },
         itemCount: widget.controller.itemList?.length ?? 0,
         onPageChanged: (index) {
-          if (widget.controller.itemList!.isNotEmpty) {
-            Post lastPost = widget.controller.itemList![lastIndex];
-            if (lastPost.isEditing) {
-              lastPost.resetPost();
-            }
-          }
-          lastIndex = index;
           preloadImages(
             context: context,
             index: index,

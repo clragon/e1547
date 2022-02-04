@@ -22,8 +22,8 @@ class PoolInfo extends StatelessWidget {
 
     return DefaultTextStyle(
       style: TextStyle(
-          color:
-              Theme.of(context).textTheme.bodyText2!.color!.withOpacity(0.35)),
+        color: dimTextColor(context),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
