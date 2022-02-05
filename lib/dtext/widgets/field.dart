@@ -137,7 +137,12 @@ class DText extends StatelessWidget {
 
           spans.addAll([
             resolve(before, state),
-            WidgetSpan(child: blocked),
+            WidgetSpan(
+              child: MediaQuery(
+                data: MediaQuery.of(context).copyWith(textScaleFactor: 1),
+                child: blocked,
+              ),
+            ),
             resolve(after, state),
           ]);
         } else {
