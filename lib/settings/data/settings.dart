@@ -5,7 +5,7 @@ import 'package:e1547/follow/follow.dart';
 import 'package:e1547/history/history.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/settings/settings.dart';
-import 'package:flutter/foundation.dart' show ValueNotifier;
+import 'package:flutter/foundation.dart';
 
 late final Settings settings;
 
@@ -14,9 +14,7 @@ Future<void> initializeSettings() async {
   await settings.initialize();
 }
 
-// TODO: rewrite settings as ChangeNotifier with getters and setters
-// TODO: create settings interface that reads / writes json, replace sharedprefs.
-class Settings extends SharedSettings {
+class Settings with SharedPrefsSettings {
   late final ValueNotifier<Credentials?> credentials = createSetting(
     key: 'credentials',
     initialValue: null,
@@ -49,18 +47,11 @@ class Settings extends SharedSettings {
     key: 'follows',
     initialValue: [],
     getSetting: (prefs, key) {
-      try {
-        List<String>? value = prefs.getStringList(key);
-        if (value != null) {
-          return value.map((e) => Follow.fromJson(e)).toList();
-        } else {
-          return null;
-        }
-      } on FormatException {
-        return prefs
-            .getStringList(key)!
-            .map((e) => Follow.fromString(e))
-            .toList();
+      List<String>? value = prefs.getStringList(key);
+      if (value != null) {
+        return value.map((e) => Follow.fromJson(e)).toList();
+      } else {
+        return null;
       }
     },
     setSetting: (prefs, key, value) async => prefs.setStringList(

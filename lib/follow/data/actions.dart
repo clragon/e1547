@@ -35,6 +35,15 @@ extension Utility on List<Follow> {
     );
   }
 
+  void markAllAsRead() {
+    for (Follow follow in this) {
+      FollowStatus? status = follow.statuses[client.host];
+      if (status != null) {
+        status.unseen = 0;
+      }
+    }
+  }
+
   List<Follow> editWith(List<String> update) {
     List<Follow> edited = [];
     for (String tags in update) {

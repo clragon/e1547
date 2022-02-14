@@ -52,6 +52,7 @@ class _UserPageState extends State<UserPage>
       avatar = await client.post(widget.user.avatarId!);
       return avatar;
     }
+    return null;
   }
 
   @override
@@ -139,7 +140,17 @@ class _UserPageState extends State<UserPage>
                     SizedBox(
                       height: 100,
                       width: 100,
-                      child: AvatarLoader(maybeAvatar),
+                      child: GestureDetector(
+                        onTap: widget.user.avatarId != null
+                            ? () => Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        PostLoadingPage(widget.user.avatarId!),
+                                  ),
+                                )
+                            : null,
+                        child: AvatarLoader(maybeAvatar),
+                      ),
                     ),
                     Padding(
                       padding: EdgeInsets.only(top: 16, bottom: 32),
@@ -166,8 +177,8 @@ class _UserPageState extends State<UserPage>
                     PopupMenuTile(
                       title: 'Browse',
                       icon: Icons.open_in_browser,
-                      value: () async => launch(
-                          widget.user.url(settings.host.value).toString()),
+                      value: () async =>
+                          launch(widget.user.url(client.host).toString()),
                     ),
                     PopupMenuTile(
                       title: 'Report',

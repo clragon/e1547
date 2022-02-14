@@ -1,5 +1,8 @@
 import 'package:e1547/pool/pool.dart';
 
-extension Link on Pool {
-  Uri url(String host) => Uri(scheme: 'https', host: host, path: '/pools/$id');
+extension Linking on Pool {
+  Uri url(String host) => getPooltUri(host, id);
 }
+
+Uri getPooltUri(String host, int id) =>
+    Uri(scheme: 'https', host: host, path: '/pools/$id');

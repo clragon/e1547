@@ -38,6 +38,7 @@ class _SearchPageState extends State<SearchPage> with ListenerCallbackMixin {
   Map<ChangeNotifier, VoidCallback> get initListeners => {
         controller.search: updatePool,
         settings.follows: updateFollow,
+        controller: updateFollow,
       };
 
   String getTitle() {
@@ -63,7 +64,7 @@ class _SearchPageState extends State<SearchPage> with ListenerCallbackMixin {
     if (follow != null) {
       if (controller.itemList?.isNotEmpty ?? false) {
         bool updated = await follow.updateLatest(
-          settings.host.value,
+          client.host,
           controller.itemList!.first,
           foreground: true,
         );

@@ -167,8 +167,7 @@ class CommentTile extends StatelessWidget {
                     ),
                     onSelected: (value) => value(),
                     itemBuilder: (context) => [
-                      if (settings.credentials.value?.username ==
-                          comment.creatorName)
+                      if (client.credentials?.username == comment.creatorName)
                         PopupMenuTile(
                           title: 'Edit',
                           icon: Icons.edit,

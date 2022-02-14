@@ -1,3 +1,4 @@
+import 'package:e1547/client/client.dart';
 import 'package:e1547/dtext/dtext.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
@@ -74,7 +75,7 @@ InlineSpan parseLink({
   }
 
   if (insite) {
-    onTap = () async => launch('https://${settings.host.value}$search');
+    onTap = () async => launch('https://${client.host}$search');
 
     // forum topics need generated names
     if (usernameGenerator != null) {

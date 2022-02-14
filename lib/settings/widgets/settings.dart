@@ -57,44 +57,43 @@ class _SettingsPageState extends State<SettingsPage> {
               },
             ),
           ),
-          ValueListenableBuilder<Credentials?>(
-            valueListenable: settings.credentials,
-            builder: (context, value, child) {
-              return FutureBuilder<CurrentUser?>(
-                future: client.currentUser,
-                builder: (context, snapshot) => SafeCrossFade(
-                  duration: Duration(milliseconds: 200),
-                  showChild: value != null,
-                  builder: (context) => DividerListTile(
-                    title: Text(value!.username),
-                    subtitle: snapshot.data?.levelString != null
-                        ? Text(snapshot.data!.levelString.toLowerCase())
-                        : null,
-                    leading: CurrentUserAvatar(),
-                    separated: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 12),
-                      child: IgnorePointer(
-                        child: IconButton(
-                          icon: Icon(Icons.exit_to_app),
-                          onPressed: () => logout(context),
-                        ),
+          AnimatedBuilder(
+            animation: client,
+            builder: (context, child) => FutureBuilder<CurrentUser?>(
+              future: client.currentUser,
+              builder: (context, snapshot) => SafeCrossFade(
+                duration: Duration(milliseconds: 200),
+                showChild: client.credentials != null,
+                builder: (context) => DividerListTile(
+                  title: Text(client.credentials!.username),
+                  subtitle: snapshot.data?.levelString != null
+                      ? Text(snapshot.data!.levelString.toLowerCase())
+                      : null,
+                  leading: CurrentUserAvatar(),
+                  separated: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 12),
+                    child: IgnorePointer(
+                      child: IconButton(
+                        icon: Icon(Icons.exit_to_app),
+                        onPressed: () => logout(context),
                       ),
                     ),
-                    onTap: () => Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => UserLoadingPage(value.username),
-                      ),
+                  ),
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          UserLoadingPage(client.credentials!.username),
                     ),
-                    onTapSeparated: () => logout(context),
                   ),
-                  secondChild: ListTile(
-                    title: Text('Login'),
-                    leading: Icon(Icons.person_add),
-                    onTap: () => Navigator.pushNamed(context, '/login'),
-                  ),
+                  onTapSeparated: () => logout(context),
                 ),
-              );
-            },
+                secondChild: ListTile(
+                  title: Text('Login'),
+                  leading: Icon(Icons.person_add),
+                  onTap: () => Navigator.pushNamed(context, '/login'),
+                ),
+              ),
+            ),
           ),
           Divider(),
           SettingsHeader(title: 'Display'),
@@ -200,13 +199,13 @@ class _SettingsPageState extends State<SettingsPage> {
           SettingsHeader(title: 'Listing'),
           AnimatedBuilder(
             animation: Listenable.merge([
+              client,
               settings.history,
-              settings.host,
               settings.writeHistory,
             ]),
             builder: (context, child) {
               List<HistoryEntry> history =
-                  settings.history.value[settings.host.value] ?? [];
+                  settings.history.value[client.host] ?? [];
               return DividerListTile(
                 title: Text('History'),
                 subtitle: settings.writeHistory.value && history.isNotEmpty

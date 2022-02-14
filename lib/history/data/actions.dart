@@ -1,6 +1,7 @@
+import 'package:e1547/client/data/client.dart';
 import 'package:e1547/history/data/entry.dart';
 import 'package:e1547/post/post.dart';
-import 'package:e1547/settings/data/settings.dart';
+import 'package:e1547/settings/settings.dart';
 
 void addPostToHistory(Post post) {
   if (!settings.writeHistory.value) {
@@ -32,7 +33,7 @@ void removeFromHistory(HistoryEntry historyEntry) {
 }
 
 void withHistory(void Function(List<HistoryEntry> history) callback) {
-  String host = settings.host.value;
+  String host = client.host;
   Map<String, List<HistoryEntry>> history = Map.from(settings.history.value);
   List<HistoryEntry> currentHistory = history[host] ?? [];
   callback(currentHistory);

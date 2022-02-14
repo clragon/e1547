@@ -7,7 +7,7 @@ typedef StartupCallback = void Function(BuildContext context);
 
 final List<StartupCallback> actions = [
   initAvatar,
-  (_) => followUpdater.update(),
+  (_) => followController.update(),
   (_) => initializeDateFormatting(),
 ];
 

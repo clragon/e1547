@@ -72,7 +72,7 @@ extension Nullable on SharedPreferences {
       _setValueOrNull(key, value, setStringList);
 }
 
-/// Stores a Setting for [SharedSettings].
+/// Stores a Setting for [SharedPrefsSettings].
 /// Is used to reset and reload settings.
 class _SharedSetting<T> {
   final String key;
@@ -103,7 +103,7 @@ class _SharedSetting<T> {
 /// }
 /// ```
 ///
-/// Since there is only ever one [SharedPreferences] and therefore [SharedSettings],
+/// Since there is only ever one [SharedPreferences] and therefore [SharedPrefsSettings],
 /// You should create a final global instance of your Settings object and inject it with imports, where it is needed.
 ///
 /// ```dart
@@ -165,11 +165,11 @@ class _SharedSetting<T> {
 ///   },
 /// );
 /// ```
-abstract class SharedSettings {
+abstract class SharedPrefsSettings {
   late final SharedPreferences _prefs;
   final List<_SharedSetting> _settings = [];
 
-  /// Initializes the [SharedSettings].
+  /// Initializes the [SharedPrefsSettings].
   /// This method should be called in your main method, before runApp.
   ///
   /// You can pass a custom [SharedPreferences] instance, in case you are using another library that wraps it.

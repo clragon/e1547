@@ -1,6 +1,6 @@
+import 'package:e1547/client/client.dart';
 import 'package:e1547/dtext/dtext.dart';
 import 'package:e1547/pool/pool.dart';
-import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:share/share.dart';
 
@@ -74,8 +74,7 @@ class PoolDialog extends StatelessWidget {
       actions: [
         TextButton(
           child: Text('SHARE'),
-          onPressed: () async =>
-              Share.share(pool.url(settings.host.value).toString()),
+          onPressed: () async => Share.share(pool.url(client.host).toString()),
         ),
         TextButton(
           child: Text('OK'),

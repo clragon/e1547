@@ -6,14 +6,13 @@ import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
+typedef PostProviderCallback = Future<List<Post>> Function(
+    String search, int page, bool force)?;
+
 class PostController extends DataController<Post>
-    with
-        SearchableController,
-        HostableController,
-        RefreshableController,
-        AccountableController {
-  Future<List<Post>> Function(String search, int page, bool force)? provider;
-  ValueNotifier<List<String>> allowed = ValueNotifier([]);
+    with SearchableController, HostableController, RefreshableController {
+  final PostProviderCallback provider;
+  final ValueNotifier<List<String>> allowed = ValueNotifier([]);
   Map<String, List<Post>>? denied;
   late ValueNotifier<bool> denying;
   @override
@@ -35,6 +34,7 @@ class PostController extends DataController<Post>
     }
   }
 
+  @protected
   List<Post> filter(List<Post> items) {
     List<String> denylist = [];
     if (denying.value && canDeny) {
@@ -60,6 +60,7 @@ class PostController extends DataController<Post>
     return newPosts;
   }
 
+  @protected
   void reapplyFilter() {
     if (posts != null) {
       denied = null;
@@ -71,6 +72,7 @@ class PostController extends DataController<Post>
   }
 
   @override
+  @protected
   Future<List<Post>> provide(int page, bool force) async {
     List<Post> nextPage;
     if (provider != null) {
@@ -94,6 +96,7 @@ class PostController extends DataController<Post>
   }
 
   @override
+  @protected
   void disposeItems(List<Post> items) {
     for (final post in items) {
       post.dispose();

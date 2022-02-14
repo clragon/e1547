@@ -293,11 +293,11 @@ extension Transitioning on Post {
 }
 
 extension Linking on Post {
-  Uri get url => getPostUri(id);
+  Uri url(String host) => getPostUri(host, id);
 }
 
-Uri getPostUri(int postId) =>
-    Uri(scheme: 'https', host: settings.host.value, path: '/posts/$postId');
+Uri getPostUri(String host, int id) =>
+    Uri(scheme: 'https', host: host, path: '/posts/$id');
 
 String getPostHero(int? postId) => 'image_$postId';
 

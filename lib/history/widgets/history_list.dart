@@ -1,3 +1,4 @@
+import 'package:e1547/client/client.dart';
 import 'package:e1547/history/history.dart';
 import 'package:e1547/history/widgets/appbar.dart';
 import 'package:e1547/interface/interface.dart';
@@ -20,11 +21,11 @@ class _HistoryPageState extends State<HistoryPage> {
     return AnimatedBuilder(
       animation: Listenable.merge([
         settings.history,
-        settings.host,
+        client,
       ]),
       builder: (context, child) {
         List<HistoryEntry> history =
-            List.from(settings.history.value[settings.host.value] ?? []);
+            List.from(settings.history.value[client.host] ?? []);
         if (history.isEmpty) {
           return IconMessage(
             icon: Icon(Icons.history),
@@ -106,16 +107,15 @@ class _HistoryPageState extends State<HistoryPage> {
                           itemBuilder: (context) => [
                             PopupMenuTile(
                               value: () async => Share.share(
-                                  getPostUri(element.postId).toString()),
+                                  getPostUri(client.host, element.postId)
+                                      .toString()),
                               title: 'Share',
                               icon: Icons.share,
                             ),
                             PopupMenuTile(
-                              value: () {
-                                removeFromHistory(element);
-                              },
                               title: 'Delete',
                               icon: Icons.delete,
+                              value: () => removeFromHistory(element),
                             ),
                           ],
                         ),

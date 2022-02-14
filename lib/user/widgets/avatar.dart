@@ -36,8 +36,7 @@ class _CurrentUserAvatarState extends State<CurrentUserAvatar>
 
   @override
   Map<ChangeNotifier, VoidCallback> get listeners => {
-        settings.credentials: updateAvatar,
-        settings.host: updateAvatar,
+        client: updateAvatar,
       };
 
   @override
@@ -88,19 +87,12 @@ class Avatar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (post != null && post!.sample.url != null) {
-      return GestureDetector(
-        onTap: () => Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => PostLoadingPage(post!.id),
-          ),
-        ),
-        child: PostTileOverlay(
-          post: post!,
-          child: Hero(
-            tag: post!.hero,
-            child: CircleAvatar(
-              foregroundImage: (CachedNetworkImageProvider(post!.sample.url!)),
-            ),
+      return PostTileOverlay(
+        post: post!,
+        child: Hero(
+          tag: post!.hero,
+          child: CircleAvatar(
+            foregroundImage: (CachedNetworkImageProvider(post!.sample.url!)),
           ),
         ),
       );

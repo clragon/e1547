@@ -1,77 +1,76 @@
 import 'dart:async';
 
 import 'package:collection/collection.dart';
-import 'package:e1547/settings/settings.dart';
+import 'package:e1547/client/client.dart';
 import 'package:flutter/material.dart';
-import 'package:mutex/mutex.dart';
 
 abstract class DataUpdater<T> extends ChangeNotifier {
-  final ValueNotifier<int> progress = ValueNotifier(0);
-  final Mutex updateLock = Mutex();
+  int progress = 0;
 
+  @protected
   Duration? get stale => null;
 
-  Future get finish => completer.future;
-  Completer completer = Completer();
+  Future get finish => _updateCompleter.future;
+  Completer _restartCompleter = Completer()..complete();
+  Completer _updateCompleter = Completer()..complete();
 
+  bool get updating => !_restartCompleter.isCompleted;
   bool error = false;
   bool restarting = false;
   bool canceling = false;
 
+  late List<Listenable> _refreshListeners = getRefreshListeners();
+
   DataUpdater() {
-    getRefreshListeners().forEach((element) => element.addListener(refresh));
+    _refreshListeners.forEach((e) => e.addListener(refresh));
   }
 
   @override
   void dispose() {
-    getRefreshListeners().forEach((element) => element.removeListener(refresh));
+    _refreshListeners.forEach((e) => e.removeListener(refresh));
     super.dispose();
   }
 
   @mustCallSuper
-  Future<void> refresh() async {
-    if (completer.isCompleted) {
-      update();
-    } else {
-      restarting = true;
-    }
-    return finish;
-  }
-
-  @mustCallSuper
   Future<void> cancel() async {
-    if (!(completer.isCompleted)) {
+    if (!(_updateCompleter.isCompleted)) {
       canceling = true;
     }
     return finish;
   }
 
   @mustCallSuper
+  @protected
   Future<void> fail() async {
-    if (!completer.isCompleted) {
+    if (!_updateCompleter.isCompleted) {
       error = true;
     }
     return finish;
   }
 
   @mustCallSuper
+  @protected
   void uncomplete() {
-    if (completer.isCompleted) {
-      completer = Completer();
+    if (_restartCompleter.isCompleted) {
+      _restartCompleter = Completer();
+    }
+    if (_updateCompleter.isCompleted) {
+      _updateCompleter = Completer();
     }
   }
 
   @mustCallSuper
+  @protected
   void complete() {
-    updateLock.release();
-    completer.complete();
+    _restartCompleter.complete();
+    _updateCompleter.complete();
     notifyListeners();
   }
 
   @mustCallSuper
   void reset() {
     uncomplete();
-    progress.value = 0;
+    progress = 0;
     restarting = false;
     canceling = false;
     error = false;
@@ -79,12 +78,15 @@ abstract class DataUpdater<T> extends ChangeNotifier {
   }
 
   @mustCallSuper
-  List<ValueNotifier> getRefreshListeners() => [];
+  List<Listenable> getRefreshListeners() => [];
 
+  @protected
   Future<T> read();
 
+  @protected
   Future<void> write(T? data);
 
+  @protected
   Future<T?> run(T data, bool force);
 
   @mustCallSuper
@@ -92,39 +94,48 @@ abstract class DataUpdater<T> extends ChangeNotifier {
     if (restarting || canceling || error) {
       return false;
     }
-    this.progress.value = progress ?? this.progress.value + 1;
+    this.progress = progress ?? this.progress + 1;
     notifyListeners();
     return true;
   }
 
-  Future<void> wrapper({bool force = false}) async {
+  Future<void> _wrapper({bool force = false}) async {
     T data = await read();
     T? result = await run(data, force);
     if (restarting) {
-      updateLock.release();
-      update(force: force);
+      _restartCompleter.complete();
       return;
     }
     await write(result);
     complete();
   }
 
+  @mustCallSuper
   Future<void> update({bool force = false}) async {
-    uncomplete();
-    if (updateLock.isLocked) {
-      return finish;
+    if (_updateCompleter.isCompleted) {
+      uncomplete();
+      reset();
+      _wrapper(force: force);
     }
-    await updateLock.acquire();
-    reset();
-    wrapper(force: force);
     return finish;
+  }
+
+  @mustCallSuper
+  Future<void> refresh({bool force = false}) async {
+    if (!_updateCompleter.isCompleted) {
+      restarting = true;
+      await _restartCompleter.future;
+    }
+    reset();
+    _wrapper(force: force);
+    return _updateCompleter.future;
   }
 }
 
 mixin HostableUpdater<T> on DataUpdater<T> {
   @override
-  List<ValueNotifier> getRefreshListeners() =>
-      super.getRefreshListeners()..add(settings.host);
+  List<Listenable> getRefreshListeners() =>
+      super.getRefreshListeners()..add(client);
 }
 
 mixin EditableUpdater<T extends Iterable> on DataUpdater<T> {
@@ -132,7 +143,7 @@ mixin EditableUpdater<T extends Iterable> on DataUpdater<T> {
   late EqualityValueNotifier<T> target = EqualityValueNotifier(source);
 
   @override
-  List<ValueNotifier> getRefreshListeners() =>
+  List<Listenable> getRefreshListeners() =>
       super.getRefreshListeners()..add(target);
 }
 

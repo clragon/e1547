@@ -14,17 +14,20 @@ import 'package:e1547/tag/tag.dart';
 import 'package:e1547/topic/topic.dart';
 import 'package:e1547/user/user.dart';
 import 'package:e1547/wiki/wiki.dart';
-import 'package:mutex/mutex.dart';
+import 'package:flutter/material.dart';
 
 export 'package:dio/dio.dart' show DioError;
 
 late final Client client = Client();
 
-class Client {
+class Client extends ChangeNotifier {
+  String get host => settings.host.value;
+  Credentials? get credentials => settings.credentials.value;
+
   late Dio dio;
   late DioCacheManager cacheManager;
 
-  Future<bool>? initialized;
+  late Future<void> initialized;
 
   Client() {
     settings.host.addListener(initialize);
@@ -32,87 +35,80 @@ class Client {
     initialize();
   }
 
-  bool get isSafe => settings.host.value != settings.customHost.value;
-
-  String get host => settings.host.value;
-
-  Future<bool> initialize() async {
-    Future<bool> init() async {
-      String host = 'https://${settings.host.value}/';
-      Credentials? credentials = settings.credentials.value;
-      dio = Dio(
-        defaultDioOptions.copyWith(
-          baseUrl: host,
-          headers: {
-            HttpHeaders.userAgentHeader:
-                '${appInfo.appName}/${appInfo.version} (${appInfo.developer})',
-            if (credentials != null)
-              HttpHeaders.authorizationHeader: credentials.toAuth(),
-          },
-        ),
-      );
-      initializeCurrentUser(reset: true);
-      cacheManager = DioCacheManager(CacheConfig(baseUrl: host));
-      dio.interceptors.add(cacheManager.interceptor);
-      if (credentials != null) {
-        try {
-          await tryLogin(credentials.username, credentials.password);
-        } on DioError catch (e) {
-          if (e.type != DioErrorType.other) {
-            logout();
-          }
-        }
-        return true;
-      } else {
-        return false;
-      }
-    }
-
-    initialized = init();
-    return await initialized!;
-  }
-
-  Future<void> tryLogin(String username, String password) async {
-    await dio.get(
-      'favorites.json',
-      options: Options(headers: {
-        HttpHeaders.authorizationHeader:
-            Credentials(username: username, password: password).toAuth(),
-      }),
+  Future<void> initialize() async {
+    Completer completer = Completer();
+    initialized = completer.future;
+    String host = 'https://${settings.host.value}/';
+    Credentials? credentials = settings.credentials.value;
+    dio = Dio(
+      defaultDioOptions.copyWith(
+        baseUrl: host,
+        headers: {
+          HttpHeaders.userAgentHeader:
+              '${appInfo.appName}/${appInfo.version} (${appInfo.developer})',
+          if (credentials != null)
+            HttpHeaders.authorizationHeader: credentials.toAuth(),
+        },
+      ),
     );
-  }
-
-  Future<bool> saveLogin(String username, String password) async {
-    if (await validateCall(() => tryLogin(username, password))) {
-      settings.credentials.value =
-          Credentials(username: username, password: password);
-      return true;
-    } else {
-      return false;
+    initializeCurrentUser(reset: true);
+    cacheManager = DioCacheManager(CacheConfig(baseUrl: host));
+    dio.interceptors.add(cacheManager.interceptor);
+    notifyListeners();
+    if (credentials != null && !await tryLogin(credentials)) {
+      logout();
     }
+    completer.complete();
   }
 
-  bool get hasLogin => (settings.credentials.value != null);
+  bool get hasLogin => credentials != null;
 
   Future<bool> get isLoggedIn async {
     await initialized;
     return hasLogin;
   }
 
+  Future<bool> tryLogin(Credentials credentials) async {
+    return validateCall(
+      () async => dio.get(
+        'favorites.json',
+        options: Options(
+          headers: {
+            HttpHeaders.authorizationHeader: credentials.toAuth(),
+          },
+        ),
+      ),
+    );
+  }
+
+  Future<bool> login(Credentials credentials) async {
+    if (await tryLogin(credentials)) {
+      settings.credentials.value = credentials;
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   Future<void> logout() async {
     settings.credentials.value = null;
   }
 
-  Mutex userInitLock = Mutex();
+  CurrentUser? _currentUser;
+  Completer _currentUserRequest = Completer()..complete();
 
   Future<void> initializeCurrentUser({bool reset = false}) async {
-    await userInitLock.acquire();
+    if (_currentUserRequest.isCompleted) {
+      _currentUserRequest = Completer();
+    } else {
+      return _currentUserRequest.future;
+    }
     if (reset) {
       _currentUser = null;
       _currentAvatar = null;
     }
     if (!await isLoggedIn) {
-      userInitLock.release();
+      _currentUserRequest.complete();
       return;
     }
     if (_currentUser == null) {
@@ -129,10 +125,8 @@ class Client {
         _currentAvatar = post;
       }
     }
-    userInitLock.release();
+    _currentUserRequest.complete();
   }
-
-  CurrentUser? _currentUser;
 
   Future<CurrentUser?> get currentUser async {
     await initializeCurrentUser();
@@ -146,14 +140,16 @@ class Client {
     return _currentAvatar;
   }
 
+  bool postIsIgnored(Post post) {
+    return (post.file.url == null && !post.flags.deleted) ||
+        post.file.ext == 'swf';
+  }
+
   Future<List<Post>> postsFromJson(List<dynamic> json) async {
     List<Post> posts = [];
     for (Map<String, dynamic> raw in json) {
       Post post = Post.fromMap(raw);
-      if (post.file.url == null && !post.flags.deleted) {
-        continue;
-      }
-      if (post.file.ext == 'swf') {
+      if (postIsIgnored(post)) {
         continue;
       }
       posts.add(post);
@@ -196,7 +192,7 @@ class Client {
     String? username;
 
     if (orderFavorites ?? false) {
-      username = settings.credentials.value?.username;
+      username = credentials?.username;
     }
 
     Map<RegExp, Future<List<Post>> Function(RegExpMatch match, String? result)>
@@ -535,7 +531,7 @@ class Client {
     }
 
     Map<String, dynamic> body = await dio
-        .get('users/${settings.credentials.value!.username}.json')
+        .get('users/${credentials!.username}.json')
         .then((response) => response.data);
 
     return CurrentUser.fromMap(body);
@@ -550,7 +546,7 @@ class Client {
       'user[blacklisted_tags]': denylist.join('\n'),
     };
 
-    await dio.put('users/${settings.credentials.value!.username}.json',
+    await dio.put('users/${credentials!.username}.json',
         data: FormData.fromMap(body));
 
     initializeCurrentUser(reset: true);
@@ -632,6 +628,7 @@ class Client {
   }
 
   Future<Comment> comment(int commentId, {bool? force}) async {
+    await initialized;
     Map<String, dynamic> body = await dio
         .getWithCache(
           'comments.json/$commentId.json',
@@ -730,6 +727,7 @@ class Client {
   }
 
   Future<Topic> topic(int topicId, {bool? force}) async {
+    await initialized;
     Map<String, dynamic> body = await dio
         .getWithCache(
           'forum_topics/$topicId.json',
@@ -742,6 +740,7 @@ class Client {
   }
 
   Future<List<Reply>> replies(int topicId, String page, {bool? force}) async {
+    await initialized;
     final body = await dio
         .getWithCache(
           'forum_posts.json',
@@ -769,6 +768,7 @@ class Client {
   }
 
   Future<Reply> reply(int replyId, {bool? force}) async {
+    await initialized;
     Map<String, dynamic> body = await dio
         .getWithCache(
           'forum_posts/$replyId.json',

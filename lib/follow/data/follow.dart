@@ -64,10 +64,9 @@ class Follow {
   Future<bool> updateLatest(String host, Post? post,
       {bool foreground = false}) async {
     bool updated = false;
+    statuses.putIfAbsent(host, () => FollowStatus());
+    FollowStatus? status = statuses[host]!;
     if (post != null) {
-      statuses.putIfAbsent(host, () => FollowStatus());
-      FollowStatus? status = statuses[host]!;
-
       if (status.latest == null || status.latest! < post.id) {
         status.latest = post.id;
         status.thumbnail = post.sample.url;
@@ -85,19 +84,18 @@ class Follow {
             .forEach((e) => e.unseen = 0);
         updated = true;
       }
-      if (await updateTimestamp(status)) {
-        updated = true;
-      }
+    }
+    if (await updateTimestamp(status)) {
+      updated = true;
     }
     return updated;
   }
 
   Future<bool> updateUnseen(String host, List<Post> posts) async {
     bool updated = false;
+    statuses.putIfAbsent(host, () => FollowStatus());
+    FollowStatus? status = statuses[host]!;
     if (posts.isNotEmpty) {
-      statuses.putIfAbsent(host, () => FollowStatus());
-      FollowStatus? status = statuses[host]!;
-
       posts.sort((a, b) => b.id.compareTo(a.id));
       if (status.latest != null) {
         posts = posts.takeWhile((value) => value.id > status.latest!).toList();
@@ -107,17 +105,19 @@ class Follow {
       }
       int length = posts.length;
       if (status.unseen == null ||
-          (statuses.entries.any(
-              (e) => e.value.unseen == 0 && status.latest == e.value.latest))) {
+          (statuses.entries.any((e) =>
+              e.value != status &&
+              e.value.unseen == 0 &&
+              status.latest == e.value.latest))) {
         status.unseen = 0;
         updated = true;
       } else {
         status.unseen = length;
         updated = true;
       }
-      if (await updateTimestamp(status)) {
-        updated = true;
-      }
+    }
+    if (await updateTimestamp(status)) {
+      updated = true;
     }
     return updated;
   }

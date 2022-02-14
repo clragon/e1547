@@ -4,7 +4,7 @@ import 'package:e1547/interface/interface.dart';
 import 'comment.dart';
 
 class CommentController extends CursorDataController<Comment>
-    with RefreshableController, AccountableController {
+    with RefreshableController, HostableController {
   final int postId;
 
   CommentController({required this.postId});
@@ -18,10 +18,8 @@ class CommentController extends CursorDataController<Comment>
 
   @override
   void disposeItems(List<Comment> items) async {
-    if (itemList != null) {
-      for (final comment in itemList!) {
-        comment.dispose();
-      }
+    for (final comment in items) {
+      comment.dispose();
     }
   }
 }

@@ -1,3 +1,4 @@
+import 'package:e1547/client/client.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/settings/settings.dart';
@@ -86,15 +87,15 @@ class _FollowingPageState extends State<FollowingPage> {
             );
           }
 
-          return ValueListenableBuilder<String>(
-            valueListenable: settings.host,
-            builder: (context, host, child) => ListView.builder(
+          return AnimatedBuilder(
+            animation: client,
+            builder: (context, child) => ListView.builder(
               physics: BouncingScrollPhysics(),
               padding: EdgeInsets.only(
                   top: 8, bottom: kBottomNavigationBarHeight + 24),
               itemCount: follows.length,
               itemBuilder: (context, index) => FollowListTile(
-                host: host,
+                host: client.host,
                 follow: follows[index],
                 onRename: () => editAlias(context, index),
                 onEdit: () => addTags(context, index),
@@ -172,7 +173,7 @@ class _FollowingPageState extends State<FollowingPage> {
             ],
           ),
           body: AnimatedBuilder(
-            animation: followUpdater,
+            animation: followController,
             builder: (context, child) => body(),
           ),
           floatingActionButton: Builder(

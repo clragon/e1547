@@ -1,5 +1,5 @@
+import 'package:e1547/client/client.dart';
 import 'package:e1547/interface/interface.dart';
-import 'package:e1547/settings/settings.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:e1547/topic/topic.dart';
 import 'package:flutter/material.dart';
@@ -63,7 +63,7 @@ class TopicSheet extends StatelessWidget {
                 IconButton(
                   icon: Icon(Icons.share),
                   onPressed: () async =>
-                      Share.share(topic.url(settings.host.value).toString()),
+                      Share.share(topic.url(client.host).toString()),
                   tooltip: 'Share',
                 ),
               ],

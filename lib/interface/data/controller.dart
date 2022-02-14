@@ -1,31 +1,30 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:e1547/settings/settings.dart';
+import 'package:e1547/client/client.dart';
 import 'package:flutter/foundation.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 abstract class RawDataController<KeyType, ItemType>
     extends PagingController<KeyType, ItemType> {
-  Future<void>? request;
-  bool isRequesting = false;
-  bool isRefreshing = false;
-  bool isForceRefreshing = false;
+  Completer _requestCompleter = Completer()..complete();
+  bool _isRefreshing = false;
+  bool _isForceRefreshing = false;
 
-  late List<Listenable> refreshListeners = getRefreshListeners();
+  late List<Listenable> _refreshListeners = getRefreshListeners();
 
   RawDataController({
     required KeyType firstPageKey,
   }) : super(firstPageKey: firstPageKey) {
     super.addPageRequestListener(requestPage);
-    refreshListeners.forEach((element) => element.addListener(refresh));
+    _refreshListeners.forEach((element) => element.addListener(refresh));
   }
 
   @override
   void dispose() {
     super.removePageRequestListener(requestPage);
-    refreshListeners.forEach((element) => element.removeListener(refresh));
+    _refreshListeners.forEach((element) => element.removeListener(refresh));
     if (itemList != null) {
       disposeItems(itemList!);
     }
@@ -33,14 +32,17 @@ abstract class RawDataController<KeyType, ItemType>
   }
 
   @mustCallSuper
+  @protected
   void failure(Exception error) {
     this.error = error;
   }
 
   @mustCallSuper
+  @protected
   void success() {}
 
   @mustCallSuper
+  @protected
   List<Listenable> getRefreshListeners() => [];
 
   Future<List<ItemType>> provide(KeyType page, bool force);
@@ -52,15 +54,16 @@ abstract class RawDataController<KeyType, ItemType>
   void disposeItems(List<ItemType> items) {}
 
   @nonVirtual
+  @protected
   Future<bool> canRefresh() async {
-    if (isRequesting) {
-      if (isRefreshing) {
+    if (!_requestCompleter.isCompleted) {
+      if (_isRefreshing) {
         return false;
       }
-      isRefreshing = true;
+      _isRefreshing = true;
       // waits for the current request to be done
-      await request;
-      isRefreshing = false;
+      await _requestCompleter.future;
+      _isRefreshing = false;
       return true;
     } else {
       return true;
@@ -73,7 +76,7 @@ abstract class RawDataController<KeyType, ItemType>
     if (!await canRefresh()) {
       return;
     }
-    isForceRefreshing = force;
+    _isForceRefreshing = force;
     List<ItemType> old = List<ItemType>.from(itemList ?? []);
     if (background) {
       await backgroundRefresh();
@@ -85,30 +88,29 @@ abstract class RawDataController<KeyType, ItemType>
     }
   }
 
+  @protected
   Future<void> loadPage(Future<void> Function() provider) async {
-    if (isRequesting) {
-      await request;
+    if (!_requestCompleter.isCompleted) {
+      await _requestCompleter.future;
     }
-    isRequesting = true;
-    Completer completer = Completer();
-    request = completer.future;
+    _requestCompleter = Completer();
     try {
       await provider();
       success();
     } on Exception catch (error) {
       failure(error);
     } finally {
-      isForceRefreshing = false;
-      isRequesting = false;
-      completer.complete();
+      _isForceRefreshing = false;
+      _requestCompleter.complete();
     }
   }
 
+  @protected
   Future<void> backgroundRefresh() async {
     return loadPage(
       () async {
         List<ItemType> items =
-            sort(await provide(firstPageKey, isForceRefreshing));
+            sort(await provide(firstPageKey, _isForceRefreshing));
         value = PagingState(
           nextPageKey: provideNextPageKey(firstPageKey, items),
           itemList: items,
@@ -118,10 +120,11 @@ abstract class RawDataController<KeyType, ItemType>
     );
   }
 
+  @protected
   Future<void> requestPage(KeyType page) async {
     return loadPage(
       () async {
-        List<ItemType> items = sort(await provide(page, isForceRefreshing));
+        List<ItemType> items = sort(await provide(page, _isForceRefreshing));
         if (items.isEmpty) {
           appendLastPage(items);
         } else {
@@ -146,9 +149,11 @@ abstract class CursorDataController<T> extends RawDataController<String, T> {
 
   CursorDataController() : super(firstPageKey: 'a0');
 
+  @protected
   int getId(T item);
 
   @override
+  @protected
   Future<void> requestPage(String page) {
     // firstpagekey cannot be changed
     // this is a hack around that
@@ -159,6 +164,7 @@ abstract class CursorDataController<T> extends RawDataController<String, T> {
   }
 
   @override
+  @protected
   String provideNextPageKey(String current, List<T> items) {
     if (orderByOldest.value) {
       if (items.isEmpty) {
@@ -179,10 +185,12 @@ abstract class CursorDataController<T> extends RawDataController<String, T> {
   }
 
   @override
+  @protected
   List<Listenable> getRefreshListeners() =>
       super.getRefreshListeners()..add(orderByOldest);
 
   @override
+  @protected
   List<T> sort(List<T> items) {
     if (orderByOldest.value) {
       items.sort((a, b) => getId(a).compareTo(getId(b)));
@@ -196,6 +204,7 @@ mixin SearchableController<PageKeyType, ItemType>
   ValueNotifier<String> get search => ValueNotifier('');
 
   @override
+  @protected
   List<Listenable> getRefreshListeners() =>
       super.getRefreshListeners()..add(search);
 }
@@ -203,15 +212,9 @@ mixin SearchableController<PageKeyType, ItemType>
 mixin HostableController<PageKeyType, ItemType>
     on RawDataController<PageKeyType, ItemType> {
   @override
+  @protected
   List<Listenable> getRefreshListeners() =>
-      super.getRefreshListeners()..add(settings.host);
-}
-
-mixin AccountableController<PageKeyType, ItemType>
-    on RawDataController<PageKeyType, ItemType> {
-  @override
-  List<Listenable> getRefreshListeners() =>
-      super.getRefreshListeners()..add(settings.credentials);
+      super.getRefreshListeners()..add(client);
 }
 
 mixin RefreshableController<PageKeyType, ItemType>
@@ -219,12 +222,14 @@ mixin RefreshableController<PageKeyType, ItemType>
   RefreshController refreshController = RefreshController();
 
   @override
+  @protected
   void failure(Exception error) {
     super.failure(error);
     refreshController.refreshFailed();
   }
 
   @override
+  @protected
   void success() {
     super.success();
     refreshController.refreshCompleted();

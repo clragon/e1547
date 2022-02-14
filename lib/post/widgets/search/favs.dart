@@ -1,7 +1,6 @@
 import 'package:e1547/client/client.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
-import 'package:e1547/settings/settings.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 
@@ -18,11 +17,11 @@ class _FavPageState extends State<FavPage> with ListenerCallbackMixin {
 
   @override
   Map<ChangeNotifier, VoidCallback> get initListeners => {
-        settings.credentials: updateUsername,
+        client: updateUsername,
       };
 
   void updateUsername() {
-    Credentials? credentials = settings.credentials.value;
+    Credentials? credentials = client.credentials;
     if (credentials != null) {
       setState(() {
         controller = PostController(
@@ -47,11 +46,11 @@ class _FavPageState extends State<FavPage> with ListenerCallbackMixin {
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder<Credentials?>(
-      valueListenable: settings.credentials,
-      builder: (context, credentials, child) => PageLoader(
-        isEmpty: credentials == null,
-        isError: credentials == null,
+    return AnimatedBuilder(
+      animation: client,
+      builder: (context, child) => PageLoader(
+        isEmpty: controller == null,
+        isError: controller == null,
         onError: Column(
           children: [
             Padding(
@@ -79,7 +78,7 @@ class _FavPageState extends State<FavPage> with ListenerCallbackMixin {
               actions: [ContextDrawerButton()],
             ),
             drawerActions: [
-              if (favRegex(credentials!.username)
+              if (favRegex(client.credentials!.username)
                   .hasMatch(controller!.search.value))
                 SwitchListTile(
                   secondary: Icon(Icons.sort),

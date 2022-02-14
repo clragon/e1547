@@ -244,7 +244,7 @@ class _ProfileHeaderState extends State<ProfileHeader>
     with ListenerCallbackMixin {
   @override
   Map<ChangeNotifier, VoidCallback> get initListeners => {
-        settings.credentials: () {
+        client: () {
           if (mounted) {
             initAvatar(context);
           }
@@ -278,9 +278,9 @@ class _ProfileHeaderState extends State<ProfileHeader>
       );
     }
 
-    return ValueListenableBuilder<Credentials?>(
-      valueListenable: settings.credentials,
-      builder: (context, value, child) => DrawerHeader(
+    return AnimatedBuilder(
+      animation: client,
+      builder: (context, child) => DrawerHeader(
         child: GestureDetector(
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -293,15 +293,16 @@ class _ProfileHeaderState extends State<ProfileHeader>
               Expanded(
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 20),
-                  child: userNameWidget(value?.username),
+                  child: userNameWidget(client.credentials?.username),
                 ),
               ),
             ],
           ),
-          onTap: value?.username != null
+          onTap: client.credentials != null
               ? () => Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (context) => UserLoadingPage(value!.username),
+                      builder: (context) =>
+                          UserLoadingPage(client.credentials!.username),
                     ),
                   )
               : null,

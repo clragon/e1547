@@ -35,9 +35,9 @@ class _LoginPageState extends State<LoginPage> {
     if (form.validate()) {
       showDialog(
         context: context,
-        builder: (context) => LoginProgressDialog(
+        builder: (context) => LoginLoadingDialog(
           username: usernameController.text,
-          apiKey: apiKeyController.text,
+          password: apiKeyController.text,
           onDone: Navigator.of(context).maybePop,
           onError: () {
             authFailed = true;
@@ -233,16 +233,16 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                     IconButton(
+                      icon: Icon(Icons.launch),
+                      color: Colors.grey,
                       onPressed: () {
                         if (usernameController.text.isNotEmpty) {
                           launch(
-                              'https://${settings.host.value}/users/${usernameController.text}/api_key');
+                              'https://${client.host}/users/${usernameController.text}/api_key');
                         } else {
-                          launch('https://${settings.host.value}/session/new');
+                          launch('https://${client.host}/session/new');
                         }
                       },
-                      icon: Icon(Icons.launch),
-                      color: Colors.grey,
                     ),
                   ],
                 ),
@@ -263,87 +263,64 @@ class _LoginPageState extends State<LoginPage> {
   }
 }
 
-class LoginProgressDialog extends StatefulWidget {
-  final String? username;
-  final String? apiKey;
+class LoginLoadingDialog extends StatefulWidget {
+  final String username;
+  final String password;
   final VoidCallback? onError;
   final VoidCallback? onDone;
 
-  const LoginProgressDialog({
+  const LoginLoadingDialog({
     required this.username,
-    required this.apiKey,
+    required this.password,
     this.onError,
     this.onDone,
   });
 
   @override
-  _LoginProgressDialogState createState() => _LoginProgressDialogState();
+  _LoginLoadingDialogState createState() => _LoginLoadingDialogState();
 }
 
-class _LoginProgressDialogState extends State<LoginProgressDialog> {
+class _LoginLoadingDialogState extends State<LoginLoadingDialog> {
   @override
   void initState() {
     super.initState();
-    client.saveLogin(widget.username!, widget.apiKey!).then((value) async {
-      await Navigator.of(context).maybePop();
-      if (value) {
-        widget.onDone?.call();
-      } else {
-        widget.onError?.call();
-      }
-    });
+    login();
+  }
+
+  Future<void> login() async {
+    Credentials credentials =
+        Credentials(username: widget.username, password: widget.password);
+    bool valid = await client.login(credentials);
+    if (valid) {
+      widget.onDone?.call();
+    } else {
+      widget.onError?.call();
+    }
+    Navigator.of(context).maybePop();
   }
 
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      child: Container(
-        padding: EdgeInsets.all(20.0),
-        child: Row(children: [
-          Padding(
-            padding: EdgeInsets.all(4),
-            child: SizedBox(
-              height: 28,
-              width: 28,
-              child: CircularProgressIndicator(),
+      child: Padding(
+        padding: EdgeInsets.all(20),
+        child: Row(
+          children: [
+            Padding(
+              padding: EdgeInsets.all(4),
+              child: SizedBox(
+                height: 28,
+                width: 28,
+                child: CircularProgressIndicator(),
+              ),
             ),
-          ),
-          Padding(
-            padding: EdgeInsets.only(left: 16),
-            child: Text('Logging in as ${widget.username}'),
-          )
-        ]),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              child: Text('Logging in as ${widget.username}'),
+            )
+          ],
+        ),
       ),
     );
-  }
-}
-
-Future<void> logout(BuildContext context) async {
-  String? name = settings.credentials.value?.username;
-  await client.logout();
-
-  String msg = 'Forgot login details';
-  if (name != null) {
-    msg = msg + ' for $name';
-  }
-
-  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-    duration: Duration(seconds: 1),
-    content: Text(msg),
-  ));
-}
-
-Future<void> guardWithLogin(
-    {required BuildContext context,
-    required VoidCallback callback,
-    String? error}) async {
-  if (client.hasLogin) {
-    callback();
-  } else {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      duration: Duration(seconds: 1),
-      content: Text(error ?? 'You must be logged in to do that!'),
-    ));
-    Navigator.of(context).pushNamed('/login');
   }
 }
