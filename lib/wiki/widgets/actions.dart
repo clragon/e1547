@@ -60,7 +60,7 @@ class _TagListActionsState extends State<TagListActions>
                   denylist.remove(widget.tag);
                   updateBlacklist(
                     context: context,
-                    denylist: denylist,
+                    value: denylist,
                     immediate: true,
                   );
                 }
@@ -90,7 +90,7 @@ class _TagListActionsState extends State<TagListActions>
               }
               updateBlacklist(
                 context: context,
-                denylist: denylist,
+                value: denylist,
                 immediate: true,
               );
             },

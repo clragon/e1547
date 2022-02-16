@@ -12,11 +12,12 @@ class ControlledTextWrapper extends StatefulWidget {
     SubmitString submit,
   ) builder;
 
-  const ControlledTextWrapper(
-      {required this.submit,
-      required this.actionController,
-      required this.builder,
-      this.textController});
+  const ControlledTextWrapper({
+    required this.submit,
+    required this.actionController,
+    required this.builder,
+    this.textController,
+  });
 
   @override
   _ControlledTextWrapperState createState() => _ControlledTextWrapperState();
@@ -66,19 +67,15 @@ class ControlledTextField extends StatelessWidget {
       submit: submit,
       textController: textController,
       actionController: actionController,
-      builder: (context, controller, submit) {
-        return TextField(
-          controller: controller,
-          autofocus: true,
-          maxLines: 1,
-          keyboardType: TextInputType.text,
-          onSubmitted: submit,
-          decoration: InputDecoration(
-            labelText: labelText,
-          ),
-          enabled: !actionController.isLoading,
-        );
-      },
+      builder: (context, controller, submit) => TextField(
+        controller: controller,
+        autofocus: true,
+        maxLines: 1,
+        keyboardType: TextInputType.text,
+        onSubmitted: submit,
+        decoration: InputDecoration(labelText: labelText),
+        enabled: !actionController.isLoading,
+      ),
     );
   }
 }

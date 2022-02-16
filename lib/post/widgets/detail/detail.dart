@@ -125,7 +125,7 @@ class _PostDetailState extends State<PostDetail>
       context,
       ControlledTextField(
         labelText: 'Reason',
-        submit: (value) => editPost(context, editingController),
+        submit: (value) async => editPost(context, editingController),
         actionController: sheetController,
       ),
     );

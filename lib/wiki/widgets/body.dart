@@ -91,6 +91,8 @@ class _WikiTagDisplayState extends State<WikiTagDisplay> {
     List<Wiki> results = await client.wikis(1, search: tagToName(widget.tag));
     if (results.isNotEmpty) {
       return results.first;
+    } else {
+      return null;
     }
   }
 

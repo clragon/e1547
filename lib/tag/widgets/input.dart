@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:e1547/client/client.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
@@ -6,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 
-typedef SubmitString = void Function(String result);
+typedef SubmitString = FutureOr<void> Function(String result);
 
 class TagInput extends StatefulWidget {
   final String? labelText;

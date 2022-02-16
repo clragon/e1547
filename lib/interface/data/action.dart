@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
-typedef ActionControllerCallback = Future<void> Function();
+typedef ActionControllerCallback = FutureOr<void> Function();
 
 class ActionControllerException implements Exception {
   final String message;
@@ -19,6 +19,8 @@ class ActionController extends ChangeNotifier {
   Duration errorTimeout = Duration(seconds: 3);
   Timer? errorTimer;
 
+  @mustCallSuper
+  @protected
   void forgive() {
     errorTimer?.cancel();
     errorTimer = Timer(
@@ -31,6 +33,7 @@ class ActionController extends ChangeNotifier {
   }
 
   @mustCallSuper
+  @protected
   void reset() {
     isLoading = false;
     isForgiven = false;
@@ -40,6 +43,7 @@ class ActionController extends ChangeNotifier {
   }
 
   @mustCallSuper
+  @protected
   Future<void> execute(ActionControllerCallback submit) async {
     error = null;
     isForgiven = false;
@@ -56,6 +60,7 @@ class ActionController extends ChangeNotifier {
     notifyListeners();
   }
 
+  @protected
   void onSucess() {}
 
   @mustCallSuper

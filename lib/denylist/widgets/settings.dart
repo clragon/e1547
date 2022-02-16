@@ -35,7 +35,7 @@ class _DenyListPageState extends State<DenyListPage> {
             } else if (value.isNotEmpty) {
               denylist.add(value);
             }
-            if (!await updateBlacklist(context: context, denylist: denylist)) {
+            if (!await updateBlacklist(context: context, value: denylist)) {
               throw ActionControllerException(
                   message: 'Failed to update blacklist!');
             }
@@ -44,7 +44,7 @@ class _DenyListPageState extends State<DenyListPage> {
           sheetController.show(
             context,
             ControlledTextWrapper(
-              submit: (value) => submit(sortTags(value), edit),
+              submit: (value) async => submit(sortTags(value), edit),
               actionController: sheetController,
               textController: TextEditingController(
                   text: edit != null ? denylist[edit] : null),
@@ -84,7 +84,7 @@ class _DenyListPageState extends State<DenyListPage> {
                 denylist.removeAt(index);
                 updateBlacklist(
                   context: context,
-                  denylist: denylist,
+                  value: denylist,
                   immediate: true,
                 );
               },

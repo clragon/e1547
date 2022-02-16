@@ -41,7 +41,7 @@ class _FollowingPageState extends State<FollowingPage> {
           sheetController.show(
             context,
             ControlledTextWrapper(
-              submit: (value) => submit(sortTags(value), edit),
+              submit: (value) async => submit(sortTags(value), edit),
               actionController: sheetController,
               textController: TextEditingController(
                   text: edit != null ? follows[edit].tags : null),
@@ -74,7 +74,7 @@ class _FollowingPageState extends State<FollowingPage> {
               labelText: 'Follow alias',
               actionController: sheetController,
               textController: TextEditingController(text: follows[edit].title),
-              submit: (value) => submit(value, edit),
+              submit: (value) async => submit(value, edit),
             ),
           );
         }

@@ -35,7 +35,7 @@ void removeFromHistory(HistoryEntry historyEntry) {
 void withHistory(void Function(List<HistoryEntry> history) callback) {
   String host = client.host;
   Map<String, List<HistoryEntry>> history = Map.from(settings.history.value);
-  List<HistoryEntry> currentHistory = history[host] ?? [];
+  List<HistoryEntry> currentHistory = List.from(history[host] ?? []);
   callback(currentHistory);
   currentHistory.sort((a, b) => a.visitedAt.compareTo(b.visitedAt));
   history[host] = currentHistory;

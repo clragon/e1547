@@ -67,8 +67,9 @@ VoidCallback? getLinkWordTap(BuildContext context, LinkWord word, int id) {
                 builder: (context) => ReplyLoadingPage(id),
               ),
             );
+      } else {
+        return null;
       }
-      break;
     case LinkWord.topic:
       if (settings.showBeta.value) {
         return () => Navigator.of(context).push(
@@ -76,8 +77,9 @@ VoidCallback? getLinkWordTap(BuildContext context, LinkWord word, int id) {
                 builder: (context) => TopicLoadingPage(id),
               ),
             );
+      } else {
+        return null;
       }
-      break;
     default:
       return null;
   }

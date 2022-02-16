@@ -33,7 +33,7 @@ class DenylistEditor extends StatelessWidget {
         List<String> tags = controller.text.split('\n');
         tags = tags.trim();
         tags.removeWhere((tag) => tag.isEmpty);
-        if (!await updateBlacklist(context: context, denylist: tags)) {
+        if (!await updateBlacklist(context: context, value: tags)) {
           throw ActionControllerException(
               message: 'Failed to update blacklist!');
         }

@@ -60,6 +60,8 @@ class _PostsPageState extends State<PostsPage> with ListenerCallbackMixin {
             ),
           ),
         );
+      } else {
+        return null;
       }
     }
 

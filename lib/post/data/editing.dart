@@ -175,6 +175,8 @@ class PostEditingController extends ChangeNotifier {
         ]);
       }
       return body;
+    } else {
+      return null;
     }
   }
 }

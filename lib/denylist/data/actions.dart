@@ -4,12 +4,13 @@ import 'package:flutter/material.dart';
 
 Future<bool> updateBlacklist({
   required BuildContext context,
-  required List<String> denylist,
+  required List<String> value,
   bool immediate = false,
 }) async {
+  List<String> denylist = List.from(value);
   bool success = true;
 
-  if (await client.isLoggedIn) {
+  if (client.hasLogin) {
     List<String> old = List.from(settings.denylist.value);
     if (immediate) {
       settings.denylist.value = denylist;
