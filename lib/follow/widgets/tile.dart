@@ -53,6 +53,7 @@ class FollowTile extends StatelessWidget {
 
     Widget info(FollowStatus status) {
       return Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
@@ -66,7 +67,7 @@ class FollowTile extends StatelessWidget {
                     color: Colors.white,
                   ),
                 ),
-              if (status.unseen != null && status.unseen! > 0)
+              if ((status.unseen ?? 0) > 0)
                 Expanded(
                   child: Text(
                     getStatusText(status),
@@ -94,7 +95,7 @@ class FollowTile extends StatelessWidget {
     }
 
     return Card(
-      clipBehavior: Clip.antiAlias,
+      clipBehavior: Clip.antiAliasWithSaveLayer,
       child: Stack(
         clipBehavior: Clip.none,
         alignment: Alignment.center,
@@ -108,28 +109,24 @@ class FollowTile extends StatelessWidget {
             bottom: active ? -1 : null,
             right: active ? -1 : null,
             left: active ? -1 : null,
-            child: SafeCrossFade(
-              showChild: active,
-              builder: (context) => AnimatedContainer(
-                duration: defaultAnimationDuration,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      Colors.transparent,
-                      Colors.black.withOpacity(0.8),
-                    ],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                  ),
-                ),
-                child: Padding(
-                  padding: EdgeInsets.all(8),
-                  child: info(status!),
-                ),
+            child: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                gradient: active
+                    ? LinearGradient(
+                        colors: [
+                          Colors.transparent,
+                          Colors.black.withOpacity(0.8),
+                        ],
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                      )
+                    : null,
               ),
-              secondChild: Padding(
-                padding: EdgeInsets.all(8),
-                child: Text(
+              child: SafeCrossFade(
+                showChild: active,
+                builder: (context) => info(status!),
+                secondChild: Text(
                   follow.title,
                   style: Theme.of(context).textTheme.headline6,
                   overflow: TextOverflow.ellipsis,
