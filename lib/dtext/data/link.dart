@@ -5,6 +5,20 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:username_generator/username_generator.dart';
 
+String stopsAtEndChar(String wrapped) => [
+      wrapped,
+      r'(?=([.,!:")\s]|(\? ))?)',
+    ].join();
+
+String startsWithName(String wrapped, [bool? needsName]) => [
+      r'("(?<name>[^"]+?)":)',
+      if (!(needsName ?? true)) r'?',
+      wrapped,
+    ].join();
+
+String linkWrap(String wrapped, [bool? needsName]) =>
+    startsWithName(stopsAtEndChar(wrapped), needsName);
+
 String linkToDisplay(String link) {
   Uri url = Uri.parse(link.trim());
   List<String> allowed = ['v'];
@@ -35,8 +49,8 @@ Map<RegExp, DTextParser> linkRegexes(
       ),
     ): (match, result, state) => parseLink(
           context: context,
-          match: match,
-          result: result,
+          name: match.namedGroup('name'),
+          link: match.namedGroup('link')!,
           state: state,
           usernameGenerator: usernameGenerator,
         ),
@@ -46,8 +60,8 @@ Map<RegExp, DTextParser> linkRegexes(
       ),
     ): (match, result, state) => parseLink(
           context: context,
-          match: match,
-          result: result,
+          name: match.namedGroup('name'),
+          link: match.namedGroup('link')!,
           state: state,
           insite: true,
           usernameGenerator: usernameGenerator,
@@ -57,57 +71,27 @@ Map<RegExp, DTextParser> linkRegexes(
 
 InlineSpan parseLink({
   required BuildContext context,
-  required RegExpMatch match,
-  required String result,
+  required String link,
+  required String? name,
   required TextState state,
   UsernameGenerator? usernameGenerator,
   bool insite = false,
 }) {
-  String? display = match.namedGroup('name');
-  String search = match.namedGroup('link')!;
-  String siteMatch = r'((e621|e926)\.net)?';
-  VoidCallback? onTap = () => launch(search);
-  int? id = int.tryParse(search.split('/').last.split('?').first);
+  String? display = name ?? linkToDisplay(link);
+  int? id = parseLinkId(link);
+  LinkWord? word = parseLinkToWord(link);
+  VoidCallback? onTap = () => launch(link);
 
-  if (display == null) {
-    display = match.namedGroup('link');
-    display = linkToDisplay(display!);
+  if (word != null && id != null) {
+    onTap = getLinkWordTap(context, word, id);
   }
 
   if (insite) {
-    onTap = () async => launch('https://${client.host}$search');
+    onTap = () async => launch('https://${client.host}$link');
 
     // forum topics need generated names
-    if (usernameGenerator != null) {
-      RegExp userReg = RegExp(r'/user(s|/show)/\d+');
-      if (userReg.hasMatch(search)) {
-        display = usernameGenerator.generate(id!);
-      }
-    }
-  }
-
-  if (id != null) {
-    Map<RegExp, VoidCallback? Function(RegExpMatch match)> links = {
-      RegExp(siteMatch + r'/post(s|/show)/\d+'): (match) =>
-          getLinkWordTap(context, LinkWord.post, id),
-      RegExp(siteMatch + r'/pool(s|/show)/\d+'): (match) =>
-          getLinkWordTap(context, LinkWord.pool, id),
-      RegExp(siteMatch + r'/user(s|/show)/\d+'): (match) =>
-          getLinkWordTap(context, LinkWord.user, id),
-      if (settings.showBeta.value) ...{
-        RegExp(siteMatch + r'/forum_topics/\d+'): (match) =>
-            getLinkWordTap(context, LinkWord.topic, id),
-        RegExp(siteMatch + r'/forum_posts/\d+'): (match) =>
-            getLinkWordTap(context, LinkWord.forum, id),
-      }
-    };
-
-    for (final entry in links.entries) {
-      RegExpMatch? match = entry.key.firstMatch(result);
-      if (match != null) {
-        onTap = entry.value(match);
-        break;
-      }
+    if (usernameGenerator != null && word == LinkWord.user) {
+      display = usernameGenerator.generate(id!);
     }
   }
 
@@ -117,4 +101,43 @@ InlineSpan parseLink({
     state: state.copyWith(link: true),
     onTap: onTap,
   );
+}
+
+int? parseLinkId(String link) {
+  return int.tryParse(link.split('/').last.split('?').first);
+}
+
+LinkWord? parseLinkToWord(String link) {
+  String siteMatch = r'((e621|e926)\.net)?';
+
+  Map<String, LinkWord> links = {
+    r'/post(s|/show)/\d+': LinkWord.post,
+    r'/pool(s|/show)/\d+': LinkWord.pool,
+    r'/user(s|/show)/\d+': LinkWord.user,
+    if (settings.showBeta.value) ...{
+      r'/forum_topics/\d+': LinkWord.topic,
+      r'/forum_posts/\d+': LinkWord.forum,
+    }
+  };
+
+  for (final entry in links.entries) {
+    RegExpMatch? match =
+        RegExp(siteMatch + entry.key, caseSensitive: false).firstMatch(link);
+    if (match != null) {
+      return entry.value;
+    }
+  }
+
+  return null;
+}
+
+VoidCallback? getLinkAction(BuildContext context, String link) {
+  int? id = parseLinkId(link);
+  LinkWord? word = parseLinkToWord(link);
+
+  if (word != null && id != null) {
+    return getLinkWordTap(context, word, id);
+  }
+
+  return null;
 }
