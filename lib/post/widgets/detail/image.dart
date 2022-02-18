@@ -132,10 +132,11 @@ class _PostDetailImageToggleState extends State<PostDetailImageToggle> {
                     Padding(
                       padding: EdgeInsets.symmetric(vertical: 2),
                       child: Icon(
-                          widget.post.isAllowed
-                              ? Icons.visibility_off
-                              : Icons.visibility,
-                          size: 16),
+                        widget.post.isAllowed
+                            ? Icons.visibility_off
+                            : Icons.visibility,
+                        size: 16,
+                      ),
                     ),
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 5),
@@ -144,7 +145,7 @@ class _PostDetailImageToggleState extends State<PostDetailImageToggle> {
                     CrossFade(
                       showChild: loading,
                       child: SizedCircularProgressIndicator(
-                        size: 12,
+                        size: 16,
                       ),
                     ),
                   ],
