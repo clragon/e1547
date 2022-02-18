@@ -31,9 +31,9 @@ class _TopicsPageState extends State<TopicsPage> {
       builder: (context) => PagedListView(
         padding: defaultListPadding,
         pagingController: controller,
-        builderDelegate: defaultPagedChildBuilderDelegate(
+        builderDelegate: defaultPagedChildBuilderDelegate<Topic>(
           pagingController: controller,
-          itemBuilder: (context, Topic item, index) => TopicTile(
+          itemBuilder: (context, item, index) => TopicTile(
             topic: item,
             onPressed: () => Navigator.of(context).push(
               MaterialPageRoute(
@@ -49,7 +49,6 @@ class _TopicsPageState extends State<TopicsPage> {
               ),
             ),
           ),
-          onLoading: Text('Loading topics'),
           onEmpty: Text('No topics'),
           onError: Text('Failed to load topics'),
         ),

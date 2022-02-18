@@ -132,9 +132,9 @@ class _PostsPageState extends State<PostsPage> with ListenerCallbackMixin {
             padding: defaultListPadding,
             addAutomaticKeepAlives: false,
             pagingController: widget.controller,
-            builderDelegate: defaultPagedChildBuilderDelegate(
+            builderDelegate: defaultPagedChildBuilderDelegate<Post>(
               pagingController: widget.controller,
-              itemBuilder: (context, Post item, index) => SelectionItemOverlay(
+              itemBuilder: (context, item, index) => SelectionItemOverlay(
                 enabled: widget.canSelect,
                 padding: EdgeInsets.all(4),
                 child: itemBuilder(context, item, index),
@@ -143,7 +143,6 @@ class _PostsPageState extends State<PostsPage> with ListenerCallbackMixin {
                 onChanged: onChanged,
               ),
               onEmpty: Text('No posts'),
-              onLoading: Text('Loading posts'),
               onError: Text('Failed to load posts'),
             ),
             gridDelegateBuilder: (childCount) =>

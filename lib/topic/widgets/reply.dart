@@ -1,6 +1,7 @@
 import 'package:e1547/dtext/dtext.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/topic/topic.dart';
+import 'package:e1547/user/user.dart';
 import 'package:flutter/material.dart';
 import 'package:timeago/timeago.dart';
 import 'package:username_generator/username_generator.dart';

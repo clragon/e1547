@@ -27,60 +27,57 @@ class SheetActionController extends ActionController {
 
   void show(BuildContext context, Widget child) {
     sheetController = Scaffold.of(context).showBottomSheet(
-      (context) => BottomSheetLoadingIndicator(child: child, controller: this),
+      (context) => ActionBottomSheet(child: child, controller: this),
     );
     sheetController!.closed.then((_) => reset());
   }
 }
 
-class BottomSheetLoadingIndicator extends StatelessWidget {
+class ActionBottomSheet extends StatelessWidget {
   final Widget child;
   final SheetActionController controller;
 
-  const BottomSheetLoadingIndicator(
-      {required this.controller, required this.child});
+  const ActionBottomSheet({required this.controller, required this.child});
 
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: controller,
       child: child,
-      builder: (context, child) {
-        return Padding(
-          padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Row(
-                children: [
-                  CrossFade(
-                    showChild: controller.isLoading,
-                    child: Center(
-                      child: Padding(
-                        padding: EdgeInsets.only(right: 10),
-                        child: SizedCircularProgressIndicator(size: 16),
+      builder: (context, child) => Padding(
+        padding: EdgeInsets.all(10).copyWith(top: 0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              children: [
+                CrossFade(
+                  showChild: controller.isLoading,
+                  child: Center(
+                    child: Padding(
+                      padding: EdgeInsets.only(right: 10),
+                      child: SizedCircularProgressIndicator(size: 16),
+                    ),
+                  ),
+                ),
+                CrossFade(
+                  showChild: controller.isError && !controller.isForgiven,
+                  child: Center(
+                    child: Padding(
+                      padding: EdgeInsets.only(right: 10),
+                      child: Icon(
+                        Icons.clear,
+                        color: Theme.of(context).errorColor,
                       ),
                     ),
                   ),
-                  CrossFade(
-                    showChild: controller.isError && !controller.isForgiven,
-                    child: Center(
-                      child: Padding(
-                        padding: EdgeInsets.only(right: 10),
-                        child: Icon(
-                          Icons.clear,
-                          color: Theme.of(context).errorColor,
-                        ),
-                      ),
-                    ),
-                  ),
-                  Expanded(child: child!),
-                ],
-              )
-            ],
-          ),
-        );
-      },
+                ),
+                Expanded(child: child!),
+              ],
+            )
+          ],
+        ),
+      ),
     );
   }
 }

@@ -25,7 +25,6 @@ class PagedChildBuilderRetryButton extends StatelessWidget {
 PagedChildBuilderDelegate<T> defaultPagedChildBuilderDelegate<T>({
   required ItemWidgetBuilder<T> itemBuilder,
   PagingController? pagingController,
-  Widget? onLoading,
   Widget? onEmpty,
   Widget? onError,
 }) {
@@ -35,11 +34,7 @@ PagedChildBuilderDelegate<T> defaultPagedChildBuilderDelegate<T>({
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          SizedCircularProgressIndicator(size: 28),
-          Padding(
-            padding: EdgeInsets.all(20),
-            child: onLoading ?? Text('Loading...'),
-          ),
+          CircularProgressIndicator(),
         ],
       ),
     ),
@@ -47,7 +42,7 @@ PagedChildBuilderDelegate<T> defaultPagedChildBuilderDelegate<T>({
       child: Center(
         child: Padding(
           padding: EdgeInsets.all(16),
-          child: SizedCircularProgressIndicator(size: 28),
+          child: CircularProgressIndicator(),
         ),
       ),
     ),

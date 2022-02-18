@@ -6,3 +6,4 @@ export 'data/controller.dart';
 // widgets
 export 'widgets/comments.dart';
 export 'widgets/comment.dart';
+export 'widgets/loading.dart';

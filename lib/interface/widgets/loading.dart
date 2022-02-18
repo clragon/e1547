@@ -1,172 +1,239 @@
-import 'package:e1547/client/client.dart';
-import 'package:e1547/comment/comment.dart';
 import 'package:e1547/interface/interface.dart';
-import 'package:e1547/pool/pool.dart';
-import 'package:e1547/post/post.dart';
-import 'package:e1547/topic/topic.dart';
-import 'package:e1547/user/user.dart';
 import 'package:flutter/material.dart';
 
-class PostLoadingPage extends StatefulWidget {
-  final int id;
+class SizedCircularProgressIndicator extends StatelessWidget {
+  final double size;
+  final double? value;
+  final double strokeWidth;
 
-  const PostLoadingPage(this.id);
-
-  @override
-  _PostLoadingPageState createState() => _PostLoadingPageState();
-}
-
-class _PostLoadingPageState extends State<PostLoadingPage> {
-  late Future<Post> post = client.post(widget.id);
-
-  @override
-  Widget build(BuildContext context) {
-    return FuturePageLoader<Post>(
-      future: post,
-      builder: (context, value) => PostDetail(post: value),
-      title: Text('Post #${widget.id}'),
-      onLoading: Text('Loading post'),
-      onError: Text('Failed to load post'),
-      onEmpty: Text('Invalid post id'),
-    );
-  }
-}
-
-class CommentLoadingPage extends StatefulWidget {
-  final int id;
-
-  const CommentLoadingPage(this.id);
-
-  @override
-  _CommentLoadingPageState createState() => _CommentLoadingPageState();
-}
-
-class _CommentLoadingPageState extends State<CommentLoadingPage> {
-  late Future<Comment> comment = client.comment(widget.id);
-
-  @override
-  Widget build(BuildContext context) {
-    return FuturePageLoader<Comment>(
-      future: comment,
-      builder: (context, value) => CommentsPage(postId: value.postId),
-      title: Text('Comment #${widget.id}'),
-      onLoading: Text('Loading comment'),
-      onError: Text('Failed to load comment'),
-      onEmpty: Text('Invalid comment id'),
-    );
-  }
-}
-
-class PoolLoadingPage extends StatefulWidget {
-  final int id;
-
-  const PoolLoadingPage(this.id);
-
-  @override
-  _PoolLoadingPageState createState() => _PoolLoadingPageState();
-}
-
-class _PoolLoadingPageState extends State<PoolLoadingPage> {
-  late Future<Pool> pool = client.pool(widget.id);
-
-  @override
-  Widget build(BuildContext context) {
-    return FuturePageLoader<Pool>(
-      future: pool,
-      builder: (context, value) => PoolPage(pool: value),
-      title: Text('Pool #${widget.id}'),
-      onLoading: Text('Loading pool'),
-      onError: Text('Failed to load pool'),
-      onEmpty: Text('Invalid pool id'),
-    );
-  }
-}
-
-class TopicLoadingPage extends StatefulWidget {
-  final int id;
-  final bool orderByOldest;
-
-  const TopicLoadingPage(this.id, {this.orderByOldest = true});
-
-  @override
-  _TopicLoadingPageState createState() => _TopicLoadingPageState();
-}
-
-class _TopicLoadingPageState extends State<TopicLoadingPage> {
-  late Future<Topic> topic = client.topic(widget.id);
-
-  @override
-  Widget build(BuildContext context) {
-    return FuturePageLoader<Topic>(
-      future: topic,
-      builder: (context, value) => RepliesPage(
-        topic: value,
-        orderByOldest: widget.orderByOldest,
-      ),
-      title: Text('Topic #${widget.id}'),
-      onLoading: Text('Loading topic'),
-      onError: Text('Failed to load topic'),
-      onEmpty: Text('Invalid topic id'),
-    );
-  }
-}
-
-class ReplyLoadingPage extends StatefulWidget {
-  final int id;
-
-  const ReplyLoadingPage(this.id);
-
-  @override
-  _ReplyLoadingPageState createState() => _ReplyLoadingPageState();
-}
-
-class _ReplyLoadingPageState extends State<ReplyLoadingPage> {
-  late Future<Reply> reply = client.reply(widget.id);
-
-  @override
-  Widget build(BuildContext context) {
-    return FuturePageLoader<Reply>(
-      future: reply,
-      builder: (context, value) => TopicLoadingPage(value.topicId),
-      title: Text('Reply #${widget.id}'),
-      onLoading: Text('Loading reply'),
-      onError: Text('Failed to load reply'),
-      onEmpty: Text('Invalid reply id'),
-    );
-  }
-}
-
-class UserLoadingPage extends StatefulWidget {
-  final String id;
-  final Post? avatar;
-  final UserPageSection initalPage;
-
-  const UserLoadingPage(
-    this.id, {
-    this.avatar,
-    this.initalPage = UserPageSection.Favorites,
+  const SizedCircularProgressIndicator({
+    required this.size,
+    this.value,
+    this.strokeWidth = 4,
   });
 
   @override
-  _UserLoadingPageState createState() => _UserLoadingPageState();
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: size,
+      width: size,
+      child: Padding(
+        padding: EdgeInsets.all(strokeWidth / 2),
+        child: CircularProgressIndicator(
+          value: value,
+          strokeWidth: strokeWidth,
+        ),
+      ),
+    );
+  }
 }
 
-class _UserLoadingPageState extends State<UserLoadingPage> {
-  late Future<User> user = client.user(widget.id.toString());
+class IconMessage extends StatelessWidget {
+  final Axis direction;
+  final Widget title;
+  final Widget icon;
+  final Widget? action;
+
+  const IconMessage({
+    this.direction = Axis.vertical,
+    required this.title,
+    required this.icon,
+    this.action,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return FuturePageLoader<User>(
-      future: user,
-      builder: (context, value) => UserPage(
-        user: value,
-        avatar: widget.avatar,
-        initialPage: widget.initalPage,
+    return Center(
+      child: Flex(
+        direction: direction,
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Padding(
+            padding: EdgeInsets.all(20),
+            child: Theme(
+              data: Theme.of(context).copyWith(
+                iconTheme: Theme.of(context).iconTheme.copyWith(size: 32),
+              ),
+              child: icon,
+            ),
+          ),
+          title,
+          if (action != null) action!,
+        ],
       ),
-      title: Text('User #${widget.id}'),
-      onLoading: Text('Loading user'),
-      onError: Text('Failed to load user'),
-      onEmpty: Text('Invalid user id'),
+    );
+  }
+}
+
+enum PageLoaderState {
+  loading,
+  empty,
+  error,
+  child,
+}
+
+class PageLoader extends StatelessWidget {
+  final WidgetBuilder? builder;
+  final Widget Function(BuildContext context, Widget child)? pageBuilder;
+  final Widget Function(BuildContext context, Widget child)? loadingBuilder;
+  final Widget? onEmpty;
+  final Widget? onEmptyIcon;
+  final Widget? onError;
+  final Widget? onErrorIcon;
+  final bool isLoading;
+  final bool isEmpty;
+  final bool isError;
+  final bool? isBuilt;
+
+  const PageLoader({
+    required this.builder,
+    this.isError = false,
+    this.isLoading = false,
+    this.isEmpty = false,
+    this.isBuilt,
+    this.pageBuilder,
+    this.loadingBuilder,
+    this.onEmpty,
+    this.onEmptyIcon,
+    this.onError,
+    this.onErrorIcon,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    PageLoaderState state =
+        isBuilt ?? true ? PageLoaderState.child : PageLoaderState.loading;
+    if (isEmpty) {
+      if (isLoading) {
+        state = PageLoaderState.loading;
+      } else if (isError) {
+        state = PageLoaderState.error;
+      } else {
+        state = PageLoaderState.empty;
+      }
+    }
+
+    Widget child() {
+      switch (state) {
+        case PageLoaderState.loading:
+          return Center(child: CircularProgressIndicator());
+        case PageLoaderState.error:
+          return IconMessage(
+            icon: onErrorIcon ?? Icon(Icons.warning_amber_outlined),
+            title: onError ?? Text('Failed to load'),
+          );
+        case PageLoaderState.empty:
+          return IconMessage(
+            icon: onEmptyIcon ?? Icon(Icons.clear),
+            title: onEmpty ?? Text('Nothing to see here'),
+          );
+        case PageLoaderState.child:
+          return builder!(context);
+      }
+    }
+
+    Widget body() {
+      Widget body = child();
+      if (pageBuilder != null) {
+        body = pageBuilder!(context, body);
+      }
+      if (loadingBuilder != null && state != PageLoaderState.child) {
+        body = loadingBuilder!(context, body);
+      }
+      return body;
+    }
+
+    return Material(
+      child: body(),
+    );
+  }
+}
+
+class FuturePageLoader<T> extends StatelessWidget {
+  final Widget Function(BuildContext context, T value) builder;
+  final Widget? title;
+  final Widget? onEmpty;
+  final Widget? onError;
+  final bool? isBuilt;
+  final Future<T> future;
+
+  const FuturePageLoader({
+    required this.future,
+    required this.builder,
+    this.title,
+    this.isBuilt,
+    this.onEmpty,
+    this.onError,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<T>(
+      future: future,
+      builder: (context, snapshot) => PageLoader(
+        builder: (context) => builder(context, snapshot.data!),
+        loadingBuilder: (context, child) => Scaffold(
+          appBar: title != null
+              ? DefaultAppBar(
+                  leading: CloseButton(),
+                  title: title,
+                )
+              : null,
+          body: child,
+        ),
+        isLoading: snapshot.connectionState != ConnectionState.done,
+        isError: snapshot.hasError,
+        isEmpty: !snapshot.hasData,
+        isBuilt: isBuilt,
+        onEmpty: onEmpty,
+        onError: onError,
+      ),
+    );
+  }
+}
+
+class LoadingTile extends StatefulWidget {
+  final Widget? leading;
+  final Widget title;
+  final Widget? trailing;
+  final Function onTap;
+
+  const LoadingTile({
+    required this.title,
+    required this.onTap,
+    this.leading,
+    this.trailing,
+  });
+
+  @override
+  _LoadingTileState createState() => _LoadingTileState();
+}
+
+class _LoadingTileState extends State<LoadingTile> {
+  bool isLoading = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: widget.leading,
+      title: widget.title,
+      trailing: CrossFade(
+        child: SizedCircularProgressIndicator(size: 24),
+        secondChild: widget.trailing ?? Icon(Icons.arrow_right),
+        showChild: isLoading,
+      ),
+      onTap: isLoading
+          ? null
+          : () async {
+              setState(() {
+                isLoading = true;
+              });
+              await widget.onTap();
+              setState(() {
+                isLoading = false;
+              });
+            },
     );
   }
 }

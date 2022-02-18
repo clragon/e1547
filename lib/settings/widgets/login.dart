@@ -291,12 +291,12 @@ class _LoginLoadingDialogState extends State<LoginLoadingDialog> {
     Credentials credentials =
         Credentials(username: widget.username, password: widget.password);
     bool valid = await client.login(credentials);
+    await Navigator.of(context).maybePop();
     if (valid) {
       widget.onDone?.call();
     } else {
       widget.onError?.call();
     }
-    Navigator.of(context).maybePop();
   }
 
   @override

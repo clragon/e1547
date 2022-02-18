@@ -133,7 +133,7 @@ class _WikiTagDisplayState extends State<WikiTagDisplay> {
         secondChild: Center(
           child: Padding(
             padding: EdgeInsets.all(12),
-            child: SizedCircularProgressIndicator(size: 26),
+            child: CircularProgressIndicator(),
           ),
         ),
       ),

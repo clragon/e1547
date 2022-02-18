@@ -49,13 +49,17 @@ class _PostDetailGalleryState extends State<PostDetailGallery> {
         controller: pageController,
         itemBuilder: (context, index) {
           loadNextPage(index);
-          return PostDetail(
-            post: widget.controller.itemList![index],
-            controller: widget.controller,
-            onPageChanged: (index) => ModalRoute.of(context)!.isCurrent
-                ? pageController.animateToPage(index,
-                    duration: defaultAnimationDuration, curve: Curves.easeInOut)
-                : pageController.jumpToPage(index),
+          return PrimaryScrollController(
+            controller: ScrollController(),
+            child: PostDetail(
+              post: widget.controller.itemList![index],
+              controller: widget.controller,
+              onPageChanged: (index) => ModalRoute.of(context)!.isCurrent
+                  ? pageController.animateToPage(index,
+                      duration: defaultAnimationDuration,
+                      curve: Curves.easeInOut)
+                  : pageController.jumpToPage(index),
+            ),
           );
         },
         itemCount: widget.controller.itemList?.length ?? 0,

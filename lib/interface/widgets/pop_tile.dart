@@ -9,16 +9,16 @@ class PopupMenuTile<T> extends PopupMenuItem<T> {
     required this.icon,
     required this.title,
   }) : super(
-          child: MenuTile(icon: icon, title: title),
+          child: ListMenuTile(icon: icon, title: title),
           value: value,
         );
 }
 
-class MenuTile extends StatelessWidget {
+class ListMenuTile extends StatelessWidget {
   final IconData icon;
   final String title;
 
-  const MenuTile({required this.icon, required this.title});
+  const ListMenuTile({required this.icon, required this.title});
 
   @override
   Widget build(BuildContext context) {

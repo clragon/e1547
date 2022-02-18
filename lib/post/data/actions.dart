@@ -292,14 +292,14 @@ extension Transitioning on Post {
   String get hero => getPostHero(id);
 }
 
+String getPostHero(int id) => 'image_$id';
+
 extension Linking on Post {
   Uri url(String host) => getPostUri(host, id);
 }
 
 Uri getPostUri(String host, int id) =>
     Uri(scheme: 'https', host: host, path: '/posts/$id');
-
-String getPostHero(int? postId) => 'image_$postId';
 
 List<String> filterArtists(List<String> artists) {
   List<String> excluded = [

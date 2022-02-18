@@ -44,7 +44,7 @@ class _TagInputState extends State<TagInput> {
     if (controller.text != '') {
       controller.text = controller.text + ' ';
     }
-    setFocusToEnd(controller);
+    controller.setFocusToEnd();
   }
 
   @override
@@ -82,7 +82,7 @@ class _TagInputState extends State<TagInput> {
           }
         }
         controller.text = tags.join(' ') + ' ';
-        setFocusToEnd(controller);
+        controller.setFocusToEnd();
       },
       itemBuilder: (context, dynamic itemData) {
         String count = itemData['post_count'].toString();
@@ -126,7 +126,7 @@ class _TagInputState extends State<TagInput> {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SizedCircularProgressIndicator(size: 20),
+            SizedCircularProgressIndicator(size: 24),
           ],
         ),
       ),
@@ -182,7 +182,7 @@ class _AdvancedTagInputState extends State<AdvancedTagInput> {
   Future<void> withTags(Future<Tagset> Function(Tagset tags) editor) async {
     controller.text =
         (await editor(Tagset.parse(controller.text))).toString() + ' ';
-    setFocusToEnd(controller);
+    controller.setFocusToEnd();
   }
 
   List<PopupMenuEntry<String>> fromMap(Map<String, String> strings) =>

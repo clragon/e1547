@@ -152,7 +152,7 @@ class _ParentEditorState extends State<ParentEditor> {
   void initState() {
     super.initState();
     textController.text = widget.editingController.parentId?.toString() ?? ' ';
-    setFocusToEnd(textController);
+    textController.setFocusToEnd();
     widget.actionController.setAction(submit);
   }
 

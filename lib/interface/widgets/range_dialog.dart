@@ -55,7 +55,7 @@ class _RangeDialogState extends State<RangeDialog> with ListenerCallbackMixin {
         padding: EdgeInsets.only(bottom: 20),
         child: TextField(
           keyboardType: TextInputType.number,
-          style: TextStyle(fontSize: 48),
+          style: Theme.of(context).textTheme.headline3,
           textAlign: TextAlign.center,
           decoration: InputDecoration(border: InputBorder.none),
           controller: controller,
@@ -67,14 +67,15 @@ class _RangeDialogState extends State<RangeDialog> with ListenerCallbackMixin {
 
     Widget sliderWidget() {
       return Slider(
-          min: min(widget.min, value).toDouble(),
-          max: max(widget.max, value).toDouble(),
-          divisions: widget.division,
-          value: value.toDouble(),
-          activeColor: Theme.of(context).colorScheme.secondary,
-          onChanged: (output) {
-            setState(() => value = output.toInt());
-          });
+        min: min(widget.min, value).toDouble(),
+        max: max(widget.max, value).toDouble(),
+        divisions: widget.division,
+        value: value.toDouble(),
+        activeColor: Theme.of(context).colorScheme.secondary,
+        onChanged: (output) {
+          setState(() => value = output.toInt());
+        },
+      );
     }
 
     return AlertDialog(

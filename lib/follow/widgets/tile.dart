@@ -39,7 +39,7 @@ class FollowTile extends StatelessWidget {
         children: [
           Expanded(
             child: Hero(
-              tag: getPostHero(status.latest),
+              tag: getPostHero(status.latest!),
               child: CachedNetworkImage(
                 imageUrl: status.thumbnail!,
                 errorWidget: defaultErrorBuilder,
@@ -181,23 +181,6 @@ class FollowListTile extends StatelessWidget {
   Widget build(BuildContext context) {
     FollowStatus? status = follow.statuses[host];
 
-    Widget cardWidget(String tag) {
-      return FakeCard(
-        child: TagGesture(
-          tag: tag,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-                child: Text(tagToTitle(tag)),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-
     Widget contextMenu() {
       bool notified = follow.type == FollowType.notify;
       bool bookmarked = follow.type == FollowType.bookmark;
@@ -293,7 +276,7 @@ class FollowListTile extends StatelessWidget {
                         direction: Axis.horizontal,
                         children: follow.tags
                             .split(' ')
-                            .map((tag) => cardWidget(tag))
+                            .map((tag) => TagCard(tag: tag))
                             .toList(),
                       ),
                     ),

@@ -36,9 +36,9 @@ class _PoolsPageState extends State<PoolsPage> {
       builder: (context) => PagedListView(
         padding: defaultListPadding,
         pagingController: controller,
-        builderDelegate: defaultPagedChildBuilderDelegate(
+        builderDelegate: defaultPagedChildBuilderDelegate<Pool>(
           pagingController: controller,
-          itemBuilder: (context, Pool item, index) => PoolTile(
+          itemBuilder: (context, item, index) => PoolTile(
             pool: item,
             onPressed: () => Navigator.of(context).push(
               MaterialPageRoute(
@@ -46,7 +46,6 @@ class _PoolsPageState extends State<PoolsPage> {
               ),
             ),
           ),
-          onLoading: Text('Loading pools'),
           onEmpty: Text('No pools'),
           onError: Text('Failed to load pools'),
         ),

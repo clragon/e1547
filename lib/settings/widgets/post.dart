@@ -1,5 +1,4 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 
@@ -35,7 +34,7 @@ class PostPresenterTile extends StatelessWidget {
                       ? Opacity(
                           opacity: 0.8,
                           child: Hero(
-                            tag: getPostHero(postId),
+                            tag: getPostHero(postId!),
                             child: CachedNetworkImage(
                               imageUrl: thumbnail!,
                               errorWidget: defaultErrorBuilder,

@@ -46,8 +46,8 @@ class SourceDisplay extends StatelessWidget {
                           builder: (context) => TextEditor(
                             title: '#${post.id} sources',
                             content: editingController!.sources!.join('\n'),
-                            richEditor: false,
-                            validate: (context, text) async {
+                            dtext: false,
+                            onSubmit: (context, text) async {
                               editingController!.sources =
                                   text.trim().split('\n');
                               return true;

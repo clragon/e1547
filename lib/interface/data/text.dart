@@ -17,11 +17,13 @@ class LowercaseTextInputFormatter extends TextInputFormatter {
   }
 }
 
-void setFocusToEnd(TextEditingController controller) {
-  controller.selection = TextSelection(
-    baseOffset: controller.text.length,
-    extentOffset: controller.text.length,
-  );
+extension Selection on TextEditingController {
+  void setFocusToEnd() {
+    selection = TextSelection(
+      baseOffset: text.length,
+      extentOffset: text.length,
+    );
+  }
 }
 
 DateFormat getCurrentDateTimeFormat() =>

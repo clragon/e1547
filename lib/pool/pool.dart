@@ -5,3 +5,4 @@ export 'data/pool.dart';
 // widgets
 export 'widgets/pools.dart';
 export 'widgets/sheet.dart';
+export 'widgets/loading.dart';

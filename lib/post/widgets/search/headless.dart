@@ -34,7 +34,6 @@ class _PostsPageHeadlessState extends State<PostsPageHeadless> {
         builderDelegate: defaultPagedChildBuilderDelegate<Post>(
           pagingController: widget.controller,
           onEmpty: Text('No posts'),
-          onLoading: Text('Loading posts'),
           onError: Text('Failed to load posts'),
           itemBuilder: (context, item, index) => PostTile(
             post: item,

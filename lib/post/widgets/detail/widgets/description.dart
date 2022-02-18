@@ -41,7 +41,7 @@ class DescriptionDisplay extends StatelessWidget {
                           builder: (context) => TextEditor(
                             title: '#${post.id} description',
                             content: editingController!.description,
-                            validate: (context, text) async {
+                            onSubmit: (context, text) async {
                               editingController!.description = text;
                               return true;
                             },

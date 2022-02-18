@@ -61,12 +61,14 @@ class DrawerCounterBody extends StatelessWidget {
       tags.sort((a, b) => b.count.compareTo(a.count));
       children = [];
       for (CountedTag tag in tags.take(limit)) {
-        children.add(TagCounterCard(
-          tag: tag.tag,
-          count: tag.count,
-          category: tag.category,
-          controller: controller,
-        ));
+        children.add(
+          TagCounterCard(
+            tag: tag.tag,
+            count: tag.count,
+            category: tag.category,
+            controller: controller,
+          ),
+        );
       }
     }
 
@@ -120,7 +122,7 @@ class DrawerCounterBody extends StatelessWidget {
                       children: [
                         Padding(
                           padding: EdgeInsets.all(8),
-                          child: SizedCircularProgressIndicator(size: 20),
+                          child: SizedCircularProgressIndicator(size: 24),
                         ),
                       ],
                     ),

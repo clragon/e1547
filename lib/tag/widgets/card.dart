@@ -5,49 +5,57 @@ import 'package:flutter/material.dart';
 
 class TagCard extends StatelessWidget {
   final String tag;
-  final String category;
+  final String? category;
+  final Color? stripeColor;
   final VoidCallback? onRemove;
   final PostController? controller;
+  final bool wiki;
+  final List<Widget>? extra;
 
   const TagCard({
     required this.tag,
-    required this.category,
-    required this.controller,
+    this.controller,
+    this.category,
+    this.stripeColor,
     this.onRemove,
+    this.wiki = false,
+    this.extra,
   });
 
   @override
   Widget build(BuildContext context) {
-    // card widget tanks performance
-    // but we cannot have ripple without material
     return Card(
       child: TagGesture(
         tag: tag,
+        wiki: wiki,
         controller: controller,
         child: Row(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Container(
-              height: 26,
-              decoration: BoxDecoration(
-                color: getCategoryColor(category),
-                borderRadius: BorderRadius.only(
+            if (stripeColor != null || category != null || onRemove != null)
+              Container(
+                height: 26,
+                decoration: BoxDecoration(
+                  color: stripeColor ??
+                      (category != null ? getCategoryColor(category!) : null),
+                  borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(4),
-                    bottomLeft: Radius.circular(4)),
-              ),
-              child: CrossFade(
-                showChild: onRemove != null,
-                child: InkWell(
-                  child: Padding(
-                    padding: EdgeInsets.all(4),
-                    child: Icon(Icons.clear, size: 16),
+                    bottomLeft: Radius.circular(4),
                   ),
-                  onTap: onRemove,
                 ),
-                secondChild: Container(width: 5),
+                child: CrossFade(
+                  showChild: onRemove != null,
+                  child: InkWell(
+                    child: Padding(
+                      padding: EdgeInsets.all(4),
+                      child: Icon(Icons.clear, size: 16),
+                    ),
+                    onTap: onRemove,
+                  ),
+                  secondChild: Container(width: 5),
+                ),
               ),
-            ),
             Flexible(
               child: Padding(
                 padding: EdgeInsets.only(top: 4, bottom: 4, right: 8, left: 6),
@@ -57,6 +65,7 @@ class TagCard extends StatelessWidget {
                 ),
               ),
             ),
+            if (extra != null) ...extra!
           ],
         ),
       ),
@@ -67,64 +76,38 @@ class TagCard extends StatelessWidget {
 class TagCounterCard extends StatelessWidget {
   final String tag;
   final int count;
-  final String category;
+  final String? category;
   final PostController? controller;
 
   const TagCounterCard({
     required this.tag,
-    required this.category,
-    required this.controller,
     required this.count,
+    this.category,
+    this.controller,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: TagGesture(
-        wiki: true,
-        tag: tag,
-        controller: controller,
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Container(
-              height: 26,
-              width: 5,
-              decoration: BoxDecoration(
-                color: getCategoryColor(category),
-                borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(4),
-                    bottomLeft: Radius.circular(4)),
-              ),
-            ),
-            Flexible(
-              child: Padding(
-                padding: EdgeInsets.only(top: 4, bottom: 4, right: 6, left: 6),
-                child: Text(
-                  tagToCard(tag),
-                  softWrap: false,
-                  maxLines: 1,
-                  overflow: TextOverflow.fade,
-                ),
-              ),
-            ),
-            Container(
-              width: 2,
-              height: 18,
-              color: Theme.of(context).dividerColor,
-            ),
-            Flexible(
-              child: Padding(
-                padding: EdgeInsets.all(4),
-                child: Text(
-                  count.toString(),
-                ),
-              ),
-            ),
-          ],
+    return TagCard(
+      tag: tag,
+      category: category,
+      controller: controller,
+      wiki: true,
+      extra: [
+        Container(
+          width: 2,
+          height: 18,
+          color: Theme.of(context).dividerColor,
         ),
-      ),
+        Flexible(
+          child: Padding(
+            padding: EdgeInsets.all(4),
+            child: Text(
+              count.toString(),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -134,51 +117,24 @@ class DenyListTagCard extends StatelessWidget {
 
   const DenyListTagCard(this.tag);
 
+  Color? getTagColor(String tag) {
+    String prefix = tag[0];
+    switch (prefix) {
+      case '-':
+        return Colors.green[300];
+      case '~':
+        return Colors.orange[300];
+      default:
+        return Colors.red[300];
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: TagGesture(
-        wiki: true,
-        tag: tag,
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Container(
-              height: 26,
-              width: 5,
-              decoration: BoxDecoration(
-                color: () {
-                  String prefix = tag[0];
-
-                  switch (prefix) {
-                    case '-':
-                      return Colors.green[300];
-                    case '~':
-                      return Colors.orange[300];
-                    default:
-                      return Colors.red[300];
-                  }
-                }(),
-                borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(5),
-                    bottomLeft: Radius.circular(5)),
-              ),
-            ),
-            Flexible(
-              child: Padding(
-                padding: EdgeInsets.only(top: 4, bottom: 4, right: 8, left: 6),
-                child: Text(
-                  tagToCard(tag),
-                  softWrap: false,
-                  maxLines: 1,
-                  overflow: TextOverflow.fade,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
+    return TagCard(
+      tag: tag,
+      wiki: true,
+      stripeColor: getTagColor(tag),
     );
   }
 }

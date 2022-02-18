@@ -1,0 +1,29 @@
+import 'package:e1547/client/client.dart';
+import 'package:e1547/interface/interface.dart';
+import 'package:e1547/pool/pool.dart';
+import 'package:e1547/post/post.dart';
+import 'package:flutter/material.dart';
+
+class PoolLoadingPage extends StatefulWidget {
+  final int id;
+
+  const PoolLoadingPage(this.id);
+
+  @override
+  _PoolLoadingPageState createState() => _PoolLoadingPageState();
+}
+
+class _PoolLoadingPageState extends State<PoolLoadingPage> {
+  late Future<Pool> pool = client.pool(widget.id);
+
+  @override
+  Widget build(BuildContext context) {
+    return FuturePageLoader<Pool>(
+      future: pool,
+      builder: (context, value) => PoolPage(pool: value),
+      title: Text('Pool #${widget.id}'),
+      onError: Text('Failed to load pool'),
+      onEmpty: Text('Pool not found'),
+    );
+  }
+}

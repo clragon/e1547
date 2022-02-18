@@ -30,7 +30,7 @@ class _ControlledTextWrapperState extends State<ControlledTextWrapper> {
   void initState() {
     super.initState();
     textController = widget.textController ?? TextEditingController();
-    setFocusToEnd(textController);
+    textController.setFocusToEnd();
     widget.actionController
         .setAction(() async => widget.submit(textController.text));
   }

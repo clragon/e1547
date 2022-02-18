@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:e1547/dtext/dtext.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
@@ -5,14 +7,14 @@ import 'package:flutter/material.dart';
 class TextEditor extends StatefulWidget {
   final String title;
   final String? content;
-  final bool richEditor;
-  final Future<bool> Function(BuildContext context, String text)? validate;
+  final bool dtext;
+  final FutureOr<bool> Function(BuildContext context, String text)? onSubmit;
 
   const TextEditor({
     required this.title,
-    required this.validate,
+    required this.onSubmit,
     this.content,
-    this.richEditor = true,
+    this.dtext = true,
   });
 
   @override
@@ -137,7 +139,7 @@ class _TextEditorState extends State<TextEditor>
                   setState(() {
                     isLoading = true;
                   });
-                  if ((await widget.validate?.call(context, text)) ?? true) {
+                  if ((await widget.onSubmit?.call(context, text)) ?? true) {
                     Navigator.of(context).maybePop();
                   }
                   setState(() {
@@ -150,19 +152,16 @@ class _TextEditorState extends State<TextEditor>
 
     Widget loadingBar() {
       return Padding(
-        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 16),
+        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 16),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            IntrinsicHeight(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  SizedCircularProgressIndicator(size: 20),
-                ],
-              ),
-            )
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedCircularProgressIndicator(size: 24),
+              ],
+            ),
           ],
         ),
       );
@@ -177,8 +176,8 @@ class _TextEditorState extends State<TextEditor>
       floatingActionButton: fab(),
       bottomSheet: isLoading
           ? loadingBar()
-          : (widget.richEditor && showBar)
-              ? EditorBar(controller: textController)
+          : (widget.dtext && showBar)
+              ? DTextEditorBar(controller: textController)
               : null,
       body: NestedScrollView(
         headerSliverBuilder: (context, innerBoxIsScrolled) => [
@@ -186,7 +185,7 @@ class _TextEditorState extends State<TextEditor>
             floating: true,
             leading: CloseButton(),
             title: Text(widget.title),
-            bottom: widget.richEditor
+            bottom: widget.dtext
                 ? TabBar(
                     controller: tabController,
                     tabs: tabs.keys.toList(),
@@ -198,7 +197,7 @@ class _TextEditorState extends State<TextEditor>
         ],
         body: Padding(
           padding: defaultActionListPadding,
-          child: widget.richEditor
+          child: widget.dtext
               ? TabBarView(
                   controller: tabController,
                   children: tabs.values.toList(),
@@ -210,16 +209,16 @@ class _TextEditorState extends State<TextEditor>
   }
 }
 
-class EditorBar extends StatefulWidget {
+class DTextEditorBar extends StatefulWidget {
   final TextEditingController controller;
 
-  const EditorBar({required this.controller});
+  const DTextEditorBar({required this.controller});
 
   @override
-  _EditorBarState createState() => _EditorBarState();
+  _DTextEditorBarState createState() => _DTextEditorBarState();
 }
 
-class _EditorBarState extends State<EditorBar> {
+class _DTextEditorBarState extends State<DTextEditorBar> {
   bool showBlocks = false;
 
   @override

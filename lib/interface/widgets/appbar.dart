@@ -142,15 +142,17 @@ class TransparentAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Theme(
-      data: Theme.of(context).copyWith(
-        iconTheme: transparent ? IconThemeData(color: Colors.white) : null,
-        appBarTheme: AppBarTheme(
-          backgroundColor: transparent ? Colors.transparent : null,
-        ),
-      ),
+      data: transparent
+          ? Theme.of(context).copyWith(
+              iconTheme: IconThemeData(color: Colors.white),
+              appBarTheme: AppBarTheme(
+                elevation: 0,
+                backgroundColor: Colors.transparent,
+              ),
+            )
+          : Theme.of(context),
       child: DefaultAppBar(
         leading: leading,
-        elevation: 0,
         title: title,
         actions: actions,
       ),

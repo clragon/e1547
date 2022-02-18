@@ -42,11 +42,10 @@ class _RepliesPageState extends State<RepliesPage> {
       builder: (context) => PagedListView(
         padding: defaultActionListPadding,
         pagingController: controller,
-        builderDelegate: defaultPagedChildBuilderDelegate(
+        builderDelegate: defaultPagedChildBuilderDelegate<Reply>(
           pagingController: controller,
-          itemBuilder: (context, Reply item, index) =>
+          itemBuilder: (context, item, index) =>
               ReplyTile(reply: item, topic: widget.topic),
-          onLoading: Text('Loading replies'),
           onEmpty: Text('No replies'),
           onError: Text('Failed to load replies'),
         ),

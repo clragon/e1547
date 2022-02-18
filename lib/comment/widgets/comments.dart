@@ -46,7 +46,6 @@ class _CommentsPageState extends State<CommentsPage> {
           pagingController: controller,
           itemBuilder: (context, Comment item, index) =>
               CommentTile(comment: item),
-          onLoading: Text('Loading comments'),
           onEmpty: Text('No comments'),
           onError: Text('Failed to load comments'),
         ),

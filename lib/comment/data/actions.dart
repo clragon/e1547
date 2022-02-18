@@ -24,18 +24,19 @@ Future<bool> editComment(
         {required BuildContext context, required Comment comment}) =>
     writeComment(postId: comment.postId, context: context, comment: comment);
 
-Future<bool> writeComment(
-    {required BuildContext context,
-    required int postId,
-    String? text,
-    Comment? comment}) async {
+Future<bool> writeComment({
+  required BuildContext context,
+  required int postId,
+  String? text,
+  Comment? comment,
+}) async {
   bool sent = false;
   await Navigator.of(context).push(
     MaterialPageRoute(
       builder: (context) => TextEditor(
         title: '#$postId comment',
         content: text ?? (comment?.body),
-        validate: (context, text) async {
+        onSubmit: (context, text) async {
           if (text.isNotEmpty) {
             try {
               await client.postComment(postId, text, comment: comment);
@@ -102,5 +103,7 @@ extension Voting on Comment {
 }
 
 extension Transitioning on Comment {
-  String get hero => 'comment_$id';
+  String get hero => getCommentHero(id);
 }
+
+String getCommentHero(int id) => 'comment_$id';
