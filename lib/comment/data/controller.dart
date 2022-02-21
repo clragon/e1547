@@ -11,17 +11,20 @@ class CommentController extends CursorDataController<Comment>
   CommentController({required this.postId});
 
   @override
+  @protected
   Future<List<Comment>> provide(String page, bool force) =>
       client.comments(postId, page, force: force);
 
   @override
+  @protected
   int getId(Comment item) => item.id;
 
-  Future<void> vote(
-      {required BuildContext context,
-      required Comment comment,
-      required bool upvote,
-      required bool replace}) async {
+  Future<void> vote({
+    required BuildContext context,
+    required Comment comment,
+    required bool upvote,
+    required bool replace,
+  }) async {
     if (await client.voteComment(comment.id, upvote, replace)) {
       if (comment.voteStatus == VoteStatus.unknown) {
         if (upvote) {

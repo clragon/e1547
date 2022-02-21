@@ -13,9 +13,11 @@ class ReplyController extends CursorDataController<Reply>
       : orderByOldest = ValueNotifier(orderByOldest);
 
   @override
+  @protected
   Future<List<Reply>> provide(String page, bool force) =>
       client.replies(topicId, page, force: force);
 
   @override
+  @protected
   int getId(Reply item) => item.id;
 }

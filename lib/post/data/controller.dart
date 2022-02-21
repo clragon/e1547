@@ -19,11 +19,20 @@ class PostController extends DataController<Post>
     with SearchableController, HostableController, RefreshableController {
   late final PostProviderCallback _provider;
 
-  Map<String, List<Post>>? deniedPosts;
-  late final ValueNotifier<bool> denying;
+  Map<String, List<Post>>? _deniedPosts;
+  Map<String, List<Post>>? get deniedPosts =>
+      _deniedPosts != null ? Map.unmodifiable(_deniedPosts!) : null;
+
+  late final bool _denying;
+  bool get denying => _denying;
+
   late final DenyListMode denyMode;
-  final ValueNotifier<List<String>> allowedTags = ValueNotifier([]);
-  final ValueNotifier<List<Post>> allowedPosts = ValueNotifier([]);
+
+  List<String> _allowedTags = [];
+  List<String> get allowedTags => List.unmodifiable(_allowedTags);
+
+  List<Post> _allowedPosts = [];
+  List<Post> get allowedPosts => List.unmodifiable(_allowedPosts);
 
   List<Post>? _posts;
 
@@ -31,12 +40,7 @@ class PostController extends DataController<Post>
   late ValueNotifier<String> search;
   bool canSearch;
 
-  late final List<Listenable> _filterNotifiers = [
-    allowedTags,
-    allowedPosts,
-    denying,
-    settings.denylist
-  ];
+  late final List<Listenable> _filterNotifiers = [settings.denylist];
 
   PostController({
     PostProviderCallback provider,
@@ -46,7 +50,7 @@ class PostController extends DataController<Post>
     this.denyMode = DenyListMode.filtering,
   }) : search = ValueNotifier(sortTags(search ?? '')) {
     _provider = provider;
-    this.denying = ValueNotifier(denying);
+    _denying = denying;
     for (final element in _filterNotifiers) {
       element.addListener(reapplyFilter);
     }
@@ -55,22 +59,22 @@ class PostController extends DataController<Post>
   @protected
   List<Post> filter(List<Post> items) {
     List<String> denylist = [];
-    if (denying.value && denyMode != DenyListMode.unavailable) {
+    if (denying && denyMode != DenyListMode.unavailable) {
       denylist = settings.denylist.value
-          .where((line) => !allowedTags.value.contains(line))
+          .where((line) => !_allowedTags.contains(line))
           .toList();
     }
 
-    deniedPosts ??= {};
+    _deniedPosts ??= {};
     List<Post> remaining = List.from(items);
     for (Post item in items) {
-      if (allowedPosts.value.contains(item)) {
+      if (_allowedPosts.contains(item)) {
         continue;
       }
       List<String> deniers = item.getDeniers(denylist);
       for (final denier in deniers) {
-        deniedPosts!.putIfAbsent(denier, () => []);
-        deniedPosts![denier]!.add(item);
+        _deniedPosts!.putIfAbsent(denier, () => []);
+        _deniedPosts![denier]!.add(item);
       }
       if (deniers.isNotEmpty && denyMode != DenyListMode.plain) {
         remaining.remove(item);
@@ -82,7 +86,7 @@ class PostController extends DataController<Post>
   @protected
   void reapplyFilter() {
     if (_posts != null) {
-      deniedPosts = null;
+      _deniedPosts = null;
       value = PagingState(
         nextPageKey: nextPageKey,
         itemList: filter(_posts!),
@@ -111,7 +115,8 @@ class PostController extends DataController<Post>
       return;
     }
     _posts = null;
-    deniedPosts = null;
+    _deniedPosts = null;
+    _allowedPosts = [];
     await super.refresh(force: force, background: background);
   }
 
@@ -120,39 +125,44 @@ class PostController extends DataController<Post>
     for (final element in _filterNotifiers) {
       element.removeListener(reapplyFilter);
     }
-    for (final element in [
-      allowedTags,
-      denying,
-    ]) {
-      element.dispose();
-    }
     super.dispose();
   }
 
   @override
   void updateItem(int index, Post item) {
-    assert(itemList != null && _posts != null,
-        'Cannot update posts on empty post list');
+    assertItemOwnership(item);
     Post original = itemList![index];
     _posts![_posts!.indexOf(original)] = item;
     reapplyFilter();
   }
 
+  void setAllowedTags(List<String> value) {
+    _allowedTags = List.from(value);
+    reapplyFilter();
+  }
+
+  void setDenying(bool denying) {
+    _denying = denying;
+    reapplyFilter();
+  }
+
   bool isDenied(Post post) {
-    assert(deniedPosts != null, 'Cannot check for denied on empty map');
-    return deniedPosts!.values.any((element) => element.contains(post));
+    assertItemOwnership(post);
+    return _deniedPosts!.values.any((element) => element.contains(post));
   }
 
   bool isAllowed(Post post) {
-    return allowedPosts.value.contains(post);
+    return _allowedPosts.contains(post);
   }
 
   void allow(Post post) {
-    allowedPosts.value = List.from(allowedPosts.value)..add(post);
+    _allowedPosts.add(post);
+    reapplyFilter();
   }
 
   void unallow(Post post) {
-    allowedPosts.value = List.from(allowedPosts.value)..remove(post);
+    _allowedPosts.remove(post);
+    reapplyFilter();
   }
 
   Future<bool> fav(BuildContext context, Post post,

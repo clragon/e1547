@@ -42,14 +42,29 @@ abstract class RawDataController<KeyType, ItemType>
   @protected
   List<Listenable> getRefreshListeners() => [];
 
+  @protected
   Future<List<ItemType>> provide(KeyType page, bool force);
 
-  List<ItemType> sort(List<ItemType> items) => items;
-
+  @protected
   KeyType provideNextPageKey(KeyType current, List<ItemType> items);
 
+  @protected
+  List<ItemType> sort(List<ItemType> items) => items;
+
+  @mustCallSuper
+  @protected
+  void assertItemOwnership(ItemType item) {
+    if (itemList == null) {
+      throw StateError(
+          'Controller cannot modify item when the itemList is empty');
+    }
+    if (!itemList!.contains(item)) {
+      throw StateError('Item isnt owned by this controller');
+    }
+  }
+
   void updateItem(int index, ItemType item) {
-    assert(itemList != null, 'Cannot update item before having data');
+    assertItemOwnership(item);
     List<ItemType> updated = List.from(itemList!);
     updated[index] = item;
     value = PagingState(

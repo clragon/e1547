@@ -14,11 +14,11 @@ class DrawerDenySwitch extends StatelessWidget {
     return AnimatedBuilder(
       animation: controller,
       builder: (context, child) => DrawerDenySwitchBody(
-        denying: controller.denying.value,
+        denying: controller.denying,
         denied: controller.deniedPosts ?? {},
-        updateAllowedList: (allowed) => controller.allowedTags.value = allowed,
-        updateDenying: (denying) => controller.denying.value = denying,
-        allowedList: controller.allowedTags.value,
+        updateAllowedList: controller.setAllowedTags,
+        updateDenying: controller.setDenying,
+        allowedList: controller.allowedTags,
       ),
     );
   }
@@ -39,13 +39,13 @@ class _DrawerMultiDenySwitchState extends State<DrawerMultiDenySwitch> {
 
   void updateDenying(bool value) {
     denying = value;
-    widget.controllers.forEach((element) => element.denying.value = denying);
+    widget.controllers.forEach((element) => element.setDenying(denying));
   }
 
   void updateAllowedList(List<String> value) {
     allowedList = value;
     widget.controllers
-        .forEach((element) => element.allowedTags.value = allowedList);
+        .forEach((element) => element.setAllowedTags(allowedList));
   }
 
   @override
@@ -65,7 +65,7 @@ class _DrawerMultiDenySwitchState extends State<DrawerMultiDenySwitch> {
           if (controller.deniedPosts != null) {
             denied.addAll(controller.deniedPosts!);
           }
-          allowedList.addAll(controller.allowedTags.value);
+          allowedList.addAll(controller.allowedTags);
         }
         allowedList = allowedList.toSet().toList();
 
@@ -86,8 +86,11 @@ class DrawerDenyTile extends StatelessWidget {
   final void Function(bool? value) onChanged;
   final MapEntry<String, List<Post>> entry;
 
-  const DrawerDenyTile(
-      {required this.entry, required this.isAllowed, required this.onChanged});
+  const DrawerDenyTile({
+    required this.entry,
+    required this.isAllowed,
+    required this.onChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -102,16 +105,14 @@ class DrawerDenyTile extends StatelessWidget {
               children: entry.key
                   .split(' ')
                   .where((tag) => tag.isNotEmpty)
-                  .map((tag) => DenyListTagCard(tag))
+                  .map(DenyListTagCard.new)
                   .toList(),
             ),
           ),
         ],
       ),
       secondary: ConstrainedBox(
-        constraints: BoxConstraints(
-          minWidth: 24,
-        ),
+        constraints: BoxConstraints(minWidth: 24),
         child: TweenAnimationBuilder(
           tween: IntTween(begin: 0, end: entry.value.length),
           duration: Duration(milliseconds: 200),
