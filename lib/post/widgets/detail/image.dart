@@ -62,8 +62,9 @@ class PostDetailVideo extends StatelessWidget {
 
 class PostDetailImageToggle extends StatefulWidget {
   final Post post;
+  final PostController controller;
 
-  const PostDetailImageToggle({required this.post});
+  const PostDetailImageToggle({required this.post, required this.controller});
 
   @override
   _PostDetailImageToggleState createState() => _PostDetailImageToggleState();
@@ -73,36 +74,42 @@ class _PostDetailImageToggleState extends State<PostDetailImageToggle> {
   bool loading = false;
   Post? replacement;
 
+  Post get post => widget.post;
+  PostController get controller => widget.controller;
+
   Future<void> onToggle() async {
     setState(() {
       loading = true;
     });
-    if (widget.post.file.url == null) {
+    if (post.file.url == null) {
       if (settings.customHost.value == null) {
         await setCustomHost(context);
       }
       if (settings.customHost.value != null) {
         if (replacement == null) {
-          replacement = await client.post(widget.post.id, unsafe: true);
+          replacement = await client.post(post.id, unsafe: true);
         }
-        widget.post.file.url = replacement!.file.url;
-        widget.post.preview.url = replacement!.preview.url;
-        widget.post.sample.url = replacement!.sample.url;
-        if (!widget.post.isBlacklisted) {
-          widget.post.isAllowed = !widget.post.isAllowed;
+        post.file.url = replacement!.file.url;
+        post.preview.url = replacement!.preview.url;
+        post.sample.url = replacement!.sample.url;
+        if (!controller.isDenied(post)) {
+          controller.allow(post);
         }
-        widget.post.notifyListeners();
+        controller.updateItem(controller.itemList!.indexOf(post), post);
       }
     } else {
-      widget.post.isAllowed = !widget.post.isAllowed;
-      widget.post.controller?.pause();
-      widget.post.notifyListeners();
-      if (!widget.post.isAllowed && replacement != null) {
-        widget.post.file.url = null;
-        widget.post.preview.url = null;
-        widget.post.sample.url = null;
-        widget.post.notifyListeners();
+      if (controller.isAllowed(post)) {
+        controller.unallow(post);
+        if (replacement != null) {
+          post.file.url = null;
+          post.preview.url = null;
+          post.sample.url = null;
+        }
+      } else {
+        controller.allow(post);
       }
+      post.controller?.pause();
+      controller.updateItem(controller.itemList!.indexOf(post), post);
     }
     setState(() {
       loading = false;
@@ -111,17 +118,19 @@ class _PostDetailImageToggleState extends State<PostDetailImageToggle> {
 
   @override
   Widget build(BuildContext context) {
-    if (!widget.post.flags.deleted) {
+    if (!post.flags.deleted) {
       return AnimatedSelector(
-        animation: widget.post,
-        selector: () => [widget.post.isAllowed, widget.post.file.url],
+        animation: controller,
+        selector: () => [controller.isAllowed(post), post.file.url],
         builder: (context, child) => CrossFade(
-          showChild: (widget.post.file.url == null ||
-              !widget.post.isVisible ||
-              widget.post.isAllowed),
+          showChild: post.file.url == null ||
+              controller.isDenied(post) ||
+              controller.isAllowed(post),
           duration: Duration(milliseconds: 200),
           child: Card(
-            color: widget.post.isAllowed ? Colors.black12 : Colors.transparent,
+            color: controller.isAllowed(post)
+                ? Colors.black12
+                : Colors.transparent,
             elevation: 0,
             child: InkWell(
               onTap: onToggle,
@@ -132,7 +141,7 @@ class _PostDetailImageToggleState extends State<PostDetailImageToggle> {
                     Padding(
                       padding: EdgeInsets.symmetric(vertical: 2),
                       child: Icon(
-                        widget.post.isAllowed
+                        controller.isAllowed(post)
                             ? Icons.visibility_off
                             : Icons.visibility,
                         size: 16,
@@ -140,7 +149,7 @@ class _PostDetailImageToggleState extends State<PostDetailImageToggle> {
                     ),
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 5),
-                      child: Text(widget.post.isAllowed ? 'hide' : 'show'),
+                      child: Text(controller.isAllowed(post) ? 'hide' : 'show'),
                     ),
                     CrossFade(
                       showChild: loading,
@@ -161,19 +170,27 @@ class _PostDetailImageToggleState extends State<PostDetailImageToggle> {
   }
 }
 
-class PostDetailImageOverlay extends StatelessWidget {
+class PostDetailImageButtons extends StatelessWidget {
   final Post post;
+  final PostController? controller;
   final Widget child;
   final VoidCallback? onOpen;
 
-  const PostDetailImageOverlay(
-      {required this.post, required this.child, required this.onOpen});
+  const PostDetailImageButtons({
+    required this.post,
+    required this.child,
+    this.controller,
+    this.onOpen,
+  });
 
   @override
   Widget build(BuildContext context) {
     VoidCallback? onTap;
 
-    if (post.file.url != null && post.isVisible) {
+    bool visible = post.file.url != null &&
+        (!(controller?.isDenied(post) ?? false) || post.isFavorited);
+
+    if (visible) {
       onTap = post.type == PostType.unsupported
           ? () => launch(post.file.url!)
           : onOpen;
@@ -186,7 +203,7 @@ class PostDetailImageOverlay extends StatelessWidget {
         Widget fullscreenButton() {
           if (post.type == PostType.video && onTap != null) {
             return CrossFade(
-              showChild: post.file.url != null && post.isVisible,
+              showChild: visible,
               child: Card(
                 elevation: 0,
                 color: Colors.black12,
@@ -240,7 +257,11 @@ class PostDetailImageOverlay extends StatelessWidget {
                     muteButton(),
                     Spacer(),
                     fullscreenButton(),
-                    PostDetailImageToggle(post: post),
+                    if (controller != null)
+                      PostDetailImageToggle(
+                        post: post,
+                        controller: controller!,
+                      ),
                   ],
                 ),
               ),
@@ -257,17 +278,23 @@ class PostDetailImageOverlay extends StatelessWidget {
 
 class PostDetailImageDisplay extends StatelessWidget {
   final Post post;
+  final PostController? controller;
   final VoidCallback? onTap;
 
-  const PostDetailImageDisplay({required this.post, this.onTap});
+  const PostDetailImageDisplay({
+    required this.post,
+    required this.controller,
+    this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
-      animation: post,
-      builder: (context, child) => PostDetailImageOverlay(
+      animation: Listenable.merge([controller]),
+      builder: (context, child) => PostDetailImageButtons(
         onOpen: onTap,
         post: post,
+        controller: controller,
         child: ImageOverlay(
           post: post,
           builder: (context) => Center(

@@ -448,7 +448,6 @@ class Client extends ChangeNotifier {
         .then((response) => response.data);
 
     Post post = Post.fromMap(body['post']);
-    post.isBlacklisted = post.isDeniedBy(settings.denylist.value);
     return post;
   }
 

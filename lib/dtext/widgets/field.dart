@@ -48,7 +48,7 @@ class DText extends StatelessWidget {
         textAlign: textAlign,
         softWrap: softWrap,
       );
-    } catch (_) {
+    } on Exception {
       if (kDebugMode) {
         rethrow;
       }

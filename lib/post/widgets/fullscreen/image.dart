@@ -34,7 +34,7 @@ class PostFullscreenImageDisplay extends StatelessWidget {
   Widget build(BuildContext context) {
     return ImageOverlay(
       post: post,
-      builder: (post) {
+      builder: (context) {
         switch (post.type) {
           case PostType.image:
             return PostFullscreenImage(post);

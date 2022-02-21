@@ -30,7 +30,11 @@ List<PopupMenuItem<VoidCallback>> postMenuPostActions(
 }
 
 List<PopupMenuItem<VoidCallback>> postMenuUserActions(
-    BuildContext context, Post post, PostEditingController? editingController) {
+  BuildContext context,
+  Post post, {
+  PostController? controller,
+  PostEditingController? editingController,
+}) {
   return [
     if (editingController != null)
       PopupMenuTile(
@@ -42,20 +46,21 @@ List<PopupMenuItem<VoidCallback>> postMenuUserActions(
           error: 'You must be logged in to edit posts!',
         ),
       ),
-    PopupMenuTile(
-      title: 'Comment',
-      icon: Icons.comment,
-      value: () => guardWithLogin(
-        context: context,
-        callback: () async {
-          if (await writeComment(context: context, postId: post.id)) {
-            post.commentCount++;
-            post.notifyListeners();
-          }
-        },
-        error: 'You must be logged in to comment!',
+    if (controller != null)
+      PopupMenuTile(
+        title: 'Comment',
+        icon: Icons.comment,
+        value: () => guardWithLogin(
+          context: context,
+          callback: () async {
+            if (await writeComment(context: context, postId: post.id)) {
+              post.commentCount++;
+              controller.updateItem(controller.itemList!.indexOf(post), post);
+            }
+          },
+          error: 'You must be logged in to comment!',
+        ),
       ),
-    ),
     PopupMenuTile(
       title: 'Report',
       icon: Icons.report,

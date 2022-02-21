@@ -44,8 +44,10 @@ class _CommentsPageState extends State<CommentsPage> {
         pagingController: controller,
         builderDelegate: defaultPagedChildBuilderDelegate(
           pagingController: controller,
-          itemBuilder: (context, Comment item, index) =>
-              CommentTile(comment: item),
+          itemBuilder: (context, Comment item, index) => CommentTile(
+            comment: item,
+            controller: controller,
+          ),
           onEmpty: Text('No comments'),
           onError: Text('Failed to load comments'),
         ),

@@ -15,10 +15,10 @@ class DrawerDenySwitch extends StatelessWidget {
       animation: controller,
       builder: (context, child) => DrawerDenySwitchBody(
         denying: controller.denying.value,
-        denied: controller.denied ?? {},
-        updateAllowedList: (allowed) => controller.allowed.value = allowed,
+        denied: controller.deniedPosts ?? {},
+        updateAllowedList: (allowed) => controller.allowedTags.value = allowed,
         updateDenying: (denying) => controller.denying.value = denying,
-        allowedList: controller.allowed.value,
+        allowedList: controller.allowedTags.value,
       ),
     );
   }
@@ -45,7 +45,7 @@ class _DrawerMultiDenySwitchState extends State<DrawerMultiDenySwitch> {
   void updateAllowedList(List<String> value) {
     allowedList = value;
     widget.controllers
-        .forEach((element) => element.allowed.value = allowedList);
+        .forEach((element) => element.allowedTags.value = allowedList);
   }
 
   @override
@@ -62,10 +62,10 @@ class _DrawerMultiDenySwitchState extends State<DrawerMultiDenySwitch> {
         Map<String, List<Post>> denied = {};
         List<String> allowedList = [];
         for (PostController controller in widget.controllers) {
-          if (controller.denied != null) {
-            denied.addAll(controller.denied!);
+          if (controller.deniedPosts != null) {
+            denied.addAll(controller.deniedPosts!);
           }
-          allowedList.addAll(controller.allowed.value);
+          allowedList.addAll(controller.allowedTags.value);
         }
         allowedList = allowedList.toSet().toList();
 
@@ -152,7 +152,11 @@ class DrawerDenySwitchBody extends StatelessWidget {
     entries.sort((a, b) => a.key.compareTo(b.key));
 
     int count = denied.values
-        .fold(0, (previousValue, element) => previousValue + element.length);
+        .fold<List<Post>>(
+            [], (previousValue, element) => previousValue..addAll(element))
+        .toSet()
+        .toList()
+        .length;
 
     return Column(
       children: [

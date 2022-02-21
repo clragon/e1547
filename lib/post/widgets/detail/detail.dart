@@ -21,8 +21,8 @@ class PostDetail extends StatefulWidget {
 
 class _PostDetailState extends State<PostDetail>
     with ListenerCallbackMixin, RouteAware {
-  late PostEditingController editingController =
-      PostEditingController(widget.post);
+  late PostEditingController? editingController =
+      widget.controller != null ? PostEditingController(widget.post) : null;
   SheetActionController sheetController = SheetActionController();
   bool keepPlaying = false;
 
@@ -30,8 +30,8 @@ class _PostDetailState extends State<PostDetail>
   late ModalRoute route;
 
   @override
-  Map<ChangeNotifier, VoidCallback> get listeners => {
-        editingController: closeSheet,
+  Map<Listenable, VoidCallback> get listeners => {
+        if (editingController != null) editingController!: closeSheet,
         if (widget.controller != null) widget.controller!: onPageChange,
       };
 
@@ -46,7 +46,7 @@ class _PostDetailState extends State<PostDetail>
   }
 
   void closeSheet() {
-    if (!editingController.isEditing) {
+    if (!editingController!.isEditing) {
       sheetController.close();
     }
   }
@@ -80,9 +80,6 @@ class _PostDetailState extends State<PostDetail>
   void dispose() {
     navigationController.routeObserver.unsubscribe(this);
     widget.post.controller?.pause();
-    if (widget.controller == null) {
-      widget.post.dispose();
-    }
     super.dispose();
   }
 
@@ -103,7 +100,7 @@ class _PostDetailState extends State<PostDetail>
     if (body != null) {
       try {
         await client.updatePost(controller.post.id, body);
-        await widget.post.resetPost(online: true);
+        await widget.controller!.resetPost(controller.post);
         controller.isEditing = false;
       } on DioError {
         controller.isLoading = false;
@@ -125,27 +122,30 @@ class _PostDetailState extends State<PostDetail>
       context,
       ControlledTextField(
         labelText: 'Reason',
-        submit: (value) async => editPost(context, editingController),
+        submit: (value) async => editPost(context, editingController!),
         actionController: sheetController,
       ),
     );
   }
 
-  Widget fab(BuildContext context) {
+  Widget fab() {
     return AnimatedBuilder(
       animation: sheetController,
       builder: (context, child) => FloatingActionButton(
         heroTag: null,
         backgroundColor: Theme.of(context).cardColor,
         foregroundColor: Theme.of(context).iconTheme.color,
-        onPressed: editingController.isEditing
+        onPressed: editingController?.isEditing ?? false
             ? sheetController.action ?? () => submitEdit(context)
             : () {},
-        child: editingController.isEditing
+        child: editingController?.isEditing ?? false
             ? Icon(sheetController.isShown ? Icons.add : Icons.check)
             : Padding(
                 padding: EdgeInsets.only(left: 2),
-                child: FavoriteButton(post: widget.post),
+                child: FavoriteButton(
+                  post: widget.post,
+                  controller: widget.controller!,
+                ),
               ),
       ),
     );
@@ -154,7 +154,8 @@ class _PostDetailState extends State<PostDetail>
   @override
   Widget build(BuildContext context) {
     Widget fullscreen() {
-      if (editingController.isEditing || widget.controller == null) {
+      if ((editingController?.isEditing ?? false) ||
+          widget.controller == null) {
         return PostFullscreenFrame(
           child: PostFullscreenImageDisplay(post: widget.post),
           post: widget.post,
@@ -168,142 +169,132 @@ class _PostDetailState extends State<PostDetail>
       }
     }
 
-    Widget editorDependant({required Widget child, required bool shown}) =>
-        CrossFade(
-          showChild: shown == editingController.isEditing,
-          child: child,
-        );
-
-    Widget editorScope({required Widget child}) {
-      return WillPopScope(
-        onWillPop: () async {
-          if (sheetController.isShown) {
-            return true;
-          }
-          if (editingController.isEditing) {
-            editingController.isEditing = false;
-            return false;
-          }
-          return true;
-        },
-        child: child,
-      );
-    }
-
     return Scaffold(
-      body: AnimatedSelector(
-        animation: editingController,
-        selector: () => [editingController.isEditing],
-        builder: (context, child) {
-          return editorScope(
-            child: Scaffold(
-              extendBodyBehindAppBar: true,
-              appBar: PostDetailAppBar(
-                post: widget.post,
-                editingController: editingController,
-              ),
-              floatingActionButton:
-                  client.hasLogin ? Builder(builder: fab) : null,
-              body: MediaQuery.removeViewInsets(
-                context: context,
-                removeTop: true,
-                child: LayoutBuilder(
-                  builder: (context, constraints) => ListView(
-                    physics: BouncingScrollPhysics(),
-                    padding: EdgeInsets.only(
-                      top: MediaQuery.of(context).padding.top,
-                      bottom: kBottomNavigationBarHeight + 24,
-                    ),
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(bottom: 10),
-                        child: ConstrainedBox(
-                          constraints: BoxConstraints(
-                            minHeight: (constraints.maxHeight / 2),
-                            maxHeight:
-                                constraints.maxWidth > constraints.maxHeight
-                                    ? constraints.maxHeight * 0.8
-                                    : double.infinity,
-                          ),
-                          child: AnimatedSize(
-                            duration: defaultAnimationDuration,
-                            child: PostDetailImageDisplay(
-                              post: widget.post,
-                              onTap: () {
-                                keepPlaying = true;
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (context) => fullscreen(),
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
+      body: PostEditingScope(
+        editingController: editingController,
+        sheetController: sheetController,
+        child: Scaffold(
+          extendBodyBehindAppBar: true,
+          appBar: PostDetailAppBar(
+            post: widget.post,
+            editingController: editingController,
+          ),
+          floatingActionButton:
+              client.hasLogin && widget.controller != null ? fab() : null,
+          body: MediaQuery.removeViewInsets(
+            context: context,
+            removeTop: true,
+            child: LayoutBuilder(
+              builder: (context, constraints) => ListView(
+                physics: BouncingScrollPhysics(),
+                padding: EdgeInsets.only(
+                  top: MediaQuery.of(context).padding.top,
+                  bottom: kBottomNavigationBarHeight + 24,
+                ),
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(bottom: 10),
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        minHeight: (constraints.maxHeight / 2),
+                        maxHeight: constraints.maxWidth > constraints.maxHeight
+                            ? constraints.maxHeight * 0.8
+                            : double.infinity,
+                      ),
+                      child: AnimatedSize(
+                        duration: defaultAnimationDuration,
+                        child: PostDetailImageDisplay(
+                          post: widget.post,
+                          controller: widget.controller,
+                          onTap: () {
+                            keepPlaying = true;
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => fullscreen(),
+                              ),
+                            );
+                          },
                         ),
                       ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 20),
-                        child: Column(
-                          children: [
-                            ArtistDisplay(
-                              post: widget.post,
-                              controller: widget.controller,
-                              editingController: editingController,
-                            ),
-                            DescriptionDisplay(
-                              post: widget.post,
-                              editingController: editingController,
-                            ),
-                            editorDependant(
-                                child: LikeDisplay(post: widget.post),
-                                shown: false),
-                            editorDependant(
-                                child: CommentDisplay(post: widget.post),
-                                shown: false),
-                            Builder(
-                              builder: (context) => ParentDisplay(
-                                post: widget.post,
-                                actionController: sheetController,
-                                editingController: editingController,
-                              ),
-                            ),
-                            editorDependant(
-                                child: PoolDisplay(post: widget.post),
-                                shown: false),
-                            Builder(
-                              builder: (context) => TagDisplay(
-                                post: widget.post,
-                                controller: widget.controller,
-                                actionController: sheetController,
-                                editingController: editingController,
-                              ),
-                            ),
-                            editorDependant(
-                                child: FileDisplay(
-                                  post: widget.post,
-                                  controller: widget.controller,
-                                ),
-                                shown: false),
-                            editorDependant(
-                                child: RatingDisplay(
-                                  post: widget.post,
-                                  editingController: editingController,
-                                ),
-                                shown: true),
-                            SourceDisplay(
-                              post: widget.post,
-                              editingController: editingController,
-                            ),
-                          ],
-                        ),
-                      )
-                    ],
+                    ),
                   ),
-                ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    child: Column(
+                      children: [
+                        ArtistDisplay(
+                          post: widget.post,
+                          controller: widget.controller,
+                          editingController: editingController,
+                        ),
+                        DescriptionDisplay(
+                          post: widget.post,
+                          editingController: editingController,
+                        ),
+                        PostEditingDependant(
+                          shown: false,
+                          controller: editingController,
+                          child: LikeDisplay(
+                            post: widget.post,
+                            controller: widget.controller,
+                          ),
+                        ),
+                        PostEditingDependant(
+                          shown: false,
+                          controller: editingController,
+                          child: CommentDisplay(
+                            post: widget.post,
+                            controller: widget.controller,
+                          ),
+                        ),
+                        Builder(
+                          builder: (context) => ParentDisplay(
+                            post: widget.post,
+                            actionController: sheetController,
+                            editingController: editingController,
+                          ),
+                        ),
+                        PostEditingDependant(
+                          shown: false,
+                          controller: editingController,
+                          child: PoolDisplay(post: widget.post),
+                        ),
+                        Builder(
+                          builder: (context) => TagDisplay(
+                            post: widget.post,
+                            controller: widget.controller,
+                            actionController: sheetController,
+                            editingController: editingController,
+                          ),
+                        ),
+                        PostEditingDependant(
+                          shown: false,
+                          controller: editingController,
+                          child: FileDisplay(
+                            post: widget.post,
+                            controller: widget.controller,
+                          ),
+                        ),
+                        PostEditingDependant(
+                          shown: true,
+                          controller: editingController,
+                          child: RatingDisplay(
+                            post: widget.post,
+                            editingController: editingController,
+                          ),
+                        ),
+                        SourceDisplay(
+                          post: widget.post,
+                          editingController: editingController,
+                        ),
+                      ],
+                    ),
+                  )
+                ],
               ),
             ),
-          );
-        },
+          ),
+        ),
       ),
     );
   }

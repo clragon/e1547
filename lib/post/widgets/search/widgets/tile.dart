@@ -5,10 +5,12 @@ import 'package:flutter/material.dart';
 
 class PostTile extends StatelessWidget {
   final Post post;
+  final PostController? controller;
   final VoidCallback? onPressed;
 
   const PostTile({
     required this.post,
+    this.controller,
     this.onPressed,
   });
 
@@ -42,9 +44,10 @@ class PostTile extends StatelessWidget {
         children: [
           Expanded(
             child: AnimatedBuilder(
-              animation: post,
+              animation: Listenable.merge([controller]),
               builder: (context, value) => PostTileOverlay(
                 post: post,
+                controller: controller,
                 child: Hero(
                   tag: post.hero,
                   child: PostImageWidget(
@@ -65,6 +68,7 @@ class PostTile extends StatelessWidget {
     return Card(
       clipBehavior: Clip.antiAlias,
       child: Stack(
+        clipBehavior: Clip.none,
         children: [
           ValueListenableBuilder<bool>(
             valueListenable: settings.showPostInfo,
@@ -73,7 +77,11 @@ class PostTile extends StatelessWidget {
                 Expanded(
                   child: image(),
                 ),
-                if (value) PostInfoBar(post: post),
+                if (value)
+                  PostInfoBar(
+                    post: post,
+                    controller: controller,
+                  ),
               ],
             ),
           ),
@@ -81,7 +89,20 @@ class PostTile extends StatelessWidget {
           Material(
             type: MaterialType.transparency,
             child: InkWell(
-              onTap: onPressed,
+              onTap: onPressed ??
+                  (controller != null
+                      ? () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => PostDetailGallery(
+                                controller: controller!,
+                                initialPage:
+                                    controller!.itemList!.indexOf(post),
+                              ),
+                            ),
+                          );
+                        }
+                      : null),
             ),
           ),
         ],
@@ -93,8 +114,10 @@ class PostTile extends StatelessWidget {
 class PostTileOverlay extends StatelessWidget {
   final Post post;
   final Widget child;
+  final PostController? controller;
 
-  const PostTileOverlay({required this.post, required this.child});
+  const PostTileOverlay(
+      {required this.post, required this.child, this.controller});
 
   @override
   Widget build(BuildContext context) {
@@ -107,7 +130,7 @@ class PostTileOverlay extends StatelessWidget {
     if (post.file.url == null) {
       return Center(child: Text('unsafe'));
     }
-    if (post.isBlacklisted) {
+    if (controller?.isDenied(post) ?? false) {
       return Center(child: Text('blacklisted'));
     }
     return child;
@@ -116,15 +139,14 @@ class PostTileOverlay extends StatelessWidget {
 
 class PostInfoBar extends StatelessWidget {
   final Post post;
+  final PostController? controller;
 
-  const PostInfoBar({required this.post});
+  const PostInfoBar({required this.post, this.controller});
 
   @override
   Widget build(BuildContext context) {
     return IconTheme(
-      data: Theme.of(context).iconTheme.copyWith(
-            size: 16,
-          ),
+      data: Theme.of(context).iconTheme.copyWith(size: 16),
       child: Container(
         color: Theme.of(context).cardColor,
         child: Padding(
@@ -137,7 +159,7 @@ class PostInfoBar extends StatelessWidget {
                   direction: Axis.horizontal,
                   children: [
                     AnimatedSelector(
-                      animation: post,
+                      animation: Listenable.merge([controller]),
                       selector: () => [post.voteStatus],
                       builder: (context, child) => Row(
                         mainAxisSize: MainAxisSize.min,
@@ -165,7 +187,7 @@ class PostInfoBar extends StatelessWidget {
                       ),
                     ),
                     AnimatedSelector(
-                      animation: post,
+                      animation: Listenable.merge([controller]),
                       selector: () => [post.isFavorited],
                       builder: (context, child) => Row(
                         mainAxisSize: MainAxisSize.min,

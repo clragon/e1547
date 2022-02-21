@@ -59,49 +59,6 @@ Future<bool> writeComment({
   return sent;
 }
 
-extension Voting on Comment {
-  Future<void> tryVote(
-      {required BuildContext context,
-      required bool upvote,
-      required bool replace}) async {
-    if (await client.voteComment(id, upvote, replace)) {
-      if (voteStatus == VoteStatus.unknown) {
-        if (upvote) {
-          score += 1;
-          voteStatus = VoteStatus.upvoted;
-        } else {
-          score -= 1;
-          voteStatus = VoteStatus.downvoted;
-        }
-      } else {
-        if (upvote) {
-          if (voteStatus == VoteStatus.upvoted) {
-            score -= 1;
-            voteStatus = VoteStatus.unknown;
-          } else {
-            score += 2;
-            voteStatus = VoteStatus.upvoted;
-          }
-        } else {
-          if (voteStatus == VoteStatus.upvoted) {
-            score -= 2;
-            voteStatus = VoteStatus.downvoted;
-          } else {
-            score += 1;
-            voteStatus = VoteStatus.unknown;
-          }
-        }
-      }
-      notifyListeners();
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        duration: Duration(seconds: 1),
-        content: Text('Failed to vote on comment #$id'),
-      ));
-    }
-  }
-}
-
 extension Transitioning on Comment {
   String get hero => getCommentHero(id);
 }

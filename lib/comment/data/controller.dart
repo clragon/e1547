@@ -1,5 +1,6 @@
 import 'package:e1547/client/client.dart';
 import 'package:e1547/interface/interface.dart';
+import 'package:flutter/material.dart';
 
 import 'comment.dart';
 
@@ -16,10 +17,45 @@ class CommentController extends CursorDataController<Comment>
   @override
   int getId(Comment item) => item.id;
 
-  @override
-  void disposeItems(List<Comment> items) async {
-    for (final comment in items) {
-      comment.dispose();
+  Future<void> vote(
+      {required BuildContext context,
+      required Comment comment,
+      required bool upvote,
+      required bool replace}) async {
+    if (await client.voteComment(comment.id, upvote, replace)) {
+      if (comment.voteStatus == VoteStatus.unknown) {
+        if (upvote) {
+          comment.score += 1;
+          comment.voteStatus = VoteStatus.upvoted;
+        } else {
+          comment.score -= 1;
+          comment.voteStatus = VoteStatus.downvoted;
+        }
+      } else {
+        if (upvote) {
+          if (comment.voteStatus == VoteStatus.upvoted) {
+            comment.score -= 1;
+            comment.voteStatus = VoteStatus.unknown;
+          } else {
+            comment.score += 2;
+            comment.voteStatus = VoteStatus.upvoted;
+          }
+        } else {
+          if (comment.voteStatus == VoteStatus.upvoted) {
+            comment.score -= 2;
+            comment.voteStatus = VoteStatus.downvoted;
+          } else {
+            comment.score += 1;
+            comment.voteStatus = VoteStatus.unknown;
+          }
+        }
+      }
+      updateItem(itemList!.indexOf(comment), comment);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        duration: Duration(seconds: 1),
+        content: Text('Failed to vote on comment #${comment.id}'),
+      ));
     }
   }
 }

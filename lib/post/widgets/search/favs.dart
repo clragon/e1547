@@ -28,7 +28,7 @@ class _FavPageState extends State<FavPage> with ListenerCallbackMixin {
           provider: (tags, page, force) => client.posts(page,
               search: tags, orderFavorites: orderFavorites, force: force),
           search: 'fav:${credentials.username}',
-          canDeny: false,
+          denyMode: DenyListMode.unavailable,
         );
       });
     } else {

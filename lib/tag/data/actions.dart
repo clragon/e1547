@@ -47,3 +47,14 @@ Map<String, int> categories = {
   'artist': 1,
   'invalid': 6,
 };
+
+List<String> filterArtists(List<String> artists) {
+  List<String> excluded = [
+    'epilepsy_warning',
+    'conditional_dnp',
+    'sound_warning',
+    'avoid_posting',
+  ];
+
+  return List.from(artists)..removeWhere((artist) => excluded.contains(artist));
+}

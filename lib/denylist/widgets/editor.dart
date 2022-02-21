@@ -3,10 +3,10 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/wiki/wiki.dart';
 import 'package:flutter/material.dart';
 
-class DenylistEditor extends StatelessWidget {
+class DenyListEditor extends StatelessWidget {
   final List<String> denylist;
 
-  const DenylistEditor({required this.denylist});
+  const DenyListEditor({required this.denylist});
 
   @override
   Widget build(BuildContext context) {

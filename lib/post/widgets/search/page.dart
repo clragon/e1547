@@ -78,7 +78,7 @@ class _PostsPageState extends State<PostsPage> with ListenerCallbackMixin {
               ],
             ),
           ),
-          if (widget.controller.canDeny)
+          if (widget.controller.denyMode != DenyListMode.unavailable)
             DrawerDenySwitch(controller: widget.controller),
           DrawerCounter(controller: widget.controller),
         ],
@@ -88,13 +88,16 @@ class _PostsPageState extends State<PostsPage> with ListenerCallbackMixin {
     Widget itemBuilder(BuildContext context, Post item, int index) {
       return PostTile(
         post: item,
+        controller: widget.controller,
         onPressed: () {
-          Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => PostDetailGallery(
-              controller: widget.controller,
-              initialPage: index,
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => PostDetailGallery(
+                controller: widget.controller,
+                initialPage: index,
+              ),
             ),
-          ));
+          );
         },
       );
     }
@@ -117,7 +120,9 @@ class _PostsPageState extends State<PostsPage> with ListenerCallbackMixin {
               : PostSelectionAppBar(
                   selections: selections,
                   onChanged: onChanged,
-                  onSelectAll: () => widget.controller.itemList!.toSet()),
+                  controller: widget.controller,
+                  onSelectAll: () => widget.controller.itemList!.toSet(),
+                ),
           drawer: defaultNavigationDrawer(),
           endDrawer: endDrawer(),
           floatingActionButton: floatingActionButton(),

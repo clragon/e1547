@@ -7,9 +7,14 @@ class PostSelectionAppBar extends StatelessWidget with AppBarSize {
   final Set<Post> Function()? onSelectAll;
   final void Function(Set<Post> selections) onChanged;
   final Set<Post> selections;
+  final PostController controller;
 
-  const PostSelectionAppBar(
-      {required this.selections, required this.onChanged, this.onSelectAll});
+  const PostSelectionAppBar({
+    required this.selections,
+    required this.onChanged,
+    this.onSelectAll,
+    required this.controller,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +49,11 @@ class PostSelectionAppBar extends StatelessWidget with AppBarSize {
             ),
             onTap: (isLiked) async {
               postFavoritingNotification(
-                  context, Set.from(selections), isLiked);
+                context,
+                Set.from(selections),
+                controller,
+                isLiked,
+              );
               onChanged({});
               return !isLiked;
             },

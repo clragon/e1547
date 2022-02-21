@@ -63,10 +63,14 @@ class ParentDisplay extends StatelessWidget {
                     onTap: () async {
                       if (parentId != null) {
                         try {
-                          Post post = await client.post(parentId);
+                          PostController controller = await waitForFirstPage(
+                              singlePostController(parentId));
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (context) => PostDetail(post: post),
+                              builder: (context) => PostDetail(
+                                post: controller.itemList!.first,
+                                controller: controller,
+                              ),
                             ),
                           );
                         } on DioError {
@@ -108,9 +112,16 @@ class ParentDisplay extends StatelessWidget {
                       title: Text(child.toString()),
                       onTap: () async {
                         try {
-                          Post post = await client.post(child);
-                          await Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => PostDetail(post: post)));
+                          PostController controller = await waitForFirstPage(
+                              singlePostController(child));
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => PostDetail(
+                                post: controller.itemList!.first,
+                                controller: controller,
+                              ),
+                            ),
+                          );
                         } on DioError {
                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                             duration: Duration(seconds: 1),

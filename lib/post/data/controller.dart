@@ -6,30 +6,48 @@ import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
+enum DenyListMode {
+  unavailable,
+  filtering,
+  plain,
+}
+
 typedef PostProviderCallback = Future<List<Post>> Function(
     String search, int page, bool force)?;
 
 class PostController extends DataController<Post>
     with SearchableController, HostableController, RefreshableController {
-  final PostProviderCallback provider;
-  final ValueNotifier<List<String>> allowed = ValueNotifier([]);
-  Map<String, List<Post>>? denied;
-  late ValueNotifier<bool> denying;
+  late final PostProviderCallback _provider;
+
+  Map<String, List<Post>>? deniedPosts;
+  late final ValueNotifier<bool> denying;
+  late final DenyListMode denyMode;
+  final ValueNotifier<List<String>> allowedTags = ValueNotifier([]);
+  final ValueNotifier<List<Post>> allowedPosts = ValueNotifier([]);
+
+  List<Post>? _posts;
+
   @override
   late ValueNotifier<String> search;
-  List<Post>? posts;
   bool canSearch;
-  bool canDeny;
+
+  late final List<Listenable> _filterNotifiers = [
+    allowedTags,
+    allowedPosts,
+    denying,
+    settings.denylist
+  ];
 
   PostController({
-    this.provider,
+    PostProviderCallback provider,
     String? search,
     bool denying = true,
     this.canSearch = true,
-    this.canDeny = true,
+    this.denyMode = DenyListMode.filtering,
   }) : search = ValueNotifier(sortTags(search ?? '')) {
+    _provider = provider;
     this.denying = ValueNotifier(denying);
-    for (final element in [allowed, this.denying, settings.denylist]) {
+    for (final element in _filterNotifiers) {
       element.addListener(reapplyFilter);
     }
   }
@@ -37,36 +55,38 @@ class PostController extends DataController<Post>
   @protected
   List<Post> filter(List<Post> items) {
     List<String> denylist = [];
-    if (denying.value && canDeny) {
+    if (denying.value && denyMode != DenyListMode.unavailable) {
       denylist = settings.denylist.value
-          .where((line) => !allowed.value.contains(line))
+          .where((line) => !allowedTags.value.contains(line))
           .toList();
     }
 
-    denied ??= {};
+    deniedPosts ??= {};
+    List<Post> remaining = List.from(items);
     for (Post item in items) {
-      String? denier = item.getDenier(denylist);
-      if (denier != null) {
-        if (denied![denier] == null) {
-          denied![denier] = [];
-        }
-        denied![denier]!.add(item);
+      if (allowedPosts.value.contains(item)) {
+        continue;
       }
-      item.isBlacklisted = denier != null;
+      List<String> deniers = item.getDeniers(denylist);
+      for (final denier in deniers) {
+        deniedPosts!.putIfAbsent(denier, () => []);
+        deniedPosts![denier]!.add(item);
+      }
+      if (deniers.isNotEmpty && denyMode != DenyListMode.plain) {
+        remaining.remove(item);
+      }
     }
-
-    List<Post> newPosts =
-        items.where((element) => !element.isBlacklisted).toList();
-    return newPosts;
+    return remaining;
   }
 
   @protected
   void reapplyFilter() {
-    if (posts != null) {
-      denied = null;
+    if (_posts != null) {
+      deniedPosts = null;
       value = PagingState(
         nextPageKey: nextPageKey,
-        itemList: filter(posts!),
+        itemList: filter(_posts!),
+        error: error,
       );
     }
   }
@@ -75,13 +95,13 @@ class PostController extends DataController<Post>
   @protected
   Future<List<Post>> provide(int page, bool force) async {
     List<Post> nextPage;
-    if (provider != null) {
-      nextPage = await provider!(search.value, page, force);
+    if (_provider != null) {
+      nextPage = await _provider!(search.value, page, force);
     } else {
       nextPage = await client.posts(page, search: search.value, force: force);
     }
-    posts ??= [];
-    posts!.addAll(nextPage);
+    _posts ??= [];
+    _posts!.addAll(nextPage);
     return filter(nextPage);
   }
 
@@ -90,30 +110,154 @@ class PostController extends DataController<Post>
     if (!await canRefresh()) {
       return;
     }
-    posts = null;
-    denied = null;
+    _posts = null;
+    deniedPosts = null;
     await super.refresh(force: force, background: background);
   }
 
   @override
-  @protected
-  void disposeItems(List<Post> items) {
-    for (final post in items) {
-      post.dispose();
-    }
-  }
-
-  @override
   void dispose() {
-    for (final element in [allowed, denying, settings.denylist]) {
+    for (final element in _filterNotifiers) {
       element.removeListener(reapplyFilter);
     }
     for (final element in [
-      allowed,
+      allowedTags,
       denying,
     ]) {
       element.dispose();
     }
     super.dispose();
+  }
+
+  @override
+  void updateItem(int index, Post item) {
+    assert(itemList != null && _posts != null,
+        'Cannot update posts on empty post list');
+    Post original = itemList![index];
+    _posts![_posts!.indexOf(original)] = item;
+    reapplyFilter();
+  }
+
+  bool isDenied(Post post) {
+    assert(deniedPosts != null, 'Cannot check for denied on empty map');
+    return deniedPosts!.values.any((element) => element.contains(post));
+  }
+
+  bool isAllowed(Post post) {
+    return allowedPosts.value.contains(post);
+  }
+
+  void allow(Post post) {
+    allowedPosts.value = List.from(allowedPosts.value)..add(post);
+  }
+
+  void unallow(Post post) {
+    allowedPosts.value = List.from(allowedPosts.value)..remove(post);
+  }
+
+  Future<bool> fav(BuildContext context, Post post,
+      {Duration? cooldown}) async {
+    cooldown ??= Duration(milliseconds: 0);
+    if (await client.addFavorite(post.id)) {
+      // cooldown avoids interference with animation
+      await Future.delayed(cooldown);
+      post.isFavorited = true;
+      post.favCount += 1;
+      updateItem(itemList!.indexOf(post), post);
+      if (settings.upvoteFavs.value) {
+        Future.delayed(Duration(seconds: 1) - cooldown).then(
+          (_) =>
+              vote(context: context, post: post, upvote: true, replace: true),
+        );
+      }
+      return true;
+    } else {
+      post.favCount -= 1;
+      post.isFavorited = false;
+      updateItem(itemList!.indexOf(post), post);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          duration: Duration(seconds: 1),
+          content: Text('Failed to add Post #${post.id} to favorites'),
+        ),
+      );
+      return false;
+    }
+  }
+
+  Future<bool> unfav(BuildContext context, Post post) async {
+    if (await client.removeFavorite(post.id)) {
+      post.isFavorited = false;
+      post.favCount -= 1;
+      updateItem(itemList!.indexOf(post), post);
+      return true;
+    } else {
+      post.favCount += 1;
+      post.isFavorited = true;
+      updateItem(itemList!.indexOf(post), post);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          duration: Duration(seconds: 1),
+          content: Text('Failed to remove Post #${post.id} from favorites'),
+        ),
+      );
+      return false;
+    }
+  }
+
+  Future<void> vote({
+    required BuildContext context,
+    required Post post,
+    required bool upvote,
+    required bool replace,
+  }) async {
+    if (await client.votePost(post.id, upvote, replace)) {
+      if (post.voteStatus == VoteStatus.unknown) {
+        if (upvote) {
+          post.score.total += 1;
+          post.score.up += 1;
+          post.voteStatus = VoteStatus.upvoted;
+        } else {
+          post.score.total -= 1;
+          post.score.down += 1;
+          post.voteStatus = VoteStatus.downvoted;
+        }
+      } else {
+        if (upvote) {
+          if (post.voteStatus == VoteStatus.upvoted) {
+            post.score.total -= 1;
+            post.score.down += 1;
+            post.voteStatus = VoteStatus.unknown;
+          } else {
+            post.score.total += 2;
+            post.score.up += 1;
+            post.score.down -= 1;
+            post.voteStatus = VoteStatus.upvoted;
+          }
+        } else {
+          if (post.voteStatus == VoteStatus.upvoted) {
+            post.score.total -= 2;
+            post.score.up -= 1;
+            post.score.down *= 1;
+            post.voteStatus = VoteStatus.downvoted;
+          } else {
+            post.score.total += 1;
+            post.score.up += 1;
+            post.voteStatus = VoteStatus.unknown;
+          }
+        }
+      }
+      updateItem(itemList!.indexOf(post), post);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        duration: Duration(seconds: 1),
+        content: Text('Failed to vote on Post #${post.id}'),
+      ));
+    }
+  }
+
+  Future<void> resetPost(Post post) async {
+    Post reset = await client.post(post.id);
+    updateItem(itemList!.indexOf(post), reset);
   }
 }

@@ -10,10 +10,12 @@ import 'package:timeago/timeago.dart';
 
 class CommentTile extends StatelessWidget {
   final Comment comment;
+  final CommentController? controller;
   final bool hasActions;
 
   const CommentTile({
     required this.comment,
+    this.controller,
     this.hasActions = true,
   });
 
@@ -126,34 +128,42 @@ class CommentTile extends StatelessWidget {
                             size: iconSize,
                           ),
                       child: AnimatedSelector(
+                        animation: Listenable.merge([controller]),
                         selector: () => [comment.voteStatus],
-                        animation: comment,
                         builder: (context, child) => VoteDisplay(
                           padding: EdgeInsets.zero,
                           score: comment.score,
                           status: comment.voteStatus,
-                          onUpvote: (isLiked) async {
-                            if (client.hasLogin) {
-                              comment.tryVote(
-                                  context: context,
-                                  upvote: true,
-                                  replace: !isLiked);
-                              return !isLiked;
-                            } else {
-                              return false;
-                            }
-                          },
-                          onDownvote: (isLiked) async {
-                            if (client.hasLogin) {
-                              comment.tryVote(
-                                  context: context,
-                                  upvote: false,
-                                  replace: !isLiked);
-                              return !isLiked;
-                            } else {
-                              return false;
-                            }
-                          },
+                          onUpvote: controller != null
+                              ? (isLiked) async {
+                                  if (client.hasLogin) {
+                                    controller!.vote(
+                                      context: context,
+                                      comment: comment,
+                                      upvote: true,
+                                      replace: !isLiked,
+                                    );
+                                    return !isLiked;
+                                  } else {
+                                    return false;
+                                  }
+                                }
+                              : null,
+                          onDownvote: controller != null
+                              ? (isLiked) async {
+                                  if (client.hasLogin) {
+                                    controller!.vote(
+                                      context: context,
+                                      comment: comment,
+                                      upvote: false,
+                                      replace: !isLiked,
+                                    );
+                                    return !isLiked;
+                                  } else {
+                                    return false;
+                                  }
+                                }
+                              : null,
                         ),
                       ),
                     ),

@@ -4,9 +4,14 @@ import 'package:flutter/material.dart';
 
 class PostDetailAppBar extends StatelessWidget with AppBarSize {
   final Post post;
+  final PostController? controller;
   final PostEditingController? editingController;
 
-  PostDetailAppBar({required this.post, this.editingController});
+  PostDetailAppBar({
+    required this.post,
+    this.controller,
+    this.editingController,
+  });
 
   @override
   Size get preferredSize => Size.fromHeight(defaultAppBarHeight);
@@ -36,7 +41,12 @@ class PostDetailAppBar extends StatelessWidget with AppBarSize {
                 onSelected: (value) => value(),
                 itemBuilder: (context) => [
                   ...postMenuPostActions(context, post),
-                  ...postMenuUserActions(context, post, editingController),
+                  ...postMenuUserActions(
+                    context,
+                    post,
+                    controller: controller,
+                    editingController: editingController,
+                  ),
                 ],
               ),
             ],

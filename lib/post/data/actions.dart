@@ -1,12 +1,9 @@
 import 'dart:io';
 
 import 'package:crypto/crypto.dart';
-import 'package:e1547/client/client.dart';
-import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:e1547/tag/tag.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart'
     show DefaultCacheManager;
@@ -90,46 +87,38 @@ extension Tagging on Post {
 }
 
 extension Denying on Post {
-  bool isDeniedBy(List<String> denylist) => getDenier(denylist) != null;
+  bool isDeniedBy(List<String> denylist) => getDeniers(denylist).isNotEmpty;
 
-  String? getDenier(List<String> denylist) {
-    if (denylist.isNotEmpty) {
-      for (String line in denylist) {
-        List<String> deny = [];
-        List<String> any = [];
-        List<String> allow = [];
+  List<String> getDeniers(List<String> denylist) {
+    List<String> deniers = [];
+    for (String line in denylist) {
+      List<String> deny = [];
+      List<String> any = [];
+      List<String> allow = [];
 
-        line
-            .split(' ')
-            .where(
-              (tag) => tagToName(tag).trim().isNotEmpty,
-            )
-            .forEach((tag) {
-          String prefix = tag[0];
-
-          switch (prefix) {
-            case '-':
-              allow.add(tag.substring(1));
-              break;
-            case '~':
-              any.add(tag.substring(1));
-              break;
-            default:
-              deny.add(tag);
-              break;
-          }
-        });
-
-        bool denied = deny.every((tag) => hasTag(tag));
-        bool allowed = allow.any((tag) => hasTag(tag));
-        bool optional = any.isEmpty || any.any((tag) => hasTag(tag));
-
-        if (denied && optional && !allowed) {
-          return line;
+      line.split(' ').where((tag) => tagToName(tag).isNotEmpty).forEach((tag) {
+        switch (tag[0]) {
+          case '-':
+            allow.add(tag.substring(1));
+            break;
+          case '~':
+            any.add(tag.substring(1));
+            break;
+          default:
+            deny.add(tag);
+            break;
         }
+      });
+
+      bool denied = deny.every(hasTag);
+      bool allowed = allow.any(hasTag);
+      bool optional = any.isEmpty || any.any(hasTag);
+
+      if (denied && optional && !allowed) {
+        deniers.add(line);
       }
     }
-    return null;
+    return deniers;
   }
 }
 
@@ -166,125 +155,9 @@ extension Downloading on Post {
         throw PlatformException(code: 'unsupported platform');
       }
       return true;
-    } catch (_) {
+    } on Exception {
       return false;
     }
-  }
-}
-
-extension Favoriting on Post {
-  Future<bool> tryRemoveFav(BuildContext context) async {
-    if (await client.removeFavorite(id)) {
-      isFavorited = false;
-      favCount -= 1;
-      notifyListeners();
-      return true;
-    } else {
-      favCount += 1;
-      isFavorited = true;
-      notifyListeners();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          duration: Duration(seconds: 1),
-          content: Text('Failed to remove Post #$id from favorites'),
-        ),
-      );
-      return false;
-    }
-  }
-
-  Future<bool> tryAddFav(BuildContext context, {Duration? cooldown}) async {
-    cooldown ??= Duration(milliseconds: 0);
-    if (await client.addFavorite(id)) {
-      // cooldown avoids interference with animation
-      await Future.delayed(cooldown);
-      isFavorited = true;
-      favCount += 1;
-      notifyListeners();
-      if (settings.upvoteFavs.value) {
-        Future.delayed(Duration(seconds: 1) - cooldown).then(
-          (_) => tryVote(context: context, upvote: true, replace: true),
-        );
-      }
-      return true;
-    } else {
-      favCount -= 1;
-      isFavorited = false;
-      notifyListeners();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          duration: Duration(seconds: 1),
-          content: Text('Failed to add Post #$id to favorites'),
-        ),
-      );
-      return false;
-    }
-  }
-}
-
-extension Voting on Post {
-  Future<void> tryVote(
-      {required BuildContext context,
-      required bool upvote,
-      required bool replace}) async {
-    if (await client.votePost(id, upvote, replace)) {
-      if (voteStatus == VoteStatus.unknown) {
-        if (upvote) {
-          score.total += 1;
-          score.up += 1;
-          voteStatus = VoteStatus.upvoted;
-        } else {
-          score.total -= 1;
-          score.down += 1;
-          voteStatus = VoteStatus.downvoted;
-        }
-      } else {
-        if (upvote) {
-          if (voteStatus == VoteStatus.upvoted) {
-            score.total -= 1;
-            score.down += 1;
-            voteStatus = VoteStatus.unknown;
-          } else {
-            score.total += 2;
-            score.up += 1;
-            score.down -= 1;
-            voteStatus = VoteStatus.upvoted;
-          }
-        } else {
-          if (voteStatus == VoteStatus.upvoted) {
-            score.total -= 2;
-            score.up -= 1;
-            score.down *= 1;
-            voteStatus = VoteStatus.downvoted;
-          } else {
-            score.total += 1;
-            score.up += 1;
-            voteStatus = VoteStatus.unknown;
-          }
-        }
-      }
-      notifyListeners();
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        duration: Duration(seconds: 1),
-        content: Text('Failed to vote on Post #$id'),
-      ));
-    }
-  }
-}
-
-extension Editing on Post {
-  Future<void> resetPost({bool online = false}) async {
-    Post reset = await client.post(id);
-    isFavorited = reset.isFavorited;
-    favCount = reset.favCount;
-    score = reset.score;
-    tags = reset.tags;
-    description = reset.description;
-    sources = reset.sources;
-    rating = reset.rating;
-    relationships.parentId = reset.relationships.parentId;
-    notifyListeners();
   }
 }
 
@@ -300,14 +173,3 @@ extension Linking on Post {
 
 Uri getPostUri(String host, int id) =>
     Uri(scheme: 'https', host: host, path: '/posts/$id');
-
-List<String> filterArtists(List<String> artists) {
-  List<String> excluded = [
-    'epilepsy_warning',
-    'conditional_dnp',
-    'sound_warning',
-    'avoid_posting',
-  ];
-
-  return List.from(artists)..removeWhere((artist) => excluded.contains(artist));
-}

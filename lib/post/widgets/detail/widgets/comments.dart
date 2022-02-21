@@ -5,13 +5,14 @@ import 'package:flutter/material.dart';
 
 class CommentDisplay extends StatelessWidget {
   final Post post;
+  final PostController? controller;
 
-  const CommentDisplay({required this.post});
+  const CommentDisplay({required this.post, this.controller});
 
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
-      animation: post,
+      animation: Listenable.merge([controller]),
       builder: (context, child) {
         int count = post.commentCount;
         return CrossFade(

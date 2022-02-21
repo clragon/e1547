@@ -6,8 +6,9 @@ import 'package:like_button/like_button.dart';
 
 class LikeDisplay extends StatelessWidget {
   final Post post;
+  final PostController? controller;
 
-  const LikeDisplay({required this.post});
+  const LikeDisplay({required this.post, this.controller});
 
   @override
   Widget build(BuildContext context) {
@@ -17,33 +18,43 @@ class LikeDisplay extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             AnimatedSelector(
-              animation: post,
+              animation: Listenable.merge([controller]),
               selector: () => [post.voteStatus],
               builder: (context, child) => VoteDisplay(
                 status: post.voteStatus,
                 score: post.score.total,
-                onUpvote: (isLiked) async {
-                  if (client.hasLogin) {
-                    post.tryVote(
-                        context: context, upvote: true, replace: !isLiked);
-                    return !isLiked;
-                  } else {
-                    return false;
-                  }
-                },
-                onDownvote: (isLiked) async {
-                  if (client.hasLogin) {
-                    post.tryVote(
-                        context: context, upvote: false, replace: !isLiked);
-                    return !isLiked;
-                  } else {
-                    return false;
-                  }
-                },
+                onUpvote: controller != null
+                    ? (isLiked) async {
+                        if (client.hasLogin) {
+                          controller!.vote(
+                              context: context,
+                              post: post,
+                              upvote: true,
+                              replace: !isLiked);
+                          return !isLiked;
+                        } else {
+                          return false;
+                        }
+                      }
+                    : null,
+                onDownvote: controller != null
+                    ? (isLiked) async {
+                        if (client.hasLogin) {
+                          controller!.vote(
+                              context: context,
+                              post: post,
+                              upvote: false,
+                              replace: !isLiked);
+                          return !isLiked;
+                        } else {
+                          return false;
+                        }
+                      }
+                    : null,
               ),
             ),
             AnimatedSelector(
-              animation: post,
+              animation: Listenable.merge([controller]),
               selector: () => [post.isFavorited],
               builder: (context, child) => Row(
                 children: [
@@ -65,31 +76,33 @@ class LikeDisplay extends StatelessWidget {
 
 class FavoriteButton extends StatelessWidget {
   final Post post;
+  final PostController controller;
 
-  const FavoriteButton({required this.post});
+  const FavoriteButton({required this.post, required this.controller});
 
   @override
   Widget build(BuildContext context) {
     return AnimatedSelector(
-      animation: post,
+      animation: Listenable.merge([controller]),
       selector: () => [post.isFavorited],
       builder: (context, child) => LikeButton(
         isLiked: post.isFavorited,
         circleColor: CircleColor(start: Colors.pink, end: Colors.red),
         bubblesColor: BubblesColor(
             dotPrimaryColor: Colors.pink, dotSecondaryColor: Colors.red),
-        likeBuilder: (bool isLiked) => Icon(
+        likeBuilder: (isLiked) => Icon(
           Icons.favorite,
           color:
               isLiked ? Colors.pinkAccent : Theme.of(context).iconTheme.color,
         ),
         onTap: (isLiked) async {
           if (isLiked) {
-            post.tryRemoveFav(context);
+            controller.unfav(context, post);
             return false;
           } else {
-            post.tryAddFav(
+            controller.fav(
               context,
+              post,
               cooldown: Duration(seconds: 1),
             );
             return true;

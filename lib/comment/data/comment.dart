@@ -1,15 +1,9 @@
 import 'dart:convert';
 
 import 'package:e1547/interface/interface.dart';
-import 'package:flutter/material.dart';
 
-class Comment with ChangeNotifier {
+class Comment {
   VoteStatus voteStatus = VoteStatus.unknown;
-
-  @override
-  void notifyListeners() {
-    super.notifyListeners();
-  }
 
   Comment({
     required this.id,

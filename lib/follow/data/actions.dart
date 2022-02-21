@@ -69,10 +69,7 @@ extension Refreshing on Follow {
 
         List<String> denylist = settings.denylist.value;
 
-        posts.forEach(
-            (element) => element.isBlacklisted = element.isDeniedBy(denylist));
-
-        posts.removeWhere((element) => element.isBlacklisted);
+        posts.removeWhere((element) => element.isDeniedBy(denylist));
         await updateUnseen(client.host, posts);
 
         if (!tags.contains(' ') && alias == null) {

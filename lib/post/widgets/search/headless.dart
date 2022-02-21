@@ -37,16 +37,7 @@ class _PostsPageHeadlessState extends State<PostsPageHeadless> {
           onError: Text('Failed to load posts'),
           itemBuilder: (context, item, index) => PostTile(
             post: item,
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => PostDetailGallery(
-                    controller: widget.controller,
-                    initialPage: index,
-                  ),
-                ),
-              );
-            },
+            controller: widget.controller,
           ),
         ),
         gridDelegateBuilder: (childCount) =>

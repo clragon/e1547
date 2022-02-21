@@ -25,9 +25,6 @@ abstract class RawDataController<KeyType, ItemType>
   void dispose() {
     super.removePageRequestListener(requestPage);
     _refreshListeners.forEach((element) => element.removeListener(refresh));
-    if (itemList != null) {
-      disposeItems(itemList!);
-    }
     super.dispose();
   }
 
@@ -51,7 +48,16 @@ abstract class RawDataController<KeyType, ItemType>
 
   KeyType provideNextPageKey(KeyType current, List<ItemType> items);
 
-  void disposeItems(List<ItemType> items) {}
+  void updateItem(int index, ItemType item) {
+    assert(itemList != null, 'Cannot update item before having data');
+    List<ItemType> updated = List.from(itemList!);
+    updated[index] = item;
+    value = PagingState(
+      nextPageKey: nextPageKey,
+      itemList: updated,
+      error: error,
+    );
+  }
 
   @nonVirtual
   @protected
@@ -77,14 +83,11 @@ abstract class RawDataController<KeyType, ItemType>
       return;
     }
     _isForceRefreshing = force;
-    List<ItemType> old = List<ItemType>.from(itemList ?? []);
     if (background) {
       await backgroundRefresh();
       await Future.delayed(Duration.zero);
-      disposeItems(old);
     } else {
       super.refresh();
-      disposeItems(old);
     }
   }
 

@@ -97,7 +97,7 @@ class _DenyListPageState extends State<DenyListPage> {
                 icon: Icon(Icons.edit),
                 onPressed: () => showDialog(
                   context: context,
-                  builder: (context) => DenylistEditor(denylist: denylist),
+                  builder: (context) => DenyListEditor(denylist: denylist),
                 ),
               ),
             ],

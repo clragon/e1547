@@ -26,7 +26,7 @@ class AppVersion extends Comparable<AppVersion> {
       major = int.tryParse(parts[0])!;
       minor = int.tryParse(parts[1]) ?? 0;
       patch = int.tryParse(parts[2]) ?? 0;
-    } catch (_) {
+    } on Exception {
       major = 0;
       minor = 0;
       patch = 0;

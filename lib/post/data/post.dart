@@ -4,7 +4,6 @@ import 'dart:math';
 
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/settings/settings.dart';
-import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:wakelock/wakelock.dart';
 
@@ -17,13 +16,8 @@ enum PostType {
   unsupported,
 }
 
-class Post with ChangeNotifier {
+class Post {
   // start of custom code
-  bool isBlacklisted = false;
-  bool isAllowed = false;
-
-  bool get isVisible => (isFavorited || isAllowed || !isBlacklisted);
-
   VoteStatus voteStatus = VoteStatus.unknown;
 
   PostType get type {
@@ -96,17 +90,6 @@ class Post with ChangeNotifier {
   Future<void> disposeVideo() async {
     await initVideo();
     loadedVideos.remove(this);
-  }
-
-  @override
-  void notifyListeners() {
-    super.notifyListeners();
-  }
-
-  @override
-  dispose() {
-    disposeVideo();
-    super.dispose();
   }
 
   // end of custom code
