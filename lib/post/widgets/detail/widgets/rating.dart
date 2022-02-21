@@ -3,15 +3,15 @@ import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 
 Map<Rating, IconData> ratingIcons = {
-  Rating.S: Icons.check,
-  Rating.Q: Icons.help,
-  Rating.E: Icons.warning,
+  Rating.s: Icons.check,
+  Rating.q: Icons.help,
+  Rating.e: Icons.warning,
 };
 
 Map<Rating, String> ratingTexts = {
-  Rating.S: 'Safe',
-  Rating.Q: 'Questionable',
-  Rating.E: 'Explicit',
+  Rating.s: 'Safe',
+  Rating.q: 'Questionable',
+  Rating.e: 'Explicit',
 };
 
 class RatingDisplay extends StatelessWidget {

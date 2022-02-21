@@ -79,7 +79,7 @@ class ArtistDisplay extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Builder(
-                  builder: (BuildContext context) => InkWell(
+                  builder: (context) => InkWell(
                     child: Text('#${post.id}'),
                     onLongPress: () {
                       Clipboard.setData(

@@ -284,12 +284,12 @@ class _AdvancedTagInputState extends State<AdvancedTagInput> {
             case 'rating':
               await showDialog(
                 context: context,
-                builder: (BuildContext context) {
-                  return RatingDialog(onTap: (rating) {
+                builder: (context) => RatingDialog(
+                  onTap: (rating) {
                     key = 'rating';
-                    value = ratingValues.reverse![rating];
-                  });
-                },
+                    value = rating.name;
+                  },
+                ),
               );
               break;
             case 'deleted':

@@ -34,9 +34,6 @@ class ImageOverlay extends StatelessWidget {
         if (post.file.url == null) {
           return centerText('Image unavailable in safe mode');
         }
-        print(controller != null &&
-            controller!.isDenied(post) &&
-            !post.isFavorited);
         if (controller != null &&
             controller!.isDenied(post) &&
             !post.isFavorited) {

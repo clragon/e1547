@@ -217,7 +217,7 @@ class PostInfoBar extends StatelessWidget {
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text(ratingValues.reverse![post.rating]!.toUpperCase()),
+                        Text(post.rating.name.toUpperCase()),
                         Padding(
                           padding: EdgeInsets.symmetric(horizontal: 4),
                           child: Icon(ratingIcons[post.rating]!),

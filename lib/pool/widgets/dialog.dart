@@ -10,7 +10,7 @@ import 'info.dart';
 void poolDialog({required BuildContext context, required Pool pool}) {
   showDialog(
     context: context,
-    builder: (BuildContext context) {
+    builder: (context) {
       return PoolDialog(
         pool: pool,
       );

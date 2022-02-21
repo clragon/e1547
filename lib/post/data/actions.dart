@@ -5,13 +5,10 @@ import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_cache_manager/flutter_cache_manager.dart'
-    show DefaultCacheManager;
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:media_scanner/media_scanner.dart';
 import 'package:permission_handler/permission_handler.dart';
-
-import 'post.dart';
 
 extension Tagging on Post {
   bool hasTag(String tag) {
@@ -20,7 +17,8 @@ extension Tagging on Post {
       String value = tag.split(':')[1];
       switch (identifier) {
         case 'rating':
-          if (rating == ratingValues.map[value]) {
+          if (rating == Rating.values.asNameMap()[value] ||
+              value == ratingTexts[rating]!.toLowerCase()) {
             return true;
           }
           break;

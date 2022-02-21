@@ -171,7 +171,7 @@ class Post {
       lockedTags: List<String>.from(json["locked_tags"].map((x) => x)),
       changeSeq: json["change_seq"],
       flags: Flags.fromMap(json["flags"]),
-      rating: ratingValues.map[json["rating"]]!,
+      rating: Rating.values.asNameMap()[json["rating"]]!,
       favCount: json["fav_count"],
       sources: List<String>.from(json["sources"].map((x) => x)),
       pools: List<int>.from(json["pools"].map((x) => x)),
@@ -198,7 +198,7 @@ class Post {
         "locked_tags": List<dynamic>.from(lockedTags!.map((x) => x)),
         "change_seq": changeSeq,
         "flags": flags.toMap(),
-        "rating": ratingValues.reverse![rating],
+        "rating": rating.name,
         "fav_count": favCount,
         "sources": List<dynamic>.from(sources.map((x) => x)),
         "pools": List<dynamic>.from(pools.map((x) => x)),
@@ -387,16 +387,7 @@ class Flags {
       };
 }
 
-enum Rating { E, S, Q }
-
-final ratingValues = EnumValues({
-  "e": Rating.E,
-  "q": Rating.Q,
-  "s": Rating.S,
-  "explicit": Rating.E,
-  "questionable": Rating.Q,
-  "safe": Rating.S
-});
+enum Rating { s, e, q }
 
 class Relationships {
   Relationships({

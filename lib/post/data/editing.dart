@@ -142,7 +142,7 @@ class PostEditingController extends ChangeNotifier {
       body.addEntries([
         MapEntry(
           'post[parent_id]',
-          parentId?.toString() ?? '',
+          parentId?.toString(),
         ),
       ]);
     }
@@ -160,7 +160,7 @@ class PostEditingController extends ChangeNotifier {
       body.addEntries([
         MapEntry(
           'post[rating]',
-          ratingValues.reverse![rating],
+          rating?.name,
         ),
       ]);
     }

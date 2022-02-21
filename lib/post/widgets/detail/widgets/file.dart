@@ -31,7 +31,7 @@ class FileDisplay extends StatelessWidget {
             children: [
               TagGesture(
                 child: Text(ratingTexts[post.rating]!),
-                tag: 'rating:${ratingValues.reverse![post.rating]}',
+                tag: 'rating:${post.rating.name}',
                 controller: controller,
               ),
               Text('${post.file.width} x ${post.file.height}'),

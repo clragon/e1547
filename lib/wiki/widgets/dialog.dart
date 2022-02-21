@@ -7,7 +7,7 @@ import 'body.dart';
 void wikiDialog({required BuildContext context, required String tag}) {
   showDialog(
     context: context,
-    builder: (BuildContext context) {
+    builder: (context) {
       return WikiDialog(
         tag: tag,
       );
