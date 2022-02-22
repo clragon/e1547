@@ -21,7 +21,7 @@ class PostDetailAppBar extends StatelessWidget with AppBarSize {
     return AnimatedBuilder(
       animation: Listenable.merge([editingController]),
       builder: (context, child) {
-        bool isEditing = editingController?.isEditing ?? false;
+        bool isEditing = editingController?.editing ?? false;
         return TransparentAppBar(
           leading: isEditing
               ? IconButton(

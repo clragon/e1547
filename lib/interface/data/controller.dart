@@ -53,19 +53,16 @@ abstract class RawDataController<KeyType, ItemType>
 
   @mustCallSuper
   @protected
-  void assertItemOwnership(ItemType item) {
+  void assertHasItems() {
     if (itemList == null) {
       throw StateError(
           'Controller cannot modify item when the itemList is empty');
-    }
-    if (!itemList!.contains(item)) {
-      throw StateError('Item isnt owned by this controller');
     }
   }
 
   @mustCallSuper
   void updateItem(int index, ItemType item, {bool force = false}) {
-    assertItemOwnership(item);
+    assertHasItems();
     List<ItemType> updated = List.from(itemList!);
     updated[index] = item;
     value = PagingState(

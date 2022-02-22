@@ -20,8 +20,8 @@ class PostEditingScope extends StatelessWidget {
         if (sheetController?.isShown ?? false) {
           return true;
         }
-        if (editingController?.isEditing ?? false) {
-          editingController!.isEditing = false;
+        if (editingController?.editing ?? false) {
+          editingController!.stopEditing();
           return false;
         }
         return true;
@@ -47,7 +47,7 @@ class PostEditingDependant extends StatelessWidget {
     return AnimatedBuilder(
       animation: Listenable.merge([controller]),
       builder: (context, child) => CrossFade(
-        showChild: shown == (controller?.isEditing ?? false),
+        showChild: shown == (controller?.editing ?? false),
         child: child!,
       ),
       child: child,

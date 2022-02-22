@@ -42,7 +42,7 @@ List<PopupMenuItem<VoidCallback>> postMenuUserActions(
         icon: Icons.edit,
         value: () => guardWithLogin(
           context: context,
-          callback: () => editingController.isEditing = true,
+          callback: editingController.startEditing,
           error: 'You must be logged in to edit posts!',
         ),
       ),

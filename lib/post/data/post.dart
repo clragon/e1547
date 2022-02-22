@@ -97,14 +97,14 @@ class Post {
   Post({
     required this.id,
     required this.createdAt,
-    this.updatedAt,
+    required this.updatedAt,
     required this.file,
     required this.preview,
     required this.sample,
     required this.score,
     required this.tags,
-    this.lockedTags,
-    this.changeSeq,
+    required this.lockedTags,
+    required this.changeSeq,
     required this.flags,
     required this.rating,
     required this.favCount,
@@ -117,7 +117,7 @@ class Post {
     required this.commentCount,
     required this.isFavorited,
     required this.hasNotes,
-    this.duration,
+    required this.duration,
   }) {
     if (type == PostType.video && Platform.isIOS) {
       file.ext = 'mp4';

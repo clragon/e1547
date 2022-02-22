@@ -280,8 +280,7 @@ class _SelectionScopeState<T> extends State<SelectionScope<T>> {
   }
 
   void onChanged(Set<T> selections) => setState(() {
-        this.selections.clear();
-        this.selections.addAll(selections);
+        this.selections = Set.from(selections);
       });
 
   @override

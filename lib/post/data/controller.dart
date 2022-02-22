@@ -128,9 +128,17 @@ class PostController extends DataController<Post>
     super.dispose();
   }
 
+  @protected
+  assertItemOwnership(Post item) {
+    assertHasItems();
+    if (!itemList!.contains(item)) {
+      throw StateError('Item isnt owned by this controller');
+    }
+  }
+
   @override
   void updateItem(int index, Post item, {bool force = false}) {
-    assertItemOwnership(item);
+    assertHasItems();
     _posts![_posts!.indexOf(itemList![index])] = item;
     super.updateItem(index, item, force: force);
   }
@@ -151,21 +159,25 @@ class PostController extends DataController<Post>
   }
 
   bool isAllowed(Post post) {
+    assertItemOwnership(post);
     return _allowedPosts.contains(post);
   }
 
   void allow(Post post) {
+    assertItemOwnership(post);
     _allowedPosts.add(post);
     reapplyFilter();
   }
 
   void unallow(Post post) {
+    assertItemOwnership(post);
     _allowedPosts.remove(post);
     reapplyFilter();
   }
 
   Future<bool> fav(BuildContext context, Post post,
       {Duration? cooldown}) async {
+    assertItemOwnership(post);
     cooldown ??= Duration(milliseconds: 0);
     if (await client.addFavorite(post.id)) {
       // cooldown avoids interference with animation
@@ -195,6 +207,7 @@ class PostController extends DataController<Post>
   }
 
   Future<bool> unfav(BuildContext context, Post post) async {
+    assertItemOwnership(post);
     if (await client.removeFavorite(post.id)) {
       post.isFavorited = false;
       post.favCount -= 1;
@@ -220,6 +233,7 @@ class PostController extends DataController<Post>
     required bool upvote,
     required bool replace,
   }) async {
+    assertItemOwnership(post);
     if (await client.votePost(post.id, upvote, replace)) {
       if (post.voteStatus == VoteStatus.unknown) {
         if (upvote) {
@@ -266,6 +280,7 @@ class PostController extends DataController<Post>
   }
 
   Future<void> resetPost(Post post) async {
+    assertItemOwnership(post);
     Post reset = await client.post(post.id);
     updateItem(itemList!.indexOf(post), reset, force: true);
   }

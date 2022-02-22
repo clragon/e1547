@@ -46,7 +46,7 @@ class _PostDetailState extends State<PostDetail>
   }
 
   void closeSheet() {
-    if (!editingController!.isEditing) {
+    if (!editingController!.editing) {
       sheetController.close();
     }
   }
@@ -95,15 +95,15 @@ class _PostDetailState extends State<PostDetail>
 
   Future<void> editPost(
       BuildContext context, PostEditingController controller) async {
-    controller.isLoading = true;
+    controller.setLoading(true);
     Map<String, String?>? body = controller.compile();
     if (body != null) {
       try {
         await client.updatePost(controller.post.id, body);
         await widget.controller!.resetPost(controller.post);
-        controller.isEditing = false;
+        controller.stopEditing();
       } on DioError {
-        controller.isLoading = false;
+        controller.setLoading(false);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             duration: Duration(seconds: 1),
@@ -130,15 +130,15 @@ class _PostDetailState extends State<PostDetail>
 
   Widget fab() {
     return AnimatedBuilder(
-      animation: sheetController,
+      animation: Listenable.merge([editingController, sheetController]),
       builder: (context, child) => FloatingActionButton(
         heroTag: null,
         backgroundColor: Theme.of(context).cardColor,
         foregroundColor: Theme.of(context).iconTheme.color,
-        onPressed: editingController?.isEditing ?? false
+        onPressed: editingController?.editing ?? false
             ? sheetController.action ?? () => submitEdit(context)
             : () {},
-        child: editingController?.isEditing ?? false
+        child: editingController?.editing ?? false
             ? Icon(sheetController.isShown ? Icons.add : Icons.check)
             : Padding(
                 padding: EdgeInsets.only(left: 2),
@@ -154,8 +154,7 @@ class _PostDetailState extends State<PostDetail>
   @override
   Widget build(BuildContext context) {
     Widget fullscreen() {
-      if ((editingController?.isEditing ?? false) ||
-          widget.controller == null) {
+      if ((editingController?.editing ?? false) || widget.controller == null) {
         return PostFullscreenFrame(
           child: PostFullscreenImageDisplay(post: widget.post),
           post: widget.post,

@@ -2,96 +2,52 @@ import 'package:flutter/material.dart';
 
 import 'post.dart';
 
-class PostEditingController extends ChangeNotifier {
-  Post post;
+class PostEdit {
+  final String? editReason;
+  final Rating? rating;
+  final String? description;
+  final int? parentId;
+  final List<String>? sources;
+  final Map<String, List<String>>? tags;
 
-  PostEditingController(this.post);
+  PostEdit({
+    required this.editReason,
+    required this.rating,
+    required this.description,
+    required this.parentId,
+    required this.sources,
+    required this.tags,
+  });
 
-  bool _isEditing = false;
-  bool _isLoading = false;
-  String? _editReason;
-  Rating? _rating;
-  String? _description;
-  int? _parentId;
-  List<String>? _sources;
-  Map<String, List<String>>? _tags;
-
-  bool get isEditing => _isEditing;
-  bool get isLoading => _isLoading;
-  String? get editReason => _editReason;
-  Rating? get rating => _rating;
-  String? get description => _description;
-  int? get parentId => _parentId;
-  List<String>? get sources => _sources;
-  Map<String, List<String>>? get tags => _tags;
-
-  set isEditing(bool value) {
-    _isEditing = value;
-    if (value) {
-      rating = post.rating;
-      description = post.description;
-      parentId = post.relationships.parentId;
-      sources = post.sources;
-      tags = post.tags.map((key, value) => MapEntry(key, List.from(value)));
-      notifyListeners();
-    } else {
-      reset();
-    }
+  factory PostEdit.fromPost(Post post) {
+    return PostEdit(
+      rating: post.rating,
+      description: post.description,
+      parentId: post.relationships.parentId,
+      sources: post.sources,
+      tags: post.tags.map((key, value) => MapEntry(key, List.from(value))),
+      editReason: null,
+    );
   }
 
-  set isLoading(bool value) {
-    _isLoading = value;
-    notifyListeners();
-  }
+  PostEdit copyWith({
+    String? editReason,
+    Rating? rating,
+    String? description,
+    int? parentId,
+    List<String>? sources,
+    Map<String, List<String>>? tags,
+  }) =>
+      PostEdit(
+        editReason: editReason,
+        rating: rating,
+        description: description,
+        parentId: parentId,
+        sources: sources,
+        tags: tags,
+      );
 
-  set editReason(String? value) {
-    _editReason = value;
-    notifyListeners();
-  }
-
-  set rating(Rating? value) {
-    _rating = value;
-    notifyListeners();
-  }
-
-  set description(String? value) {
-    _description = value;
-    notifyListeners();
-  }
-
-  set parentId(int? value) {
-    _parentId = value;
-    notifyListeners();
-  }
-
-  set sources(List<String>? value) {
-    _sources = value;
-    notifyListeners();
-  }
-
-  set tags(Map<String, List<String>>? value) {
-    _tags = value;
-    notifyListeners();
-  }
-
-  void reset() {
-    isLoading = false;
-    editReason = null;
-    rating = null;
-    description = null;
-    parentId = null;
-    sources = null;
-    tags = null;
-    notifyListeners();
-  }
-
-  Map<String, String?>? compile() {
-    if (!isEditing) {
-      assert(false,
-          'Tried to compile PostEditingController data while not editing!');
-      return null;
-    }
-
+  Map<String, String?>? compile(Post post) {
     Map<String, String?> body = {};
 
     List<String> extractTags(Map<String, List<String>> tags) {
@@ -178,5 +134,39 @@ class PostEditingController extends ChangeNotifier {
     } else {
       return null;
     }
+  }
+}
+
+class PostEditingController extends ValueNotifier<PostEdit?> {
+  final Post post;
+
+  PostEditingController(this.post) : super(null);
+
+  bool get editing => value != null;
+
+  bool get canEdit => editing && !loading;
+
+  bool _loading = false;
+  bool get loading => _loading;
+
+  void startEditing() {
+    value = PostEdit.fromPost(post);
+  }
+
+  void stopEditing() {
+    _loading = false;
+    value = null;
+  }
+
+  void setLoading(bool value) {
+    _loading = value;
+    notifyListeners();
+  }
+
+  Map<String, String?>? compile() {
+    if (value == null) {
+      throw StateError('Controller cannot compile with no edit data');
+    }
+    return value!.compile(post);
   }
 }

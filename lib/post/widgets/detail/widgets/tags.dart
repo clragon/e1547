@@ -22,11 +22,12 @@ class TagDisplay extends StatelessWidget {
     return AnimatedSelector(
       animation: Listenable.merge([editingController]),
       selector: () =>
-          [editingController?.isEditing, editingController?.tags.hashCode],
+          [editingController?.editing, editingController?.value?.tags.hashCode],
       builder: (context, child) {
         bool isEditing =
-            (editingController?.isEditing ?? false) && actionController != null;
-        Map<String, List<String>>? tags = editingController?.tags ?? post.tags;
+            (editingController?.editing ?? false) && actionController != null;
+        Map<String, List<String>>? tags =
+            editingController?.value?.tags ?? post.tags;
 
         Widget title(String category) {
           return Padding(
@@ -51,10 +52,15 @@ class TagDisplay extends StatelessWidget {
                   controller: controller,
                   onRemove: isEditing
                       ? () {
-                          Map<String, List<String>> edited =
-                              Map.from(editingController!.tags!);
-                          edited[category]!.remove(tag);
-                          editingController!.tags = edited;
+                          if (editingController!.canEdit) {
+                            Map<String, List<String>> edited =
+                                Map.from(editingController!.value!.tags!);
+                            edited[category]!.remove(tag);
+                            editingController!.value =
+                                editingController!.value!.copyWith(
+                              tags: edited,
+                            );
+                          }
                         }
                       : null,
                 ),
@@ -113,11 +119,11 @@ Future<bool> onPostTagsEdit(
     return true;
   }
   List<String> edited = value.split(' ');
-  Map<String, List<String>> tags = Map.from(controller.tags!);
+  Map<String, List<String>> tags = Map.from(controller.value!.tags!);
   tags[category]!.addAll(edited);
   tags[category] = tags[category]!.toSet().toList();
   tags[category]!.sort();
-  controller.tags = tags;
+  controller.value = controller.value!.copyWith(tags: tags);
   if (category != 'general') {
     () async {
       for (String tag in edited) {
@@ -130,12 +136,12 @@ Future<bool> onPostTagsEdit(
               .firstWhere((k) => validator[0]['category'] == categories[k]);
         }
         if (target != null) {
-          Map<String, List<String>> tags = Map.from(controller.tags!);
+          Map<String, List<String>> tags = Map.from(controller.value!.tags!);
           tags[category]!.remove(tag);
           tags[target]!.add(tag);
           tags[target] = tags[target]!.toSet().toList();
           tags[target]!.sort();
-          controller.tags = tags;
+          controller.value = controller.value!.copyWith(tags: tags);
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             duration: Duration(milliseconds: 500),
             content: Text('Moved $tag to $target tags'),

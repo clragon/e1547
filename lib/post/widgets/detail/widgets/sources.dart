@@ -16,10 +16,11 @@ class SourceDisplay extends StatelessWidget {
     return AnimatedSelector(
       animation: Listenable.merge([editingController]),
       selector: () =>
-          [editingController?.isEditing, editingController?.sources],
+          [editingController?.editing, editingController?.value?.sources],
       builder: (context, child) {
-        bool isEditing = editingController?.isEditing ?? false;
-        List<String> sources = editingController?.sources ?? post.sources;
+        bool isEditing = editingController?.editing ?? false;
+        List<String> sources =
+            editingController?.value?.sources ?? post.sources;
         return CrossFade(
           showChild: sources.isNotEmpty || isEditing,
           child: Column(
@@ -41,20 +42,25 @@ class SourceDisplay extends StatelessWidget {
                     showChild: isEditing,
                     child: IconButton(
                       icon: Icon(Icons.edit),
-                      onPressed: () => Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => TextEditor(
-                            title: '#${post.id} sources',
-                            content: editingController!.sources!.join('\n'),
-                            dtext: false,
-                            onSubmit: (context, text) async {
-                              editingController!.sources =
-                                  text.trim().split('\n');
-                              return true;
-                            },
-                          ),
-                        ),
-                      ),
+                      onPressed: editingController!.canEdit
+                          ? () => Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => TextEditor(
+                                    title: '#${post.id} sources',
+                                    content: editingController!.value!.sources!
+                                        .join('\n'),
+                                    dtext: false,
+                                    onSubmit: (context, text) {
+                                      editingController!.value =
+                                          editingController!.value!.copyWith(
+                                        sources: text.trim().split('\n'),
+                                      );
+                                      return true;
+                                    },
+                                  ),
+                                ),
+                              )
+                          : null,
                     ),
                   ),
                 ],

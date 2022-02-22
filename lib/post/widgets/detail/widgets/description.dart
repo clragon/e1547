@@ -14,12 +14,13 @@ class DescriptionDisplay extends StatelessWidget {
     return AnimatedSelector(
       animation: Listenable.merge([editingController]),
       selector: () => [
-        editingController?.description,
-        editingController?.isEditing,
+        editingController?.value?.description,
+        editingController?.editing,
       ],
       builder: (context, child) {
-        bool editing = (editingController?.isEditing ?? false);
-        String description = editingController?.description ?? post.description;
+        bool editing = (editingController?.editing ?? false);
+        String description =
+            editingController?.value?.description ?? post.description;
         return CrossFade(
           showChild: description.isNotEmpty || editing,
           child: Column(
@@ -40,9 +41,12 @@ class DescriptionDisplay extends StatelessWidget {
                         MaterialPageRoute(
                           builder: (context) => TextEditor(
                             title: '#${post.id} description',
-                            content: editingController!.description,
-                            onSubmit: (context, text) async {
-                              editingController!.description = text;
+                            content: editingController!.value!.description,
+                            onSubmit: (context, text) {
+                              editingController!.value =
+                                  editingController!.value!.copyWith(
+                                description: text,
+                              );
                               return true;
                             },
                           ),

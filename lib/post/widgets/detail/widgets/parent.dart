@@ -17,13 +17,13 @@ class ParentDisplay extends StatelessWidget {
     return AnimatedSelector(
       animation: Listenable.merge([editingController]),
       selector: () => [
-        editingController?.isEditing,
-        editingController?.parentId,
+        editingController?.editing,
+        editingController?.value?.parentId,
       ],
       builder: (context, child) {
-        bool isEditing = editingController?.isEditing ?? false;
+        bool isEditing = editingController?.editing ?? false;
         int? parentId =
-            editingController?.parentId ?? post.relationships.parentId;
+            editingController?.value?.parentId ?? post.relationships.parentId;
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -162,7 +162,8 @@ class _ParentEditorState extends State<ParentEditor> {
   @override
   void initState() {
     super.initState();
-    textController.text = widget.editingController.parentId?.toString() ?? ' ';
+    textController.text =
+        widget.editingController.value?.parentId?.toString() ?? ' ';
     textController.setFocusToEnd();
     widget.actionController.setAction(submit);
   }
@@ -178,12 +179,16 @@ class _ParentEditorState extends State<ParentEditor> {
 
   Future<void> submit() async {
     if (textController.text.trim().isEmpty) {
-      widget.editingController.parentId = null;
+      widget.editingController.value = widget.editingController.value!.copyWith(
+        parentId: null,
+      );
       return;
     }
     try {
       Post parent = await client.post(int.parse(textController.text));
-      widget.editingController.parentId = parent.id;
+      widget.editingController.value = widget.editingController.value!.copyWith(
+        parentId: parent.id,
+      );
     } on DioError {
       showError('Invalid parent post');
     } on FormatException {

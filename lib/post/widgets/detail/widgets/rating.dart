@@ -24,9 +24,12 @@ class RatingDisplay extends StatelessWidget {
   Widget build(BuildContext context) {
     return AnimatedSelector(
       animation: Listenable.merge([editingController]),
-      selector: () => [editingController?.isEditing, editingController?.rating],
+      selector: () =>
+          [editingController?.editing, editingController?.value?.rating],
       builder: (context, child) {
-        Rating rating = editingController?.rating ?? post.rating;
+        Rating rating = editingController?.value?.rating ?? post.rating;
+        bool canEdit =
+            (editingController?.canEdit ?? false) && !post.flags.ratingLocked;
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -46,12 +49,12 @@ class RatingDisplay extends StatelessWidget {
               title: Text(ratingTexts[rating]!),
               leading: Icon(
                   !post.flags.ratingLocked ? ratingIcons[rating] : Icons.lock),
-              onTap: (editingController?.isEditing ?? false) &&
-                      !post.flags.ratingLocked
+              onTap: canEdit
                   ? () => showDialog(
                         context: context,
                         builder: (context) => RatingDialog(
-                          onTap: (value) => editingController!.rating = value,
+                          onTap: (value) => editingController!.value =
+                              editingController!.value!.copyWith(rating: value),
                         ),
                       )
                   : null,

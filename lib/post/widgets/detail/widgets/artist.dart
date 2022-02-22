@@ -22,11 +22,11 @@ class ArtistDisplay extends StatelessWidget {
       return AnimatedSelector(
         animation: Listenable.merge([editingController]),
         selector: () => [
-          editingController?.tags.hashCode,
+          editingController?.value?.tags.hashCode,
         ],
         builder: (context, child) {
-          List<String> artists =
-              filterArtists((editingController?.tags ?? post.tags)['artist']!);
+          List<String> artists = filterArtists(
+              (editingController?.value?.tags ?? post.tags)['artist']!);
           if (artists.isNotEmpty) {
             List<InlineSpan> spans = [];
             for (String artist in artists) {
