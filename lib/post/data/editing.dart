@@ -4,11 +4,11 @@ import 'post.dart';
 
 class PostEdit {
   final String? editReason;
-  final Rating? rating;
-  final String? description;
+  final Rating rating;
+  final String description;
   final int? parentId;
-  final List<String>? sources;
-  final Map<String, List<String>>? tags;
+  final List<String> sources;
+  final Map<String, List<String>> tags;
 
   PostEdit({
     required this.editReason,
@@ -39,12 +39,12 @@ class PostEdit {
     Map<String, List<String>>? tags,
   }) =>
       PostEdit(
-        editReason: editReason,
-        rating: rating,
-        description: description,
-        parentId: parentId,
-        sources: sources,
-        tags: tags,
+        editReason: editReason ?? this.editReason,
+        rating: rating ?? this.rating,
+        description: description ?? this.description,
+        parentId: parentId ?? this.parentId,
+        sources: sources ?? this.sources,
+        tags: tags ?? this.tags,
       );
 
   Map<String, String?>? compile(Post post) {
@@ -57,7 +57,7 @@ class PostEdit {
     }
 
     List<String> oldTags = extractTags(post.tags);
-    List<String> newTags = extractTags(tags!);
+    List<String> newTags = extractTags(tags);
     List<String> removedTags =
         oldTags.where((element) => !newTags.contains(element)).toList();
     removedTags = removedTags.map((t) => '-$t').toList();
@@ -77,10 +77,10 @@ class PostEdit {
     }
 
     List<String> removedSource =
-        post.sources.where((element) => !sources!.contains(element)).toList();
+        post.sources.where((element) => !sources.contains(element)).toList();
     removedSource = removedSource.map((s) => '-$s').toList();
     List<String> addedSource =
-        sources!.where((element) => !post.sources.contains(element)).toList();
+        sources.where((element) => !post.sources.contains(element)).toList();
     List<String> sourceDiff = [];
     sourceDiff.addAll(removedSource);
     sourceDiff.addAll(addedSource);
@@ -116,7 +116,7 @@ class PostEdit {
       body.addEntries([
         MapEntry(
           'post[rating]',
-          rating?.name,
+          rating.name,
         ),
       ]);
     }

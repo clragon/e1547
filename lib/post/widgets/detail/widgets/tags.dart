@@ -54,7 +54,7 @@ class TagDisplay extends StatelessWidget {
                       ? () {
                           if (editingController!.canEdit) {
                             Map<String, List<String>> edited =
-                                Map.from(editingController!.value!.tags!);
+                                Map.from(editingController!.value!.tags);
                             edited[category]!.remove(tag);
                             editingController!.value =
                                 editingController!.value!.copyWith(
@@ -119,7 +119,7 @@ Future<bool> onPostTagsEdit(
     return true;
   }
   List<String> edited = value.split(' ');
-  Map<String, List<String>> tags = Map.from(controller.value!.tags!);
+  Map<String, List<String>> tags = Map.from(controller.value!.tags);
   tags[category]!.addAll(edited);
   tags[category] = tags[category]!.toSet().toList();
   tags[category]!.sort();
@@ -136,7 +136,7 @@ Future<bool> onPostTagsEdit(
               .firstWhere((k) => validator[0]['category'] == categories[k]);
         }
         if (target != null) {
-          Map<String, List<String>> tags = Map.from(controller.value!.tags!);
+          Map<String, List<String>> tags = Map.from(controller.value!.tags);
           tags[category]!.remove(tag);
           tags[target]!.add(tag);
           tags[target] = tags[target]!.toSet().toList();

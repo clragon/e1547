@@ -47,7 +47,7 @@ class SourceDisplay extends StatelessWidget {
                                 MaterialPageRoute(
                                   builder: (context) => TextEditor(
                                     title: '#${post.id} sources',
-                                    content: editingController!.value!.sources!
+                                    content: editingController!.value!.sources
                                         .join('\n'),
                                     dtext: false,
                                     onSubmit: (context, text) {
