@@ -29,13 +29,12 @@ extension Caching on Dio {
       if (host.isEmpty) {
         host = options.baseUrl;
       }
-      primaryKey = Uri(host: host);
-      primaryKey.queryParameters.addAll(
-        keyExtras.map(
+      primaryKey = Uri.parse(host);
+      primaryKey.replace(
+        queryParameters: keyExtras.map(
           (key, value) => MapEntry(key, value.toString()),
         ),
       );
-
       if (forceRefresh ?? false) {
         await cacheManager.delete(primaryKey.toString(),
             requestMethod: requestMethod);
