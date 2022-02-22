@@ -23,25 +23,22 @@ extension Caching on Dio {
     Map<String, dynamic>? keyExtras,
     bool? forceRefresh,
   }) async {
-    String? primaryKey;
+    Uri? primaryKey;
     if (keyExtras != null) {
-      primaryKey = RequestOptions(path: path).uri.host;
-      if (primaryKey.isEmpty) {
-        primaryKey = options.baseUrl;
+      String host = RequestOptions(path: path).uri.host;
+      if (host.isEmpty) {
+        host = options.baseUrl;
       }
-      List<String> extras = [];
-      for (MapEntry<String, dynamic> entry in keyExtras.entries) {
-        if (entry.value != null) {
-          extras.add('${entry.key}=${entry.value}');
-        }
-      }
-      if (extras.isNotEmpty) {
-        primaryKey += '?';
-        primaryKey += extras.join('&');
-      }
+      primaryKey = Uri(host: host);
+      primaryKey.queryParameters.addAll(
+        keyExtras.map(
+          (key, value) => MapEntry(key, value.toString()),
+        ),
+      );
 
       if (forceRefresh ?? false) {
-        await cacheManager.delete(primaryKey, requestMethod: requestMethod);
+        await cacheManager.delete(primaryKey.toString(),
+            requestMethod: requestMethod);
       }
     } else {
       if (forceRefresh ?? false) {
@@ -49,7 +46,7 @@ extension Caching on Dio {
       }
     }
 
-    return primaryKey;
+    return primaryKey?.toString();
   }
 
   Future<void> clearCacheKey(
