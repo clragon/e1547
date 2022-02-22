@@ -84,8 +84,8 @@ class _SearchPageState extends State<SearchPage> with ListenerCallbackMixin {
     setState(() {
       loading = true;
     });
-    String input = Tagset.parse(controller.search.value).toString();
-    RegExpMatch? match = poolRegex().firstMatch(input);
+    Tagset input = Tagset.parse(controller.search.value);
+    RegExpMatch? match = poolRegex().firstMatch(input.toString());
     if (input.length == 1 &&
         match != null &&
         match.namedGroup('id')! != pool?.id.toString()) {
