@@ -63,7 +63,8 @@ abstract class RawDataController<KeyType, ItemType>
     }
   }
 
-  void updateItem(int index, ItemType item) {
+  @mustCallSuper
+  void updateItem(int index, ItemType item, {bool force = false}) {
     assertItemOwnership(item);
     List<ItemType> updated = List.from(itemList!);
     updated[index] = item;
@@ -72,6 +73,10 @@ abstract class RawDataController<KeyType, ItemType>
       itemList: updated,
       error: error,
     );
+    // this renews the cache
+    if (force) {
+      provide(firstPageKey, force);
+    }
   }
 
   @nonVirtual

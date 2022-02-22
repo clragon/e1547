@@ -129,11 +129,10 @@ class PostController extends DataController<Post>
   }
 
   @override
-  void updateItem(int index, Post item) {
+  void updateItem(int index, Post item, {bool force = false}) {
     assertItemOwnership(item);
-    Post original = itemList![index];
-    _posts![_posts!.indexOf(original)] = item;
-    reapplyFilter();
+    _posts![_posts!.indexOf(itemList![index])] = item;
+    super.updateItem(index, item, force: force);
   }
 
   void setAllowedTags(List<String> value) {
@@ -173,7 +172,7 @@ class PostController extends DataController<Post>
       await Future.delayed(cooldown);
       post.isFavorited = true;
       post.favCount += 1;
-      updateItem(itemList!.indexOf(post), post);
+      updateItem(itemList!.indexOf(post), post, force: true);
       if (settings.upvoteFavs.value) {
         Future.delayed(Duration(seconds: 1) - cooldown).then(
           (_) =>
@@ -199,7 +198,7 @@ class PostController extends DataController<Post>
     if (await client.removeFavorite(post.id)) {
       post.isFavorited = false;
       post.favCount -= 1;
-      updateItem(itemList!.indexOf(post), post);
+      updateItem(itemList!.indexOf(post), post, force: true);
       return true;
     } else {
       post.favCount += 1;
@@ -257,7 +256,7 @@ class PostController extends DataController<Post>
           }
         }
       }
-      updateItem(itemList!.indexOf(post), post);
+      updateItem(itemList!.indexOf(post), post, force: true);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         duration: Duration(seconds: 1),
@@ -268,6 +267,6 @@ class PostController extends DataController<Post>
 
   Future<void> resetPost(Post post) async {
     Post reset = await client.post(post.id);
-    updateItem(itemList!.indexOf(post), reset);
+    updateItem(itemList!.indexOf(post), reset, force: true);
   }
 }

@@ -191,6 +191,8 @@ class Client extends ChangeNotifier {
     await initialized;
     String? username;
 
+    print('calling posts with $force');
+
     if (orderFavorites ?? false) {
       username = credentials?.username;
     }
