@@ -431,6 +431,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.1"
+  overflow_view:
+    dependency: "direct main"
+    description:
+      name: overflow_view
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.3.1"
   package_config:
     dependency: transitive
     description:
@@ -886,6 +893,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.0.5"
+  value_layout_builder:
+    dependency: transitive
+    description:
+      name: value_layout_builder
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.3.1"
   vector_math:
     dependency: transitive
     description:

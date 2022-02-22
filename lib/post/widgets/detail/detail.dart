@@ -177,6 +177,7 @@ class _PostDetailState extends State<PostDetail>
           extendBodyBehindAppBar: true,
           appBar: PostDetailAppBar(
             post: widget.post,
+            controller: widget.controller,
             editingController: editingController,
           ),
           floatingActionButton:

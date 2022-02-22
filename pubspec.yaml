@@ -15,6 +15,7 @@ dependencies:
   grouped_list: ^4.1.0
   video_player: ^2.2.10
   sliver_tools: ^0.2.5
+  overflow_view: ^0.3.1
   sliding_sheet: ^0.5.0
   decorated_icon: ^1.2.0
   pull_to_refresh: ^2.0.0

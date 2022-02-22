@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:e1547/dtext/dtext.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
+import 'package:overflow_view/overflow_view.dart';
 
 class TextEditor extends StatefulWidget {
   final String title;
@@ -68,16 +69,11 @@ class _TextEditorState extends State<TextEditor>
         physics: BouncingScrollPhysics(),
         child: Padding(
           padding: EdgeInsets.all(8),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
+          child: Row(
             children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: child,
-                  )
-                ],
-              ),
+              Expanded(
+                child: child,
+              )
             ],
           ),
         ),
@@ -153,15 +149,10 @@ class _TextEditorState extends State<TextEditor>
     Widget loadingBar() {
       return Padding(
         padding: EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SizedCircularProgressIndicator(size: 24),
-              ],
-            ),
+            SizedCircularProgressIndicator(size: 24),
           ],
         ),
       );
@@ -256,6 +247,7 @@ class _DTextEditorBarState extends State<DTextEditorBar> {
 
     Widget blockButtons() {
       return Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
           IconButton(
             icon: Icon(Icons.subject),
@@ -283,6 +275,7 @@ class _DTextEditorBarState extends State<DTextEditorBar> {
 
     Widget textButtons() {
       return Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
           IconButton(
             icon: Icon(Icons.format_bold),
@@ -324,31 +317,27 @@ class _DTextEditorBarState extends State<DTextEditorBar> {
       );
     }
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        int rowSize = (constraints.maxWidth / 40).round();
-        bool showAll = rowSize > 10;
-        return Padding(
-          padding: EdgeInsets.only(left: 10, right: 10, bottom: 10),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Row(
-                children: [
-                  CrossFade(
-                      showChild: showAll || showBlocks, child: blockButtons()),
-                  CrossFade(
-                      showChild: showAll || !showBlocks, child: textButtons()),
-                  CrossFade(
-                    showChild: !showAll,
-                    child: switcher(),
-                  ),
-                ],
-              )
-            ],
+    return Padding(
+      padding: EdgeInsets.only(left: 10, right: 10, bottom: 10),
+      child: OverflowView(
+        children: [
+          CrossFade(
+            showChild: showBlocks,
+            child: blockButtons(),
+            secondChild: textButtons(),
           ),
-        );
-      },
+          CrossFade(
+            showChild: showBlocks,
+            child: textButtons(),
+            secondChild: blockButtons(),
+          ),
+          SizedBox(
+            width: 48,
+          ),
+        ],
+        builder: (context, remaining) =>
+            remaining == 3 ? SizedBox() : switcher(),
+      ),
     );
   }
 }
