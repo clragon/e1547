@@ -14,8 +14,8 @@ class DescriptionDisplay extends StatelessWidget {
     return AnimatedSelector(
       animation: Listenable.merge([editingController]),
       selector: () => [
+        editingController?.canEdit,
         editingController?.value?.description,
-        editingController?.editing,
       ],
       builder: (context, child) {
         bool editing = (editingController?.editing ?? false);
@@ -37,21 +37,24 @@ class DescriptionDisplay extends StatelessWidget {
                     ),
                     IconButton(
                       icon: Icon(Icons.edit),
-                      onPressed: () => Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => TextEditor(
-                            title: '#${post.id} description',
-                            content: editingController!.value!.description,
-                            onSubmit: (context, text) {
-                              editingController!.value =
-                                  editingController!.value!.copyWith(
-                                description: text,
-                              );
-                              return true;
-                            },
-                          ),
-                        ),
-                      ),
+                      onPressed: editingController!.canEdit
+                          ? () => Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => TextEditor(
+                                    title: '#${post.id} description',
+                                    content:
+                                        editingController!.value!.description,
+                                    onSubmit: (context, text) {
+                                      editingController!.value =
+                                          editingController!.value!.copyWith(
+                                        description: text,
+                                      );
+                                      return true;
+                                    },
+                                  ),
+                                ),
+                              )
+                          : null,
                     ),
                   ],
                 ),

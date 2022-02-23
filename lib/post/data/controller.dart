@@ -85,6 +85,7 @@ class PostController extends DataController<Post>
 
   @protected
   void reapplyFilter() {
+    print('reapplying filter!');
     if (_posts != null) {
       _deniedPosts = null;
       value = PagingState(
@@ -281,7 +282,7 @@ class PostController extends DataController<Post>
 
   Future<void> resetPost(Post post) async {
     assertItemOwnership(post);
-    Post reset = await client.post(post.id);
+    Post reset = await client.post(post.id, force: true);
     updateItem(itemList!.indexOf(post), reset, force: true);
   }
 }

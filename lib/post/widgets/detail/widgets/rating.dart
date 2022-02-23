@@ -24,8 +24,10 @@ class RatingDisplay extends StatelessWidget {
   Widget build(BuildContext context) {
     return AnimatedSelector(
       animation: Listenable.merge([editingController]),
-      selector: () =>
-          [editingController?.editing, editingController?.value?.rating],
+      selector: () => [
+        editingController?.canEdit,
+        editingController?.value?.rating,
+      ],
       builder: (context, child) {
         Rating rating = editingController?.value?.rating ?? post.rating;
         bool canEdit =

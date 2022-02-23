@@ -1,10 +1,12 @@
+import 'dart:async';
+
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 
 class TagEditor extends StatefulWidget {
   final String? category;
-  final Future<bool> Function(String text) submit;
+  final FutureOr<bool> Function(String text) submit;
   final ActionController controller;
 
   const TagEditor({

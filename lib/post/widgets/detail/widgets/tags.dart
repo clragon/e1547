@@ -21,8 +21,10 @@ class TagDisplay extends StatelessWidget {
   Widget build(BuildContext context) {
     return AnimatedSelector(
       animation: Listenable.merge([editingController]),
-      selector: () =>
-          [editingController?.editing, editingController?.value?.tags.hashCode],
+      selector: () => [
+        editingController?.canEdit,
+        editingController?.value?.tags.hashCode,
+      ],
       builder: (context, child) {
         bool isEditing =
             (editingController?.editing ?? false) && actionController != null;
@@ -50,17 +52,16 @@ class TagDisplay extends StatelessWidget {
                   tag: tag,
                   category: category,
                   controller: controller,
-                  onRemove: isEditing
+                  editing: isEditing,
+                  onRemove: editingController!.canEdit
                       ? () {
-                          if (editingController!.canEdit) {
-                            Map<String, List<String>> edited =
-                                Map.from(editingController!.value!.tags);
-                            edited[category]!.remove(tag);
-                            editingController!.value =
-                                editingController!.value!.copyWith(
-                              tags: edited,
-                            );
-                          }
+                          Map<String, List<String>> edited =
+                              Map.from(editingController!.value!.tags);
+                          edited[category]!.remove(tag);
+                          editingController!.value =
+                              editingController!.value!.copyWith(
+                            tags: edited,
+                          );
                         }
                       : null,
                 ),
@@ -70,12 +71,14 @@ class TagDisplay extends StatelessWidget {
                   showChild: isEditing,
                   child: TagAddCard(
                     category: category,
-                    submit: (value) => onPostTagsEdit(
-                      context,
-                      editingController!,
-                      value,
-                      category,
-                    ),
+                    submit: editingController!.canEdit
+                        ? (value) => onPostTagsEdit(
+                              context,
+                              editingController!,
+                              value,
+                              category,
+                            )
+                        : null,
                     controller: actionController!,
                   ),
                 ),

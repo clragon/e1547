@@ -100,6 +100,9 @@ class _PostDetailState extends State<PostDetail>
     if (body != null) {
       try {
         await client.updatePost(controller.post.id, body);
+        widget.post.tags = controller.value!.tags;
+        widget.controller!.updateItem(
+            widget.controller!.itemList!.indexOf(widget.post), widget.post);
         await widget.controller!.resetPost(controller.post);
         controller.stopEditing();
       } on DioError {
@@ -122,7 +125,11 @@ class _PostDetailState extends State<PostDetail>
       context,
       ControlledTextField(
         labelText: 'Reason',
-        submit: (value) async => editPost(context, editingController!),
+        submit: (value) async {
+          editingController!.value =
+              editingController!.value!.copyWith(editReason: value);
+          return editPost(context, editingController!);
+        },
         actionController: sheetController,
       ),
     );
@@ -151,23 +158,23 @@ class _PostDetailState extends State<PostDetail>
     );
   }
 
+  Widget fullscreen() {
+    if (widget.controller == null || (editingController?.editing ?? false)) {
+      return PostFullscreenFrame(
+        child: PostFullscreenImageDisplay(post: widget.post),
+        post: widget.post,
+      );
+    } else {
+      return PostFullscreenGallery(
+        controller: widget.controller!,
+        initialPage: widget.controller!.itemList!.indexOf(widget.post),
+        onPageChanged: widget.onPageChanged,
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    Widget fullscreen() {
-      if ((editingController?.editing ?? false) || widget.controller == null) {
-        return PostFullscreenFrame(
-          child: PostFullscreenImageDisplay(post: widget.post),
-          post: widget.post,
-        );
-      } else {
-        return PostFullscreenGallery(
-          controller: widget.controller!,
-          initialPage: widget.controller!.itemList!.indexOf(widget.post),
-          onPageChanged: widget.onPageChanged,
-        );
-      }
-    }
-
     return Scaffold(
       body: PostEditingScope(
         editingController: editingController,

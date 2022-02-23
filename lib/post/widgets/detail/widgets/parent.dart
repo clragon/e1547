@@ -17,7 +17,7 @@ class ParentDisplay extends StatelessWidget {
     return AnimatedSelector(
       animation: Listenable.merge([editingController]),
       selector: () => [
-        editingController?.editing,
+        editingController?.canEdit,
         editingController?.value?.parentId,
       ],
       builder: (context, child) {
@@ -48,15 +48,17 @@ class ParentDisplay extends StatelessWidget {
                         ? Builder(
                             builder: (context) => IconButton(
                               icon: Icon(Icons.edit),
-                              onPressed: () {
-                                actionController!.show(
-                                  context,
-                                  ParentEditor(
-                                    actionController: actionController!,
-                                    editingController: editingController!,
-                                  ),
-                                );
-                              },
+                              onPressed: editingController!.canEdit
+                                  ? () {
+                                      actionController!.show(
+                                        context,
+                                        ParentEditor(
+                                          actionController: actionController!,
+                                          editingController: editingController!,
+                                        ),
+                                      );
+                                    }
+                                  : null,
                             ),
                           )
                         : null,

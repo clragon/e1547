@@ -15,8 +15,10 @@ class SourceDisplay extends StatelessWidget {
   Widget build(BuildContext context) {
     return AnimatedSelector(
       animation: Listenable.merge([editingController]),
-      selector: () =>
-          [editingController?.editing, editingController?.value?.sources],
+      selector: () => [
+        editingController?.canEdit,
+        editingController?.value?.sources,
+      ],
       builder: (context, child) {
         bool isEditing = editingController?.editing ?? false;
         List<String> sources =

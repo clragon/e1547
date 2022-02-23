@@ -8,6 +8,7 @@ class TagCard extends StatelessWidget {
   final String? category;
   final Color? stripeColor;
   final VoidCallback? onRemove;
+  final bool editing;
   final PostController? controller;
   final bool wiki;
   final List<Widget>? extra;
@@ -18,6 +19,7 @@ class TagCard extends StatelessWidget {
     this.category,
     this.stripeColor,
     this.onRemove,
+    this.editing = false,
     this.wiki = false,
     this.extra,
   });
@@ -33,7 +35,10 @@ class TagCard extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            if (stripeColor != null || category != null || onRemove != null)
+            if (stripeColor != null ||
+                category != null ||
+                editing ||
+                onRemove != null)
               Container(
                 height: 26,
                 decoration: BoxDecoration(
@@ -45,13 +50,12 @@ class TagCard extends StatelessWidget {
                   ),
                 ),
                 child: CrossFade(
-                  showChild: onRemove != null,
-                  child: InkWell(
-                    child: Padding(
-                      padding: EdgeInsets.all(4),
-                      child: Icon(Icons.clear, size: 16),
-                    ),
-                    onTap: onRemove,
+                  showChild: editing,
+                  child: IconButton(
+                    constraints: BoxConstraints(),
+                    padding: EdgeInsets.zero,
+                    icon: Icon(Icons.clear, size: 16),
+                    onPressed: onRemove,
                   ),
                   secondChild: Container(width: 5),
                 ),
