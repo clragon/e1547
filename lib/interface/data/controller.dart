@@ -4,11 +4,12 @@ import 'dart:math';
 import 'package:e1547/client/client.dart';
 import 'package:flutter/foundation.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
+import 'package:mutex/mutex.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 abstract class RawDataController<KeyType, ItemType>
     extends PagingController<KeyType, ItemType> {
-  Completer _requestCompleter = Completer()..complete();
+  Mutex _requestLock = Mutex();
   bool _isRefreshing = false;
   bool _isForceRefreshing = false;
 
@@ -79,13 +80,14 @@ abstract class RawDataController<KeyType, ItemType>
   @nonVirtual
   @protected
   Future<bool> canRefresh() async {
-    if (!_requestCompleter.isCompleted) {
+    if (_requestLock.isLocked) {
       if (_isRefreshing) {
         return false;
       }
       _isRefreshing = true;
       // waits for the current request to be done
-      await _requestCompleter.future;
+      await _requestLock.acquire();
+      _requestLock.release();
       _isRefreshing = false;
       return true;
     } else {
@@ -110,10 +112,7 @@ abstract class RawDataController<KeyType, ItemType>
 
   @protected
   Future<void> loadPage(Future<void> Function() provider) async {
-    if (!_requestCompleter.isCompleted) {
-      await _requestCompleter.future;
-    }
-    _requestCompleter = Completer();
+    await _requestLock.acquire();
     try {
       await provider();
       success();
@@ -121,7 +120,7 @@ abstract class RawDataController<KeyType, ItemType>
       failure(error);
     } finally {
       _isForceRefreshing = false;
-      _requestCompleter.complete();
+      _requestLock.release();
     }
   }
 

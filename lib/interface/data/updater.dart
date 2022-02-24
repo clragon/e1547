@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:collection/collection.dart';
 import 'package:e1547/client/client.dart';
 import 'package:flutter/material.dart';
+import 'package:mutex/mutex.dart';
 
 abstract class DataUpdater<T> extends ChangeNotifier {
   int progress = 0;
@@ -11,10 +12,10 @@ abstract class DataUpdater<T> extends ChangeNotifier {
   Duration? get stale => null;
 
   Future get finish => _updateCompleter.future;
-  Completer _restartCompleter = Completer()..complete();
   Completer _updateCompleter = Completer()..complete();
+  final Mutex _updateLock = Mutex();
 
-  bool get updating => !_restartCompleter.isCompleted;
+  bool get updating => !_updateCompleter.isCompleted;
   bool error = false;
   bool restarting = false;
   bool canceling = false;
@@ -51,9 +52,6 @@ abstract class DataUpdater<T> extends ChangeNotifier {
   @mustCallSuper
   @protected
   void uncomplete() {
-    if (_restartCompleter.isCompleted) {
-      _restartCompleter = Completer();
-    }
     if (_updateCompleter.isCompleted) {
       _updateCompleter = Completer();
     }
@@ -62,7 +60,7 @@ abstract class DataUpdater<T> extends ChangeNotifier {
   @mustCallSuper
   @protected
   void complete() {
-    _restartCompleter.complete();
+    _updateLock.release();
     _updateCompleter.complete();
     notifyListeners();
   }
@@ -100,10 +98,11 @@ abstract class DataUpdater<T> extends ChangeNotifier {
   }
 
   Future<void> _wrapper({bool force = false}) async {
+    await _updateLock.acquire();
     T data = await read();
     T? result = await run(data, force);
     if (restarting) {
-      _restartCompleter.complete();
+      _updateLock.release();
       return;
     }
     await write(result);
@@ -124,11 +123,12 @@ abstract class DataUpdater<T> extends ChangeNotifier {
   Future<void> refresh({bool force = false}) async {
     if (!_updateCompleter.isCompleted) {
       restarting = true;
-      await _restartCompleter.future;
+      await _updateLock.acquire();
+      _updateLock.release();
     }
     reset();
     _wrapper(force: force);
-    return _updateCompleter.future;
+    return finish;
   }
 }
 
