@@ -95,7 +95,9 @@ class _PostFullscreenGalleryState extends State<PostFullscreenGallery>
           itemCount: widget.controller.itemList?.length,
           controller: pageController,
           itemBuilder: (context, index) => PostFullscreenImageDisplay(
-              post: widget.controller.itemList![index]),
+            post: widget.controller.itemList![index],
+            controller: widget.controller,
+          ),
           onPageChanged: (index) {
             current.value = index;
             widget.onPageChanged?.call(index);

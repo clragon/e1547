@@ -297,6 +297,7 @@ class PostDetailImageDisplay extends StatelessWidget {
         controller: controller,
         child: ImageOverlay(
           post: post,
+          controller: controller,
           builder: (context) => Center(
             child: Hero(
               tag: post.hero,

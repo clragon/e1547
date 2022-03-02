@@ -11,12 +11,14 @@ import 'package:flutter/services.dart';
 
 class PostReportImage extends StatelessWidget {
   final Post post;
+  final PostController? controller;
   final bool isLoading;
   final double height;
 
   const PostReportImage({
     required this.post,
     required this.height,
+    this.controller,
     this.isLoading = false,
   });
 
@@ -36,6 +38,7 @@ class PostReportImage extends StatelessWidget {
               isLoading: isLoading,
               child: ImageOverlay(
                 post: post,
+                controller: controller,
                 builder: (context) => Hero(
                   tag: post.hero,
                   child: PostImageWidget(

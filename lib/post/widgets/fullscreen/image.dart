@@ -27,13 +27,15 @@ class PostFullscreenImage extends StatelessWidget {
 
 class PostFullscreenImageDisplay extends StatelessWidget {
   final Post post;
+  final PostController? controller;
 
-  const PostFullscreenImageDisplay({required this.post});
+  const PostFullscreenImageDisplay({required this.post, this.controller});
 
   @override
   Widget build(BuildContext context) {
     return ImageOverlay(
       post: post,
+      controller: controller,
       builder: (context) {
         switch (post.type) {
           case PostType.image:
