@@ -70,11 +70,10 @@ class _LoginPageState extends State<LoginPage> {
             border: OutlineInputBorder(),
           ),
           maxLines: 1,
+          inputFormatters: [FilteringTextInputFormatter.deny(' ')],
           autofillHints: [AutofillHints.username],
           textInputAction: TextInputAction.next,
-          onChanged: (value) {
-            authFailed = false;
-          },
+          onChanged: (value) => authFailed = false,
           validator: (value) {
             if (authFailed) {
               return 'Failed to login. Please check username.';
@@ -147,14 +146,10 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
             maxLines: 1,
-            inputFormatters: [
-              FilteringTextInputFormatter.deny(' '),
-            ],
+            inputFormatters: [FilteringTextInputFormatter.deny(' ')],
             autofillHints: [AutofillHints.password],
             textInputAction: TextInputAction.done,
-            onChanged: (value) {
-              authFailed = false;
-            },
+            onChanged: (value) => authFailed = false,
             validator: (value) {
               if (authFailed) {
                 return 'Failed to login. Please check API key.\n'
@@ -288,9 +283,12 @@ class _LoginLoadingDialogState extends State<LoginLoadingDialog> {
   }
 
   Future<void> login() async {
-    Credentials credentials =
-        Credentials(username: widget.username, password: widget.password);
-    bool valid = await client.login(credentials);
+    bool valid = await client.login(
+      Credentials(
+        username: widget.username,
+        password: widget.password,
+      ),
+    );
     await Navigator.of(context).maybePop();
     if (valid) {
       widget.onDone?.call();
