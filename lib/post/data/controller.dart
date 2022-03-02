@@ -23,7 +23,7 @@ class PostController extends DataController<Post>
   Map<String, List<Post>>? get deniedPosts =>
       _deniedPosts != null ? Map.unmodifiable(_deniedPosts!) : null;
 
-  late final bool _denying;
+  late bool _denying;
   bool get denying => _denying;
 
   late final DenyListMode denyMode;
@@ -85,7 +85,6 @@ class PostController extends DataController<Post>
 
   @protected
   void reapplyFilter() {
-    print('reapplying filter!');
     if (_posts != null) {
       _deniedPosts = null;
       value = PagingState(
