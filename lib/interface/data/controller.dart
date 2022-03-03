@@ -254,3 +254,38 @@ mixin RefreshableController<PageKeyType, ItemType>
     refreshController.refreshCompleted();
   }
 }
+
+extension Loading on RawDataController {
+  Future<void> loadFirstPage() async {
+    Future<void> loaded = waitForFirstPage();
+    notifyPageRequestListeners(nextPageKey!);
+    return loaded;
+  }
+
+  Future<void> waitForFirstPage() {
+    Completer completer = Completer();
+
+    void onUpdate() {
+      switch (value.status) {
+        case PagingStatus.loadingFirstPage:
+          // ignored
+          break;
+        case PagingStatus.ongoing:
+        case PagingStatus.noItemsFound:
+        case PagingStatus.completed:
+          removeListener(onUpdate);
+          completer.complete();
+          break;
+        case PagingStatus.firstPageError:
+        case PagingStatus.subsequentPageError:
+          removeListener(onUpdate);
+          completer.completeError(error);
+          break;
+      }
+    }
+
+    addListener(onUpdate);
+    onUpdate();
+    return completer.future;
+  }
+}

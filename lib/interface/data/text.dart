@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
-Color dimTextColor(BuildContext context) =>
-    Theme.of(context).textTheme.bodyText2!.color!.withOpacity(0.35);
+Color dimTextColor(BuildContext context, [double opacity = 0.35]) =>
+    Theme.of(context).textTheme.bodyText2!.color!.withOpacity(opacity);
 
 int notZero(double value) => value < 1 ? 1 : value.round();
 
@@ -32,6 +32,18 @@ DateFormat getCurrentDateTimeFormat() =>
 DateFormat getCurrentDateFormat() => DateFormat.yMd(Platform.localeName);
 
 DateFormat getCurrentTimeFormat() => DateFormat.jm(Platform.localeName);
+
+String dateOrName(DateTime date) {
+  String title = getCurrentDateFormat().format(date);
+  DateTime today = DateTime.now().stripTime();
+  if (today.isAtSameMomentAs(date.stripTime())) {
+    title = 'Today';
+  }
+  if (today.subtract(Duration(days: 1)).isAtSameMomentAs(date.stripTime())) {
+    title = 'Yesterday';
+  }
+  return title;
+}
 
 extension days on DateTime {
   DateTime stripTime() {

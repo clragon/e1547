@@ -119,11 +119,7 @@ class _WikiTagDisplayState extends State<WikiTagDisplay> {
               child: Text(
                 'no wiki entry',
                 style: TextStyle(
-                  color: Theme.of(context)
-                      .textTheme
-                      .bodyText2!
-                      .color!
-                      .withOpacity(0.5),
+                  color: dimTextColor(context, 0.5),
                   fontStyle: FontStyle.italic,
                 ),
               ),

@@ -14,9 +14,7 @@ class PostDetail extends StatefulWidget {
   const PostDetail({required this.post, this.controller, this.onPageChanged});
 
   @override
-  State<StatefulWidget> createState() {
-    return _PostDetailState();
-  }
+  State<StatefulWidget> createState() => _PostDetailState();
 }
 
 class _PostDetailState extends State<PostDetail>

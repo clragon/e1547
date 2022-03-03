@@ -4,7 +4,6 @@ import 'package:e1547/client/client.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
-import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
 class PostLoadingPage extends StatefulWidget {
   final int id;
@@ -16,8 +15,11 @@ class PostLoadingPage extends StatefulWidget {
 }
 
 class _PostLoadingPageState extends State<PostLoadingPage> {
-  late Future<PostController> controller =
-      waitForFirstPage(singlePostController(widget.id));
+  late Future<PostController> controller = Future(() async {
+    PostController controller = singlePostController(widget.id);
+    await controller.loadFirstPage();
+    return controller;
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -44,31 +46,4 @@ PostController singlePostController(int id) {
     denyMode: DenyListMode.plain,
   );
   return controller;
-}
-
-Future<T> waitForFirstPage<T extends DataController>(T controller) {
-  Completer<T> completer = Completer<T>();
-
-  void onUpdate() {
-    switch (controller.value.status) {
-      case PagingStatus.loadingFirstPage:
-        // ignored
-        break;
-      case PagingStatus.ongoing:
-      case PagingStatus.noItemsFound:
-      case PagingStatus.completed:
-        controller.removeListener(onUpdate);
-        completer.complete(controller);
-        break;
-      case PagingStatus.firstPageError:
-      case PagingStatus.subsequentPageError:
-        controller.removeListener(onUpdate);
-        completer.completeError(controller.error);
-        break;
-    }
-  }
-
-  controller.addListener(onUpdate);
-  controller.notifyPageRequestListeners(controller.nextPageKey!);
-  return completer.future;
 }
