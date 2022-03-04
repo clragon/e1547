@@ -258,7 +258,7 @@ class SelectionScope<T> extends StatefulWidget {
   final Widget Function(
     BuildContext context,
     Set<T> selections,
-    void Function(Set<T> selections) onChanged,
+    void Function(Set<T> selections) onSelectionChanged,
   ) builder;
   final Set<T>? selections;
 
@@ -275,11 +275,11 @@ class _SelectionScopeState<T> extends State<SelectionScope<T>> {
   void didUpdateWidget(covariant SelectionScope<T> oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.selections != widget.selections) {
-      onChanged(widget.selections ?? {});
+      onSelectionChanged(widget.selections ?? {});
     }
   }
 
-  void onChanged(Set<T> selections) => setState(() {
+  void onSelectionChanged(Set<T> selections) => setState(() {
         this.selections = Set.from(selections);
       });
 
@@ -289,11 +289,11 @@ class _SelectionScopeState<T> extends State<SelectionScope<T>> {
       child: widget.builder(
         context,
         selections,
-        onChanged,
+        onSelectionChanged,
       ),
       onWillPop: () async {
         if (selections.isNotEmpty) {
-          onChanged({});
+          onSelectionChanged({});
           return false;
         } else {
           return true;
@@ -303,9 +303,11 @@ class _SelectionScopeState<T> extends State<SelectionScope<T>> {
   }
 }
 
+typedef SelectionChanged<T> = void Function(Set<T> selections);
+
 class SelectionAppBar<T> extends StatelessWidget {
   final Set<T> Function()? onSelectAll;
-  final void Function(Set<T> selections) onChanged;
+  final SelectionChanged<T> onChanged;
   final Set<T> selections;
   final List<Widget> actions;
 
@@ -345,7 +347,7 @@ class SelectionItemOverlay<T> extends StatelessWidget {
   final Widget child;
   final T item;
   final Set<T> selections;
-  final void Function(Set<T> selections) onChanged;
+  final SelectionChanged<T> onChanged;
   final bool enabled;
   final EdgeInsets? padding;
 

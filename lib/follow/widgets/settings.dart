@@ -73,7 +73,7 @@ class _FollowingPageState extends State<FollowingPage> {
             ControlledTextField(
               labelText: 'Follow alias',
               actionController: sheetController,
-              textController: TextEditingController(text: follows[edit].title),
+              textController: TextEditingController(text: follows[edit].name),
               submit: (value) async => submit(value, edit),
             ),
           );

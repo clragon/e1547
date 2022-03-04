@@ -52,7 +52,7 @@ class _PostDetailState extends State<PostDetail>
   @override
   void initState() {
     super.initState();
-    addPostToHistory(widget.post);
+    historyController.addPost(widget.post);
   }
 
   @override

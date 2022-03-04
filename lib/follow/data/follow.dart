@@ -28,7 +28,7 @@ class Follow {
     this.type = type ?? FollowType.update;
   }
 
-  String get title => alias ?? tagToTitle(tags);
+  String get name => alias ?? tagToTitle(tags);
 
   bool updateAlias(String alias) {
     if (this.alias != alias) {

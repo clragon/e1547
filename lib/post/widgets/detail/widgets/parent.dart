@@ -9,8 +9,11 @@ class ParentDisplay extends StatelessWidget {
   final SheetActionController? actionController;
   final PostEditingController? editingController;
 
-  const ParentDisplay(
-      {required this.post, this.actionController, this.editingController});
+  const ParentDisplay({
+    required this.post,
+    this.actionController,
+    this.editingController,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -65,8 +68,9 @@ class ParentDisplay extends StatelessWidget {
                     onTap: () async {
                       if (parentId != null) {
                         try {
-                          PostController controller = await waitForFirstPage(
-                              singlePostController(parentId));
+                          PostController controller =
+                              singlePostController(parentId);
+                          await controller.loadFirstPage();
                           Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (context) => PostDetail(
@@ -114,8 +118,9 @@ class ParentDisplay extends StatelessWidget {
                       title: Text(child.toString()),
                       onTap: () async {
                         try {
-                          PostController controller = await waitForFirstPage(
-                              singlePostController(child));
+                          PostController controller =
+                              singlePostController(child);
+                          await controller.loadFirstPage();
                           Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (context) => PostDetail(

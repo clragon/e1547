@@ -81,7 +81,7 @@ class FollowTile extends StatelessWidget {
             ],
           ),
           Text(
-            follow.title,
+            follow.name,
             style: Theme.of(context).textTheme.headline6!.copyWith(
                   shadows: getTextShadows(),
                   color: Colors.white,
@@ -127,7 +127,7 @@ class FollowTile extends StatelessWidget {
                 showChild: active,
                 builder: (context) => info(status!),
                 secondChild: Text(
-                  follow.title,
+                  follow.name,
                   style: Theme.of(context).textTheme.headline6,
                   overflow: TextOverflow.ellipsis,
                   softWrap: true,
@@ -257,7 +257,7 @@ class FollowListTile extends StatelessWidget {
         title: Padding(
           padding: EdgeInsets.all(8),
           child: Text(
-            follow.title,
+            follow.name,
             style: Theme.of(context).textTheme.headline6?.copyWith(
                   shadows: getTextShadows(),
                   color: Colors.white,

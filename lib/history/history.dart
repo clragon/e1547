@@ -1,6 +1,10 @@
 // data
-export 'data/actions.dart';
+export 'data/collection.dart';
+export 'data/controller.dart';
 export 'data/entry.dart';
+export 'data/post.dart';
+export 'data/tag.dart';
 
 // widgets
-export 'widgets/history_list.dart';
+export 'widgets/history.dart';
+export 'widgets/tile.dart';

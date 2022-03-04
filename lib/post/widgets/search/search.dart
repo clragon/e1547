@@ -1,6 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/follow/follow.dart';
+import 'package:e1547/history/data/controller.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
@@ -21,7 +22,7 @@ class SearchPage extends StatefulWidget {
 
 class _SearchPageState extends State<SearchPage> with ListenerCallbackMixin {
   late bool reversePools = widget.reversePools;
-  bool loading = true;
+  bool loadingInfo = true;
   Pool? pool;
 
   late PostController controller = PostController(
@@ -36,24 +37,26 @@ class _SearchPageState extends State<SearchPage> with ListenerCallbackMixin {
 
   @override
   Map<ChangeNotifier, VoidCallback> get initListeners => {
-        controller.search: updatePool,
+        controller.search: updateSearch,
         settings.follows: updateFollow,
-        controller: updateFollow,
       };
 
-  String getTitle() {
-    Follow? follow = settings.follows.value
-        .singleWhereOrNull((follow) => follow.tags == controller.search.value);
-    if (follow != null) {
-      return follow.title;
-    }
+  Future<void> updateSearch() async {
+    await Future.delayed(Duration.zero);
+    await Future.wait([controller.waitForFirstPage(), updatePool()]);
     if (pool != null) {
-      return tagToTitle(pool!.name);
+      historyController.addTag(
+        pool!.search,
+        alias: pool!.name,
+        posts: controller.itemList,
+      );
+    } else {
+      historyController.addTag(
+        controller.search.value,
+        posts: controller.itemList,
+      );
     }
-    if (Tagset.parse(controller.search.value).length == 1) {
-      return tagToTitle(controller.search.value);
-    }
-    return 'Search';
+    updateFollow();
   }
 
   Future<void> updateFollow() async {
@@ -82,7 +85,7 @@ class _SearchPageState extends State<SearchPage> with ListenerCallbackMixin {
 
   Future<void> updatePool() async {
     setState(() {
-      loading = true;
+      loadingInfo = true;
     });
     Tagset input = Tagset.parse(controller.search.value);
     RegExpMatch? match = poolRegex().firstMatch(input.toString());
@@ -94,8 +97,23 @@ class _SearchPageState extends State<SearchPage> with ListenerCallbackMixin {
       pool = null;
     }
     setState(() {
-      loading = false;
+      loadingInfo = false;
     });
+  }
+
+  String getTitle() {
+    Follow? follow = settings.follows.value
+        .singleWhereOrNull((follow) => follow.tags == controller.search.value);
+    if (follow != null) {
+      return follow.name;
+    }
+    if (pool != null) {
+      return tagToTitle(pool!.name);
+    }
+    if (Tagset.parse(controller.search.value).length == 1) {
+      return tagToTitle(controller.search.value);
+    }
+    return 'Search';
   }
 
   @override
@@ -112,7 +130,7 @@ class _SearchPageState extends State<SearchPage> with ListenerCallbackMixin {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 CrossFade(
-                  showChild: !loading &&
+                  showChild: !loadingInfo &&
                       Tagset.parse(controller.search.value).isNotEmpty,
                   child: IconButton(
                     icon: Icon(Icons.info_outline),

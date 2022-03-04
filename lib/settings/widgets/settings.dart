@@ -198,14 +198,9 @@ class _SettingsPageState extends State<SettingsPage> {
           Divider(),
           SettingsHeader(title: 'Listing'),
           AnimatedBuilder(
-            animation: Listenable.merge([
-              client,
-              settings.history,
-              settings.writeHistory,
-            ]),
+            animation: historyController,
             builder: (context, child) {
-              List<HistoryEntry> history =
-                  settings.history.value[client.host] ?? [];
+              List<HistoryEntry> history = historyController.collection.entries;
               return DividerListTile(
                 title: Text('History'),
                 subtitle: settings.writeHistory.value && history.isNotEmpty

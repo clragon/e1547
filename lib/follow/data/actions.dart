@@ -28,7 +28,7 @@ extension Utility on List<Follow> {
         }
 
         if (result == 0) {
-          result = a.title.toLowerCase().compareTo(b.title.toLowerCase());
+          result = a.name.toLowerCase().compareTo(b.name.toLowerCase());
         }
         return result;
       },

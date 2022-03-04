@@ -16,18 +16,8 @@ class PoolDisplay extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: EdgeInsets.only(
-              right: 4,
-              left: 4,
-              top: 2,
-              bottom: 2,
-            ),
-            child: Text(
-              'Pools',
-              style: TextStyle(
-                fontSize: 16,
-              ),
-            ),
+            padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+            child: Text('Pools', style: TextStyle(fontSize: 16)),
           ),
           ...post.pools.map(
             (id) => LoadingTile(
@@ -37,7 +27,8 @@ class PoolDisplay extends StatelessWidget {
                 Pool pool = await client.pool(id);
                 try {
                   Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => PoolPage(pool: pool)));
+                    builder: (context) => PoolPage(pool: pool),
+                  ));
                 } on DioError {
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     duration: Duration(seconds: 1),

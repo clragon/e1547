@@ -24,22 +24,21 @@ class _TagAddCardState extends State<TagAddCard> {
   Widget build(BuildContext context) {
     return Card(
       child: Builder(
-        builder: (context) => IconButton(
-          constraints: BoxConstraints(),
-          padding: EdgeInsets.all(2),
-          icon: Icon(Icons.add, size: 16),
-          onPressed:  widget.submit != null
-              ? () => widget.controller.show(
-            context,
-            TagEditor(
-              category: widget.category,
-              submit: widget.submit!,
-              controller: widget.controller,
-            ),
-          )
-              : null,
-        )
-      ),
+          builder: (context) => IconButton(
+                constraints: BoxConstraints(),
+                padding: EdgeInsets.all(2),
+                icon: Icon(Icons.add, size: 16),
+                onPressed: widget.submit != null
+                    ? () => widget.controller.show(
+                          context,
+                          TagEditor(
+                            category: widget.category,
+                            submit: widget.submit!,
+                            controller: widget.controller,
+                          ),
+                        )
+                    : null,
+              ),),
     );
   }
 }
