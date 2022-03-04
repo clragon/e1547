@@ -1,4 +1,3 @@
-import 'package:e1547/history/history.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
@@ -20,18 +19,7 @@ class _HomePageState extends State<HomePage> with ListenerCallbackMixin {
       };
 
   void update() {
-    if (settings.homeTags.value != controller.search.value) {
-      addToHistory();
-    }
     settings.homeTags.value = controller.search.value;
-  }
-
-  Future<void> addToHistory() async {
-    await controller.waitForFirstPage();
-    historyController.addTag(
-      controller.search.value,
-      posts: controller.itemList,
-    );
   }
 
   @override

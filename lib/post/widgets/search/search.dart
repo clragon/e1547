@@ -1,7 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/follow/follow.dart';
-import 'package:e1547/history/data/controller.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
@@ -42,20 +41,7 @@ class _SearchPageState extends State<SearchPage> with ListenerCallbackMixin {
       };
 
   Future<void> updateSearch() async {
-    await Future.delayed(Duration.zero);
-    await Future.wait([controller.waitForFirstPage(), updatePool()]);
-    if (pool != null) {
-      historyController.addTag(
-        pool!.search,
-        alias: pool!.name,
-        posts: controller.itemList,
-      );
-    } else {
-      historyController.addTag(
-        controller.search.value,
-        posts: controller.itemList,
-      );
-    }
+    await updatePool();
     updateFollow();
   }
 

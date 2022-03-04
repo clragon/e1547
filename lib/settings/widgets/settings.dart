@@ -1,6 +1,5 @@
 import 'package:e1547/client/client.dart';
 import 'package:e1547/follow/follow.dart';
-import 'package:e1547/history/history.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:e1547/user/user.dart';
@@ -197,25 +196,6 @@ class _SettingsPageState extends State<SettingsPage> {
           ),
           Divider(),
           SettingsHeader(title: 'Listing'),
-          AnimatedBuilder(
-            animation: historyController,
-            builder: (context, child) {
-              List<HistoryEntry> history = historyController.collection.entries;
-              return DividerListTile(
-                title: Text('History'),
-                subtitle: settings.writeHistory.value && history.isNotEmpty
-                    ? Text('${history.length} posts seen')
-                    : null,
-                leading: Icon(Icons.history),
-                onTap: () => Navigator.pushNamed(context, '/history'),
-                onTapSeparated: () {},
-                separated: Switch(
-                  value: settings.writeHistory.value,
-                  onChanged: (value) => settings.writeHistory.value = value,
-                ),
-              );
-            },
-          ),
           ValueListenableBuilder<List<String>>(
             valueListenable: settings.denylist,
             builder: (context, value, child) => ListTile(
