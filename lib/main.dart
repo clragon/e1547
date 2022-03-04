@@ -6,7 +6,7 @@ import 'package:flutter/services.dart';
 
 Future<void> main() async {
   await initialize();
-  runApp(Main());
+  runApp(App());
 }
 
 Future<void> initialize() async {
@@ -17,7 +17,7 @@ Future<void> initialize() async {
   initializeHttpCache();
 }
 
-class Main extends StatelessWidget {
+class App extends StatelessWidget {
   @override
   Widget build(context) => StartupActions(
         child: ValueListenableBuilder<AppTheme>(
