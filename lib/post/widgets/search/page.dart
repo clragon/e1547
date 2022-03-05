@@ -70,10 +70,10 @@ class _PostsPageState extends State<PostsPage> {
             ListTile(
               leading: Icon(Icons.format_list_numbered),
               title: Text('Post IDs'),
-              subtitle: Text('${widget.controller.itemList?.length ?? 0}'),
               onTap: () => showDialog(
                 context: context,
                 builder: (context) => AlertDialog(
+                  title: Text('${widget.controller.itemList?.length ?? 0}'),
                   actions: [
                     TextButton(
                       onPressed: Navigator.of(context).maybePop,
