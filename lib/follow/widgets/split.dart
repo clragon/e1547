@@ -57,10 +57,8 @@ class _FollowsSplitPageState extends State<FollowsSplitPage>
 
   @override
   Widget build(BuildContext context) {
-    return TileLayoutScope(
-      tileBuilder: (tileHeightFactor, crossAxisCount, stagger) =>
-          (index) => StaggeredTile.count(1, 1 * tileHeightFactor),
-      builder: (context, crossAxisCount, tileBuilder) => AnimatedBuilder(
+    return TileLayout(
+      child: AnimatedBuilder(
         animation: controller,
         builder: (context, child) => RefreshablePageLoader(
           onEmpty: Text('No follows'),
@@ -75,15 +73,16 @@ class _FollowsSplitPageState extends State<FollowsSplitPage>
                 'Refreshing ${controller.progress} / ${controller.items.length}...',
           ),
           builder: (context) => StaggeredGridView.countBuilder(
-            key: joinKeys(['follows', tileBuilder, crossAxisCount]),
+            key: joinKeys(['follows', TileLayout.of(context).crossAxisCount]),
             padding: defaultListPadding,
             physics: BouncingScrollPhysics(),
             addAutomaticKeepAlives: false,
-            crossAxisCount: crossAxisCount,
+            crossAxisCount: TileLayout.of(context).crossAxisCount,
             itemCount: controller.items.length,
             itemBuilder: (context, index) =>
                 FollowTile(follow: controller.items[index]),
-            staggeredTileBuilder: tileBuilder,
+            staggeredTileBuilder: (index) => StaggeredTile.count(
+                1, 1 * TileLayout.of(context).tileHeightFactor),
           ),
           appBar: DefaultAppBar(
             title: Text('Following'),

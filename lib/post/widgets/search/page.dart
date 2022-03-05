@@ -131,16 +131,8 @@ class _PostsPageState extends State<PostsPage> with ListenerCallbackMixin {
       );
     }
 
-    TileLayoutTileBuilder tileBuilder = defaultStaggerTileBuilder(
-      (index) {
-        PostFile image = widget.controller.itemList![index].sample;
-        return Size(image.width.toDouble(), image.height.toDouble());
-      },
-    );
-
-    return TileLayoutScope(
-      tileBuilder: tileBuilder,
-      builder: (context, crossAxisCount, tileBuilder) => SelectionScope<Post>(
+    return TileLayout(
+      child: SelectionScope<Post>(
         selections: selections,
         builder: (context, selections, onChanged) => RefreshablePage(
           refreshController: widget.controller.refreshController,
@@ -157,7 +149,7 @@ class _PostsPageState extends State<PostsPage> with ListenerCallbackMixin {
           floatingActionButton: floatingActionButton(),
           refresh: () => widget.controller.backgroundRefresh(force: true),
           builder: (context) => PagedStaggeredGridView(
-            key: joinKeys(['posts', crossAxisCount]),
+            key: joinKeys(['posts', TileLayout.of(context).crossAxisCount]),
             physics: BouncingScrollPhysics(),
             showNewPageErrorIndicatorAsGridChild: false,
             showNewPageProgressIndicatorAsGridChild: false,
@@ -180,8 +172,9 @@ class _PostsPageState extends State<PostsPage> with ListenerCallbackMixin {
             ),
             gridDelegateBuilder: (childCount) =>
                 SliverStaggeredGridDelegateWithFixedCrossAxisCount(
-              staggeredTileBuilder: tileBuilder,
-              crossAxisCount: crossAxisCount,
+              staggeredTileBuilder: postStaggeredTileBuilder(
+                  context, (index) => widget.controller.itemList![index]),
+              crossAxisCount: TileLayout.of(context).crossAxisCount,
               staggeredTileCount: widget.controller.itemList?.length,
             ),
           ),

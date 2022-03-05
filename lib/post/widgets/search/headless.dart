@@ -15,36 +15,33 @@ class PostsPageHeadless extends StatefulWidget {
 class _PostsPageHeadlessState extends State<PostsPageHeadless> {
   @override
   Widget build(BuildContext context) {
-    return TileLayoutScope(
-      tileBuilder: defaultStaggerTileBuilder(
-        (index) {
-          PostFile image = widget.controller.itemList![index].sample;
-          return Size(image.width.toDouble(), image.height.toDouble());
-        },
-      ),
-      builder: (context, crossAxisCount, tileBuilder) => PagedStaggeredGridView(
-        key: joinKeys(['posts', crossAxisCount]),
-        physics: BouncingScrollPhysics(),
-        showNewPageErrorIndicatorAsGridChild: false,
-        showNewPageProgressIndicatorAsGridChild: false,
-        showNoMoreItemsIndicatorAsGridChild: false,
-        padding: defaultListPadding,
-        addAutomaticKeepAlives: false,
-        pagingController: widget.controller,
-        builderDelegate: defaultPagedChildBuilderDelegate<Post>(
+    return TileLayout(
+      child: Builder(
+        builder: (context) => PagedStaggeredGridView(
+          key: joinKeys(['posts', TileLayout.of(context).crossAxisCount]),
+          physics: BouncingScrollPhysics(),
+          showNewPageErrorIndicatorAsGridChild: false,
+          showNewPageProgressIndicatorAsGridChild: false,
+          showNoMoreItemsIndicatorAsGridChild: false,
+          padding: defaultListPadding,
+          addAutomaticKeepAlives: false,
           pagingController: widget.controller,
-          onEmpty: Text('No posts'),
-          onError: Text('Failed to load posts'),
-          itemBuilder: (context, item, index) => PostTile(
-            post: item,
-            controller: widget.controller,
+          builderDelegate: defaultPagedChildBuilderDelegate<Post>(
+            pagingController: widget.controller,
+            onEmpty: Text('No posts'),
+            onError: Text('Failed to load posts'),
+            itemBuilder: (context, item, index) => PostTile(
+              post: item,
+              controller: widget.controller,
+            ),
           ),
-        ),
-        gridDelegateBuilder: (childCount) =>
-            SliverStaggeredGridDelegateWithFixedCrossAxisCount(
-          staggeredTileBuilder: tileBuilder,
-          crossAxisCount: crossAxisCount,
-          staggeredTileCount: widget.controller.itemList?.length,
+          gridDelegateBuilder: (childCount) =>
+              SliverStaggeredGridDelegateWithFixedCrossAxisCount(
+            staggeredTileBuilder: postStaggeredTileBuilder(
+                context, (index) => widget.controller.itemList![index]),
+            crossAxisCount: TileLayout.of(context).crossAxisCount,
+            staggeredTileCount: widget.controller.itemList?.length,
+          ),
         ),
       ),
     );
