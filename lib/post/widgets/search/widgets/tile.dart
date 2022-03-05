@@ -69,7 +69,6 @@ class PostTile extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       child: SelectionItemOverlay(
         item: post,
-        padding: EdgeInsets.all(4),
         child: Stack(
           clipBehavior: Clip.none,
           children: [
