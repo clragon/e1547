@@ -1,7 +1,7 @@
 // data
 export 'data/actions.dart';
 export 'data/follow.dart';
-export 'data/updater.dart';
+export 'data/controller.dart';
 // widgets
 export 'widgets/combined.dart';
 export 'widgets/drawer.dart';

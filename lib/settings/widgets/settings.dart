@@ -209,12 +209,12 @@ class _SettingsPageState extends State<SettingsPage> {
               onTap: () => Navigator.pushNamed(context, '/blacklist'),
             ),
           ),
-          ValueListenableBuilder<List<Follow>>(
-            valueListenable: settings.follows,
-            builder: (context, value, child) => ListTile(
+          AnimatedBuilder(
+            animation: followController,
+            builder: (context, child) => ListTile(
               title: Text('Following'),
-              subtitle: value.isNotEmpty
-                  ? Text('${value.length} searches followed')
+              subtitle: followController.items.isNotEmpty
+                  ? Text('${followController.items.length} searches followed')
                   : null,
               leading: Icon(Icons.turned_in),
               onTap: () => Navigator.pushNamed(context, '/following'),

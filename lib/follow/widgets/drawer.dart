@@ -16,36 +16,32 @@ class _FollowMarkReadTileState extends State<FollowMarkReadTile>
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
-      animation: client,
-      builder: (context, child) => ValueListenableBuilder<List<Follow>>(
-        valueListenable: settings.follows,
-        builder: (context, follows, child) {
-          int unseen = follows.fold<int>(
-            0,
-            (previousValue, element) =>
-                previousValue + (element.statuses[client.host]?.unseen ?? 0),
-          );
-          return ListTile(
-            enabled: unseen != 0,
-            leading: Icon(unseen != 0 ? Icons.mark_email_read : Icons.drafts),
-            title: Text('unseen posts'),
-            subtitle: unseen != 0
-                ? TweenAnimationBuilder(
-                    tween: IntTween(begin: 0, end: unseen),
-                    duration: defaultAnimationDuration,
-                    builder: (context, int value, child) {
-                      return Text('mark $value posts as seen');
-                    },
-                  )
-                : Text('no unseen posts'),
-            onTap: () async {
-              follows.markAllAsRead();
-              settings.follows.value = List.from(follows);
-              Navigator.of(context).maybePop();
-            },
-          );
-        },
-      ),
+      animation: Listenable.merge([client, followController]),
+      builder: (context, child) {
+        int unseen = followController.items.fold<int>(
+          0,
+          (previousValue, element) =>
+              previousValue + (element.statuses[client.host]?.unseen ?? 0),
+        );
+        return ListTile(
+          enabled: unseen != 0,
+          leading: Icon(unseen != 0 ? Icons.mark_email_read : Icons.drafts),
+          title: Text('unseen posts'),
+          subtitle: unseen != 0
+              ? TweenAnimationBuilder(
+                  tween: IntTween(begin: 0, end: unseen),
+                  duration: defaultAnimationDuration,
+                  builder: (context, int value, child) {
+                    return Text('mark $value posts as seen');
+                  },
+                )
+              : Text('no unseen posts'),
+          onTap: () async {
+            followController.markAllAsRead();
+            Navigator.of(context).maybePop();
+          },
+        );
+      },
     );
   }
 }

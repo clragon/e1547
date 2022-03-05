@@ -1,7 +1,6 @@
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/pool/pool.dart';
-import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
 
 class PoolFollowButton extends StatefulWidget {
@@ -20,21 +19,21 @@ class PoolFollowButtonState extends State<PoolFollowButton> {
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder<List<Follow>>(
-      valueListenable: settings.follows,
-      builder: (context, value, child) {
-        bool following = value.any((element) => element.tags == tag);
+    return AnimatedBuilder(
+      animation: followController,
+      builder: (context, child) {
+        bool following =
+            followController.items.any((element) => element.tags == tag);
         return Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             IconButton(
               onPressed: () {
                 if (following) {
-                  value.removeWhere((element) => element.tags == tag);
+                  followController.removeTag(tag);
                 } else {
-                  value.add(Follow.fromString(tag));
+                  followController.addTag(tag);
                 }
-                settings.follows.value = List.from(value);
               },
               icon: CrossFade(
                 showChild: following,

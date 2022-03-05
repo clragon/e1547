@@ -2,7 +2,6 @@ import 'package:e1547/client/client.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
-import 'package:e1547/settings/settings.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -22,11 +21,11 @@ class _FollowsCombinedPageState extends State<FollowsCombinedPage>
 
   @override
   Map<ChangeNotifier, VoidCallback> get initListeners => {
-        settings.follows: updateTags,
+        followController: updateTags,
       };
 
   Future<void> updateTags() async {
-    List<String?> update = settings.follows.value.tags;
+    List<String?> update = followController.items.tags;
     if (tags == null) {
       tags = update;
     } else if (!listEquals(tags, update)) {

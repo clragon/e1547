@@ -1,7 +1,6 @@
 import 'package:e1547/client/client.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/interface/interface.dart';
-import 'package:e1547/settings/settings.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 
@@ -17,70 +16,66 @@ class _FollowingPageState extends State<FollowingPage> {
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder<List<Follow>>(
-      valueListenable: settings.follows,
-      builder: (context, follows, child) {
-        void addTags(BuildContext context, [int? edit]) {
-          void submit(String value, [int? edit]) {
-            value = value.trim();
-            Follow result = Follow.fromString(value);
-
-            if (edit != null) {
-              if (value.isNotEmpty) {
-                follows[edit] = result;
-              } else {
-                follows.removeAt(edit);
-              }
-              settings.follows.value = follows;
-            } else if (value.isNotEmpty) {
-              follows.add(result);
-              settings.follows.value = follows;
-            }
-          }
-
+    return AnimatedBuilder(
+      animation: followController,
+      builder: (context, child) {
+        void addTags(BuildContext context, {Follow? follow}) {
           sheetController.show(
             context,
             ControlledTextWrapper(
-              submit: (value) async => submit(sortTags(value), edit),
+              submit: (value) async {
+                value = value.trim();
+                Follow result = Follow.fromString(value);
+                if (follow != null) {
+                  if (value.isNotEmpty) {
+                    followController.replace(
+                        followController.items.indexOf(follow), result);
+                  } else {
+                    followController.remove(follow);
+                  }
+                } else if (value.isNotEmpty) {
+                  followController.add(result);
+                }
+              },
               actionController: sheetController,
-              textController: TextEditingController(
-                  text: edit != null ? follows[edit].tags : null),
+              textController: TextEditingController(text: follow?.tags),
               builder: (context, controller, submit) => TagInput(
                 controller: controller,
                 textInputAction: TextInputAction.done,
-                labelText: edit != null ? 'Edit follow' : 'Add to follows',
+                labelText: follow != null ? 'Edit follow' : 'Add to follows',
                 submit: submit,
               ),
             ),
           );
         }
 
-        void editAlias(BuildContext context, int edit) {
-          void submit(String value, int edit) {
-            value = value.trim();
-            if (follows[edit].alias != value) {
-              if (value.isNotEmpty) {
-                follows[edit].alias = value;
-              } else {
-                follows[edit].alias = null;
-              }
-              settings.follows.value = follows;
-            }
-          }
-
+        void editAlias(BuildContext context, Follow follow) {
           sheetController.show(
             context,
             ControlledTextField(
               labelText: 'Follow alias',
               actionController: sheetController,
-              textController: TextEditingController(text: follows[edit].name),
-              submit: (value) async => submit(value, edit),
+              textController: TextEditingController(text: follow.name),
+              submit: (value) {
+                value = value.trim();
+                if (follow.alias != value) {
+                  if (value.isNotEmpty) {
+                    follow.alias = value;
+                  } else {
+                    follow.alias = null;
+                  }
+                  followController.replace(
+                    followController.items.indexOf(follow),
+                    follow,
+                  );
+                }
+              },
             ),
           );
         }
 
         Widget body() {
-          if (follows.isEmpty) {
+          if (followController.items.isEmpty) {
             return IconMessage(
               icon: Icon(Icons.bookmark),
               title: Text('You are not following any tags'),
@@ -93,31 +88,33 @@ class _FollowingPageState extends State<FollowingPage> {
               physics: BouncingScrollPhysics(),
               padding: EdgeInsets.only(
                   top: 8, bottom: kBottomNavigationBarHeight + 24),
-              itemCount: follows.length,
+              itemCount: followController.items.length,
               itemBuilder: (context, index) => FollowListTile(
                 host: client.host,
-                follow: follows[index],
-                onRename: () => editAlias(context, index),
-                onEdit: () => addTags(context, index),
-                onDelete: () {
-                  follows.removeAt(index);
-                  settings.follows.value = follows;
-                },
+                follow: followController.items[index],
+                onRename: () =>
+                    editAlias(context, followController.items[index]),
+                onEdit: () =>
+                    addTags(context, follow: followController.items[index]),
+                onDelete: () =>
+                    followController.remove(followController.items[index]),
                 onChangeNotify: (enabled) {
+                  Follow follow = followController.items[index];
                   if (enabled) {
-                    follows[index].type = FollowType.notify;
+                    follow.type = FollowType.notify;
                   } else {
-                    follows[index].type = FollowType.update;
+                    follow.type = FollowType.update;
                   }
-                  settings.follows.value = follows;
+                  followController.replace(index, follow);
                 },
                 onChangeBookmark: (enabled) {
+                  Follow follow = followController.items[index];
                   if (enabled) {
-                    follows[index].type = FollowType.bookmark;
+                    follow.type = FollowType.bookmark;
                   } else {
-                    follows[index].type = FollowType.update;
+                    follow.type = FollowType.update;
                   }
-                  settings.follows.value = follows;
+                  followController.replace(index, follow);
                 },
               ),
             ),
@@ -125,8 +122,8 @@ class _FollowingPageState extends State<FollowingPage> {
         }
 
         Widget editor() {
-          TextEditingController controller =
-              TextEditingController(text: follows.tags.join('\n'));
+          TextEditingController controller = TextEditingController(
+              text: followController.items.tags.join('\n'));
           return AlertDialog(
             title: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -151,7 +148,7 @@ class _FollowingPageState extends State<FollowingPage> {
                   List<String> tags = controller.text.split('\n');
                   tags = tags.trim();
                   tags.removeWhere((tag) => tag.isEmpty);
-                  settings.follows.value = follows.editWith(tags);
+                  followController.edit(tags);
                   Navigator.of(context).maybePop();
                 },
               ),
@@ -172,10 +169,7 @@ class _FollowingPageState extends State<FollowingPage> {
               ),
             ],
           ),
-          body: AnimatedBuilder(
-            animation: followController,
-            builder: (context, child) => body(),
-          ),
+          body: body(),
           floatingActionButton: Builder(
             builder: (context) => AnimatedBuilder(
               animation: sheetController,

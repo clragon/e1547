@@ -20,13 +20,6 @@ class _FollowsSplitPageState extends State<FollowsSplitPage>
         controller: updateRefresh,
       };
 
-  Future<void> refreshFollows({bool force = false}) async {
-    await controller.update(force: force);
-    if (mounted) {
-      setState(() {});
-    }
-  }
-
   Future<void> updateRefresh() async {
     WidgetsBinding.instance!.addPostFrameCallback((_) async {
       if (controller.updating && mounted) {
@@ -46,7 +39,7 @@ class _FollowsSplitPageState extends State<FollowsSplitPage>
                 curve: Curves.easeInOut,
               );
             }
-            if (!controller.error) {
+            if (controller.error != null) {
               refreshController.refreshCompleted();
             } else {
               refreshController.refreshFailed();
@@ -60,7 +53,7 @@ class _FollowsSplitPageState extends State<FollowsSplitPage>
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration(milliseconds: 500), refreshFollows);
+    Future.delayed(Duration(milliseconds: 500), controller.update);
   }
 
   @override
@@ -97,12 +90,10 @@ class _FollowsSplitPageState extends State<FollowsSplitPage>
           ),
           appBar: DefaultAppBar(
             title: Text('Following'),
-            actions: [
-              ContextDrawerButton(),
-            ],
+            actions: [ContextDrawerButton()],
           ),
           refresh: () async {
-            if (await validateCall(() => refreshFollows(force: true))) {
+            if (await validateCall(() => controller.update(force: true))) {
               refreshController.refreshCompleted();
             } else {
               refreshController.refreshFailed();

@@ -354,7 +354,7 @@ class Client extends ChangeNotifier {
 
   Future<List<Post>> follows(int page, {int attempt = 0, bool? force}) async {
     List<Post> posts = [];
-    List<String> tags = List<Follow>.from(settings.follows.value)
+    List<String> tags = List<Follow>.from(followController.items)
         .map<String>((e) => e.tags)
         .toList();
     // ignore meta tags

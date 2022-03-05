@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:collection/collection.dart';
 import 'package:e1547/client/client.dart';
 import 'package:flutter/material.dart';
 import 'package:mutex/mutex.dart';
@@ -16,62 +15,48 @@ abstract class DataUpdater<T> extends ChangeNotifier {
   final Mutex _updateLock = Mutex();
 
   bool get updating => !_updateCompleter.isCompleted;
-  bool error = false;
   bool restarting = false;
   bool canceling = false;
+
+  Exception? error;
 
   late List<Listenable> _refreshListeners = getRefreshListeners();
 
   DataUpdater() {
-    _refreshListeners.forEach((e) => e.addListener(refresh));
+    _refreshListeners.forEach((e) => e.addListener(restart));
   }
 
   @override
   void dispose() {
-    _refreshListeners.forEach((e) => e.removeListener(refresh));
+    _refreshListeners.forEach((e) => e.removeListener(restart));
     super.dispose();
   }
 
-  @mustCallSuper
-  Future<void> cancel() async {
-    if (!(_updateCompleter.isCompleted)) {
-      canceling = true;
-    }
-    return finish;
+  void _fail(Exception exception) {
+    error = exception;
+    _updateLock.release();
+    _updateCompleter.completeError(exception);
+    notifyListeners();
   }
 
-  @mustCallSuper
-  @protected
-  Future<void> fail() async {
-    if (!_updateCompleter.isCompleted) {
-      error = true;
-    }
-    return finish;
-  }
-
-  @mustCallSuper
-  @protected
-  void uncomplete() {
+  void _uncomplete() {
     if (_updateCompleter.isCompleted) {
       _updateCompleter = Completer();
     }
   }
 
-  @mustCallSuper
-  @protected
-  void complete() {
+  void _complete() {
     _updateLock.release();
     _updateCompleter.complete();
     notifyListeners();
   }
 
-  @mustCallSuper
-  void reset() {
-    uncomplete();
+  void _reset() {
+    _uncomplete();
     progress = 0;
     restarting = false;
     canceling = false;
-    error = false;
+    error = null;
     notifyListeners();
   }
 
@@ -89,7 +74,7 @@ abstract class DataUpdater<T> extends ChangeNotifier {
 
   @mustCallSuper
   bool step([int? progress]) {
-    if (restarting || canceling || error) {
+    if (restarting || canceling) {
       return false;
     }
     this.progress = progress ?? this.progress + 1;
@@ -100,69 +85,63 @@ abstract class DataUpdater<T> extends ChangeNotifier {
   Future<void> _wrapper({bool force = false}) async {
     await _updateLock.acquire();
     T data = await read();
-    T? result = await run(data, force);
-    if (restarting) {
-      _updateLock.release();
-      return;
+    T? result;
+    try {
+      result = await run(data, force);
+      if (restarting) {
+        _updateLock.release();
+        return;
+      }
+      await write(result);
+      _complete();
+    } on Exception catch (e) {
+      if (e is UpdaterException) {
+        _fail(e);
+      } else {
+        rethrow;
+      }
     }
-    await write(result);
-    complete();
   }
 
   @mustCallSuper
   Future<void> update({bool force = false}) async {
     if (_updateCompleter.isCompleted) {
-      uncomplete();
-      reset();
+      _uncomplete();
+      _reset();
       _wrapper(force: force);
     }
     return finish;
   }
 
   @mustCallSuper
-  Future<void> refresh({bool force = false}) async {
+  Future<void> restart({bool force = false}) async {
     if (!_updateCompleter.isCompleted) {
       restarting = true;
       await _updateLock.acquire();
       _updateLock.release();
     }
-    reset();
+    _reset();
     _wrapper(force: force);
     return finish;
   }
+
+  @mustCallSuper
+  Future<void> cancel() async {
+    if (!(_updateCompleter.isCompleted)) {
+      canceling = true;
+    }
+    return finish;
+  }
+}
+
+class UpdaterException implements Exception {
+  final String? message;
+
+  UpdaterException({this.message});
 }
 
 mixin HostableUpdater<T> on DataUpdater<T> {
   @override
   List<Listenable> getRefreshListeners() =>
       super.getRefreshListeners()..add(client);
-}
-
-mixin EditableUpdater<T extends Iterable> on DataUpdater<T> {
-  ValueNotifier<T> get source;
-  late EqualityValueNotifier<T> target = EqualityValueNotifier(source);
-
-  @override
-  List<Listenable> getRefreshListeners() =>
-      super.getRefreshListeners()..add(target);
-}
-
-class EqualityValueNotifier<T extends Iterable> extends ValueNotifier<T> {
-  final ValueNotifier<T> source;
-
-  EqualityValueNotifier(this.source) : super(source.value) {
-    source.addListener(updateValue);
-  }
-
-  void updateValue() {
-    if (!UnorderedIterableEquality().equals(value, source.value)) {
-      value = source.value;
-    }
-  }
-
-  @override
-  void dispose() {
-    source.removeListener(updateValue);
-    super.dispose();
-  }
 }

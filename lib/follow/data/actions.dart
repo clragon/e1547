@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:collection/collection.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/post/post.dart';
@@ -33,28 +32,6 @@ extension Utility on List<Follow> {
         return result;
       },
     );
-  }
-
-  void markAllAsRead() {
-    for (Follow follow in this) {
-      FollowStatus? status = follow.statuses[client.host];
-      if (status != null) {
-        status.unseen = 0;
-      }
-    }
-  }
-
-  List<Follow> editWith(List<String> update) {
-    List<Follow> edited = [];
-    for (String tags in update) {
-      Follow? match = firstWhereOrNull((follow) => follow.tags == tags);
-      if (match != null) {
-        edited.add(match);
-      } else {
-        edited.add(Follow.fromString(tags));
-      }
-    }
-    return edited;
   }
 }
 

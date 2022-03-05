@@ -1,6 +1,8 @@
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 
+final List<String> wikiMetaTags = List.unmodifiable(['help:', 'e621:']);
+
 String sortTags(String tags) {
   return Tagset.parse(tags).toString();
 }

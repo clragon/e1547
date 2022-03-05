@@ -4,7 +4,6 @@ import 'package:e1547/follow/follow.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
-import 'package:e1547/settings/settings.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:e1547/wiki/wiki.dart';
 import 'package:flutter/material.dart';
@@ -37,7 +36,7 @@ class _SearchPageState extends State<SearchPage> with ListenerCallbackMixin {
   @override
   Map<ChangeNotifier, VoidCallback> get initListeners => {
         controller.search: updateSearch,
-        settings.follows: updateFollow,
+        followController: updateFollow,
       };
 
   Future<void> updateSearch() async {
@@ -46,7 +45,7 @@ class _SearchPageState extends State<SearchPage> with ListenerCallbackMixin {
   }
 
   Future<void> updateFollow() async {
-    List<Follow> follows = List.from(settings.follows.value);
+    List<Follow> follows = List.from(followController.items);
     Follow? follow = follows.singleWhereOrNull(
       (follow) => follow.tags == controller.search.value,
     );
@@ -58,12 +57,14 @@ class _SearchPageState extends State<SearchPage> with ListenerCallbackMixin {
           foreground: true,
         );
         if (updated) {
-          settings.follows.value = follows;
+          followController.replace(
+              followController.items.indexOf(follow), follow);
         }
       }
       if (pool != null) {
         if (follow.updatePool(pool!)) {
-          settings.follows.value = follows;
+          followController.replace(
+              followController.items.indexOf(follow), follow);
         }
       }
     }
@@ -88,7 +89,7 @@ class _SearchPageState extends State<SearchPage> with ListenerCallbackMixin {
   }
 
   String getTitle() {
-    Follow? follow = settings.follows.value
+    Follow? follow = followController.items
         .singleWhereOrNull((follow) => follow.tags == controller.search.value);
     if (follow != null) {
       return follow.name;
@@ -140,9 +141,7 @@ class _SearchPageState extends State<SearchPage> with ListenerCallbackMixin {
           PoolOrderSwitch(
             reversePool: reversePools,
             onChange: (value) {
-              setState(() {
-                reversePools = value;
-              });
+              setState(() => reversePools = value);
               controller.refresh();
               Navigator.of(context).maybePop();
             },
