@@ -84,7 +84,7 @@ class _LoadingDialogState extends State<LoadingDialog> {
                 ],
               ),
             ),
-            SafeCrossFade(
+            CrossFade.builder(
               showChild: controller.isError,
               builder: (context) => Padding(
                 padding: EdgeInsets.symmetric(vertical: 8),

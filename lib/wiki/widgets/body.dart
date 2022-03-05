@@ -100,7 +100,7 @@ class _WikiTagDisplayState extends State<WikiTagDisplay> {
   Widget build(BuildContext context) {
     return FutureBuilder<Wiki?>(
       future: wiki,
-      builder: (context, snapshot) => SafeCrossFade(
+      builder: (context, snapshot) => CrossFade.builder(
         style: FadeAnimationStyle.stacked,
         showChild: snapshot.connectionState == ConnectionState.done,
         builder: (context) {

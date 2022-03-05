@@ -1,6 +1,7 @@
 import 'package:e1547/denylist/denylist.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
+import 'package:e1547/settings/settings.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
@@ -69,7 +70,7 @@ class _PostsPageState extends State<PostsPage> with ListenerCallbackMixin {
       return ContextDrawer(
         title: Text('Posts'),
         children: [
-          SafeCrossFade(
+          CrossFade.builder(
             showChild: widget.drawerActions?.isNotEmpty ?? false,
             builder: (context) => Column(
               children: [
@@ -81,69 +82,80 @@ class _PostsPageState extends State<PostsPage> with ListenerCallbackMixin {
           if (widget.controller.denyMode != DenyListMode.unavailable)
             DrawerDenySwitch(controller: widget.controller),
           DrawerCounter(controller: widget.controller),
-          ListTile(
-            onTap: () => showDialog(
-              context: context,
-              builder: (context) => AlertDialog(
-                title: Text('posts: ${widget.controller.itemList!.length}'),
-                content: SizedBox(
-                  height: 500,
-                  width: 200,
-                  child: ListView.builder(
-                    itemCount: widget.controller.itemList!.length,
-                    itemBuilder: (context, index) {
-                      Post current = widget.controller.itemList![index];
-                      return Text(
-                        current.id.toString(),
-                        style: TextStyle(
-                          color: widget.controller.itemList!
-                                  .sublist(0, index)
-                                  .any((element) => element.id == current.id)
-                              ? Colors.red
-                              : null,
-                        ),
-                      );
-                    },
+          // TODO: fix duplicates and remove this
+          if (settings.showBeta.value) ...[
+            Divider(),
+            ListTile(
+              leading: Icon(Icons.format_list_numbered),
+              title: Text('Post IDs'),
+              subtitle: Text('${widget.controller.itemList?.length ?? 0}'),
+              onTap: () => showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  actions: [
+                    TextButton(
+                      onPressed: Navigator.of(context).maybePop,
+                      child: Text('OK'),
+                    ),
+                  ],
+                  content: SizedBox(
+                    height: 500,
+                    width: 200,
+                    child: ListView.builder(
+                      itemCount: widget.controller.itemList!.length,
+                      itemBuilder: (context, index) {
+                        Post current = widget.controller.itemList![index];
+                        return Text(
+                          current.id.toString(),
+                          style: TextStyle(
+                            color: widget.controller.itemList!
+                                    .sublist(0, index)
+                                    .any((element) => element.id == current.id)
+                                ? Colors.red
+                                : null,
+                          ),
+                        );
+                      },
+                    ),
                   ),
                 ),
               ),
             ),
-            title: Text('post ids'),
-          ),
+          ]
         ],
       );
     }
 
     Widget itemBuilder(BuildContext context, Post item, int index) {
-      return PostTile(
-        post: item,
-        controller: widget.controller,
-        onPressed: () {
-          Navigator.of(context).push(
+      return SelectionItemOverlay(
+        item: item,
+        padding: EdgeInsets.all(4),
+        child: PostTile(
+          post: item,
+          controller: widget.controller,
+          onPressed: () => Navigator.of(context).push(
             MaterialPageRoute(
               builder: (context) => PostDetailGallery(
                 controller: widget.controller,
                 initialPage: index,
               ),
             ),
-          );
-        },
+          ),
+        ),
       );
     }
 
     return TileLayout(
-      child: SelectionScope<Post>(
+      child: SelectionLayout<Post>(
+        enabled: widget.canSelect,
+        onSelectAll: () => widget.controller.itemList!.toSet(),
         selections: selections,
-        builder: (context, selections, onChanged) => RefreshablePage(
+        child: RefreshablePage(
           refreshController: widget.controller.refreshController,
-          appBar: selections.isEmpty
-              ? widget.appBarBuilder(context)
-              : PostSelectionAppBar(
-                  selections: selections,
-                  onChanged: onChanged,
-                  controller: widget.controller,
-                  onSelectAll: () => widget.controller.itemList!.toSet(),
-                ),
+          appBar: PostSelectionAppBar(
+            appbar: widget.appBarBuilder(context),
+            controller: widget.controller,
+          ),
           drawer: defaultNavigationDrawer(),
           endDrawer: endDrawer(),
           floatingActionButton: floatingActionButton(),
@@ -159,14 +171,7 @@ class _PostsPageState extends State<PostsPage> with ListenerCallbackMixin {
             pagingController: widget.controller,
             builderDelegate: defaultPagedChildBuilderDelegate<Post>(
               pagingController: widget.controller,
-              itemBuilder: (context, item, index) => SelectionItemOverlay(
-                enabled: widget.canSelect,
-                padding: EdgeInsets.all(4),
-                child: itemBuilder(context, item, index),
-                item: item,
-                selections: selections,
-                onChanged: onChanged,
-              ),
+              itemBuilder: itemBuilder,
               onEmpty: Text('No posts'),
               onError: Text('Failed to load posts'),
             ),

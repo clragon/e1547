@@ -8,30 +8,8 @@ enum FadeAnimationStyle {
   stacked,
 }
 
-class FadeBuilder extends StatelessWidget {
-  final WidgetBuilder builder;
-  final Duration? duration;
-
-  const FadeBuilder({
-    required this.builder,
-    this.duration,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    Duration duration = this.duration ?? defaultAnimationDuration;
-    return AnimatedSize(
-      duration: duration,
-      child: AnimatedSwitcher(
-        duration: duration,
-        child: builder(context),
-      ),
-    );
-  }
-}
-
 class CrossFade extends StatelessWidget {
-  final Widget child;
+  final WidgetBuilder builder;
 
   final Widget? secondChild;
   final Duration? duration;
@@ -40,13 +18,29 @@ class CrossFade extends StatelessWidget {
 
   final FadeAnimationStyle style;
 
-  const CrossFade({
+  const CrossFade.builder({
     required this.showChild,
-    required this.child,
+    required this.builder,
     this.secondChild,
     this.duration,
     this.style = FadeAnimationStyle.adjacent,
   });
+
+  factory CrossFade({
+    required bool showChild,
+    required Widget child,
+    Widget? secondChild,
+    Duration? duration,
+    FadeAnimationStyle style = FadeAnimationStyle.adjacent,
+  }) {
+    return CrossFade.builder(
+      showChild: showChild,
+      builder: (context) => child,
+      secondChild: secondChild,
+      duration: duration,
+      style: style,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,48 +48,22 @@ class CrossFade extends StatelessWidget {
     switch (style) {
       case FadeAnimationStyle.stacked:
         return AnimatedCrossFade(
-          firstChild: child,
+          firstChild: builder(context),
           secondChild: secondChild ?? SizedBox.shrink(),
           crossFadeState:
               showChild ? CrossFadeState.showFirst : CrossFadeState.showSecond,
           duration: duration,
         );
       case FadeAnimationStyle.adjacent:
-        return FadeBuilder(
-          builder: (context) =>
-              showChild ? child : secondChild ?? SizedBox.shrink(),
+        return AnimatedSize(
+          duration: duration,
+          child: AnimatedSwitcher(
+            duration: duration,
+            child:
+                showChild ? builder(context) : secondChild ?? SizedBox.shrink(),
+          ),
         );
     }
-  }
-}
-
-// TODO: replace with CrossFade.builder
-class SafeCrossFade extends StatelessWidget {
-  final WidgetBuilder builder;
-
-  final Widget? secondChild;
-  final Duration? duration;
-
-  final bool showChild;
-
-  final FadeAnimationStyle style;
-
-  const SafeCrossFade({
-    required this.showChild,
-    required this.builder,
-    this.secondChild,
-    this.duration,
-    this.style = FadeAnimationStyle.adjacent,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return CrossFade(
-      showChild: showChild,
-      child: showChild ? builder(context) : SizedBox.shrink(),
-      secondChild: secondChild,
-      style: style,
-    );
   }
 }
 
@@ -125,7 +93,7 @@ class Replacer extends StatelessWidget {
       layoutBuilder: (topChild, topChildKey, bottomChild, bottomChildKey) =>
           Stack(
         clipBehavior: Clip.none,
-        children: <Widget>[
+        children: [
           Positioned(
             key: bottomChildKey,
             child: ExcludeFocus(

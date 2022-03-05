@@ -3,41 +3,38 @@ import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 import 'package:like_button/like_button.dart';
 
-class PostSelectionAppBar extends StatelessWidget with AppBarSize {
-  final Set<Post> Function()? onSelectAll;
-  final void Function(Set<Post> selections) onChanged;
-  final Set<Post> selections;
+class PostSelectionAppBar extends StatelessWidget with PreferredSizeWidget {
   final PostController controller;
+  final PreferredSizeWidget appbar;
+
+  @override
+  Size get preferredSize => appbar.preferredSize;
 
   const PostSelectionAppBar({
-    required this.selections,
-    required this.onChanged,
-    this.onSelectAll,
     required this.controller,
+    required this.appbar,
   });
 
   @override
   Widget build(BuildContext context) {
     return SelectionAppBar<Post>(
-      onSelectAll: onSelectAll,
-      onChanged: onChanged,
-      selections: selections,
-      titleBuilder: (context) => selections.length == 1
-          ? Text('post #${selections.first.id}')
-          : Text('${selections.length} posts'),
-      actions: [
+      appbar: appbar,
+      titleBuilder: (context, data) => data.selections.length == 1
+          ? Text('post #${data.selections.first.id}')
+          : Text('${data.selections.length} posts'),
+      actionBuilder: (context, data) => [
         IconButton(
           icon: Icon(Icons.file_download),
           onPressed: () {
-            postDownloadingNotification(context, Set.from(selections));
-            onChanged({});
+            postDownloadingNotification(context, Set.from(data.selections));
+            data.onChanged({});
           },
         ),
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 4),
           child: LikeButton(
-            isLiked: selections.isNotEmpty &&
-                selections.every((post) => post.isFavorited),
+            isLiked: data.selections.isNotEmpty &&
+                data.selections.every((post) => post.isFavorited),
             circleColor: CircleColor(start: Colors.pink, end: Colors.red),
             bubblesColor: BubblesColor(
                 dotPrimaryColor: Colors.pink, dotSecondaryColor: Colors.red),
@@ -50,11 +47,11 @@ class PostSelectionAppBar extends StatelessWidget with AppBarSize {
             onTap: (isLiked) async {
               postFavoritingNotification(
                 context,
-                Set.from(selections),
+                Set.from(data.selections),
                 controller,
                 isLiked,
               );
-              onChanged({});
+              data.onChanged({});
               return !isLiked;
             },
           ),

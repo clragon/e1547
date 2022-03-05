@@ -90,7 +90,7 @@ class DrawerCounterBody extends StatelessWidget {
               expanded: Column(
                 children: [
                   Divider(),
-                  SafeCrossFade(
+                  CrossFade.builder(
                     showChild: children != null,
                     builder: (context) => CrossFade(
                       showChild: children!.isNotEmpty,

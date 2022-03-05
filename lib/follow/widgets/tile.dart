@@ -123,7 +123,7 @@ class FollowTile extends StatelessWidget {
                       )
                     : null,
               ),
-              child: SafeCrossFade(
+              child: CrossFade.builder(
                 showChild: active,
                 builder: (context) => info(status!),
                 secondChild: Text(

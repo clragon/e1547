@@ -19,17 +19,12 @@ class _HistoryPageState extends State<HistoryPage> {
       animation: historyController,
       builder: (context, child) {
         List<HistoryEntry> history = historyController.collection.entries;
-        return SelectionScope<HistoryEntry>(
-          builder: (context, selections, onSelectionChanged) => Scaffold(
-            appBar: selections.isEmpty
-                ? DefaultAppBar(
-                    title: Text('History'),
-                  )
-                : HistorySelectionAppBar(
-                    selections: selections,
-                    onChanged: onSelectionChanged,
-                    onSelectAll: () => history.toSet(),
-                  ),
+        return SelectionLayout<HistoryEntry>(
+          onSelectAll: () => history.toSet(),
+          child: Scaffold(
+            appBar: HistorySelectionAppBar(
+              appbar: DefaultAppBar(title: Text('History')),
+            ),
             body: history.isNotEmpty
                 ? GroupedListView<HistoryEntry, DateTime>(
                     elements: history,
@@ -41,11 +36,8 @@ class _HistoryPageState extends State<HistoryPage> {
                         SettingsHeader(title: dateOrName(element.visitedAt)),
                     itemComparator: (a, b) =>
                         a.visitedAt.compareTo(b.visitedAt),
-                    itemBuilder: (context, element) => HistoryTile(
-                      entry: element,
-                      selections: selections,
-                      onSelectionChanged: onSelectionChanged,
-                    ),
+                    itemBuilder: (context, element) =>
+                        HistoryTile(entry: element),
                   )
                 : IconMessage(
                     icon: Icon(Icons.history),

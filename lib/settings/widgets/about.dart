@@ -214,7 +214,7 @@ class _VersionButtonState extends State<VersionButton> {
   Widget build(BuildContext context) {
     return FutureBuilder<List<AppVersion>?>(
       future: newVersions,
-      builder: (context, snapshot) => SafeCrossFade(
+      builder: (context, snapshot) => CrossFade.builder(
         showChild: snapshot.connectionState == ConnectionState.done,
         builder: (context) => Stack(
           children: [

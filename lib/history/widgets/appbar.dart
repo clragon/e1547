@@ -3,15 +3,14 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/tag/data/actions.dart';
 import 'package:flutter/material.dart';
 
-class HistorySelectionAppBar extends StatelessWidget with AppBarSize {
-  final Set<HistoryEntry> Function()? onSelectAll;
-  final void Function(Set<HistoryEntry> selections) onChanged;
-  final Set<HistoryEntry> selections;
+class HistorySelectionAppBar extends StatelessWidget with PreferredSizeWidget {
+  final PreferredSizeWidget appbar;
+
+  @override
+  Size get preferredSize => appbar.preferredSize;
 
   const HistorySelectionAppBar({
-    required this.selections,
-    required this.onChanged,
-    this.onSelectAll,
+    required this.appbar,
   });
 
   @override
@@ -28,20 +27,18 @@ class HistorySelectionAppBar extends StatelessWidget with AppBarSize {
     }
 
     return SelectionAppBar<HistoryEntry>(
-      selections: selections,
-      onChanged: onChanged,
-      onSelectAll: onSelectAll,
-      titleBuilder: (context) => selections.length == 1
-          ? Text(itemIdentifier(selections.first))
-          : Text('${selections.length} entries'),
-      actions: [
+      appbar: appbar,
+      titleBuilder: (context, data) => data.selections.length == 1
+          ? Text(itemIdentifier(data.selections.first))
+          : Text('${data.selections.length} entries'),
+      actionBuilder: (context, data) => [
         IconButton(
           icon: Icon(Icons.delete_outline),
           onPressed: () {
-            for (HistoryEntry entry in selections) {
+            for (HistoryEntry entry in data.selections) {
               historyController.removeEntry(entry);
             }
-            onChanged({});
+            data.onChanged({});
           },
         ),
       ],

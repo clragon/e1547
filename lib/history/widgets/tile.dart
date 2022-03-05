@@ -11,14 +11,10 @@ import 'package:share/share.dart';
 
 class HistoryTile extends StatelessWidget {
   final HistoryEntry entry;
-  final Set<HistoryEntry> selections;
-  final SelectionChanged<HistoryEntry> onSelectionChanged;
 
   const HistoryTile({
     Key? key,
     required this.entry,
-    required this.selections,
-    required this.onSelectionChanged,
   }) : super(key: key);
 
   @override
@@ -55,8 +51,6 @@ class HistoryTile extends StatelessWidget {
         postId: entry.id,
         thumbnail: entry.thumbnail,
         child: SelectionItemOverlay<HistoryEntry>(
-          selections: selections,
-          onChanged: onSelectionChanged,
           item: entry,
           child: ListTile(
             title: titleText('Post #${entry.id}'),
@@ -95,8 +89,6 @@ class HistoryTile extends StatelessWidget {
           ),
         ),
         child: SelectionItemOverlay<HistoryEntry>(
-          selections: selections,
-          onChanged: onSelectionChanged,
           item: entry,
           child: ListTile(
             title: entry.tags.isNotEmpty

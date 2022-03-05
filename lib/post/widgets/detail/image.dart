@@ -43,7 +43,7 @@ class PostDetailVideo extends StatelessWidget {
             PostVideoWidget(post: post),
             Positioned.fill(
               child: Center(
-                child: SafeCrossFade(
+                child: CrossFade.builder(
                   showChild: post.controller != null,
                   builder: (context) => Padding(
                     padding: EdgeInsets.symmetric(vertical: 16, horizontal: 8),
@@ -226,7 +226,7 @@ class PostDetailImageButtons extends StatelessWidget {
         }
 
         Widget muteButton() {
-          return SafeCrossFade(
+          return CrossFade.builder(
             showChild: post.type == PostType.video && post.file.url != null,
             builder: (context) => Card(
               elevation: 0,

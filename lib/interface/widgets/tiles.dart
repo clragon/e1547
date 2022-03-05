@@ -11,10 +11,8 @@ class TileLayoutData extends InheritedWidget {
   final int crossAxisCount;
   final GridQuilt stagger;
 
-  final Widget child;
-
   TileLayoutData({
-    required this.child,
+    required Widget child,
     required this.tileHeightFactor,
     required this.crossAxisCount,
     required this.stagger,

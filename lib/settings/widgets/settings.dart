@@ -60,7 +60,7 @@ class _SettingsPageState extends State<SettingsPage> {
             animation: client,
             builder: (context, child) => FutureBuilder<CurrentUser?>(
               future: client.currentUser,
-              builder: (context, snapshot) => SafeCrossFade(
+              builder: (context, snapshot) => CrossFade.builder(
                 duration: Duration(milliseconds: 200),
                 showChild: client.credentials != null,
                 builder: (context) => DividerListTile(

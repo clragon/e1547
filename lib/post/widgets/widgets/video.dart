@@ -132,7 +132,7 @@ class VideoBar extends StatelessWidget {
         child: AnimatedBuilder(
           animation: videoController,
           builder: (context, child) {
-            return SafeCrossFade(
+            return CrossFade.builder(
               showChild: videoController.value.isInitialized,
               builder: (context) {
                 return Column(

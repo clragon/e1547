@@ -11,6 +11,7 @@ export 'data/hosts.dart';
 export 'widgets/action.dart';
 export 'widgets/animation.dart';
 export 'widgets/appbar.dart';
+export 'widgets/selection.dart';
 export 'widgets/dialog.dart';
 export 'widgets/divider_tile.dart';
 export 'widgets/drawer.dart';

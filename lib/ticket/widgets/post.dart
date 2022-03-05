@@ -262,7 +262,7 @@ class _PostFlagScreenState extends State<PostFlagScreen> {
                 },
                 isLoading: isLoading,
               ),
-              SafeCrossFade(
+              CrossFade.builder(
                 showChild: type == FlagType.Inferior,
                 builder: (context) => Padding(
                   padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
@@ -290,7 +290,7 @@ class _PostFlagScreenState extends State<PostFlagScreen> {
                   ),
                 ),
               ),
-              SafeCrossFade(
+              CrossFade.builder(
                 showChild: type != null,
                 builder: (context) => Padding(
                   padding: EdgeInsets.symmetric(horizontal: 24, vertical: 6),
