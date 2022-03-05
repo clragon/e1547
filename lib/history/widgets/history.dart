@@ -17,35 +17,31 @@ class _HistoryPageState extends State<HistoryPage> {
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: historyController,
-      builder: (context, child) {
-        List<HistoryEntry> history = historyController.collection.entries;
-        return SelectionLayout<HistoryEntry>(
-          onSelectAll: () => history.toSet(),
-          child: Scaffold(
-            appBar: HistorySelectionAppBar(
-              appbar: DefaultAppBar(title: Text('History')),
-            ),
-            body: history.isNotEmpty
-                ? GroupedListView<HistoryEntry, DateTime>(
-                    elements: history,
-                    order: GroupedListOrder.DESC,
-                    physics: BouncingScrollPhysics(),
-                    controller: PrimaryScrollController.of(context),
-                    groupBy: (element) => element.visitedAt.stripTime(),
-                    groupHeaderBuilder: (element) =>
-                        SettingsHeader(title: dateOrName(element.visitedAt)),
-                    itemComparator: (a, b) =>
-                        a.visitedAt.compareTo(b.visitedAt),
-                    itemBuilder: (context, element) =>
-                        HistoryTile(entry: element),
-                  )
-                : IconMessage(
-                    icon: Icon(Icons.history),
-                    title: Text('Your history is empty'),
-                  ),
+      builder: (context, child) => SelectionLayout<HistoryEntry>(
+        items: historyController.collection.entries,
+        child: Scaffold(
+          appBar: HistorySelectionAppBar(
+            appbar: DefaultAppBar(title: Text('History')),
           ),
-        );
-      },
+          body: historyController.collection.entries.isNotEmpty
+              ? GroupedListView<HistoryEntry, DateTime>(
+                  elements: historyController.collection.entries,
+                  order: GroupedListOrder.DESC,
+                  physics: BouncingScrollPhysics(),
+                  controller: PrimaryScrollController.of(context),
+                  groupBy: (element) => element.visitedAt.stripTime(),
+                  groupHeaderBuilder: (element) =>
+                      SettingsHeader(title: dateOrName(element.visitedAt)),
+                  itemComparator: (a, b) => a.visitedAt.compareTo(b.visitedAt),
+                  itemBuilder: (context, element) =>
+                      HistoryTile(entry: element),
+                )
+              : IconMessage(
+                  icon: Icon(Icons.history),
+                  title: Text('Your history is empty'),
+                ),
+        ),
+      ),
     );
   }
 }

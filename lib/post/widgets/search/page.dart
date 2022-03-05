@@ -23,25 +23,7 @@ class PostsPage extends StatefulWidget {
   State<StatefulWidget> createState() => _PostsPageState();
 }
 
-class _PostsPageState extends State<PostsPage> with ListenerCallbackMixin {
-  Set<Post> selections = {};
-
-  @override
-  Map<ChangeNotifier, VoidCallback> get listeners => {
-        widget.controller: updatePage,
-      };
-
-  void updatePage() {
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
-      if (mounted) {
-        setState(() {
-          selections.removeWhere((element) =>
-              !(widget.controller.itemList?.contains(element) ?? true));
-        });
-      }
-    });
-  }
-
+class _PostsPageState extends State<PostsPage> {
   @override
   Widget build(BuildContext context) {
     Widget? floatingActionButton() {
@@ -127,10 +109,13 @@ class _PostsPageState extends State<PostsPage> with ListenerCallbackMixin {
     }
 
     return TileLayout(
-      child: SelectionLayout<Post>(
-        enabled: widget.canSelect,
-        onSelectAll: () => widget.controller.itemList!.toSet(),
-        selections: selections,
+      child: AnimatedBuilder(
+        animation: widget.controller,
+        builder: (context, child) => SelectionLayout<Post>(
+          enabled: widget.canSelect,
+          items: widget.controller.itemList,
+          child: child!,
+        ),
         child: RefreshablePage(
           refreshController: widget.controller.refreshController,
           appBar: PostSelectionAppBar(
@@ -152,6 +137,8 @@ class _PostsPageState extends State<PostsPage> with ListenerCallbackMixin {
             pagingController: widget.controller,
             builderDelegate: defaultPagedChildBuilderDelegate<Post>(
               pagingController: widget.controller,
+              onEmpty: Text('No posts'),
+              onError: Text('Failed to load posts'),
               itemBuilder: (context, item, index) => PostTile(
                 post: item,
                 controller: widget.controller,
@@ -164,8 +151,6 @@ class _PostsPageState extends State<PostsPage> with ListenerCallbackMixin {
                   ),
                 ),
               ),
-              onEmpty: Text('No posts'),
-              onError: Text('Failed to load posts'),
             ),
             gridDelegateBuilder: (childCount) =>
                 SliverStaggeredGridDelegateWithFixedCrossAxisCount(

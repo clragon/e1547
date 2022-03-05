@@ -7,14 +7,14 @@ typedef SelectionChanged<T> = void Function(Set<T> selections);
 
 class SelectionLayoutData<T> extends InheritedWidget {
   final Set<T> selections;
+  final List<T> items;
   final SelectionChanged<T> onChanged;
-  final void Function()? onSelectAll;
 
   SelectionLayoutData({
     required Widget child,
     required this.selections,
     required this.onChanged,
-    required this.onSelectAll,
+    required this.items,
   }) : super(child: child);
 
   @override
@@ -24,14 +24,12 @@ class SelectionLayoutData<T> extends InheritedWidget {
 
 class SelectionLayout<T> extends StatefulWidget {
   final Widget child;
-  final Set<T>? selections;
-  final Set<T> Function()? onSelectAll;
+  final List<T>? items;
   final bool enabled;
 
   const SelectionLayout({
     required this.child,
-    this.selections,
-    this.onSelectAll,
+    required this.items,
     this.enabled = true,
   });
 
@@ -44,20 +42,22 @@ class SelectionLayout<T> extends StatefulWidget {
 }
 
 class _SelectionLayoutState<T> extends State<SelectionLayout<T>> {
-  late Set<T> selections = widget.selections ?? {};
+  Set<T> selections = {};
 
   @override
   void didUpdateWidget(covariant SelectionLayout<T> oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.selections != widget.selections) {
-      onSelectionChanged(widget.selections ?? {});
+    if (oldWidget.items != widget.items) {
+      Set<T> updated = Set.from(selections);
+      updated.removeWhere(
+          (element) => !(widget.items?.contains(element) ?? false));
+      onSelectionChanged(updated);
     }
   }
 
   void onSelectionChanged(Set<T> selections) {
     setState(() {
-      this.selections.clear();
-      this.selections.addAll(selections);
+      this.selections = selections;
     });
   }
 
@@ -75,11 +75,9 @@ class _SelectionLayoutState<T> extends State<SelectionLayout<T>> {
         }
       },
       child: SelectionLayoutData<T>(
+        items: widget.items ?? [],
         selections: selections,
         onChanged: onSelectionChanged,
-        onSelectAll: widget.onSelectAll != null
-            ? () => onSelectionChanged(widget.onSelectAll!())
-            : null,
         child: widget.child,
       ),
     );
@@ -115,12 +113,11 @@ class SelectionAppBar<T> extends StatelessWidget with PreferredSizeWidget {
           onPressed: () => layoutData!.onChanged({}),
         ),
         actions: [
-          if (layoutData!.onSelectAll != null)
-            IconButton(
-              icon: Icon(Icons.select_all),
-              onPressed: layoutData.onSelectAll,
-            ),
-          ...actionBuilder(context, layoutData),
+          IconButton(
+            icon: Icon(Icons.select_all),
+            onPressed: () => layoutData!.onChanged(layoutData.items.toSet()),
+          ),
+          ...actionBuilder(context, layoutData!),
         ],
       ),
       secondChild: appbar,
