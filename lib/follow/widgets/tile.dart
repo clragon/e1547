@@ -9,12 +9,12 @@ import 'package:flutter/material.dart';
 
 class FollowTile extends StatelessWidget {
   final Follow follow;
-  final String host;
 
-  FollowTile({required this.follow, required this.host});
+  FollowTile({required this.follow});
+
   @override
   Widget build(BuildContext context) {
-    FollowStatus? status = follow.statuses[host];
+    FollowStatus? status = followController.status(follow);
     bool active = status?.thumbnail != null;
 
     String getStatusText(FollowStatus? status) {
@@ -22,7 +22,7 @@ class FollowTile extends StatelessWidget {
         return '';
       }
       String text = status.unseen.toString();
-      if (status.unseen == follow.checkAmount) {
+      if (status.unseen == followController.refreshAmount) {
         text += '+';
       }
       text += ' new post';
@@ -159,17 +159,17 @@ class FollowTile extends StatelessWidget {
 }
 
 class FollowListTile extends StatelessWidget {
+  final Follow follow;
+
   final VoidCallback onEdit;
   final VoidCallback onDelete;
   final VoidCallback onRename;
-  final Follow follow;
-  final String? host;
+
   final void Function(bool enabled) onChangeBookmark;
   final void Function(bool enabled) onChangeNotify;
 
   FollowListTile({
     required this.follow,
-    required this.host,
     required this.onEdit,
     required this.onDelete,
     required this.onRename,
@@ -179,7 +179,7 @@ class FollowListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    FollowStatus? status = follow.statuses[host];
+    FollowStatus? status = followController.status(follow);
 
     Widget contextMenu() {
       bool notified = follow.type == FollowType.notify;
@@ -234,7 +234,7 @@ class FollowListTile extends StatelessWidget {
         return '';
       }
       String text = status.unseen.toString();
-      if (status.unseen == follow.checkAmount) {
+      if (status.unseen == followController.refreshAmount) {
         text += '+';
       }
       text += ' new post';

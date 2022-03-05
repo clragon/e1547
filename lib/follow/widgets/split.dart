@@ -1,4 +1,3 @@
-import 'package:e1547/client/client.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
@@ -39,7 +38,7 @@ class _FollowsSplitPageState extends State<FollowsSplitPage>
                 curve: Curves.easeInOut,
               );
             }
-            if (controller.error != null) {
+            if (controller.error == null) {
               refreshController.refreshCompleted();
             } else {
               refreshController.refreshFailed();
@@ -82,10 +81,8 @@ class _FollowsSplitPageState extends State<FollowsSplitPage>
             addAutomaticKeepAlives: false,
             crossAxisCount: crossAxisCount,
             itemCount: controller.items.length,
-            itemBuilder: (context, index) => FollowTile(
-              follow: controller.items[index],
-              host: client.host,
-            ),
+            itemBuilder: (context, index) =>
+                FollowTile(follow: controller.items[index]),
             staggeredTileBuilder: tileBuilder,
           ),
           appBar: DefaultAppBar(

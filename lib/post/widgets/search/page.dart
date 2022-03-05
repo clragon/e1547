@@ -81,6 +81,35 @@ class _PostsPageState extends State<PostsPage> with ListenerCallbackMixin {
           if (widget.controller.denyMode != DenyListMode.unavailable)
             DrawerDenySwitch(controller: widget.controller),
           DrawerCounter(controller: widget.controller),
+          ListTile(
+            onTap: () => showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: Text('posts: ${widget.controller.itemList!.length}'),
+                content: SizedBox(
+                  height: 500,
+                  width: 200,
+                  child: ListView.builder(
+                    itemCount: widget.controller.itemList!.length,
+                    itemBuilder: (context, index) {
+                      Post current = widget.controller.itemList![index];
+                      return Text(
+                        current.id.toString(),
+                        style: TextStyle(
+                          color: widget.controller.itemList!
+                                  .sublist(0, index)
+                                  .any((element) => element.id == current.id)
+                              ? Colors.red
+                              : null,
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ),
+            title: Text('post ids'),
+          ),
         ],
       );
     }
@@ -126,8 +155,7 @@ class _PostsPageState extends State<PostsPage> with ListenerCallbackMixin {
           drawer: defaultNavigationDrawer(),
           endDrawer: endDrawer(),
           floatingActionButton: floatingActionButton(),
-          refresh: () =>
-              widget.controller.refresh(background: true, force: true),
+          refresh: () => widget.controller.backgroundRefresh(force: true),
           builder: (context) => PagedStaggeredGridView(
             key: joinKeys(['posts', crossAxisCount]),
             physics: BouncingScrollPhysics(),

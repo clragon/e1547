@@ -1,4 +1,3 @@
-import 'package:e1547/client/client.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/tag/tag.dart';
@@ -82,41 +81,36 @@ class _FollowingPageState extends State<FollowingPage> {
             );
           }
 
-          return AnimatedBuilder(
-            animation: client,
-            builder: (context, child) => ListView.builder(
-              physics: BouncingScrollPhysics(),
-              padding: EdgeInsets.only(
-                  top: 8, bottom: kBottomNavigationBarHeight + 24),
-              itemCount: followController.items.length,
-              itemBuilder: (context, index) => FollowListTile(
-                host: client.host,
-                follow: followController.items[index],
-                onRename: () =>
-                    editAlias(context, followController.items[index]),
-                onEdit: () =>
-                    addTags(context, follow: followController.items[index]),
-                onDelete: () =>
-                    followController.remove(followController.items[index]),
-                onChangeNotify: (enabled) {
-                  Follow follow = followController.items[index];
-                  if (enabled) {
-                    follow.type = FollowType.notify;
-                  } else {
-                    follow.type = FollowType.update;
-                  }
-                  followController.replace(index, follow);
-                },
-                onChangeBookmark: (enabled) {
-                  Follow follow = followController.items[index];
-                  if (enabled) {
-                    follow.type = FollowType.bookmark;
-                  } else {
-                    follow.type = FollowType.update;
-                  }
-                  followController.replace(index, follow);
-                },
-              ),
+          return ListView.builder(
+            physics: BouncingScrollPhysics(),
+            padding: EdgeInsets.only(
+                top: 8, bottom: kBottomNavigationBarHeight + 24),
+            itemCount: followController.items.length,
+            itemBuilder: (context, index) => FollowListTile(
+              follow: followController.items[index],
+              onRename: () => editAlias(context, followController.items[index]),
+              onEdit: () =>
+                  addTags(context, follow: followController.items[index]),
+              onDelete: () =>
+                  followController.remove(followController.items[index]),
+              onChangeNotify: (enabled) {
+                Follow follow = followController.items[index];
+                if (enabled) {
+                  follow.type = FollowType.notify;
+                } else {
+                  follow.type = FollowType.update;
+                }
+                followController.replace(index, follow);
+              },
+              onChangeBookmark: (enabled) {
+                Follow follow = followController.items[index];
+                if (enabled) {
+                  follow.type = FollowType.bookmark;
+                } else {
+                  follow.type = FollowType.update;
+                }
+                followController.replace(index, follow);
+              },
             ),
           );
         }

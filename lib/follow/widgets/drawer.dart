@@ -1,4 +1,3 @@
-import 'package:e1547/client/client.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/settings/settings.dart';
@@ -16,12 +15,12 @@ class _FollowMarkReadTileState extends State<FollowMarkReadTile>
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
-      animation: Listenable.merge([client, followController]),
+      animation: followController,
       builder: (context, child) {
         int unseen = followController.items.fold<int>(
           0,
           (previousValue, element) =>
-              previousValue + (element.statuses[client.host]?.unseen ?? 0),
+              previousValue + (followController.status(element)?.unseen ?? 0),
         );
         return ListTile(
           enabled: unseen != 0,

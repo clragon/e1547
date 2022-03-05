@@ -107,11 +107,11 @@ class Follow {
       if (status.unseen == null ||
           (statuses.entries.any((e) =>
               e.value != status &&
-              e.value.unseen == 0 &&
-              status.latest == e.value.latest))) {
+              status.latest == e.value.latest &&
+              e.value.unseen == 0))) {
         status.unseen = 0;
         updated = true;
-      } else {
+      } else if (length > status.unseen!) {
         status.unseen = length;
         updated = true;
       }

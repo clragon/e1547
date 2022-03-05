@@ -20,16 +20,18 @@ class FollowController extends DataUpdater<List<Follow>> with HostableUpdater {
   set _items(List<Follow> value) => _source.value = List.from(value);
   List<Follow> get items => _source.value;
 
-  static const int _refreshAmount = 5;
+  final int refreshAmount = 5;
 
   FollowController({required ValueNotifier<List<Follow>> settings})
       : _source = settings {
     _source.addListener(notifyListeners);
+    client.addListener(notifyListeners);
   }
 
   @override
   void dispose() {
     _source.removeListener(notifyListeners);
+    client.removeListener(notifyListeners);
     super.dispose();
   }
 
@@ -68,7 +70,7 @@ class FollowController extends DataUpdater<List<Follow>> with HostableUpdater {
       if (follow.type != FollowType.bookmark) {
         DateTime? updated = follow.statuses[client.host]?.updated;
         if (force || updated == null || now.difference(updated) > stale) {
-          if (await follow.refresh()) {
+          if (await refresh(follow)) {
             await write(data);
             await Future.delayed(Duration(milliseconds: 500));
           } else {
@@ -86,9 +88,9 @@ class FollowController extends DataUpdater<List<Follow>> with HostableUpdater {
     return data;
   }
 
-  bool followsTag(String tag) {
-    return items.any((element) => element.tags == tag);
-  }
+  bool followsTag(String tag) => items.any((element) => element.tags == tag);
+
+  FollowStatus? status(Follow follow) => follow.statuses[client.host];
 
   void add(Follow follow) {
     _items = List.from(items)..add(follow);
@@ -103,8 +105,9 @@ class FollowController extends DataUpdater<List<Follow>> with HostableUpdater {
   }
 
   void removeTag(String tag) {
-    Follow? removed = items.firstWhere((element) => element.tags == tag);
-    remove(removed);
+    items
+        .where((element) => element.tags == tag)
+        .forEach((element) => remove(element));
   }
 
   void replace(int index, Follow follow) {
@@ -114,8 +117,8 @@ class FollowController extends DataUpdater<List<Follow>> with HostableUpdater {
   Future<bool> refresh(Follow follow) async {
     return validateCall(
       () async {
-        List<Post> posts = await client.postsRaw(1,
-            search: follow.tags, limit: _refreshAmount);
+        List<Post> posts =
+            await client.postsRaw(1, search: follow.tags, limit: refreshAmount);
 
         List<String> denylist = settings.denylist.value;
 

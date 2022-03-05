@@ -41,12 +41,12 @@ class _SearchPageState extends State<SearchPage> with ListenerCallbackMixin {
 
   Future<void> updateSearch() async {
     await updatePool();
-    updateFollow();
+    await controller.waitForFirstPage();
+    await updateFollow();
   }
 
   Future<void> updateFollow() async {
-    List<Follow> follows = List.from(followController.items);
-    Follow? follow = follows.singleWhereOrNull(
+    Follow? follow = followController.items.singleWhereOrNull(
       (follow) => follow.tags == controller.search.value,
     );
     if (follow != null) {
