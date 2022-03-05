@@ -126,25 +126,6 @@ class _PostsPageState extends State<PostsPage> with ListenerCallbackMixin {
       );
     }
 
-    Widget itemBuilder(BuildContext context, Post item, int index) {
-      return SelectionItemOverlay(
-        item: item,
-        padding: EdgeInsets.all(4),
-        child: PostTile(
-          post: item,
-          controller: widget.controller,
-          onPressed: () => Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => PostDetailGallery(
-                controller: widget.controller,
-                initialPage: index,
-              ),
-            ),
-          ),
-        ),
-      );
-    }
-
     return TileLayout(
       child: SelectionLayout<Post>(
         enabled: widget.canSelect,
@@ -171,7 +152,18 @@ class _PostsPageState extends State<PostsPage> with ListenerCallbackMixin {
             pagingController: widget.controller,
             builderDelegate: defaultPagedChildBuilderDelegate<Post>(
               pagingController: widget.controller,
-              itemBuilder: itemBuilder,
+              itemBuilder: (context, item, index) => PostTile(
+                post: item,
+                controller: widget.controller,
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => PostDetailGallery(
+                      controller: widget.controller,
+                      initialPage: index,
+                    ),
+                  ),
+                ),
+              ),
               onEmpty: Text('No posts'),
               onError: Text('Failed to load posts'),
             ),

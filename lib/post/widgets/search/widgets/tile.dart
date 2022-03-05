@@ -67,45 +67,49 @@ class PostTile extends StatelessWidget {
 
     return Card(
       clipBehavior: Clip.antiAlias,
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          ValueListenableBuilder<bool>(
-            valueListenable: settings.showPostInfo,
-            builder: (context, value, child) => Column(
-              children: [
-                Expanded(
-                  child: image(),
-                ),
-                if (value)
-                  PostInfoBar(
-                    post: post,
-                    controller: controller,
+      child: SelectionItemOverlay(
+        item: post,
+        padding: EdgeInsets.all(4),
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            ValueListenableBuilder<bool>(
+              valueListenable: settings.showPostInfo,
+              builder: (context, value, child) => Column(
+                children: [
+                  Expanded(
+                    child: image(),
                   ),
-              ],
+                  if (value)
+                    PostInfoBar(
+                      post: post,
+                      controller: controller,
+                    ),
+                ],
+              ),
             ),
-          ),
-          Positioned(top: 0, right: 0, child: tag()),
-          Material(
-            type: MaterialType.transparency,
-            child: InkWell(
-              onTap: onPressed ??
-                  (controller != null
-                      ? () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => PostDetailGallery(
-                                controller: controller!,
-                                initialPage:
-                                    controller!.itemList!.indexOf(post),
+            Positioned(top: 0, right: 0, child: tag()),
+            Material(
+              type: MaterialType.transparency,
+              child: InkWell(
+                onTap: onPressed ??
+                    (controller != null
+                        ? () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => PostDetailGallery(
+                                  controller: controller!,
+                                  initialPage:
+                                      controller!.itemList!.indexOf(post),
+                                ),
                               ),
-                            ),
-                          );
-                        }
-                      : null),
+                            );
+                          }
+                        : null),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
