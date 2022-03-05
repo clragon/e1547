@@ -56,7 +56,8 @@ class _SelectionLayoutState<T> extends State<SelectionLayout<T>> {
 
   void onSelectionChanged(Set<T> selections) {
     setState(() {
-      this.selections = Set.from(selections);
+      this.selections.clear();
+      this.selections.addAll(selections);
     });
   }
 
