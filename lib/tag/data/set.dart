@@ -1,19 +1,17 @@
-import 'package:e1547/tag/tag.dart';
-
-class Tagset extends Iterable<Tag> {
-  Tagset(Set<Tag> tags) : _tags = {for (Tag t in tags) t.name: t};
+class Tagset extends Iterable<StringTag> {
+  Tagset(Set<StringTag> tags) : _tags = {for (StringTag t in tags) t.name: t};
 
   Tagset.parse(String tagString) : _tags = {} {
     for (String ts in tagString.split(RegExp(r'\s+'))) {
       if (ts.trim().isEmpty) {
         continue;
       }
-      Tag t = Tag.parse(ts);
+      StringTag t = StringTag.parse(ts);
       _tags[t.name] = t;
     }
   }
 
-  final Map<String, Tag> _tags;
+  final Map<String, StringTag> _tags;
 
   Uri url(String host) => Uri(
         scheme: 'https',
@@ -28,7 +26,7 @@ class Tagset extends Iterable<Tag> {
   }
 
   String? operator [](String? name) {
-    Tag? t = _tags[name!];
+    StringTag? t = _tags[name!];
     if (t == null) {
       return null;
     }
@@ -37,7 +35,7 @@ class Tagset extends Iterable<Tag> {
   }
 
   void operator []=(String name, String? value) {
-    _tags[name] = Tag(name, value);
+    _tags[name] = StringTag(name, value);
   }
 
   void remove(String? name) {
@@ -45,14 +43,14 @@ class Tagset extends Iterable<Tag> {
   }
 
   @override
-  Iterator<Tag> get iterator => _tags.values.iterator;
+  Iterator<StringTag> get iterator => _tags.values.iterator;
 
   @override
   String toString() {
-    List<Tag> meta = [];
-    List<Tag> normal = [];
+    List<StringTag> meta = [];
+    List<StringTag> normal = [];
 
-    for (Tag t in _tags.values) {
+    for (StringTag t in _tags.values) {
       if (t.value != null) {
         meta.add(t);
       } else {
@@ -61,7 +59,7 @@ class Tagset extends Iterable<Tag> {
     }
 
     // normal tags, then optional, then subtracting
-    int order(Tag a, Tag b) {
+    int order(StringTag a, StringTag b) {
       int getPrefixValue(String prefix) {
         switch (prefix) {
           case '-':
@@ -82,9 +80,36 @@ class Tagset extends Iterable<Tag> {
     meta.sort(order);
 
     // meta tags first
-    List<Tag> output = [];
+    List<StringTag> output = [];
     output.addAll(meta);
     output.addAll(normal);
     return output.join(' ');
   }
+}
+
+class StringTag {
+  final String name;
+  final String? value;
+
+  StringTag(this.name, [this.value]);
+
+  factory StringTag.parse(String tag) {
+    assert(tag.trim().isNotEmpty, "Can't parse an empty tag.");
+    List<String> components = tag.trim().split(':');
+    assert(components.length == 1 || components.length == 2);
+
+    String name = components[0];
+    String? value = components.length == 2 ? components[1] : null;
+    return StringTag(name, value);
+  }
+
+  @override
+  String toString() => value == null ? name : '$name:$value';
+
+  @override
+  bool operator ==(Object other) =>
+      other is StringTag && name == other.name && value == other.value;
+
+  @override
+  int get hashCode => toString().hashCode;
 }

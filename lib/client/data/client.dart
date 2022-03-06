@@ -551,7 +551,7 @@ class Client extends ChangeNotifier {
     initializeCurrentUser(reset: true);
   }
 
-  Future<List> tag(String search, {int? category, bool? force}) async {
+  Future<List<Tag>> tags(String search, {int? category, bool? force}) async {
     await initialized;
     final body = await dio
         .getWithCache(
@@ -566,16 +566,22 @@ class Client extends ChangeNotifier {
           forceRefresh: force,
         )
         .then((response) => response.data);
-    List tags = [];
+    List<Tag> tags = [];
     if (body is List) {
-      tags = body;
+      for (final tag in body) {
+        tags.add(Tag.fromJson(tag));
+      }
     }
     return tags;
   }
 
-  Future<List> autocomplete(String search, {int? category, bool? force}) async {
+  Future<List<AutocompleteTag>> autocomplete(String search,
+      {int? category, bool? force}) async {
     await initialized;
     if (category == null) {
+      if (search.length < 3) {
+        return [];
+      }
       final body = await dio
           .getWithCache(
             'tags/autocomplete.json',
@@ -587,14 +593,32 @@ class Client extends ChangeNotifier {
             forceRefresh: force,
           )
           .then((response) => response.data);
-      List tags = [];
+      List<AutocompleteTag> tags = [];
       if (body is List) {
-        tags = body;
+        for (final tag in body) {
+          tags.add(AutocompleteTag.fromJson(tag));
+        }
       }
       tags = tags.take(3).toList();
       return tags;
     } else {
-      return tag(search + '*', category: category, force: force);
+      List<AutocompleteTag> tags = [];
+      for (final tag in await this.tags(
+        search + '*',
+        category: category,
+        force: force,
+      )) {
+        tags.add(
+          AutocompleteTag(
+            id: tag.id,
+            name: tag.name,
+            postCount: tag.postCount,
+            category: tag.category,
+            antecedentName: null,
+          ),
+        );
+      }
+      return tags;
     }
   }
 

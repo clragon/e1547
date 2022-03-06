@@ -125,15 +125,16 @@ Future<bool> onPostTagsEdit(
   tags[category]!.sort();
   controller.value = controller.value!.copyWith(tags: tags);
   if (category != 'general') {
-    () async {
+    Future(() async {
       for (String tag in edited) {
-        List validator = await client.tag(tag);
+        List<Tag> tags = await client.tags(tag);
         String? target;
-        if (validator.isEmpty) {
+        if (tags.isEmpty) {
           target = 'general';
-        } else if (validator[0]['category'] != categories[category]) {
+        } else if (tags.first.name == tag &&
+            tags.first.category != categories[category]) {
           target = categories.keys
-              .firstWhere((k) => validator[0]['category'] == categories[k]);
+              .firstWhere((k) => tags.first.category == categories[k]);
         }
         if (target != null) {
           Map<String, List<String>> tags = Map.from(controller.value!.tags);
@@ -150,7 +151,7 @@ Future<bool> onPostTagsEdit(
         }
         await Future.delayed(Duration(milliseconds: 200));
       }
-    }();
+    });
   }
   return true;
 }

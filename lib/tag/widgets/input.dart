@@ -7,6 +7,7 @@ import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:intl/intl.dart';
 
 typedef SubmitString = FutureOr<void> Function(String result);
 
@@ -49,7 +50,7 @@ class _TagInputState extends State<TagInput> {
 
   @override
   Widget build(BuildContext context) {
-    return TypeAheadField(
+    return TypeAheadField<AutocompleteTag>(
       direction: AxisDirection.up,
       hideOnEmpty: true,
       hideOnError: true,
@@ -67,7 +68,7 @@ class _TagInputState extends State<TagInput> {
         onSubmitted: (result) => widget.submit(sortTags(result)),
         textInputAction: widget.textInputAction,
       ),
-      onSuggestionSelected: (dynamic suggestion) {
+      onSuggestionSelected: (suggestion) {
         List<String> tags = sortTags(controller.text).split(' ');
         List<String> before = [];
         for (String tag in tags) {
@@ -77,51 +78,41 @@ class _TagInputState extends State<TagInput> {
             if (operator != '-' && operator != '~') {
               operator = '';
             }
-            tags[tags.indexOf(tag)] = operator + suggestion['name'];
+            tags[tags.indexOf(tag)] = operator + suggestion.name;
             break;
           }
         }
         controller.text = tags.join(' ') + ' ';
         controller.setFocusToEnd();
       },
-      itemBuilder: (context, dynamic itemData) {
-        String count = itemData['post_count'].toString();
-        return Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Container(
-                  color: getCategoryColor(categories.entries
-                      .firstWhere((e) => e.value == itemData['category'],
-                          orElse: () => MapEntry('', 0))
-                      .key),
-                  height: 54,
-                  width: 5,
-                ),
-                Padding(
-                  padding: EdgeInsets.all(16),
-                  child: Text(
-                    itemData['name'],
-                    style: TextStyle(fontSize: 16),
-                  ),
-                ),
-              ],
+      itemBuilder: (context, itemData) => Row(
+        children: [
+          Container(
+            color: getCategoryColor(categories.entries
+                .firstWhere((e) => e.value == itemData.category,
+                    orElse: () => MapEntry('', 0))
+                .key),
+            height: 54,
+            width: 5,
+          ),
+          Padding(
+            padding: EdgeInsets.all(16),
+            child: Text(
+              itemData.name,
+              style: TextStyle(fontSize: 16),
             ),
-            Padding(
-              padding: EdgeInsets.all(16),
-              child: Text(
-                itemData['post_count'] >= 1000
-                    ? '${count.substring(0, count.length - 3)}k'
-                    : count.toString(),
-                style: TextStyle(fontSize: 16),
-              ),
+          ),
+          Spacer(),
+          Padding(
+            padding: EdgeInsets.all(16),
+            child: Text(
+              NumberFormat.compact().format(itemData.postCount),
+              style: TextStyle(fontSize: 16),
             ),
-          ],
-        );
-      },
-      loadingBuilder: (context) => Container(height: 0),
+          ),
+        ],
+      ),
+      loadingBuilder: (context) => SizedBox(),
       noItemsFoundBuilder: (context) => ListTile(
         title: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -134,7 +125,7 @@ class _TagInputState extends State<TagInput> {
         List<String> tags = controller.text.split(' ');
         List<String> before = [];
         int selection = 0;
-        for (String tag in tags) {
+        for (final tag in tags) {
           before.add(tag);
           if (before.join(' ').length >= controller.selection.extent.offset) {
             selection = tags.indexOf(tag);
@@ -143,8 +134,8 @@ class _TagInputState extends State<TagInput> {
         }
         if (tagToName(tags[selection].trim()).isNotEmpty &&
             !tags[selection].contains(':')) {
-          return (await client.autocomplete(tagToName(tags[selection]),
-              category: widget.category));
+          return client.autocomplete(tagToName(tags[selection]),
+              category: widget.category);
         } else {
           return [];
         }
