@@ -4,6 +4,7 @@ import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class PostsPage extends StatefulWidget {
   final bool canSelect;
@@ -74,6 +75,19 @@ class _PostsPageState extends State<PostsPage> {
                 builder: (context) => AlertDialog(
                   title: Text('${widget.controller.itemList?.length ?? 0}'),
                   actions: [
+                    TextButton(
+                      onPressed: () {
+                        Clipboard.setData(
+                          ClipboardData(
+                            text: widget.controller.itemList!
+                                .map((e) => e.id)
+                                .toList()
+                                .join('\n'),
+                          ),
+                        );
+                      },
+                      child: Text('COPY'),
+                    ),
                     TextButton(
                       onPressed: Navigator.of(context).maybePop,
                       child: Text('OK'),

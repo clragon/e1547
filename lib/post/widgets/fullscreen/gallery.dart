@@ -48,16 +48,19 @@ class _PostFullscreenGalleryState extends State<PostFullscreenGallery>
     }
   }
 
+  late NavigationController navigation;
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    topLevelNavigationController.routeObserver
+    navigation = NavigationData.of(context);
+    navigation.routeObserver
         .subscribe(this, ModalRoute.of(context) as PageRoute);
   }
 
   @override
   void dispose() {
-    topLevelNavigationController.routeObserver.unsubscribe(this);
+    navigation.routeObserver.unsubscribe(this);
     frameController.dispose();
     SystemChrome.setSystemUIChangeCallback(null);
     super.dispose();

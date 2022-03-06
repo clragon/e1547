@@ -22,6 +22,7 @@ class _PostDetailState extends State<PostDetail>
       widget.controller != null ? PostEditingController(widget.post) : null;
   bool keepPlaying = false;
 
+  late NavigationController navigation;
   late NavigatorState navigator;
   late ModalRoute route;
 
@@ -45,14 +46,15 @@ class _PostDetailState extends State<PostDetail>
     super.didChangeDependencies();
     navigator = Navigator.of(context);
     route = ModalRoute.of(context)!;
-    topLevelNavigationController.routeObserver.subscribe(this, route as PageRoute);
+    navigation = NavigationData.of(context);
+    navigation.routeObserver.subscribe(this, route as PageRoute);
   }
 
   @override
   void reassemble() {
     super.reassemble();
-    topLevelNavigationController.routeObserver.unsubscribe(this);
-    topLevelNavigationController.routeObserver
+    navigation.routeObserver.unsubscribe(this);
+    navigation.routeObserver
         .subscribe(this, ModalRoute.of(context) as PageRoute);
     if (widget.post.type == PostType.image && widget.post.file.url != null) {
       preloadImage(context: context, post: widget.post, size: ImageSize.file);
@@ -61,7 +63,7 @@ class _PostDetailState extends State<PostDetail>
 
   @override
   void dispose() {
-    topLevelNavigationController.routeObserver.unsubscribe(this);
+    navigation.routeObserver.unsubscribe(this);
     widget.post.controller?.pause();
     editingController?.dispose();
     super.dispose();
