@@ -15,20 +15,19 @@ final NavigationController topLevelNavigationController =
 
 double defaultDrawerEdge(double screenWidth) => screenWidth * 0.1;
 
-class NavigationDestination<UniqueRoute extends Enum> {
+class NavigationDestination {
   final String path;
   final WidgetBuilder builder;
-  final UniqueRoute? route;
+  final bool unique;
 
   const NavigationDestination({
     required this.path,
     required this.builder,
-    this.route,
+    this.unique = false,
   });
 }
 
-class NavigationDrawerDestination<UniqueRoute extends Enum>
-    extends NavigationDestination<UniqueRoute> {
+class NavigationDrawerDestination extends NavigationDestination {
   final String name;
   final bool Function(BuildContext context)? visible;
   final Widget? icon;
@@ -41,33 +40,32 @@ class NavigationDrawerDestination<UniqueRoute extends Enum>
     this.visible,
     required String path,
     required WidgetBuilder builder,
-    UniqueRoute? route,
+    bool unique = false,
   }) : super(
           path: path,
           builder: builder,
-          route: route,
+          unique: unique,
         );
 }
 
-class NavigationController<UniqueRoute extends Enum> {
-  final List<NavigationDestination<UniqueRoute>> destinations;
+class NavigationController {
+  final List<NavigationDestination> destinations;
   late final Map<String, WidgetBuilder> routes;
 
   final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
 
-  late UniqueRoute drawerSelection;
+  late String drawerSelection;
 
   NavigationController({required this.destinations}) {
     drawerSelection =
-        destinations.singleWhere((element) => element.path == '/').route!;
+        destinations.singleWhere((element) => element.path == '/').path;
     routes = _generateRoutes(destinations);
   }
 
-  WidgetBuilder _getDestinationBuilder(
-      NavigationDestination<UniqueRoute> destintation) {
-    if (destintation.route != null) {
+  WidgetBuilder _getDestinationBuilder(NavigationDestination destintation) {
+    if (destintation.unique) {
       return (context) {
-        drawerSelection = destintation.route!;
+        drawerSelection = destintation.path;
         return destintation.builder(context);
       };
     } else {
@@ -76,7 +74,7 @@ class NavigationController<UniqueRoute extends Enum> {
   }
 
   Map<String, WidgetBuilder> _generateRoutes(
-      List<NavigationDestination<UniqueRoute>> destinations) {
+      List<NavigationDestination> destinations) {
     return Map.fromEntries(
       destinations.map(
         (element) => MapEntry(
@@ -88,30 +86,21 @@ class NavigationController<UniqueRoute extends Enum> {
   }
 }
 
-class NavigationData<T extends Enum> extends InheritedWidget {
-  final NavigationController<T> controller;
+class NavigationData extends InheritedWidget {
+  final NavigationController controller;
 
   NavigationData({required Widget child, required this.controller})
       : super(child: child);
 
-  static NavigationController<T> of<T extends Enum>(BuildContext context) {
+  static NavigationController of(BuildContext context) {
     return context
-        .dependOnInheritedWidgetOfExactType<NavigationData<T>>()!
+        .dependOnInheritedWidgetOfExactType<NavigationData>()!
         .controller;
   }
 
   @override
-  bool updateShouldNotify(covariant NavigationData<T> oldWidget) =>
+  bool updateShouldNotify(covariant NavigationData oldWidget) =>
       oldWidget.controller != controller;
-}
-
-enum DrawerSelection {
-  home,
-  hot,
-  favorites,
-  follows,
-  pools,
-  topics,
 }
 
 enum DrawerGroup {
@@ -120,13 +109,13 @@ enum DrawerGroup {
   settings,
 }
 
-final List<NavigationDestination<DrawerSelection>> topLevelDestinations = [
+final List<NavigationDestination> topLevelDestinations = [
   NavigationDrawerDestination(
     path: '/',
     name: 'Home',
     icon: Icon(Icons.home),
     builder: (context) => HomePage(),
-    route: DrawerSelection.home,
+    unique: true,
     group: DrawerGroup.search.name,
   ),
   NavigationDrawerDestination(
@@ -134,7 +123,7 @@ final List<NavigationDestination<DrawerSelection>> topLevelDestinations = [
     name: 'Hot',
     icon: Icon(Icons.whatshot),
     builder: (context) => HotPage(),
-    route: DrawerSelection.hot,
+    unique: true,
     group: DrawerGroup.search.name,
   ),
   NavigationDrawerDestination(
@@ -149,7 +138,7 @@ final List<NavigationDestination<DrawerSelection>> topLevelDestinations = [
     name: 'Favorites',
     icon: Icon(Icons.favorite),
     builder: (context) => FavPage(),
-    route: DrawerSelection.favorites,
+    unique: true,
     group: DrawerGroup.collection.name,
   ),
   NavigationDrawerDestination(
@@ -157,7 +146,7 @@ final List<NavigationDestination<DrawerSelection>> topLevelDestinations = [
     name: 'Following',
     icon: Icon(Icons.turned_in),
     builder: (context) => FollowsPage(),
-    route: DrawerSelection.follows,
+    unique: true,
     group: DrawerGroup.collection.name,
   ),
   NavigationDrawerDestination(
@@ -165,7 +154,7 @@ final List<NavigationDestination<DrawerSelection>> topLevelDestinations = [
     name: 'Pools',
     icon: Icon(Icons.collections),
     builder: (context) => PoolsPage(),
-    route: DrawerSelection.pools,
+    unique: true,
     group: DrawerGroup.collection.name,
   ),
   NavigationDrawerDestination(
@@ -174,7 +163,7 @@ final List<NavigationDestination<DrawerSelection>> topLevelDestinations = [
     icon: Icon(Icons.forum),
     builder: (context) => TopicsPage(),
     visible: (context) => settings.showBeta.value,
-    route: DrawerSelection.topics,
+    unique: true,
     group: DrawerGroup.collection.name,
   ),
   NavigationDrawerDestination(
@@ -209,26 +198,25 @@ final List<NavigationDestination<DrawerSelection>> topLevelDestinations = [
   ),
 ];
 
-class NavigationDrawer<UniqueRoute extends Enum> extends StatelessWidget {
+class NavigationDrawer extends StatelessWidget {
   const NavigationDrawer();
 
-  List<NavigationDrawerDestination<UniqueRoute>> getDrawerDestinations(
-      List<NavigationDestination<UniqueRoute>> destinations) {
+  List<NavigationDrawerDestination> getDrawerDestinations(
+      List<NavigationDestination> destinations) {
     return destinations
-        .where((e) => e is NavigationDrawerDestination<UniqueRoute>)
+        .where((e) => e is NavigationDrawerDestination)
         .toList()
-        .cast<NavigationDrawerDestination<UniqueRoute>>();
+        .cast<NavigationDrawerDestination>();
   }
 
   @override
   Widget build(BuildContext context) {
-    final NavigationController<UniqueRoute> controller =
-        NavigationData.of(context);
+    final NavigationController controller = NavigationData.of(context);
 
     List<Widget> children = [];
     children.add(ProfileHeader());
 
-    List<NavigationDrawerDestination<UniqueRoute>> destinations =
+    List<NavigationDrawerDestination> destinations =
         getDrawerDestinations(controller.destinations);
 
     String? currentGroup = destinations.first.group;
@@ -243,11 +231,11 @@ class NavigationDrawer<UniqueRoute extends Enum> extends StatelessWidget {
       }
       children.add(
         ListTile(
-          selected: destination.route != null &&
-              destination.route == controller.drawerSelection,
+          selected: destination.unique &&
+              destination.path == controller.drawerSelection,
           title: Text(destination.name),
           leading: destination.icon != null ? destination.icon : null,
-          onTap: destination.route != null
+          onTap: destination.unique
               ? () => Navigator.of(context)
                   .pushNamedAndRemoveUntil(destination.path, (_) => false)
               : () => Navigator.of(context).popAndPushNamed(destination.path),
