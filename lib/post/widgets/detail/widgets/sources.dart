@@ -7,12 +7,13 @@ import 'package:url_launcher/url_launcher.dart';
 
 class SourceDisplay extends StatelessWidget {
   final Post post;
-  final PostEditingController? editingController;
 
-  const SourceDisplay({required this.post, this.editingController});
+  const SourceDisplay({required this.post});
 
   @override
   Widget build(BuildContext context) {
+    PostEditingController? editingController = PostEditor.of(context);
+
     return AnimatedSelector(
       animation: Listenable.merge([editingController]),
       selector: () => [
@@ -49,12 +50,12 @@ class SourceDisplay extends StatelessWidget {
                                 MaterialPageRoute(
                                   builder: (context) => TextEditor(
                                     title: '#${post.id} sources',
-                                    content: editingController!.value!.sources
+                                    content: editingController.value!.sources
                                         .join('\n'),
                                     dtext: false,
                                     onSubmit: (context, text) {
-                                      editingController!.value =
-                                          editingController!.value!.copyWith(
+                                      editingController.value =
+                                          editingController.value!.copyWith(
                                         sources: text.trim().split('\n'),
                                       );
                                       return true;

@@ -8,16 +8,16 @@ import 'package:flutter/services.dart';
 class ArtistDisplay extends StatelessWidget {
   final Post post;
   final PostController? controller;
-  final PostEditingController? editingController;
 
   const ArtistDisplay({
     required this.post,
     this.controller,
-    this.editingController,
   });
 
   @override
   Widget build(BuildContext context) {
+    PostEditingController? editingController = PostEditor.of(context);
+
     Widget artists() {
       return AnimatedSelector(
         animation: Listenable.merge([editingController]),

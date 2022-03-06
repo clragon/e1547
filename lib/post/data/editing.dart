@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:e1547/interface/interface.dart';
 
 import 'post.dart';
 
@@ -137,10 +137,12 @@ class PostEdit {
   }
 }
 
-class PostEditingController extends ValueNotifier<PostEdit?> {
+class PostEditingController extends SheetActionController {
   final Post post;
 
-  PostEditingController(this.post) : super(null);
+  PostEdit? value;
+
+  PostEditingController(this.post);
 
   bool get editing => value != null;
 
@@ -151,11 +153,14 @@ class PostEditingController extends ValueNotifier<PostEdit?> {
 
   void startEditing() {
     value = PostEdit.fromPost(post);
+    notifyListeners();
   }
 
   void stopEditing() {
     _loading = false;
     value = null;
+    close();
+    notifyListeners();
   }
 
   void setLoading(bool value) {

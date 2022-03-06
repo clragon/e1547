@@ -20,7 +20,6 @@ class _PostDetailState extends State<PostDetail>
     with ListenerCallbackMixin, RouteAware {
   late PostEditingController? editingController =
       widget.controller != null ? PostEditingController(widget.post) : null;
-  SheetActionController sheetController = SheetActionController();
   bool keepPlaying = false;
 
   late NavigatorState navigator;
@@ -28,7 +27,6 @@ class _PostDetailState extends State<PostDetail>
 
   @override
   Map<Listenable, VoidCallback> get listeners => {
-        if (editingController != null) editingController!: closeSheet,
         if (widget.controller != null) widget.controller!: onPageChange,
       };
 
@@ -39,12 +37,6 @@ class _PostDetailState extends State<PostDetail>
       } else if (route.isActive) {
         navigator.removeRoute(route);
       }
-    }
-  }
-
-  void closeSheet() {
-    if (!editingController!.editing) {
-      sheetController.close();
     }
   }
 
@@ -71,6 +63,7 @@ class _PostDetailState extends State<PostDetail>
   void dispose() {
     navigationController.routeObserver.unsubscribe(this);
     widget.post.controller?.pause();
+    editingController?.dispose();
     super.dispose();
   }
 
@@ -112,32 +105,32 @@ class _PostDetailState extends State<PostDetail>
   }
 
   Future<void> submitEdit(BuildContext context) async {
-    sheetController.show(
+    editingController!.show(
       context,
       ControlledTextField(
+        actionController: editingController!,
         labelText: 'Reason',
         submit: (value) async {
           editingController!.value =
               editingController!.value!.copyWith(editReason: value);
           return editPost(context, editingController!);
         },
-        actionController: sheetController,
       ),
     );
   }
 
   Widget fab() {
     return AnimatedBuilder(
-      animation: Listenable.merge([editingController, sheetController]),
+      animation: Listenable.merge([editingController]),
       builder: (context, child) => FloatingActionButton(
         heroTag: null,
         backgroundColor: Theme.of(context).cardColor,
         foregroundColor: Theme.of(context).iconTheme.color,
         onPressed: editingController?.editing ?? false
-            ? sheetController.action ?? () => submitEdit(context)
+            ? editingController!.action ?? () => submitEdit(context)
             : () {},
         child: editingController?.editing ?? false
-            ? Icon(sheetController.isShown ? Icons.add : Icons.check)
+            ? Icon(editingController!.isShown ? Icons.add : Icons.check)
             : Padding(
                 padding: EdgeInsets.only(left: 2),
                 child: FavoriteButton(
@@ -170,9 +163,8 @@ class _PostDetailState extends State<PostDetail>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: PostEditingScope(
+      body: PostEditor(
         editingController: editingController,
-        sheetController: sheetController,
         child: Scaffold(
           extendBodyBehindAppBar: true,
           appBar: PostDetailAppBar(
@@ -226,68 +218,45 @@ class _PostDetailState extends State<PostDetail>
                         ArtistDisplay(
                           post: widget.post,
                           controller: widget.controller,
-                          editingController: editingController,
                         ),
-                        DescriptionDisplay(
-                          post: widget.post,
-                          editingController: editingController,
-                        ),
-                        PostEditingDependant(
+                        DescriptionDisplay(post: widget.post),
+                        PostEditorChild(
                           shown: false,
-                          controller: editingController,
                           child: LikeDisplay(
                             post: widget.post,
                             controller: widget.controller,
                           ),
                         ),
-                        PostEditingDependant(
+                        PostEditorChild(
                           shown: false,
-                          controller: editingController,
                           child: CommentDisplay(
                             post: widget.post,
                             controller: widget.controller,
                           ),
                         ),
-                        Builder(
-                          builder: (context) => ParentDisplay(
-                            post: widget.post,
-                            actionController: sheetController,
-                            editingController: editingController,
-                          ),
-                        ),
-                        PostEditingDependant(
+                        ParentDisplay(post: widget.post),
+                        PostEditorChild(
                           shown: false,
-                          controller: editingController,
                           child: PoolDisplay(post: widget.post),
                         ),
-                        Builder(
-                          builder: (context) => TagDisplay(
-                            post: widget.post,
-                            controller: widget.controller,
-                            actionController: sheetController,
-                            editingController: editingController,
-                          ),
+                        TagDisplay(
+                          post: widget.post,
+                          controller: widget.controller,
                         ),
-                        PostEditingDependant(
+                        PostEditorChild(
                           shown: false,
-                          controller: editingController,
                           child: FileDisplay(
                             post: widget.post,
                             controller: widget.controller,
                           ),
                         ),
-                        PostEditingDependant(
+                        PostEditorChild(
                           shown: true,
-                          controller: editingController,
                           child: RatingDisplay(
                             post: widget.post,
-                            editingController: editingController,
                           ),
                         ),
-                        SourceDisplay(
-                          post: widget.post,
-                          editingController: editingController,
-                        ),
+                        SourceDisplay(post: widget.post),
                       ],
                     ),
                   )

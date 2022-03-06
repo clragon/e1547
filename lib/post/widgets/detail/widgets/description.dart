@@ -5,12 +5,13 @@ import 'package:flutter/material.dart';
 
 class DescriptionDisplay extends StatelessWidget {
   final Post post;
-  final PostEditingController? editingController;
 
-  const DescriptionDisplay({required this.post, this.editingController});
+  const DescriptionDisplay({required this.post});
 
   @override
   Widget build(BuildContext context) {
+    PostEditingController? editingController = PostEditor.of(context);
+
     return AnimatedSelector(
       animation: Listenable.merge([editingController]),
       selector: () => [
@@ -43,10 +44,10 @@ class DescriptionDisplay extends StatelessWidget {
                                   builder: (context) => TextEditor(
                                     title: '#${post.id} description',
                                     content:
-                                        editingController!.value!.description,
+                                        editingController.value!.description,
                                     onSubmit: (context, text) {
-                                      editingController!.value =
-                                          editingController!.value!.copyWith(
+                                      editingController.value =
+                                          editingController.value!.copyWith(
                                         description: text,
                                       );
                                       return true;

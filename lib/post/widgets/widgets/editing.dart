@@ -2,22 +2,35 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/data/editing.dart';
 import 'package:flutter/material.dart';
 
-class PostEditingScope extends StatelessWidget {
+class PostEditorData extends InheritedNotifier<PostEditingController> {
+  PostEditorData(
+      {required Widget child, required PostEditingController controller})
+      : super(child: child, notifier: controller);
+}
+
+class PostEditor extends StatelessWidget {
   final Widget child;
   final PostEditingController? editingController;
-  final SheetActionController? sheetController;
 
-  const PostEditingScope({
+  const PostEditor({
     required this.child,
     this.editingController,
-    this.sheetController,
   });
+
+  static PostEditingController? of(BuildContext context) {
+    return context
+        .dependOnInheritedWidgetOfExactType<PostEditorData>()
+        ?.notifier;
+  }
 
   @override
   Widget build(BuildContext context) {
+    if (editingController == null) return child;
+
     return WillPopScope(
+      child: PostEditorData(controller: editingController!, child: child),
       onWillPop: () async {
-        if (sheetController?.isShown ?? false) {
+        if (editingController?.isShown ?? false) {
           return true;
         }
         if (editingController?.editing ?? false) {
@@ -26,30 +39,24 @@ class PostEditingScope extends StatelessWidget {
         }
         return true;
       },
-      child: child,
     );
   }
 }
 
-class PostEditingDependant extends StatelessWidget {
+class PostEditorChild extends StatelessWidget {
   final Widget child;
   final bool shown;
-  final PostEditingController? controller;
 
-  const PostEditingDependant({
+  const PostEditorChild({
     required this.child,
     required this.shown,
-    this.controller,
   });
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: Listenable.merge([controller]),
-      builder: (context, child) => CrossFade(
-        showChild: shown == (controller?.editing ?? false),
-        child: child!,
-      ),
+    PostEditingController? controller = PostEditor.of(context);
+    return CrossFade(
+      showChild: shown == (controller?.editing ?? false),
       child: child,
     );
   }

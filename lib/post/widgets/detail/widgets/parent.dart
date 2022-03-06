@@ -6,17 +6,13 @@ import 'package:flutter/services.dart';
 
 class ParentDisplay extends StatelessWidget {
   final Post post;
-  final SheetActionController? actionController;
-  final PostEditingController? editingController;
 
-  const ParentDisplay({
-    required this.post,
-    this.actionController,
-    this.editingController,
-  });
+  const ParentDisplay({required this.post});
 
   @override
   Widget build(BuildContext context) {
+    PostEditingController? editingController = PostEditor.of(context);
+
     return AnimatedSelector(
       animation: Listenable.merge([editingController]),
       selector: () => [
@@ -39,30 +35,25 @@ class ParentDisplay extends StatelessWidget {
                     padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
                     child: Text(
                       'Parent',
-                      style: TextStyle(
-                        fontSize: 16,
-                      ),
+                      style: TextStyle(fontSize: 16),
                     ),
                   ),
                   LoadingTile(
                     leading: Icon(Icons.supervisor_account),
                     title: Text(parentId?.toString() ?? 'none'),
-                    trailing: isEditing && actionController != null
-                        ? Builder(
-                            builder: (context) => IconButton(
-                              icon: Icon(Icons.edit),
-                              onPressed: editingController!.canEdit
-                                  ? () {
-                                      actionController!.show(
-                                        context,
-                                        ParentEditor(
-                                          actionController: actionController!,
-                                          editingController: editingController!,
-                                        ),
-                                      );
-                                    }
-                                  : null,
-                            ),
+                    trailing: isEditing && editingController != null
+                        ? IconButton(
+                            icon: Icon(Icons.edit),
+                            onPressed: editingController.canEdit
+                                ? () {
+                                    editingController.show(
+                                      context,
+                                      ParentEditor(
+                                        editingController: editingController,
+                                      ),
+                                    );
+                                  }
+                                : null,
                           )
                         : null,
                     onTap: () async {
@@ -151,13 +142,9 @@ class ParentDisplay extends StatelessWidget {
 }
 
 class ParentEditor extends StatefulWidget {
-  final ActionController actionController;
   final PostEditingController editingController;
 
-  const ParentEditor({
-    required this.actionController,
-    required this.editingController,
-  });
+  const ParentEditor({required this.editingController});
 
   @override
   _ParentEditorState createState() => _ParentEditorState();
@@ -172,7 +159,7 @@ class _ParentEditorState extends State<ParentEditor> {
     textController.text =
         widget.editingController.value?.parentId?.toString() ?? ' ';
     textController.setFocusToEnd();
-    widget.actionController.setAction(submit);
+    widget.editingController.setAction(submit);
   }
 
   void showError(String message) {
@@ -214,8 +201,8 @@ class _ParentEditorState extends State<ParentEditor> {
         FilteringTextInputFormatter.allow(RegExp(r'^ ?\d*')),
       ],
       decoration: InputDecoration(labelText: 'Parent ID'),
-      onSubmitted: (_) => widget.actionController.action!(),
-      readOnly: widget.actionController.isLoading,
+      onSubmitted: (_) => widget.editingController.action!(),
+      readOnly: widget.editingController.isLoading,
     );
   }
 }

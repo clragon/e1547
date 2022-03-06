@@ -16,12 +16,13 @@ Map<Rating, String> ratingTexts = {
 
 class RatingDisplay extends StatelessWidget {
   final Post post;
-  final PostEditingController? editingController;
 
-  const RatingDisplay({required this.post, this.editingController});
+  const RatingDisplay({required this.post});
 
   @override
   Widget build(BuildContext context) {
+    PostEditingController? editingController = PostEditor.of(context);
+
     return AnimatedSelector(
       animation: Listenable.merge([editingController]),
       selector: () => [
@@ -56,7 +57,7 @@ class RatingDisplay extends StatelessWidget {
                         context: context,
                         builder: (context) => RatingDialog(
                           onTap: (value) => editingController!.value =
-                              editingController!.value!.copyWith(rating: value),
+                              editingController.value!.copyWith(rating: value),
                         ),
                       )
                   : null,

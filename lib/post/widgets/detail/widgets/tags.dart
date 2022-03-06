@@ -7,18 +7,16 @@ import 'package:flutter/material.dart';
 class TagDisplay extends StatelessWidget {
   final Post post;
   final PostController? controller;
-  final SheetActionController? actionController;
-  final PostEditingController? editingController;
 
   const TagDisplay({
     required this.post,
     required this.controller,
-    this.actionController,
-    this.editingController,
   });
 
   @override
   Widget build(BuildContext context) {
+    PostEditingController? editingController = PostEditor.of(context);
+
     return AnimatedSelector(
       animation: Listenable.merge([editingController]),
       selector: () => [
@@ -26,8 +24,7 @@ class TagDisplay extends StatelessWidget {
         editingController?.value?.tags.hashCode,
       ],
       builder: (context, child) {
-        bool isEditing =
-            (editingController?.editing ?? false) && actionController != null;
+        bool isEditing = (editingController?.editing ?? false);
         Map<String, List<String>>? tags =
             editingController?.value?.tags ?? post.tags;
 
@@ -56,10 +53,10 @@ class TagDisplay extends StatelessWidget {
                   onRemove: editingController!.canEdit
                       ? () {
                           Map<String, List<String>> edited =
-                              Map.from(editingController!.value!.tags);
+                              Map.from(editingController.value!.tags);
                           edited[category]!.remove(tag);
-                          editingController!.value =
-                              editingController!.value!.copyWith(
+                          editingController.value =
+                              editingController.value!.copyWith(
                             tags: edited,
                           );
                         }
@@ -74,12 +71,12 @@ class TagDisplay extends StatelessWidget {
                     submit: editingController!.canEdit
                         ? (value) => onPostTagsEdit(
                               context,
-                              editingController!,
+                              editingController,
                               value,
                               category,
                             )
                         : null,
-                    controller: actionController!,
+                    controller: editingController,
                   ),
                 ),
             ],
