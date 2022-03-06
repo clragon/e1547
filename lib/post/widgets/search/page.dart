@@ -121,7 +121,7 @@ class _PostsPageState extends State<PostsPage> {
             appbar: widget.appBarBuilder(context),
             controller: widget.controller,
           ),
-          drawer: defaultNavigationDrawer(),
+          drawer: NavigationDrawer(),
           endDrawer: endDrawer(),
           floatingActionButton: floatingActionButton(),
           refresh: () => widget.controller.backgroundRefresh(force: true),

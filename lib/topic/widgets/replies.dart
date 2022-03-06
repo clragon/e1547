@@ -50,7 +50,7 @@ class _RepliesPageState extends State<RepliesPage> {
           onError: Text('Failed to load replies'),
         ),
       ),
-      drawer: defaultNavigationDrawer(),
+      drawer: NavigationDrawer(),
       endDrawer: ContextDrawer(
         title: Text('Replies'),
         children: [

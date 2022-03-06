@@ -101,7 +101,7 @@ class _UserPageState extends State<UserPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: defaultNavigationDrawer(),
+      drawer: NavigationDrawer(),
       endDrawer: ContextDrawer(
         title: Text('Posts'),
         children: [

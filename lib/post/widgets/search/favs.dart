@@ -67,7 +67,7 @@ class _FavPageState extends State<FavPage> with ListenerCallbackMixin {
         loadingBuilder: (context, child) => Scaffold(
           appBar: DefaultAppBar(title: Text('Favorites')),
           body: Center(child: child),
-          drawer: defaultNavigationDrawer(),
+          drawer: NavigationDrawer(),
         ),
         builder: (context) => ValueListenableBuilder<String>(
           valueListenable: controller!.search,

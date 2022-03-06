@@ -20,17 +20,22 @@ Future<void> initialize() async {
 class App extends StatelessWidget {
   @override
   Widget build(context) => StartupActions(
-        child: ValueListenableBuilder<AppTheme>(
-          valueListenable: settings.theme,
-          builder: (context, value, child) => ExcludeSemantics(
-            child: AnnotatedRegion<SystemUiOverlayStyle>(
-              value: defaultUIStyle(appThemeMap[value]!),
-              child: MaterialApp(
-                title: appInfo.appName,
-                theme: appThemeMap[value],
-                routes: navigationController.routes,
-                navigatorObservers: [navigationController.routeObserver],
-                scrollBehavior: DesktopScrollBehaviour(),
+        child: NavigationData(
+          controller: topLevelNavigationController,
+          child: ValueListenableBuilder<AppTheme>(
+            valueListenable: settings.theme,
+            builder: (context, value, child) => ExcludeSemantics(
+              child: AnnotatedRegion<SystemUiOverlayStyle>(
+                value: defaultUIStyle(appThemeMap[value]!),
+                child: MaterialApp(
+                  title: appInfo.appName,
+                  theme: appThemeMap[value],
+                  routes: NavigationData.of(context).routes,
+                  navigatorObservers: [
+                    NavigationData.of(context).routeObserver,
+                  ],
+                  scrollBehavior: DesktopScrollBehaviour(),
+                ),
               ),
             ),
           ),

@@ -95,7 +95,7 @@ class _FollowsSplitPageState extends State<FollowsSplitPage>
               refreshController.refreshFailed();
             }
           },
-          drawer: defaultNavigationDrawer(),
+          drawer: NavigationDrawer(),
           endDrawer: ContextDrawer(
             title: Text('Follows'),
             children: [

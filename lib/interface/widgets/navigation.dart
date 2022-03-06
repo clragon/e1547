@@ -10,11 +10,8 @@ import 'package:e1547/topic/topic.dart';
 import 'package:e1547/user/user.dart';
 import 'package:flutter/material.dart';
 
-final NavigationController navigationController =
+final NavigationController topLevelNavigationController =
     NavigationController(destinations: topLevelDestinations);
-
-NavigationDrawer defaultNavigationDrawer() =>
-    NavigationDrawer(controller: navigationController);
 
 double defaultDrawerEdge(double screenWidth) => screenWidth * 0.1;
 
@@ -63,20 +60,49 @@ class NavigationController<UniqueRoute extends Enum> {
   NavigationController({required this.destinations}) {
     drawerSelection =
         destinations.singleWhere((element) => element.path == '/').route!;
-    routes = Map.fromEntries(
+    routes = _generateRoutes(destinations);
+  }
+
+  WidgetBuilder _getDestinationBuilder(
+      NavigationDestination<UniqueRoute> destintation) {
+    if (destintation.route != null) {
+      return (context) {
+        drawerSelection = destintation.route!;
+        return destintation.builder(context);
+      };
+    } else {
+      return destintation.builder;
+    }
+  }
+
+  Map<String, WidgetBuilder> _generateRoutes(
+      List<NavigationDestination<UniqueRoute>> destinations) {
+    return Map.fromEntries(
       destinations.map(
-        (e) => MapEntry(
-          e.path,
-          e.route != null
-              ? (context) {
-                  drawerSelection = e.route!;
-                  return e.builder(context);
-                }
-              : e.builder,
+        (element) => MapEntry(
+          element.path,
+          _getDestinationBuilder(element),
         ),
       ),
     );
   }
+}
+
+class NavigationData<T extends Enum> extends InheritedWidget {
+  final NavigationController<T> controller;
+
+  NavigationData({required Widget child, required this.controller})
+      : super(child: child);
+
+  static NavigationController<T> of<T extends Enum>(BuildContext context) {
+    return context
+        .dependOnInheritedWidgetOfExactType<NavigationData<T>>()!
+        .controller;
+  }
+
+  @override
+  bool updateShouldNotify(covariant NavigationData<T> oldWidget) =>
+      oldWidget.controller != controller;
 }
 
 enum DrawerSelection {
@@ -184,20 +210,26 @@ final List<NavigationDestination<DrawerSelection>> topLevelDestinations = [
 ];
 
 class NavigationDrawer<UniqueRoute extends Enum> extends StatelessWidget {
-  final NavigationController<UniqueRoute> controller;
+  const NavigationDrawer();
 
-  const NavigationDrawer({required this.controller});
-
-  @override
-  Widget build(BuildContext context) {
-    List<Widget> children = [];
-    children.add(ProfileHeader());
-
-    List<NavigationDrawerDestination<UniqueRoute>> destinations = controller
-        .destinations
+  List<NavigationDrawerDestination<UniqueRoute>> getDrawerDestinations(
+      List<NavigationDestination<UniqueRoute>> destinations) {
+    return destinations
         .where((e) => e is NavigationDrawerDestination<UniqueRoute>)
         .toList()
         .cast<NavigationDrawerDestination<UniqueRoute>>();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final NavigationController<UniqueRoute> controller =
+        NavigationData.of(context);
+
+    List<Widget> children = [];
+    children.add(ProfileHeader());
+
+    List<NavigationDrawerDestination<UniqueRoute>> destinations =
+        getDrawerDestinations(controller.destinations);
 
     String? currentGroup = destinations.first.group;
 
@@ -209,16 +241,18 @@ class NavigationDrawer<UniqueRoute extends Enum> extends StatelessWidget {
         currentGroup = destination.group;
         children.add(const Divider());
       }
-      children.add(ListTile(
-        selected: destination.route != null &&
-            destination.route == controller.drawerSelection,
-        title: Text(destination.name),
-        leading: destination.icon != null ? destination.icon : null,
-        onTap: destination.route != null
-            ? () => Navigator.of(context)
-                .pushNamedAndRemoveUntil(destination.path, (_) => false)
-            : () => Navigator.of(context).popAndPushNamed(destination.path),
-      ));
+      children.add(
+        ListTile(
+          selected: destination.route != null &&
+              destination.route == controller.drawerSelection,
+          title: Text(destination.name),
+          leading: destination.icon != null ? destination.icon : null,
+          onTap: destination.route != null
+              ? () => Navigator.of(context)
+                  .pushNamedAndRemoveUntil(destination.path, (_) => false)
+              : () => Navigator.of(context).popAndPushNamed(destination.path),
+        ),
+      );
     }
 
     return Drawer(

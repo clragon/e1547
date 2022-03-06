@@ -45,14 +45,14 @@ class _PostDetailState extends State<PostDetail>
     super.didChangeDependencies();
     navigator = Navigator.of(context);
     route = ModalRoute.of(context)!;
-    navigationController.routeObserver.subscribe(this, route as PageRoute);
+    topLevelNavigationController.routeObserver.subscribe(this, route as PageRoute);
   }
 
   @override
   void reassemble() {
     super.reassemble();
-    navigationController.routeObserver.unsubscribe(this);
-    navigationController.routeObserver
+    topLevelNavigationController.routeObserver.unsubscribe(this);
+    topLevelNavigationController.routeObserver
         .subscribe(this, ModalRoute.of(context) as PageRoute);
     if (widget.post.type == PostType.image && widget.post.file.url != null) {
       preloadImage(context: context, post: widget.post, size: ImageSize.file);
@@ -61,7 +61,7 @@ class _PostDetailState extends State<PostDetail>
 
   @override
   void dispose() {
-    navigationController.routeObserver.unsubscribe(this);
+    topLevelNavigationController.routeObserver.unsubscribe(this);
     widget.post.controller?.pause();
     editingController?.dispose();
     super.dispose();
