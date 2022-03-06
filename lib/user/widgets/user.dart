@@ -89,10 +89,10 @@ class _UserPageState extends State<UserPage>
   }
 
   late Map<Widget, Widget> tabs = {
-    Tab(text: 'Favorites'): PostsPageHeadless(
+    Tab(text: 'Favorites'): PostGrid(
       controller: favoritePostController,
     ),
-    Tab(text: 'Uploads'): PostsPageHeadless(
+    Tab(text: 'Uploads'): PostGrid(
       controller: uploadPostController,
     ),
     Tab(text: 'About'): UserInfo(user: widget.user),
@@ -204,9 +204,11 @@ class _UserPageState extends State<UserPage>
             ),
           ),
         ],
-        body: TabBarView(
-          controller: tabController,
-          children: tabs.values.toList(),
+        body: TileLayout(
+          child: TabBarView(
+            controller: tabController,
+            children: tabs.values.toList(),
+          ),
         ),
       ),
     );

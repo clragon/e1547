@@ -4,7 +4,6 @@ import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
-import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
 class PostsPage extends StatefulWidget {
   final bool canSelect;
@@ -126,40 +125,7 @@ class _PostsPageState extends State<PostsPage> {
           endDrawer: endDrawer(),
           floatingActionButton: floatingActionButton(),
           refresh: () => widget.controller.backgroundRefresh(force: true),
-          builder: (context) => PagedStaggeredGridView(
-            key: joinKeys(['posts', TileLayout.of(context).crossAxisCount]),
-            physics: BouncingScrollPhysics(),
-            showNewPageErrorIndicatorAsGridChild: false,
-            showNewPageProgressIndicatorAsGridChild: false,
-            showNoMoreItemsIndicatorAsGridChild: false,
-            padding: defaultListPadding,
-            addAutomaticKeepAlives: false,
-            pagingController: widget.controller,
-            builderDelegate: defaultPagedChildBuilderDelegate<Post>(
-              pagingController: widget.controller,
-              onEmpty: Text('No posts'),
-              onError: Text('Failed to load posts'),
-              itemBuilder: (context, item, index) => PostTile(
-                post: item,
-                controller: widget.controller,
-                onPressed: () => Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => PostDetailGallery(
-                      controller: widget.controller,
-                      initialPage: index,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            gridDelegateBuilder: (childCount) =>
-                SliverStaggeredGridDelegateWithFixedCrossAxisCount(
-              staggeredTileBuilder: postStaggeredTileBuilder(
-                  context, (index) => widget.controller.itemList![index]),
-              crossAxisCount: TileLayout.of(context).crossAxisCount,
-              staggeredTileCount: widget.controller.itemList?.length,
-            ),
-          ),
+          builder: (context) => PostGrid(controller: widget.controller),
         ),
       ),
     );
