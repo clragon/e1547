@@ -25,62 +25,57 @@ class PoolDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget body() {
-      return ConstrainedBox(
-        constraints: BoxConstraints(
-          maxHeight: MediaQuery.of(context).size.height * 0.5,
-        ),
-        child: SingleChildScrollView(
-          physics: BouncingScrollPhysics(),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              pool.description.isNotEmpty
-                  ? DText(pool.description)
-                  : Text(
-                      'no description',
-                      style: TextStyle(fontStyle: FontStyle.italic),
-                    ),
-              Padding(
-                padding: EdgeInsets.only(top: 16, bottom: 8),
-                child: Divider(),
+    return LayoutBuilder(
+      builder: (context, constraints) => AlertDialog(
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Flexible(
+              child: Text(
+                '${pool.name.replaceAll('_', ' ')} (#${pool.id})',
+                softWrap: true,
               ),
-              PoolInfo(pool: pool),
-            ],
-          ),
+            ),
+            PoolFollowButton(pool),
+          ],
         ),
-      );
-    }
-
-    Widget title() {
-      return Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Flexible(
-            child: Text(
-              '${pool.name.replaceAll('_', ' ')} (#${pool.id})',
-              softWrap: true,
+        content: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxHeight: constraints.maxHeight * 0.5,
+          ),
+          child: SingleChildScrollView(
+            physics: BouncingScrollPhysics(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                pool.description.isNotEmpty
+                    ? DText(pool.description)
+                    : Text(
+                        'no description',
+                        style: TextStyle(fontStyle: FontStyle.italic),
+                      ),
+                Padding(
+                  padding: EdgeInsets.only(top: 16, bottom: 8),
+                  child: Divider(),
+                ),
+                PoolInfo(pool: pool),
+              ],
             ),
           ),
-          PoolFollowButton(pool),
+        ),
+        actions: [
+          TextButton(
+            child: Text('SHARE'),
+            onPressed: () async =>
+                Share.share(pool.url(client.host).toString()),
+          ),
+          TextButton(
+            child: Text('OK'),
+            onPressed: Navigator.of(context).maybePop,
+          ),
         ],
-      );
-    }
-
-    return AlertDialog(
-      title: title(),
-      content: body(),
-      actions: [
-        TextButton(
-          child: Text('SHARE'),
-          onPressed: () async => Share.share(pool.url(client.host).toString()),
-        ),
-        TextButton(
-          child: Text('OK'),
-          onPressed: Navigator.of(context).maybePop,
-        ),
-      ],
+      ),
     );
   }
 }

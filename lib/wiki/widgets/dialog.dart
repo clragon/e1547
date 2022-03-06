@@ -22,39 +22,33 @@ class WikiDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget body() {
-      return ConstrainedBox(
-        child: WikiBody(tag: tag),
-        constraints: BoxConstraints(
-          maxHeight: MediaQuery.of(context).size.height * 0.5,
-        ),
-      );
-    }
-
-    Widget title() {
-      return Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Flexible(
-            child: Text(
-              tagToTitle(tag),
-              softWrap: true,
+    return LayoutBuilder(
+      builder: (context, constraints) => AlertDialog(
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Flexible(
+              child: Text(
+                tagToTitle(tag),
+                softWrap: true,
+              ),
             ),
-          ),
-          TagListActions(tag: tag),
-        ],
-      );
-    }
-
-    return AlertDialog(
-      title: title(),
-      content: body(),
-      actions: [
-        TextButton(
-          child: Text('OK'),
-          onPressed: Navigator.of(context).maybePop,
+            TagListActions(tag: tag),
+          ],
         ),
-      ],
+        content: ConstrainedBox(
+          child: WikiBody(tag: tag),
+          constraints: BoxConstraints(
+            maxHeight: constraints.maxHeight * 0.5,
+          ),
+        ),
+        actions: [
+          TextButton(
+            child: Text('OK'),
+            onPressed: Navigator.of(context).maybePop,
+          ),
+        ],
+      ),
     );
   }
 }

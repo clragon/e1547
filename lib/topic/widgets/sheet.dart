@@ -10,24 +10,9 @@ import 'package:sliding_sheet/sliding_sheet.dart';
 void topicSheet(BuildContext context, Topic topic) {
   showSlidingBottomSheet(
     context,
-    builder: (context) => SlidingSheetDialog(
-      duration: Duration(milliseconds: 400),
-      isBackdropInteractable: true,
-      cornerRadius: 16,
-      minHeight: MediaQuery.of(context).size.height * 0.6,
-      builder: (context, sheetState) {
-        return TopicSheet(
-          topic: topic,
-        );
-      },
-      snapSpec: SnapSpec(
-        snap: true,
-        positioning: SnapPositioning.relativeToAvailableSpace,
-        snappings: [
-          0.6,
-          SnapSpec.expanded,
-        ],
-      ),
+    builder: (context) => defaultSlidingSheetDialog(
+      context,
+      (context, sheetState) => TopicSheet(topic: topic),
     ),
   );
 }

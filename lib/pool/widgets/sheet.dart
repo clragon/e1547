@@ -15,9 +15,7 @@ void poolSheet(BuildContext context, Pool pool) {
     context,
     builder: (context) => defaultSlidingSheetDialog(
       context,
-      (context, sheetState) => PoolSheet(
-        pool: pool,
-      ),
+      (context, sheetState) => PoolSheet(pool: pool),
     ),
   );
 }

@@ -8,9 +8,7 @@ import 'tile.dart';
 
 class PoolsPage extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() {
-    return _PoolsPageState();
-  }
+  State<StatefulWidget> createState() => _PoolsPageState();
 }
 
 class _PoolsPageState extends State<PoolsPage> {
