@@ -7,7 +7,6 @@ class User {
     required this.poolVersionCount,
     required this.forumPostCount,
     required this.commentCount,
-    required this.appealCount,
     required this.flagCount,
     required this.positiveFeedbackCount,
     required this.neutralFeedbackCount,
@@ -33,7 +32,6 @@ class User {
   int poolVersionCount;
   int forumPostCount;
   int commentCount;
-  int appealCount;
   int flagCount;
   int positiveFeedbackCount;
   int neutralFeedbackCount;
@@ -63,7 +61,6 @@ class User {
         poolVersionCount: json["pool_version_count"],
         forumPostCount: json["forum_post_count"],
         commentCount: json["comment_count"],
-        appealCount: json["appeal_count"],
         flagCount: json["flag_count"],
         positiveFeedbackCount: json["positive_feedback_count"],
         neutralFeedbackCount: json["neutral_feedback_count"],
@@ -90,7 +87,6 @@ class User {
         "pool_version_count": poolVersionCount,
         "forum_post_count": forumPostCount,
         "comment_count": commentCount,
-        "appeal_count": appealCount,
         "flag_count": flagCount,
         "positive_feedback_count": positiveFeedbackCount,
         "neutral_feedback_count": neutralFeedbackCount,
