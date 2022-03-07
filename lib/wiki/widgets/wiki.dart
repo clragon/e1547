@@ -1,4 +1,5 @@
 import 'package:e1547/interface/interface.dart';
+import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 
 import 'actions.dart';
@@ -16,7 +17,7 @@ class WikiPage extends StatelessWidget {
       appBar: DefaultAppBar(
         title: Flexible(
           child: Text(
-            tag.replaceAll('_', ' '),
+            tagToTitle(tag),
             overflow: TextOverflow.ellipsis,
           ),
         ),

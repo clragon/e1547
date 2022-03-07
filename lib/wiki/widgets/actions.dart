@@ -96,7 +96,7 @@ class RemoveTagAction extends StatelessWidget {
       onPressed: () {
         Navigator.of(context).maybePop();
         List<String> result = controller.search.value.split(' ');
-        result.removeWhere((element) => tagToName(element) == tag);
+        result.removeWhere((element) => element == tag);
         controller.search.value = sortTags(result.join(' '));
       },
     );
