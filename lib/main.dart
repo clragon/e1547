@@ -1,12 +1,22 @@
+import 'dart:async';
+
 import 'package:e1547/client/client.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+List<String> log = [];
+
 Future<void> main() async {
   await initialize();
-  runApp(App());
+  runZoned(
+    () => runApp(App()),
+    zoneSpecification: ZoneSpecification(print: (self, parent, zone, line) {
+      log.add(line);
+      self.parent!.print(line);
+    }),
+  );
 }
 
 Future<void> initialize() async {

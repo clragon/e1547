@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:e1547/client/client.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:mutex/mutex.dart';
@@ -77,45 +78,68 @@ abstract class RawDataController<KeyType, ItemType>
     }
   }
 
+  final String controllerKey = UniqueKey().toString();
+
   @nonVirtual
   @protected
   Future<bool> canRefresh() async {
+    String key = UniqueKey().toString();
     if (_requestLock.isLocked) {
+      print('$controllerKey$key mutex is locked');
       if (_isRefreshing) {
+        print('$controllerKey$key already refreshing, false!');
         return false;
       }
+      print('$controllerKey$key not refreshing, waiting!');
       _isRefreshing = true;
       // waits for the current request to be done
       await _requestLock.acquire();
       _requestLock.release();
+      print('$key done with lock, true!');
       _isRefreshing = false;
       return true;
     } else {
+      print('$key mutex is not locked, true!');
       return true;
     }
   }
 
   @override
   Future<void> refresh({bool force = false}) async {
+    String key = UniqueKey().toString();
+    print('$controllerKey$key refresh called!');
     if (!await canRefresh()) {
+      print('$controllerKey$key cannot refresh, false!');
       return;
     }
+    print('$controllerKey$key can refresh, true!');
     _isForceRefreshing = force;
     super.refresh();
   }
 
   Future<void> backgroundRefresh({bool force = false}) async {
+    String key = UniqueKey().toString();
+    print('$controllerKey$key refresh called!');
     if (!await canRefresh()) {
+      print('$controllerKey$key cannot refresh, false!');
       return;
     }
+    print('$controllerKey$key can refresh, true!');
     _isForceRefreshing = force;
     loadPage(firstPageKey, reset: true);
   }
 
   @protected
   Future<void> loadPage(KeyType page, {bool reset = false}) async {
+    String key = UniqueKey().toString();
+    print('-------------------------------------------------');
+    print(
+        '$controllerKey$key ${StackTrace.current.toString().split('\n').take(9).join('\n')}');
+    print('-------------------------------------------------');
     try {
+      print('$controllerKey$key loadpage with $page');
       await _requestLock.acquire();
+      print('$controllerKey$key acquired mutex on page $page');
       List<ItemType> items = sort(await provide(page, _isForceRefreshing));
       if (reset) {
         value = PagingState(
@@ -132,8 +156,10 @@ abstract class RawDataController<KeyType, ItemType>
       }
       success();
     } on Exception catch (error) {
+      print('$controllerKey$key failed to load page $page with $error');
       failure(error);
     } finally {
+      print('$controllerKey$key done with loading page $page');
       _isForceRefreshing = false;
       _requestLock.release();
     }

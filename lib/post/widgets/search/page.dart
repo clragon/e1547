@@ -1,5 +1,6 @@
 import 'package:e1547/denylist/denylist.dart';
 import 'package:e1547/interface/interface.dart';
+import 'package:e1547/main.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:e1547/tag/tag.dart';
@@ -69,20 +70,29 @@ class _PostsPageState extends State<PostsPage> {
             Divider(),
             ListTile(
               leading: Icon(Icons.format_list_numbered),
-              title: Text('Post IDs'),
+              title: Text('LOG'),
               onTap: () => showDialog(
                 context: context,
                 builder: (context) => AlertDialog(
-                  title: Text('${widget.controller.itemList?.length ?? 0}'),
+                  title: Text(
+                    '${widget.controller.itemList!.length} items / ${widget.controller.itemList!.asMap().entries.where((e) => widget.controller.itemList!.sublist(
+                          0,
+                          e.key,
+                        ).any((element) => element.id == widget.controller.itemList![e.key].id)).length} duplicates!',
+                  ),
                   actions: [
+                    TextButton(
+                      onPressed: () {
+                        log.clear();
+                        Navigator.of(context).maybePop();
+                      },
+                      child: Text('CLEAR'),
+                    ),
                     TextButton(
                       onPressed: () {
                         Clipboard.setData(
                           ClipboardData(
-                            text: widget.controller.itemList!
-                                .map((e) => e.id)
-                                .toList()
-                                .join('\n'),
+                            text: log.join('\n'),
                           ),
                         );
                       },
@@ -93,24 +103,17 @@ class _PostsPageState extends State<PostsPage> {
                       child: Text('OK'),
                     ),
                   ],
-                  content: SizedBox(
-                    height: 500,
-                    width: 200,
-                    child: ListView.builder(
-                      itemCount: widget.controller.itemList!.length,
-                      itemBuilder: (context, index) {
-                        Post current = widget.controller.itemList![index];
-                        return Text(
-                          current.id.toString(),
-                          style: TextStyle(
-                            color: widget.controller.itemList!
-                                    .sublist(0, index)
-                                    .any((element) => element.id == current.id)
-                                ? Colors.red
-                                : null,
+                  content: SingleChildScrollView(
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Flexible(
+                          child: Text(
+                            log.join('\n'),
                           ),
-                        );
-                      },
+                        ),
+                      ],
                     ),
                   ),
                 ),
