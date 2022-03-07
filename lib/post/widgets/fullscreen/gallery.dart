@@ -73,9 +73,9 @@ class _PostFullscreenGalleryState extends State<PostFullscreenGallery>
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder(
+    return ValueListenableBuilder<int>(
       valueListenable: current,
-      builder: (context, int value, child) => Theme(
+      builder: (context, value, child) => Theme(
         data: Theme.of(context).copyWith(
           appBarTheme: AppBarTheme(
             systemOverlayStyle: defaultUIStyle(Theme.of(context)).copyWith(
@@ -97,7 +97,7 @@ class _PostFullscreenGalleryState extends State<PostFullscreenGallery>
         builder: (context, child) => PageView.builder(
           itemCount: widget.controller.itemList?.length,
           controller: pageController,
-          itemBuilder: (context, index) => PostFullscreenImageDisplay(
+          itemBuilder: (context, index) => PostFullscreen(
             post: widget.controller.itemList![index],
             controller: widget.controller,
           ),

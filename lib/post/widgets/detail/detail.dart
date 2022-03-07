@@ -147,11 +147,11 @@ class _PostDetailState extends State<PostDetail>
   Widget fullscreen() {
     if (widget.controller == null || (editingController?.editing ?? false)) {
       return PostFullscreenFrame(
-        child: PostFullscreenImageDisplay(
+        post: widget.post,
+        child: PostFullscreen(
           post: widget.post,
           controller: widget.controller,
         ),
-        post: widget.post,
       );
     } else {
       return PostFullscreenGallery(

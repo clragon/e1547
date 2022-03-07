@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 
@@ -12,6 +11,9 @@ class FrameController extends ChangeNotifier {
   bool visible;
 
   FrameController({this.onToggle, this.visible = false});
+
+  static FrameController? of(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<FrameData>()?.notifier;
 
   void showFrame({Duration? duration}) =>
       toggleFrame(shown: true, duration: duration);
@@ -38,15 +40,18 @@ class FrameController extends ChangeNotifier {
     }
   }
 
-  void cancel() {
-    frameToggler?.cancel();
-  }
+  void cancel() => frameToggler?.cancel();
 
   @override
   void dispose() {
     cancel();
     super.dispose();
   }
+}
+
+class FrameData extends InheritedNotifier<FrameController> {
+  FrameData({required Widget child, required FrameController controller})
+      : super(child: child, notifier: controller);
 }
 
 class PostFullscreenFrame extends StatefulWidget {
@@ -87,48 +92,41 @@ class _PostFullscreenFrameState extends State<PostFullscreenFrame> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: AnimatedBuilder(
-        animation: controller,
-        child: widget.child,
-        builder: (contex, child) => Scaffold(
-          extendBodyBehindAppBar: true,
-          appBar: PreferredSize(
-            preferredSize: Size.fromHeight(defaultAppBarHeight),
-            child: FrameFadeWidget(
-              controller: controller,
-              child: PostFullscreenAppBar(post: widget.post),
+    return FrameData(
+      controller: controller,
+      child: Scaffold(
+        body: AnimatedBuilder(
+          animation: controller,
+          child: widget.child,
+          builder: (contex, child) => Scaffold(
+            extendBodyBehindAppBar: true,
+            appBar: FrameAppBar(
+              appBar: PostFullscreenAppBar(post: widget.post),
             ),
-          ),
-          body: GestureDetector(
-            behavior: HitTestBehavior.translucent,
-            onTap: () {
-              controller.toggleFrame();
-              if ((widget.post.controller?.value.isPlaying ?? false) &&
-                  controller.visible) {
-                controller.hideFrame(duration: Duration(seconds: 2));
-              }
-            },
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                child!,
-                if (widget.post.controller != null) ...[
-                  Positioned(
-                    bottom: 0,
-                    right: 0,
-                    left: 0,
-                    child: VideoBar(
-                      videoController: widget.post.controller!,
-                      frameController: controller,
+            body: GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onTap: () {
+                controller.toggleFrame();
+                if ((widget.post.controller?.value.isPlaying ?? false) &&
+                    controller.visible) {
+                  controller.hideFrame(duration: Duration(seconds: 2));
+                }
+              },
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  child!,
+                  if (widget.post.controller != null) ...[
+                    Positioned(
+                      bottom: 0,
+                      right: 0,
+                      left: 0,
+                      child: VideoBar(videoController: widget.post.controller!),
                     ),
-                  ),
-                  VideoButton(
-                    videoController: widget.post.controller!,
-                    frameController: controller,
-                  ),
-                ]
-              ],
+                    VideoButton(videoController: widget.post.controller!),
+                  ]
+                ],
+              ),
             ),
           ),
         ),
@@ -137,16 +135,17 @@ class _PostFullscreenFrameState extends State<PostFullscreenFrame> {
   }
 }
 
-class FrameFadeWidget extends StatelessWidget {
-  final Duration fadeOutDuration = Duration(milliseconds: 50);
-  final FrameController? controller;
+class FrameChild extends StatelessWidget {
   final bool? shown;
   final Widget child;
 
-  FrameFadeWidget({required this.child, this.shown, this.controller});
+  final Duration fadeOutDuration = Duration(milliseconds: 50);
+
+  FrameChild({required this.child, this.shown});
 
   @override
   Widget build(BuildContext context) {
+    FrameController? controller = FrameController.of(context);
     bool shown = this.shown ?? controller?.visible ?? true;
 
     Widget body() {
@@ -163,11 +162,27 @@ class FrameFadeWidget extends StatelessWidget {
     if (controller != null) {
       return AnimatedBuilder(
         child: child,
-        animation: controller!,
+        animation: controller,
         builder: (context, child) => body(),
       );
     } else {
       return body();
     }
+  }
+}
+
+class FrameAppBar extends StatelessWidget with PreferredSizeWidget {
+  final PreferredSizeWidget appBar;
+
+  const FrameAppBar({Key? key, required this.appBar}) : super(key: key);
+
+  @override
+  Size get preferredSize => appBar.preferredSize;
+
+  @override
+  Widget build(BuildContext context) {
+    return FrameChild(
+      child: appBar,
+    );
   }
 }

@@ -1,2 +1,2 @@
 export 'fullscreen/gallery.dart';
-export 'fullscreen/image.dart';
+export 'fullscreen/fullscreen.dart';

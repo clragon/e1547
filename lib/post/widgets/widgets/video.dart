@@ -7,11 +7,9 @@ import 'package:video_player/video_player.dart';
 
 class VideoButton extends StatefulWidget {
   final VideoPlayerController videoController;
-  final FrameController? frameController;
   final double size;
 
-  VideoButton(
-      {required this.videoController, this.frameController, this.size = 54})
+  VideoButton({required this.videoController, this.size = 54})
       : super(key: ObjectKey(videoController));
 
   @override
@@ -46,21 +44,18 @@ class _VideoButtonState extends State<VideoButton>
 
   @override
   Widget build(BuildContext context) {
+    FrameController? frameController = FrameController.of(context);
     return AnimatedBuilder(
-      animation: Listenable.merge([
-        animationController,
-        widget.videoController,
-        widget.frameController
-      ]),
+      animation: Listenable.merge([widget.videoController, frameController]),
       builder: (context, child) {
         bool loading = !widget.videoController.value.isInitialized ||
             widget.videoController.value.isBuffering;
         bool shown = !widget.videoController.value.isPlaying || loading;
-        if (widget.frameController != null) {
-          shown = widget.frameController!.visible || shown;
+        if (frameController != null) {
+          shown = frameController.visible || shown;
         }
 
-        return FrameFadeWidget(
+        return FrameChild(
           shown: shown,
           child: Material(
             shape: CircleBorder(),
@@ -79,11 +74,14 @@ class _VideoButtonState extends State<VideoButton>
                       duration: Duration(milliseconds: 100),
                       showChild:
                           !widget.videoController.value.isPlaying || !loading,
-                      child: AnimatedIcon(
-                        icon: AnimatedIcons.play_pause,
-                        progress: animationController,
-                        size: widget.size,
-                        color: Colors.white,
+                      child: AnimatedBuilder(
+                        animation: animationController,
+                        builder: (context, child) => AnimatedIcon(
+                          icon: AnimatedIcons.play_pause,
+                          progress: animationController,
+                          size: widget.size,
+                          color: Colors.white,
+                        ),
                       ),
                       secondChild: Center(
                         child: SizedBox(
@@ -99,12 +97,12 @@ class _VideoButtonState extends State<VideoButton>
                   ),
                   onPressed: () {
                     if (widget.videoController.value.isPlaying) {
-                      widget.frameController?.cancel();
+                      frameController?.cancel();
                       widget.videoController.pause();
                     } else {
                       widget.videoController.play();
-                      widget.frameController
-                          ?.hideFrame(duration: Duration(milliseconds: 500));
+                      frameController?.hideFrame(
+                          duration: Duration(milliseconds: 500));
                     }
                   },
                 ),
@@ -119,95 +117,88 @@ class _VideoButtonState extends State<VideoButton>
 
 class VideoBar extends StatelessWidget {
   final VideoPlayerController videoController;
-  final FrameController? frameController;
 
-  const VideoBar(
-      {required this.videoController, required this.frameController});
+  const VideoBar({required this.videoController});
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: FrameFadeWidget(
-        controller: frameController,
+      child: FrameChild(
         child: AnimatedBuilder(
           animation: videoController,
-          builder: (context, child) {
-            return CrossFade.builder(
-              showChild: videoController.value.isInitialized,
-              builder: (context) {
-                return Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          VideoGlobalVolumeControl(
-                            videoController: videoController,
-                          ),
-                          SizedBox(
-                            width: 4,
-                          ),
-                          Text(
-                            videoController.value.position
-                                .toString()
-                                .substring(2, 7),
-                          ),
-                          Flexible(
-                              child: Slider(
-                            min: 0,
-                            max: videoController.value.duration.inMilliseconds
-                                .toDouble(),
-                            value: videoController.value.position.inMilliseconds
-                                .toDouble()
-                                .clamp(
-                                  0,
-                                  videoController.value.duration.inMilliseconds
-                                      .toDouble(),
-                                ),
-                            onChangeStart: (double value) {
-                              frameController?.cancel();
-                            },
-                            onChanged: (double value) {
-                              videoController.seekTo(
-                                  Duration(milliseconds: value.toInt()));
-                            },
-                            onChangeEnd: (double value) {
-                              if (videoController.value.isPlaying) {
-                                frameController?.hideFrame(
-                                    duration: Duration(seconds: 2));
-                              }
-                            },
-                          )),
-                          Text(
-                            videoController.value.duration
-                                .toString()
-                                .substring(2, 7),
-                          ),
-                          SizedBox(
-                            width: 4,
-                          ),
-                          InkWell(
-                            onTap: Navigator.of(context).maybePop,
-                            child: Padding(
-                              padding: EdgeInsets.all(4),
-                              child: Icon(
-                                Icons.fullscreen_exit,
-                                size: 24,
-                                color: Theme.of(context).iconTheme.color,
-                              ),
-                            ),
-                          ),
-                        ],
+          builder: (context, child) => CrossFade.builder(
+            showChild: videoController.value.isInitialized,
+            builder: (context) => Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      VideoGlobalVolumeControl(
+                        videoController: videoController,
                       ),
-                    ),
-                  ],
-                );
-              },
-            );
-          },
+                      SizedBox(
+                        width: 4,
+                      ),
+                      Text(
+                        videoController.value.position
+                            .toString()
+                            .substring(2, 7),
+                      ),
+                      Flexible(
+                          child: Slider(
+                        min: 0,
+                        max: videoController.value.duration.inMilliseconds
+                            .toDouble(),
+                        value: videoController.value.position.inMilliseconds
+                            .toDouble()
+                            .clamp(
+                              0,
+                              videoController.value.duration.inMilliseconds
+                                  .toDouble(),
+                            ),
+                        onChangeStart: (value) {
+                          FrameController.of(context)?.cancel();
+                        },
+                        onChanged: (value) {
+                          videoController
+                              .seekTo(Duration(milliseconds: value.toInt()));
+                        },
+                        onChangeEnd: (value) {
+                          if (videoController.value.isPlaying) {
+                            FrameController.of(context)
+                                ?.hideFrame(duration: Duration(seconds: 2));
+                          }
+                        },
+                      )),
+                      Text(
+                        videoController.value.duration
+                            .toString()
+                            .substring(2, 7),
+                      ),
+                      SizedBox(
+                        width: 4,
+                      ),
+                      InkWell(
+                        onTap: Navigator.of(context).maybePop,
+                        child: Padding(
+                          padding: EdgeInsets.all(4),
+                          child: Icon(
+                            Icons.fullscreen_exit,
+                            size: 24,
+                            color: Theme.of(context).iconTheme.color,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -242,7 +233,8 @@ class _VideoGestureState extends State<VideoGesture>
         if (widget.videoController.value.isInitialized) {
           Duration current = (await widget.videoController.position)!;
           bool boundOnZero = current == Duration.zero;
-          // for inexplicable reasons, duration will be a single ms ahead
+          // final position is never reported, so we subtract 1 ms.
+          // see: https://github.com/flutter/flutter/issues/90114
           bool boundOnEnd = current ==
               widget.videoController.value.duration - Duration(milliseconds: 1);
           if ((!widget.forward && boundOnZero) ||
@@ -287,33 +279,31 @@ class _VideoGestureState extends State<VideoGesture>
             double size = constraints.maxHeight * 2;
             return AnimatedBuilder(
               animation: fadeAnimation,
-              builder: (context, child) => SizedBox(
-                child: Stack(
-                  alignment: Alignment.center,
-                  clipBehavior: Clip.none,
-                  children: [
-                    Positioned(
-                      right: widget.forward ? null : constraints.maxWidth * 0.2,
-                      left: widget.forward ? constraints.maxWidth * 0.2 : null,
-                      child: Container(
-                        width: size,
-                        height: size,
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).splashColor,
-                          borderRadius: widget.forward
-                              ? BorderRadius.only(
-                                  topLeft: Radius.circular(size),
-                                  bottomLeft: Radius.circular(size),
-                                )
-                              : BorderRadius.only(
-                                  topRight: Radius.circular(size),
-                                  bottomRight: Radius.circular(size),
-                                ),
-                        ),
+              builder: (context, child) => Stack(
+                alignment: Alignment.center,
+                clipBehavior: Clip.none,
+                children: [
+                  Positioned(
+                    right: widget.forward ? null : constraints.maxWidth * 0.2,
+                    left: widget.forward ? constraints.maxWidth * 0.2 : null,
+                    child: Container(
+                      width: size,
+                      height: size,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).splashColor,
+                        borderRadius: widget.forward
+                            ? BorderRadius.only(
+                                topLeft: Radius.circular(size),
+                                bottomLeft: Radius.circular(size),
+                              )
+                            : BorderRadius.only(
+                                topRight: Radius.circular(size),
+                                bottomRight: Radius.circular(size),
+                              ),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             );
           })
