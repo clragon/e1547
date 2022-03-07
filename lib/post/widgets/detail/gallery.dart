@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
+import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
 class PostDetailGallery extends StatefulWidget {
   final PostController controller;
@@ -14,10 +15,22 @@ class PostDetailGallery extends StatefulWidget {
   _PostDetailGalleryState createState() => _PostDetailGalleryState();
 }
 
-class _PostDetailGalleryState extends State<PostDetailGallery> {
+class _PostDetailGalleryState extends State<PostDetailGallery>
+    with ListenerCallbackMixin {
   bool hasRequestedNextPage = false;
   late PageController pageController =
       PageController(initialPage: widget.initialPage);
+
+  @override
+  Map<Listenable, VoidCallback> get listeners => {
+        widget.controller: updateRequest,
+      };
+
+  void updateRequest() {
+    if (widget.controller.value.status == PagingStatus.ongoing) {
+      hasRequestedNextPage = false;
+    }
+  }
 
   @override
   void dispose() {
