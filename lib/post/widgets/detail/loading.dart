@@ -22,6 +22,12 @@ class _PostLoadingPageState extends State<PostLoadingPage> {
   });
 
   @override
+  void dispose() {
+    controller.then((value) => value.dispose());
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return FuturePageLoader<PostController>(
       future: controller,
