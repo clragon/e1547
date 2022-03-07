@@ -86,7 +86,9 @@ class ParentDisplay extends StatelessWidget {
               ),
             ),
             CrossFade(
-              showChild: post.relationships.children.isNotEmpty && !isEditing,
+              showChild: post.relationships.children.isNotEmpty &&
+                  post.relationships.hasActiveChildren &&
+                  !isEditing,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
