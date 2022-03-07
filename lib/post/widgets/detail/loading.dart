@@ -31,8 +31,7 @@ class _PostLoadingPageState extends State<PostLoadingPage> {
   Widget build(BuildContext context) {
     return FuturePageLoader<PostController>(
       future: controller,
-      builder: (context, value) => PostDetail(
-        post: value.itemList!.first,
+      builder: (context, value) => PostDetailGallery(
         controller: value,
       ),
       title: Text('Post #${widget.id}'),

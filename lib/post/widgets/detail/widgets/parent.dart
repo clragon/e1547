@@ -64,8 +64,7 @@ class ParentDisplay extends StatelessWidget {
                           await controller.loadFirstPage();
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (context) => PostDetail(
-                                post: controller.itemList!.first,
+                              builder: (context) => PostDetailGallery(
                                 controller: controller,
                               ),
                             ),
@@ -114,8 +113,7 @@ class ParentDisplay extends StatelessWidget {
                           await controller.loadFirstPage();
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (context) => PostDetail(
-                                post: controller.itemList!.first,
+                              builder: (context) => PostDetailGallery(
                                 controller: controller,
                               ),
                             ),
