@@ -89,6 +89,8 @@ class HistoryController extends ChangeNotifier {
             ?.map((e) => e.sample.url)
             .where((e) => e != null)
             .cast<String>()
+            .toList()
+            .take(4)
             .toList() ??
         [];
     if (_getRecentEntries(collection.tags).any(
@@ -103,7 +105,7 @@ class HistoryController extends ChangeNotifier {
         visitedAt: DateTime.now(),
         tags: tag,
         alias: alias,
-        thumbnails: thumbnails.take(4).toList(),
+        thumbnails: thumbnails,
       ),
     );
     return true;
