@@ -53,7 +53,7 @@ class CommentController extends CursorDataController<Comment>
           }
         }
       }
-      updateItem(itemList!.indexOf(comment), comment);
+      updateItem(itemList!.indexOf(comment), comment, force: true);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         duration: Duration(seconds: 1),
