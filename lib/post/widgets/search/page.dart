@@ -88,13 +88,6 @@ class _PostsPageState extends State<PostsPage> {
                           actions: [
                             TextButton(
                               onPressed: () {
-                                widget.controller.log.clear();
-                                Navigator.of(context).maybePop();
-                              },
-                              child: Text('CLEAR'),
-                            ),
-                            TextButton(
-                              onPressed: () {
                                 Clipboard.setData(
                                   ClipboardData(
                                     text: widget.controller.log.join('\n'),
