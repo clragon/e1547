@@ -13,35 +13,71 @@ class HistoryPage extends StatefulWidget {
 }
 
 class _HistoryPageState extends State<HistoryPage> {
+  DateTime? search;
+
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: historyController,
-      builder: (context, child) => SelectionLayout<HistoryEntry>(
-        items: historyController.collection.entries,
-        child: Scaffold(
-          appBar: HistorySelectionAppBar(
-            appbar: DefaultAppBar(title: Text('History')),
+      builder: (context, child) {
+        List<HistoryEntry> entries = historyController.collection.entries;
+        if (search != null) {
+          entries.removeWhere((element) =>
+              !DateUtils.dateOnly(element.visitedAt).isAtSameMomentAs(search!));
+        }
+        bool isNotEmpty = entries.isNotEmpty;
+        return SelectionLayout<HistoryEntry>(
+          items: entries,
+          child: Scaffold(
+            appBar: HistorySelectionAppBar(
+              appbar: DefaultAppBar(
+                title: Text('History' +
+                    (search != null ? ' - ${dateOrName(search!)}' : '')),
+              ),
+            ),
+            body: isNotEmpty
+                ? GroupedListView<HistoryEntry, DateTime>(
+                    elements: entries,
+                    order: GroupedListOrder.DESC,
+                    physics: BouncingScrollPhysics(),
+                    controller: PrimaryScrollController.of(context),
+                    groupBy: (element) => DateUtils.dateOnly(element.visitedAt),
+                    groupHeaderBuilder: (element) =>
+                        SettingsHeader(title: dateOrName(element.visitedAt)),
+                    itemComparator: (a, b) =>
+                        a.visitedAt.compareTo(b.visitedAt),
+                    itemBuilder: (context, element) =>
+                        HistoryTile(entry: element),
+                  )
+                : IconMessage(
+                    icon: Icon(Icons.history),
+                    title: Text('Your history is empty'),
+                  ),
+            floatingActionButton: FloatingActionButton(
+              child: Icon(Icons.search),
+              onPressed: () async {
+                DateTime firstDate =
+                    historyController.collection.entries.first.visitedAt;
+                DateTime lastDate =
+                    historyController.collection.entries.last.visitedAt;
+
+                DateTime? result = await showDatePicker(
+                  context: context,
+                  initialDate: search ?? DateTime.now(),
+                  firstDate: firstDate,
+                  lastDate: lastDate,
+                  locale: Localizations.localeOf(context),
+                  cancelText: 'CLEAR',
+                );
+
+                setState(() {
+                  search = result;
+                });
+              },
+            ),
           ),
-          body: historyController.collection.entries.isNotEmpty
-              ? GroupedListView<HistoryEntry, DateTime>(
-                  elements: historyController.collection.entries,
-                  order: GroupedListOrder.DESC,
-                  physics: BouncingScrollPhysics(),
-                  controller: PrimaryScrollController.of(context),
-                  groupBy: (element) => element.visitedAt.stripTime(),
-                  groupHeaderBuilder: (element) =>
-                      SettingsHeader(title: dateOrName(element.visitedAt)),
-                  itemComparator: (a, b) => a.visitedAt.compareTo(b.visitedAt),
-                  itemBuilder: (context, element) =>
-                      HistoryTile(entry: element),
-                )
-              : IconMessage(
-                  icon: Icon(Icons.history),
-                  title: Text('Your history is empty'),
-                ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

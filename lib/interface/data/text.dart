@@ -37,20 +37,16 @@ DateFormat getCurrentTimeFormat() => DateFormat.jm(Platform.localeName);
 
 String dateOrName(DateTime date) {
   String title = getCurrentDateFormat().format(date);
-  DateTime today = DateTime.now().stripTime();
-  if (today.isAtSameMomentAs(date.stripTime())) {
+  DateTime today = DateUtils.dateOnly(DateTime.now());
+  if (today.isAtSameMomentAs(DateUtils.dateOnly(date))) {
     title = 'Today';
   }
-  if (today.subtract(Duration(days: 1)).isAtSameMomentAs(date.stripTime())) {
+  if (today
+      .subtract(Duration(days: 1))
+      .isAtSameMomentAs(DateUtils.dateOnly(date))) {
     title = 'Yesterday';
   }
   return title;
-}
-
-extension days on DateTime {
-  DateTime stripTime() {
-    return DateTime(year, month, day);
-  }
 }
 
 extension Trimming on List<String> {
