@@ -65,60 +65,73 @@ class _PostsPageState extends State<PostsPage> {
             DrawerDenySwitch(controller: widget.controller),
           DrawerCounter(controller: widget.controller),
           // TODO: fix duplicates and remove this
-          if (settings.showBeta.value) ...[
-            Divider(),
-            ListTile(
-              leading: Icon(Icons.format_list_numbered),
-              title: Text('Log'),
-              onTap: () => showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
-                  title: Text(
-                    '${widget.controller.itemList!.length} items / ${widget.controller.itemList!.asMap().entries.where((e) => widget.controller.itemList!.sublist(
-                          0,
-                          e.key,
-                        ).any((element) => element.id == widget.controller.itemList![e.key].id)).length} duplicates!',
-                  ),
-                  actions: [
-                    TextButton(
-                      onPressed: () {
-                        widget.controller.log.clear();
-                        Navigator.of(context).maybePop();
-                      },
-                      child: Text('CLEAR'),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        Clipboard.setData(
-                          ClipboardData(
-                            text: widget.controller.log.join('\n'),
+          AnimatedBuilder(
+            animation: settings.showBeta,
+            builder: (context, child) {
+              if (settings.showBeta.value) {
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Divider(),
+                    ListTile(
+                      leading: Icon(Icons.format_list_numbered),
+                      title: Text('Log'),
+                      onTap: () => showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: Text(
+                            '${widget.controller.itemList!.length} items / ${widget.controller.itemList!.asMap().entries.where((e) => widget.controller.itemList!.sublist(
+                                  0,
+                                  e.key,
+                                ).any((element) => element.id == widget.controller.itemList![e.key].id)).length} duplicates!',
                           ),
-                        );
-                      },
-                      child: Text('COPY'),
-                    ),
-                    TextButton(
-                      onPressed: Navigator.of(context).maybePop,
-                      child: Text('OK'),
-                    ),
-                  ],
-                  content: SingleChildScrollView(
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Flexible(
-                          child: Text(
-                            widget.controller.log.join('\n'),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                widget.controller.log.clear();
+                                Navigator.of(context).maybePop();
+                              },
+                              child: Text('CLEAR'),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                Clipboard.setData(
+                                  ClipboardData(
+                                    text: widget.controller.log.join('\n'),
+                                  ),
+                                );
+                                Navigator.of(context).maybePop();
+                              },
+                              child: Text('COPY'),
+                            ),
+                            TextButton(
+                              onPressed: Navigator.of(context).maybePop,
+                              child: Text('OK'),
+                            ),
+                          ],
+                          content: SingleChildScrollView(
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Flexible(
+                                  child: Text(
+                                    widget.controller.log.join('\n'),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                      ],
+                      ),
                     ),
-                  ),
-                ),
-              ),
-            ),
-          ]
+                  ],
+                );
+              } else {
+                return SizedBox();
+              }
+            },
+          ),
         ],
       );
     }
