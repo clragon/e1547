@@ -70,6 +70,12 @@ class _HistoryPageState extends State<HistoryPage> {
                   cancelText: 'CLEAR',
                 );
 
+                if (result != search) {
+                  PrimaryScrollController.of(context)?.animateTo(0,
+                      duration: defaultAnimationDuration,
+                      curve: Curves.easeInOut);
+                }
+
                 setState(() {
                   search = result;
                 });
