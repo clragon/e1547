@@ -68,10 +68,19 @@ class _HistoryPageState extends State<HistoryPage> {
                   lastDate: lastDate,
                   locale: Localizations.localeOf(context),
                   cancelText: 'CLEAR',
+                  initialEntryMode: DatePickerEntryMode.calendarOnly,
+                  selectableDayPredicate: (date) =>
+                      historyController.collection.entries.any(
+                    (element) => DateUtils.dateOnly(element.visitedAt)
+                        .isAtSameMomentAs(date),
+                  ),
                 );
 
-                if (result != search) {
-                  PrimaryScrollController.of(context)?.animateTo(0,
+                ScrollController? scrollController =
+                    PrimaryScrollController.of(context);
+                if (result != search &&
+                    (scrollController?.hasClients ?? false)) {
+                  scrollController!.animateTo(0,
                       duration: defaultAnimationDuration,
                       curve: Curves.easeInOut);
                 }
