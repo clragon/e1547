@@ -88,7 +88,10 @@ class FollowController extends DataUpdater<List<Follow>> with HostableUpdater {
     return data;
   }
 
-  bool followsTag(String tag) => items.any((element) => element.tags == tag);
+  Follow? getFollow(String tag) =>
+      items.singleWhereOrNull((follow) => follow.tags == tag);
+
+  bool followsTag(String tag) => getFollow(tag) != null;
 
   FollowStatus? status(Follow follow) => follow.statuses[client.host];
 

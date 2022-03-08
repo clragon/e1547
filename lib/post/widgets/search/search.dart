@@ -1,4 +1,3 @@
-import 'package:collection/collection.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/interface/interface.dart';
@@ -46,9 +45,7 @@ class _SearchPageState extends State<SearchPage> with ListenerCallbackMixin {
   }
 
   Future<void> updateFollow() async {
-    Follow? follow = followController.items.singleWhereOrNull(
-      (follow) => follow.tags == controller.search.value,
-    );
+    Follow? follow = followController.getFollow(controller.search.value);
     if (follow != null) {
       if (controller.itemList?.isNotEmpty ?? false) {
         bool updated = await follow.updateLatest(
@@ -89,8 +86,7 @@ class _SearchPageState extends State<SearchPage> with ListenerCallbackMixin {
   }
 
   String getTitle() {
-    Follow? follow = followController.items
-        .singleWhereOrNull((follow) => follow.tags == controller.search.value);
+    Follow? follow = followController.getFollow(controller.search.value);
     if (follow != null) {
       return follow.name;
     }
