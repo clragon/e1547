@@ -80,19 +80,17 @@ abstract class RawDataController<KeyType, ItemType>
     }
   }
 
-  final String controllerKey = UniqueKey().toString();
-
   @nonVirtual
   @protected
   Future<bool> canRefresh() async {
     String key = UniqueKey().toString();
     if (_requestLock.isLocked) {
-      log.add('$controllerKey$key mutex is locked');
+      log.add('$key mutex is locked');
       if (_isRefreshing) {
-        log.add('$controllerKey$key already refreshing, false!');
+        log.add('$key already refreshing, false!');
         return false;
       }
-      log.add('$controllerKey$key not refreshing, waiting!');
+      log.add('$key not refreshing, waiting!');
       _isRefreshing = true;
       // waits for the current request to be done
       await _requestLock.acquire();
@@ -109,24 +107,24 @@ abstract class RawDataController<KeyType, ItemType>
   @override
   Future<void> refresh({bool force = false}) async {
     String key = UniqueKey().toString();
-    log.add('$controllerKey$key refresh called!');
+    log.add('$key refresh called!');
     if (!await canRefresh()) {
-      log.add('$controllerKey$key cannot refresh, false!');
+      log.add('$key cannot refresh, false!');
       return;
     }
-    log.add('$controllerKey$key can refresh, true!');
+    log.add('$key can refresh, true!');
     _isForceRefreshing = force;
     super.refresh();
   }
 
   Future<void> backgroundRefresh({bool force = false}) async {
     String key = UniqueKey().toString();
-    log.add('$controllerKey$key refresh called!');
+    log.add('$key refresh called!');
     if (!await canRefresh()) {
-      log.add('$controllerKey$key cannot refresh, false!');
+      log.add('$key cannot refresh, false!');
       return;
     }
-    log.add('$controllerKey$key can refresh, true!');
+    log.add('$key can refresh, true!');
     _isForceRefreshing = force;
     loadPage(firstPageKey, reset: true);
   }
@@ -136,12 +134,12 @@ abstract class RawDataController<KeyType, ItemType>
     String key = UniqueKey().toString();
     log.add('-------------------------------------------------');
     log.add(
-        '$controllerKey$key ${StackTrace.current.toString().split('\n').take(9).join('\n')}');
+        '$key ${StackTrace.current.toString().split('\n').take(9).join('\n')}');
     log.add('-------------------------------------------------');
     try {
-      log.add('$controllerKey$key loadpage with $page');
+      log.add('$key loadpage with $page');
       await _requestLock.acquire();
-      log.add('$controllerKey$key acquired mutex on page $page');
+      log.add('$key acquired mutex on page $page');
       List<ItemType> items = sort(await provide(page, _isForceRefreshing));
       if (reset) {
         value = PagingState(
@@ -158,10 +156,10 @@ abstract class RawDataController<KeyType, ItemType>
       }
       success();
     } on Exception catch (error) {
-      log.add('$controllerKey$key failed to load page $page with $error');
+      log.add('$key failed to load page $page with $error');
       failure(error);
     } finally {
-      log.add('$controllerKey$key done with loading page $page');
+      log.add('$key done with loading page $page');
       _isForceRefreshing = false;
       _requestLock.release();
     }
