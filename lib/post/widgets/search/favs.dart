@@ -20,6 +20,10 @@ class _FavPageState extends State<FavPage> with ListenerCallbackMixin {
         client: updateUsername,
       };
 
+  Future<void> addToHistory() async {
+    controller!.addToHistory(context);
+  }
+
   void updateUsername() {
     Credentials? credentials = client.credentials;
     if (credentials != null) {
@@ -30,9 +34,13 @@ class _FavPageState extends State<FavPage> with ListenerCallbackMixin {
           search: 'fav:${credentials.username}',
           denyMode: DenyListMode.unavailable,
         );
+        controller!.search.addListener(addToHistory);
+        addToHistory();
       });
     } else {
       setState(() {
+        controller?.search.removeListener(addToHistory);
+        controller?.dispose();
         controller = null;
       });
     }

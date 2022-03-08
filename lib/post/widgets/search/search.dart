@@ -42,6 +42,7 @@ class _SearchPageState extends State<SearchPage> with ListenerCallbackMixin {
     await updatePool();
     await controller.waitForFirstPage();
     await updateFollow();
+    controller.addToHistory(context, pool);
   }
 
   Future<void> updateFollow() async {

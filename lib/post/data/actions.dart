@@ -1,9 +1,13 @@
 import 'dart:io';
 
 import 'package:crypto/crypto.dart';
+import 'package:e1547/history/history.dart';
+import 'package:e1547/interface/interface.dart';
+import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:e1547/tag/tag.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
@@ -171,3 +175,21 @@ extension Linking on Post {
 
 Uri getPostUri(String host, int id) =>
     Uri(scheme: 'https', host: host, path: '/posts/$id');
+
+extension History on PostController {
+  Future<void> addToHistory(BuildContext context, [Pool? pool]) async {
+    await waitForFirstPage();
+    if (pool != null) {
+      historyController.addTag(
+        pool.search,
+        alias: pool.name,
+        posts: itemList,
+      );
+    } else {
+      historyController.addTag(
+        search.value,
+        posts: itemList,
+      );
+    }
+  }
+}

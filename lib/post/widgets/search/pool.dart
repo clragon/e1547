@@ -1,4 +1,5 @@
 import 'package:e1547/client/client.dart';
+import 'package:e1547/history/history.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
@@ -7,24 +8,38 @@ import 'package:flutter/material.dart';
 
 class PoolPage extends StatefulWidget {
   final Pool pool;
+  final bool reversed;
 
-  const PoolPage({required this.pool});
+  const PoolPage({required this.pool, this.reversed = false});
 
   @override
   _PoolPageState createState() => _PoolPageState();
 }
 
 class _PoolPageState extends State<PoolPage> {
-  late PostController controller;
-  bool reversePool = false;
+  late bool reversePool = widget.reversed;
+  late PostController controller = PostController(
+    provider: (tags, page, force) => client.poolPosts(
+      widget.pool.id,
+      page,
+      reverse: reversePool,
+      force: force,
+    ),
+    canSearch: false,
+  );
 
   @override
   void initState() {
     super.initState();
-    controller = PostController(
-      provider: (tags, page, force) => client.poolPosts(widget.pool.id, page,
-          reverse: reversePool, force: force),
-      canSearch: false,
+    addToHistory();
+  }
+
+  Future<void> addToHistory() async {
+    await controller.waitForFirstPage();
+    historyController.addTag(
+      widget.pool.search,
+      alias: widget.pool.name,
+      posts: controller.itemList,
     );
   }
 

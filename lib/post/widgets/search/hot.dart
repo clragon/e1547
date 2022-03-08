@@ -9,8 +9,13 @@ class HotPage extends StatefulWidget {
   _HotPageState createState() => _HotPageState();
 }
 
-class _HotPageState extends State<HotPage> {
+class _HotPageState extends State<HotPage> with ListenerCallbackMixin {
   PostController controller = PostController(search: "order:rank");
+
+  @override
+  Map<ChangeNotifier, VoidCallback> get initListeners => {
+        controller.search: () => controller.addToHistory(context),
+      };
 
   @override
   void dispose() {

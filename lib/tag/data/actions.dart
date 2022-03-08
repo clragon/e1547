@@ -1,3 +1,4 @@
+import 'package:e1547/interface/interface.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 
@@ -14,7 +15,7 @@ String tagToName(String tags) => tags
     .join(' ');
 
 String tagToTitle(String tags) =>
-    tags.trim().split(' ').join(', ').replaceAll('_', ' ');
+    tags.replaceAll(',', ' ').split(' ').trim().join(', ').replaceAll('_', ' ');
 
 String tagToCard(String tags) => tagToTitle(tagToName(tags));
 

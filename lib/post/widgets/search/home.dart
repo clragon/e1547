@@ -20,6 +20,7 @@ class _HomePageState extends State<HomePage> with ListenerCallbackMixin {
 
   void update() {
     settings.homeTags.value = controller.search.value;
+    controller.addToHistory(context);
   }
 
   @override

@@ -9,6 +9,8 @@ Color dimTextColor(BuildContext context, [double opacity = 0.35]) =>
 
 int notZero(double value) => value < 1 ? 1 : value.round();
 
+Key joinKeys(List<dynamic> keys) => Key(keys.join('_'));
+
 class LowercaseTextInputFormatter extends TextInputFormatter {
   @override
   TextEditingValue formatEditUpdate(
@@ -52,5 +54,6 @@ extension days on DateTime {
 }
 
 extension Trimming on List<String> {
-  List<String> trim() => map((e) => e.trim()).toList();
+  List<String> trim() =>
+      map((e) => e.trim()).toList()..removeWhere((element) => element.isEmpty);
 }

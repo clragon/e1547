@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/history/history.dart';
 import 'package:e1547/post/post.dart';
@@ -84,16 +85,19 @@ class HistoryController extends ChangeNotifier {
     if (!enabled) {
       return false;
     }
-    if (_getRecentEntries(collection.tags)
-        .any((element) => element.tags == tag)) {
-      return false;
-    }
     List<String> thumbnails = posts
             ?.map((e) => e.sample.url)
             .where((e) => e != null)
             .cast<String>()
             .toList() ??
         [];
+    if (_getRecentEntries(collection.tags).any(
+      (element) =>
+          element.tags == tag &&
+          DeepCollectionEquality().equals(element.thumbnails, thumbnails),
+    )) {
+      return false;
+    }
     addEntry(
       TagHistoryEntry(
         visitedAt: DateTime.now(),
