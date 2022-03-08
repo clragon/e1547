@@ -140,7 +140,14 @@ class PostEdit {
 class PostEditingController extends SheetActionController {
   final Post post;
 
-  PostEdit? value;
+  PostEdit? _value;
+
+  PostEdit? get value => _value;
+
+  set value(PostEdit? value) {
+    _value = value;
+    notifyListeners();
+  }
 
   PostEditingController(this.post);
 
