@@ -1,6 +1,5 @@
 import 'package:e1547/denylist/denylist.dart';
 import 'package:e1547/interface/interface.dart';
-import 'package:e1547/main.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:e1547/tag/tag.dart';
@@ -70,7 +69,7 @@ class _PostsPageState extends State<PostsPage> {
             Divider(),
             ListTile(
               leading: Icon(Icons.format_list_numbered),
-              title: Text('LOG'),
+              title: Text('Log'),
               onTap: () => showDialog(
                 context: context,
                 builder: (context) => AlertDialog(
@@ -83,7 +82,7 @@ class _PostsPageState extends State<PostsPage> {
                   actions: [
                     TextButton(
                       onPressed: () {
-                        log.clear();
+                        widget.controller.log.clear();
                         Navigator.of(context).maybePop();
                       },
                       child: Text('CLEAR'),
@@ -92,7 +91,7 @@ class _PostsPageState extends State<PostsPage> {
                       onPressed: () {
                         Clipboard.setData(
                           ClipboardData(
-                            text: log.join('\n'),
+                            text: widget.controller.log.join('\n'),
                           ),
                         );
                       },
@@ -110,7 +109,7 @@ class _PostsPageState extends State<PostsPage> {
                       children: [
                         Flexible(
                           child: Text(
-                            log.join('\n'),
+                            widget.controller.log.join('\n'),
                           ),
                         ),
                       ],

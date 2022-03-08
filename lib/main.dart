@@ -6,17 +6,9 @@ import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-List<String> log = [];
-
 Future<void> main() async {
   await initialize();
-  runZoned(
-    () => runApp(App()),
-    zoneSpecification: ZoneSpecification(print: (self, parent, zone, line) {
-      log.add(line);
-      self.parent!.print(line);
-    }),
-  );
+  runApp(App());
 }
 
 Future<void> initialize() async {
