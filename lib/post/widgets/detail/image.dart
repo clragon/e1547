@@ -124,8 +124,8 @@ class _PostDetailImageToggleState extends State<PostDetailImageToggle> {
         selector: () => [controller.isAllowed(post), post.file.url],
         builder: (context, child) => CrossFade(
           showChild: post.file.url == null ||
-              controller.isDenied(post) ||
-              controller.isAllowed(post),
+              (!post.isFavorited &&
+                  (controller.isDenied(post) || controller.isAllowed(post))),
           duration: Duration(milliseconds: 200),
           child: Card(
             color: controller.isAllowed(post)
