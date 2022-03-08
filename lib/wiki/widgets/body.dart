@@ -89,7 +89,7 @@ class _WikiTagDisplayState extends State<WikiTagDisplay> {
 
   Future<Wiki?> retrieveWiki() async {
     List<Wiki> results = await client.wikis(1, search: tagToName(widget.tag));
-    if (results.isNotEmpty) {
+    if (results.isNotEmpty && results.first.title == widget.tag) {
       return results.first;
     } else {
       return null;
