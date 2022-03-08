@@ -110,14 +110,15 @@ class HistoryTile extends StatelessWidget {
               ),
               onSelected: (value) => value(),
               itemBuilder: (context) => [
-                PopupMenuTile(
-                  title: 'Wiki',
-                  icon: Icons.info,
-                  value: () => wikiSheet(
-                    context: context,
-                    tag: entry.tags,
+                if (entry.tags.isNotEmpty)
+                  PopupMenuTile(
+                    title: 'Wiki',
+                    icon: Icons.info,
+                    value: () => wikiSheet(
+                      context: context,
+                      tag: entry.tags,
+                    ),
                   ),
-                ),
                 PopupMenuTile(
                   title: 'Delete',
                   icon: Icons.delete,
