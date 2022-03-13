@@ -10,9 +10,9 @@ jobs:
   ios-build:
     runs-on: macos-latest
     steps:
-    - uses: actions/checkout@v1 
+    - uses: actions/checkout@v3 
     
-    - uses: subosito/flutter-action@v1
+    - uses: subosito/flutter-action@v2
       with:
         channel: 'stable' 
         
@@ -26,13 +26,13 @@ jobs:
         mv e1547.zip ../../../e1547.ipa
     
     # Upload generated apk to the artifacts.
-    - uses: actions/upload-artifact@v1
+    - uses: actions/upload-artifact@v3
       with:
         name: release-ios
         path: e1547.ipa
         
     - name: Upload the release assets — iOS file
-      uses: actions/upload-release-asset@e8f9f06c4b078e705bd2ea027f0926603fc9b4d5
+      uses: softprops/action-gh-release@v1
       with:
         upload_url: ${{ github.event.release.upload_url }}
         asset_path: e1547.ipa
@@ -46,13 +46,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
   
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v3
     
-    - uses: actions/setup-java@v1
+    - uses: actions/setup-java@v2
       with:
-        java-version: '12.x'
+        distribution: 'zulu'
+        java-version: '12'
   
-    - uses: subosito/flutter-action@v1
+    - uses: subosito/flutter-action@v2
       with:
         channel: 'stable' 
         
@@ -72,13 +73,13 @@ jobs:
     - run: flutter build apk
     
     # Upload generated apk to the artifacts.
-    - uses: actions/upload-artifact@v1
+    - uses: actions/upload-artifact@v3
       with:
         name: release-apk
         path: build/app/outputs/apk/release/app-release.apk
       
     - name: Upload the release assets — Android file
-      uses: actions/upload-release-asset@e8f9f06c4b078e705bd2ea027f0926603fc9b4d5
+      uses: softprops/action-gh-release@v1
       with:
         upload_url: ${{ github.event.release.upload_url }}
         asset_path: build/app/outputs/apk/release/app-release.apk
