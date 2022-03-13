@@ -1,10 +1,8 @@
 import 'package:e1547/denylist/denylist.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
-import 'package:e1547/settings/settings.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 class PostsPage extends StatefulWidget {
   final bool canSelect;
@@ -64,67 +62,6 @@ class _PostsPageState extends State<PostsPage> {
           if (widget.controller.denyMode != DenyListMode.unavailable)
             DrawerDenySwitch(controller: widget.controller),
           DrawerCounter(controller: widget.controller),
-          // TODO: fix duplicates and remove this
-          AnimatedBuilder(
-            animation: settings.showBeta,
-            builder: (context, child) {
-              if (settings.showBeta.value) {
-                return Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Divider(),
-                    ListTile(
-                      leading: Icon(Icons.format_list_numbered),
-                      title: Text('Log'),
-                      onTap: () => showDialog(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                          title: Text(
-                            '${widget.controller.itemList!.length} items / ${widget.controller.itemList!.asMap().entries.where((e) => widget.controller.itemList!.sublist(
-                                  0,
-                                  e.key,
-                                ).any((element) => element.id == widget.controller.itemList![e.key].id)).length} duplicates!',
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () {
-                                Clipboard.setData(
-                                  ClipboardData(
-                                    text: widget.controller.log.join('\n'),
-                                  ),
-                                );
-                                Navigator.of(context).maybePop();
-                              },
-                              child: Text('COPY'),
-                            ),
-                            TextButton(
-                              onPressed: Navigator.of(context).maybePop,
-                              child: Text('OK'),
-                            ),
-                          ],
-                          content: SingleChildScrollView(
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Flexible(
-                                  child: Text(
-                                    widget.controller.log.join('\n'),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                );
-              } else {
-                return SizedBox();
-              }
-            },
-          ),
         ],
       );
     }

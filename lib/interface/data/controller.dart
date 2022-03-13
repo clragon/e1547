@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:e1547/client/client.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:mutex/mutex.dart';
@@ -13,8 +12,6 @@ abstract class RawDataController<KeyType, ItemType>
   Mutex _requestLock = Mutex();
   bool _isRefreshing = false;
   bool _isForceRefreshing = false;
-
-  List<String> log = [];
 
   late List<Listenable> _refreshListeners = getRefreshListeners();
 
@@ -83,63 +80,42 @@ abstract class RawDataController<KeyType, ItemType>
   @nonVirtual
   @protected
   Future<bool> canRefresh() async {
-    String key = UniqueKey().toString();
     if (_requestLock.isLocked) {
-      log.add('$key mutex is locked');
       if (_isRefreshing) {
-        log.add('$key already refreshing, false!');
         return false;
       }
-      log.add('$key not refreshing, waiting!');
       _isRefreshing = true;
       // waits for the current request to be done
       await _requestLock.acquire();
       _requestLock.release();
-      log.add('$key done with lock, true!');
       _isRefreshing = false;
       return true;
     } else {
-      log.add('$key mutex is not locked, true!');
       return true;
     }
   }
 
   @override
   Future<void> refresh({bool force = false}) async {
-    String key = UniqueKey().toString();
-    log.add('$key refresh called!');
     if (!await canRefresh()) {
-      log.add('$key cannot refresh, false!');
       return;
     }
-    log.add('$key can refresh, true!');
     _isForceRefreshing = force;
     super.refresh();
   }
 
   Future<void> backgroundRefresh({bool force = false}) async {
-    String key = UniqueKey().toString();
-    log.add('$key refresh called!');
     if (!await canRefresh()) {
-      log.add('$key cannot refresh, false!');
       return;
     }
-    log.add('$key can refresh, true!');
     _isForceRefreshing = force;
     loadPage(firstPageKey, reset: true);
   }
 
   @protected
   Future<void> loadPage(KeyType page, {bool reset = false}) async {
-    String key = UniqueKey().toString();
-    log.add('-------------------------------------------------');
-    log.add(
-        '$key ${StackTrace.current.toString().split('\n').take(9).join('\n')}');
-    log.add('-------------------------------------------------');
     try {
-      log.add('$key loadpage with $page');
       await _requestLock.acquire();
-      log.add('$key acquired mutex on page $page');
       List<ItemType> items = sort(await provide(page, _isForceRefreshing));
       if (reset) {
         value = PagingState(
@@ -156,10 +132,8 @@ abstract class RawDataController<KeyType, ItemType>
       }
       success();
     } on Exception catch (error) {
-      log.add('$key failed to load page $page with $error');
       failure(error);
     } finally {
-      log.add('$key done with loading page $page');
       _isForceRefreshing = false;
       _requestLock.release();
     }
