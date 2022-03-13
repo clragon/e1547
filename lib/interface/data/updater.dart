@@ -4,11 +4,8 @@ import 'package:e1547/client/client.dart';
 import 'package:flutter/material.dart';
 import 'package:mutex/mutex.dart';
 
-abstract class DataUpdater<T> extends ChangeNotifier {
+abstract class DataUpdater extends ChangeNotifier {
   int progress = 0;
-
-  @protected
-  Duration? get stale => null;
 
   Future get finish => _updateCompleter.future;
   Completer _updateCompleter = Completer()..complete();
@@ -34,15 +31,9 @@ abstract class DataUpdater<T> extends ChangeNotifier {
 
   void _fail(Exception exception) {
     error = exception;
-    _updateLock.release();
     _updateCompleter.completeError(exception);
+    _updateLock.release();
     notifyListeners();
-  }
-
-  void _uncomplete() {
-    if (_updateCompleter.isCompleted) {
-      _updateCompleter = Completer();
-    }
   }
 
   void _complete() {
@@ -52,7 +43,6 @@ abstract class DataUpdater<T> extends ChangeNotifier {
   }
 
   void _reset() {
-    _uncomplete();
     progress = 0;
     restarting = false;
     canceling = false;
@@ -60,17 +50,12 @@ abstract class DataUpdater<T> extends ChangeNotifier {
     notifyListeners();
   }
 
+  @protected
   @mustCallSuper
   List<Listenable> getRefreshListeners() => [];
 
   @protected
-  Future<T> read();
-
-  @protected
-  Future<void> write(T? data);
-
-  @protected
-  Future<T?> run(T data, bool force);
+  Future<void> run(bool force);
 
   @mustCallSuper
   bool step([int? progress]) {
@@ -84,15 +69,12 @@ abstract class DataUpdater<T> extends ChangeNotifier {
 
   Future<void> _wrapper({bool force = false}) async {
     await _updateLock.acquire();
-    T data = await read();
-    T? result;
     try {
-      result = await run(data, force);
+      await run(force);
       if (restarting) {
         _updateLock.release();
         return;
       }
-      await write(result);
       _complete();
     } on Exception catch (e) {
       if (e is UpdaterException) {
@@ -106,7 +88,7 @@ abstract class DataUpdater<T> extends ChangeNotifier {
   @mustCallSuper
   Future<void> update({bool force = false}) async {
     if (_updateCompleter.isCompleted) {
-      _uncomplete();
+      _updateCompleter = Completer();
       _reset();
       _wrapper(force: force);
     }
@@ -115,7 +97,9 @@ abstract class DataUpdater<T> extends ChangeNotifier {
 
   @mustCallSuper
   Future<void> restart({bool force = false}) async {
-    if (!_updateCompleter.isCompleted) {
+    if (_updateCompleter.isCompleted) {
+      _updateCompleter = Completer();
+    } else {
       restarting = true;
       await _updateLock.acquire();
       _updateLock.release();
@@ -140,7 +124,7 @@ class UpdaterException implements Exception {
   UpdaterException({this.message});
 }
 
-mixin HostableUpdater<T> on DataUpdater<T> {
+mixin HostableUpdater on DataUpdater {
   @override
   List<Listenable> getRefreshListeners() =>
       super.getRefreshListeners()..add(client);

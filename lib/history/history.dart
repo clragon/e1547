@@ -1,4 +1,5 @@
 // data
+export 'data/actions.dart';
 export 'data/collection.dart';
 export 'data/controller.dart';
 export 'data/entry.dart';

@@ -49,14 +49,14 @@ class Settings with SharedPrefsSettings {
     getSetting: (prefs, key) {
       List<String>? value = prefs.getStringList(key);
       if (value != null) {
-        return value.map((e) => Follow.fromJson(e)).toList();
+        return value.map((e) => Follow.fromJson(json.decode(e))).toList();
       } else {
         return null;
       }
     },
     setSetting: (prefs, key, value) async => prefs.setStringList(
       key,
-      value.map((e) => e.toJson()).toList(),
+      value.map((e) => json.encode(e.toJson())).toList(),
     ),
   );
 

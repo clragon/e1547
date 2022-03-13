@@ -52,7 +52,7 @@ class _FollowsSplitPageState extends State<FollowsSplitPage>
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration(milliseconds: 500), controller.update);
+    Future.delayed(Duration.zero, controller.update);
   }
 
   @override

@@ -49,20 +49,25 @@ class _SearchPageState extends State<SearchPage> with ListenerCallbackMixin {
     Follow? follow = followController.getFollow(controller.search.value);
     if (follow != null) {
       if (controller.itemList?.isNotEmpty ?? false) {
-        bool updated = await follow.updateLatest(
+        Follow updated = follow.withLatest(
           client.host,
           controller.itemList!.first,
           foreground: true,
         );
-        if (updated) {
+        if (updated != follow) {
           followController.replace(
-              followController.items.indexOf(follow), follow);
+            followController.items.indexOf(follow),
+            updated,
+          );
         }
       }
       if (pool != null) {
-        if (follow.updatePool(pool!)) {
+        Follow updated = follow.withPool(pool!);
+        if (updated != follow) {
           followController.replace(
-              followController.items.indexOf(follow), follow);
+            followController.items.indexOf(follow),
+            updated,
+          );
         }
       }
     }

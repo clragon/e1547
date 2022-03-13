@@ -56,16 +56,21 @@ class _FollowingPageState extends State<FollowingPage> {
               actionController: sheetController,
               textController: TextEditingController(text: follow.name),
               submit: (value) {
-                value = value.trim();
+                String? alias = value.trim();
                 if (follow.alias != value) {
                   if (value.isNotEmpty) {
-                    follow.alias = value;
+                    alias = value;
                   } else {
-                    follow.alias = null;
+                    alias = null;
                   }
                   followController.replace(
                     followController.items.indexOf(follow),
-                    follow,
+                    Follow(
+                      tags: follow.tags,
+                      alias: alias,
+                      type: follow.type,
+                      statuses: follow.statuses,
+                    ),
                   );
                 }
               },
@@ -93,24 +98,18 @@ class _FollowingPageState extends State<FollowingPage> {
                   addTags(context, follow: followController.items[index]),
               onDelete: () =>
                   followController.remove(followController.items[index]),
-              onChangeNotify: (enabled) {
-                Follow follow = followController.items[index];
-                if (enabled) {
-                  follow.type = FollowType.notify;
-                } else {
-                  follow.type = FollowType.update;
-                }
-                followController.replace(index, follow);
-              },
-              onChangeBookmark: (enabled) {
-                Follow follow = followController.items[index];
-                if (enabled) {
-                  follow.type = FollowType.bookmark;
-                } else {
-                  follow.type = FollowType.update;
-                }
-                followController.replace(index, follow);
-              },
+              onChangeNotify: (enabled) => followController.replace(
+                index,
+                followController.items[index].copyWith(
+                  type: enabled ? FollowType.notify : FollowType.update,
+                ),
+              ),
+              onChangeBookmark: (enabled) => followController.replace(
+                index,
+                followController.items[index].copyWith(
+                  type: enabled ? FollowType.bookmark : FollowType.update,
+                ),
+              ),
             ),
           );
         }

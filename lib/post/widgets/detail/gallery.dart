@@ -45,7 +45,7 @@ class _PostDetailGalleryState extends State<PostDetailGallery>
 
       if (widget.controller.nextPageKey != null &&
           index >= newPageRequestTriggerIndex) {
-        WidgetsBinding.instance?.addPostFrameCallback((_) {
+        WidgetsBinding.instance!.addPostFrameCallback((_) {
           widget.controller
               .notifyPageRequestListeners(widget.controller.nextPageKey!);
         });
