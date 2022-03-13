@@ -34,7 +34,7 @@ class Comment {
   bool doNotBumpPost;
   bool isHidden;
   bool isSticky;
-  String? warningType;
+  int? warningType;
   int? warningUserId;
   String creatorName;
   String updaterName;
