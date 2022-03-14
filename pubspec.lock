@@ -342,9 +342,9 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "268945f"
-      resolved-ref: "268945f249caf808173afbf6a567fb615ab24992"
-      url: "git://github.com/EdsonBueno/infinite_scroll_pagination"
+      ref: HEAD
+      resolved-ref: "3da855e1edece1cb17cdc282b22c428fecc70647"
+      url: "git://github.com/clragon/infinite_scroll_pagination.git"
     source: git
     version: "4.0.0"
   intl:
@@ -406,9 +406,11 @@ packages:
   media_scanner:
     dependency: "direct main"
     description:
-      name: media_scanner
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "."
+      ref: HEAD
+      resolved-ref: "9f98050d78ff7a00462639147592a81aacc04bce"
+      url: "git://github.com/clragon/media_scanner.git"
+    source: git
     version: "2.0.0"
   meta:
     dependency: transitive
