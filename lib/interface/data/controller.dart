@@ -96,20 +96,16 @@ abstract class RawDataController<KeyType, ItemType>
   }
 
   @override
-  Future<void> refresh({bool force = false}) async {
+  Future<void> refresh({bool background = false, bool force = false}) async {
     if (!await canRefresh()) {
       return;
     }
     _isForceRefreshing = force;
-    super.refresh();
-  }
-
-  Future<void> backgroundRefresh({bool force = false}) async {
-    if (!await canRefresh()) {
-      return;
+    if (background) {
+      loadPage(firstPageKey, reset: true);
+    } else {
+      super.refresh();
     }
-    _isForceRefreshing = force;
-    loadPage(firstPageKey, reset: true);
   }
 
   @protected

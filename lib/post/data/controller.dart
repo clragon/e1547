@@ -110,23 +110,14 @@ class PostController extends DataController<Post>
   }
 
   @override
-  Future<void> refresh({bool force = false}) async {
+  Future<void> refresh({bool background = false, bool force = false}) async {
     if (!await canRefresh()) {
       return;
     }
     _posts = null;
     _deniedPosts = null;
     _allowedPosts = [];
-    await super.refresh(force: force);
-  }
-
-  @override
-  Future<void> backgroundRefresh({bool force = false}) async {
-    super.backgroundRefresh(force: force);
-    await Future.delayed(Duration.zero);
-    _posts = null;
-    _deniedPosts = null;
-    _allowedPosts = [];
+    await super.refresh(background: background, force: force);
   }
 
   @override

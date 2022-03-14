@@ -36,7 +36,7 @@ class RefreshableControllerPage<T extends RefreshableController>
       appBar: appBar,
       floatingActionButton: floatingActionButton,
       refreshController: controller.refreshController,
-      refresh: () => controller.backgroundRefresh(force: true),
+      refresh: () => controller.refresh(background: true, force: true),
     );
   }
 }
