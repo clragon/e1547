@@ -39,9 +39,11 @@ class Follow {
 
   factory Follow.fromJson(Map<String, dynamic> json) => Follow(
         tags: json["tags"],
-        alias: json["alias"] == null ? null : json["alias"],
-        statuses: Map.from(json["statuses"]).map((k, v) =>
-            MapEntry<String, FollowStatus>(k, FollowStatus.fromJson(v))),
+        alias: json["alias"],
+        statuses: json["statuses"] != null
+            ? Map.from(json["statuses"]).map((k, v) =>
+                MapEntry<String, FollowStatus>(k, FollowStatus.fromJson(v)))
+            : null,
         type: FollowType.values
             .firstWhereOrNull((element) => element.name == json['type']),
       );
