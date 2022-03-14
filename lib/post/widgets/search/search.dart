@@ -52,7 +52,7 @@ class _SearchPageState extends State<SearchPage> with ListenerCallbackMixin {
         Follow updated = follow.withLatest(
           client.host,
           controller.itemList!.first,
-          foreground: true,
+          foreground: mounted,
         );
         if (updated != follow) {
           followController.replace(
