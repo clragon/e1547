@@ -106,6 +106,12 @@ class _SearchPageState extends State<SearchPage> with ListenerCallbackMixin {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+    controller.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return PostsPage(
       controller: controller,

@@ -35,6 +35,12 @@ class _FollowsCombinedPageState extends State<FollowsCombinedPage>
   }
 
   @override
+  void dispose() {
+    super.dispose();
+    controller.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return PostsPage(
       controller: controller,

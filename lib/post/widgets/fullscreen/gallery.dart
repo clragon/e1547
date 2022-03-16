@@ -23,7 +23,7 @@ class _PostFullscreenGalleryState extends State<PostFullscreenGallery>
     with RouteAware {
   late PageController pageController =
       PageController(initialPage: widget.initialPage);
-  late ValueNotifier<int> current = ValueNotifier(widget.initialPage);
+  late ValueNotifier<int> currentPage = ValueNotifier(widget.initialPage);
   late FrameController frameController;
 
   Future<void> toggleFrame(bool shown) async {
@@ -61,8 +61,10 @@ class _PostFullscreenGalleryState extends State<PostFullscreenGallery>
   @override
   void dispose() {
     navigation.routeObserver.unsubscribe(this);
-    frameController.dispose();
     SystemChrome.setSystemUIChangeCallback(null);
+    frameController.dispose();
+    pageController.dispose();
+    currentPage.dispose();
     super.dispose();
   }
 
@@ -74,7 +76,7 @@ class _PostFullscreenGalleryState extends State<PostFullscreenGallery>
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder<int>(
-      valueListenable: current,
+      valueListenable: currentPage,
       builder: (context, value, child) => Theme(
         data: Theme.of(context).copyWith(
           appBarTheme: AppBarTheme(
@@ -102,7 +104,7 @@ class _PostFullscreenGalleryState extends State<PostFullscreenGallery>
             controller: widget.controller,
           ),
           onPageChanged: (index) {
-            current.value = index;
+            currentPage.value = index;
             widget.onPageChanged?.call(index);
             if (widget.controller.itemList != null) {
               preloadImages(

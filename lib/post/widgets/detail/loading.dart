@@ -15,25 +15,20 @@ class PostLoadingPage extends StatefulWidget {
 }
 
 class _PostLoadingPageState extends State<PostLoadingPage> {
-  late Future<PostController> controller = Future(() async {
-    PostController controller = singlePostController(widget.id);
-    await controller.loadFirstPage();
-    return controller;
-  });
+  late PostController controller = singlePostController(widget.id);
+  late Future<void> firstPage = controller.loadFirstPage();
 
   @override
   void dispose() {
-    controller.then((value) => value.dispose());
+    controller.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return FuturePageLoader<PostController>(
-      future: controller,
-      builder: (context, value) => PostDetailGallery(
-        controller: value,
-      ),
+    return FuturePageLoader<void>(
+      future: firstPage,
+      builder: (context, value) => PostDetailGallery(controller: controller),
       title: Text('Post #${widget.id}'),
       onError: Text('Failed to load post'),
       onEmpty: Text('Post not found'),

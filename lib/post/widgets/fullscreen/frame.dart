@@ -78,6 +78,9 @@ class _PostFullscreenFrameState extends State<PostFullscreenFrame> {
     if (oldWidget.controller == widget.controller) {
       controller.cancel();
     } else {
+      if (oldWidget.controller == null) {
+        controller.dispose();
+      }
       controller = widget.controller ?? FrameController();
     }
   }

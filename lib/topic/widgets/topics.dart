@@ -14,6 +14,12 @@ class _TopicsPageState extends State<TopicsPage> {
   TopicController controller = TopicController();
 
   @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return RefreshableControllerPage(
       appBar: DefaultAppBar(title: Text('Topics')),

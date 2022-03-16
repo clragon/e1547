@@ -15,6 +15,12 @@ class _PoolsPageState extends State<PoolsPage> {
   PoolController controller = PoolController();
 
   @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return RefreshableControllerPage(
       appBar: DefaultAppBar(

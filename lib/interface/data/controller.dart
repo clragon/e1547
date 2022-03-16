@@ -208,6 +208,12 @@ mixin SearchableController<PageKeyType, ItemType>
   @protected
   List<Listenable> getRefreshListeners() =>
       super.getRefreshListeners()..add(search);
+
+  @override
+  void dispose() {
+    search.dispose();
+    super.dispose();
+  }
 }
 
 mixin HostableController<PageKeyType, ItemType>
@@ -234,6 +240,12 @@ mixin RefreshableController<PageKeyType, ItemType>
   void success() {
     super.success();
     refreshController.refreshCompleted();
+  }
+
+  @override
+  void dispose() {
+    refreshController.dispose();
+    super.dispose();
   }
 }
 

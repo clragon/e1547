@@ -8,7 +8,6 @@ import 'package:e1547/ticket/ticket.dart';
 import 'package:e1547/user/user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 enum UserPageSection {
@@ -38,7 +37,6 @@ class _UserPageState extends State<UserPage>
       PostController(search: 'fav:${widget.user.name}', canSearch: false);
   late PostController uploadPostController =
       PostController(search: 'user:${widget.user.name}', canSearch: false);
-  RefreshController refreshController = RefreshController();
   late TabController tabController;
 
   late Post? avatar = widget.avatar;
@@ -85,6 +83,8 @@ class _UserPageState extends State<UserPage>
   @override
   void dispose() {
     tabController.dispose();
+    favoritePostController.dispose();
+    uploadPostController.dispose();
     super.dispose();
   }
 

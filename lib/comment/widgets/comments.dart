@@ -17,6 +17,12 @@ class _CommentsPageState extends State<CommentsPage> {
   late CommentController controller = CommentController(postId: widget.postId);
 
   @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return RefreshableControllerPage(
       appBar: DefaultAppBar(

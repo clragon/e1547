@@ -1,5 +1,4 @@
 import 'package:e1547/client/client.dart';
-import 'package:e1547/history/history.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
@@ -31,16 +30,7 @@ class _PoolPageState extends State<PoolPage> {
   @override
   void initState() {
     super.initState();
-    addToHistory();
-  }
-
-  Future<void> addToHistory() async {
-    await controller.waitForFirstPage();
-    historyController.addTag(
-      widget.pool.search,
-      alias: widget.pool.name,
-      posts: controller.itemList,
-    );
+    controller.addToHistory(context, widget.pool);
   }
 
   @override

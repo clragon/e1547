@@ -56,6 +56,12 @@ class _FollowsSplitPageState extends State<FollowsSplitPage>
   }
 
   @override
+  void dispose() {
+    refreshController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return TileLayout(
       child: AnimatedBuilder(
