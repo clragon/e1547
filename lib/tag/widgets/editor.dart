@@ -29,6 +29,12 @@ class _TagEditorState extends State<TagEditor> {
   }
 
   @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return TagInput(
       labelText: widget.category,

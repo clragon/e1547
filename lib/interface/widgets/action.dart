@@ -36,6 +36,12 @@ class _ControlledTextWrapperState extends State<ControlledTextWrapper> {
   }
 
   @override
+  void dispose() {
+    textController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: widget.actionController,

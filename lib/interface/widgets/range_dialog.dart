@@ -33,11 +33,13 @@ class _RangeDialogState extends State<RangeDialog> with ListenerCallbackMixin {
 
   @override
   Map<ChangeNotifier, VoidCallback> get listeners => {
-        controller: updateValue,
+        controller: () => value = int.tryParse(controller.text) ?? value,
       };
 
-  void updateValue() {
-    value = int.tryParse(controller.text) ?? value;
+  @override
+  void dispose() {
+    super.dispose();
+    controller.dispose();
   }
 
   void submit(String output) {

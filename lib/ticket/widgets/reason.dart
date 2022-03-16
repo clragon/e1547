@@ -57,6 +57,13 @@ class _ReasonReportScreenState extends State<ReasonReportScreen> {
   bool isLoading = false;
 
   @override
+  void dispose() {
+    scrollController.dispose();
+    reasonController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Form(
       child: Scaffold(

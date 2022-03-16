@@ -162,6 +162,12 @@ class _ParentEditorState extends State<ParentEditor> {
     widget.editingController.setAction(submit);
   }
 
+  @override
+  void dispose() {
+    textController.dispose();
+    super.dispose();
+  }
+
   void showError(String message) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       duration: Duration(seconds: 1),

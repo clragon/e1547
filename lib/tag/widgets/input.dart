@@ -49,6 +49,25 @@ class _TagInputState extends State<TagInput> {
   }
 
   @override
+  void didUpdateWidget(covariant TagInput oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.controller != oldWidget.controller) {
+      if (oldWidget.controller == null) {
+        controller.dispose();
+      }
+      controller = widget.controller ?? TextEditingController();
+    }
+  }
+
+  @override
+  void dispose() {
+    if (widget.controller == null) {
+      controller.dispose();
+    }
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return TypeAheadField<AutocompleteTag>(
       direction: AxisDirection.up,
@@ -170,13 +189,32 @@ class _AdvancedTagInputState extends State<AdvancedTagInput> {
     controller = widget.controller ?? TextEditingController();
   }
 
+  @override
+  void didUpdateWidget(covariant AdvancedTagInput oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.controller != oldWidget.controller) {
+      if (oldWidget.controller == null) {
+        controller.dispose();
+      }
+      controller = widget.controller ?? TextEditingController();
+    }
+  }
+
+  @override
+  void dispose() {
+    if (widget.controller == null) {
+      controller.dispose();
+    }
+    super.dispose();
+  }
+
   Future<void> withTags(Future<Tagset> Function(Tagset tags) editor) async {
     controller.text =
         (await editor(Tagset.parse(controller.text))).toString() + ' ';
     controller.setFocusToEnd();
   }
 
-  List<PopupMenuEntry<String>> fromMap(Map<String, String> strings) =>
+  List<PopupMenuEntry<String>> popMenuFromMap(Map<String, String> strings) =>
       strings.keys.map((e) => PopupMenuItem(child: Text(e), value: e)).toList();
 
   @override
@@ -190,7 +228,7 @@ class _AdvancedTagInputState extends State<AdvancedTagInput> {
       return PopupMenuButton<String>(
         icon: Icon(Icons.filter_list),
         tooltip: 'Filter by',
-        itemBuilder: (context) => fromMap(filterTypes),
+        itemBuilder: (context) => popMenuFromMap(filterTypes),
         onSelected: (selection) {
           String? filterType = filterTypes[selection];
 
@@ -239,7 +277,7 @@ class _AdvancedTagInputState extends State<AdvancedTagInput> {
       return PopupMenuButton<String>(
         icon: Icon(Icons.sort),
         tooltip: 'Sort by',
-        itemBuilder: (context) => fromMap(orders),
+        itemBuilder: (context) => popMenuFromMap(orders),
         onSelected: (String selection) {
           String? orderType = orders[selection];
 
@@ -266,7 +304,7 @@ class _AdvancedTagInputState extends State<AdvancedTagInput> {
       return PopupMenuButton<String>(
         icon: Icon(Icons.playlist_add_check),
         tooltip: 'Conditions',
-        itemBuilder: (context) => fromMap(status),
+        itemBuilder: (context) => popMenuFromMap(status),
         onSelected: (selection) async {
           String? key;
           String? value;

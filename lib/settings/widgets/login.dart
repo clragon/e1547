@@ -26,8 +26,10 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   void dispose() {
-    super.dispose();
+    usernameController.dispose();
+    apiKeyController.dispose();
     pasteUndoTimer?.cancel();
+    super.dispose();
   }
 
   Future<void> saveAndTest(BuildContext context) async {

@@ -73,6 +73,13 @@ class _PostReportScreenState extends State<PostReportScreen> {
   bool isLoading = false;
 
   @override
+  void dispose() {
+    scrollController.dispose();
+    reasonController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Form(
       child: Scaffold(
@@ -180,6 +187,13 @@ class _PostFlagScreenState extends State<PostFlagScreen> {
   FlagType? type;
 
   bool isLoading = false;
+
+  @override
+  void dispose() {
+    scrollController.dispose();
+    parentController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
