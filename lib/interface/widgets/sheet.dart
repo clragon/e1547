@@ -152,3 +152,53 @@ SlidingSheetDialog defaultSlidingSheetDialog(
     ),
   );
 }
+
+class DefaultSheetBody extends StatelessWidget {
+  final Widget? title;
+  final List<Widget>? actions;
+  final Widget body;
+
+  const DefaultSheetBody({
+    Key? key,
+    this.title,
+    this.actions,
+    required this.body,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      child: Padding(
+        padding: EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (title != null || actions != null)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Flexible(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 8),
+                      child: DefaultTextStyle(
+                        child: title!,
+                        style: Theme.of(context).textTheme.headline6!,
+                      ),
+                    ),
+                  ),
+                  if (actions != null)
+                    Row(
+                      children: actions!,
+                    ),
+                ],
+              ),
+            Padding(
+              padding: EdgeInsets.all(16),
+              child: body,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

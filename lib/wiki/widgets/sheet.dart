@@ -32,52 +32,28 @@ class WikiSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Flexible(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 8),
-                    child: InkWell(
-                      onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => SearchPage(tags: tag),
-                      )),
-                      child: Text(
-                        tagToTitle(tag),
-                        style: Theme.of(context).textTheme.headline6,
-                      ),
-                    ),
-                  ),
-                ),
-                Row(
-                  children: [
-                    if (controller != null)
-                      TagSearchActions(
-                        tag: tag,
-                        controller: controller!,
-                      ),
-                    TagListActions(
-                      tag: tag,
-                    ),
-                  ],
-                )
-              ],
-            ),
-            Padding(
-              padding: EdgeInsets.all(16),
-              child: WikiBody(
-                tag: tag,
-                controller: controller,
-              ),
-            ),
-          ],
+    return DefaultSheetBody(
+      title: InkWell(
+        onTap: () => Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => SearchPage(tags: tag),
+          ),
         ),
+        child: Text(tagToTitle(tag)),
+      ),
+      actions: [
+        if (controller != null)
+          TagSearchActions(
+            tag: tag,
+            controller: controller!,
+          ),
+        TagListActions(
+          tag: tag,
+        ),
+      ],
+      body: WikiBody(
+        tag: tag,
+        controller: controller,
       ),
     );
   }
