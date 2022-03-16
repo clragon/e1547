@@ -22,8 +22,8 @@ class _HistoryPageState extends State<HistoryPage> {
       builder: (context, child) {
         List<HistoryEntry> entries = historyController.collection.entries;
         if (search != null) {
-          entries.removeWhere((element) =>
-              !DateUtils.dateOnly(element.visitedAt).isAtSameMomentAs(search!));
+          entries.retainWhere((element) =>
+              DateUtils.dateOnly(element.visitedAt).isAtSameMomentAs(search!));
         }
         bool isNotEmpty = entries.isNotEmpty;
         return SelectionLayout<HistoryEntry>(

@@ -51,12 +51,14 @@ class HistoryController extends ChangeNotifier {
         .toList();
   }
 
-  List<T> _trimEntries<T extends HistoryEntry>(List<T> entries) {
-    List<T> updated = List.from(entries);
-    updated = updated.take(maxCount).toList();
-    updated.removeWhere(
-        (element) => DateTime.now().difference(element.visitedAt) > maxAge);
-    return updated;
+  void _trimEntries() {
+    for (final entry in collection.entries.where(
+        (element) => DateTime.now().difference(element.visitedAt) > maxAge)) {
+      removeEntry(entry);
+    }
+    while (collection.entries.length > maxCount) {
+      removeEntry(collection.entries.reversed.last);
+    }
   }
 
   bool addPost(Post post) {
@@ -114,16 +116,17 @@ class HistoryController extends ChangeNotifier {
   void addEntry(HistoryEntry entry) {
     if (entry is PostHistoryEntry) {
       _collection = collection.copyWith(
-        posts: _trimEntries(List.from(collection.posts)..add(entry)),
+        posts: List.from(collection.posts)..add(entry),
       );
     } else if (entry is TagHistoryEntry) {
       _collection = collection.copyWith(
-        tags: _trimEntries(List.from(collection.tags)..add(entry)),
+        tags: List.from(collection.tags)..add(entry),
       );
     } else {
       throw UnimplementedError(
           'No storage implementation for this HistoryEntry: $entry');
     }
+    _trimEntries();
   }
 
   void removeEntry(HistoryEntry entry) {
