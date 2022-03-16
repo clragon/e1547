@@ -211,8 +211,8 @@ mixin SearchableController<PageKeyType, ItemType>
 
   @override
   void dispose() {
-    search.dispose();
     super.dispose();
+    search.dispose();
   }
 }
 
@@ -244,8 +244,8 @@ mixin RefreshableController<PageKeyType, ItemType>
 
   @override
   void dispose() {
-    refreshController.dispose();
     super.dispose();
+    refreshController.dispose();
   }
 }
 
