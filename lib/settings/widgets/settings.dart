@@ -208,7 +208,8 @@ class _SettingsPageState extends State<SettingsPage> {
                   : null,
               leading: Icon(Icons.history),
               onTap: () => Navigator.pushNamed(context, '/history'),
-              onTapSeparated: () {},
+              onTapSeparated: () =>
+                  settings.writeHistory.value = !settings.writeHistory.value,
               separated: Switch(
                 value: settings.writeHistory.value,
                 onChanged: (value) => settings.writeHistory.value = value,
