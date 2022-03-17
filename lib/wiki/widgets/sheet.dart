@@ -2,24 +2,20 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
-import 'package:sliding_sheet/sliding_sheet.dart';
 
 import 'actions.dart';
 import 'body.dart';
 
-void wikiSheet({
+Future<void> wikiSheet({
   required BuildContext context,
   required String tag,
   PostController? controller,
-}) {
-  showSlidingBottomSheet(
+}) async {
+  return showDefaultSlidingBottomSheet(
     context,
-    builder: (context) => defaultSlidingSheetDialog(
-      context,
-      (context, sheetState) => WikiSheet(
-        tag: tag,
-        controller: controller,
-      ),
+    (context, sheetState) => WikiSheet(
+      tag: tag,
+      controller: controller,
     ),
   );
 }

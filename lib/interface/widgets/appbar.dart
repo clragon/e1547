@@ -3,14 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:sliver_tools/sliver_tools.dart';
 
 const double kContentPadding = 4;
-
-double defaultAppBarHeight = kToolbarHeight + (kContentPadding);
-
-EdgeInsets defaultListPadding = EdgeInsets.all(kContentPadding);
-
-double defaultActionListBottomHeight = kBottomNavigationBarHeight + 24;
-
-EdgeInsets defaultActionListPadding =
+const double defaultAppBarHeight = kToolbarHeight + (kContentPadding);
+const EdgeInsets defaultListPadding = EdgeInsets.symmetric(
+  horizontal: kContentPadding,
+  vertical: kContentPadding * 2,
+);
+const double defaultActionListBottomHeight = kBottomNavigationBarHeight + 24;
+final EdgeInsets defaultActionListPadding =
     defaultListPadding.copyWith(bottom: defaultActionListBottomHeight);
 
 mixin AppBarSize on Widget implements PreferredSizeWidget {
@@ -40,7 +39,8 @@ class DefaultAppBar extends StatelessWidget with AppBarSize {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: kContentPadding * 2).add(
         EdgeInsets.only(
-            top: MediaQuery.of(context).padding.top + kContentPadding),
+          top: MediaQuery.of(context).padding.top + kContentPadding,
+        ),
       ),
       child: MediaQuery.removePadding(
         context: context,

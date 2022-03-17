@@ -204,10 +204,12 @@ class _UserPageState extends State<UserPage>
             ),
           ),
         ],
-        body: TileLayout(
-          child: TabBarView(
-            controller: tabController,
-            children: tabs.values.toList(),
+        body: LimitedWidthLayout(
+          child: TileLayout(
+            child: TabBarView(
+              controller: tabController,
+              children: tabs.values.toList(),
+            ),
           ),
         ),
       ),
@@ -252,7 +254,8 @@ class UserInfo extends StatelessWidget {
 
     return ListView(
       physics: BouncingScrollPhysics(),
-      padding: defaultListPadding,
+      padding:
+          defaultActionListPadding.add(LimitedWidthLayout.of(context)!.padding),
       children: [
         info(
           Icons.tag,

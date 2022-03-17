@@ -131,6 +131,17 @@ class _SheetFloatingActionButtonState extends State<SheetFloatingActionButton> {
   }
 }
 
+Future<void> showDefaultSlidingBottomSheet(
+    BuildContext context, SheetBuilder builder) async {
+  return showSlidingBottomSheet(
+    context,
+    builder: (context) => defaultSlidingSheetDialog(
+      context,
+      builder,
+    ),
+  );
+}
+
 SlidingSheetDialog defaultSlidingSheetDialog(
     BuildContext context, SheetBuilder builder) {
   return SlidingSheetDialog(
@@ -140,7 +151,8 @@ SlidingSheetDialog defaultSlidingSheetDialog(
     isBackdropInteractable: true,
     cornerRadius: 16,
     cornerRadiusOnFullscreen: 0,
-    minHeight: MediaQuery.of(context).size.height * 0.6,
+    minHeight: 600,
+    maxWidth: 600,
     builder: builder,
     snapSpec: SnapSpec(
       snap: true,

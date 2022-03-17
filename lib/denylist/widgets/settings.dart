@@ -19,110 +19,114 @@ class _DenyListPageState extends State<DenyListPage> {
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder<List<String>>(
-      valueListenable: settings.denylist,
-      builder: (context, denylist, child) {
-        void addTags(BuildContext context, [int? edit]) {
-          Future<void> submit(String value, [int? edit]) async {
-            value = value.trim();
+    return LimitedWidthLayout(
+      child: ValueListenableBuilder<List<String>>(
+        valueListenable: settings.denylist,
+        builder: (context, denylist, child) {
+          void addTags(BuildContext context, [int? edit]) {
+            Future<void> submit(String value, [int? edit]) async {
+              value = value.trim();
 
-            if (edit != null) {
-              if (value.isNotEmpty) {
-                denylist[edit] = value;
-              } else {
-                denylist.removeAt(edit);
+              if (edit != null) {
+                if (value.isNotEmpty) {
+                  denylist[edit] = value;
+                } else {
+                  denylist.removeAt(edit);
+                }
+              } else if (value.isNotEmpty) {
+                denylist.add(value);
               }
-            } else if (value.isNotEmpty) {
-              denylist.add(value);
+              if (!await updateBlacklist(context: context, value: denylist)) {
+                throw ActionControllerException(
+                    message: 'Failed to update blacklist!');
+              }
             }
-            if (!await updateBlacklist(context: context, value: denylist)) {
-              throw ActionControllerException(
-                  message: 'Failed to update blacklist!');
-            }
-          }
 
-          sheetController.show(
-            context,
-            ControlledTextWrapper(
-              submit: (value) async => submit(sortTags(value), edit),
-              actionController: sheetController,
-              textController: TextEditingController(
-                  text: edit != null ? denylist[edit] : null),
-              builder: (context, controller, submit) => TagInput(
-                controller: controller,
-                textInputAction: TextInputAction.done,
-                labelText: 'Add to blacklist',
-                submit: submit,
-                readOnly: sheetController.isLoading,
-              ),
-            ),
-          );
-        }
-
-        return RefreshablePageLoader(
-          onEmptyIcon: Icon(Icons.check),
-          onEmpty: Text('Your blacklist is empty'),
-          onLoading: Text('Loading blacklist'),
-          onError: Text('Failed to load blacklist'),
-          isError: false,
-          isLoading: false,
-          isBuilt: true,
-          isEmpty: denylist.isEmpty,
-          refreshController: refreshController,
-          refreshHeader: RefreshablePageDefaultHeader(
-            completeText: 'refreshed blacklist',
-            refreshingText: 'refreshing blacklist',
-          ),
-          builder: (context) => ListView.builder(
-            physics: BouncingScrollPhysics(),
-            padding: defaultActionListPadding,
-            itemCount: denylist.length,
-            itemBuilder: (context, index) => DenylistTile(
-              tag: denylist[index],
-              onEdit: () => addTags(context, index),
-              onDelete: () {
-                denylist.removeAt(index);
-                updateBlacklist(
-                  context: context,
-                  value: denylist,
-                  immediate: true,
-                );
-              },
-            ),
-          ),
-          appBar: DefaultAppBar(
-            title: Text('Blacklist'),
-            actions: [
-              IconButton(
-                icon: Icon(Icons.edit),
-                onPressed: () => showDialog(
-                  context: context,
-                  builder: (context) => DenyListEditor(denylist: denylist),
+            sheetController.show(
+              context,
+              ControlledTextWrapper(
+                submit: (value) async => submit(sortTags(value), edit),
+                actionController: sheetController,
+                textController: TextEditingController(
+                    text: edit != null ? denylist[edit] : null),
+                builder: (context, controller, submit) => TagInput(
+                  controller: controller,
+                  textInputAction: TextInputAction.done,
+                  labelText: 'Add to blacklist',
+                  submit: submit,
+                  readOnly: sheetController.isLoading,
                 ),
               ),
-            ],
-          ),
-          floatingActionButton: Builder(
-            builder: (context) => AnimatedBuilder(
-              animation: sheetController,
-              builder: (context, child) => FloatingActionButton(
-                child: Icon(sheetController.isShown ? Icons.check : Icons.add),
-                onPressed: sheetController.isLoading
-                    ? null
-                    : sheetController.action ?? () => addTags(context),
+            );
+          }
+
+          return RefreshablePageLoader(
+            onEmptyIcon: Icon(Icons.check),
+            onEmpty: Text('Your blacklist is empty'),
+            onLoading: Text('Loading blacklist'),
+            onError: Text('Failed to load blacklist'),
+            isError: false,
+            isLoading: false,
+            isBuilt: true,
+            isEmpty: denylist.isEmpty,
+            refreshController: refreshController,
+            refreshHeader: RefreshablePageDefaultHeader(
+              completeText: 'refreshed blacklist',
+              refreshingText: 'refreshing blacklist',
+            ),
+            builder: (context) => ListView.builder(
+              physics: BouncingScrollPhysics(),
+              padding: defaultActionListPadding
+                  .add(LimitedWidthLayout.of(context)!.padding),
+              itemCount: denylist.length,
+              itemBuilder: (context, index) => DenylistTile(
+                tag: denylist[index],
+                onEdit: () => addTags(context, index),
+                onDelete: () {
+                  denylist.removeAt(index);
+                  updateBlacklist(
+                    context: context,
+                    value: denylist,
+                    immediate: true,
+                  );
+                },
               ),
             ),
-          ),
-          refresh: () async {
-            if (await validateCall(
-                () => client.initializeCurrentUser(reset: true))) {
-              refreshController.refreshCompleted();
-            } else {
-              refreshController.refreshFailed();
-            }
-          },
-        );
-      },
+            appBar: DefaultAppBar(
+              title: Text('Blacklist'),
+              actions: [
+                IconButton(
+                  icon: Icon(Icons.edit),
+                  onPressed: () => showDialog(
+                    context: context,
+                    builder: (context) => DenyListEditor(denylist: denylist),
+                  ),
+                ),
+              ],
+            ),
+            floatingActionButton: Builder(
+              builder: (context) => AnimatedBuilder(
+                animation: sheetController,
+                builder: (context, child) => FloatingActionButton(
+                  child:
+                      Icon(sheetController.isShown ? Icons.check : Icons.add),
+                  onPressed: sheetController.isLoading
+                      ? null
+                      : sheetController.action ?? () => addTags(context),
+                ),
+              ),
+            ),
+            refresh: () async {
+              if (await validateCall(
+                  () => client.initializeCurrentUser(reset: true))) {
+                refreshController.refreshCompleted();
+              } else {
+                refreshController.refreshFailed();
+              }
+            },
+          );
+        },
+      ),
     );
   }
 }

@@ -5,18 +5,14 @@ import 'package:e1547/pool/pool.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 import 'package:share/share.dart';
-import 'package:sliding_sheet/sliding_sheet.dart';
 
 import 'actions.dart';
 import 'info.dart';
 
-void poolSheet(BuildContext context, Pool pool) {
-  showSlidingBottomSheet(
+Future<void> poolSheet(BuildContext context, Pool pool) async {
+  return showDefaultSlidingBottomSheet(
     context,
-    builder: (context) => defaultSlidingSheetDialog(
-      context,
-      (context, sheetState) => PoolSheet(pool: pool),
-    ),
+    (context, sheetState) => PoolSheet(pool: pool),
   );
 }
 
