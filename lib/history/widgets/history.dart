@@ -5,6 +5,7 @@ import 'package:e1547/settings/settings.dart';
 import 'package:e1547/tag/data/regex.dart';
 import 'package:grouped_list/grouped_list.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 enum HistoryFilter {
   Posts,
@@ -116,7 +117,6 @@ class _HistoryPageState extends State<HistoryPage> {
                     firstDate: firstDate,
                     lastDate: lastDate,
                     locale: Localizations.localeOf(context),
-                    cancelText: 'CLEAR',
                     initialEntryMode: DatePickerEntryMode.calendarOnly,
                     selectableDayPredicate: (date) =>
                         historyController.collection.entries.any(
@@ -143,10 +143,26 @@ class _HistoryPageState extends State<HistoryPage> {
                 title: Text('History'),
                 children: [
                   ListTile(
+                    leading: Icon(
+                      Icons.info_outline,
+                      color: dimTextColor(context),
+                    ),
+                    subtitle: Text(
+                      'History entries are deleted when they are '
+                      'older than ${HistoryController.maxAge.inDays} days or '
+                      'there are more then ${NumberFormat.compact().format(HistoryController.maxCount)} entries.',
+                      style: TextStyle(
+                        color: dimTextColor(context),
+                      ),
+                    ),
+                  ),
+                  Divider(),
+                  ListTile(
                     leading: Icon(Icons.filter_alt),
                     title: Text('Filter'),
                     subtitle: Text('${entries.length} entries shown'),
                   ),
+                  Divider(),
                   for (final filter in HistoryFilter.values)
                     Padding(
                       padding: const EdgeInsets.only(left: 16),
@@ -168,6 +184,15 @@ class _HistoryPageState extends State<HistoryPage> {
                         },
                       ),
                     ),
+                  Divider(),
+                  Center(
+                    child: Text(
+                      'of ${historyController.collection.entries.length} entries',
+                      style: TextStyle(
+                        color: dimTextColor(context),
+                      ),
+                    ),
+                  )
                 ],
               ),
             ),
