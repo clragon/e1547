@@ -23,7 +23,7 @@ class DescriptionDisplay extends StatelessWidget {
         String description =
             editingController?.value?.description ?? post.description;
         return CrossFade(
-          showChild: description.isNotEmpty || editing,
+          showChild: description.trim().isNotEmpty || editing,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
