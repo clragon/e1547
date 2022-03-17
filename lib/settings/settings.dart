@@ -11,4 +11,4 @@ export 'widgets/header.dart';
 export 'widgets/host.dart';
 export 'widgets/login.dart';
 export 'widgets/settings.dart';
-export 'widgets/post.dart';
+export 'widgets/tile.dart';
