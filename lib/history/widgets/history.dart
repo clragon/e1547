@@ -2,8 +2,15 @@ import 'package:e1547/history/history.dart';
 import 'package:e1547/history/widgets/appbar.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/settings/settings.dart';
+import 'package:e1547/tag/data/regex.dart';
 import 'package:grouped_list/grouped_list.dart';
 import 'package:flutter/material.dart';
+
+enum HistoryFilter {
+  Posts,
+  Tags,
+  Pools,
+}
 
 class HistoryPage extends StatefulWidget {
   const HistoryPage({Key? key}) : super(key: key);
@@ -14,6 +21,7 @@ class HistoryPage extends StatefulWidget {
 
 class _HistoryPageState extends State<HistoryPage> {
   DateTime? search;
+  Set<HistoryFilter> filters = HistoryFilter.values.toSet();
 
   @override
   Widget build(BuildContext context) {
@@ -23,18 +31,54 @@ class _HistoryPageState extends State<HistoryPage> {
         builder: (context, child) {
           List<HistoryEntry> entries = historyController.collection.entries;
           if (search != null) {
-            entries.retainWhere((element) =>
-                DateUtils.dateOnly(element.visitedAt)
-                    .isAtSameMomentAs(search!));
+            entries.retainWhere(
+              (element) => DateUtils.dateOnly(element.visitedAt)
+                  .isAtSameMomentAs(search!),
+            );
           }
+          List<HistoryEntry> updated = [];
+          for (final filter in filters) {
+            switch (filter) {
+              case HistoryFilter.Posts:
+                updated.addAll(
+                  entries.where((element) => element is PostHistoryEntry),
+                );
+                break;
+              case HistoryFilter.Tags:
+                updated.addAll(
+                  entries.where(
+                    (element) =>
+                        element is TagHistoryEntry &&
+                        !poolRegex().hasMatch(element.tags),
+                  ),
+                );
+                break;
+              case HistoryFilter.Pools:
+                updated.addAll(
+                  entries.where(
+                    (element) =>
+                        element is TagHistoryEntry &&
+                        poolRegex().hasMatch(element.tags),
+                  ),
+                );
+                break;
+            }
+          }
+          entries = updated;
           bool isNotEmpty = entries.isNotEmpty;
           return SelectionLayout<HistoryEntry>(
             items: entries,
             child: Scaffold(
               appBar: HistorySelectionAppBar(
                 appbar: DefaultAppBar(
-                  title: Text('History' +
-                      (search != null ? ' - ${dateOrName(search!)}' : '')),
+                  leading: BackButton(),
+                  title: Text(
+                    'History' +
+                        (search != null ? ' - ${dateOrName(search!)}' : ''),
+                  ),
+                  actions: [
+                    ContextDrawerButton(),
+                  ],
                 ),
               ),
               body: isNotEmpty
@@ -94,6 +138,37 @@ class _HistoryPageState extends State<HistoryPage> {
                     search = result;
                   });
                 },
+              ),
+              endDrawer: ContextDrawer(
+                title: Text('History'),
+                children: [
+                  ListTile(
+                    leading: Icon(Icons.filter_alt),
+                    title: Text('Filter'),
+                    subtitle: Text('${entries.length} entries shown'),
+                  ),
+                  for (final filter in HistoryFilter.values)
+                    Padding(
+                      padding: const EdgeInsets.only(left: 16),
+                      child: CheckboxListTile(
+                        title: Text(filter.name),
+                        value: filters.contains(filter),
+                        onChanged: (value) {
+                          print(value);
+                          if (value == null) {
+                            return;
+                          }
+                          setState(() {
+                            if (value) {
+                              filters.add(filter);
+                            } else {
+                              filters.remove(filter);
+                            }
+                          });
+                        },
+                      ),
+                    ),
+                ],
               ),
             ),
           );
