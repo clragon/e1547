@@ -199,23 +199,21 @@ class _SettingsPageState extends State<SettingsPage> {
           SettingsHeader(title: 'Listing'),
           AnimatedBuilder(
             animation: historyController,
-            builder: (context, child) {
-              List<PostHistoryEntry> history =
-                  historyController.collection.posts;
-              return DividerListTile(
-                title: Text('History'),
-                subtitle: settings.writeHistory.value && history.isNotEmpty
-                    ? Text('${history.length} posts seen')
-                    : null,
-                leading: Icon(Icons.history),
-                onTap: () => Navigator.pushNamed(context, '/history'),
-                onTapSeparated: () {},
-                separated: Switch(
-                  value: settings.writeHistory.value,
-                  onChanged: (value) => settings.writeHistory.value = value,
-                ),
-              );
-            },
+            builder: (context, child) => DividerListTile(
+              title: Text('History'),
+              subtitle: settings.writeHistory.value &&
+                      historyController.collection.entries.isNotEmpty
+                  ? Text(
+                      '${historyController.collection.entries.length} pages visited')
+                  : null,
+              leading: Icon(Icons.history),
+              onTap: () => Navigator.pushNamed(context, '/history'),
+              onTapSeparated: () {},
+              separated: Switch(
+                value: settings.writeHistory.value,
+                onChanged: (value) => settings.writeHistory.value = value,
+              ),
+            ),
           ),
           ValueListenableBuilder<List<String>>(
             valueListenable: settings.denylist,
