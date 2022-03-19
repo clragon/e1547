@@ -44,11 +44,11 @@ dependencies:
   image_gallery_saver: ^1.7.1
 
   infinite_scroll_pagination:
-    git: git://github.com/clragon/infinite_scroll_pagination.git
+    git: https://github.com/clragon/infinite_scroll_pagination.git
   media_scanner:
-    git: git://github.com/clragon/media_scanner.git
+    git: https://github.com/clragon/media_scanner.git
   username_generator:
-    git: git://github.com/clragon/username_generator.git
+    git: https://github.com/clragon/username_generator.git
 
   flutter:
     sdk: flutter
