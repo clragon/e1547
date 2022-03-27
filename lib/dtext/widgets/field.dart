@@ -2,7 +2,7 @@ import 'package:e1547/dtext/dtext.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-typedef DTextParser = InlineSpan Function(
+typedef DTextParser = InlineSpan Function(BuildContext context,
     RegExpMatch match, String result, TextState state);
 
 class DText extends StatelessWidget {

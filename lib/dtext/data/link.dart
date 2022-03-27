@@ -44,7 +44,7 @@ Map<RegExp, DTextParser> linkRegexes(BuildContext context) {
         r'(?<link>(http(s)?):\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*))',
         false,
       ),
-    ): (match, result, state) => parseLink(
+    ): (context, match, result, state) => parseLink(
           context: context,
           name: match.namedGroup('name'),
           link: match.namedGroup('link')!,
@@ -54,7 +54,7 @@ Map<RegExp, DTextParser> linkRegexes(BuildContext context) {
       linkWrap(
         r'(?<link>[-a-zA-Z0-9()@:%_\+.~#?&//=]*)',
       ),
-    ): (match, result, state) => parseLink(
+    ): (context, match, result, state) => parseLink(
           context: context,
           name: match.namedGroup('name'),
           link: match.namedGroup('link')!,

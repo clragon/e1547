@@ -95,7 +95,7 @@ class TextTag {
 
   static final String _anyName = r'(?<tag>[\w\d]+?)';
 
-  static RegExp _buildRegex([String? name]) {
+  static RegExp toRegex([String? name]) {
     String nameMatch = _anyName;
     if (name != null) {
       nameMatch = r'(?<tag>' + RegExp.escape(name) + r')';
@@ -121,7 +121,7 @@ class TextTag {
   }
 
   static TextTag? firstMatch(String text, {String? name}) {
-    RegExpMatch? match = _buildRegex(name).firstMatch(text);
+    RegExpMatch? match = toRegex(name).firstMatch(text);
     if (match != null) {
       return TextTag.fromMatch(match);
     } else {
@@ -130,6 +130,6 @@ class TextTag {
   }
 
   static List<TextTag> allMatches(String text, {String? name}) {
-    return _buildRegex(name).allMatches(text).map(TextTag.fromMatch).toList();
+    return toRegex(name).allMatches(text).map(TextTag.fromMatch).toList();
   }
 }

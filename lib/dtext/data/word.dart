@@ -28,7 +28,7 @@ Map<RegExp, DTextParser> linkWordRegexes(BuildContext context) {
       (word) => MapEntry(
         RegExp(RegExp.escape(word.name) + r' #(?<id>\d+)',
             caseSensitive: false),
-        (match, result, state) => parseWord(
+        (context, match, result, state) => parseWord(
           context: context,
           word: word,
           id: int.parse(match.namedGroup('id')!),
