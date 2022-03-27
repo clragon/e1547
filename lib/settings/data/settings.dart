@@ -113,8 +113,6 @@ class Settings with SharedPrefsSettings {
       createSetting<bool>(key: 'showPostInfo', initialValue: false);
   late final ValueNotifier<bool> showBeta =
       createSetting<bool>(key: 'showBeta', initialValue: false);
-  late final ValueNotifier<bool> hideSystemUI =
-      createSetting<bool>(key: 'hideSystemUI', initialValue: true);
   late final ValueNotifier<bool> upvoteFavs =
       createSetting<bool>(key: 'upvoteFavs', initialValue: false);
   late final ValueNotifier<bool> muteVideos =

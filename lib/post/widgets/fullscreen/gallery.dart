@@ -1,6 +1,5 @@
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
-import 'package:e1547/settings/data/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -37,15 +36,10 @@ class _PostFullscreenGalleryState extends State<PostFullscreenGallery>
   @override
   void initState() {
     super.initState();
-    if (settings.hideSystemUI.value) {
-      toggleFrame(false);
-      frameController = FrameController(onToggle: toggleFrame);
-      SystemChrome.setSystemUIChangeCallback((hidden) async {
-        frameController.toggleFrame(shown: !hidden);
-      });
-    } else {
-      frameController = FrameController();
-    }
+    toggleFrame(false);
+    frameController = FrameController(onToggle: toggleFrame);
+    SystemChrome.setSystemUIChangeCallback(
+        (hidden) async => frameController.toggleFrame(shown: !hidden));
   }
 
   late NavigationController navigation;

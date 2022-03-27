@@ -46,17 +46,6 @@ class _AdvancedSettingsPageState extends State<AdvancedSettingsPage> {
               ),
             ),
             ValueListenableBuilder<bool>(
-              valueListenable: settings.hideSystemUI,
-              builder: (context, value, child) => SwitchListTile(
-                title: Text('Fullscreen'),
-                subtitle: Text(value ? 'system ui hidden' : 'system ui shown'),
-                secondary:
-                    Icon(value ? Icons.fullscreen : Icons.fullscreen_exit),
-                value: value,
-                onChanged: (value) => settings.hideSystemUI.value = value,
-              ),
-            ),
-            ValueListenableBuilder<bool>(
               valueListenable: settings.muteVideos,
               builder: (context, value, child) => SwitchListTile(
                 title: Text('Video volume'),
