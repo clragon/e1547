@@ -2,9 +2,6 @@ import 'package:e1547/dtext/dtext.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-typedef DTextParser = InlineSpan Function(BuildContext context,
-    RegExpMatch match, String result, TextState state);
-
 class DText extends StatelessWidget {
   final int? maxLines;
   final TextOverflow overflow;
@@ -31,6 +28,7 @@ class DText extends StatelessWidget {
       overline: false,
       header: false,
       link: false,
+      onTap: null,
     );
 
     String result = data.replaceAllMapped(RegExp(r'\r\n'), (_) => '\n');

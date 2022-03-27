@@ -14,14 +14,15 @@ TextSpan plainText({
   required BuildContext context,
   required String text,
   required TextState state,
-  VoidCallback? onTap,
 }) {
   text = normalize(text);
   text = text.replaceAllMapped(RegExp(r'\n{4,}'), (_) => '\n');
 
   return TextSpan(
     text: text,
-    recognizer: TapGestureRecognizer()..onTap = onTap,
+    recognizer: state.onTap != null
+        ? (TapGestureRecognizer()..onTap = state.onTap)
+        : null,
     style: TextStyle(
       color: state.link ? Colors.blue[400] : null,
       fontWeight: state.bold ? FontWeight.bold : null,

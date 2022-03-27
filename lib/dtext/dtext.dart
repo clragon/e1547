@@ -1,9 +1,14 @@
 // data
 export 'data/dtext.dart';
 export 'data/link.dart';
-export 'data/regex.dart';
 export 'data/tags.dart';
 export 'data/word.dart';
+export 'data/anchor.dart';
+export 'data/header.dart';
+export 'data/list.dart';
+export 'data/search.dart';
+export 'data/block.dart';
+export 'data/parser.dart';
 // widgets
 export 'widgets/field.dart';
 export 'widgets/plain.dart';

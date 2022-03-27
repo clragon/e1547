@@ -22,23 +22,21 @@ enum LinkWord {
   thumb,
 }
 
-Map<RegExp, DTextParser> linkWordRegexes(BuildContext context) {
-  return Map.fromEntries(
-    LinkWord.values.map(
-      (word) => MapEntry(
-        RegExp(RegExp.escape(word.name) + r' #(?<id>\d+)',
+List<DTextParser> linkWordParsers() => LinkWord.values
+    .map(
+      (word) => DTextParser(
+        regex: RegExp(RegExp.escape(word.name) + r' #(?<id>\d+)',
             caseSensitive: false),
-        (context, match, result, state) => parseWord(
+        tranformer: (context, match, state) => parseWord(
           context: context,
           word: word,
           id: int.parse(match.namedGroup('id')!),
-          result: result,
+          result: match.between,
           state: state,
         ),
       ),
-    ),
-  );
-}
+    )
+    .toList();
 
 VoidCallback? getLinkWordTap(BuildContext context, LinkWord word, int id) {
   switch (word) {
@@ -95,7 +93,9 @@ InlineSpan parseWord({
   return plainText(
     context: context,
     text: result,
-    state: state.copyWith(link: true),
-    onTap: onTap,
+    state: state.copyWith(
+      link: true,
+      onTap: onTap,
+    ),
   );
 }

@@ -5,6 +5,34 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:username_generator/username_generator.dart';
 
+DTextParser linkParser = DTextParser(
+  regex: RegExp(
+    linkWrap(
+      r'(?<link>(http(s)?):\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*))',
+      false,
+    ),
+  ),
+  tranformer: (context, match, state) => parseLink(
+    context: context,
+    name: match.namedGroup('name'),
+    link: match.namedGroup('link')!,
+    state: state,
+  ),
+);
+
+DTextParser localLinkParser = DTextParser(
+  regex: RegExp(
+    linkWrap(r'(?<link>[-a-zA-Z0-9()@:%_\+.~#?&//=]*)'),
+  ),
+  tranformer: (context, match, state) => parseLink(
+    context: context,
+    name: match.namedGroup('name'),
+    link: match.namedGroup('link')!,
+    state: state,
+    insite: true,
+  ),
+);
+
 String stopsAtEndChar(String wrapped) => [
       wrapped,
       r'(?=([.,!:")\s]|(\? ))?)',
@@ -37,33 +65,6 @@ String linkToDisplay(String link) {
   return display;
 }
 
-Map<RegExp, DTextParser> linkRegexes(BuildContext context) {
-  return {
-    RegExp(
-      linkWrap(
-        r'(?<link>(http(s)?):\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*))',
-        false,
-      ),
-    ): (context, match, result, state) => parseLink(
-          context: context,
-          name: match.namedGroup('name'),
-          link: match.namedGroup('link')!,
-          state: state,
-        ),
-    RegExp(
-      linkWrap(
-        r'(?<link>[-a-zA-Z0-9()@:%_\+.~#?&//=]*)',
-      ),
-    ): (context, match, result, state) => parseLink(
-          context: context,
-          name: match.namedGroup('name'),
-          link: match.namedGroup('link')!,
-          state: state,
-          insite: true,
-        ),
-  };
-}
-
 InlineSpan parseLink({
   required BuildContext context,
   required String link,
@@ -82,20 +83,25 @@ InlineSpan parseLink({
 
   if (insite) {
     onTap = () async => launch('https://${client.host}$link');
-
     UsernameGenerator? usernameGenerator = UsernameGeneratorData.of(context);
-
     // forum topics need generated names
     if (usernameGenerator != null && word == LinkWord.user) {
       display = usernameGenerator.generate(id!);
     }
   }
 
-  return plainText(
-    context: context,
-    text: display,
-    state: state.copyWith(link: true),
-    onTap: onTap,
+  return TextSpan(
+    children: [
+      parseDText(
+        context,
+        display,
+        state.copyWith(
+          link: true,
+          onTap: onTap,
+        ),
+        parsers: [tagParser],
+      ),
+    ],
   );
 }
 

@@ -1,3 +1,5 @@
+import 'package:flutter/cupertino.dart';
+
 class TextState {
   bool bold;
   bool italic;
@@ -6,6 +8,7 @@ class TextState {
   bool overline;
   bool header;
   bool link;
+  VoidCallback? onTap;
 
   TextState({
     required this.bold,
@@ -15,6 +18,7 @@ class TextState {
     required this.overline,
     required this.header,
     required this.link,
+    required this.onTap,
   });
 
   TextState copyWith({
@@ -26,6 +30,7 @@ class TextState {
     bool? header,
     bool? link,
     bool? dark,
+    VoidCallback? onTap,
   }) =>
       TextState(
         bold: bold ?? this.bold,
@@ -35,6 +40,7 @@ class TextState {
         overline: overline ?? this.overline,
         header: header ?? this.header,
         link: link ?? this.link,
+        onTap: onTap ?? this.onTap,
       );
 }
 
