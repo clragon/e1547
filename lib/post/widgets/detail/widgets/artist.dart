@@ -38,13 +38,16 @@ class ArtistDisplay extends StatelessWidget {
                   child: TagGesture(
                     tag: artist,
                     controller: controller,
-                    child: Text(artist, style: TextStyle(fontSize: 14.0)),
+                    child: Text(artist),
                   ),
                 ),
               );
             }
-            return Text.rich(TextSpan(children: spans),
-                overflow: TextOverflow.fade);
+            return Text.rich(
+              TextSpan(children: spans),
+              overflow: TextOverflow.fade,
+              style: TextStyle(fontSize: 14.0),
+            );
           } else {
             return Text(
               'no artist',
