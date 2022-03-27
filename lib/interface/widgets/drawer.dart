@@ -35,8 +35,9 @@ class ContextDrawer extends StatelessWidget {
 
 class ContextDrawerButton extends StatelessWidget {
   final IconData? icon;
+  final String? tooltip;
 
-  const ContextDrawerButton({this.icon});
+  const ContextDrawerButton({this.icon, this.tooltip = 'Filter'});
 
   @override
   Widget build(BuildContext context) {
@@ -44,6 +45,7 @@ class ContextDrawerButton extends StatelessWidget {
       padding: EdgeInsets.only(right: 4),
       child: Builder(
         builder: (context) => IconButton(
+          tooltip: tooltip,
           icon: Icon(icon ?? Icons.filter_list),
           onPressed: () => Scaffold.of(context).openEndDrawer(),
         ),
