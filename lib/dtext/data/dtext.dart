@@ -1,11 +1,9 @@
 import 'package:e1547/dtext/dtext.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
-import 'package:username_generator/username_generator.dart';
 
 // parse string recursively
-InlineSpan parseDText(BuildContext context, String text, TextState state,
-    {UsernameGenerator? usernameGenerator}) {
+InlineSpan parseDText(BuildContext context, String text, TextState state) {
   // list of spans that will be returned
   List<InlineSpan> spans = [];
 
@@ -192,7 +190,7 @@ InlineSpan parseDText(BuildContext context, String text, TextState state,
         state.copyWith(header: true),
       );
     },
-    ...linkRegexes(context, usernameGenerator),
+    ...linkRegexes(context),
     ...linkWordRegexes(context),
   };
 

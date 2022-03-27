@@ -1,7 +1,6 @@
 import 'package:e1547/dtext/dtext.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:username_generator/username_generator.dart';
 
 typedef DTextParser = InlineSpan Function(
     RegExpMatch match, String result, TextState state);
@@ -13,11 +12,8 @@ class DText extends StatelessWidget {
   final TextAlign textAlign;
   final bool softWrap;
 
-  final UsernameGenerator? usernameGenerator;
-
   const DText(
     this.data, {
-    this.usernameGenerator,
     this.maxLines,
     this.overflow = TextOverflow.clip,
     this.textAlign = TextAlign.start,

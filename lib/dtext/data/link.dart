@@ -37,10 +37,7 @@ String linkToDisplay(String link) {
   return display;
 }
 
-Map<RegExp, DTextParser> linkRegexes(
-  BuildContext context,
-  UsernameGenerator? usernameGenerator,
-) {
+Map<RegExp, DTextParser> linkRegexes(BuildContext context) {
   return {
     RegExp(
       linkWrap(
@@ -52,7 +49,6 @@ Map<RegExp, DTextParser> linkRegexes(
           name: match.namedGroup('name'),
           link: match.namedGroup('link')!,
           state: state,
-          usernameGenerator: usernameGenerator,
         ),
     RegExp(
       linkWrap(
@@ -64,7 +60,6 @@ Map<RegExp, DTextParser> linkRegexes(
           link: match.namedGroup('link')!,
           state: state,
           insite: true,
-          usernameGenerator: usernameGenerator,
         ),
   };
 }
@@ -74,7 +69,6 @@ InlineSpan parseLink({
   required String link,
   required String? name,
   required TextState state,
-  UsernameGenerator? usernameGenerator,
   bool insite = false,
 }) {
   String? display = name ?? linkToDisplay(link);
@@ -88,6 +82,8 @@ InlineSpan parseLink({
 
   if (insite) {
     onTap = () async => launch('https://${client.host}$link');
+
+    UsernameGenerator? usernameGenerator = UsernameGeneratorData.of(context);
 
     // forum topics need generated names
     if (usernameGenerator != null && word == LinkWord.user) {
