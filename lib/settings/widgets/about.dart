@@ -79,7 +79,6 @@ class AboutPage extends StatelessWidget {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    ChangelogButton(),
                     if (appInfo.github != null)
                       IconButton(
                         icon: FaIcon(FontAwesomeIcons.github),
@@ -236,98 +235,6 @@ class NewVersionsDialog extends StatelessWidget {
           child: body,
         ),
         actions: actions,
-      ),
-    );
-  }
-}
-
-class ChangelogButton extends StatefulWidget {
-  const ChangelogButton({Key? key}) : super(key: key);
-
-  @override
-  State<ChangelogButton> createState() => _ChangelogButtonState();
-}
-
-class _ChangelogButtonState extends State<ChangelogButton> {
-  Future<List<AppVersion>?> versions = getVersions();
-
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder<List<AppVersion>?>(
-      future: versions,
-      builder: (context, snapshot) => CrossFade.builder(
-        showChild: snapshot.connectionState == ConnectionState.done,
-        builder: (context) => IconButton(
-          icon: FaIcon(FontAwesomeIcons.clipboardList),
-          onPressed: () async => showDialog(
-            context: context,
-            builder: (context) => ChangelogDialog(versions: snapshot.data),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class ChangelogDialog extends StatelessWidget {
-  final List<AppVersion>? versions;
-
-  const ChangelogDialog({required this.versions});
-
-  @override
-  Widget build(BuildContext context) {
-    Widget body;
-    if (versions == null || versions!.isEmpty) {
-      body = Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          IconMessage(
-            title: Text('Failed to retrieve version information'),
-            icon: Icon(Icons.warning_amber),
-          ),
-        ],
-      );
-    } else {
-      body = SingleChildScrollView(
-        physics: BouncingScrollPhysics(),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ...versions!
-                .map(
-                  (release) => [
-                    Padding(
-                      padding: EdgeInsets.symmetric(vertical: 8),
-                      child: Text(
-                        '${release.name} (${release.version})',
-                        style: Theme.of(context).textTheme.headline6,
-                      ),
-                    ),
-                    Text(release.description!),
-                  ],
-                )
-                .reduce((a, b) => [...a, ...b]),
-          ],
-        ),
-      );
-    }
-
-    return LayoutBuilder(
-      builder: (context, constraints) => AlertDialog(
-        title: Text('Changelog'),
-        content: ConstrainedBox(
-          constraints: BoxConstraints(
-            maxHeight: constraints.maxHeight * 0.6,
-          ),
-          child: body,
-        ),
-        actions: [
-          TextButton(
-            child: Text('OK'),
-            onPressed: Navigator.of(context).maybePop,
-          )
-        ],
       ),
     );
   }
