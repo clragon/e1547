@@ -1,8 +1,11 @@
+import 'dart:io';
+
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:store_checker/store_checker.dart';
 
 class AppIcon extends StatelessWidget {
   final double radius;
@@ -28,7 +31,7 @@ class AboutPage extends StatelessWidget {
       appBar: DefaultAppBar(
         title: Text('About'),
         leading: BackButton(),
-        actions: [VersionButton()],
+        actions: [NewVersionsButton()],
       ),
       body: Stack(
         alignment: Alignment.center,
@@ -76,6 +79,7 @@ class AboutPage extends StatelessWidget {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
+                    ChangelogButton(),
                     if (appInfo.github != null)
                       IconButton(
                         icon: FaIcon(FontAwesomeIcons.github),
@@ -88,6 +92,12 @@ class AboutPage extends StatelessWidget {
                         onPressed: () => launch(
                             'https://discord.com/invite/' + appInfo.discord!),
                       ),
+                    if (Platform.isAndroid) PlaystoreButton(),
+                    if (appInfo.website != null)
+                      IconButton(
+                        icon: FaIcon(FontAwesomeIcons.globe),
+                        onPressed: () => launch('https://' + appInfo.website!),
+                      ),
                   ],
                 ),
               ),
@@ -99,14 +109,14 @@ class AboutPage extends StatelessWidget {
   }
 }
 
-class VersionButton extends StatefulWidget {
-  const VersionButton();
+class NewVersionsButton extends StatefulWidget {
+  const NewVersionsButton();
 
   @override
-  _VersionButtonState createState() => _VersionButtonState();
+  _NewVersionsButtonState createState() => _NewVersionsButtonState();
 }
 
-class _VersionButtonState extends State<VersionButton> {
+class _NewVersionsButtonState extends State<NewVersionsButton> {
   Future<List<AppVersion>?> newVersions = getNewVersions();
 
   @override
@@ -162,7 +172,15 @@ class NewVersionsDialog extends StatelessWidget {
     ];
 
     if (newVersions == null) {
-      body = Text('Failed to retrieve version information');
+      body = Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          IconMessage(
+            title: Text('Failed to retrieve version information'),
+            icon: Icon(Icons.warning_amber),
+          ),
+        ],
+      );
     } else if (newVersions!.isEmpty) {
       body = Text('You have the newest version (${appInfo.version})');
     } else {
@@ -218,6 +236,130 @@ class NewVersionsDialog extends StatelessWidget {
           child: body,
         ),
         actions: actions,
+      ),
+    );
+  }
+}
+
+class ChangelogButton extends StatefulWidget {
+  const ChangelogButton({Key? key}) : super(key: key);
+
+  @override
+  State<ChangelogButton> createState() => _ChangelogButtonState();
+}
+
+class _ChangelogButtonState extends State<ChangelogButton> {
+  Future<List<AppVersion>?> versions = getVersions();
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<List<AppVersion>?>(
+      future: versions,
+      builder: (context, snapshot) => CrossFade.builder(
+        showChild: snapshot.connectionState == ConnectionState.done,
+        builder: (context) => IconButton(
+          icon: FaIcon(FontAwesomeIcons.clipboardList),
+          onPressed: () async => showDialog(
+            context: context,
+            builder: (context) => ChangelogDialog(versions: snapshot.data),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class ChangelogDialog extends StatelessWidget {
+  final List<AppVersion>? versions;
+
+  const ChangelogDialog({required this.versions});
+
+  @override
+  Widget build(BuildContext context) {
+    Widget body;
+    if (versions == null || versions!.isEmpty) {
+      body = Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          IconMessage(
+            title: Text('Failed to retrieve version information'),
+            icon: Icon(Icons.warning_amber),
+          ),
+        ],
+      );
+    } else {
+      body = SingleChildScrollView(
+        physics: BouncingScrollPhysics(),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ...versions!
+                .map(
+                  (release) => [
+                    Padding(
+                      padding: EdgeInsets.symmetric(vertical: 8),
+                      child: Text(
+                        '${release.name} (${release.version})',
+                        style: Theme.of(context).textTheme.headline6,
+                      ),
+                    ),
+                    Text(release.description!),
+                  ],
+                )
+                .reduce((a, b) => [...a, ...b]),
+          ],
+        ),
+      );
+    }
+
+    return LayoutBuilder(
+      builder: (context, constraints) => AlertDialog(
+        title: Text('Changelog'),
+        content: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxHeight: constraints.maxHeight * 0.6,
+          ),
+          child: body,
+        ),
+        actions: [
+          TextButton(
+            child: Text('OK'),
+            onPressed: Navigator.of(context).maybePop,
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class PlaystoreButton extends StatefulWidget {
+  const PlaystoreButton({Key? key}) : super(key: key);
+
+  @override
+  State<PlaystoreButton> createState() => _PlaystoreButtonState();
+}
+
+class _PlaystoreButtonState extends State<PlaystoreButton> {
+  Future<Source> source = StoreChecker.getSource;
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<Source>(
+      future: source,
+      builder: (context, snapshot) => CrossFade.builder(
+        showChild: snapshot.hasData &&
+            snapshot.data != Source.IS_INSTALLED_FROM_PLAY_STORE,
+        builder: (context) => IconButton(
+          icon: Padding(
+            padding: const EdgeInsets.only(left: 3),
+            child: FaIcon(FontAwesomeIcons.googlePlay),
+          ),
+          onPressed: () => launch(
+            'https://play.google.com/store/apps/details?id=' +
+                appInfo.packageName,
+          ),
+        ),
       ),
     );
   }

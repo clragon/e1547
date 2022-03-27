@@ -55,7 +55,7 @@ List<AppVersion>? githubData;
 
 Future<List<AppVersion>?> getVersions() async {
   if (kDebugMode) {
-    return [];
+    return null;
   }
   if (githubData == null) {
     Dio dio = Dio(defaultDioOptions.copyWith(

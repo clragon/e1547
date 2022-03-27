@@ -6,6 +6,7 @@ Future<void> initializeAppInfo() async => appInfo = await AppInfo.fromPlatform(
       developer: 'binaryfloof',
       github: 'clragon/e1547',
       discord: 'MRwKGqfmUz',
+      website: null,
     );
 
 abstract class AppDeveloper {
@@ -18,11 +19,13 @@ class AppInfo extends PackageInfo with AppDeveloper {
   final String developer;
   final String? github;
   final String? discord;
+  final String? website;
 
   AppInfo({
     required this.developer,
     required this.github,
     required this.discord,
+    required this.website,
     required String appName,
     required String packageName,
     required String version,
@@ -38,14 +41,16 @@ class AppInfo extends PackageInfo with AppDeveloper {
 
   static Future<AppInfo> fromPlatform({
     required String developer,
-    required String github,
-    required String discord,
+    required String? github,
+    required String? discord,
+    required String? website,
   }) async {
     PackageInfo info = await PackageInfo.fromPlatform();
     return AppInfo(
       developer: developer,
       github: github,
       discord: discord,
+      website: website,
       appName: info.appName,
       packageName: info.packageName,
       version: info.version,

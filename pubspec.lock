@@ -795,6 +795,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.10.0"
+  store_checker:
+    dependency: "direct main"
+    description:
+      name: store_checker
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.0"
   stream_channel:
     dependency: transitive
     description:
