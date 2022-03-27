@@ -1,4 +1,3 @@
-import 'package:e1547/tag/tag.dart';
 import 'package:e1547/topic/topic.dart';
 import 'package:flutter/material.dart';
 import 'package:timeago/timeago.dart';
@@ -24,7 +23,7 @@ class TopicTile extends StatelessWidget {
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: Text(
-                tagToName(topic.title),
+                topic.title,
                 style: Theme.of(context).textTheme.subtitle1,
               ),
             ),
