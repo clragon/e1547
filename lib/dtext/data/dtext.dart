@@ -46,6 +46,8 @@ InlineSpan parseDText(BuildContext context, String text, TextState state,
       return result;
     });
 
+  sorted.removeWhere((element) => sorted.first.key.start != element.key.start);
+
   DTextParserResult? result;
 
   for (final entry in sorted) {
@@ -61,7 +63,12 @@ InlineSpan parseDText(BuildContext context, String text, TextState state,
   }
 
   if (result == null) {
-    spans.add(plainText(context: context, text: text, state: state));
+    String before = text.substring(0, sorted.first.key.start + 1);
+    String after = text.substring(sorted.first.key.start + 1);
+    spans.addAll([
+      plainText(context: context, text: before, state: state),
+      parseDText(context, after, state),
+    ]);
   }
 
   return TextSpan(
