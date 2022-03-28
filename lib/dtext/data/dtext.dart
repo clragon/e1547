@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 final List<DTextParser> allParsers = [
   blockParser,
   tagParser,
+  codeParser,
   anchorParser,
   searchParser,
   listParser,

@@ -8,6 +8,7 @@ class TextState {
   bool overline;
   bool header;
   bool link;
+  bool highlight;
   VoidCallback? onTap;
 
   TextState({
@@ -18,6 +19,7 @@ class TextState {
     required this.overline,
     required this.header,
     required this.link,
+    required this.highlight,
     required this.onTap,
   });
 
@@ -29,7 +31,7 @@ class TextState {
     bool? overline,
     bool? header,
     bool? link,
-    bool? dark,
+    bool? highlight,
     VoidCallback? onTap,
   }) =>
       TextState(
@@ -40,6 +42,7 @@ class TextState {
         overline: overline ?? this.overline,
         header: header ?? this.header,
         link: link ?? this.link,
+        highlight: highlight ?? this.highlight,
         onTap: onTap ?? this.onTap,
       );
 }

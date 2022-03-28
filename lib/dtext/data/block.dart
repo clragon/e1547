@@ -57,7 +57,8 @@ DTextParser blockParser = DTextParser.builder(
         case TextBlock.code:
           blocked = QuoteWrap(
             child: Text.rich(
-                plainText(context: context, text: between, state: state)),
+              plainText(context: context, text: between, state: state),
+            ),
           );
           break;
         case TextBlock.section:

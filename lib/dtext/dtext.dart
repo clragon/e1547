@@ -9,6 +9,7 @@ export 'data/list.dart';
 export 'data/search.dart';
 export 'data/block.dart';
 export 'data/parser.dart';
+export 'data/code.dart';
 // widgets
 export 'widgets/field.dart';
 export 'widgets/plain.dart';

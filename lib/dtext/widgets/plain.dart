@@ -33,6 +33,9 @@ TextSpan plainText({
         state.underline ? TextDecoration.underline : TextDecoration.none,
         state.overline ? TextDecoration.overline : TextDecoration.none,
       ]),
+      background: state.highlight
+          ? (Paint()..color = Theme.of(context).cardColor)
+          : null,
     ),
   );
 }

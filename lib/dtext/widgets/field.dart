@@ -28,6 +28,7 @@ class DText extends StatelessWidget {
       overline: false,
       header: false,
       link: false,
+      highlight: false,
       onTap: null,
     );
 
