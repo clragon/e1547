@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:username_generator/username_generator.dart';
 
 class UsernameGeneratorData extends InheritedWidget {
