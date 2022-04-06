@@ -76,7 +76,6 @@ class TagDisplay extends StatelessWidget {
                               category,
                             )
                         : null,
-                    controller: editingController,
                   ),
                 ),
             ],

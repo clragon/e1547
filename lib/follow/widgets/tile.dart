@@ -5,6 +5,7 @@ import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:e1547/wiki/wiki.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class FollowTile extends StatelessWidget {
@@ -161,25 +162,67 @@ class FollowTile extends StatelessWidget {
 class FollowListTile extends StatelessWidget {
   final Follow follow;
 
-  final VoidCallback onEdit;
-  final VoidCallback onDelete;
-  final VoidCallback onRename;
-
-  final void Function(bool enabled) onChangeBookmark;
-  final void Function(bool enabled) onChangeNotify;
-
-  FollowListTile({
-    required this.follow,
-    required this.onEdit,
-    required this.onDelete,
-    required this.onRename,
-    required this.onChangeBookmark,
-    required this.onChangeNotify,
-  });
+  FollowListTile({required this.follow});
 
   @override
   Widget build(BuildContext context) {
+    SheetActionController? sheetController = SheetActions.of(context);
     FollowStatus? status = followController.status(follow);
+
+    void editAlias() {
+      sheetController!.show(
+        context,
+        ControlledTextField(
+          labelText: 'Follow alias',
+          actionController: sheetController,
+          textController: TextEditingController(text: follow.name),
+          submit: (value) {
+            String? alias = value.trim();
+            if (follow.alias != value) {
+              if (value.isNotEmpty) {
+                alias = value;
+              } else {
+                alias = null;
+              }
+              followController.replace(
+                follow,
+                Follow(
+                  tags: follow.tags,
+                  alias: alias,
+                  type: follow.type,
+                  statuses: follow.statuses,
+                ),
+              );
+            }
+          },
+        ),
+      );
+    }
+
+    void edit() {
+      sheetController!.show(
+        context,
+        ControlledTextWrapper(
+          submit: (value) async {
+            value = value.trim();
+            Follow result = Follow.fromString(value);
+            if (value.isNotEmpty) {
+              followController.replace(follow, result);
+            } else {
+              followController.remove(follow);
+            }
+          },
+          actionController: sheetController,
+          textController: TextEditingController(text: follow.tags),
+          builder: (context, controller, submit) => TagInput(
+            controller: controller,
+            textInputAction: TextInputAction.done,
+            labelText: 'Edit follow',
+            submit: submit,
+          ),
+        ),
+      );
+    }
 
     Widget contextMenu() {
       bool notified = follow.type == FollowType.notify;
@@ -192,36 +235,46 @@ class FollowListTile extends StatelessWidget {
         ),
         onSelected: (value) => value(),
         itemBuilder: (context) => [
-          /*
-          if (!bookmarked)
+          // disabled
+          if (kDebugMode && !bookmarked)
             PopupMenuTile(
-              value: () => onChangeNotify(!notified),
+              value: () => followController.replace(
+                follow,
+                follow.copyWith(
+                  type: !notified ? FollowType.notify : FollowType.update,
+                ),
+              ),
               title:
                   notified ? 'Disable notifications' : 'Enable notifications',
               icon: notified
                   ? Icons.notifications_off
                   : Icons.notifications_active,
             ),
-           */
           if (!notified)
             PopupMenuTile(
-              value: () => onChangeBookmark(!bookmarked),
+              value: () => followController.replace(
+                follow,
+                follow.copyWith(
+                  type: !bookmarked ? FollowType.bookmark : FollowType.update,
+                ),
+              ),
               title: bookmarked ? 'Enable updates' : 'Disable updates',
               icon: bookmarked ? Icons.update : Icons.update_disabled,
             ),
-          if (follow.tags.split(' ').length > 1)
+          if (sheetController != null && follow.tags.split(' ').length > 1)
             PopupMenuTile(
-              value: onRename,
+              value: editAlias,
               title: 'Rename',
               icon: Icons.label,
             ),
+          if (sheetController != null)
+            PopupMenuTile(
+              value: edit,
+              title: 'Edit',
+              icon: Icons.edit,
+            ),
           PopupMenuTile(
-            value: onEdit,
-            title: 'Edit',
-            icon: Icons.edit,
-          ),
-          PopupMenuTile(
-            value: onDelete,
+            value: () => followController.remove(follow),
             title: 'Delete',
             icon: Icons.delete,
           ),

@@ -7,11 +7,9 @@ import 'package:flutter/material.dart';
 class TagAddCard extends StatefulWidget {
   final String? category;
   final FutureOr<bool> Function(String value)? submit;
-  final SheetActionController controller;
 
   const TagAddCard({
     required this.submit,
-    required this.controller,
     this.category,
   });
 
@@ -29,12 +27,12 @@ class _TagAddCardState extends State<TagAddCard> {
           padding: EdgeInsets.all(2),
           icon: Icon(Icons.add, size: 16),
           onPressed: widget.submit != null
-              ? () => widget.controller.show(
+              ? () => SheetActions.of(context)!.show(
                     context,
                     TagEditor(
                       category: widget.category,
                       submit: widget.submit!,
-                      controller: widget.controller,
+                      controller: SheetActions.of(context)!,
                     ),
                   )
               : null,

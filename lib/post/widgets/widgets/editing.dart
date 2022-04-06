@@ -28,7 +28,10 @@ class PostEditor extends StatelessWidget {
     if (editingController == null) return child;
 
     return WillPopScope(
-      child: PostEditorData(controller: editingController!, child: child),
+      child: PostEditorData(
+        controller: editingController!,
+        child: SheetActions(controller: editingController!, child: child),
+      ),
       onWillPop: () async {
         if (editingController?.isShown ?? false) {
           return true;

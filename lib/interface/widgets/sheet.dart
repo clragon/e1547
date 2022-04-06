@@ -2,6 +2,19 @@ import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
 import 'package:sliding_sheet/sliding_sheet.dart';
 
+class SheetActions extends InheritedNotifier {
+  final SheetActionController controller;
+
+  SheetActions({required Widget child, required this.controller})
+      : super(child: child, notifier: controller);
+
+  static SheetActionController? of(BuildContext context) {
+    return context
+        .dependOnInheritedWidgetOfExactType<SheetActions>()
+        ?.controller;
+  }
+}
+
 class SheetActionController extends ActionController {
   PersistentBottomSheetController? sheetController;
   bool get isShown => sheetController != null;

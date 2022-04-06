@@ -4,12 +4,27 @@ import 'package:e1547/client/client.dart';
 import 'package:flutter/material.dart';
 import 'package:mutex/mutex.dart';
 
-abstract class DataUpdater extends ChangeNotifier {
+abstract class DataUpdater<T> extends ChangeNotifier {
   int progress = 0;
 
   Future get finish => _updateCompleter.future;
   Completer _updateCompleter = Completer()..complete();
   final Mutex _updateLock = Mutex();
+  final Mutex _writeLock = Mutex();
+
+  @protected
+  Future<T> read();
+
+  @protected
+  Future<void> write(T value);
+
+  @protected
+  Future<void> withData(T Function(T data) updater) async {
+    await _writeLock.acquire();
+    T updated = updater(await read());
+    await write(updated);
+    _writeLock.release();
+  }
 
   bool get updating => !_updateCompleter.isCompleted;
   bool restarting = false;
@@ -76,12 +91,8 @@ abstract class DataUpdater extends ChangeNotifier {
         return;
       }
       _complete();
-    } on Exception catch (e) {
-      if (e is UpdaterException) {
-        _fail(e);
-      } else {
-        rethrow;
-      }
+    } on UpdaterException catch (e) {
+      _fail(e);
     }
   }
 
@@ -124,7 +135,7 @@ class UpdaterException implements Exception {
   UpdaterException({this.message});
 }
 
-mixin HostableUpdater on DataUpdater {
+mixin HostableUpdater<T> on DataUpdater<T> {
   @override
   List<Listenable> getRefreshListeners() =>
       super.getRefreshListeners()..add(client);

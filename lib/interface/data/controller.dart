@@ -150,19 +150,10 @@ abstract class CursorDataController<T> extends RawDataController<String, T> {
 
   CursorDataController() : super(firstPageKey: 'a0');
 
+  String get firstPageKey => orderByOldest.value ? 'a0' : '1';
+
   @protected
   int getId(T item);
-
-  @override
-  @protected
-  Future<void> loadPage(String page, {bool reset = false}) {
-    // firstpagekey cannot be changed
-    // this is a hack around that
-    if (page == 'a0' && !orderByOldest.value) {
-      page = '1';
-    }
-    return super.loadPage(page, reset: reset);
-  }
 
   @override
   @protected

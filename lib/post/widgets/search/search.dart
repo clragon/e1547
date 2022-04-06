@@ -55,7 +55,7 @@ class _SearchPageState extends State<SearchPage> with ListenerCallbackMixin {
           foreground: mounted,
         );
         if (updated != follow) {
-          followController.replace(
+          followController.replaceAt(
             followController.items.indexOf(follow),
             updated,
           );
@@ -64,7 +64,7 @@ class _SearchPageState extends State<SearchPage> with ListenerCallbackMixin {
       if (pool != null) {
         Follow updated = follow.withPool(pool!);
         if (updated != follow) {
-          followController.replace(
+          followController.replaceAt(
             followController.items.indexOf(follow),
             updated,
           );

@@ -12,7 +12,7 @@ import 'package:flutter/material.dart';
 late final FollowController followController =
     FollowController(settings: settings.follows);
 
-class FollowController extends DataUpdater with HostableUpdater {
+class FollowController extends DataUpdater<List<Follow>> with HostableUpdater {
   late final ValueNotifier<List<Follow>> _source;
   late SelectedValueNotifier<List<Follow>> _restarter =
       SelectedValueNotifier<List<Follow>>(
@@ -20,7 +20,12 @@ class FollowController extends DataUpdater with HostableUpdater {
     comparator: _compare,
   );
 
-  set _items(List<Follow> value) => _source.value = List.from(value);
+  @override
+  Future<List<Follow>> read() async => items;
+
+  @override
+  Future<void> write(List<Follow> value) async => _source.value = List.from(value);
+
   List<Follow> get items => _source.value;
 
   final int refreshAmount = 5;
@@ -47,16 +52,12 @@ class FollowController extends DataUpdater with HostableUpdater {
         old.every((a) => value.any((b) => a.tags == b.tags));
   }
 
-  void _sort() {
-    List<Follow> updated = List.from(items);
-    updated.sortByNew(client.host);
-    _items = updated;
-  }
+  Future<void> _sort() => withData((items) => items..sortByNew(client.host));
 
   @override
   @protected
   Future<void> run(bool force) async {
-    _sort();
+    await _sort();
     List<Follow> data = List.from(items);
     DateTime now = DateTime.now();
     for (Follow follow in data) {
@@ -69,21 +70,22 @@ class FollowController extends DataUpdater with HostableUpdater {
           try {
             refreshed = await refresh(follow, force: force);
             await Future.delayed(Duration(milliseconds: 500));
-          } on DioError {
-            throw FollowUpdaterException(follow);
+          } on DioError catch (e) {
+            throw UpdaterException(
+                message:
+                    'FollowUpdater failed to update ${follow.tags} with: $e');
           }
         }
       }
       if (step()) {
         if (refreshed != null) {
-          data[data.indexOf(follow)] = refreshed;
-          _items = List.from(data);
+          await replace(follow, refreshed);
         }
       } else {
         return;
       }
     }
-    _sort();
+    await _sort();
   }
 
   Follow? getFollow(String tag) =>
@@ -93,25 +95,7 @@ class FollowController extends DataUpdater with HostableUpdater {
 
   FollowStatus? status(Follow follow) => follow.resolve(client.host);
 
-  void add(Follow follow) {
-    _items = List.from(items)..add(follow);
-  }
-
-  void addTag(String tag) {
-    _items = List.from(items)..add(Follow.fromString(tag));
-  }
-
-  void remove(Follow follow) {
-    _items = List.from(items)..remove(follow);
-  }
-
-  void removeTag(String tag) {
-    items
-        .where((element) => element.tags == tag)
-        .forEach((element) => remove(element));
-  }
-
-  void replace(int index, Follow follow) {
+  Follow _syncUnseen(Follow follow) {
     Follow updated = follow;
     if (status(updated)?.unseen == 0) {
       updated.statuses.forEach((key, value) {
@@ -120,8 +104,40 @@ class FollowController extends DataUpdater with HostableUpdater {
         }
       });
     }
-    _items = List.from(items)..[index] = updated;
+    return updated;
   }
+
+  Future<void> add(Follow follow) async =>
+      withData((items) => items..add(follow));
+
+  Future<void> addTag(String tag) async =>
+      withData((items) => items..add(Follow.fromString(tag)));
+
+  Future<void> remove(Follow follow) async =>
+      ((items) => items..remove(follow));
+
+  Future<void> removeTag(String tag) async =>
+      withData((items) => items..removeWhere((element) => element.tags == tag));
+
+  Future<void> replace(Follow old, Follow updated) async => withData(
+        (items) {
+          int index = items.indexOf(old);
+          if (index == -1) {
+            index = items.indexWhere((element) => element.tags == old.tags);
+          }
+          if (index == -1) {
+            throw UpdaterException(
+                message:
+                    'FollowUpdater failed to update ${updated.tags} with: Could not find follow to be replaced');
+          }
+          items[index] = _syncUnseen(updated);
+          return items;
+        },
+      );
+
+  Future<void> replaceAt(int index, Follow follow) async => withData(
+        (items) => items..[index] = _syncUnseen(follow),
+      );
 
   Future<Follow> refresh(Follow follow, {bool force = false}) async {
     Follow updated = follow;
@@ -147,37 +163,35 @@ class FollowController extends DataUpdater with HostableUpdater {
     return updated;
   }
 
-  void edit(List<String> update) {
-    List<Follow> edited = [];
-    for (String tags in update) {
-      Follow? match = items.firstWhereOrNull((follow) => follow.tags == tags);
-      if (match != null) {
-        edited.add(match);
-      } else {
-        edited.add(Follow.fromString(tags));
-      }
-    }
-    _items = edited;
-  }
+  Future<void> edit(List<String> update) async => withData(
+        (items) {
+          List<Follow> edited = [];
+          for (String tags in update) {
+            Follow? match =
+                items.firstWhereOrNull((follow) => follow.tags == tags);
+            if (match != null) {
+              edited.add(match);
+            } else {
+              edited.add(Follow.fromString(tags));
+            }
+          }
+          return edited;
+        },
+      );
 
-  void markAllAsRead() {
-    List<Follow> updated = List.from(items);
-    for (int i = 0; i < updated.length; i++) {
-      Follow follow = updated[i];
-      FollowStatus? status = this.status(follow);
-      if (status != null) {
-        updated[i] = follow.withStatus(client.host, status.copyWith(unseen: 0));
-      }
-    }
-    _items = updated;
-  }
-}
-
-class FollowUpdaterException extends UpdaterException {
-  final Follow follow;
-
-  FollowUpdaterException(this.follow)
-      : super(message: 'Failed to update ${follow.tags}');
+  Future<void> markAllAsRead() async => withData(
+        (items) {
+          for (int i = 0; i < items.length; i++) {
+            Follow follow = items[i];
+            FollowStatus? status = this.status(follow);
+            if (status != null) {
+              items[i] =
+                  follow.withStatus(client.host, status.copyWith(unseen: 0));
+            }
+          }
+          return items;
+        },
+      );
 }
 
 class SelectedValueNotifier<T> extends ValueNotifier<T> {
