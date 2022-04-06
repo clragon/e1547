@@ -137,20 +137,24 @@ abstract class RawDataController<KeyType, ItemType>
 }
 
 abstract class DataController<T> extends RawDataController<int, T> {
-  DataController({
-    int firstPageKey = 1,
-  }) : super(firstPageKey: firstPageKey);
+  DataController({int firstPageKey = 1}) : super(firstPageKey: firstPageKey);
 
   @override
+  @protected
   int provideNextPageKey(int current, List<T> items) => current + 1;
 }
 
 abstract class CursorDataController<T> extends RawDataController<String, T> {
   ValueNotifier<bool> orderByOldest = ValueNotifier(true);
 
-  CursorDataController() : super(firstPageKey: 'a0');
+  static const String _cursorFirstPage = 'a0';
+  static const String _indexFirstPage = '1';
 
-  String get firstPageKey => orderByOldest.value ? 'a0' : '1';
+  CursorDataController() : super(firstPageKey: _cursorFirstPage);
+
+  @override
+  String get firstPageKey =>
+      orderByOldest.value ? _cursorFirstPage : _indexFirstPage;
 
   @protected
   int getId(T item);
