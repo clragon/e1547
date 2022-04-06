@@ -102,36 +102,50 @@ class SourceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    IconData? icon = getHostIcon(url);
-    return Card(
-      child: InkWell(
-        onTap: () => launch(url),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (icon != null)
-              Padding(
-                padding: const EdgeInsets.only(left: 8),
-                child: FaIcon(
-                  getHostIcon(url),
-                  size: 16,
-                  color: Colors.grey,
+    if (linkParser.regex.hasMatch(url)) {
+      IconData? icon = getHostIcon(url);
+      return Card(
+        child: InkWell(
+          onTap: () => launch(url),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (icon != null)
+                Padding(
+                  padding: const EdgeInsets.only(left: 8),
+                  child: FaIcon(
+                    getHostIcon(url),
+                    size: 16,
+                    color: Colors.grey,
+                  ),
                 ),
-              ),
-            Flexible(
-              child: Padding(
-                padding: EdgeInsets.all(6),
-                child: Text(
-                  linkToDisplay(url),
-                  style: TextStyle(
-                    color: Colors.blue[400],
+              Flexible(
+                child: Padding(
+                  padding: EdgeInsets.all(6),
+                  child: Text(
+                    linkToDisplay(url),
+                    style: TextStyle(
+                      color: Colors.blue[400],
+                    ),
                   ),
                 ),
               ),
+            ],
+          ),
+        ),
+      );
+    } else {
+      return Card(
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: EdgeInsets.all(6),
+              child: Flexible(child: Text(url)),
             ),
           ],
         ),
-      ),
-    );
+      );
+    }
   }
 }
