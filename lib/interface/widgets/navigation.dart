@@ -167,6 +167,15 @@ final List<NavigationDestination> topLevelDestinations = [
     group: DrawerGroup.collection.name,
   ),
   NavigationDrawerDestination(
+    path: '/history',
+    name: 'History',
+    icon: Icon(Icons.history),
+    builder: (context) => HistoryPage(),
+    visible: (context) => settings.writeHistory.value,
+    unique: true,
+    group: DrawerGroup.settings.name,
+  ),
+  NavigationDrawerDestination(
     path: '/settings',
     name: 'Settings',
     icon: Icon(Icons.settings),
@@ -191,10 +200,6 @@ final List<NavigationDestination> topLevelDestinations = [
   NavigationDestination(
     path: '/following',
     builder: (context) => FollowingPage(),
-  ),
-  NavigationDestination(
-    path: '/history',
-    builder: (context) => HistoryPage(),
   ),
 ];
 

@@ -24,55 +24,58 @@ class _HistoryPageState extends State<HistoryPage> {
   DateTime? search;
   Set<HistoryFilter> filters = HistoryFilter.values.toSet();
 
+  List<HistoryEntry> filter(List<HistoryEntry> entries) {
+    if (search != null) {
+      entries.retainWhere(
+        (element) =>
+            DateUtils.dateOnly(element.visitedAt).isAtSameMomentAs(search!),
+      );
+    }
+    List<HistoryEntry> updated = [];
+    for (final filter in filters) {
+      switch (filter) {
+        case HistoryFilter.Posts:
+          updated.addAll(
+            entries.where((element) => element is PostHistoryEntry),
+          );
+          break;
+        case HistoryFilter.Tags:
+          updated.addAll(
+            entries.where(
+              (element) =>
+                  element is TagHistoryEntry &&
+                  !poolRegex().hasMatch(element.tags),
+            ),
+          );
+          break;
+        case HistoryFilter.Pools:
+          updated.addAll(
+            entries.where(
+              (element) =>
+                  element is TagHistoryEntry &&
+                  poolRegex().hasMatch(element.tags),
+            ),
+          );
+          break;
+      }
+    }
+    return updated;
+  }
+
   @override
   Widget build(BuildContext context) {
     return LimitedWidthLayout(
       child: AnimatedBuilder(
         animation: historyController,
         builder: (context, child) {
-          List<HistoryEntry> entries = historyController.collection.entries;
-          if (search != null) {
-            entries.retainWhere(
-              (element) => DateUtils.dateOnly(element.visitedAt)
-                  .isAtSameMomentAs(search!),
-            );
-          }
-          List<HistoryEntry> updated = [];
-          for (final filter in filters) {
-            switch (filter) {
-              case HistoryFilter.Posts:
-                updated.addAll(
-                  entries.where((element) => element is PostHistoryEntry),
-                );
-                break;
-              case HistoryFilter.Tags:
-                updated.addAll(
-                  entries.where(
-                    (element) =>
-                        element is TagHistoryEntry &&
-                        !poolRegex().hasMatch(element.tags),
-                  ),
-                );
-                break;
-              case HistoryFilter.Pools:
-                updated.addAll(
-                  entries.where(
-                    (element) =>
-                        element is TagHistoryEntry &&
-                        poolRegex().hasMatch(element.tags),
-                  ),
-                );
-                break;
-            }
-          }
-          entries = updated;
+          List<HistoryEntry> entries =
+              filter(historyController.collection.entries);
           bool isNotEmpty = entries.isNotEmpty;
           return SelectionLayout<HistoryEntry>(
             items: entries,
             child: Scaffold(
               appBar: HistorySelectionAppBar(
                 appbar: DefaultAppBar(
-                  leading: BackButton(),
                   title: Text(
                     'History' +
                         (search != null ? ' - ${dateOrName(search!)}' : ''),
@@ -139,6 +142,7 @@ class _HistoryPageState extends State<HistoryPage> {
                   });
                 },
               ),
+              drawer: NavigationDrawer(),
               endDrawer: ContextDrawer(
                 title: Text('History'),
                 children: [
@@ -170,7 +174,6 @@ class _HistoryPageState extends State<HistoryPage> {
                         title: Text(filter.name),
                         value: filters.contains(filter),
                         onChanged: (value) {
-                          print(value);
                           if (value == null) {
                             return;
                           }
