@@ -52,13 +52,19 @@ class HistoryController extends ChangeNotifier {
   }
 
   void _trimEntries() {
-    for (final entry in collection.entries.where(
-        (element) => DateTime.now().difference(element.visitedAt) > maxAge)) {
-      removeEntry(entry);
+    List<HistoryEntry> removal = [];
+
+    removal.addAll(collection.entries.where(
+        (element) => DateTime.now().difference(element.visitedAt) > maxAge));
+
+    if (collection.entries.length > maxCount) {
+      int trash = (maxCount / 50).clamp(100, double.infinity).round();
+      removal.addAll(collection.entries.take(trash).toList());
     }
-    while (collection.entries.length > maxCount) {
-      removeEntry(collection.entries.reversed.last);
-    }
+
+    removal = removal.toSet().toList();
+
+    removeEntries(removal);
   }
 
   bool addPost(Post post) {
@@ -113,34 +119,52 @@ class HistoryController extends ChangeNotifier {
     return true;
   }
 
-  void addEntry(HistoryEntry entry) {
-    if (entry is PostHistoryEntry) {
-      _collection = collection.copyWith(
-        posts: List.from(collection.posts)..add(entry),
-      );
-    } else if (entry is TagHistoryEntry) {
-      _collection = collection.copyWith(
-        tags: List.from(collection.tags)..add(entry),
-      );
-    } else {
-      throw UnimplementedError(
-          'No storage implementation for this HistoryEntry: $entry');
+  void addEntry(HistoryEntry entry) => addEntries([entry]);
+
+  void addEntries(List<HistoryEntry> entries) {
+    if (entries.isEmpty) {
+      return;
     }
+    List<PostHistoryEntry> posts = List.from(collection.posts);
+    List<TagHistoryEntry> tags = List.from(collection.tags);
+    for (final entry in entries) {
+      if (entry is PostHistoryEntry) {
+        posts.add(entry);
+      } else if (entry is TagHistoryEntry) {
+        tags.add(entry);
+      } else {
+        throw UnimplementedError(
+            'No storage implementation for this HistoryEntry: $entry');
+      }
+    }
+    _collection = collection.copyWith(
+      posts: posts,
+      tags: tags,
+    );
     _trimEntries();
   }
 
-  void removeEntry(HistoryEntry entry) {
-    if (entry is PostHistoryEntry) {
-      _collection = collection.copyWith(
-        posts: List.from(collection.posts)..remove(entry),
-      );
-    } else if (entry is TagHistoryEntry) {
-      _collection = collection.copyWith(
-        tags: List.from(collection.tags)..remove(entry),
-      );
-    } else {
-      throw UnimplementedError(
-          'No storage implementation for this HistoryEntry: $entry');
+  void removeEntry(HistoryEntry entry) => removeEntries([entry]);
+
+  void removeEntries(List<HistoryEntry> entries) {
+    if (entries.isEmpty) {
+      return;
     }
+    List<PostHistoryEntry> posts = List.from(collection.posts);
+    List<TagHistoryEntry> tags = List.from(collection.tags);
+    for (final entry in entries) {
+      if (entry is PostHistoryEntry) {
+        posts.remove(entry);
+      } else if (entry is TagHistoryEntry) {
+        tags.remove(entry);
+      } else {
+        throw UnimplementedError(
+            'No storage implementation for this HistoryEntry: $entry');
+      }
+    }
+    _collection = collection.copyWith(
+      posts: posts,
+      tags: tags,
+    );
   }
 }

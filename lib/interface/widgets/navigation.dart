@@ -172,7 +172,6 @@ final List<NavigationDestination> topLevelDestinations = [
     icon: Icon(Icons.history),
     builder: (context) => HistoryPage(),
     visible: (context) => settings.writeHistory.value,
-    unique: true,
     group: DrawerGroup.settings.name,
   ),
   NavigationDrawerDestination(

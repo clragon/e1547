@@ -76,6 +76,7 @@ class _HistoryPageState extends State<HistoryPage> {
             child: Scaffold(
               appBar: HistorySelectionAppBar(
                 appbar: DefaultAppBar(
+                  leading: BackButton(),
                   title: Text(
                     'History' +
                         (search != null ? ' - ${dateOrName(search!)}' : ''),
@@ -142,7 +143,6 @@ class _HistoryPageState extends State<HistoryPage> {
                   });
                 },
               ),
-              drawer: NavigationDrawer(),
               endDrawer: ContextDrawer(
                 title: Text('History'),
                 children: [

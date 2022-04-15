@@ -35,9 +35,7 @@ class HistorySelectionAppBar extends StatelessWidget with PreferredSizeWidget {
         IconButton(
           icon: Icon(Icons.delete_outline),
           onPressed: () {
-            for (HistoryEntry entry in data.selections) {
-              historyController.removeEntry(entry);
-            }
+            historyController.removeEntries(data.selections.toList());
             data.onChanged({});
           },
         ),
