@@ -12,7 +12,7 @@ late final HistoryController historyController = HistoryController();
 class HistoryController extends ChangeNotifier {
   late final ValueNotifier<Map<String, HistoryCollection>> _source;
 
-  static const int maxCount = 5000;
+  static const int maxCount = 3000;
   static const Duration maxAge = Duration(days: 30);
 
   set _collection(HistoryCollection value) {
