@@ -45,7 +45,9 @@ class _PostDetailState extends State<PostDetail>
   @override
   void initState() {
     super.initState();
-    historyController.addPost(widget.post);
+    WidgetsBinding.instance!.addPostFrameCallback(
+      (_) => historyController.addPost(widget.post),
+    );
   }
 
   @override
