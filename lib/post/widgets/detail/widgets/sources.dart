@@ -139,9 +139,11 @@ class SourceCard extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Padding(
-              padding: EdgeInsets.all(6),
-              child: Flexible(child: Text(url)),
+            Flexible(
+              child: Padding(
+                padding: EdgeInsets.all(6),
+                child: Text(url),
+              ),
             ),
           ],
         ),
