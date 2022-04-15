@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:collection/collection.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/history/history.dart';
@@ -58,7 +60,8 @@ class HistoryController extends ChangeNotifier {
         (element) => DateTime.now().difference(element.visitedAt) > maxAge));
 
     if (collection.entries.length > maxCount) {
-      int trash = (maxCount / 50).clamp(100, double.infinity).round();
+      int trash = max((collection.entries.length - maxCount),
+          (maxCount / 50).clamp(100, double.infinity).round());
       removal.addAll(collection.entries.take(trash).toList());
     }
 
