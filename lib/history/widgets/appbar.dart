@@ -3,14 +3,11 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/tag/data/actions.dart';
 import 'package:flutter/material.dart';
 
-class HistorySelectionAppBar extends StatelessWidget with PreferredSizeWidget {
-  final PreferredSizeWidget appbar;
-
-  @override
-  Size get preferredSize => appbar.preferredSize;
+class HistorySelectionAppBar extends StatelessWidget with AppBarBuilderWidget {
+  final PreferredSizeWidget child;
 
   const HistorySelectionAppBar({
-    required this.appbar,
+    required this.child,
   });
 
   @override
@@ -27,7 +24,7 @@ class HistorySelectionAppBar extends StatelessWidget with PreferredSizeWidget {
     }
 
     return SelectionAppBar<HistoryEntry>(
-      appbar: appbar,
+      child: child,
       titleBuilder: (context, data) => data.selections.length == 1
           ? Text(itemIdentifier(data.selections.first))
           : Text('${data.selections.length} entries'),

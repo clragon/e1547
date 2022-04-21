@@ -26,7 +26,7 @@ class _HotPageState extends State<HotPage> with ListenerCallbackMixin {
   @override
   Widget build(BuildContext context) {
     return PostsPage(
-      appBarBuilder: (context) => DefaultAppBar(
+      appBar: DefaultAppBar(
         title: Text('Hot'),
         actions: [SizedBox.shrink()],
       ),

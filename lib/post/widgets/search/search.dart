@@ -115,7 +115,7 @@ class _SearchPageState extends State<SearchPage> with ListenerCallbackMixin {
   Widget build(BuildContext context) {
     return PostsPage(
       controller: controller,
-      appBarBuilder: (context) => DefaultAppBar(
+      appBar: DefaultAppBar(
         title: Text(getTitle()),
         leading: BackButton(),
         actions: [

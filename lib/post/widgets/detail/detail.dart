@@ -181,7 +181,6 @@ class _PostDetailState extends State<PostDetail>
           appBar: PostDetailAppBar(
             post: widget.post,
             controller: widget.controller,
-            editingController: editingController,
           ),
           floatingActionButton:
               client.hasLogin && widget.controller != null ? fab() : null,

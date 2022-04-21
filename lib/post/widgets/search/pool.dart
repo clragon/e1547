@@ -43,7 +43,7 @@ class _PoolPageState extends State<PoolPage> {
   Widget build(BuildContext context) {
     return PostsPage(
       controller: controller,
-      appBarBuilder: (context) => DefaultAppBar(
+      appBar: DefaultAppBar(
         title: Text(tagToTitle(widget.pool.name)),
         leading: BackButton(),
         actions: [

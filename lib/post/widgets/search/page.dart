@@ -7,13 +7,13 @@ import 'package:flutter/material.dart';
 class PostsPage extends StatefulWidget {
   final bool canSelect;
   final PostController controller;
-  final PreferredSizeWidget Function(BuildContext) appBarBuilder;
+  final PreferredSizeWidget appBar;
   final List<Widget>? drawerActions;
 
   PostsPage({
     this.canSelect = true,
     required this.controller,
-    required this.appBarBuilder,
+    required this.appBar,
     this.drawerActions,
   }) : super(key: ObjectKey(controller));
 
@@ -77,7 +77,7 @@ class _PostsPageState extends State<PostsPage> {
         child: RefreshablePage(
           refreshController: widget.controller.refreshController,
           appBar: PostSelectionAppBar(
-            appbar: widget.appBarBuilder(context),
+            child: widget.appBar,
             controller: widget.controller,
           ),
           drawer: NavigationDrawer(),

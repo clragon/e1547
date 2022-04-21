@@ -73,12 +73,13 @@ class _PostFullscreenGalleryState extends State<PostFullscreenGallery>
       valueListenable: currentPage,
       builder: (context, value, child) => Theme(
         data: Theme.of(context).copyWith(
-          appBarTheme: AppBarTheme(
-            systemOverlayStyle: defaultUIStyle(Theme.of(context)).copyWith(
-              statusBarIconBrightness: Brightness.light,
-              statusBarColor: Colors.black26,
-            ),
-          ),
+          appBarTheme: Theme.of(context).appBarTheme.copyWith(
+                systemOverlayStyle:
+                    Theme.of(context).appBarTheme.systemOverlayStyle!.copyWith(
+                          statusBarIconBrightness: Brightness.light,
+                          statusBarColor: Colors.black26,
+                        ),
+              ),
         ),
         child: widget.controller.itemList != null
             ? PostFullscreenFrame(

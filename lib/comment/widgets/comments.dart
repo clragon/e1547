@@ -46,7 +46,7 @@ class _CommentsPageState extends State<CommentsPage> {
           : null,
       controller: controller,
       builder: (context) => PagedListView(
-        padding: defaultActionListPadding.copyWith(top: 8),
+        padding: defaultActionListPadding,
         pagingController: controller,
         builderDelegate: defaultPagedChildBuilderDelegate(
           pagingController: controller,

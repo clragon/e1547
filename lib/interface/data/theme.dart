@@ -26,19 +26,7 @@ final MaterialColor primarySwatch = MaterialColor(
   },
 );
 
-final Color accent = Color(0xFFffc107);
-
-SystemUiOverlayStyle defaultUIStyle(ThemeData theme) => SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-      statusBarBrightness: theme.brightness,
-      statusBarIconBrightness: theme.brightness == Brightness.light
-          ? Brightness.dark
-          : Brightness.light,
-      systemNavigationBarColor: Colors.transparent,
-      systemNavigationBarIconBrightness: theme.brightness == Brightness.light
-          ? Brightness.dark
-          : Brightness.light,
-    );
+final Color accentColor = Color(0xFFffc107);
 
 ThemeData prepareTheme(ThemeData theme) => theme.copyWith(
       platform: theme.platform == TargetPlatform.windows
@@ -66,7 +54,18 @@ ThemeData prepareTheme(ThemeData theme) => theme.copyWith(
         ),
       ),
       appBarTheme: AppBarTheme(
-        systemOverlayStyle: defaultUIStyle(theme),
+        systemOverlayStyle: SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          statusBarBrightness: theme.brightness,
+          statusBarIconBrightness: theme.brightness == Brightness.light
+              ? Brightness.dark
+              : Brightness.light,
+          systemNavigationBarColor: Colors.transparent,
+          systemNavigationBarIconBrightness:
+              theme.brightness == Brightness.light
+                  ? Brightness.dark
+                  : Brightness.light,
+        ),
         color: theme.canvasColor,
         foregroundColor: theme.iconTheme.color,
       ),
@@ -80,7 +79,7 @@ final Map<AppTheme, ThemeData> appThemeMap = {
     ThemeData.from(
       colorScheme: ColorScheme.fromSwatch(
         primarySwatch: primarySwatch,
-        accentColor: accent,
+        accentColor: accentColor,
         cardColor: Colors.white,
         backgroundColor: Colors.grey[50],
         brightness: Brightness.light,
@@ -95,7 +94,7 @@ final Map<AppTheme, ThemeData> appThemeMap = {
     ThemeData.from(
       colorScheme: ColorScheme.fromSwatch(
         primarySwatch: primarySwatch,
-        accentColor: accent,
+        accentColor: accentColor,
         cardColor: Colors.grey[900],
         backgroundColor: Color.fromARGB(255, 20, 20, 20),
         brightness: Brightness.dark,
@@ -106,7 +105,7 @@ final Map<AppTheme, ThemeData> appThemeMap = {
     ThemeData.from(
       colorScheme: ColorScheme.fromSwatch(
         primarySwatch: primarySwatch,
-        accentColor: accent,
+        accentColor: accentColor,
         cardColor: Color.fromARGB(255, 20, 20, 20),
         backgroundColor: Colors.black,
         brightness: Brightness.dark,
@@ -117,7 +116,7 @@ final Map<AppTheme, ThemeData> appThemeMap = {
     ThemeData.from(
       colorScheme: ColorScheme.fromSwatch(
         primarySwatch: primarySwatch,
-        accentColor: accent,
+        accentColor: accentColor,
         cardColor: Color.fromARGB(255, 31, 60, 103),
         backgroundColor: Color.fromARGB(255, 15, 33, 60),
         brightness: Brightness.dark,

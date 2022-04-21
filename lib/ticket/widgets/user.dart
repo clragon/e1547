@@ -1,15 +1,13 @@
 import 'package:e1547/client/client.dart';
 import 'package:e1547/interface/interface.dart';
-import 'package:e1547/post/post.dart';
 import 'package:e1547/ticket/ticket.dart';
 import 'package:e1547/user/user.dart';
 import 'package:flutter/material.dart';
 
 class UserReportScreen extends StatelessWidget {
   final User user;
-  final Post? avatar;
 
-  const UserReportScreen({required this.user, this.avatar});
+  const UserReportScreen({required this.user});
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +32,7 @@ class UserReportScreen extends StatelessWidget {
                 SizedBox(
                   height: 100,
                   width: 100,
-                  child: Avatar(avatar),
+                  child: UserAvatar(id: user.avatarId),
                 ),
                 Positioned.fill(
                   child: CrossFade(

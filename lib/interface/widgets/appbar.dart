@@ -2,28 +2,68 @@ import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
 import 'package:sliver_tools/sliver_tools.dart';
 
-const double kContentPadding = 4;
-const double defaultAppBarHeight = kToolbarHeight + (kContentPadding);
-const EdgeInsets defaultListPadding = EdgeInsets.symmetric(
-  horizontal: kContentPadding,
-  vertical: kContentPadding * 2,
-);
-const double defaultActionListBottomHeight = kBottomNavigationBarHeight + 24;
-final EdgeInsets defaultActionListPadding =
-    defaultListPadding.copyWith(bottom: defaultActionListBottomHeight);
+abstract class AppBarBuilderWidget implements PreferredSizeWidget {
+  abstract final PreferredSizeWidget child;
 
-mixin AppBarSize on Widget implements PreferredSizeWidget {
   @override
-  Size get preferredSize => Size.fromHeight(defaultAppBarHeight);
+  Size get preferredSize => child.preferredSize;
 }
 
-class DefaultAppBar extends StatelessWidget with AppBarSize {
+class AppBarBuilder extends StatelessWidget with AppBarBuilderWidget {
+  @override
+  final PreferredSizeWidget child;
+  final Widget Function(BuildContext context, PreferredSizeWidget child)
+      builder;
+
+  const AppBarBuilder({Key? key, required this.child, required this.builder})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return builder(context, child);
+  }
+}
+
+class AppBarPadding extends StatelessWidget with AppBarBuilderWidget {
+  @override
+  final PreferredSizeWidget child;
+
+  @override
+  Size get preferredSize => Size(
+        child.preferredSize.width + defaultAppBarHorizontalPadding,
+        child.preferredSize.height + defaultAppBarTopPadding,
+      );
+
+  const AppBarPadding({Key? key, required this.child}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding:
+          EdgeInsets.symmetric(horizontal: defaultAppBarHorizontalPadding).add(
+        EdgeInsets.only(
+          top: defaultAppBarTopPadding + MediaQuery.of(context).padding.top,
+        ),
+      ),
+      child: MediaQuery.removePadding(
+        context: context,
+        removeTop: true,
+        child: child,
+      ),
+    );
+  }
+}
+
+class DefaultAppBar extends StatelessWidget with PreferredSizeWidget {
   final Widget? leading;
   final List<Widget>? actions;
   final Widget? title;
   final double? elevation;
   final bool automaticallyImplyLeading;
   final ScrollController? scrollController;
+
+  @override
+  Size get preferredSize => Size.fromHeight(defaultAppBarHeight);
 
   const DefaultAppBar({
     this.leading,
@@ -36,43 +76,30 @@ class DefaultAppBar extends StatelessWidget with AppBarSize {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: kContentPadding * 2).add(
-        EdgeInsets.only(
-          top: MediaQuery.of(context).padding.top + kContentPadding,
-        ),
-      ),
-      child: MediaQuery.removePadding(
-        context: context,
-        removeTop: true,
-        child: ScrollToTopScope(
-          height: kToolbarHeight,
-          controller: scrollController,
-          builder: (context, child) => AppBar(
-            leading: leading,
-            actions: actions,
-            title: IgnorePointer(child: title),
-            elevation: elevation,
-            automaticallyImplyLeading: automaticallyImplyLeading,
-            flexibleSpace: child,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(4)),
-            ),
-          ),
+    return AppBarPadding(
+      child: AppBar(
+        leading: leading,
+        actions: actions,
+        title: IgnorePointer(child: title),
+        elevation: elevation,
+        automaticallyImplyLeading: automaticallyImplyLeading,
+        flexibleSpace: ScrollToTop(controller: scrollController),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(4)),
         ),
       ),
     );
   }
 }
 
-class ScrollToTopScope extends StatelessWidget {
+class ScrollToTop extends StatelessWidget {
   final ScrollController? controller;
   final bool primary;
   final Widget Function(BuildContext context, Widget child)? builder;
   final Widget? child;
   final double? height;
 
-  const ScrollToTopScope({
+  const ScrollToTop({
     this.builder,
     this.child,
     this.controller,
@@ -124,71 +151,36 @@ class ScrollToTopScope extends StatelessWidget {
   }
 }
 
-class TransparentAppBar extends StatelessWidget {
-  final Widget? title;
-  final Widget? leading;
-  final List<Widget>? actions;
+class TransparentAppBar extends StatelessWidget with AppBarBuilderWidget {
   final bool transparent;
 
+  @override
+  final PreferredSizeWidget child;
+
   const TransparentAppBar({
-    this.actions,
-    this.title,
-    this.leading,
     this.transparent = true,
+    required this.child,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Theme(
-      data: transparent
-          ? Theme.of(context).copyWith(
-              iconTheme: IconThemeData(color: Colors.white),
-              appBarTheme: AppBarTheme(
-                elevation: 0,
-                backgroundColor: Colors.transparent,
-              ),
-            )
-          : Theme.of(context),
-      child: DefaultAppBar(
-        leading: leading,
-        title: title,
-        actions: actions,
+    return AnimatedTheme(
+      data: Theme.of(context).copyWith(
+        iconTheme: Theme.of(context).iconTheme.copyWith(color: Colors.white),
+        appBarTheme: Theme.of(context).appBarTheme.copyWith(
+              elevation: transparent ? 0 : null,
+              backgroundColor: transparent ? Colors.transparent : null,
+            ),
       ),
+      child: child,
     );
   }
 }
 
-class DefaultSliverAppBar extends StatelessWidget {
-  final Widget? leading;
-  final List<Widget>? actions;
-  final Widget? title;
-  final double? elevation;
-  final bool forceElevated;
-  final bool automaticallyImplyLeading;
-  final double? expandedHeight;
-  final PreferredSizeWidget? bottom;
-  final Widget Function(BuildContext context, double collapse)?
-      flexibleSpaceBuilder;
-  final bool floating;
-  final bool pinned;
-  final bool snap;
-  final ScrollController? scrollController;
+class SliverAppBarPadding extends StatelessWidget {
+  final Widget child;
 
-  const DefaultSliverAppBar({
-    this.leading,
-    this.actions,
-    this.title,
-    this.elevation,
-    this.flexibleSpaceBuilder,
-    this.expandedHeight,
-    this.bottom,
-    this.floating = false,
-    this.pinned = false,
-    this.snap = false,
-    this.automaticallyImplyLeading = false,
-    this.forceElevated = false,
-    this.scrollController,
-  });
+  const SliverAppBarPadding({Key? key, required this.child}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -206,48 +198,89 @@ class DefaultSliverAppBar extends StatelessWidget {
           sliver: MediaQuery.removePadding(
             context: context,
             removeTop: true,
-            child: SliverAppBar(
-              title: IgnorePointer(child: title),
-              automaticallyImplyLeading: automaticallyImplyLeading,
-              elevation: elevation,
-              forceElevated: forceElevated,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(4)),
-              ),
-              toolbarHeight: kToolbarHeight,
-              expandedHeight: expandedHeight,
-              leading: leading,
-              floating: floating,
-              pinned: pinned,
-              snap: snap,
-              actions: actions,
-              bottom: bottom,
-              flexibleSpace: flexibleSpaceBuilder != null
-                  ? LayoutBuilder(
-                      builder: (context, constraints) {
-                        double bottomHeight = bottom?.preferredSize.height ?? 0;
-                        double minHeight = (kToolbarHeight + bottomHeight);
-                        double maxHeight =
-                            (expandedHeight ?? kToolbarHeight) - minHeight;
-                        double currentHeight =
-                            constraints.maxHeight - minHeight;
-                        return ScrollToTopScope(
-                          controller: scrollController,
-                          child: Padding(
-                            padding: EdgeInsets.only(bottom: bottomHeight),
-                            child: flexibleSpaceBuilder!(
-                              context,
-                              currentHeight / maxHeight,
-                            ),
-                          ),
-                        );
-                      },
-                    )
-                  : null,
-            ),
+            child: child,
           ),
         ),
       ],
+    );
+  }
+}
+
+class DefaultSliverAppBar extends StatelessWidget {
+  final Widget? leading;
+  final List<Widget>? actions;
+  final Widget? title;
+  final double? elevation;
+  final bool forceElevated;
+  final bool automaticallyImplyLeading;
+  final double? expandedHeight;
+  final PreferredSizeWidget? bottom;
+  final Widget Function(BuildContext context, double extension)?
+      flexibleSpaceBuilder;
+  final Widget? flexibleSpace;
+  final bool floating;
+  final bool pinned;
+  final bool snap;
+  final ScrollController? scrollController;
+
+  const DefaultSliverAppBar({
+    this.leading,
+    this.actions,
+    this.title,
+    this.elevation,
+    this.flexibleSpaceBuilder,
+    this.flexibleSpace,
+    this.expandedHeight,
+    this.bottom,
+    this.floating = false,
+    this.pinned = false,
+    this.snap = false,
+    this.automaticallyImplyLeading = false,
+    this.forceElevated = false,
+    this.scrollController,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SliverAppBarPadding(
+      child: SliverAppBar(
+        title: IgnorePointer(child: title),
+        automaticallyImplyLeading: automaticallyImplyLeading,
+        elevation: elevation,
+        forceElevated: forceElevated,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(4)),
+        ),
+        toolbarHeight: kToolbarHeight,
+        expandedHeight: expandedHeight,
+        leading: leading,
+        floating: floating,
+        pinned: pinned,
+        snap: snap,
+        actions: actions,
+        bottom: bottom,
+        flexibleSpace: flexibleSpaceBuilder != null
+            ? LayoutBuilder(
+                builder: (context, constraints) {
+                  double bottomHeight = bottom?.preferredSize.height ?? 0;
+                  double minHeight = (kToolbarHeight + bottomHeight);
+                  double maxHeight =
+                      (expandedHeight ?? kToolbarHeight) - minHeight;
+                  double currentHeight = constraints.maxHeight - minHeight;
+                  return ScrollToTop(
+                    controller: scrollController,
+                    child: Padding(
+                      padding: EdgeInsets.only(bottom: bottomHeight),
+                      child: flexibleSpaceBuilder!(
+                        context,
+                        currentHeight / maxHeight,
+                      ),
+                    ),
+                  );
+                },
+              )
+            : flexibleSpace,
+      ),
     );
   }
 }

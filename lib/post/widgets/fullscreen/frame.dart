@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 
@@ -104,7 +105,7 @@ class _PostFullscreenFrameState extends State<PostFullscreenFrame> {
           builder: (contex, child) => Scaffold(
             extendBodyBehindAppBar: true,
             appBar: FrameAppBar(
-              appBar: PostFullscreenAppBar(post: widget.post),
+              child: PostFullscreenAppBar(post: widget.post),
             ),
             body: GestureDetector(
               behavior: HitTestBehavior.translucent,
@@ -174,18 +175,15 @@ class FrameChild extends StatelessWidget {
   }
 }
 
-class FrameAppBar extends StatelessWidget with PreferredSizeWidget {
-  final PreferredSizeWidget appBar;
+class FrameAppBar extends StatelessWidget with AppBarBuilderWidget {
+  final PreferredSizeWidget child;
 
-  const FrameAppBar({Key? key, required this.appBar}) : super(key: key);
-
-  @override
-  Size get preferredSize => appBar.preferredSize;
+  const FrameAppBar({Key? key, required this.child}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return FrameChild(
-      child: appBar,
+      child: child,
     );
   }
 }

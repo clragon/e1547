@@ -3,22 +3,19 @@ import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 import 'package:like_button/like_button.dart';
 
-class PostSelectionAppBar extends StatelessWidget with PreferredSizeWidget {
+class PostSelectionAppBar extends StatelessWidget with AppBarBuilderWidget {
   final PostController controller;
-  final PreferredSizeWidget appbar;
-
-  @override
-  Size get preferredSize => appbar.preferredSize;
+  final PreferredSizeWidget child;
 
   const PostSelectionAppBar({
     required this.controller,
-    required this.appbar,
+    required this.child,
   });
 
   @override
   Widget build(BuildContext context) {
     return SelectionAppBar<Post>(
-      appbar: appbar,
+      child: child,
       titleBuilder: (context, data) => data.selections.length == 1
           ? Text('post #${data.selections.first.id}')
           : Text('${data.selections.length} posts'),

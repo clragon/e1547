@@ -75,7 +75,7 @@ class _HistoryPageState extends State<HistoryPage> {
             items: entries,
             child: Scaffold(
               appBar: HistorySelectionAppBar(
-                appbar: DefaultAppBar(
+                child: DefaultAppBar(
                   leading: BackButton(),
                   title: Text(
                     'History' +

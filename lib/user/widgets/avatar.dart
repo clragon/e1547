@@ -5,7 +5,7 @@ import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
 
-Future<void> initAvatar(BuildContext context) async {
+Future<void> initializeUserAvatar(BuildContext context) async {
   Post? avatar = await client.currentAvatar;
   if (avatar?.sample.url != null) {
     precacheImage(
@@ -46,7 +46,7 @@ class _CurrentUserAvatarState extends State<CurrentUserAvatar>
 }
 
 class UserAvatar extends StatefulWidget {
-  final int id;
+  final int? id;
 
   const UserAvatar({required this.id});
 
@@ -55,9 +55,19 @@ class UserAvatar extends StatefulWidget {
 }
 
 class _UserAvatarState extends State<UserAvatar> with ListenerCallbackMixin {
-  late Future<Post?> avatar = getAvatar();
+  late Future<Post?> avatar;
 
-  Future<Post?> getAvatar() async => await client.post(widget.id);
+  Future<Post?> getAvatar() async {
+    if (widget.id == null) {
+      return Future.value(null);
+    }
+    return await client.post(widget.id!);
+  }
+
+  @override
+  Map<Listenable, VoidCallback> get initListeners => {
+        client: () => avatar = getAvatar(),
+      };
 
   @override
   Widget build(BuildContext context) {

@@ -24,7 +24,8 @@ class FollowController extends DataUpdater<List<Follow>> with HostableUpdater {
   Future<List<Follow>> read() async => items;
 
   @override
-  Future<void> write(List<Follow> value) async => _source.value = List.from(value);
+  Future<void> write(List<Follow> value) async =>
+      _source.value = List.from(value);
 
   List<Follow> get items => _source.value;
 

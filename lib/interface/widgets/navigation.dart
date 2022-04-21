@@ -272,7 +272,7 @@ class _ProfileHeaderState extends State<ProfileHeader>
   Map<ChangeNotifier, VoidCallback> get initListeners => {
         client: () {
           if (mounted) {
-            initAvatar(context);
+            initializeUserAvatar(context);
           }
         },
       };

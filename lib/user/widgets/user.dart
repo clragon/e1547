@@ -2,7 +2,6 @@ import 'package:e1547/client/client.dart';
 import 'package:e1547/denylist/denylist.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
-import 'package:e1547/settings/settings.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:e1547/ticket/ticket.dart';
 import 'package:e1547/user/user.dart';
@@ -18,12 +17,10 @@ enum UserPageSection {
 
 class UserPage extends StatefulWidget {
   final User user;
-  final Post? avatar;
   final UserPageSection initialPage;
 
   const UserPage({
     required this.user,
-    this.avatar,
     this.initialPage = UserPageSection.Favorites,
   });
 
@@ -38,25 +35,6 @@ class _UserPageState extends State<UserPage>
   late PostController uploadPostController =
       PostController(search: 'user:${widget.user.name}', canSearch: false);
   late TabController tabController;
-
-  late Post? avatar = widget.avatar;
-  late Future<Post?> maybeAvatar;
-
-  Future<Post?> getAvatar() async {
-    if (avatar != null) {
-      return avatar;
-    }
-    if (widget.user.avatarId != null) {
-      avatar = await client.post(widget.user.avatarId!);
-      return avatar;
-    }
-    return null;
-  }
-
-  @override
-  Map<ChangeNotifier, VoidCallback> get initListeners => {
-        settings.customHost: () => maybeAvatar = getAvatar(),
-      };
 
   @override
   void initState() {
@@ -128,10 +106,10 @@ class _UserPageState extends State<UserPage>
               pinned: true,
               leading: BackButton(),
               expandedHeight: 250,
-              flexibleSpaceBuilder: (context, collapse) => FlexibleSpaceBar(
+              flexibleSpaceBuilder: (context, extension) => FlexibleSpaceBar(
                 collapseMode: CollapseMode.pin,
                 title: Opacity(
-                  opacity: 1 - (collapse * 6).clamp(0, 1),
+                  opacity: 1 - (extension * 6).clamp(0, 1),
                   child: Text(widget.user.name),
                 ),
                 background: Column(
@@ -149,7 +127,7 @@ class _UserPageState extends State<UserPage>
                                   ),
                                 )
                             : null,
-                        child: AvatarLoader(maybeAvatar),
+                        child: UserAvatar(id: widget.user.avatarId),
                       ),
                     ),
                     Padding(
@@ -166,7 +144,6 @@ class _UserPageState extends State<UserPage>
                 controller: tabController,
                 labelColor: Theme.of(context).iconTheme.color,
                 indicatorColor: Theme.of(context).iconTheme.color,
-                padding: EdgeInsets.symmetric(horizontal: kContentPadding * 2),
                 tabs: tabs.keys.toList(),
               ),
               actions: [
@@ -177,8 +154,9 @@ class _UserPageState extends State<UserPage>
                     PopupMenuTile(
                       title: 'Browse',
                       icon: Icons.open_in_browser,
-                      value: () async =>
-                          launch(widget.user.url(client.host).toString()),
+                      value: () async => launch(
+                        widget.user.url(client.host).toString(),
+                      ),
                     ),
                     PopupMenuTile(
                       title: 'Report',
@@ -190,7 +168,6 @@ class _UserPageState extends State<UserPage>
                             MaterialPageRoute(
                               builder: (context) => UserReportScreen(
                                 user: widget.user,
-                                avatar: avatar,
                               ),
                             ),
                           );

@@ -33,16 +33,15 @@ List<PopupMenuItem<VoidCallback>> postMenuUserActions(
   BuildContext context,
   Post post, {
   PostController? controller,
-  PostEditingController? editingController,
 }) {
   return [
-    if (editingController != null)
+    if (PostEditor.of(context) != null)
       PopupMenuTile(
         title: 'Edit',
         icon: Icons.edit,
         value: () => guardWithLogin(
           context: context,
-          callback: editingController.startEditing,
+          callback: PostEditor.of(context)!.startEditing,
           error: 'You must be logged in to edit posts!',
         ),
       ),

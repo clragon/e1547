@@ -84,18 +84,15 @@ class _SelectionLayoutState<T> extends State<SelectionLayout<T>> {
   }
 }
 
-class SelectionAppBar<T> extends StatelessWidget with PreferredSizeWidget {
+class SelectionAppBar<T> extends StatelessWidget with AppBarBuilderWidget {
   final List<Widget> Function(
       BuildContext context, SelectionLayoutData<T> layoutData) actionBuilder;
   final Widget Function(
       BuildContext context, SelectionLayoutData<T> layoutData)? titleBuilder;
-  final PreferredSizeWidget appbar;
-
-  @override
-  Size get preferredSize => appbar.preferredSize;
+  final PreferredSizeWidget child;
 
   const SelectionAppBar({
-    required this.appbar,
+    required this.child,
     required this.actionBuilder,
     this.titleBuilder,
   });
@@ -120,7 +117,7 @@ class SelectionAppBar<T> extends StatelessWidget with PreferredSizeWidget {
           ...actionBuilder(context, layoutData!),
         ],
       ),
-      secondChild: appbar,
+      secondChild: child,
     );
   }
 }
