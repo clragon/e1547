@@ -81,23 +81,15 @@ or
 
 Compiling the app for yourself should be possible for both platforms, iOS and Android.
 
-### Getting started
-
 1. Install [Flutter](https://flutter.dev/docs/get-started/install)
 2. Clone the e1547 GitHub Repository
-3. Run `flutter pub get` to install the dependencies
 
-### Android
+3. run flutter build <br>
+   | OS      | command             |
+   |---      |---                  |
+   | android | `flutter build apk` |
+   | iOS     | `flutter build ipa` |
 
-- Build with [Android Studio](https://developer.android.com/studio)
-
-### iOS
-
-**Compiling for iOS requires running macOS.**
-
-- Run `ios/build.sh`
-
-This will create a release build IPA file for you, as well as reduce the file size by removing unecessary Flutter artifacts.
 
 ## Status
 Is the app currently under development?  
