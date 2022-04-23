@@ -259,51 +259,9 @@ class NavigationDrawer extends StatelessWidget {
   }
 }
 
-class ProfileHeader extends StatefulWidget {
-  @override
-  State<StatefulWidget> createState() {
-    return _ProfileHeaderState();
-  }
-}
-
-class _ProfileHeaderState extends State<ProfileHeader>
-    with ListenerCallbackMixin {
-  @override
-  Map<ChangeNotifier, VoidCallback> get initListeners => {
-        client: () {
-          if (mounted) {
-            initializeUserAvatar(context);
-          }
-        },
-      };
-
+class ProfileHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    Widget userNameWidget(String? name) {
-      return CrossFade(
-        showChild: name != null,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Expanded(
-              child: Text(
-                name ?? '...',
-                style: Theme.of(context).textTheme.headline6,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ],
-        ),
-        secondChild: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20),
-          child: OutlinedButton(
-            child: Text('LOGIN'),
-            onPressed: () => Navigator.popAndPushNamed(context, '/login'),
-          ),
-        ),
-      );
-    }
-
     return AnimatedBuilder(
       animation: client,
       builder: (context, child) => DrawerHeader(
@@ -319,7 +277,29 @@ class _ProfileHeaderState extends State<ProfileHeader>
               Expanded(
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 20),
-                  child: userNameWidget(client.credentials?.username),
+                  child: CrossFade.builder(
+                    showChild: client.credentials?.username != null,
+                    builder: (context) => Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            client.credentials!.username,
+                            style: Theme.of(context).textTheme.headline6,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                    secondChild: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      child: OutlinedButton(
+                        child: Text('LOGIN'),
+                        onPressed: () =>
+                            Navigator.popAndPushNamed(context, '/login'),
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ],

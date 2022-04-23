@@ -127,7 +127,7 @@ class _UserPageState extends State<UserPage>
                                   ),
                                 )
                             : null,
-                        child: UserAvatar(id: widget.user.avatarId),
+                        child: PostAvatar(id: widget.user.avatarId),
                       ),
                     ),
                     Padding(

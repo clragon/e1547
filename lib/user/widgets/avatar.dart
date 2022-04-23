@@ -3,6 +3,7 @@ import 'package:e1547/client/client.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
+import 'package:e1547/user/user.dart';
 import 'package:flutter/material.dart';
 
 Future<void> initializeUserAvatar(BuildContext context) async {
@@ -15,70 +16,71 @@ Future<void> initializeUserAvatar(BuildContext context) async {
   }
 }
 
-class CurrentUserAvatar extends StatefulWidget {
+class CurrentUserAvatar extends StatelessWidget {
   const CurrentUserAvatar();
 
   @override
-  _CurrentUserAvatarState createState() => _CurrentUserAvatarState();
-}
-
-class _CurrentUserAvatarState extends State<CurrentUserAvatar>
-    with ListenerCallbackMixin {
-  Future<Post?> avatar = client.currentAvatar;
-
-  void updateAvatar() {
-    if (mounted) {
-      setState(() {
-        avatar = client.currentAvatar;
-      });
-    }
-  }
-
-  @override
-  Map<ChangeNotifier, VoidCallback> get listeners => {
-        client: updateAvatar,
-      };
-
-  @override
   Widget build(BuildContext context) {
-    return AvatarLoader(avatar);
+    return AvatarLoader((context) async {
+      initializeUserAvatar(context);
+      return client.currentAvatar;
+    });
   }
 }
 
-class UserAvatar extends StatefulWidget {
-  final int? id;
+class UserAvatar extends StatelessWidget {
+  final int id;
 
   const UserAvatar({required this.id});
 
   @override
-  _UserAvatarState createState() => _UserAvatarState();
+  Widget build(BuildContext context) {
+    return AvatarLoader((context) async {
+      User user = await client.user(id.toString());
+
+      if (user.avatarId == null) {
+        return Future.value(null);
+      }
+      return await client.post(user.avatarId!);
+    });
+  }
 }
 
-class _UserAvatarState extends State<UserAvatar> with ListenerCallbackMixin {
-  late Future<Post?> avatar;
+class PostAvatar extends StatelessWidget {
+  final int? id;
 
-  Future<Post?> getAvatar() async {
-    if (widget.id == null) {
-      return Future.value(null);
-    }
-    return await client.post(widget.id!);
-  }
-
-  @override
-  Map<Listenable, VoidCallback> get initListeners => {
-        client: () => avatar = getAvatar(),
-      };
+  const PostAvatar({required this.id});
 
   @override
   Widget build(BuildContext context) {
-    return AvatarLoader(avatar);
+    return AvatarLoader(
+      (context) async {
+        if (id == null) {
+          return Future.value(null);
+        }
+        return await client.post(id!);
+      },
+    );
   }
 }
 
-class AvatarLoader extends StatelessWidget {
-  final Future<Post?> avatar;
+class AvatarLoader extends StatefulWidget {
+  final Future<Post?> Function(BuildContext context) provider;
 
-  const AvatarLoader(this.avatar);
+  const AvatarLoader(this.provider);
+
+  @override
+  State<AvatarLoader> createState() => _AvatarLoaderState();
+}
+
+class _AvatarLoaderState extends State<AvatarLoader>
+    with ListenerCallbackMixin {
+  late Future<Post?> avatar;
+
+  @override
+  Map<Listenable, VoidCallback> get initListeners => {
+        client: () => avatar = widget.provider(context),
+      };
 
   @override
   Widget build(BuildContext context) {

@@ -32,7 +32,7 @@ class UserReportScreen extends StatelessWidget {
                 SizedBox(
                   height: 100,
                   width: 100,
-                  child: UserAvatar(id: user.avatarId),
+                  child: PostAvatar(id: user.avatarId),
                 ),
                 Positioned.fill(
                   child: CrossFade(
