@@ -53,7 +53,8 @@ class NavigationController {
     routes = _generateRoutes(destinations);
   }
 
-  WidgetBuilder _getDestinationBuilder(NavigationRouteDestination destintation) {
+  WidgetBuilder _getDestinationBuilder(
+      NavigationRouteDestination destintation) {
     if (destintation.unique) {
       return (context) {
         drawerSelection = destintation.path;

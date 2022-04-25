@@ -1,6 +1,6 @@
 import 'package:e1547/history/history.dart';
 import 'package:e1547/interface/interface.dart';
-import 'package:e1547/tag/data/actions.dart';
+import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 
 class HistorySelectionAppBar extends StatelessWidget with AppBarBuilderWidget {

@@ -1,7 +1,7 @@
 import 'package:e1547/client/client.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/settings/settings.dart';
-import 'package:e1547/user/data/current.dart';
+import 'package:e1547/user/user.dart';
 import 'package:flutter/material.dart';
 
 DenylistController denylistController = DenylistController();
@@ -9,11 +9,11 @@ DenylistController denylistController = DenylistController();
 class DenylistController extends DataUpdater<List<String>> {
   late final ValueNotifier<List<String>> _source;
 
-  List<String> get items => List.from(_source.value);
+  List<String> get items => _source.value;
 
   @override
   @protected
-  Future<List<String>> read() async => (items);
+  Future<List<String>> read() async => List.from(items);
 
   @override
   @protected

@@ -1,5 +1,5 @@
 import 'package:e1547/interface/interface.dart';
-import 'package:e1547/post/data/editing.dart';
+import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 
 class PostEditorData extends InheritedNotifier<PostEditingController> {

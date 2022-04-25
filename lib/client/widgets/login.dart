@@ -1,4 +1,4 @@
-import 'package:e1547/client/data/client.dart';
+import 'package:e1547/client/client.dart';
 import 'package:flutter/material.dart';
 
 Future<void> logout(BuildContext context) async {

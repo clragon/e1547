@@ -1,4 +1,4 @@
-import 'package:e1547/denylist/data/controller.dart';
+import 'package:e1547/denylist/denylist.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/wiki/wiki.dart';
 import 'package:flutter/material.dart';
