@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:collection/collection.dart';
 import 'package:e1547/client/client.dart';
+import 'package:e1547/denylist/denylist.dart';
 import 'package:e1547/history/history.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
@@ -79,7 +80,7 @@ class HistoryController extends ChangeNotifier {
       return false;
     }
     String? thumbnail;
-    if (!post.isDeniedBy(settings.denylist.value)) {
+    if (!post.isDeniedBy(denylistController.items)) {
       thumbnail = post.sample.url;
     }
     addEntry(

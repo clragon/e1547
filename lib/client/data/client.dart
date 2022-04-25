@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:async/async.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_http_cache/dio_http_cache.dart';
 import 'package:e1547/client/client.dart';
@@ -51,7 +52,7 @@ class Client extends ChangeNotifier {
         },
       ),
     );
-    initializeCurrentUser(reset: true);
+    currentUser(force: true);
     cacheManager = DioCacheManager(CacheConfig(baseUrl: host));
     dio.interceptors.add(cacheManager.interceptor);
     notifyListeners();
@@ -92,52 +93,6 @@ class Client extends ChangeNotifier {
 
   Future<void> logout() async {
     settings.credentials.value = null;
-  }
-
-  CurrentUser? _currentUser;
-  Completer _currentUserRequest = Completer()..complete();
-
-  Future<void> initializeCurrentUser({bool reset = false}) async {
-    if (_currentUserRequest.isCompleted) {
-      _currentUserRequest = Completer();
-    } else {
-      return _currentUserRequest.future;
-    }
-    if (reset) {
-      _currentUser = null;
-      _currentAvatar = null;
-    }
-    if (!await isLoggedIn) {
-      _currentUserRequest.complete();
-      return;
-    }
-    if (_currentUser == null) {
-      _currentUser = await authedUser();
-      List<String> updated = _currentUser!.blacklistedTags.split('\n');
-      updated = updated.trim();
-      updated.removeWhere((element) => element.isEmpty);
-      settings.denylist.value = updated;
-    }
-    if (_currentAvatar == null) {
-      int? avatarId = _currentUser?.avatarId;
-      if (avatarId != null) {
-        Post post = await this.post(avatarId);
-        _currentAvatar = post;
-      }
-    }
-    _currentUserRequest.complete();
-  }
-
-  Future<CurrentUser?> get currentUser async {
-    await initializeCurrentUser();
-    return _currentUser;
-  }
-
-  Post? _currentAvatar;
-
-  Future<Post?> get currentAvatar async {
-    await initializeCurrentUser();
-    return _currentAvatar;
   }
 
   bool postIsIgnored(Post post) {
@@ -524,16 +479,52 @@ class Client extends ChangeNotifier {
     });
   }
 
-  Future<CurrentUser?> authedUser() async {
-    if (!await isLoggedIn) {
-      return null;
+  AsyncMemoizer<CurrentUser?> _currentUser = AsyncMemoizer();
+
+  Future<CurrentUser?> currentUser({bool? force}) async {
+    if (force ?? false) {
+      _currentUser = AsyncMemoizer();
+      _currentUserAvatar = AsyncMemoizer();
     }
 
-    Map<String, dynamic> body = await dio
-        .get('users/${credentials!.username}.json')
-        .then((response) => response.data);
+    _currentUser.runOnce(
+      () async {
+        if (!await isLoggedIn) {
+          return null;
+        }
 
-    return CurrentUser.fromMap(body);
+        return CurrentUser.fromMap(
+          await dio
+              .get('users/${credentials!.username}.json')
+              .then((response) => response.data),
+        );
+      },
+    );
+
+    return _currentUser.future;
+  }
+
+  AsyncMemoizer<Post?> _currentUserAvatar = AsyncMemoizer();
+
+  Future<Post?> currentUserAvatar({bool? force}) async {
+    if (force ?? false) {
+      _currentUserAvatar = AsyncMemoizer();
+    }
+
+    _currentUserAvatar.runOnce(() async {
+      if (!await isLoggedIn) {
+        return null;
+      }
+
+      CurrentUser? user = await currentUser();
+      if (user != null && user.avatarId != null) {
+        return client.post(user.avatarId!);
+      }
+
+      return null;
+    });
+
+    return _currentUserAvatar.future;
   }
 
   Future<void> updateBlacklist(List<String> denylist) async {
@@ -547,8 +538,6 @@ class Client extends ChangeNotifier {
 
     await dio.put('users/${credentials!.username}.json',
         data: FormData.fromMap(body));
-
-    initializeCurrentUser(reset: true);
   }
 
   Future<List<Tag>> tags(String search, {int? category, bool? force}) async {

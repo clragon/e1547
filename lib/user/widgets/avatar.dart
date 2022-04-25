@@ -7,7 +7,7 @@ import 'package:e1547/user/user.dart';
 import 'package:flutter/material.dart';
 
 Future<void> initializeUserAvatar(BuildContext context) async {
-  Post? avatar = await client.currentAvatar;
+  Post? avatar = await client.currentUserAvatar();
   if (avatar?.sample.url != null) {
     precacheImage(
       CachedNetworkImageProvider(avatar!.sample.url!),
@@ -23,7 +23,7 @@ class CurrentUserAvatar extends StatelessWidget {
   Widget build(BuildContext context) {
     return AvatarLoader((context) async {
       initializeUserAvatar(context);
-      return client.currentAvatar;
+      return client.currentUserAvatar();
     });
   }
 }

@@ -7,7 +7,7 @@ typedef ActionControllerCallback = FutureOr<void> Function();
 class ActionControllerException implements Exception {
   final String message;
 
-  ActionControllerException({required this.message});
+  const ActionControllerException({required this.message});
 }
 
 class ActionController extends ChangeNotifier {

@@ -1,33 +1,24 @@
 import 'package:e1547/client/client.dart';
-import 'package:e1547/denylist/denylist.dart';
-import 'package:e1547/follow/follow.dart';
-import 'package:e1547/history/history.dart';
 import 'package:e1547/interface/interface.dart';
-import 'package:e1547/pool/pool.dart';
-import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
-import 'package:e1547/topic/topic.dart';
 import 'package:e1547/user/user.dart';
 import 'package:flutter/material.dart';
 
-final NavigationController topLevelNavigationController =
-    NavigationController(destinations: topLevelDestinations);
-
 double defaultDrawerEdge(double screenWidth) => screenWidth * 0.1;
 
-class NavigationDestination {
+class NavigationRouteDestination {
   final String path;
   final WidgetBuilder builder;
   final bool unique;
 
-  const NavigationDestination({
+  const NavigationRouteDestination({
     required this.path,
     required this.builder,
     this.unique = false,
   });
 }
 
-class NavigationDrawerDestination extends NavigationDestination {
+class NavigationDrawerDestination extends NavigationRouteDestination {
   final String name;
   final bool Function(BuildContext context)? visible;
   final Widget? icon;
@@ -49,7 +40,7 @@ class NavigationDrawerDestination extends NavigationDestination {
 }
 
 class NavigationController {
-  final List<NavigationDestination> destinations;
+  final List<NavigationRouteDestination> destinations;
   late final Map<String, WidgetBuilder> routes;
 
   final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
@@ -62,7 +53,7 @@ class NavigationController {
     routes = _generateRoutes(destinations);
   }
 
-  WidgetBuilder _getDestinationBuilder(NavigationDestination destintation) {
+  WidgetBuilder _getDestinationBuilder(NavigationRouteDestination destintation) {
     if (destintation.unique) {
       return (context) {
         drawerSelection = destintation.path;
@@ -74,7 +65,7 @@ class NavigationController {
   }
 
   Map<String, WidgetBuilder> _generateRoutes(
-      List<NavigationDestination> destinations) {
+      List<NavigationRouteDestination> destinations) {
     return Map.fromEntries(
       destinations.map(
         (element) => MapEntry(
@@ -109,104 +100,11 @@ enum DrawerGroup {
   settings,
 }
 
-final List<NavigationDestination> topLevelDestinations = [
-  NavigationDrawerDestination(
-    path: '/',
-    name: 'Home',
-    icon: Icon(Icons.home),
-    builder: (context) => HomePage(),
-    unique: true,
-    group: DrawerGroup.search.name,
-  ),
-  NavigationDrawerDestination(
-    path: '/hot',
-    name: 'Hot',
-    icon: Icon(Icons.whatshot),
-    builder: (context) => HotPage(),
-    unique: true,
-    group: DrawerGroup.search.name,
-  ),
-  NavigationDrawerDestination(
-    path: '/search',
-    name: 'Search',
-    icon: Icon(Icons.search),
-    builder: (context) => SearchPage(),
-    group: DrawerGroup.search.name,
-  ),
-  NavigationDrawerDestination(
-    path: '/fav',
-    name: 'Favorites',
-    icon: Icon(Icons.favorite),
-    builder: (context) => FavPage(),
-    unique: true,
-    group: DrawerGroup.collection.name,
-  ),
-  NavigationDrawerDestination(
-    path: '/follows',
-    name: 'Following',
-    icon: Icon(Icons.turned_in),
-    builder: (context) => FollowsPage(),
-    unique: true,
-    group: DrawerGroup.collection.name,
-  ),
-  NavigationDrawerDestination(
-    path: '/pools',
-    name: 'Pools',
-    icon: Icon(Icons.collections),
-    builder: (context) => PoolsPage(),
-    unique: true,
-    group: DrawerGroup.collection.name,
-  ),
-  NavigationDrawerDestination(
-    path: '/topics',
-    name: 'Forum',
-    icon: Icon(Icons.forum),
-    builder: (context) => TopicsPage(),
-    visible: (context) => settings.showBeta.value,
-    unique: true,
-    group: DrawerGroup.collection.name,
-  ),
-  NavigationDrawerDestination(
-    path: '/history',
-    name: 'History',
-    icon: Icon(Icons.history),
-    builder: (context) => HistoryPage(),
-    visible: (context) => settings.writeHistory.value,
-    group: DrawerGroup.settings.name,
-  ),
-  NavigationDrawerDestination(
-    path: '/settings',
-    name: 'Settings',
-    icon: Icon(Icons.settings),
-    builder: (context) => SettingsPage(),
-    group: DrawerGroup.settings.name,
-  ),
-  NavigationDrawerDestination(
-    path: '/about',
-    name: 'About',
-    icon: DrawerUpdateIcon(),
-    builder: (context) => AboutPage(),
-    group: DrawerGroup.settings.name,
-  ),
-  NavigationDestination(
-    path: '/login',
-    builder: (context) => LoginPage(),
-  ),
-  NavigationDestination(
-    path: '/blacklist',
-    builder: (context) => DenyListPage(),
-  ),
-  NavigationDestination(
-    path: '/following',
-    builder: (context) => FollowingPage(),
-  ),
-];
-
 class NavigationDrawer extends StatelessWidget {
   const NavigationDrawer();
 
   List<NavigationDrawerDestination> getDrawerDestinations(
-      List<NavigationDestination> destinations) {
+      List<NavigationRouteDestination> destinations) {
     return destinations
         .where((e) => e is NavigationDrawerDestination)
         .toList()

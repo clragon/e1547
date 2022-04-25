@@ -3,15 +3,19 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/wiki/wiki.dart';
 import 'package:flutter/material.dart';
 
-class DenyListEditor extends StatelessWidget {
-  final List<String> denylist;
+class DenyListEditor extends StatefulWidget {
+  const DenyListEditor();
 
-  const DenyListEditor({required this.denylist});
+  @override
+  State<DenyListEditor> createState() => _DenyListEditorState();
+}
+
+class _DenyListEditorState extends State<DenyListEditor> {
+  TextEditingController controller =
+      TextEditingController(text: denylistController.items.join('\n'));
 
   @override
   Widget build(BuildContext context) {
-    TextEditingController controller =
-        TextEditingController(text: denylist.join('\n'));
     return LoadingDialog(
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -33,7 +37,7 @@ class DenyListEditor extends StatelessWidget {
         List<String> tags = controller.text.split('\n');
         tags = tags.trim();
         tags.removeWhere((tag) => tag.isEmpty);
-        if (!await updateBlacklist(context: context, value: tags)) {
+        if (!await validateCall(() => denylistController.edit(tags))) {
           throw ActionControllerException(
               message: 'Failed to update blacklist!');
         }

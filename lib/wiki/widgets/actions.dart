@@ -2,7 +2,6 @@ import 'package:e1547/denylist/denylist.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
-import 'package:e1547/settings/settings.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 
@@ -17,28 +16,23 @@ class TagListActions extends StatelessWidget {
       return SizedBox.shrink();
     }
     return AnimatedBuilder(
-      animation: Listenable.merge([settings.denylist, followController]),
+      animation: Listenable.merge([denylistController, followController]),
       builder: (context, child) {
-        bool following = followController.followsTag(tag);
-        bool denied = settings.denylist.value.contains(tag);
+        bool following = followController.follows(tag);
+        bool denied = denylistController.denies(tag);
         return Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             CrossFade(
               showChild: !denied,
               child: IconButton(
-                onPressed: () {
+                onPressed: () async {
                   if (following) {
                     followController.removeTag(tag);
                   } else {
                     followController.addTag(tag);
                     if (denied) {
-                      settings.denylist.value.remove(tag);
-                      updateBlacklist(
-                        context: context,
-                        value: settings.denylist.value,
-                        immediate: true,
-                      );
+                      await denylistController.remove(tag);
                     }
                   }
                 },
@@ -53,20 +47,15 @@ class TagListActions extends StatelessWidget {
             CrossFade(
               showChild: !following,
               child: IconButton(
-                onPressed: () {
+                onPressed: () async {
                   if (denied) {
-                    settings.denylist.value.remove(tag);
+                    await denylistController.remove(tag);
                   } else {
-                    settings.denylist.value.add(tag);
                     if (following) {
                       followController.removeTag(tag);
                     }
+                    await denylistController.add(tag);
                   }
-                  updateBlacklist(
-                    context: context,
-                    value: settings.denylist.value,
-                    immediate: true,
-                  );
                 },
                 icon: CrossFade(
                   showChild: denied,

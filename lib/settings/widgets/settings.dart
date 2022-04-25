@@ -1,4 +1,5 @@
 import 'package:e1547/client/client.dart';
+import 'package:e1547/denylist/data/controller.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/history/history.dart';
 import 'package:e1547/interface/interface.dart';
@@ -62,7 +63,7 @@ class _SettingsPageState extends State<SettingsPage> {
             AnimatedBuilder(
               animation: client,
               builder: (context, child) => FutureBuilder<CurrentUser?>(
-                future: client.currentUser,
+                future: client.currentUser(),
                 builder: (context, snapshot) => CrossFade.builder(
                   duration: Duration(milliseconds: 200),
                   showChild: client.credentials != null,
@@ -219,15 +220,14 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
               ),
             ),
-            ValueListenableBuilder<List<String>>(
-              valueListenable: settings.denylist,
-              builder: (context, value, child) => ListTile(
+            AnimatedBuilder(
+              animation: denylistController,
+              builder: (context, child) => ListTile(
                 title: Text('Blacklist'),
                 leading: Icon(Icons.block),
-                subtitle: value.isNotEmpty
-                    ? Text('${value.join(' ').trim().split(' ').where(
-                          (element) => element.isNotEmpty && element[0] != '-',
-                        ).length} tags blocked')
+                subtitle: denylistController.items.isNotEmpty
+                    ? Text(
+                        '${denylistController.items.join(' ').split(' ').trim().where((e) => e[0] != '-').length} tags blocked')
                     : null,
                 onTap: () => Navigator.pushNamed(context, '/blacklist'),
               ),

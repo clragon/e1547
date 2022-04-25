@@ -4,29 +4,17 @@ import 'package:e1547/client/client.dart';
 import 'package:flutter/material.dart';
 import 'package:mutex/mutex.dart';
 
-abstract class DataUpdater<T> extends ChangeNotifier {
-  int progress = 0;
+abstract class DataUpdater<T> extends ChangeNotifier with DataLock<T> {
+  final Mutex _runLock = Mutex();
 
-  Future get finish => _updateCompleter.future;
-  Completer _updateCompleter = Completer()..complete();
-  final Mutex _updateLock = Mutex();
-  final Mutex _writeLock = Mutex();
+  Future<void> get finish => _runCompleter.future;
 
-  @protected
-  Future<T> read();
+  Completer<void> _runCompleter = Completer()..complete();
 
-  @protected
-  Future<void> write(T value);
+  int _progress = 0;
+  int get progress => _progress;
 
-  @protected
-  Future<void> withData(T Function(T data) updater) async {
-    await _writeLock.acquire();
-    T updated = updater(await read());
-    await write(updated);
-    _writeLock.release();
-  }
-
-  bool get updating => !_updateCompleter.isCompleted;
+  bool get updating => !_runCompleter.isCompleted;
   bool restarting = false;
   bool canceling = false;
 
@@ -46,19 +34,19 @@ abstract class DataUpdater<T> extends ChangeNotifier {
 
   void _fail(Exception exception) {
     error = exception;
-    _updateCompleter.completeError(exception);
-    _updateLock.release();
+    _runCompleter.completeError(exception);
+    _runLock.release();
     notifyListeners();
   }
 
   void _complete() {
-    _updateLock.release();
-    _updateCompleter.complete();
+    _runLock.release();
+    _runCompleter.complete();
     notifyListeners();
   }
 
   void _reset() {
-    progress = 0;
+    _progress = 0;
     restarting = false;
     canceling = false;
     error = null;
@@ -77,17 +65,17 @@ abstract class DataUpdater<T> extends ChangeNotifier {
     if (restarting || canceling) {
       return false;
     }
-    this.progress = progress ?? this.progress + 1;
+    _progress = progress ?? this.progress + 1;
     notifyListeners();
     return true;
   }
 
   Future<void> _wrapper({bool force = false}) async {
-    await _updateLock.acquire();
+    await _runLock.acquire();
     try {
       await run(force);
       if (restarting) {
-        _updateLock.release();
+        _runLock.release();
         return;
       }
       _complete();
@@ -98,8 +86,8 @@ abstract class DataUpdater<T> extends ChangeNotifier {
 
   @mustCallSuper
   Future<void> update({bool force = false}) async {
-    if (_updateCompleter.isCompleted) {
-      _updateCompleter = Completer();
+    if (_runCompleter.isCompleted) {
+      _runCompleter = Completer();
       _reset();
       _wrapper(force: force);
     }
@@ -108,12 +96,12 @@ abstract class DataUpdater<T> extends ChangeNotifier {
 
   @mustCallSuper
   Future<void> restart({bool force = false}) async {
-    if (_updateCompleter.isCompleted) {
-      _updateCompleter = Completer();
+    if (_runCompleter.isCompleted) {
+      _runCompleter = Completer();
     } else {
       restarting = true;
-      await _updateLock.acquire();
-      _updateLock.release();
+      await _runLock.acquire();
+      _runLock.release();
     }
     _reset();
     _wrapper(force: force);
@@ -122,7 +110,7 @@ abstract class DataUpdater<T> extends ChangeNotifier {
 
   @mustCallSuper
   Future<void> cancel() async {
-    if (!(_updateCompleter.isCompleted)) {
+    if (!(_runCompleter.isCompleted)) {
       canceling = true;
     }
     return finish;
@@ -133,6 +121,27 @@ class UpdaterException implements Exception {
   final String? message;
 
   UpdaterException({this.message});
+}
+
+typedef DataUpdate<T> = FutureOr<T> Function(T data);
+
+abstract class DataLock<T> {
+  @protected
+  final Mutex resourceLock = Mutex();
+
+  @protected
+  Future<T> read();
+
+  @protected
+  Future<void> write(T value);
+
+  @protected
+  Future<void> withData(DataUpdate<T> updater) async {
+    await resourceLock.acquire();
+    T updated = await updater(await read());
+    await write(updated);
+    resourceLock.release();
+  }
 }
 
 mixin HostableUpdater<T> on DataUpdater<T> {

@@ -1,4 +1,5 @@
 import 'package:e1547/client/client.dart';
+import 'package:e1547/denylist/data/controller.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
@@ -40,7 +41,7 @@ class PostController extends DataController<Post>
   late ValueNotifier<String> search;
   bool canSearch;
 
-  late final List<Listenable> _filterNotifiers = [settings.denylist];
+  late final List<Listenable> _filterNotifiers = [denylistController];
 
   PostController({
     PostProviderCallback provider,
@@ -60,7 +61,7 @@ class PostController extends DataController<Post>
   List<Post> filter(List<Post> items) {
     List<String> denylist = [];
     if (denying && denyMode != DenyListMode.unavailable) {
-      denylist = settings.denylist.value
+      denylist = denylistController.items
           .where((line) => !_allowedTags.contains(line))
           .toList();
     }

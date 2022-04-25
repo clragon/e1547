@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:collection/collection.dart';
 import 'package:e1547/client/client.dart';
+import 'package:e1547/denylist/data/controller.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
@@ -20,14 +21,15 @@ class FollowController extends DataUpdater<List<Follow>> with HostableUpdater {
     comparator: _compare,
   );
 
-  @override
-  Future<List<Follow>> read() async => items;
-
-  @override
-  Future<void> write(List<Follow> value) async =>
-      _source.value = List.from(value);
-
   List<Follow> get items => _source.value;
+
+  @override
+  @protected
+  Future<List<Follow>> read() async => List.from(items);
+
+  @override
+  @protected
+  Future<void> write(List<Follow> value) async => _source.value = value;
 
   final int refreshAmount = 5;
 
@@ -92,7 +94,7 @@ class FollowController extends DataUpdater<List<Follow>> with HostableUpdater {
   Follow? getFollow(String tag) =>
       items.singleWhereOrNull((follow) => follow.tags == tag);
 
-  bool followsTag(String tag) => getFollow(tag) != null;
+  bool follows(String tag) => getFollow(tag) != null;
 
   FollowStatus? status(Follow follow) => follow.resolve(client.host);
 
@@ -109,35 +111,34 @@ class FollowController extends DataUpdater<List<Follow>> with HostableUpdater {
   }
 
   Future<void> add(Follow follow) async =>
-      withData((items) => items..add(follow));
+      withData((data) => data..add(follow));
 
   Future<void> addTag(String tag) async =>
-      withData((items) => items..add(Follow.fromString(tag)));
+      withData((data) => data..add(Follow.fromString(tag)));
 
-  Future<void> remove(Follow follow) async =>
-      ((items) => items..remove(follow));
+  Future<void> remove(Follow follow) async => ((data) => data..remove(follow));
 
   Future<void> removeTag(String tag) async =>
-      withData((items) => items..removeWhere((element) => element.tags == tag));
+      withData((data) => data..removeWhere((element) => element.tags == tag));
 
   Future<void> replace(Follow old, Follow updated) async => withData(
-        (items) {
-          int index = items.indexOf(old);
+        (data) {
+          int index = data.indexOf(old);
           if (index == -1) {
-            index = items.indexWhere((element) => element.tags == old.tags);
+            index = data.indexWhere((element) => element.tags == old.tags);
           }
           if (index == -1) {
             throw UpdaterException(
                 message:
                     'FollowUpdater failed to update ${updated.tags} with: Could not find follow to be replaced');
           }
-          items[index] = _syncUnseen(updated);
-          return items;
+          data[index] = _syncUnseen(updated);
+          return data;
         },
       );
 
   Future<void> replaceAt(int index, Follow follow) async => withData(
-        (items) => items..[index] = _syncUnseen(follow),
+        (data) => data..[index] = _syncUnseen(follow),
       );
 
   Future<Follow> refresh(Follow follow, {bool force = false}) async {
@@ -145,9 +146,8 @@ class FollowController extends DataUpdater<List<Follow>> with HostableUpdater {
     List<Post> posts = await client.postsRaw(1,
         search: updated.tags, limit: refreshAmount, force: force);
 
-    List<String> denylist = settings.denylist.value;
-
-    posts.removeWhere((element) => element.isDeniedBy(denylist));
+    posts
+        .removeWhere((element) => element.isDeniedBy(denylistController.items));
     updated = updated.withUnseen(client.host, posts);
 
     if (!updated.tags.contains(' ') && updated.alias == null) {
@@ -165,11 +165,11 @@ class FollowController extends DataUpdater<List<Follow>> with HostableUpdater {
   }
 
   Future<void> edit(List<String> update) async => withData(
-        (items) {
+        (data) {
           List<Follow> edited = [];
           for (String tags in update) {
             Follow? match =
-                items.firstWhereOrNull((follow) => follow.tags == tags);
+                data.firstWhereOrNull((follow) => follow.tags == tags);
             if (match != null) {
               edited.add(match);
             } else {
@@ -181,16 +181,16 @@ class FollowController extends DataUpdater<List<Follow>> with HostableUpdater {
       );
 
   Future<void> markAllAsRead() async => withData(
-        (items) {
-          for (int i = 0; i < items.length; i++) {
-            Follow follow = items[i];
+        (data) {
+          for (int i = 0; i < data.length; i++) {
+            Follow follow = data[i];
             FollowStatus? status = this.status(follow);
             if (status != null) {
-              items[i] =
+              data[i] =
                   follow.withStatus(client.host, status.copyWith(unseen: 0));
             }
           }
-          return items;
+          return data;
         },
       );
 }

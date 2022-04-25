@@ -28,6 +28,7 @@ dependencies:
   # data
   dio: ^4.0.6
   share: ^2.0.1
+  async: ^2.9.0
   intl: ^0.17.0
   mutex: ^3.0.0
   crypto: ^3.0.1
@@ -55,9 +56,6 @@ dependencies:
     sdk: flutter
 
 dev_dependencies:
-  flutter_test:
-    sdk: flutter
-
   flutter_launcher_icons: ^0.9.0
   flutter_native_splash: ^2.0.2
 
