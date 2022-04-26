@@ -10,9 +10,9 @@ import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 enum UserPageSection {
-  Favorites,
-  Uploads,
-  Info,
+  favorites,
+  uploads,
+  info,
 }
 
 class UserPage extends StatefulWidget {
@@ -21,7 +21,7 @@ class UserPage extends StatefulWidget {
 
   const UserPage({
     required this.user,
-    this.initialPage = UserPageSection.Favorites,
+    this.initialPage = UserPageSection.favorites,
   });
 
   @override
@@ -41,13 +41,13 @@ class _UserPageState extends State<UserPage>
     super.initState();
     int index = 0;
     switch (widget.initialPage) {
-      case UserPageSection.Favorites:
+      case UserPageSection.favorites:
         index = 0;
         break;
-      case UserPageSection.Uploads:
+      case UserPageSection.uploads:
         index = 1;
         break;
-      case UserPageSection.Info:
+      case UserPageSection.info:
         index = 2;
         break;
     }
@@ -67,21 +67,21 @@ class _UserPageState extends State<UserPage>
   }
 
   late Map<Widget, Widget> tabs = {
-    Tab(text: 'Favorites'): PostGrid(
+    const Tab(text: 'Favorites'): PostGrid(
       controller: favoritePostController,
     ),
-    Tab(text: 'Uploads'): PostGrid(
+    const Tab(text: 'Uploads'): PostGrid(
       controller: uploadPostController,
     ),
-    Tab(text: 'About'): UserInfo(user: widget.user),
+    const Tab(text: 'About'): UserInfo(user: widget.user),
   };
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: NavigationDrawer(),
+      drawer: const NavigationDrawer(),
       endDrawer: ContextDrawer(
-        title: Text('Posts'),
+        title: const Text('Posts'),
         children: [
           DrawerMultiDenySwitch(
             controllers: [
@@ -98,13 +98,13 @@ class _UserPageState extends State<UserPage>
         ],
       ),
       body: NestedScrollView(
-        physics: BouncingScrollPhysics(),
+        physics: const BouncingScrollPhysics(),
         headerSliverBuilder: (context, innerBoxIsScrolled) => [
           SliverOverlapAbsorber(
             handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
             sliver: DefaultSliverAppBar(
               pinned: true,
-              leading: BackButton(),
+              leading: const BackButton(),
               expandedHeight: 250,
               flexibleSpaceBuilder: (context, extension) => FlexibleSpaceBar(
                 collapseMode: CollapseMode.pin,
@@ -131,7 +131,7 @@ class _UserPageState extends State<UserPage>
                       ),
                     ),
                     Padding(
-                      padding: EdgeInsets.only(top: 16, bottom: 32),
+                      padding: const EdgeInsets.only(top: 16, bottom: 32),
                       child: Text(
                         widget.user.name,
                         style: Theme.of(context).textTheme.headline6,
@@ -148,7 +148,7 @@ class _UserPageState extends State<UserPage>
               ),
               actions: [
                 PopupMenuButton<VoidCallback>(
-                  icon: Icon(Icons.more_vert),
+                  icon: const Icon(Icons.more_vert),
                   onSelected: (value) => value(),
                   itemBuilder: (context) => [
                     PopupMenuTile(
@@ -203,24 +203,24 @@ class UserInfo extends StatelessWidget {
   Widget build(BuildContext context) {
     Widget info(IconData icon, String tag, Widget value) {
       return IconTheme(
-        data: IconThemeData(
+        data: const IconThemeData(
           color: Colors.grey,
         ),
         child: Padding(
-          padding: EdgeInsets.symmetric(vertical: 6),
+          padding: const EdgeInsets.symmetric(vertical: 6),
           child: Row(
             children: [
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: Icon(icon),
               ),
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: Text(tag),
               ),
-              Spacer(),
+              const Spacer(),
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: value,
               ),
             ],
@@ -230,7 +230,7 @@ class UserInfo extends StatelessWidget {
     }
 
     return ListView(
-      physics: BouncingScrollPhysics(),
+      physics: const BouncingScrollPhysics(),
       padding:
           defaultActionListPadding.add(LimitedWidthLayout.of(context)!.padding),
       children: [
@@ -241,7 +241,7 @@ class UserInfo extends StatelessWidget {
             onLongPress: () {
               Clipboard.setData(ClipboardData(text: user.id.toString()));
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                duration: Duration(seconds: 1),
+                duration: const Duration(seconds: 1),
                 content: Text('Copied user id #${user.id}'),
               ));
             },

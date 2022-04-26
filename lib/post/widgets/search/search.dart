@@ -117,18 +117,17 @@ class _SearchPageState extends State<SearchPage> with ListenerCallbackMixin {
       controller: controller,
       appBar: DefaultAppBar(
         title: Text(getTitle()),
-        leading: BackButton(),
+        leading: const BackButton(),
         actions: [
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 8),
             child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 CrossFade(
                   showChild: !loadingInfo &&
                       Tagset.parse(controller.search.value).isNotEmpty,
                   child: IconButton(
-                    icon: Icon(Icons.info_outline),
+                    icon: const Icon(Icons.info_outline),
                     onPressed: pool != null
                         ? () => poolSheet(context, pool!)
                         : () => wikiSheet(
@@ -138,7 +137,7 @@ class _SearchPageState extends State<SearchPage> with ListenerCallbackMixin {
                             ),
                   ),
                 ),
-                ContextDrawerButton(),
+                const ContextDrawerButton(),
               ],
             ),
           ),

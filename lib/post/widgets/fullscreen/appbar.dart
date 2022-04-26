@@ -9,7 +9,7 @@ class PostFullscreenAppBar extends StatelessWidget with PreferredSizeWidget {
   PostFullscreenAppBar({required this.post, this.isEditing = false});
 
   @override
-  Size get preferredSize => Size.fromHeight(defaultAppBarHeight);
+  Size get preferredSize => const Size.fromHeight(defaultAppBarHeight);
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +20,7 @@ class PostFullscreenAppBar extends StatelessWidget with PreferredSizeWidget {
             ? null
             : [
                 PopupMenuButton<VoidCallback>(
-                  icon: ShadowIcon(
+                  icon: const ShadowIcon(
                     Icons.more_vert,
                     color: Colors.white,
                   ),

@@ -8,9 +8,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 enum HistoryFilter {
-  Posts,
-  Tags,
-  Pools,
+  posts,
+  tags,
+  pools,
 }
 
 class HistoryPage extends StatefulWidget {
@@ -34,12 +34,12 @@ class _HistoryPageState extends State<HistoryPage> {
     List<HistoryEntry> updated = [];
     for (final filter in filters) {
       switch (filter) {
-        case HistoryFilter.Posts:
+        case HistoryFilter.posts:
           updated.addAll(
-            entries.where((element) => element is PostHistoryEntry),
+            entries.whereType<PostHistoryEntry>(),
           );
           break;
-        case HistoryFilter.Tags:
+        case HistoryFilter.tags:
           updated.addAll(
             entries.where(
               (element) =>
@@ -48,7 +48,7 @@ class _HistoryPageState extends State<HistoryPage> {
             ),
           );
           break;
-        case HistoryFilter.Pools:
+        case HistoryFilter.pools:
           updated.addAll(
             entries.where(
               (element) =>
@@ -76,12 +76,12 @@ class _HistoryPageState extends State<HistoryPage> {
             child: Scaffold(
               appBar: HistorySelectionAppBar(
                 child: DefaultAppBar(
-                  leading: BackButton(),
+                  leading: const BackButton(),
                   title: Text(
                     'History' +
                         (search != null ? ' - ${dateOrName(search!)}' : ''),
                   ),
-                  actions: [
+                  actions: const [
                     ContextDrawerButton(),
                   ],
                 ),
@@ -92,7 +92,7 @@ class _HistoryPageState extends State<HistoryPage> {
                           .add(LimitedWidthLayout.of(context)!.padding),
                       elements: entries,
                       order: GroupedListOrder.DESC,
-                      physics: BouncingScrollPhysics(),
+                      physics: const BouncingScrollPhysics(),
                       controller: PrimaryScrollController.of(context),
                       groupBy: (element) =>
                           DateUtils.dateOnly(element.visitedAt),
@@ -103,12 +103,12 @@ class _HistoryPageState extends State<HistoryPage> {
                       itemBuilder: (context, element) =>
                           HistoryTile(entry: element),
                     )
-                  : IconMessage(
+                  : const IconMessage(
                       icon: Icon(Icons.history),
                       title: Text('Your history is empty'),
                     ),
               floatingActionButton: FloatingActionButton(
-                child: Icon(Icons.search),
+                child: const Icon(Icons.search),
                 onPressed: () async {
                   DateTime firstDate =
                       historyController.collection.entries.first.visitedAt;
@@ -144,7 +144,7 @@ class _HistoryPageState extends State<HistoryPage> {
                 },
               ),
               endDrawer: ContextDrawer(
-                title: Text('History'),
+                title: const Text('History'),
                 children: [
                   ListTile(
                     leading: Icon(
@@ -160,13 +160,13 @@ class _HistoryPageState extends State<HistoryPage> {
                       ),
                     ),
                   ),
-                  Divider(),
+                  const Divider(),
                   ListTile(
-                    leading: Icon(Icons.filter_alt),
-                    title: Text('Filter'),
+                    leading: const Icon(Icons.filter_alt),
+                    title: const Text('Filter'),
                     subtitle: Text('${entries.length} entries shown'),
                   ),
-                  Divider(),
+                  const Divider(),
                   for (final filter in HistoryFilter.values)
                     Padding(
                       padding: const EdgeInsets.only(left: 16),
@@ -187,7 +187,7 @@ class _HistoryPageState extends State<HistoryPage> {
                         },
                       ),
                     ),
-                  Divider(),
+                  const Divider(),
                   Center(
                     child: Text(
                       'of ${historyController.collection.entries.length} entries',

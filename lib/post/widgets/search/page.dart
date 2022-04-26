@@ -48,14 +48,14 @@ class _PostsPageState extends State<PostsPage> {
 
     Widget? endDrawer() {
       return ContextDrawer(
-        title: Text('Posts'),
+        title: const Text('Posts'),
         children: [
           CrossFade.builder(
             showChild: widget.drawerActions?.isNotEmpty ?? false,
             builder: (context) => Column(
               children: [
                 ...widget.drawerActions!,
-                Divider(),
+                const Divider(),
               ],
             ),
           ),
@@ -80,7 +80,7 @@ class _PostsPageState extends State<PostsPage> {
             child: widget.appBar,
             controller: widget.controller,
           ),
-          drawer: NavigationDrawer(),
+          drawer: const NavigationDrawer(),
           endDrawer: endDrawer(),
           floatingActionButton: floatingActionButton(),
           refresh: () =>

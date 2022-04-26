@@ -23,7 +23,7 @@ class _PoolsPageState extends State<PoolsPage> {
   @override
   Widget build(BuildContext context) {
     return RefreshableControllerPage(
-      appBar: DefaultAppBar(
+      appBar: const DefaultAppBar(
         title: Text('Pools'),
       ),
       floatingActionButton: SheetFloatingActionButton(
@@ -35,7 +35,7 @@ class _PoolsPageState extends State<PoolsPage> {
           submit: (value) => controller.search.value = value,
         ),
       ),
-      drawer: NavigationDrawer(),
+      drawer: const NavigationDrawer(),
       controller: controller,
       builder: (context) => PagedListView(
         padding: defaultListPadding,
@@ -50,8 +50,8 @@ class _PoolsPageState extends State<PoolsPage> {
               ),
             ),
           ),
-          onEmpty: Text('No pools'),
-          onError: Text('Failed to load pools'),
+          onEmpty: const Text('No pools'),
+          onError: const Text('Failed to load pools'),
         ),
       ),
     );

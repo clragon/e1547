@@ -10,7 +10,7 @@ class SelectionLayoutData<T> extends InheritedWidget {
   final List<T> items;
   final SelectionChanged<T> onChanged;
 
-  SelectionLayoutData({
+  const SelectionLayoutData({
     required Widget child,
     required this.selections,
     required this.onChanged,
@@ -89,6 +89,7 @@ class SelectionAppBar<T> extends StatelessWidget with AppBarBuilderWidget {
       BuildContext context, SelectionLayoutData<T> layoutData) actionBuilder;
   final Widget Function(
       BuildContext context, SelectionLayoutData<T> layoutData)? titleBuilder;
+  @override
   final PreferredSizeWidget child;
 
   const SelectionAppBar({
@@ -106,12 +107,12 @@ class SelectionAppBar<T> extends StatelessWidget with AppBarBuilderWidget {
         title: titleBuilder?.call(context, layoutData!) ??
             Text('${layoutData!.selections.length} items'),
         leading: IconButton(
-          icon: Icon(Icons.clear),
+          icon: const Icon(Icons.clear),
           onPressed: () => layoutData!.onChanged({}),
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.select_all),
+            icon: const Icon(Icons.select_all),
             onPressed: () => layoutData!.onChanged(layoutData.items.toSet()),
           ),
           ...actionBuilder(context, layoutData!),

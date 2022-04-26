@@ -8,8 +8,8 @@ Future<void> postDownloadingNotification(
 ) async {
   return loadingNotification<Post>(
     context: context,
-    icon: Icon(Icons.download),
-    timeout: Duration(milliseconds: 100),
+    icon: const Icon(Icons.download),
+    timeout: const Duration(milliseconds: 100),
     process: (Post item) => item.download(),
     items: items,
     onDone: (items) => items.length == 1
@@ -32,9 +32,9 @@ Future<void> postFavoritingNotification(
 ) {
   return loadingNotification<Post>(
     context: context,
-    icon: Icon(Icons.favorite),
+    icon: const Icon(Icons.favorite),
     items: items,
-    timeout: Duration(milliseconds: 300),
+    timeout: const Duration(milliseconds: 300),
     process: isLiked
         ? (post) async {
             if (post.isFavorited) {

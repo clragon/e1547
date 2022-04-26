@@ -26,7 +26,7 @@ class ListMenuTile extends StatelessWidget {
       children: [
         Icon(icon, size: 20),
         Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
           child: Text(title),
         ),
       ],

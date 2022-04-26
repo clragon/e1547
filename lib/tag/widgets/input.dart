@@ -78,7 +78,6 @@ class _TagInputState extends State<TagInput> {
       textFieldConfiguration: TextFieldConfiguration(
         controller: controller,
         autofocus: true,
-        maxLines: 1,
         inputFormatters: [
           LowercaseTextInputFormatter(),
           if (!widget.multiInput) FilteringTextInputFormatter.deny(' '),
@@ -109,33 +108,33 @@ class _TagInputState extends State<TagInput> {
           Container(
             color: getCategoryColor(categories.entries
                 .firstWhere((e) => e.value == itemData.category,
-                    orElse: () => MapEntry('', 0))
+                    orElse: () => const MapEntry('', 0))
                 .key),
             height: 54,
             width: 5,
           ),
           Padding(
-            padding: EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
             child: Text(
               itemData.name,
-              style: TextStyle(fontSize: 16),
+              style: const TextStyle(fontSize: 16),
             ),
           ),
-          Spacer(),
+          const Spacer(),
           Padding(
-            padding: EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
             child: Text(
               NumberFormat.compact().format(itemData.postCount),
-              style: TextStyle(fontSize: 16),
+              style: const TextStyle(fontSize: 16),
             ),
           ),
         ],
       ),
-      loadingBuilder: (context) => SizedBox(),
+      loadingBuilder: (context) => const SizedBox(),
       noItemsFoundBuilder: (context) => ListTile(
         title: Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
+          children: const [
             SizedCircularProgressIndicator(size: 24),
           ],
         ),
@@ -226,7 +225,7 @@ class _AdvancedTagInputState extends State<AdvancedTagInput> {
       };
 
       return PopupMenuButton<String>(
-        icon: Icon(Icons.filter_list),
+        icon: const Icon(Icons.filter_list),
         tooltip: 'Filter by',
         itemBuilder: (context) => popMenuFromMap(filterTypes),
         onSelected: (selection) {
@@ -275,7 +274,7 @@ class _AdvancedTagInputState extends State<AdvancedTagInput> {
       };
 
       return PopupMenuButton<String>(
-        icon: Icon(Icons.sort),
+        icon: const Icon(Icons.sort),
         tooltip: 'Sort by',
         itemBuilder: (context) => popMenuFromMap(orders),
         onSelected: (String selection) {
@@ -302,7 +301,7 @@ class _AdvancedTagInputState extends State<AdvancedTagInput> {
       };
 
       return PopupMenuButton<String>(
-        icon: Icon(Icons.playlist_add_check),
+        icon: const Icon(Icons.playlist_add_check),
         tooltip: 'Conditions',
         itemBuilder: (context) => popMenuFromMap(status),
         onSelected: (selection) async {
@@ -335,10 +334,12 @@ class _AdvancedTagInputState extends State<AdvancedTagInput> {
             if (key == null) {
               return tags;
             }
+            // ignore: iterable_contains_unrelated_type
             if (key == 'status' && tags.contains('status')) {
               tags.remove('status');
               return tags;
             }
+            // ignore: iterable_contains_unrelated_type
             if (key == 'inpool' && tags.contains('inpool')) {
               tags.remove('inpool');
               return tags;
@@ -360,7 +361,7 @@ class _AdvancedTagInputState extends State<AdvancedTagInput> {
           textInputAction: widget.textInputAction,
         ),
         Padding(
-          padding: EdgeInsets.symmetric(vertical: 10),
+          padding: const EdgeInsets.symmetric(vertical: 10),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [

@@ -10,13 +10,13 @@ class PagedChildBuilderRetryButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (pagingController == null) {
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     }
     return Padding(
-      padding: EdgeInsets.all(4),
+      padding: const EdgeInsets.all(4),
       child: TextButton(
         onPressed: pagingController!.retryLastFailedRequest,
-        child: Text('Try again'),
+        child: const Text('Try again'),
       ),
     );
   }
@@ -33,12 +33,12 @@ PagedChildBuilderDelegate<T> defaultPagedChildBuilderDelegate<T>({
     firstPageProgressIndicatorBuilder: (context) => Material(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: [
+        children: const [
           CircularProgressIndicator(),
         ],
       ),
     ),
-    newPageProgressIndicatorBuilder: (context) => Material(
+    newPageProgressIndicatorBuilder: (context) => const Material(
       child: Center(
         child: Padding(
           padding: EdgeInsets.all(16),
@@ -47,18 +47,18 @@ PagedChildBuilderDelegate<T> defaultPagedChildBuilderDelegate<T>({
       ),
     ),
     noItemsFoundIndicatorBuilder: (context) => IconMessage(
-      icon: Icon(Icons.clear),
-      title: onEmpty ?? Text('Nothing to see here'),
+      icon: const Icon(Icons.clear),
+      title: onEmpty ?? const Text('Nothing to see here'),
     ),
     firstPageErrorIndicatorBuilder: (context) => IconMessage(
-      icon: Icon(Icons.warning_amber_outlined),
-      title: onError ?? Text('Failed to load'),
+      icon: const Icon(Icons.warning_amber_outlined),
+      title: onError ?? const Text('Failed to load'),
       action: PagedChildBuilderRetryButton(pagingController),
     ),
     newPageErrorIndicatorBuilder: (context) => IconMessage(
       direction: Axis.horizontal,
-      icon: Icon(Icons.warning_amber_outlined),
-      title: onError ?? Text('Failed to load'),
+      icon: const Icon(Icons.warning_amber_outlined),
+      title: onError ?? const Text('Failed to load'),
       action: PagedChildBuilderRetryButton(pagingController),
     ),
   );

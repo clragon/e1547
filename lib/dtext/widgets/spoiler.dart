@@ -21,7 +21,7 @@ class _SpoilerWrapState extends State<SpoilerWrap> {
           InkWell(
             onTap: () => setState(() => visible = !visible),
             child: Padding(
-              padding: EdgeInsets.all(8),
+              padding: const EdgeInsets.all(8),
               child: Row(
                 children: [
                   Expanded(
@@ -47,7 +47,7 @@ class _SpoilerWrapState extends State<SpoilerWrap> {
                       color: Colors.black,
                       borderRadius: BorderRadius.circular(4),
                     ),
-                    child: Center(
+                    child: const Center(
                       child: Text(
                         'SPOILER',
                         style: TextStyle(

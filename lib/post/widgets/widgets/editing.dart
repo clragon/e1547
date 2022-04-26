@@ -3,7 +3,7 @@ import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 
 class PostEditorData extends InheritedNotifier<PostEditingController> {
-  PostEditorData(
+  const PostEditorData(
       {required Widget child, required PostEditingController controller})
       : super(child: child, notifier: controller);
 }

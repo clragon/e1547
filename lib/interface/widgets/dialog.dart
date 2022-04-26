@@ -73,7 +73,7 @@ class _LoadingDialogState extends State<LoadingDialog> {
                 children: [
                   CrossFade(
                     showChild: controller.isLoading,
-                    child: Padding(
+                    child: const Padding(
                       padding: EdgeInsets.only(right: 8),
                       child: SizedCircularProgressIndicator(size: 16),
                     ),
@@ -87,7 +87,7 @@ class _LoadingDialogState extends State<LoadingDialog> {
             CrossFade.builder(
               showChild: controller.isError,
               builder: (context) => Padding(
-                padding: EdgeInsets.symmetric(vertical: 8),
+                padding: const EdgeInsets.symmetric(vertical: 8),
                 child: DefaultTextStyle(
                   style: Theme.of(context).textTheme.bodyText2!.copyWith(
                         color: Theme.of(context).errorColor,
@@ -100,7 +100,7 @@ class _LoadingDialogState extends State<LoadingDialog> {
                         ),
                     child: Row(
                       children: [
-                        Padding(
+                        const Padding(
                           padding: EdgeInsets.symmetric(horizontal: 4),
                           child: Icon(Icons.warning_amber_outlined),
                         ),
@@ -115,11 +115,11 @@ class _LoadingDialogState extends State<LoadingDialog> {
         ),
         actions: [
           TextButton(
-            child: Text('CANCEL'),
+            child: const Text('CANCEL'),
             onPressed: Navigator.of(context).maybePop,
           ),
           TextButton(
-            child: Text('OK'),
+            child: const Text('OK'),
             onPressed: controller.isLoading ? null : controller.action,
           ),
         ],

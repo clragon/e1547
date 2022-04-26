@@ -20,7 +20,7 @@ abstract class DataUpdater<T> extends ChangeNotifier with DataLock<T> {
 
   Exception? error;
 
-  late List<Listenable> _refreshListeners = getRefreshListeners();
+  late final List<Listenable> _refreshListeners = getRefreshListeners();
 
   DataUpdater() {
     _refreshListeners.forEach((e) => e.addListener(restart));

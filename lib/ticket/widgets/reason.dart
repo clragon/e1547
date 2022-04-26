@@ -15,7 +15,7 @@ class ReportFormReason extends StatelessWidget {
       child: TextFormField(
         enabled: !isLoading,
         controller: controller,
-        decoration: InputDecoration(
+        decoration: const InputDecoration(
           labelText: 'Reason',
           border: OutlineInputBorder(),
         ),
@@ -70,11 +70,11 @@ class _ReasonReportScreenState extends State<ReasonReportScreen> {
         appBar: DefaultAppBar(
           elevation: 0,
           title: widget.title,
-          leading: CloseButton(),
+          leading: const CloseButton(),
         ),
         floatingActionButton: Builder(
           builder: (context) => FloatingActionButton(
-            child: Icon(Icons.check),
+            child: const Icon(Icons.check),
             onPressed: isLoading
                 ? null
                 : () async {
@@ -89,14 +89,14 @@ class _ReasonReportScreenState extends State<ReasonReportScreen> {
                       );
                       if (await widget.onReport(reasonController.text.trim())) {
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          duration: Duration(seconds: 1),
+                          duration: const Duration(seconds: 1),
                           content: Text(widget.onSuccess ?? 'Reported item'),
                           behavior: SnackBarBehavior.floating,
                         ));
                         Navigator.maybePop(context);
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          duration: Duration(seconds: 1),
+                          duration: const Duration(seconds: 1),
                           content:
                               Text(widget.onFailure ?? 'Failed to report item'),
                         ));
@@ -110,12 +110,12 @@ class _ReasonReportScreenState extends State<ReasonReportScreen> {
         ),
         body: LayoutBuilder(
           builder: (context, constraints) => ListView(
-            physics: BouncingScrollPhysics(),
+            physics: const BouncingScrollPhysics(),
             controller: scrollController,
             padding: defaultFormScreenPadding,
             children: [
               ConstrainedBox(
-                constraints: BoxConstraints(
+                constraints: const BoxConstraints(
                   minHeight: defaultFormTargetHeight,
                 ),
                 child: Column(
@@ -128,7 +128,7 @@ class _ReasonReportScreenState extends State<ReasonReportScreen> {
                   ],
                 ),
               ),
-              ReportFormHeader(
+              const ReportFormHeader(
                 title: Text('Report'),
               ),
               ReportFormReason(

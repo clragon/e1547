@@ -61,27 +61,27 @@ class _FavPageState extends State<FavPage> with ListenerCallbackMixin {
         isError: controller == null,
         onError: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.all(16),
+            const Padding(
+              padding: EdgeInsets.all(16),
               child: Text('You are not logged in'),
             ),
             TextButton(
               onPressed: () => Navigator.of(context).pushNamed('/login'),
-              child: Text('LOGIN'),
+              child: const Text('LOGIN'),
             ),
           ],
         ),
-        onErrorIcon: Icon(Icons.login),
+        onErrorIcon: const Icon(Icons.login),
         loadingBuilder: (context, child) => Scaffold(
-          appBar: DefaultAppBar(title: Text('Favorites')),
+          appBar: const DefaultAppBar(title: Text('Favorites')),
           body: Center(child: child),
-          drawer: NavigationDrawer(),
+          drawer: const NavigationDrawer(),
         ),
         builder: (context) => ValueListenableBuilder<String>(
           valueListenable: controller!.search,
           builder: (context, value, child) => PostsPage(
             controller: controller!,
-            appBar: DefaultAppBar(
+            appBar: const DefaultAppBar(
               title: Text('Favorites'),
               actions: [ContextDrawerButton()],
             ),
@@ -89,7 +89,7 @@ class _FavPageState extends State<FavPage> with ListenerCallbackMixin {
               if (favRegex(client.credentials!.username)
                   .hasMatch(controller!.search.value))
                 SwitchListTile(
-                  secondary: Icon(Icons.sort),
+                  secondary: const Icon(Icons.sort),
                   title: Text(
                     'Favorite order',
                     style: Theme.of(context).textTheme.subtitle1,

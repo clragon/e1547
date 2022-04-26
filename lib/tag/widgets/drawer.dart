@@ -82,26 +82,25 @@ class DrawerCounterBody extends StatelessWidget {
               iconColor: Theme.of(context).iconTheme.color,
             ),
             child: ExpandablePanel(
-              header: ListTile(
+              header: const ListTile(
                 title: Text('Tags'),
                 leading: Icon(Icons.tag),
               ),
-              collapsed: SizedBox.shrink(),
+              collapsed: const SizedBox.shrink(),
               expanded: Column(
                 children: [
-                  Divider(),
+                  const Divider(),
                   CrossFade.builder(
                     showChild: children != null,
                     builder: (context) => CrossFade(
                       showChild: children!.isNotEmpty,
                       child: Padding(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 8),
                         child: Row(
                           children: [
                             Expanded(
                               child: Wrap(
-                                direction: Axis.horizontal,
                                 children: children,
                               ),
                             )
@@ -118,8 +117,7 @@ class DrawerCounterBody extends StatelessWidget {
                     ),
                     secondChild: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
+                      children: const [
                         Padding(
                           padding: EdgeInsets.all(8),
                           child: SizedCircularProgressIndicator(size: 24),

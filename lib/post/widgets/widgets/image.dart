@@ -33,9 +33,8 @@ class PostImageWidget extends StatelessWidget {
             ProgressIndicatorBuilder? progressIndicatorBuilder,
             bool stacked = false,
           }) {
-            Duration fades = stacked
-                ? Duration(milliseconds: 0)
-                : Duration(milliseconds: 500);
+            Duration fades =
+                stacked ? const Duration() : const Duration(milliseconds: 500);
 
             Widget progressIndicator(context, url, progress) {
               return Center(
@@ -54,7 +53,7 @@ class PostImageWidget extends StatelessWidget {
               imageUrl: url,
               errorWidget: stacked
                   ? defaultErrorBuilder
-                  : (context, url, error) => SizedBox.shrink(),
+                  : (context, url, error) => const SizedBox.shrink(),
               progressIndicatorBuilder: showProgress || stacked
                   ? progressIndicatorBuilder ?? progressIndicator
                   : null,
@@ -125,4 +124,4 @@ class PostImageWidget extends StatelessWidget {
 }
 
 Widget defaultErrorBuilder(BuildContext context, String url, dynamic error) =>
-    Center(child: Icon(Icons.warning_amber_outlined));
+    const Center(child: Icon(Icons.warning_amber_outlined));

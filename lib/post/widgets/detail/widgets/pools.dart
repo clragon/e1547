@@ -15,13 +15,13 @@ class PoolDisplay extends StatelessWidget {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
+          const Padding(
             padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
             child: Text('Pools', style: TextStyle(fontSize: 16)),
           ),
           ...post.pools.map(
             (id) => LoadingTile(
-              leading: Icon(Icons.group),
+              leading: const Icon(Icons.group),
               title: Text(id.toString()),
               onTap: () async {
                 Pool pool = await client.pool(id);
@@ -31,18 +31,18 @@ class PoolDisplay extends StatelessWidget {
                   ));
                 } on DioError {
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    duration: Duration(seconds: 1),
+                    duration: const Duration(seconds: 1),
                     content: Text('Coulnd\'t retrieve Pool #${pool.id}'),
                   ));
                 }
               },
             ),
           ),
-          Divider(),
+          const Divider(),
         ],
       );
     } else {
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     }
   }
 }

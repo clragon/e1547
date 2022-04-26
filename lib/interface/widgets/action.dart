@@ -76,7 +76,6 @@ class ControlledTextField extends StatelessWidget {
       builder: (context, controller, submit) => TextField(
         controller: controller,
         autofocus: true,
-        maxLines: 1,
         keyboardType: TextInputType.text,
         onSubmitted: submit,
         decoration: InputDecoration(labelText: labelText),

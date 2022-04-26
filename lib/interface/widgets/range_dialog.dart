@@ -54,12 +54,12 @@ class _RangeDialogState extends State<RangeDialog> with ListenerCallbackMixin {
       FocusScope.of(context).requestFocus(FocusNode());
 
       return Padding(
-        padding: EdgeInsets.only(bottom: 20),
+        padding: const EdgeInsets.only(bottom: 20),
         child: TextField(
           keyboardType: TextInputType.number,
           style: Theme.of(context).textTheme.headline3,
           textAlign: TextAlign.center,
-          decoration: InputDecoration(border: InputBorder.none),
+          decoration: const InputDecoration(border: InputBorder.none),
           controller: controller,
           onSubmitted: submit,
           inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -91,11 +91,11 @@ class _RangeDialogState extends State<RangeDialog> with ListenerCallbackMixin {
       ),
       actions: [
         TextButton(
-          child: Text('CANCEL'),
+          child: const Text('CANCEL'),
           onPressed: Navigator.of(context).maybePop,
         ),
         TextButton(
-          child: Text('OK'),
+          child: const Text('OK'),
           onPressed: () => submit(controller.text),
         ),
       ],

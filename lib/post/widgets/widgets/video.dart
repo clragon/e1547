@@ -58,20 +58,20 @@ class _VideoButtonState extends State<VideoButton>
         return FrameChild(
           shown: shown,
           child: Material(
-            shape: CircleBorder(),
+            shape: const CircleBorder(),
             color: Colors.transparent,
             elevation: 8,
             child: Container(
               clipBehavior: Clip.antiAlias,
-              decoration: BoxDecoration(shape: BoxShape.circle),
+              decoration: const BoxDecoration(shape: BoxShape.circle),
               child: Material(
                 type: MaterialType.transparency,
-                shape: CircleBorder(),
+                shape: const CircleBorder(),
                 child: IconButton(
                   iconSize: widget.size,
                   icon: Center(
                     child: Replacer(
-                      duration: Duration(milliseconds: 100),
+                      duration: const Duration(milliseconds: 100),
                       showChild:
                           !widget.videoController.value.isPlaying || !loading,
                       child: AnimatedBuilder(
@@ -87,7 +87,7 @@ class _VideoButtonState extends State<VideoButton>
                         child: SizedBox(
                           height: widget.size * 0.7,
                           width: widget.size * 0.7,
-                          child: Padding(
+                          child: const Padding(
                             padding: EdgeInsets.all(8),
                             child: CircularProgressIndicator(),
                           ),
@@ -102,7 +102,7 @@ class _VideoButtonState extends State<VideoButton>
                     } else {
                       widget.videoController.play();
                       frameController?.hideFrame(
-                          duration: Duration(milliseconds: 500));
+                          duration: const Duration(milliseconds: 500));
                     }
                   },
                 ),
@@ -132,7 +132,7 @@ class VideoBar extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -140,7 +140,7 @@ class VideoBar extends StatelessWidget {
                       VideoGlobalVolumeControl(
                         videoController: videoController,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 4,
                       ),
                       Text(
@@ -150,7 +150,6 @@ class VideoBar extends StatelessWidget {
                       ),
                       Flexible(
                           child: Slider(
-                        min: 0,
                         max: videoController.value.duration.inMilliseconds
                             .toDouble(),
                         value: videoController.value.position.inMilliseconds
@@ -169,8 +168,8 @@ class VideoBar extends StatelessWidget {
                         },
                         onChangeEnd: (value) {
                           if (videoController.value.isPlaying) {
-                            FrameController.of(context)
-                                ?.hideFrame(duration: Duration(seconds: 2));
+                            FrameController.of(context)?.hideFrame(
+                                duration: const Duration(seconds: 2));
                           }
                         },
                       )),
@@ -179,13 +178,13 @@ class VideoBar extends StatelessWidget {
                             .toString()
                             .substring(2, 7),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 4,
                       ),
                       InkWell(
                         onTap: Navigator.of(context).maybePop,
                         child: Padding(
-                          padding: EdgeInsets.all(4),
+                          padding: const EdgeInsets.all(4),
                           child: Icon(
                             Icons.fullscreen_exit,
                             size: 24,
@@ -216,8 +215,8 @@ class VideoGesture extends StatefulWidget {
 
 class _VideoGestureState extends State<VideoGesture>
     with SingleTickerProviderStateMixin {
-  late AnimationController animationController =
-      AnimationController(vsync: this, duration: Duration(milliseconds: 400));
+  late AnimationController animationController = AnimationController(
+      vsync: this, duration: const Duration(milliseconds: 400));
   late final Animation<double> fadeAnimation = CurvedAnimation(
     parent: animationController,
     curve: Curves.easeInOut,
@@ -236,7 +235,8 @@ class _VideoGestureState extends State<VideoGesture>
           // final position is never reported, so we subtract 1 ms.
           // see: https://github.com/flutter/flutter/issues/90114
           bool boundOnEnd = current ==
-              widget.videoController.value.duration - Duration(milliseconds: 1);
+              widget.videoController.value.duration -
+                  const Duration(milliseconds: 1);
           if ((!widget.forward && boundOnZero) ||
               (widget.forward && boundOnEnd)) {
             return;
@@ -244,9 +244,9 @@ class _VideoGestureState extends State<VideoGesture>
 
           Duration target = current;
           if (widget.forward) {
-            target += Duration(seconds: 10);
+            target += const Duration(seconds: 10);
           } else {
-            target -= Duration(seconds: 10);
+            target -= const Duration(seconds: 10);
           }
           setState(() {
             combo++;
@@ -254,8 +254,8 @@ class _VideoGestureState extends State<VideoGesture>
 
           widget.videoController.seekTo(target);
           comboReset?.cancel();
-          comboReset = Timer(
-              Duration(milliseconds: 900), () => setState(() => combo = 0));
+          comboReset = Timer(const Duration(milliseconds: 900),
+              () => setState(() => combo = 0));
           await animationController.forward();
           await animationController.reverse();
         }
@@ -270,7 +270,7 @@ class _VideoGestureState extends State<VideoGesture>
             ),
             title: Text(
               '${10 * combo} seconds',
-              style: TextStyle(
+              style: const TextStyle(
                 color: Colors.white,
               ),
             ),
@@ -333,7 +333,6 @@ class _VideoGesturesState extends State<VideoGestures> {
           widget.child,
           Positioned.fill(
             child: Row(
-              mainAxisSize: MainAxisSize.max,
               children: [
                 Expanded(
                   child: VideoGesture(
@@ -451,7 +450,7 @@ class _VideoVolumeControlState extends State<VideoVolumeControl> {
           child: InkWell(
             onTap: () => widget.videoController.setVolume(muted ? 1 : 0),
             child: Padding(
-              padding: EdgeInsets.all(4),
+              padding: const EdgeInsets.all(4),
               child: Icon(
                 muted ? Icons.volume_off : Icons.volume_up,
                 size: 24,
@@ -488,7 +487,7 @@ class _VideoGlobalVolumeControlState extends State<VideoGlobalVolumeControl> {
         return InkWell(
           onTap: () => setState(() => Post.muteVideos = !muted),
           child: Padding(
-            padding: EdgeInsets.all(4),
+            padding: const EdgeInsets.all(4),
             child: Icon(
               muted ? Icons.volume_off : Icons.volume_up,
               size: 24,

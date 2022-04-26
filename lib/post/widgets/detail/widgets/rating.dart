@@ -36,7 +36,7 @@ class RatingDisplay extends StatelessWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
+            const Padding(
               padding: EdgeInsets.symmetric(
                 horizontal: 4,
                 vertical: 2,
@@ -62,7 +62,7 @@ class RatingDisplay extends StatelessWidget {
                       )
                   : null,
             ),
-            Divider(),
+            const Divider(),
           ],
         );
       },
@@ -78,7 +78,7 @@ class RatingDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SimpleDialog(
-      title: Text('Rating'),
+      title: const Text('Rating'),
       children: ratingTexts.entries
           .map(
             (entry) => ListTile(

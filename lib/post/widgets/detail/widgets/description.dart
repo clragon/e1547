@@ -32,12 +32,12 @@ class DescriptionDisplay extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
+                    const Text(
                       'Description',
                       style: TextStyle(fontSize: 16),
                     ),
                     IconButton(
-                      icon: Icon(Icons.edit),
+                      icon: const Icon(Icons.edit),
                       onPressed: editingController!.canEdit
                           ? () => Navigator.of(context).push(
                                 MaterialPageRoute(
@@ -65,7 +65,7 @@ class DescriptionDisplay extends StatelessWidget {
                   Expanded(
                     child: Card(
                       child: Padding(
-                        padding: EdgeInsets.all(16),
+                        padding: const EdgeInsets.all(16),
                         child: description.isNotEmpty
                             ? DText(description)
                             : Text(
@@ -80,7 +80,7 @@ class DescriptionDisplay extends StatelessWidget {
                   )
                 ],
               ),
-              Divider(),
+              const Divider(),
             ],
           ),
         );

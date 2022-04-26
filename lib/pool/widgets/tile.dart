@@ -16,13 +16,12 @@ class PoolTile extends StatelessWidget {
   Widget build(BuildContext context) {
     Widget title() {
       return Padding(
-        padding: EdgeInsets.symmetric(vertical: 12),
+        padding: const EdgeInsets.symmetric(vertical: 12),
         child: Row(
-          mainAxisSize: MainAxisSize.max,
           children: [
             Expanded(
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Text(
                   tagToTitle(pool.name),
                   overflow: TextOverflow.ellipsis,
@@ -32,7 +31,7 @@ class PoolTile extends StatelessWidget {
               ),
             ),
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 12),
               child: Text(
                 pool.postIds.length.toString(),
                 style: Theme.of(context).textTheme.subtitle1,
@@ -53,10 +52,9 @@ class PoolTile extends StatelessWidget {
             title(),
             if (pool.description.isNotEmpty)
               Padding(
-                padding: EdgeInsets.only(
+                padding: const EdgeInsets.only(
                   left: 16,
                   right: 16,
-                  top: 0,
                   bottom: 8,
                 ),
                 child: IgnorePointer(

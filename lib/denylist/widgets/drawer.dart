@@ -101,7 +101,6 @@ class DrawerDenyTile extends StatelessWidget {
         children: [
           Expanded(
             child: Wrap(
-              direction: Axis.horizontal,
               children: entry.key
                   .split(' ')
                   .where((tag) => tag.isNotEmpty)
@@ -112,10 +111,10 @@ class DrawerDenyTile extends StatelessWidget {
         ],
       ),
       secondary: ConstrainedBox(
-        constraints: BoxConstraints(minWidth: 24),
+        constraints: const BoxConstraints(minWidth: 24),
         child: TweenAnimationBuilder(
           tween: IntTween(begin: 0, end: entry.value.length),
-          duration: Duration(milliseconds: 200),
+          duration: const Duration(milliseconds: 200),
           builder: (context, value, child) => Text(
             value.toString(),
             style: Theme.of(context).textTheme.headline6,
@@ -162,7 +161,7 @@ class DrawerDenySwitchBody extends StatelessWidget {
     return Column(
       children: [
         SwitchListTile(
-          title: Text('Blacklist'),
+          title: const Text('Blacklist'),
           subtitle: denying && count > 0
               ? TweenAnimationBuilder(
                   tween: IntTween(begin: 0, end: count),
@@ -171,7 +170,7 @@ class DrawerDenySwitchBody extends StatelessWidget {
                       Text('blocked $value posts'),
                 )
               : null,
-          secondary: Icon(Icons.block),
+          secondary: const Icon(Icons.block),
           value: denying,
           onChanged: updateDenying,
         ),
@@ -179,7 +178,7 @@ class DrawerDenySwitchBody extends StatelessWidget {
           showChild: denied.isNotEmpty || allowedList.isNotEmpty,
           child: Column(
             children: [
-              Divider(),
+              const Divider(),
               ...entries.map(
                 (entry) => DrawerDenyTile(
                   entry: entry,
@@ -199,7 +198,7 @@ class DrawerDenySwitchBody extends StatelessWidget {
           ),
         ),
         Padding(
-          padding: EdgeInsets.only(top: 8),
+          padding: const EdgeInsets.only(top: 8),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -230,7 +229,7 @@ class DrawerDenySwitchBody extends StatelessWidget {
             ],
           ),
         ),
-        Divider(),
+        const Divider(),
       ],
     );
   }

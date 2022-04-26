@@ -32,7 +32,7 @@ class _HomePageState extends State<HomePage> with ListenerCallbackMixin {
   @override
   Widget build(BuildContext context) {
     return PostsPage(
-      appBar: DefaultAppBar(
+      appBar: const DefaultAppBar(
         title: Text('Home'),
         actions: [SizedBox.shrink()],
       ),

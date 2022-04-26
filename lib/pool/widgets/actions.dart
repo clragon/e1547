@@ -37,8 +37,8 @@ class PoolFollowButtonState extends State<PoolFollowButton> {
               },
               icon: CrossFade(
                 showChild: following,
-                child: Icon(Icons.turned_in),
-                secondChild: Icon(Icons.turned_in_not),
+                child: const Icon(Icons.turned_in),
+                secondChild: const Icon(Icons.turned_in_not),
               ),
               tooltip: following ? 'unfollow tag' : 'follow tag',
             ),

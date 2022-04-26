@@ -16,15 +16,13 @@ class DenylistTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Row(
             children: [
               Expanded(
                 child: Wrap(
-                  direction: Axis.horizontal,
                   children: Tagset.parse(tag)
                       .map((tag) => DenyListTagCard(tag.toString()))
                       .toList(),
@@ -32,7 +30,6 @@ class DenylistTile extends StatelessWidget {
               ),
               Column(
                 mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   PopupMenuButton<VoidCallback?>(
                     icon: Icon(
@@ -57,7 +54,7 @@ class DenylistTile extends StatelessWidget {
               ),
             ],
           ),
-          Divider()
+          const Divider()
         ],
       ),
     );

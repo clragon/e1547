@@ -32,7 +32,7 @@ class PoolInfo extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('id'),
+              const Text('id'),
               InkWell(
                 child: Text(
                   '#${pool.id}',
@@ -43,7 +43,7 @@ class PoolInfo extends StatelessWidget {
                   ));
                   await Navigator.of(context).maybePop();
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    duration: Duration(seconds: 1),
+                    duration: const Duration(seconds: 1),
                     content: Text('Copied pool id #${pool.id}'),
                   ));
                 },

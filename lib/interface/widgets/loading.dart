@@ -47,10 +47,9 @@ class IconMessage extends StatelessWidget {
       child: Flex(
         direction: direction,
         mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Padding(
-            padding: EdgeInsets.all(20),
+            padding: const EdgeInsets.all(20),
             child: Theme(
               data: Theme.of(context).copyWith(
                 iconTheme: Theme.of(context).iconTheme.copyWith(size: 32),
@@ -117,16 +116,16 @@ class PageLoader extends StatelessWidget {
     Widget child() {
       switch (state) {
         case PageLoaderState.loading:
-          return Center(child: CircularProgressIndicator());
+          return const Center(child: CircularProgressIndicator());
         case PageLoaderState.error:
           return IconMessage(
-            icon: onErrorIcon ?? Icon(Icons.warning_amber_outlined),
-            title: onError ?? Text('Failed to load'),
+            icon: onErrorIcon ?? const Icon(Icons.warning_amber_outlined),
+            title: onError ?? const Text('Failed to load'),
           );
         case PageLoaderState.empty:
           return IconMessage(
-            icon: onEmptyIcon ?? Icon(Icons.clear),
-            title: onEmpty ?? Text('Nothing to see here'),
+            icon: onEmptyIcon ?? const Icon(Icons.clear),
+            title: onEmpty ?? const Text('Nothing to see here'),
           );
         case PageLoaderState.child:
           return builder!(context);
@@ -176,7 +175,7 @@ class FuturePageLoader<T> extends StatelessWidget {
         loadingBuilder: (context, child) => Scaffold(
           appBar: title != null
               ? DefaultAppBar(
-                  leading: CloseButton(),
+                  leading: const CloseButton(),
                   title: title,
                 )
               : null,
@@ -219,8 +218,8 @@ class _LoadingTileState extends State<LoadingTile> {
       leading: widget.leading,
       title: widget.title,
       trailing: CrossFade(
-        child: SizedCircularProgressIndicator(size: 24),
-        secondChild: widget.trailing ?? Icon(Icons.arrow_right),
+        child: const SizedCircularProgressIndicator(size: 24),
+        secondChild: widget.trailing ?? const Icon(Icons.arrow_right),
         showChild: isLoading,
       ),
       onTap: isLoading

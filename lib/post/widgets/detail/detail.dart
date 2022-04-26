@@ -104,7 +104,7 @@ class _PostDetailState extends State<PostDetail>
         controller.setLoading(false);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            duration: Duration(seconds: 1),
+            duration: const Duration(seconds: 1),
             content: Text('failed to edit Post #${widget.post.id}'),
             behavior: SnackBarBehavior.floating,
           ),
@@ -143,7 +143,7 @@ class _PostDetailState extends State<PostDetail>
         child: editingController?.editing ?? false
             ? Icon(editingController!.isShown ? Icons.add : Icons.check)
             : Padding(
-                padding: EdgeInsets.only(left: 2),
+                padding: const EdgeInsets.only(left: 2),
                 child: FavoriteButton(
                   post: widget.post,
                   controller: widget.controller!,
@@ -189,14 +189,14 @@ class _PostDetailState extends State<PostDetail>
             removeTop: true,
             child: LayoutBuilder(
               builder: (context, constraints) => ListView(
-                physics: BouncingScrollPhysics(),
+                physics: const BouncingScrollPhysics(),
                 padding: EdgeInsets.only(
                   top: MediaQuery.of(context).padding.top,
                   bottom: kBottomNavigationBarHeight + 24,
                 ),
                 children: [
                   Padding(
-                    padding: EdgeInsets.only(bottom: 10),
+                    padding: const EdgeInsets.only(bottom: 10),
                     child: ConstrainedBox(
                       constraints: BoxConstraints(
                         minHeight: (constraints.maxHeight / 2),
@@ -222,7 +222,7 @@ class _PostDetailState extends State<PostDetail>
                     ),
                   ),
                   Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Column(
                       children: [
                         ArtistDisplay(

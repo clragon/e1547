@@ -27,7 +27,7 @@ class _WikiBodyState extends State<WikiBody> {
     if (tags.length > 1) {
       Widget tagInfo(String tag) {
         return Padding(
-          padding: EdgeInsets.symmetric(vertical: 8),
+          padding: const EdgeInsets.symmetric(vertical: 8),
           child: ExpandableNotifier(
             // initialExpanded: false,
             child: ExpandableTheme(
@@ -37,7 +37,7 @@ class _WikiBodyState extends State<WikiBody> {
               ),
               child: ExpandablePanel(
                 header: Padding(
-                  padding: EdgeInsets.symmetric(vertical: 4),
+                  padding: const EdgeInsets.symmetric(vertical: 4),
                   child: Row(
                     children: [
                       Expanded(
@@ -45,7 +45,7 @@ class _WikiBodyState extends State<WikiBody> {
                           tagToTitle(tag),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: TextStyle(fontSize: 16),
+                          style: const TextStyle(fontSize: 16),
                         ),
                       ),
                       if (widget.controller != null)
@@ -54,9 +54,9 @@ class _WikiBodyState extends State<WikiBody> {
                     ],
                   ),
                 ),
-                collapsed: SizedBox.shrink(),
+                collapsed: const SizedBox.shrink(),
                 expanded: Padding(
-                  padding: EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(8),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [WikiTagDisplay(tag: tag)],
@@ -109,7 +109,7 @@ class _WikiTagDisplayState extends State<WikiTagDisplay> {
               child: DText(snapshot.data!.body),
             );
           } else if (snapshot.hasError) {
-            return IconMessage(
+            return const IconMessage(
               title: Text('unable to retrieve wiki entry'),
               icon: Icon(Icons.warning_amber_outlined),
               direction: Axis.horizontal,
@@ -126,7 +126,7 @@ class _WikiTagDisplayState extends State<WikiTagDisplay> {
             );
           }
         },
-        secondChild: Center(
+        secondChild: const Center(
           child: Padding(
             padding: EdgeInsets.all(12),
             child: CircularProgressIndicator(),

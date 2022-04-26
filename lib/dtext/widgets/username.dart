@@ -4,7 +4,7 @@ import 'package:username_generator/username_generator.dart';
 class UsernameGeneratorData extends InheritedWidget {
   final UsernameGenerator generator;
 
-  UsernameGeneratorData({required this.generator, required Widget child})
+  const UsernameGeneratorData({required this.generator, required Widget child})
       : super(child: child);
 
   static UsernameGenerator? of(BuildContext context) {

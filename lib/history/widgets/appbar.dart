@@ -4,6 +4,7 @@ import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 
 class HistorySelectionAppBar extends StatelessWidget with AppBarBuilderWidget {
+  @override
   final PreferredSizeWidget child;
 
   const HistorySelectionAppBar({
@@ -16,7 +17,7 @@ class HistorySelectionAppBar extends StatelessWidget with AppBarBuilderWidget {
       if (entry is PostHistoryEntry) {
         return 'Post #${entry.id}';
       } else if (entry is TagHistoryEntry) {
-        return '${tagToTitle(entry.tags)}';
+        return tagToTitle(entry.tags);
       } else {
         throw UnimplementedError(
             'No item identifier implementation for this HistoryEntry: $entry');
@@ -30,7 +31,7 @@ class HistorySelectionAppBar extends StatelessWidget with AppBarBuilderWidget {
           : Text('${data.selections.length} entries'),
       actionBuilder: (context, data) => [
         IconButton(
-          icon: Icon(Icons.delete_outline),
+          icon: const Icon(Icons.delete_outline),
           onPressed: () {
             historyController.removeEntries(data.selections.toList());
             data.onChanged({});

@@ -23,9 +23,9 @@ class _TagAddCardState extends State<TagAddCard> {
     return Card(
       child: Builder(
         builder: (context) => IconButton(
-          constraints: BoxConstraints(),
-          padding: EdgeInsets.all(2),
-          icon: Icon(Icons.add, size: 16),
+          constraints: const BoxConstraints(),
+          padding: const EdgeInsets.all(2),
+          icon: const Icon(Icons.add, size: 16),
           onPressed: widget.submit != null
               ? () => SheetActions.of(context)!.show(
                     context,

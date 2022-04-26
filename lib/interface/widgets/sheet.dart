@@ -5,7 +5,7 @@ import 'package:sliding_sheet/sliding_sheet.dart';
 class SheetActions extends InheritedNotifier {
   final SheetActionController controller;
 
-  SheetActions({required Widget child, required this.controller})
+  const SheetActions({required Widget child, required this.controller})
       : super(child: child, notifier: controller);
 
   static SheetActionController? of(BuildContext context) {
@@ -58,7 +58,7 @@ class ActionBottomSheet extends StatelessWidget {
       animation: controller,
       child: child,
       builder: (context, child) => Padding(
-        padding: EdgeInsets.all(10).copyWith(top: 0),
+        padding: const EdgeInsets.all(10).copyWith(top: 0),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -66,7 +66,7 @@ class ActionBottomSheet extends StatelessWidget {
               children: [
                 CrossFade(
                   showChild: controller.isLoading,
-                  child: Center(
+                  child: const Center(
                     child: Padding(
                       padding: EdgeInsets.only(right: 10),
                       child: SizedCircularProgressIndicator(size: 16),
@@ -77,7 +77,7 @@ class ActionBottomSheet extends StatelessWidget {
                   showChild: controller.isError && !controller.isForgiven,
                   child: Center(
                     child: Padding(
-                      padding: EdgeInsets.only(right: 10),
+                      padding: const EdgeInsets.only(right: 10),
                       child: Icon(
                         Icons.clear,
                         color: Theme.of(context).errorColor,
@@ -158,8 +158,8 @@ Future<void> showDefaultSlidingBottomSheet(
 SlidingSheetDialog defaultSlidingSheetDialog(
     BuildContext context, SheetBuilder builder) {
   return SlidingSheetDialog(
-    scrollSpec: ScrollSpec(physics: const ClampingScrollPhysics()),
-    duration: Duration(milliseconds: 400),
+    scrollSpec: const ScrollSpec(physics: ClampingScrollPhysics()),
+    duration: const Duration(milliseconds: 400),
     avoidStatusBar: true,
     isBackdropInteractable: true,
     cornerRadius: 16,
@@ -167,9 +167,7 @@ SlidingSheetDialog defaultSlidingSheetDialog(
     minHeight: 600,
     maxWidth: 600,
     builder: builder,
-    snapSpec: SnapSpec(
-      snap: true,
-      positioning: SnapPositioning.relativeToAvailableSpace,
+    snapSpec: const SnapSpec(
       snappings: [
         0.6,
         SnapSpec.expanded,
@@ -194,7 +192,7 @@ class DefaultSheetBody extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -204,7 +202,7 @@ class DefaultSheetBody extends StatelessWidget {
                 children: [
                   Flexible(
                     child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 8),
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
                       child: DefaultTextStyle(
                         child: title!,
                         style: Theme.of(context).textTheme.headline6!,
@@ -218,7 +216,7 @@ class DefaultSheetBody extends StatelessWidget {
                 ],
               ),
             Padding(
-              padding: EdgeInsets.all(16),
+              padding: const EdgeInsets.all(16),
               child: body,
             ),
           ],

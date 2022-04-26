@@ -9,7 +9,7 @@ class UserLoadingPage extends StatefulWidget {
 
   const UserLoadingPage(
     this.id, {
-    this.initalPage = UserPageSection.Favorites,
+    this.initalPage = UserPageSection.favorites,
   });
 
   @override
@@ -28,8 +28,8 @@ class _UserLoadingPageState extends State<UserLoadingPage> {
         initialPage: widget.initalPage,
       ),
       title: Text('User #${widget.id}'),
-      onError: Text('Failed to load user'),
-      onEmpty: Text('User not found'),
+      onError: const Text('Failed to load user'),
+      onEmpty: const Text('User not found'),
     );
   }
 }

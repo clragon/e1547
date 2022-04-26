@@ -45,7 +45,7 @@ class _LoginPageState extends State<LoginPage> {
             authFailed = true;
             form.validate();
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
+              const SnackBar(
                 duration: Duration(seconds: 3),
                 content: Text(
                   'Failed to login. '
@@ -63,17 +63,16 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     Widget usernameField() {
       return Padding(
-        padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
         child: TextFormField(
           controller: usernameController,
           autocorrect: false,
-          decoration: InputDecoration(
+          decoration: const InputDecoration(
             labelText: 'Username',
             border: OutlineInputBorder(),
           ),
-          maxLines: 1,
           inputFormatters: [FilteringTextInputFormatter.deny(' ')],
-          autofillHints: [AutofillHints.username],
+          autofillHints: const [AutofillHints.username],
           textInputAction: TextInputAction.next,
           onChanged: (value) => authFailed = false,
           validator: (value) {
@@ -95,7 +94,7 @@ class _LoginPageState extends State<LoginPage> {
       Widget pasteButton() {
         if (justPasted) {
           return IconButton(
-            icon: Icon(Icons.undo),
+            icon: const Icon(Icons.undo),
             tooltip: 'Undo previous paste',
             onPressed: () => setState(() {
               justPasted = false;
@@ -104,13 +103,13 @@ class _LoginPageState extends State<LoginPage> {
           );
         } else {
           return IconButton(
-            icon: Icon(Icons.content_paste),
+            icon: const Icon(Icons.content_paste),
             tooltip: 'Paste',
             onPressed: () async {
               ClipboardData? data = await Clipboard.getData('text/plain');
               if (data == null || data.text!.trim().isEmpty) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Clipboard is empty')));
+                    const SnackBar(content: Text('Clipboard is empty')));
                 return;
               }
 
@@ -120,7 +119,7 @@ class _LoginPageState extends State<LoginPage> {
                 apiKeyController.text = data.text!;
               });
 
-              pasteUndoTimer = Timer(Duration(seconds: 10), () {
+              pasteUndoTimer = Timer(const Duration(seconds: 10), () {
                 setState(() {
                   justPasted = false;
                 });
@@ -134,22 +133,21 @@ class _LoginPageState extends State<LoginPage> {
 
       Widget inputField() {
         return Padding(
-          padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
           child: TextFormField(
             autocorrect: false,
             controller: apiKeyController,
             decoration: InputDecoration(
               labelText: 'API Key',
               helperText: 'e.g. $apiKeyExample',
-              border: OutlineInputBorder(),
+              border: const OutlineInputBorder(),
               suffixIcon: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: pasteButton(),
               ),
             ),
-            maxLines: 1,
             inputFormatters: [FilteringTextInputFormatter.deny(' ')],
-            autofillHints: [AutofillHints.password],
+            autofillHints: const [AutofillHints.password],
             textInputAction: TextInputAction.done,
             onChanged: (value) => authFailed = false,
             validator: (value) {
@@ -180,7 +178,7 @@ class _LoginPageState extends State<LoginPage> {
     Widget loginButton() {
       return Builder(
         builder: (context) => Padding(
-          padding: EdgeInsets.symmetric(vertical: 24, horizontal: 24),
+          padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 24),
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
               primary: Theme.of(context).colorScheme.secondary,
@@ -198,39 +196,39 @@ class _LoginPageState extends State<LoginPage> {
     }
 
     return Scaffold(
-      appBar: DefaultAppBar(
+      appBar: const DefaultAppBar(
         leading: CloseButton(),
         elevation: 0,
       ),
       body: Form(
         child: LayoutBuilder(
           builder: (context, constraints) => ListView(
-            physics: BouncingScrollPhysics(),
-            padding: EdgeInsets.all(16),
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.all(16),
             children: [
               ConstrainedBox(
                 constraints: BoxConstraints(
                   maxHeight: constraints.maxHeight * 0.4,
                 ),
-                child: Center(
+                child: const Center(
                   child: AppIcon(
                     radius: 64,
                   ),
                 ),
               ),
               Padding(
-                padding: EdgeInsets.only(left: 32, right: 32, bottom: 12),
+                padding: const EdgeInsets.only(left: 32, right: 32, bottom: 12),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
+                    const Text(
                       'Login',
                       style: TextStyle(
                         fontSize: 20,
                       ),
                     ),
                     IconButton(
-                      icon: Icon(Icons.launch),
+                      icon: const Icon(Icons.launch),
                       color: Colors.grey,
                       onPressed: () {
                         if (usernameController.text.isNotEmpty) {
@@ -303,10 +301,10 @@ class _LoginLoadingDialogState extends State<LoginLoadingDialog> {
   Widget build(BuildContext context) {
     return Dialog(
       child: Padding(
-        padding: EdgeInsets.all(20),
+        padding: const EdgeInsets.all(20),
         child: Row(
           children: [
-            Padding(
+            const Padding(
               padding: EdgeInsets.all(4),
               child: SizedBox(
                 height: 28,
@@ -315,7 +313,7 @@ class _LoginLoadingDialogState extends State<LoginLoadingDialog> {
               ),
             ),
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Text('Logging in as ${widget.username}'),
             )
           ],

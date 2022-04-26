@@ -25,8 +25,8 @@ class _TopicLoadingPageState extends State<TopicLoadingPage> {
         orderByOldest: widget.orderByOldest,
       ),
       title: Text('Topic #${widget.id}'),
-      onError: Text('Failed to load topic'),
-      onEmpty: Text('Topic not found'),
+      onError: const Text('Failed to load topic'),
+      onEmpty: const Text('Topic not found'),
     );
   }
 }
@@ -49,8 +49,8 @@ class _ReplyLoadingPageState extends State<ReplyLoadingPage> {
       future: reply,
       builder: (context, value) => TopicLoadingPage(value.topicId),
       title: Text('Reply #${widget.id}'),
-      onError: Text('Failed to load reply'),
-      onEmpty: Text('Reply not found'),
+      onError: const Text('Failed to load reply'),
+      onEmpty: const Text('Reply not found'),
     );
   }
 }

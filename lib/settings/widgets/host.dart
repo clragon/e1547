@@ -18,7 +18,7 @@ Future<void> setCustomHost(BuildContext context) async {
     if (host.isEmpty) {
       settings.customHost.value = null;
     } else {
-      await Future.delayed(Duration(seconds: 1));
+      await Future.delayed(const Duration(seconds: 1));
       try {
         await dio.get('https://$host');
         switch (host) {
@@ -47,13 +47,12 @@ Future<void> setCustomHost(BuildContext context) async {
     context: context,
     builder: (context) => LoadingDialog(
       submit: submit,
-      title: Text('Custom Host'),
+      title: const Text('Custom Host'),
       builder: (context, actionController) => TextField(
         controller: controller,
         keyboardType: TextInputType.url,
         autofocus: true,
-        maxLines: 1,
-        decoration: InputDecoration(labelText: 'url'),
+        decoration: const InputDecoration(labelText: 'url'),
         onSubmitted: (_) => actionController.action!(),
         enabled: !actionController.isLoading,
       ),

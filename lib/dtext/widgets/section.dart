@@ -21,19 +21,19 @@ class SectionWrap extends StatelessWidget {
           ),
           child: ExpandablePanel(
             header: Padding(
-              padding: EdgeInsets.all(8),
+              padding: const EdgeInsets.all(8),
               child: Text(
                 title?.replaceAllMapped(RegExp(r'\n'), (_) => '') ?? '',
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 16,
                 ),
               ),
             ),
-            collapsed: SizedBox.shrink(),
+            collapsed: const SizedBox.shrink(),
             expanded: Padding(
-              padding: EdgeInsets.all(8),
+              padding: const EdgeInsets.all(8),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [child],

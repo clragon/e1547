@@ -7,7 +7,7 @@ Future<void> logout(BuildContext context) async {
 
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
-      duration: Duration(seconds: 1),
+      duration: const Duration(seconds: 1),
       content: Text('Forgot login details ${name != null ? ' for $name' : ''}'),
     ),
   );
@@ -23,7 +23,7 @@ Future<void> guardWithLogin({
   } else {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        duration: Duration(seconds: 1),
+        duration: const Duration(seconds: 1),
         content: Text(error ?? 'You must be logged in to do that!'),
       ),
     );

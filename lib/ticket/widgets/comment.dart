@@ -26,7 +26,7 @@ class CommentReportScreen extends StatelessWidget {
         child: ReportLoadingOverlay(
           isLoading: isLoading,
           child: Padding(
-            padding: EdgeInsets.all(8),
+            padding: const EdgeInsets.all(8),
             child: CommentTile(
               comment: comment,
               hasActions: false,

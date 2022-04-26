@@ -178,7 +178,7 @@ class PostController extends DataController<Post>
   Future<bool> fav(BuildContext context, Post post,
       {Duration? cooldown}) async {
     _assertItemOwnership(post);
-    cooldown ??= Duration(milliseconds: 0);
+    cooldown ??= const Duration();
     if (await client.addFavorite(post.id)) {
       // cooldown avoids interference with animation
       await Future.delayed(cooldown);
@@ -186,7 +186,7 @@ class PostController extends DataController<Post>
       post.favCount += 1;
       updateItem(itemList!.indexOf(post), post, force: true);
       if (settings.upvoteFavs.value) {
-        Future.delayed(Duration(seconds: 1) - cooldown).then(
+        Future.delayed(const Duration(seconds: 1) - cooldown).then(
           (_) =>
               vote(context: context, post: post, upvote: true, replace: true),
         );
@@ -198,7 +198,7 @@ class PostController extends DataController<Post>
       updateItem(itemList!.indexOf(post), post);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          duration: Duration(seconds: 1),
+          duration: const Duration(seconds: 1),
           content: Text('Failed to add Post #${post.id} to favorites'),
         ),
       );
@@ -219,7 +219,7 @@ class PostController extends DataController<Post>
       updateItem(itemList!.indexOf(post), post);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          duration: Duration(seconds: 1),
+          duration: const Duration(seconds: 1),
           content: Text('Failed to remove Post #${post.id} from favorites'),
         ),
       );
@@ -273,7 +273,7 @@ class PostController extends DataController<Post>
       updateItem(itemList!.indexOf(post), post, force: true);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        duration: Duration(seconds: 1),
+        duration: const Duration(seconds: 1),
         content: Text('Failed to vote on Post #${post.id}'),
       ));
     }

@@ -52,22 +52,22 @@ List<Shadow> getTextShadows() {
   const Color color = Colors.black38;
 
   return [
-    Shadow(
+    const Shadow(
       offset: Offset(offset, offset),
       blurRadius: blur,
       color: color,
     ),
-    Shadow(
+    const Shadow(
       offset: Offset(-offset, offset),
       blurRadius: blur,
       color: color,
     ),
-    Shadow(
+    const Shadow(
       offset: Offset(-offset, -offset),
       blurRadius: blur,
       color: color,
     ),
-    Shadow(
+    const Shadow(
       offset: Offset(offset, -offset),
       blurRadius: blur,
       color: color,

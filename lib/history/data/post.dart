@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:e1547/history/history.dart';
 
 class PostHistoryEntry extends HistoryEntry {
+  @override
   final DateTime visitedAt;
   final int id;
   final String? thumbnail;

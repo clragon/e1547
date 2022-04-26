@@ -45,11 +45,10 @@ class ImageTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 4),
       child: Column(
         children: [
           ClipRRect(
-            clipBehavior: Clip.antiAlias,
             borderRadius: BorderRadius.circular(5),
             child: Stack(
               alignment: Alignment.center,
@@ -63,7 +62,7 @@ class ImageTile extends StatelessWidget {
                       }
                       return GridView.builder(
                         primary: false,
-                        physics: NeverScrollableScrollPhysics(),
+                        physics: const NeverScrollableScrollPhysics(),
                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: count.clamp(1, 2),
                           mainAxisExtent: count > 2
@@ -77,7 +76,6 @@ class ImageTile extends StatelessWidget {
                           if (thumbnails != null &&
                               index < thumbnails!.length) {
                             return ClipRRect(
-                              clipBehavior: Clip.antiAlias,
                               borderRadius: getGridBorderRadius(
                                 index: index,
                                 length: thumbnails!.length.clamp(0, 4),
@@ -93,7 +91,7 @@ class ImageTile extends StatelessWidget {
                               ),
                             );
                           } else {
-                            return Center(
+                            return const Center(
                               child: Icon(Icons.image_not_supported_outlined),
                             );
                           }
@@ -108,7 +106,7 @@ class ImageTile extends StatelessWidget {
                     onTap: onTap,
                     onLongPress: onLongPress,
                     child: ConstrainedBox(
-                      constraints: BoxConstraints(
+                      constraints: const BoxConstraints(
                         minHeight: 300,
                       ),
                       child: child,
@@ -118,7 +116,7 @@ class ImageTile extends StatelessWidget {
               ],
             ),
           ),
-          Divider(),
+          const Divider(),
         ],
       ),
     );

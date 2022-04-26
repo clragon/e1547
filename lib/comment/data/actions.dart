@@ -43,7 +43,7 @@ Future<bool> writeComment({
               sent = true;
               return true;
             } on DioError {
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                 duration: Duration(seconds: 1),
                 content: Text('Failed to send comment!'),
                 behavior: SnackBarBehavior.floating,

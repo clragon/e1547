@@ -33,7 +33,6 @@ class TagCard extends StatelessWidget {
         controller: controller,
         child: Row(
           mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             if (stripeColor != null ||
                 category != null ||
@@ -44,7 +43,7 @@ class TagCard extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: stripeColor ??
                       (category != null ? getCategoryColor(category!) : null),
-                  borderRadius: BorderRadius.only(
+                  borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(4),
                     bottomLeft: Radius.circular(4),
                   ),
@@ -52,9 +51,9 @@ class TagCard extends StatelessWidget {
                 child: CrossFade(
                   showChild: editing,
                   child: IconButton(
-                    constraints: BoxConstraints(),
+                    constraints: const BoxConstraints(),
                     padding: EdgeInsets.zero,
-                    icon: Icon(Icons.clear, size: 16),
+                    icon: const Icon(Icons.clear, size: 16),
                     onPressed: onRemove,
                   ),
                   secondChild: Container(width: 5),
@@ -62,7 +61,8 @@ class TagCard extends StatelessWidget {
               ),
             Flexible(
               child: Padding(
-                padding: EdgeInsets.only(top: 4, bottom: 4, right: 8, left: 6),
+                padding:
+                    const EdgeInsets.only(top: 4, bottom: 4, right: 8, left: 6),
                 child: Text(
                   tagToCard(tag),
                   overflow: TextOverflow.ellipsis,
@@ -105,7 +105,7 @@ class TagCounterCard extends StatelessWidget {
         ),
         Flexible(
           child: Padding(
-            padding: EdgeInsets.all(4),
+            padding: const EdgeInsets.all(4),
             child: Text(
               count.toString(),
             ),

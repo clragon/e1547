@@ -25,7 +25,7 @@ class PoolSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -34,7 +34,7 @@ class PoolSheet extends StatelessWidget {
               children: [
                 Expanded(
                   child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 8),
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
                     child: Text(
                       tagToTitle(pool.name),
                       style: Theme.of(context).textTheme.headline6,
@@ -43,7 +43,7 @@ class PoolSheet extends StatelessWidget {
                   ),
                 ),
                 IconButton(
-                  icon: Icon(Icons.share),
+                  icon: const Icon(Icons.share),
                   onPressed: () async =>
                       Share.share(pool.url(client.host).toString()),
                   tooltip: 'Share',
@@ -52,17 +52,17 @@ class PoolSheet extends StatelessWidget {
               ],
             ),
             Padding(
-              padding: EdgeInsets.all(16),
+              padding: const EdgeInsets.all(16),
               child: pool.description.isNotEmpty
                   ? DText(pool.description)
-                  : Text(
+                  : const Text(
                       'no description',
                       style: TextStyle(fontStyle: FontStyle.italic),
                     ),
             ),
-            Divider(),
+            const Divider(),
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: PoolInfo(pool: pool),
             ),
           ],

@@ -32,7 +32,7 @@ class SourceDisplay extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Padding(
+                  const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
                     child: Text(
                       'Sources',
@@ -44,7 +44,7 @@ class SourceDisplay extends StatelessWidget {
                   CrossFade(
                     showChild: isEditing,
                     child: IconButton(
-                      icon: Icon(Icons.edit),
+                      icon: const Icon(Icons.edit),
                       onPressed: editingController!.canEdit
                           ? () => Navigator.of(context).push(
                                 MaterialPageRoute(
@@ -69,14 +69,14 @@ class SourceDisplay extends StatelessWidget {
                 ],
               ),
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
                 child: sources.join('\n').trim().isNotEmpty
                     ? Wrap(
                         children:
                             sources.map((e) => SourceCard(url: e)).toList(),
                       )
                     : Padding(
-                        padding: EdgeInsets.all(4),
+                        padding: const EdgeInsets.all(4),
                         child: Text(
                           'no sources',
                           style: TextStyle(
@@ -86,7 +86,7 @@ class SourceDisplay extends StatelessWidget {
                         ),
                       ),
               ),
-              Divider(),
+              const Divider(),
             ],
           ),
         );
@@ -121,7 +121,7 @@ class SourceCard extends StatelessWidget {
                 ),
               Flexible(
                 child: Padding(
-                  padding: EdgeInsets.all(6),
+                  padding: const EdgeInsets.all(6),
                   child: Text(
                     linkToDisplay(url),
                     style: TextStyle(
@@ -141,7 +141,7 @@ class SourceCard extends StatelessWidget {
           children: [
             Flexible(
               child: Padding(
-                padding: EdgeInsets.all(6),
+                padding: const EdgeInsets.all(6),
                 child: Text(url),
               ),
             ),

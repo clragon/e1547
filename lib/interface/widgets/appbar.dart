@@ -40,7 +40,8 @@ class AppBarPadding extends StatelessWidget with AppBarBuilderWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding:
-          EdgeInsets.symmetric(horizontal: defaultAppBarHorizontalPadding).add(
+          const EdgeInsets.symmetric(horizontal: defaultAppBarHorizontalPadding)
+              .add(
         EdgeInsets.only(
           top: defaultAppBarTopPadding + MediaQuery.of(context).padding.top,
         ),
@@ -63,7 +64,7 @@ class DefaultAppBar extends StatelessWidget with PreferredSizeWidget {
   final ScrollController? scrollController;
 
   @override
-  Size get preferredSize => Size.fromHeight(defaultAppBarHeight);
+  Size get preferredSize => const Size.fromHeight(defaultAppBarHeight);
 
   const DefaultAppBar({
     this.leading,
@@ -84,7 +85,7 @@ class DefaultAppBar extends StatelessWidget with PreferredSizeWidget {
         elevation: elevation,
         automaticallyImplyLeading: automaticallyImplyLeading,
         flexibleSpace: ScrollToTop(controller: scrollController),
-        shape: RoundedRectangleBorder(
+        shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(4)),
         ),
       ),
@@ -192,7 +193,7 @@ class SliverAppBarPadding extends StatelessWidget {
           ),
         ),
         SliverPadding(
-          padding: EdgeInsets.symmetric(
+          padding: const EdgeInsets.symmetric(
             horizontal: kContentPadding * 2,
           ),
           sliver: MediaQuery.removePadding(
@@ -248,10 +249,9 @@ class DefaultSliverAppBar extends StatelessWidget {
         automaticallyImplyLeading: automaticallyImplyLeading,
         elevation: elevation,
         forceElevated: forceElevated,
-        shape: RoundedRectangleBorder(
+        shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(4)),
         ),
-        toolbarHeight: kToolbarHeight,
         expandedHeight: expandedHeight,
         leading: leading,
         floating: floating,

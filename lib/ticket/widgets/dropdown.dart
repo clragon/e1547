@@ -16,14 +16,13 @@ class ReportFormDropdown<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
       child: DropdownButtonFormField<T>(
         isExpanded: true,
-        decoration: InputDecoration(
+        decoration: const InputDecoration(
           labelText: 'Type',
           border: OutlineInputBorder(),
         ),
-        isDense: true,
         value: type,
         onChanged: isLoading ? null : onChanged,
         validator: (value) {

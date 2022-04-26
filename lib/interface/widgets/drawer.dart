@@ -23,7 +23,7 @@ class ContextDrawer extends StatelessWidget {
                   )
                 : null,
             body: ListView(
-              physics: BouncingScrollPhysics(),
+              physics: const BouncingScrollPhysics(),
               children: children,
             ),
           ),
@@ -42,7 +42,7 @@ class ContextDrawerButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(right: 4),
+      padding: const EdgeInsets.only(right: 4),
       child: Builder(
         builder: (context) => IconButton(
           tooltip: tooltip,

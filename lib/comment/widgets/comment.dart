@@ -21,10 +21,10 @@ class CommentTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final double iconSize = 18;
+    const double iconSize = 18;
 
     Widget picture() {
-      return Padding(
+      return const Padding(
         padding: EdgeInsets.only(right: 8, top: 4),
         child: Icon(Icons.person),
       );
@@ -36,7 +36,7 @@ class CommentTile extends StatelessWidget {
         child: Row(
           children: [
             Padding(
-              padding: EdgeInsets.symmetric(vertical: 4),
+              padding: const EdgeInsets.symmetric(vertical: 4),
               child: InkWell(
                 child: Text(comment.creatorName),
                 onTap: () => Navigator.of(context).push(
@@ -49,7 +49,7 @@ class CommentTile extends StatelessWidget {
             ),
             Text(
               ' • ${format(comment.createdAt)}${comment.createdAt != comment.updatedAt ? ' (edited)' : ''}',
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 12,
               ),
             ),
@@ -91,7 +91,7 @@ class CommentTile extends StatelessWidget {
     }
 
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 8),
       child: Column(
         children: [
           Hero(
@@ -107,14 +107,14 @@ class CommentTile extends StatelessWidget {
                 Material(
               type: MaterialType.transparency,
               child: SingleChildScrollView(
-                physics: NeverScrollableScrollPhysics(),
+                physics: const NeverScrollableScrollPhysics(),
                 child: body(),
               ),
             ),
           ),
           if (hasActions)
             Padding(
-              padding: EdgeInsets.only(left: 24),
+              padding: const EdgeInsets.only(left: 24),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
@@ -168,7 +168,7 @@ class CommentTile extends StatelessWidget {
                       ),
                     ),
                   ),
-                  Spacer(),
+                  const Spacer(),
                   PopupMenuButton<VoidCallback>(
                     icon: Icon(
                       Icons.more_vert,
@@ -205,7 +205,7 @@ class CommentTile extends StatelessWidget {
                           Clipboard.setData(
                               ClipboardData(text: comment.id.toString()));
                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            duration: Duration(seconds: 1),
+                            duration: const Duration(seconds: 1),
                             content: Text('Copied comment id #${comment.id}'),
                           ));
                         },
@@ -230,7 +230,7 @@ class CommentTile extends StatelessWidget {
                 ],
               ),
             ),
-          Divider(),
+          const Divider(),
         ],
       ),
     );

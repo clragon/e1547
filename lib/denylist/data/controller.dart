@@ -41,7 +41,7 @@ class DenylistController extends DataUpdater<List<String>> {
       {bool upload = true}) async {
     await resourceLock.acquire();
     List<String> updated = await updater(await read());
-    await write(updated, upload: true);
+    await write(updated, upload: upload);
     resourceLock.release();
   }
 

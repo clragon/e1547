@@ -44,13 +44,13 @@ class _FollowsCombinedPageState extends State<FollowsCombinedPage>
   Widget build(BuildContext context) {
     return PostsPage(
       controller: controller,
-      appBar: DefaultAppBar(
+      appBar: const DefaultAppBar(
         title: Text('Following'),
         actions: [
           ContextDrawerButton(),
         ],
       ),
-      drawerActions: [
+      drawerActions: const [
         FollowSplitSwitchTile(),
         FollowSettingsTile(),
       ],

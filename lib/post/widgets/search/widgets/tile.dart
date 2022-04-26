@@ -20,7 +20,7 @@ class PostTile extends StatelessWidget {
       if (post.file.ext == 'gif') {
         return Container(
           color: Colors.black12,
-          child: Icon(
+          child: const Icon(
             Icons.gif,
             color: Colors.white,
           ),
@@ -29,13 +29,13 @@ class PostTile extends StatelessWidget {
       if (post.type == PostType.video) {
         return Container(
           color: Colors.black12,
-          child: Icon(
+          child: const Icon(
             Icons.play_arrow,
             color: Colors.white,
           ),
         );
       }
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     }
 
     Widget image() {
@@ -125,16 +125,16 @@ class PostTileOverlay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (post.flags.deleted) {
-      return Center(child: Text('deleted'));
+      return const Center(child: Text('deleted'));
     }
     if (post.type == PostType.unsupported) {
-      return Center(child: Text('unsupported'));
+      return const Center(child: Text('unsupported'));
     }
     if (post.file.url == null) {
-      return Center(child: Text('unsafe'));
+      return const Center(child: Text('unsafe'));
     }
     if (controller?.isDenied(post) ?? false) {
-      return Center(child: Text('blacklisted'));
+      return const Center(child: Text('blacklisted'));
     }
     return child;
   }
@@ -153,13 +153,12 @@ class PostInfoBar extends StatelessWidget {
       child: Container(
         color: Theme.of(context).cardColor,
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           child: Row(
             children: [
               Expanded(
                 child: Wrap(
                   alignment: WrapAlignment.spaceEvenly,
-                  direction: Axis.horizontal,
                   children: [
                     AnimatedSelector(
                       animation: Listenable.merge([controller]),
@@ -169,7 +168,7 @@ class PostInfoBar extends StatelessWidget {
                         children: [
                           Text(post.score.total.toString()),
                           Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 4),
+                            padding: const EdgeInsets.symmetric(horizontal: 4),
                             child: Icon(
                               post.score.total >= 0
                                   ? Icons.arrow_upward
@@ -197,7 +196,7 @@ class PostInfoBar extends StatelessWidget {
                         children: [
                           Text(post.favCount.toString()),
                           Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 4),
+                            padding: const EdgeInsets.symmetric(horizontal: 4),
                             child: Icon(
                               Icons.favorite,
                               color:
@@ -211,7 +210,7 @@ class PostInfoBar extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(post.commentCount.toString()),
-                        Padding(
+                        const Padding(
                           padding: EdgeInsets.symmetric(horizontal: 4),
                           child: Icon(Icons.comment),
                         ),
@@ -222,7 +221,7 @@ class PostInfoBar extends StatelessWidget {
                       children: [
                         Text(post.rating.name.toUpperCase()),
                         Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 4),
+                          padding: const EdgeInsets.symmetric(horizontal: 4),
                           child: Icon(ratingIcons[post.rating]!),
                         ),
                       ],

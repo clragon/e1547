@@ -5,6 +5,7 @@ import 'package:like_button/like_button.dart';
 
 class PostSelectionAppBar extends StatelessWidget with AppBarBuilderWidget {
   final PostController controller;
+  @override
   final PreferredSizeWidget child;
 
   const PostSelectionAppBar({
@@ -21,19 +22,19 @@ class PostSelectionAppBar extends StatelessWidget with AppBarBuilderWidget {
           : Text('${data.selections.length} posts'),
       actionBuilder: (context, data) => [
         IconButton(
-          icon: Icon(Icons.file_download),
+          icon: const Icon(Icons.file_download),
           onPressed: () {
             postDownloadingNotification(context, Set.from(data.selections));
             data.onChanged({});
           },
         ),
         Padding(
-          padding: EdgeInsets.symmetric(horizontal: 4),
+          padding: const EdgeInsets.symmetric(horizontal: 4),
           child: LikeButton(
             isLiked: data.selections.isNotEmpty &&
                 data.selections.every((post) => post.isFavorited),
-            circleColor: CircleColor(start: Colors.pink, end: Colors.red),
-            bubblesColor: BubblesColor(
+            circleColor: const CircleColor(start: Colors.pink, end: Colors.red),
+            bubblesColor: const BubblesColor(
                 dotPrimaryColor: Colors.pink, dotSecondaryColor: Colors.red),
             likeBuilder: (bool isLiked) => Icon(
               Icons.favorite,

@@ -30,7 +30,7 @@ class PostReportImage extends StatelessWidget {
         maxHeight: max(height * 0.5, defaultFormTargetHeight),
       ),
       child: Padding(
-        padding: EdgeInsets.all(24),
+        padding: const EdgeInsets.all(24),
         child: Center(
           child: Card(
             clipBehavior: Clip.antiAlias,
@@ -86,11 +86,11 @@ class _PostReportScreenState extends State<PostReportScreen> {
         appBar: DefaultAppBar(
           elevation: 0,
           title: Text('Post #${widget.post.id}'),
-          leading: CloseButton(),
+          leading: const CloseButton(),
         ),
         floatingActionButton: Builder(
           builder: (context) => FloatingActionButton(
-            child: Icon(Icons.check),
+            child: const Icon(Icons.check),
             onPressed: isLoading
                 ? null
                 : () async {
@@ -112,14 +112,14 @@ class _PostReportScreenState extends State<PostReportScreen> {
                         allowRedirect: true,
                       )) {
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          duration: Duration(seconds: 1),
+                          duration: const Duration(seconds: 1),
                           content: Text('Reported post #${widget.post.id}'),
                           behavior: SnackBarBehavior.floating,
                         ));
                         Navigator.maybePop(context);
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          duration: Duration(seconds: 1),
+                          duration: const Duration(seconds: 1),
                           content:
                               Text('Failed to report post #${widget.post.id}'),
                         ));
@@ -135,7 +135,7 @@ class _PostReportScreenState extends State<PostReportScreen> {
           builder: (context, constraints) => ListView(
             controller: scrollController,
             padding: defaultFormScreenPadding,
-            physics: BouncingScrollPhysics(),
+            physics: const BouncingScrollPhysics(),
             children: [
               PostReportImage(
                 post: widget.post,
@@ -143,11 +143,11 @@ class _PostReportScreenState extends State<PostReportScreen> {
                 isLoading: isLoading,
               ),
               ReportFormHeader(
-                title: Text('Report'),
+                title: const Text('Report'),
                 icon: IconButton(
                   onPressed: () =>
                       wikiSheet(context: context, tag: 'e621:report_post'),
-                  icon: Icon(Icons.info_outline),
+                  icon: const Icon(Icons.info_outline),
                 ),
               ),
               ReportFormDropdown<ReportType?>(
@@ -202,11 +202,11 @@ class _PostFlagScreenState extends State<PostFlagScreen> {
         appBar: DefaultAppBar(
           elevation: 0,
           title: Text('Post #${widget.post.id}'),
-          leading: CloseButton(),
+          leading: const CloseButton(),
         ),
         floatingActionButton: Builder(
           builder: (context) => FloatingActionButton(
-            child: Icon(Icons.check),
+            child: const Icon(Icons.check),
             onPressed: isLoading
                 ? null
                 : () async {
@@ -228,14 +228,14 @@ class _PostFlagScreenState extends State<PostFlagScreen> {
                         allowRedirect: true,
                       )) {
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          duration: Duration(seconds: 1),
+                          duration: const Duration(seconds: 1),
                           content: Text('Flagged post #${widget.post.id}'),
                           behavior: SnackBarBehavior.floating,
                         ));
                         Navigator.maybePop(context);
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          duration: Duration(seconds: 1),
+                          duration: const Duration(seconds: 1),
                           content:
                               Text('Failed to flag post #${widget.post.id}'),
                         ));
@@ -251,7 +251,7 @@ class _PostFlagScreenState extends State<PostFlagScreen> {
           builder: (context, constraints) => ListView(
             controller: scrollController,
             padding: defaultFormScreenPadding,
-            physics: BouncingScrollPhysics(),
+            physics: const BouncingScrollPhysics(),
             children: [
               PostReportImage(
                 post: widget.post,
@@ -259,11 +259,11 @@ class _PostFlagScreenState extends State<PostFlagScreen> {
                 isLoading: isLoading,
               ),
               ReportFormHeader(
-                title: Text('Flag'),
+                title: const Text('Flag'),
                 icon: IconButton(
                   onPressed: () => wikiSheet(
                       context: context, tag: 'e621:flag_for_deletion'),
-                  icon: Icon(Icons.info_outline),
+                  icon: const Icon(Icons.info_outline),
                 ),
               ),
               ReportFormDropdown<FlagType?>(
@@ -277,17 +277,17 @@ class _PostFlagScreenState extends State<PostFlagScreen> {
                 isLoading: isLoading,
               ),
               CrossFade.builder(
-                showChild: type == FlagType.Inferior,
+                showChild: type == FlagType.inferior,
                 builder: (context) => Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                   child: TextFormField(
                     enabled: !isLoading,
                     controller: parentController,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: 'Parent ID',
                       border: OutlineInputBorder(),
                     ),
-                    maxLines: 1,
                     keyboardType: TextInputType.number,
                     inputFormatters: [
                       FilteringTextInputFormatter.allow(RegExp(r'^ ?\d*')),
@@ -307,13 +307,14 @@ class _PostFlagScreenState extends State<PostFlagScreen> {
               CrossFade.builder(
                 showChild: type != null,
                 builder: (context) => Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 6),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 24, vertical: 6),
                   child: Row(
                     children: [
                       Expanded(
                         child: Card(
                           child: Padding(
-                            padding: EdgeInsets.all(16),
+                            padding: const EdgeInsets.all(16),
                             child: DText(flagDescriptions[type]!),
                           ),
                         ),

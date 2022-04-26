@@ -57,7 +57,7 @@ extension Caching on Dio {
     await _prepareCacheKey(
       path,
       cacheManager,
-      requestMethod: 'get',
+      requestMethod: requestMethod,
       keyExtras: keyExtras,
       forceRefresh: true,
     );

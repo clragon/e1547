@@ -10,7 +10,7 @@ class QuoteWrap extends StatelessWidget {
     return Card(
       color: Theme.of(context).canvasColor,
       child: Padding(
-        padding: EdgeInsets.all(8),
+        padding: const EdgeInsets.all(8),
         child: Row(
           children: [
             Expanded(

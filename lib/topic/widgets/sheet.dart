@@ -26,7 +26,7 @@ class TopicSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -35,7 +35,7 @@ class TopicSheet extends StatelessWidget {
               children: [
                 Expanded(
                   child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 8),
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
                     child: Text(
                       tagToName(topic.title),
                       style: Theme.of(context).textTheme.headline6,
@@ -44,17 +44,17 @@ class TopicSheet extends StatelessWidget {
                   ),
                 ),
                 IconButton(
-                  icon: Icon(Icons.share),
+                  icon: const Icon(Icons.share),
                   onPressed: () async =>
                       Share.share(topic.url(client.host).toString()),
                   tooltip: 'Share',
                 ),
               ],
             ),
-            SizedBox(height: 16),
-            Divider(),
+            const SizedBox(height: 16),
+            const Divider(),
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: TopicInfo(topic: topic),
             ),
           ],
@@ -93,7 +93,7 @@ class TopicInfo extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('id'),
+              const Text('id'),
               InkWell(
                 child: Text(
                   '#${topic.id}',
@@ -104,7 +104,7 @@ class TopicInfo extends StatelessWidget {
                   ));
                   await Navigator.of(context).maybePop();
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    duration: Duration(seconds: 1),
+                    duration: const Duration(seconds: 1),
                     content: Text('Copied topic id #${topic.id}'),
                   ));
                 },

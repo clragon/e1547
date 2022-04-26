@@ -45,14 +45,14 @@ class _PoolPageState extends State<PoolPage> {
       controller: controller,
       appBar: DefaultAppBar(
         title: Text(tagToTitle(widget.pool.name)),
-        leading: BackButton(),
+        leading: const BackButton(),
         actions: [
           IconButton(
-            icon: Icon(Icons.info_outline),
+            icon: const Icon(Icons.info_outline),
             tooltip: 'Info',
             onPressed: () => poolSheet(context, widget.pool),
           ),
-          ContextDrawerButton(),
+          const ContextDrawerButton(),
         ],
       ),
       drawerActions: [
@@ -79,8 +79,8 @@ class PoolOrderSwitch extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SwitchListTile(
-      secondary: Icon(Icons.sort),
-      title: Text('Pool order'),
+      secondary: const Icon(Icons.sort),
+      title: const Text('Pool order'),
       subtitle: Text(reversePool ? 'newest first' : 'oldest first'),
       value: reversePool,
       onChanged: onChange,

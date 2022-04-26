@@ -22,7 +22,7 @@ class _TopicsPageState extends State<TopicsPage> {
   @override
   Widget build(BuildContext context) {
     return RefreshableControllerPage(
-      appBar: DefaultAppBar(title: Text('Topics')),
+      appBar: const DefaultAppBar(title: Text('Topics')),
       floatingActionButton: SheetFloatingActionButton(
         actionIcon: Icons.search,
         builder: (context, actionController) => ControlledTextField(
@@ -32,7 +32,7 @@ class _TopicsPageState extends State<TopicsPage> {
           submit: (value) => controller.search.value = value,
         ),
       ),
-      drawer: NavigationDrawer(),
+      drawer: const NavigationDrawer(),
       controller: controller,
       builder: (context) => PagedListView(
         padding: defaultListPadding,
@@ -55,8 +55,8 @@ class _TopicsPageState extends State<TopicsPage> {
               ),
             ),
           ),
-          onEmpty: Text('No topics'),
-          onError: Text('Failed to load topics'),
+          onEmpty: const Text('No topics'),
+          onError: const Text('Failed to load topics'),
         ),
       ),
     );

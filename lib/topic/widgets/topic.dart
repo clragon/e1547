@@ -17,11 +17,10 @@ class TopicTile extends StatelessWidget {
   Widget build(BuildContext context) {
     Widget title() {
       return Row(
-        mainAxisSize: MainAxisSize.max,
         children: [
           Expanded(
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: Text(
                 topic.title,
                 style: Theme.of(context).textTheme.subtitle1,
@@ -31,7 +30,7 @@ class TopicTile extends StatelessWidget {
           InkWell(
             onTap: onCountPressed,
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
@@ -41,7 +40,7 @@ class TopicTile extends StatelessWidget {
                   ),
                   Text(
                     format(topic.updatedAt),
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 12,
                     ),
                   ),

@@ -11,7 +11,7 @@ DTextParser blockParser = DTextParser.builder(
     if (block != null) {
       if (!tag.active) {
         return DTextParserResult(
-          span: TextSpan(),
+          span: const TextSpan(),
           text: after,
           state: state,
         );
@@ -131,7 +131,8 @@ DTextParser tagParser = DTextParser.builder(
           break;
       }
 
-      return DTextParserResult(span: TextSpan(), text: after, state: updated);
+      return DTextParserResult(
+          span: const TextSpan(), text: after, state: updated);
     } else {
       return null;
     }

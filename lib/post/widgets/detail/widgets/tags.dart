@@ -30,10 +30,10 @@ class TagDisplay extends StatelessWidget {
 
         Widget title(String category) {
           return Padding(
-            padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
             child: Text(
               '${category[0].toUpperCase()}${category.substring(1)}',
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 16,
               ),
             ),
@@ -42,7 +42,6 @@ class TagDisplay extends StatelessWidget {
 
         Widget tagCategory(String category) {
           return Wrap(
-            direction: Axis.horizontal,
             children: [
               ...tags[category]!.map(
                 (tag) => TagCard(
@@ -88,7 +87,7 @@ class TagDisplay extends StatelessWidget {
             children: [
               title(category),
               Row(children: [Expanded(child: tagCategory(category))]),
-              Divider(),
+              const Divider(),
             ],
           );
         }
@@ -143,12 +142,12 @@ Future<bool> onPostTagsEdit(
           tags[target]!.sort();
           controller.value = controller.value!.copyWith(tags: tags);
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            duration: Duration(milliseconds: 500),
+            duration: const Duration(milliseconds: 500),
             content: Text('Moved $tag to $target tags'),
             behavior: SnackBarBehavior.floating,
           ));
         }
-        await Future.delayed(Duration(milliseconds: 200));
+        await Future.delayed(const Duration(milliseconds: 200));
       }
     });
   }

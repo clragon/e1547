@@ -19,7 +19,7 @@ class HistoryTile extends StatelessWidget {
   Widget build(BuildContext context) {
     Widget titleText(String text) {
       return Padding(
-        padding: EdgeInsets.symmetric(horizontal: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 8),
         child: Text(
           text,
           style: TextStyle(
@@ -32,7 +32,7 @@ class HistoryTile extends StatelessWidget {
 
     Widget subtitleText(String text) {
       return Padding(
-        padding: EdgeInsets.symmetric(horizontal: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 8),
         child: Text(
           text,
           style: TextStyle(
@@ -55,7 +55,7 @@ class HistoryTile extends StatelessWidget {
             subtitle:
                 subtitleText(getCurrentTimeFormat().format(entry.visitedAt)),
             trailing: PopupMenuButton<VoidCallback>(
-              icon: ShadowIcon(
+              icon: const ShadowIcon(
                 Icons.more_vert,
                 color: Colors.white,
               ),
@@ -103,7 +103,7 @@ class HistoryTile extends StatelessWidget {
             subtitle:
                 subtitleText(getCurrentTimeFormat().format(entry.visitedAt)),
             trailing: PopupMenuButton<VoidCallback>(
-              icon: ShadowIcon(
+              icon: const ShadowIcon(
                 Icons.more_vert,
               ),
               onSelected: (value) => value(),

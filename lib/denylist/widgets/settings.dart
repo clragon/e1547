@@ -45,21 +45,21 @@ class _DenyListPageState extends State<DenyListPage> {
       child: AnimatedBuilder(
         animation: denylistController,
         builder: (context, child) => RefreshablePageLoader(
-          onEmptyIcon: Icon(Icons.check),
-          onEmpty: Text('Your blacklist is empty'),
-          onLoading: Text('Loading blacklist'),
-          onError: Text('Failed to load blacklist'),
+          onEmptyIcon: const Icon(Icons.check),
+          onEmpty: const Text('Your blacklist is empty'),
+          onLoading: const Text('Loading blacklist'),
+          onError: const Text('Failed to load blacklist'),
           isError: false,
           isLoading: false,
           isBuilt: true,
           isEmpty: denylistController.items.isEmpty,
           refreshController: refreshController,
-          refreshHeader: RefreshablePageDefaultHeader(
+          refreshHeader: const RefreshablePageDefaultHeader(
             completeText: 'refreshed blacklist',
             refreshingText: 'refreshing blacklist',
           ),
           builder: (context) => ListView.builder(
-            physics: BouncingScrollPhysics(),
+            physics: const BouncingScrollPhysics(),
             padding: defaultActionListPadding
                 .add(LimitedWidthLayout.of(context)!.padding),
             itemCount: denylistController.items.length,
@@ -80,7 +80,7 @@ class _DenyListPageState extends State<DenyListPage> {
                         await denylistController.replace(tag, value);
                       }
                     } on DioError {
-                      throw ActionControllerException(
+                      throw const ActionControllerException(
                           message: 'Failed to update blacklist!');
                     }
                   },
@@ -92,13 +92,13 @@ class _DenyListPageState extends State<DenyListPage> {
             ),
           ),
           appBar: DefaultAppBar(
-            title: Text('Blacklist'),
+            title: const Text('Blacklist'),
             actions: [
               IconButton(
-                icon: Icon(Icons.edit),
+                icon: const Icon(Icons.edit),
                 onPressed: () => showDialog(
                   context: context,
-                  builder: (context) => DenyListEditor(),
+                  builder: (context) => const DenyListEditor(),
                 ),
               ),
             ],
@@ -121,7 +121,7 @@ class _DenyListPageState extends State<DenyListPage> {
                                     await denylistController.add(value);
                                   }
                                 } on DioError {
-                                  throw ActionControllerException(
+                                  throw const ActionControllerException(
                                       message: 'Failed to update blacklist!');
                                 }
                               },

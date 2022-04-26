@@ -16,8 +16,11 @@ abstract class AppDeveloper {
 }
 
 class AppInfo extends PackageInfo with AppDeveloper {
+  @override
   final String developer;
+  @override
   final String? github;
+  @override
   final String? discord;
   final String? website;
 

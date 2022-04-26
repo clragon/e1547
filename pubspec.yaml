@@ -56,6 +56,7 @@ dependencies:
     sdk: flutter
 
 dev_dependencies:
+  flutter_lints: ^1.0.4
   flutter_launcher_icons: ^0.9.0
   flutter_native_splash: ^2.0.2
 

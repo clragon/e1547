@@ -25,7 +25,7 @@ class _FollowMarkReadTileState extends State<FollowMarkReadTile>
         return ListTile(
           enabled: unseen != 0,
           leading: Icon(unseen != 0 ? Icons.mark_email_read : Icons.drafts),
-          title: Text('unseen posts'),
+          title: const Text('unseen posts'),
           subtitle: unseen != 0
               ? TweenAnimationBuilder(
                   tween: IntTween(begin: 0, end: unseen),
@@ -34,7 +34,7 @@ class _FollowMarkReadTileState extends State<FollowMarkReadTile>
                     return Text('mark $value posts as seen');
                   },
                 )
-              : Text('no unseen posts'),
+              : const Text('no unseen posts'),
           onTap: () async {
             followController.markAllAsRead();
             Navigator.of(context).maybePop();
@@ -59,8 +59,8 @@ class _FollowSplitSwitchTileState extends State<FollowSplitSwitchTile> {
       valueListenable: settings.splitFollows,
       builder: (context, value, child) => SwitchListTile(
         secondary: Icon(value ? Icons.view_comfy : Icons.view_compact),
-        title: Text('split tags'),
-        subtitle: value ? Text('separated') : Text('combined'),
+        title: const Text('split tags'),
+        subtitle: value ? const Text('separated') : const Text('combined'),
         value: value,
         onChanged: (value) async {
           await Navigator.of(context).maybePop();
@@ -77,8 +77,8 @@ class FollowSettingsTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      leading: Icon(Icons.turned_in),
-      title: Text('Following settings'),
+      leading: const Icon(Icons.turned_in),
+      title: const Text('Following settings'),
       onTap: () async {
         await Navigator.of(context).maybePop();
         Navigator.of(context).pushNamed('/following');

@@ -25,7 +25,7 @@ class _FollowsSplitPageState extends State<FollowsSplitPage>
         if (refreshController.headerMode?.value == RefreshStatus.idle) {
           await refreshController.requestRefresh(
             needCallback: false,
-            duration: Duration(milliseconds: 100),
+            duration: const Duration(milliseconds: 100),
           );
           await controller.finish;
           if (mounted) {
@@ -67,9 +67,9 @@ class _FollowsSplitPageState extends State<FollowsSplitPage>
       child: AnimatedBuilder(
         animation: controller,
         builder: (context, child) => RefreshablePageLoader(
-          onEmpty: Text('No follows'),
-          onLoading: Text('Loading follows'),
-          onError: Text('Failed to load follows'),
+          onEmpty: const Text('No follows'),
+          onLoading: const Text('Loading follows'),
+          onError: const Text('Failed to load follows'),
           isError: false,
           isLoading: false,
           isEmpty: controller.items.isEmpty,
@@ -81,7 +81,7 @@ class _FollowsSplitPageState extends State<FollowsSplitPage>
           builder: (context) => StaggeredGridView.countBuilder(
             key: joinKeys(['follows', TileLayout.of(context).crossAxisCount]),
             padding: defaultListPadding,
-            physics: BouncingScrollPhysics(),
+            physics: const BouncingScrollPhysics(),
             addAutomaticKeepAlives: false,
             crossAxisCount: TileLayout.of(context).crossAxisCount,
             itemCount: controller.items.length,
@@ -90,7 +90,7 @@ class _FollowsSplitPageState extends State<FollowsSplitPage>
             staggeredTileBuilder: (index) => StaggeredTile.count(
                 1, 1 * TileLayout.of(context).tileHeightFactor),
           ),
-          appBar: DefaultAppBar(
+          appBar: const DefaultAppBar(
             title: Text('Following'),
             actions: [ContextDrawerButton()],
           ),
@@ -101,8 +101,8 @@ class _FollowsSplitPageState extends State<FollowsSplitPage>
               refreshController.refreshFailed();
             }
           },
-          drawer: NavigationDrawer(),
-          endDrawer: ContextDrawer(
+          drawer: const NavigationDrawer(),
+          endDrawer: const ContextDrawer(
             title: Text('Follows'),
             children: [
               FollowSplitSwitchTile(),

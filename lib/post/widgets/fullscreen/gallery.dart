@@ -87,7 +87,7 @@ class _PostFullscreenGalleryState extends State<PostFullscreenGallery>
                 post: widget.controller.itemList![value],
                 controller: frameController,
               )
-            : SizedBox.shrink(),
+            : const SizedBox.shrink(),
       ),
       child: AnimatedBuilder(
         animation: widget.controller,

@@ -7,6 +7,7 @@ import 'reply.dart';
 class ReplyController extends CursorDataController<Reply>
     with RefreshableController {
   final int topicId;
+  @override
   final ValueNotifier<bool> orderByOldest;
 
   ReplyController({required this.topicId, bool orderByOldest = true})

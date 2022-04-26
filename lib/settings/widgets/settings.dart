@@ -20,16 +20,16 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget build(BuildContext context) {
     return LimitedWidthLayout.builder(
       builder: (context) => Scaffold(
-        appBar: DefaultAppBar(
+        appBar: const DefaultAppBar(
           title: Text('Settings'),
           leading: BackButton(),
         ),
         body: ListView(
-          physics: BouncingScrollPhysics(),
+          physics: const BouncingScrollPhysics(),
           padding: defaultActionListPadding
               .add(LimitedWidthLayout.of(context)!.padding),
           children: [
-            SettingsHeader(title: 'Server'),
+            const SettingsHeader(title: 'Server'),
             GestureDetector(
               behavior: HitTestBehavior.translucent,
               onLongPress: () => setCustomHost(context),
@@ -42,7 +42,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   bool useCustomHost =
                       settings.host.value == settings.customHost.value;
                   return SwitchListTile(
-                    title: Text('Host'),
+                    title: const Text('Host'),
                     subtitle: Text(settings.host.value),
                     secondary:
                         Icon(useCustomHost ? Icons.warning : Icons.security),
@@ -65,19 +65,19 @@ class _SettingsPageState extends State<SettingsPage> {
               builder: (context, child) => FutureBuilder<CurrentUser?>(
                 future: client.currentUser(),
                 builder: (context, snapshot) => CrossFade.builder(
-                  duration: Duration(milliseconds: 200),
+                  duration: const Duration(milliseconds: 200),
                   showChild: client.credentials != null,
                   builder: (context) => DividerListTile(
                     title: Text(client.credentials!.username),
                     subtitle: snapshot.data?.levelString != null
                         ? Text(snapshot.data!.levelString.toLowerCase())
                         : null,
-                    leading: CurrentUserAvatar(),
+                    leading: const CurrentUserAvatar(),
                     separated: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 12),
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
                       child: IgnorePointer(
                         child: IconButton(
-                          icon: Icon(Icons.exit_to_app),
+                          icon: const Icon(Icons.exit_to_app),
                           onPressed: () => logout(context),
                         ),
                       ),
@@ -91,26 +91,26 @@ class _SettingsPageState extends State<SettingsPage> {
                     onTapSeparated: () => logout(context),
                   ),
                   secondChild: ListTile(
-                    title: Text('Login'),
-                    leading: Icon(Icons.person_add),
+                    title: const Text('Login'),
+                    leading: const Icon(Icons.person_add),
                     onTap: () => Navigator.pushNamed(context, '/login'),
                   ),
                 ),
               ),
             ),
-            Divider(),
-            SettingsHeader(title: 'Display'),
+            const Divider(),
+            const SettingsHeader(title: 'Display'),
             ValueListenableBuilder<AppTheme>(
               valueListenable: settings.theme,
               builder: (context, value, child) => ListTile(
-                title: Text('Theme'),
+                title: const Text('Theme'),
                 subtitle: Text(value.name),
-                leading: Icon(Icons.brightness_6),
+                leading: const Icon(Icons.brightness_6),
                 onTap: () {
                   showDialog(
                     context: context,
                     builder: (context) => SimpleDialog(
-                      title: Text('Theme'),
+                      title: const Text('Theme'),
                       children: [
                         Column(
                           mainAxisSize: MainAxisSize.min,
@@ -152,7 +152,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   iconColor: Theme.of(context).iconTheme.color,
                 ),
                 child: ExpandablePanel(
-                  header: ListTile(
+                  header: const ListTile(
                     leading: Icon(Icons.grid_view),
                     title: Text('Grid'),
                     subtitle: Text('post grid settings'),
@@ -163,13 +163,13 @@ class _SettingsPageState extends State<SettingsPage> {
                       ValueListenableBuilder<int>(
                         valueListenable: settings.tileSize,
                         builder: (context, value, child) => ListTile(
-                          title: Text('Tile size'),
+                          title: const Text('Tile size'),
                           subtitle: Text(value.toString()),
-                          leading: Icon(Icons.crop),
+                          leading: const Icon(Icons.crop),
                           onTap: () => showDialog(
                             context: context,
                             builder: (context) => RangeDialog(
-                              title: Text('Tile size'),
+                              title: const Text('Tile size'),
                               value: value,
                               division: (300 / 50).round(),
                               min: 100,
@@ -195,22 +195,22 @@ class _SettingsPageState extends State<SettingsPage> {
                       ),
                     ],
                   ),
-                  collapsed: SizedBox.shrink(),
+                  collapsed: const SizedBox.shrink(),
                 ),
               ),
             ),
-            Divider(),
-            SettingsHeader(title: 'Listing'),
+            const Divider(),
+            const SettingsHeader(title: 'Listing'),
             AnimatedBuilder(
               animation: historyController,
               builder: (context, child) => DividerListTile(
-                title: Text('History'),
+                title: const Text('History'),
                 subtitle: settings.writeHistory.value &&
                         historyController.collection.entries.isNotEmpty
                     ? Text(
                         '${historyController.collection.entries.length} pages visited')
                     : null,
-                leading: Icon(Icons.history),
+                leading: const Icon(Icons.history),
                 onTap: () => Navigator.pushNamed(context, '/history'),
                 onTapSeparated: () =>
                     settings.writeHistory.value = !settings.writeHistory.value,
@@ -223,8 +223,8 @@ class _SettingsPageState extends State<SettingsPage> {
             AnimatedBuilder(
               animation: denylistController,
               builder: (context, child) => ListTile(
-                title: Text('Blacklist'),
-                leading: Icon(Icons.block),
+                title: const Text('Blacklist'),
+                leading: const Icon(Icons.block),
                 subtitle: denylistController.items.isNotEmpty
                     ? Text(
                         '${denylistController.items.join(' ').split(' ').trim().where((e) => e[0] != '-').length} tags blocked')
@@ -235,19 +235,19 @@ class _SettingsPageState extends State<SettingsPage> {
             AnimatedBuilder(
               animation: followController,
               builder: (context, child) => ListTile(
-                title: Text('Following'),
+                title: const Text('Following'),
                 subtitle: followController.items.isNotEmpty
                     ? Text('${followController.items.length} searches followed')
                     : null,
-                leading: Icon(Icons.turned_in),
+                leading: const Icon(Icons.turned_in),
                 onTap: () => Navigator.pushNamed(context, '/following'),
               ),
             ),
-            Divider(),
-            SettingsHeader(title: 'Other'),
+            const Divider(),
+            const SettingsHeader(title: 'Other'),
             ListTile(
-              leading: Icon(Icons.tune),
-              title: Text('Advanced settings'),
+              leading: const Icon(Icons.tune),
+              title: const Text('Advanced settings'),
               onTap: () => Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (context) => AdvancedSettingsPage(),

@@ -36,13 +36,13 @@ class GridSettingsTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      title: Text('Quilt'),
+      title: const Text('Quilt'),
       subtitle: Text(getDescription(state)),
       leading: Icon(getIcon(state)),
       onTap: () => showDialog(
         context: context,
         builder: (context) => SimpleDialog(
-          title: Text('Grid'),
+          title: const Text('Grid'),
           children: [
             Column(
               mainAxisSize: MainAxisSize.min,

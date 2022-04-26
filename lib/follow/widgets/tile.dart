@@ -11,7 +11,7 @@ import 'package:flutter/material.dart';
 class FollowTile extends StatelessWidget {
   final Follow follow;
 
-  FollowTile({required this.follow});
+  const FollowTile({required this.follow});
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +61,7 @@ class FollowTile extends StatelessWidget {
             children: [
               if (follow.type != FollowType.update)
                 Padding(
-                  padding: EdgeInsets.only(right: 4),
+                  padding: const EdgeInsets.only(right: 4),
                   child: ShadowIcon(
                     getFollowIcon(follow.type),
                     size: 16,
@@ -104,7 +104,7 @@ class FollowTile extends StatelessWidget {
           AnimatedOpacity(
             opacity: active ? 1 : 0,
             duration: defaultAnimationDuration,
-            child: active ? image(status!) : SizedBox.shrink(),
+            child: active ? image(status!) : const SizedBox.shrink(),
           ),
           Positioned(
             bottom: active ? -1 : null,
@@ -162,7 +162,7 @@ class FollowTile extends StatelessWidget {
 class FollowListTile extends StatelessWidget {
   final Follow follow;
 
-  FollowListTile({required this.follow});
+  const FollowListTile({required this.follow});
 
   @override
   Widget build(BuildContext context) {
@@ -229,7 +229,7 @@ class FollowListTile extends StatelessWidget {
       bool bookmarked = follow.type == FollowType.bookmark;
 
       return PopupMenuButton<VoidCallback>(
-        icon: ShadowIcon(
+        icon: const ShadowIcon(
           Icons.more_vert,
           color: Colors.white,
         ),
@@ -308,7 +308,7 @@ class FollowListTile extends StatelessWidget {
       onLongPress: () => wikiSheet(context: context, tag: follow.tags),
       child: ListTile(
         title: Padding(
-          padding: EdgeInsets.all(8),
+          padding: const EdgeInsets.all(8),
           child: Text(
             follow.name,
             style: Theme.of(context).textTheme.headline6?.copyWith(
@@ -318,7 +318,7 @@ class FollowListTile extends StatelessWidget {
           ),
         ),
         subtitle: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 8),
           child: Column(
             children: [
               if (follow.tags.split(' ').length > 1)
@@ -326,7 +326,6 @@ class FollowListTile extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Wrap(
-                        direction: Axis.horizontal,
                         children: follow.tags
                             .split(' ')
                             .map((tag) => TagCard(tag: tag))
@@ -336,7 +335,7 @@ class FollowListTile extends StatelessWidget {
                   ],
                 ),
               Padding(
-                padding: EdgeInsets.all(4),
+                padding: const EdgeInsets.all(4),
                 child: Row(
                   children: [
                     if (status?.unseen != null && status!.unseen! > 0)
@@ -363,7 +362,7 @@ class FollowListTile extends StatelessWidget {
             CrossFade(
               showChild: follow.type != FollowType.update,
               child: Padding(
-                padding: EdgeInsets.all(8),
+                padding: const EdgeInsets.all(8),
                 child: ShadowIcon(
                   getFollowIcon(follow.type),
                   color: Colors.white,

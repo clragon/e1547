@@ -12,35 +12,35 @@ class _AdvancedSettingsPageState extends State<AdvancedSettingsPage> {
   Widget build(BuildContext context) {
     return LimitedWidthLayout.builder(
       builder: (context) => Scaffold(
-        appBar: DefaultAppBar(
+        appBar: const DefaultAppBar(
           title: Text('Advanced settings'),
           leading: BackButton(),
         ),
         body: ListView(
-          physics: BouncingScrollPhysics(),
+          physics: const BouncingScrollPhysics(),
           padding: defaultActionListPadding
               .add(LimitedWidthLayout.of(context)!.padding),
           children: [
-            SettingsHeader(title: 'Server'),
+            const SettingsHeader(title: 'Server'),
             ValueListenableBuilder<bool>(
               valueListenable: settings.upvoteFavs,
               builder: (context, value, child) => SwitchListTile(
-                title: Text('Upvote favorites'),
+                title: const Text('Upvote favorites'),
                 subtitle: Text(value ? 'upvote and favorite' : 'favorite only'),
-                secondary: Icon(Icons.arrow_upward),
+                secondary: const Icon(Icons.arrow_upward),
                 value: value,
                 onChanged: (value) => settings.upvoteFavs.value = value,
               ),
             ),
-            Divider(),
-            SettingsHeader(title: 'Display'),
+            const Divider(),
+            const SettingsHeader(title: 'Display'),
             ValueListenableBuilder<bool>(
               valueListenable: settings.showPostInfo,
               builder: (context, value, child) => SwitchListTile(
-                title: Text('Post info'),
+                title: const Text('Post info'),
                 subtitle:
                     Text(value ? 'info on post tiles' : 'image tiles only'),
-                secondary: Icon(Icons.subtitles),
+                secondary: const Icon(Icons.subtitles),
                 value: value,
                 onChanged: (value) => settings.showPostInfo.value = value,
               ),
@@ -48,21 +48,21 @@ class _AdvancedSettingsPageState extends State<AdvancedSettingsPage> {
             ValueListenableBuilder<bool>(
               valueListenable: settings.muteVideos,
               builder: (context, value, child) => SwitchListTile(
-                title: Text('Video volume'),
+                title: const Text('Video volume'),
                 subtitle: Text(value ? 'muted' : 'with sound'),
                 secondary: Icon(value ? Icons.volume_off : Icons.volume_up),
                 value: value,
                 onChanged: (value) => settings.muteVideos.value = value,
               ),
             ),
-            Divider(),
-            SettingsHeader(title: 'Beta'),
+            const Divider(),
+            const SettingsHeader(title: 'Beta'),
             ValueListenableBuilder<bool>(
               valueListenable: settings.showBeta,
               builder: (context, value, child) => SwitchListTile(
-                title: Text('Experimental features'),
+                title: const Text('Experimental features'),
                 subtitle: Text(value ? 'preview enabled' : 'preview disabled'),
-                secondary: Icon(Icons.auto_awesome),
+                secondary: const Icon(Icons.auto_awesome),
                 value: value,
                 onChanged: (value) => settings.showBeta.value = value,
               ),

@@ -46,10 +46,11 @@ class PostDetailVideo extends StatelessWidget {
                 child: CrossFade.builder(
                   showChild: post.controller != null,
                   builder: (context) => Padding(
-                    padding: EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
                     child: VideoButton(videoController: post.controller!),
                   ),
-                  secondChild: SizedCircularProgressIndicator(size: 24),
+                  secondChild: const SizedCircularProgressIndicator(size: 24),
                 ),
               ),
             ),
@@ -86,9 +87,7 @@ class _PostDetailImageToggleState extends State<PostDetailImageToggle> {
         await setCustomHost(context);
       }
       if (settings.customHost.value != null) {
-        if (replacement == null) {
-          replacement = await client.post(post.id, unsafe: true);
-        }
+        replacement ??= await client.post(post.id, unsafe: true);
         post.file.url = replacement!.file.url;
         post.preview.url = replacement!.preview.url;
         post.sample.url = replacement!.sample.url;
@@ -126,7 +125,7 @@ class _PostDetailImageToggleState extends State<PostDetailImageToggle> {
           showChild: post.file.url == null ||
               (!post.isFavorited &&
                   (controller.isDenied(post) || controller.isAllowed(post))),
-          duration: Duration(milliseconds: 200),
+          duration: const Duration(milliseconds: 200),
           child: Card(
             color: controller.isAllowed(post)
                 ? Colors.black12
@@ -135,11 +134,11 @@ class _PostDetailImageToggleState extends State<PostDetailImageToggle> {
             child: InkWell(
               onTap: onToggle,
               child: Padding(
-                padding: EdgeInsets.all(8),
+                padding: const EdgeInsets.all(8),
                 child: Row(
                   children: [
                     Padding(
-                      padding: EdgeInsets.symmetric(vertical: 2),
+                      padding: const EdgeInsets.symmetric(vertical: 2),
                       child: Icon(
                         controller.isAllowed(post)
                             ? Icons.visibility_off
@@ -148,12 +147,12 @@ class _PostDetailImageToggleState extends State<PostDetailImageToggle> {
                       ),
                     ),
                     Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 5),
+                      padding: const EdgeInsets.symmetric(horizontal: 5),
                       child: Text(controller.isAllowed(post) ? 'hide' : 'show'),
                     ),
                     CrossFade(
                       showChild: loading,
-                      child: SizedCircularProgressIndicator(
+                      child: const SizedCircularProgressIndicator(
                         size: 16,
                       ),
                     ),
@@ -165,7 +164,7 @@ class _PostDetailImageToggleState extends State<PostDetailImageToggle> {
         ),
       );
     } else {
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     }
   }
 }
@@ -209,7 +208,7 @@ class PostDetailImageButtons extends StatelessWidget {
                 color: Colors.black12,
                 child: InkWell(
                   onTap: onTap,
-                  child: Padding(
+                  child: const Padding(
                     padding: EdgeInsets.all(4),
                     child: Icon(
                       Icons.fullscreen,
@@ -221,7 +220,7 @@ class PostDetailImageButtons extends StatelessWidget {
               ),
             );
           } else {
-            return SizedBox.shrink();
+            return const SizedBox.shrink();
           }
         }
 
@@ -251,11 +250,11 @@ class PostDetailImageButtons extends StatelessWidget {
             ),
             Positioned(
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 4),
+                padding: const EdgeInsets.symmetric(horizontal: 4),
                 child: Row(
                   children: [
                     muteButton(),
-                    Spacer(),
+                    const Spacer(),
                     fullscreenButton(),
                     if (controller != null)
                       PostDetailImageToggle(

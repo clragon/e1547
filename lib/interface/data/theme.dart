@@ -10,7 +10,7 @@ enum AppTheme {
   blue,
 }
 
-final MaterialColor primarySwatch = MaterialColor(
+const MaterialColor primarySwatch = MaterialColor(
   0xFFFCB328,
   <int, Color>{
     50: Color(0xFFFFF6E5),
@@ -26,7 +26,7 @@ final MaterialColor primarySwatch = MaterialColor(
   },
 );
 
-final Color accentColor = Color(0xFFffc107);
+const Color accentColor = Color(0xFFffc107);
 
 ThemeData prepareTheme(ThemeData theme) => theme.copyWith(
       platform: theme.platform == TargetPlatform.windows
@@ -82,11 +82,10 @@ final Map<AppTheme, ThemeData> appThemeMap = {
         accentColor: accentColor,
         cardColor: Colors.white,
         backgroundColor: Colors.grey[50],
-        brightness: Brightness.light,
       ),
     ),
   ).copyWith(
-    floatingActionButtonTheme: FloatingActionButtonThemeData(
+    floatingActionButtonTheme: const FloatingActionButtonThemeData(
       foregroundColor: Colors.white,
     ),
   ),
@@ -96,7 +95,7 @@ final Map<AppTheme, ThemeData> appThemeMap = {
         primarySwatch: primarySwatch,
         accentColor: accentColor,
         cardColor: Colors.grey[900],
-        backgroundColor: Color.fromARGB(255, 20, 20, 20),
+        backgroundColor: const Color.fromARGB(255, 20, 20, 20),
         brightness: Brightness.dark,
       ),
     ),
@@ -106,7 +105,7 @@ final Map<AppTheme, ThemeData> appThemeMap = {
       colorScheme: ColorScheme.fromSwatch(
         primarySwatch: primarySwatch,
         accentColor: accentColor,
-        cardColor: Color.fromARGB(255, 20, 20, 20),
+        cardColor: const Color.fromARGB(255, 20, 20, 20),
         backgroundColor: Colors.black,
         brightness: Brightness.dark,
       ),
@@ -117,8 +116,8 @@ final Map<AppTheme, ThemeData> appThemeMap = {
       colorScheme: ColorScheme.fromSwatch(
         primarySwatch: primarySwatch,
         accentColor: accentColor,
-        cardColor: Color.fromARGB(255, 31, 60, 103),
-        backgroundColor: Color.fromARGB(255, 15, 33, 60),
+        cardColor: const Color.fromARGB(255, 31, 60, 103),
+        backgroundColor: const Color.fromARGB(255, 15, 33, 60),
         brightness: Brightness.dark,
       ),
     ),

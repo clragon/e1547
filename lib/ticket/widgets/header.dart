@@ -12,7 +12,7 @@ class ReportFormHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: defaultFormPadding
-          .add(EdgeInsets.only(left: 8, right: 8, bottom: 12)),
+          .add(const EdgeInsets.only(left: 8, right: 8, bottom: 12)),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -24,7 +24,7 @@ class ReportFormHeader extends StatelessWidget {
           ),
           if (icon != null)
             IconTheme(
-              data: IconThemeData(
+              data: const IconThemeData(
                 color: Colors.grey,
               ),
               child: icon!,

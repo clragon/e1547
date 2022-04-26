@@ -19,7 +19,7 @@ InlineSpan parseDText(BuildContext context, String text, TextState state,
   parsers ??= allParsers;
 
   if (text.isEmpty) {
-    return TextSpan();
+    return const TextSpan();
   }
 
   List<InlineSpan> spans = [];

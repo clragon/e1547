@@ -51,7 +51,7 @@ class FrameController extends ChangeNotifier {
 }
 
 class FrameData extends InheritedNotifier<FrameController> {
-  FrameData({required Widget child, required FrameController controller})
+  const FrameData({required Widget child, required FrameController controller})
       : super(child: child, notifier: controller);
 }
 
@@ -113,7 +113,7 @@ class _PostFullscreenFrameState extends State<PostFullscreenFrame> {
                 controller.toggleFrame();
                 if ((widget.post.controller?.value.isPlaying ?? false) &&
                     controller.visible) {
-                  controller.hideFrame(duration: Duration(seconds: 2));
+                  controller.hideFrame(duration: const Duration(seconds: 2));
                 }
               },
               child: Stack(
@@ -143,9 +143,9 @@ class FrameChild extends StatelessWidget {
   final bool? shown;
   final Widget child;
 
-  final Duration fadeOutDuration = Duration(milliseconds: 50);
+  final Duration fadeOutDuration = const Duration(milliseconds: 50);
 
-  FrameChild({required this.child, this.shown});
+  const FrameChild({required this.child, this.shown});
 
   @override
   Widget build(BuildContext context) {
@@ -176,6 +176,7 @@ class FrameChild extends StatelessWidget {
 }
 
 class FrameAppBar extends StatelessWidget with AppBarBuilderWidget {
+  @override
   final PreferredSizeWidget child;
 
   const FrameAppBar({Key? key, required this.child}) : super(key: key);

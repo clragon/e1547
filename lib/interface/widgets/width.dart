@@ -6,7 +6,7 @@ class LimitedWidthLayoutData extends InheritedWidget {
 
   EdgeInsets get padding => EdgeInsets.symmetric(horizontal: space);
 
-  LimitedWidthLayoutData({
+  const LimitedWidthLayoutData({
     required Widget child,
     required this.maxWidth,
     required this.space,

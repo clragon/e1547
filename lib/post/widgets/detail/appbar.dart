@@ -7,7 +7,7 @@ class PostDetailAppBar extends StatelessWidget with PreferredSizeWidget {
   final PostController? controller;
 
   @override
-  Size get preferredSize => Size.fromHeight(defaultAppBarHeight);
+  Size get preferredSize => const Size.fromHeight(defaultAppBarHeight);
 
   PostDetailAppBar({
     required this.post,
@@ -23,7 +23,7 @@ class PostDetailAppBar extends StatelessWidget with PreferredSizeWidget {
             ? IconButton(
                 onPressed: Navigator.of(context).maybePop,
                 tooltip: 'Stop editing',
-                icon: ShadowIcon(
+                icon: const ShadowIcon(
                   Icons.clear,
                   color: Colors.white,
                 ),
@@ -33,7 +33,7 @@ class PostDetailAppBar extends StatelessWidget with PreferredSizeWidget {
             ? null
             : [
                 PopupMenuButton<VoidCallback>(
-                  icon: ShadowIcon(
+                  icon: const ShadowIcon(
                     Icons.more_vert,
                     color: Colors.white,
                   ),

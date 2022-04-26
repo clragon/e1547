@@ -382,7 +382,7 @@ class Client extends ChangeNotifier {
           },
           forceRefresh: force,
           maxAge: age,
-          maxStale: Duration(hours: 4),
+          maxStale: const Duration(hours: 4),
         )
         .then(
           (response) => response.data,
@@ -578,7 +578,7 @@ class Client extends ChangeNotifier {
             queryParameters: {
               'search[name_matches]': search,
             },
-            maxAge: Duration(days: 1),
+            maxAge: const Duration(days: 1),
             forceRefresh: force,
           )
           .then((response) => response.data);

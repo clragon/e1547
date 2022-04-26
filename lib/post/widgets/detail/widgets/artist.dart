@@ -31,7 +31,7 @@ class ArtistDisplay extends StatelessWidget {
             List<InlineSpan> spans = [];
             for (String artist in artists) {
               if (artist != artists.first && artists.length > 1) {
-                spans.add(TextSpan(text: ', '));
+                spans.add(const TextSpan(text: ', '));
               }
               spans.add(
                 WidgetSpan(
@@ -46,7 +46,7 @@ class ArtistDisplay extends StatelessWidget {
             return Text.rich(
               TextSpan(children: spans),
               overflow: TextOverflow.fade,
-              style: TextStyle(fontSize: 14.0),
+              style: const TextStyle(fontSize: 14.0),
             );
           } else {
             return Text(
@@ -68,7 +68,7 @@ class ArtistDisplay extends StatelessWidget {
             Flexible(
               child: Row(
                 children: [
-                  Padding(
+                  const Padding(
                     padding: EdgeInsets.only(right: 12),
                     child: Icon(Icons.account_circle),
                   ),
@@ -88,7 +88,7 @@ class ArtistDisplay extends StatelessWidget {
                       Clipboard.setData(
                           ClipboardData(text: post.id.toString()));
                       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        duration: Duration(seconds: 1),
+                        duration: const Duration(seconds: 1),
                         content: Text('Copied post id #${post.id}'),
                       ));
                     },
@@ -97,9 +97,9 @@ class ArtistDisplay extends StatelessWidget {
                 InkWell(
                   child: Row(
                     children: [
-                      Icon(Icons.person, size: 14),
+                      const Icon(Icons.person, size: 14),
                       Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 4),
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
                         child: Text(post.uploaderId.toString()),
                       ),
                     ],
@@ -108,7 +108,7 @@ class ArtistDisplay extends StatelessWidget {
                     MaterialPageRoute(
                       builder: (context) => UserLoadingPage(
                         post.uploaderId.toString(),
-                        initalPage: UserPageSection.Uploads,
+                        initalPage: UserPageSection.uploads,
                       ),
                     ),
                   ),
@@ -117,7 +117,7 @@ class ArtistDisplay extends StatelessWidget {
             ),
           ],
         ),
-        Divider(),
+        const Divider(),
       ],
     );
   }

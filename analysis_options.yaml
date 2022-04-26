@@ -1,0 +1,9 @@
+include: package:flutter_lints/flutter.yaml
+
+# https://dart-lang.github.io/linter/lints/index.html.
+linter:
+  rules:
+    overridden_fields: false
+    use_key_in_widget_constructors: false
+    avoid_redundant_argument_values: true
+    avoid_function_literals_in_foreach_calls: false

@@ -26,9 +26,9 @@ class _CommentsPageState extends State<CommentsPage> {
   Widget build(BuildContext context) {
     return RefreshableControllerPage(
       appBar: DefaultAppBar(
-        leading: BackButton(),
+        leading: const BackButton(),
         title: Text('#${widget.postId} comments'),
-        actions: [
+        actions: const [
           ContextDrawerButton(),
         ],
       ),
@@ -54,18 +54,18 @@ class _CommentsPageState extends State<CommentsPage> {
             comment: item,
             controller: controller,
           ),
-          onEmpty: Text('No comments'),
-          onError: Text('Failed to load comments'),
+          onEmpty: const Text('No comments'),
+          onError: const Text('Failed to load comments'),
         ),
       ),
       endDrawer: ContextDrawer(
-        title: Text('Comments'),
+        title: const Text('Comments'),
         children: [
           ValueListenableBuilder<bool>(
             valueListenable: controller.orderByOldest,
             builder: (context, value, child) => SwitchListTile(
-              secondary: Icon(Icons.sort),
-              title: Text('Comment order'),
+              secondary: const Icon(Icons.sort),
+              title: const Text('Comment order'),
               subtitle: Text(value ? 'oldest first' : 'newest first'),
               value: value,
               onChanged: (value) {

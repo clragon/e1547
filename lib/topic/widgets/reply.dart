@@ -17,7 +17,7 @@ class ReplyTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Widget picture() {
-      return Padding(
+      return const Padding(
         padding: EdgeInsets.only(right: 8, top: 4),
         child: Icon(Icons.person),
       );
@@ -27,7 +27,7 @@ class ReplyTile extends StatelessWidget {
       return Row(
         children: [
           Padding(
-            padding: EdgeInsets.only(top: 4, bottom: 4),
+            padding: const EdgeInsets.only(top: 4, bottom: 4),
             child: InkWell(
               child: Text(
                 generator.generate(reply.creatorId),
@@ -76,7 +76,7 @@ class ReplyTile extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Padding(
-                        padding: EdgeInsets.only(bottom: 8),
+                        padding: const EdgeInsets.only(bottom: 8),
                         child: UsernameGeneratorData(
                           generator: generator,
                           child: DText(reply.body),
@@ -93,7 +93,7 @@ class ReplyTile extends StatelessWidget {
     }
 
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 8),
       child: Column(
         children: [
           Hero(
@@ -103,7 +103,7 @@ class ReplyTile extends StatelessWidget {
               child: body(),
             ),
           ),
-          Divider(),
+          const Divider(),
         ],
       ),
     );

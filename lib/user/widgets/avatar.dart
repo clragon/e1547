@@ -109,7 +109,7 @@ class Avatar extends StatelessWidget {
         ),
       );
     } else {
-      return AppIcon();
+      return const AppIcon();
     }
   }
 }

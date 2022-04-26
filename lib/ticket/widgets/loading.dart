@@ -19,10 +19,10 @@ class ReportLoadingOverlay extends StatelessWidget {
           child: CrossFade(
             showChild: isLoading,
             child: Container(
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: Colors.black54,
               ),
-              child: Center(
+              child: const Center(
                 child: CircularProgressIndicator(),
               ),
             ),

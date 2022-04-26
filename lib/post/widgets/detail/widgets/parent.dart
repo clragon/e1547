@@ -31,7 +31,7 @@ class ParentDisplay extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Padding(
+                  const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
                     child: Text(
                       'Parent',
@@ -39,11 +39,11 @@ class ParentDisplay extends StatelessWidget {
                     ),
                   ),
                   LoadingTile(
-                    leading: Icon(Icons.supervisor_account),
+                    leading: const Icon(Icons.supervisor_account),
                     title: Text(parentId?.toString() ?? 'none'),
                     trailing: isEditing && editingController != null
                         ? IconButton(
-                            icon: Icon(Icons.edit),
+                            icon: const Icon(Icons.edit),
                             onPressed: editingController.canEdit
                                 ? () {
                                     editingController.show(
@@ -72,7 +72,7 @@ class ParentDisplay extends StatelessWidget {
                         } on DioError {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              duration: Duration(seconds: 1),
+                              duration: const Duration(seconds: 1),
                               content:
                                   Text('Coulnd\'t retrieve Post #$parentId'),
                             ),
@@ -81,7 +81,7 @@ class ParentDisplay extends StatelessWidget {
                       }
                     },
                   ),
-                  Divider(),
+                  const Divider(),
                 ],
               ),
             ),
@@ -92,7 +92,7 @@ class ParentDisplay extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Padding(
+                  const Padding(
                     padding: EdgeInsets.symmetric(
                       horizontal: 4,
                       vertical: 2,
@@ -106,7 +106,7 @@ class ParentDisplay extends StatelessWidget {
                   ),
                   ...post.relationships.children.map(
                     (child) => LoadingTile(
-                      leading: Icon(Icons.supervised_user_circle),
+                      leading: const Icon(Icons.supervised_user_circle),
                       title: Text(child.toString()),
                       onTap: () async {
                         try {
@@ -122,7 +122,7 @@ class ParentDisplay extends StatelessWidget {
                           );
                         } on DioError {
                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            duration: Duration(seconds: 1),
+                            duration: const Duration(seconds: 1),
                             content: Text(
                                 'Coulnd\'t retrieve Post #${child.toString()}'),
                           ));
@@ -130,7 +130,7 @@ class ParentDisplay extends StatelessWidget {
                       },
                     ),
                   ),
-                  Divider(),
+                  const Divider(),
                 ],
               ),
             ),
@@ -170,7 +170,7 @@ class _ParentEditorState extends State<ParentEditor> {
 
   void showError(String message) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      duration: Duration(seconds: 1),
+      duration: const Duration(seconds: 1),
       content: Text(message),
       behavior: SnackBarBehavior.floating,
     ));
@@ -179,8 +179,14 @@ class _ParentEditorState extends State<ParentEditor> {
 
   Future<void> submit() async {
     if (textController.text.trim().isEmpty) {
-      widget.editingController.value = widget.editingController.value!.copyWith(
+      PostEdit previous = widget.editingController.value!;
+      widget.editingController.value = PostEdit(
+        editReason: previous.editReason,
+        rating: previous.rating,
+        description: previous.description,
         parentId: null,
+        sources: previous.sources,
+        tags: previous.tags,
       );
       return;
     }
@@ -201,12 +207,11 @@ class _ParentEditorState extends State<ParentEditor> {
     return TextField(
       controller: textController,
       autofocus: true,
-      maxLines: 1,
       keyboardType: TextInputType.number,
       inputFormatters: [
         FilteringTextInputFormatter.allow(RegExp(r'^ ?\d*')),
       ],
-      decoration: InputDecoration(labelText: 'Parent ID'),
+      decoration: const InputDecoration(labelText: 'Parent ID'),
       onSubmitted: (_) => widget.editingController.action!(),
       readOnly: widget.editingController.isLoading,
     );

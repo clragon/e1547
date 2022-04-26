@@ -30,8 +30,9 @@ class VoteDisplay extends StatelessWidget {
           cursor: SystemMouseCursors.click,
           child: LikeButton(
             isLiked: status == VoteStatus.upvoted,
-            circleColor: CircleColor(start: Colors.orange, end: Colors.amber),
-            bubblesColor: BubblesColor(
+            circleColor:
+                const CircleColor(start: Colors.orange, end: Colors.amber),
+            bubblesColor: const BubblesColor(
               dotPrimaryColor: Colors.amber,
               dotSecondaryColor: Colors.orange,
               dotThirdColor: Colors.deepOrange,
@@ -45,7 +46,7 @@ class VoteDisplay extends StatelessWidget {
           ),
         ),
         Padding(
-          padding: padding ?? EdgeInsets.symmetric(horizontal: 8),
+          padding: padding ?? const EdgeInsets.symmetric(horizontal: 8),
           child: Text(score.toString()),
         ),
         MouseRegion(
@@ -53,8 +54,8 @@ class VoteDisplay extends StatelessWidget {
           child: LikeButton(
             isLiked: status == VoteStatus.downvoted,
             circleColor:
-                CircleColor(start: Colors.blue, end: Colors.cyanAccent),
-            bubblesColor: BubblesColor(
+                const CircleColor(start: Colors.blue, end: Colors.cyanAccent),
+            bubblesColor: const BubblesColor(
               dotPrimaryColor: Colors.cyanAccent,
               dotSecondaryColor: Colors.blue,
               dotThirdColor: Colors.indigoAccent,

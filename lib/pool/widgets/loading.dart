@@ -22,8 +22,8 @@ class _PoolLoadingPageState extends State<PoolLoadingPage> {
       future: pool,
       builder: (context, value) => PoolPage(pool: value),
       title: Text('Pool #${widget.id}'),
-      onError: Text('Failed to load pool'),
-      onEmpty: Text('Pool not found'),
+      onError: const Text('Failed to load pool'),
+      onEmpty: const Text('Pool not found'),
     );
   }
 }

@@ -16,7 +16,7 @@ class ActionController extends ChangeNotifier {
   bool isLoading = false;
   bool isForgiven = false;
   bool get isError => error != null;
-  Duration errorTimeout = Duration(seconds: 3);
+  Duration errorTimeout = const Duration(seconds: 3);
   Timer? errorTimer;
 
   @mustCallSuper

@@ -41,7 +41,7 @@ class _FollowingPageState extends State<FollowingPage> {
 
             Widget body() {
               if (followController.items.isEmpty) {
-                return IconMessage(
+                return const IconMessage(
                   icon: Icon(Icons.bookmark),
                   title: Text('You are not following any tags'),
                 );
@@ -50,7 +50,7 @@ class _FollowingPageState extends State<FollowingPage> {
               return ListView.builder(
                 padding: defaultActionListPadding
                     .add(LimitedWidthLayout.of(context)!.padding),
-                physics: BouncingScrollPhysics(),
+                physics: const BouncingScrollPhysics(),
                 itemCount: followController.items.length,
                 itemBuilder: (context, index) => FollowListTile(
                   follow: followController.items[index],
@@ -60,13 +60,13 @@ class _FollowingPageState extends State<FollowingPage> {
 
             return Scaffold(
               appBar: DefaultAppBar(
-                title: Text('Following'),
+                title: const Text('Following'),
                 actions: [
                   IconButton(
-                    icon: Icon(Icons.edit),
+                    icon: const Icon(Icons.edit),
                     onPressed: () async => showDialog(
                       context: context,
-                      builder: (context) => FollowEditor(),
+                      builder: (context) => const FollowEditor(),
                     ),
                   ),
                 ],
@@ -105,20 +105,20 @@ class _FollowEditorState extends State<FollowEditor> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('Following'),
+      title: const Text('Following'),
       content: TextField(
-        scrollPhysics: BouncingScrollPhysics(),
+        scrollPhysics: const BouncingScrollPhysics(),
         controller: controller,
         keyboardType: TextInputType.multiline,
         maxLines: null,
       ),
       actions: [
         TextButton(
-          child: Text('CANCEL'),
+          child: const Text('CANCEL'),
           onPressed: Navigator.of(context).maybePop,
         ),
         TextButton(
-          child: Text('OK'),
+          child: const Text('OK'),
           onPressed: () {
             List<String> tags = controller.text.split('\n');
             tags = tags.trim();

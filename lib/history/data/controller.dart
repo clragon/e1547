@@ -108,7 +108,7 @@ class HistoryController extends ChangeNotifier {
     if (_getRecentEntries(collection.tags).any(
       (element) =>
           element.tags == tag &&
-          DeepCollectionEquality().equals(element.thumbnails, thumbnails),
+          const DeepCollectionEquality().equals(element.thumbnails, thumbnails),
     )) {
       return false;
     }

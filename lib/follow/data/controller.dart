@@ -15,7 +15,7 @@ late final FollowController followController =
 
 class FollowController extends DataUpdater<List<Follow>> with HostableUpdater {
   late final ValueNotifier<List<Follow>> _source;
-  late SelectedValueNotifier<List<Follow>> _restarter =
+  late final SelectedValueNotifier<List<Follow>> _restarter =
       SelectedValueNotifier<List<Follow>>(
     source: _source,
     comparator: _compare,
@@ -72,7 +72,7 @@ class FollowController extends DataUpdater<List<Follow>> with HostableUpdater {
             now.difference(updated) > getFollowRefreshRate(data.length)) {
           try {
             refreshed = await refresh(follow, force: force);
-            await Future.delayed(Duration(milliseconds: 500));
+            await Future.delayed(const Duration(milliseconds: 500));
           } on DioError catch (e) {
             throw UpdaterException(
                 message:

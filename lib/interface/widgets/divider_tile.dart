@@ -54,7 +54,7 @@ class DividerListTile extends StatelessWidget {
                     child: Row(
                       children: [
                         Padding(
-                          padding: EdgeInsets.symmetric(vertical: 12),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
                           child: Container(
                             color: Theme.of(context).dividerColor,
                             width: 2,

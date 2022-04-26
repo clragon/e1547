@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:e1547/history/history.dart';
 
 class TagHistoryEntry extends HistoryEntry {
+  @override
   final DateTime visitedAt;
   final String tags;
   final String? alias;

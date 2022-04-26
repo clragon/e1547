@@ -18,7 +18,7 @@ class PostGrid extends StatelessWidget {
 Widget postGrid(BuildContext context, PostController controller) {
   return PagedStaggeredGridView(
     key: joinKeys(['posts', TileLayout.of(context).crossAxisCount]),
-    physics: BouncingScrollPhysics(),
+    physics: const BouncingScrollPhysics(),
     showNewPageErrorIndicatorAsGridChild: false,
     showNewPageProgressIndicatorAsGridChild: false,
     showNoMoreItemsIndicatorAsGridChild: false,
@@ -27,8 +27,8 @@ Widget postGrid(BuildContext context, PostController controller) {
     pagingController: controller,
     builderDelegate: defaultPagedChildBuilderDelegate<Post>(
       pagingController: controller,
-      onEmpty: Text('No posts'),
-      onError: Text('Failed to load posts'),
+      onEmpty: const Text('No posts'),
+      onError: const Text('Failed to load posts'),
       itemBuilder: (context, item, index) => PostTile(
         post: item,
         controller: controller,

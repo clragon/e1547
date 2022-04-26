@@ -51,7 +51,7 @@ class DText extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 4),
+            padding: const EdgeInsets.symmetric(horizontal: 4),
             child: Icon(
               Icons.warning_amber_outlined,
               color: Theme.of(context).errorColor,

@@ -26,7 +26,7 @@ class UserReportScreen extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Padding(
-            padding: EdgeInsets.only(top: 30),
+            padding: const EdgeInsets.only(top: 30),
             child: Stack(
               children: [
                 SizedBox(
@@ -38,11 +38,11 @@ class UserReportScreen extends StatelessWidget {
                   child: CrossFade(
                     showChild: isLoading,
                     child: Container(
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                         shape: BoxShape.circle,
                         color: Colors.black54,
                       ),
-                      child: Center(
+                      child: const Center(
                         child: CircularProgressIndicator(),
                       ),
                     ),
@@ -52,7 +52,7 @@ class UserReportScreen extends StatelessWidget {
             ),
           ),
           Padding(
-            padding: EdgeInsets.symmetric(vertical: 16),
+            padding: const EdgeInsets.symmetric(vertical: 16),
             child: Text(
               user.name,
               style: Theme.of(context).textTheme.headline6,

@@ -13,7 +13,7 @@ class TagListActions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (wikiMetaTags.any((prefix) => tag.startsWith(prefix))) {
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     }
     return AnimatedBuilder(
       animation: Listenable.merge([denylistController, followController]),
@@ -38,8 +38,8 @@ class TagListActions extends StatelessWidget {
                 },
                 icon: CrossFade(
                   showChild: following,
-                  child: Icon(Icons.turned_in),
-                  secondChild: Icon(Icons.turned_in_not),
+                  child: const Icon(Icons.turned_in),
+                  secondChild: const Icon(Icons.turned_in_not),
                 ),
                 tooltip: following ? 'Unfollow tag' : 'Follow tag',
               ),
@@ -59,8 +59,8 @@ class TagListActions extends StatelessWidget {
                 },
                 icon: CrossFade(
                   showChild: denied,
-                  child: Icon(Icons.check),
-                  secondChild: Icon(Icons.block),
+                  child: const Icon(Icons.check),
+                  secondChild: const Icon(Icons.block),
                 ),
                 tooltip: denied ? 'Unblock tag' : 'Block tag',
               ),
@@ -80,7 +80,7 @@ class RemoveTagAction extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return IconButton(
-      icon: Icon(Icons.search_off),
+      icon: const Icon(Icons.search_off),
       tooltip: 'Remove from search',
       onPressed: () {
         Navigator.of(context).maybePop();
@@ -100,7 +100,7 @@ class AddTagAction extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return IconButton(
-      icon: Icon(Icons.zoom_in),
+      icon: const Icon(Icons.zoom_in),
       tooltip: 'Add to search',
       onPressed: () {
         Navigator.of(context).maybePop();
@@ -119,7 +119,7 @@ class SubtractTagAction extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return IconButton(
-      icon: Icon(Icons.zoom_out),
+      icon: const Icon(Icons.zoom_out),
       tooltip: 'Subtract from search',
       onPressed: () {
         Navigator.of(context).maybePop();
@@ -142,7 +142,7 @@ class TagSearchActions extends StatelessWidget {
       valueListenable: controller.search,
       builder: (context, String value, child) {
         if (!controller.canSearch || tag.contains(' ')) {
-          return SizedBox.shrink();
+          return const SizedBox.shrink();
         }
 
         bool isSearched = controller.search.value

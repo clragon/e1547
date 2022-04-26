@@ -9,11 +9,11 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 abstract class RawDataController<KeyType, ItemType>
     extends PagingController<KeyType, ItemType> {
-  Mutex _requestLock = Mutex();
+  final Mutex _requestLock = Mutex();
   bool _isRefreshing = false;
   bool _isForceRefreshing = false;
 
-  late List<Listenable> _refreshListeners = getRefreshListeners();
+  late final List<Listenable> _refreshListeners = getRefreshListeners();
 
   RawDataController({
     required KeyType firstPageKey,

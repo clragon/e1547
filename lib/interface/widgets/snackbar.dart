@@ -63,12 +63,12 @@ Future<void> loadingNotification<T>({
         ),
       ),
       leading: icon,
-      padding: EdgeInsets.all(8),
-      leadingPadding: EdgeInsets.all(8),
+      padding: const EdgeInsets.all(8),
+      leadingPadding: const EdgeInsets.all(8),
       actions: [
         TextButton(
           onPressed: () => status = LoadingNotificationStatus.cancelled,
-          child: Text('CANCEL'),
+          child: const Text('CANCEL'),
         ),
       ],
     ),
@@ -101,18 +101,18 @@ Future<void> loadingNotification<T>({
         child: Text(getStatus(status, progress.value)),
       ),
       leading: Icon(getStatusIcon(status)),
-      padding: EdgeInsets.all(8),
-      leadingPadding: EdgeInsets.all(8),
+      padding: const EdgeInsets.all(8),
+      leadingPadding: const EdgeInsets.all(8),
       actions: [
         TextButton(
           onPressed: messenger.hideCurrentMaterialBanner,
-          child: Text('DISMISS'),
+          child: const Text('DISMISS'),
         ),
       ],
     ),
   );
 
-  await Future.delayed(Duration(seconds: 2));
+  await Future.delayed(const Duration(seconds: 2));
   messenger.hideCurrentMaterialBanner();
 }
 

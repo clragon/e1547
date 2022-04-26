@@ -27,15 +27,15 @@ class _RepliesPageState extends State<RepliesPage> {
   Widget build(BuildContext context) {
     return RefreshableControllerPage(
       appBar: DefaultAppBar(
-        leading: BackButton(),
+        leading: const BackButton(),
         title: Text(widget.topic.title),
         actions: [
           IconButton(
-            icon: Icon(Icons.info_outline),
+            icon: const Icon(Icons.info_outline),
             tooltip: 'Info',
             onPressed: () => topicSheet(context, widget.topic),
           ),
-          ContextDrawerButton(),
+          const ContextDrawerButton(),
         ],
       ),
       controller: controller,
@@ -46,19 +46,19 @@ class _RepliesPageState extends State<RepliesPage> {
           pagingController: controller,
           itemBuilder: (context, item, index) =>
               ReplyTile(reply: item, topic: widget.topic),
-          onEmpty: Text('No replies'),
-          onError: Text('Failed to load replies'),
+          onEmpty: const Text('No replies'),
+          onError: const Text('Failed to load replies'),
         ),
       ),
-      drawer: NavigationDrawer(),
+      drawer: const NavigationDrawer(),
       endDrawer: ContextDrawer(
-        title: Text('Replies'),
+        title: const Text('Replies'),
         children: [
           ValueListenableBuilder<bool>(
             valueListenable: controller.orderByOldest,
             builder: (context, value, child) => SwitchListTile(
-              secondary: Icon(Icons.sort),
-              title: Text('Reply order'),
+              secondary: const Icon(Icons.sort),
+              title: const Text('Reply order'),
               subtitle: Text(value ? 'oldest first' : 'newest first'),
               value: value,
               onChanged: (value) {

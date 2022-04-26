@@ -81,7 +81,7 @@ class NavigationController {
 class NavigationData extends InheritedWidget {
   final NavigationController controller;
 
-  NavigationData({required Widget child, required this.controller})
+  const NavigationData({required Widget child, required this.controller})
       : super(child: child);
 
   static NavigationController of(BuildContext context) {
@@ -107,7 +107,7 @@ class NavigationDrawer extends StatelessWidget {
   List<NavigationDrawerDestination> getDrawerDestinations(
       List<NavigationRouteDestination> destinations) {
     return destinations
-        .where((e) => e is NavigationDrawerDestination)
+        .whereType<NavigationDrawerDestination>()
         .toList()
         .cast<NavigationDrawerDestination>();
   }
@@ -137,7 +137,7 @@ class NavigationDrawer extends StatelessWidget {
           selected: destination.unique &&
               destination.path == controller.drawerSelection,
           title: Text(destination.name),
-          leading: destination.icon != null ? destination.icon : null,
+          leading: destination.icon,
           onTap: destination.unique
               ? () => Navigator.of(context)
                   .pushNamedAndRemoveUntil(destination.path, (_) => false)
@@ -150,7 +150,7 @@ class NavigationDrawer extends StatelessWidget {
       child: PrimaryScrollController(
         controller: ScrollController(),
         child: ListView(
-          physics: BouncingScrollPhysics(),
+          physics: const BouncingScrollPhysics(),
           children: children,
         ),
       ),
@@ -166,16 +166,15 @@ class ProfileHeader extends StatelessWidget {
       builder: (context, child) => DrawerHeader(
         child: GestureDetector(
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              SizedBox(
+              const SizedBox(
                 height: 72,
                 width: 72,
                 child: CurrentUserAvatar(),
               ),
               Expanded(
                 child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20),
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: CrossFade.builder(
                     showChild: client.credentials?.username != null,
                     builder: (context) => Row(
@@ -191,9 +190,9 @@ class ProfileHeader extends StatelessWidget {
                       ],
                     ),
                     secondChild: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: OutlinedButton(
-                        child: Text('LOGIN'),
+                        child: const Text('LOGIN'),
                         onPressed: () =>
                             Navigator.popAndPushNamed(context, '/login'),
                       ),
@@ -233,14 +232,14 @@ class _DrawerUpdateIconState extends State<DrawerUpdateIcon> {
         if (snapshot.hasData && snapshot.data!.isNotEmpty) {
           return Stack(
             children: [
-              Icon(Icons.update),
+              const Icon(Icons.update),
               Positioned(
                 bottom: 0,
                 left: 0,
                 child: Container(
                   height: 10,
                   width: 10,
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     shape: BoxShape.circle,
                     color: Colors.red,
                   ),
@@ -249,7 +248,7 @@ class _DrawerUpdateIconState extends State<DrawerUpdateIcon> {
             ],
           );
         } else {
-          return Icon(Icons.info);
+          return const Icon(Icons.info);
         }
       },
     );

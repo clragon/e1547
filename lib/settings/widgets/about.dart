@@ -15,7 +15,7 @@ class AppIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(shape: BoxShape.circle),
+      decoration: const BoxDecoration(shape: BoxShape.circle),
       clipBehavior: Clip.antiAlias,
       width: radius * 2,
       height: radius * 2,
@@ -28,7 +28,7 @@ class AboutPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: DefaultAppBar(
+      appBar: const DefaultAppBar(
         title: Text('About'),
         leading: BackButton(),
         actions: [NewVersionsButton()],
@@ -38,24 +38,23 @@ class AboutPage extends StatelessWidget {
         children: [
           Center(
             child: Padding(
-              padding: EdgeInsets.only(bottom: 100),
+              padding: const EdgeInsets.only(bottom: 100),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  AppIcon(radius: 64),
+                  const AppIcon(radius: 64),
                   Padding(
-                    padding: EdgeInsets.only(top: 24, bottom: 12),
+                    padding: const EdgeInsets.only(top: 24, bottom: 12),
                     child: Text(
                       appInfo.appName,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 22,
                       ),
                     ),
                   ),
                   Text(
                     appInfo.version,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 16,
                     ),
                   ),
@@ -68,7 +67,7 @@ class AboutPage extends StatelessWidget {
             child: Material(
               color: Theme.of(context).cardColor,
               elevation: 6,
-              shape: RoundedRectangleBorder(
+              shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(5),
                   topRight: Radius.circular(5),
@@ -81,20 +80,20 @@ class AboutPage extends StatelessWidget {
                   children: [
                     if (appInfo.github != null)
                       IconButton(
-                        icon: FaIcon(FontAwesomeIcons.github),
+                        icon: const FaIcon(FontAwesomeIcons.github),
                         onPressed: () =>
                             launch('https://github.com/' + appInfo.github!),
                       ),
                     if (appInfo.discord != null)
                       IconButton(
-                        icon: FaIcon(FontAwesomeIcons.discord),
+                        icon: const FaIcon(FontAwesomeIcons.discord),
                         onPressed: () => launch(
                             'https://discord.com/invite/' + appInfo.discord!),
                       ),
-                    if (Platform.isAndroid) PlaystoreButton(),
+                    if (Platform.isAndroid) const PlaystoreButton(),
                     if (appInfo.website != null)
                       IconButton(
-                        icon: FaIcon(FontAwesomeIcons.globe),
+                        icon: const FaIcon(FontAwesomeIcons.globe),
                         onPressed: () => launch('https://' + appInfo.website!),
                       ),
                   ],
@@ -127,7 +126,7 @@ class _NewVersionsButtonState extends State<NewVersionsButton> {
         builder: (context) => Stack(
           children: [
             IconButton(
-              icon: Icon(Icons.update),
+              icon: const Icon(Icons.update),
               onPressed: () => showDialog(
                 context: context,
                 builder: (context) =>
@@ -141,7 +140,7 @@ class _NewVersionsButtonState extends State<NewVersionsButton> {
                 child: Container(
                   height: 10,
                   width: 10,
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     shape: BoxShape.circle,
                     color: Colors.red,
                   ),
@@ -149,7 +148,7 @@ class _NewVersionsButtonState extends State<NewVersionsButton> {
               ),
           ],
         ),
-        secondChild: CircularProgressIndicator(),
+        secondChild: const CircularProgressIndicator(),
       ),
     );
   }
@@ -165,7 +164,7 @@ class NewVersionsDialog extends StatelessWidget {
     Widget body;
     List<Widget> actions = [
       TextButton(
-        child: Text('OK'),
+        child: const Text('OK'),
         onPressed: Navigator.of(context).maybePop,
       )
     ];
@@ -173,7 +172,7 @@ class NewVersionsDialog extends StatelessWidget {
     if (newVersions == null) {
       body = Column(
         mainAxisSize: MainAxisSize.min,
-        children: [
+        children: const [
           IconMessage(
             title: Text('Failed to retrieve version information'),
             icon: Icon(Icons.warning_amber),
@@ -184,7 +183,7 @@ class NewVersionsDialog extends StatelessWidget {
       body = Text('You have the newest version (${appInfo.version})');
     } else {
       body = SingleChildScrollView(
-        physics: BouncingScrollPhysics(),
+        physics: const BouncingScrollPhysics(),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -197,7 +196,7 @@ class NewVersionsDialog extends StatelessWidget {
                 .map(
                   (release) => [
                     Padding(
-                      padding: EdgeInsets.symmetric(vertical: 8),
+                      padding: const EdgeInsets.symmetric(vertical: 8),
                       child: Text(
                         '${release.name} (${release.version})',
                         style: Theme.of(context).textTheme.headline6,
@@ -212,13 +211,13 @@ class NewVersionsDialog extends StatelessWidget {
       );
       actions = [
         TextButton(
-          child: Text('CANCEL'),
+          child: const Text('CANCEL'),
           onPressed: () {
             Navigator.of(context).pop();
           },
         ),
         TextButton(
-          child: Text('DOWNLOAD'),
+          child: const Text('DOWNLOAD'),
           onPressed: () =>
               launch('https://github.com/${appInfo.github!}/releases/latest'),
         )
@@ -258,8 +257,8 @@ class _PlaystoreButtonState extends State<PlaystoreButton> {
         showChild: snapshot.hasData &&
             snapshot.data != Source.IS_INSTALLED_FROM_PLAY_STORE,
         builder: (context) => IconButton(
-          icon: Padding(
-            padding: const EdgeInsets.only(left: 3),
+          icon: const Padding(
+            padding: EdgeInsets.only(left: 3),
             child: FaIcon(FontAwesomeIcons.googlePlay),
           ),
           onPressed: () => launch(

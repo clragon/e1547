@@ -1,7 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 
-final Duration defaultAnimationDuration = Duration(milliseconds: 200);
+const Duration defaultAnimationDuration = Duration(milliseconds: 200);
 
 enum FadeAnimationStyle {
   adjacent,
@@ -49,7 +49,7 @@ class CrossFade extends StatelessWidget {
       case FadeAnimationStyle.stacked:
         return AnimatedCrossFade(
           firstChild: builder(context),
-          secondChild: secondChild ?? SizedBox.shrink(),
+          secondChild: secondChild ?? const SizedBox.shrink(),
           crossFadeState:
               showChild ? CrossFadeState.showFirst : CrossFadeState.showSecond,
           duration: duration,
@@ -59,8 +59,9 @@ class CrossFade extends StatelessWidget {
           duration: duration,
           child: AnimatedSwitcher(
             duration: duration,
-            child:
-                showChild ? builder(context) : secondChild ?? SizedBox.shrink(),
+            child: showChild
+                ? builder(context)
+                : secondChild ?? const SizedBox.shrink(),
           ),
         );
     }
@@ -144,7 +145,7 @@ class _AnimatedSelectorState extends State<AnimatedSelector> {
         List<dynamic> selected = widget.selector();
         bool shouldRebuild = [
           oldWidget != widget,
-          !DeepCollectionEquality().equals(values, selected),
+          !const DeepCollectionEquality().equals(values, selected),
         ].any((element) => element);
         if (shouldRebuild) {
           values = selected;

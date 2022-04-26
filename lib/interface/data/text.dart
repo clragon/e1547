@@ -42,7 +42,7 @@ String dateOrName(DateTime date) {
     title = 'Today';
   }
   if (today
-      .subtract(Duration(days: 1))
+      .subtract(const Duration(days: 1))
       .isAtSameMomentAs(DateUtils.dateOnly(date))) {
     title = 'Yesterday';
   }

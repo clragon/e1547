@@ -33,8 +33,8 @@ class _PostLoadingPageState extends State<PostLoadingPage> {
       future: firstPage,
       builder: (context, value) => PostDetailGallery(controller: value),
       title: Text('Post #${widget.id}'),
-      onError: Text('Failed to load post'),
-      onEmpty: Text('Post not found'),
+      onError: const Text('Failed to load post'),
+      onEmpty: const Text('Post not found'),
     );
   }
 }

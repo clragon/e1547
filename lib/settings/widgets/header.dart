@@ -7,7 +7,7 @@ class SettingsHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(left: 72, bottom: 8, top: 8, right: 16),
+      padding: const EdgeInsets.only(left: 72, bottom: 8, top: 8, right: 16),
       child: Text(
         title,
         style: TextStyle(

@@ -44,7 +44,7 @@ class WikiDialog extends StatelessWidget {
         ),
         actions: [
           TextButton(
-            child: Text('OK'),
+            child: const Text('OK'),
             onPressed: Navigator.of(context).maybePop,
           ),
         ],

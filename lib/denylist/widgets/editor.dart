@@ -20,15 +20,15 @@ class _DenyListEditorState extends State<DenyListEditor> {
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text('Blacklist'),
+          const Text('Blacklist'),
           IconButton(
-            icon: Icon(Icons.help_outline),
+            icon: const Icon(Icons.help_outline),
             onPressed: () => wikiSheet(context: context, tag: 'e621:blacklist'),
           )
         ],
       ),
       builder: (context, submit) => TextField(
-        scrollPhysics: BouncingScrollPhysics(),
+        scrollPhysics: const BouncingScrollPhysics(),
         controller: controller,
         keyboardType: TextInputType.multiline,
         maxLines: null,
@@ -38,7 +38,7 @@ class _DenyListEditorState extends State<DenyListEditor> {
         tags = tags.trim();
         tags.removeWhere((tag) => tag.isEmpty);
         if (!await validateCall(() => denylistController.edit(tags))) {
-          throw ActionControllerException(
+          throw const ActionControllerException(
               message: 'Failed to update blacklist!');
         }
       },

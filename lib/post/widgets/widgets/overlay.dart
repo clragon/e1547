@@ -43,12 +43,12 @@ class ImageOverlay extends StatelessWidget {
         if (post.type == PostType.unsupported) {
           return IconMessage(
             title: Text('${post.file.ext} files are not supported'),
-            icon: Icon(Icons.image_not_supported_outlined),
+            icon: const Icon(Icons.image_not_supported_outlined),
             action: Padding(
-              padding: EdgeInsets.all(4),
+              padding: const EdgeInsets.all(4),
               child: TextButton(
                 onPressed: () async => launch(post.file.url!),
-                child: Text('Open'),
+                child: const Text('Open'),
               ),
             ),
           );

@@ -102,7 +102,7 @@ class TextTag {
         ].join(),
       );
 
-  static final String _anyName = r'(?<tag>[\w\d]+?)';
+  static const String _anyName = r'(?<tag>[\w\d]+?)';
 
   static RegExp toRegex([String? name]) {
     String nameMatch = _anyName;

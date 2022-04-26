@@ -21,8 +21,8 @@ class _CommentLoadingPageState extends State<CommentLoadingPage> {
       future: comment,
       builder: (context, value) => CommentsPage(postId: value.postId),
       title: Text('Comment #${widget.id}'),
-      onError: Text('Failed to load comment'),
-      onEmpty: Text('Comment not found'),
+      onError: const Text('Failed to load comment'),
+      onEmpty: const Text('Comment not found'),
     );
   }
 }

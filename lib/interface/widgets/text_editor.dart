@@ -66,9 +66,9 @@ class _TextEditorState extends State<TextEditor>
   Widget build(BuildContext context) {
     Widget scrollView(Widget child) {
       return SingleChildScrollView(
-        physics: BouncingScrollPhysics(),
+        physics: const BouncingScrollPhysics(),
         child: Padding(
-          padding: EdgeInsets.all(8),
+          padding: const EdgeInsets.all(8),
           child: Row(
             children: [
               Expanded(
@@ -86,7 +86,7 @@ class _TextEditorState extends State<TextEditor>
           controller: textController,
           keyboardType: TextInputType.multiline,
           autofocus: true,
-          decoration: InputDecoration(
+          decoration: const InputDecoration(
             border: InputBorder.none,
             hintText: 'type here...',
           ),
@@ -100,7 +100,7 @@ class _TextEditorState extends State<TextEditor>
       return scrollView(
         Card(
           child: Padding(
-            padding: EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
             child: AnimatedBuilder(
               animation: textController,
               builder: (context, child) {
@@ -148,10 +148,10 @@ class _TextEditorState extends State<TextEditor>
 
     Widget loadingBar() {
       return Padding(
-        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
+          children: const [
             SizedCircularProgressIndicator(size: 24),
           ],
         ),
@@ -159,8 +159,8 @@ class _TextEditorState extends State<TextEditor>
     }
 
     Map<Widget, Widget> tabs = {
-      Tab(text: 'Write'): editor(),
-      Tab(text: 'Preview'): preview(),
+      const Tab(text: 'Write'): editor(),
+      const Tab(text: 'Preview'): preview(),
     };
 
     return Scaffold(
@@ -174,7 +174,7 @@ class _TextEditorState extends State<TextEditor>
         headerSliverBuilder: (context, innerBoxIsScrolled) => [
           DefaultSliverAppBar(
             floating: true,
-            leading: CloseButton(),
+            leading: const CloseButton(),
             title: Text(widget.title),
             bottom: widget.dtext
                 ? TabBar(
@@ -250,22 +250,22 @@ class _DTextEditorBarState extends State<DTextEditorBar> {
         mainAxisSize: MainAxisSize.min,
         children: [
           IconButton(
-            icon: Icon(Icons.subject),
+            icon: const Icon(Icons.subject),
             onPressed: () => enclose('section,expanded=', endTag: 'section'),
             tooltip: 'Section',
           ),
           IconButton(
-            icon: Icon(Icons.format_quote),
+            icon: const Icon(Icons.format_quote),
             onPressed: () => enclose('quote'),
             tooltip: 'Quote',
           ),
           IconButton(
-            icon: Icon(Icons.code),
+            icon: const Icon(Icons.code),
             onPressed: () => enclose('code'),
             tooltip: 'Code',
           ),
           IconButton(
-            icon: Icon(Icons.warning),
+            icon: const Icon(Icons.warning),
             onPressed: () => enclose('spoiler'),
             tooltip: 'Spoiler',
           ),
@@ -278,22 +278,22 @@ class _DTextEditorBarState extends State<DTextEditorBar> {
         mainAxisSize: MainAxisSize.min,
         children: [
           IconButton(
-            icon: Icon(Icons.format_bold),
+            icon: const Icon(Icons.format_bold),
             onPressed: () => enclose('b'),
             tooltip: 'Bold',
           ),
           IconButton(
-            icon: Icon(Icons.format_italic),
+            icon: const Icon(Icons.format_italic),
             onPressed: () => enclose('i'),
             tooltip: 'Italic',
           ),
           IconButton(
-            icon: Icon(Icons.format_underlined),
+            icon: const Icon(Icons.format_underlined),
             onPressed: () => enclose('u'),
             tooltip: 'Underlined',
           ),
           IconButton(
-            icon: Icon(Icons.format_strikethrough),
+            icon: const Icon(Icons.format_strikethrough),
             onPressed: () => enclose('s'),
             tooltip: 'Strikethrough',
           ),
@@ -305,7 +305,7 @@ class _DTextEditorBarState extends State<DTextEditorBar> {
       return IntrinsicHeight(
         child: Row(
           children: [
-            VerticalDivider(),
+            const VerticalDivider(),
             ExpandIcon(
               isExpanded: showBlocks,
               onPressed: (value) => setState(() {
@@ -318,7 +318,7 @@ class _DTextEditorBarState extends State<DTextEditorBar> {
     }
 
     return Padding(
-      padding: EdgeInsets.only(left: 10, right: 10, bottom: 10),
+      padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
       child: OverflowView(
         children: [
           CrossFade(
@@ -331,12 +331,12 @@ class _DTextEditorBarState extends State<DTextEditorBar> {
             child: textButtons(),
             secondChild: blockButtons(),
           ),
-          SizedBox(
+          const SizedBox(
             width: 48,
           ),
         ],
         builder: (context, remaining) =>
-            remaining == 3 ? SizedBox() : switcher(),
+            remaining == 3 ? const SizedBox() : switcher(),
       ),
     );
   }

@@ -41,7 +41,7 @@ class CommentDisplay extends StatelessWidget {
                   )
                 ],
               ),
-              Divider(),
+              const Divider(),
             ],
           ),
         );
