@@ -4,7 +4,6 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:store_checker/store_checker.dart';
 
 class AppIcon extends StatelessWidget {

@@ -5,7 +5,6 @@ import 'package:e1547/post/post.dart';
 import 'package:e1547/ticket/ticket.dart';
 import 'package:flutter/material.dart';
 import 'package:share/share.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 List<PopupMenuItem<VoidCallback>> postMenuPostActions(
     BuildContext context, Post post) {

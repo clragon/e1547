@@ -7,7 +7,6 @@ import 'package:e1547/ticket/ticket.dart';
 import 'package:e1547/user/user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 enum UserPageSection {
   favorites,

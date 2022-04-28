@@ -17,6 +17,7 @@ export 'widgets/drawer.dart';
 export 'widgets/loading.dart';
 export 'widgets/navigation.dart';
 export 'widgets/notifiers.dart';
+export 'widgets/link.dart';
 export 'widgets/pagination.dart';
 export 'widgets/pop_tile.dart';
 export 'widgets/range_dialog.dart';

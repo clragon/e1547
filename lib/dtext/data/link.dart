@@ -1,8 +1,8 @@
 import 'package:e1547/client/client.dart';
 import 'package:e1547/dtext/dtext.dart';
+import 'package:e1547/interface/interface.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:username_generator/username_generator.dart';
 
 DTextParser linkParser = DTextParser(
@@ -35,7 +35,7 @@ DTextParser localLinkParser = DTextParser(
 
 String stopsAtEndChar(String wrapped) => [
       wrapped,
-      r'(?=([.,!:")\s]|(\? ))?)',
+      r'(?=([.,!\?:")\s])?)',
     ].join();
 
 String startsWithName(String wrapped, [bool? needsName]) => [
@@ -75,19 +75,20 @@ InlineSpan parseLink({
   String? display = name ?? linkToDisplay(link);
   int? id = parseLinkId(link);
   LinkWord? word = parseLinkToWord(link);
+
   VoidCallback? onTap = () => launch(link);
-
-  if (word != null && id != null) {
-    onTap = getLinkWordTap(context, word, id);
-  }
-
   if (insite) {
     onTap = () async => launch('https://${client.host}$link');
+
     UsernameGenerator? usernameGenerator = UsernameGeneratorData.of(context);
     // forum topics need generated names
     if (usernameGenerator != null && word == LinkWord.user) {
       display = usernameGenerator.generate(id!);
     }
+  }
+
+  if (word != null && id != null) {
+    onTap = getLinkWordTap(context, word, id);
   }
 
   return TextSpan(

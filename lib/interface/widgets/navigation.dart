@@ -43,6 +43,7 @@ class NavigationController {
   final List<NavigationRouteDestination> destinations;
   late final Map<String, WidgetBuilder> routes;
 
+  final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
   final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
 
   late String drawerSelection;
