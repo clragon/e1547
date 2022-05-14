@@ -66,7 +66,6 @@ class _TextEditorState extends State<TextEditor>
   Widget build(BuildContext context) {
     Widget scrollView(Widget child) {
       return SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
         child: Padding(
           padding: const EdgeInsets.all(8),
           child: Row(

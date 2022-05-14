@@ -91,7 +91,6 @@ class _HistoryPageState extends State<HistoryPage> {
                           .add(LimitedWidthLayout.of(context)!.padding),
                       elements: entries,
                       order: GroupedListOrder.DESC,
-                      physics: const BouncingScrollPhysics(),
                       controller: PrimaryScrollController.of(context),
                       groupBy: (element) =>
                           DateUtils.dateOnly(element.visitedAt),

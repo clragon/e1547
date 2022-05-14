@@ -23,7 +23,6 @@ class ContextDrawer extends StatelessWidget {
                   )
                 : null,
             body: ListView(
-              physics: const BouncingScrollPhysics(),
               children: children,
             ),
           ),

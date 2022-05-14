@@ -202,7 +202,6 @@ class _RefreshablePageState extends State<RefreshablePage> {
     Widget body() {
       return SmartRefresher(
         controller: refreshController,
-        physics: const BouncingScrollPhysics(),
         onRefresh: widget.refresh,
         header: widget.refreshHeader ?? const RefreshablePageDefaultHeader(),
         child: widget.builder?.call(context),

@@ -202,7 +202,6 @@ class _LoginPageState extends State<LoginPage> {
       body: Form(
         child: LayoutBuilder(
           builder: (context, constraints) => ListView(
-            physics: const BouncingScrollPhysics(),
             padding: const EdgeInsets.all(16),
             children: [
               ConstrainedBox(

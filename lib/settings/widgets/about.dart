@@ -182,7 +182,6 @@ class NewVersionsDialog extends StatelessWidget {
       body = Text('You have the newest version (${appInfo.version})');
     } else {
       body = SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,

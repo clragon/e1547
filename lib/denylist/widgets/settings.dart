@@ -59,7 +59,6 @@ class _DenyListPageState extends State<DenyListPage> {
             refreshingText: 'refreshing blacklist',
           ),
           builder: (context) => ListView.builder(
-            physics: const BouncingScrollPhysics(),
             padding: defaultActionListPadding
                 .add(LimitedWidthLayout.of(context)!.padding),
             itemCount: denylistController.items.length,

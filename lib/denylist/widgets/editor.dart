@@ -28,7 +28,6 @@ class _DenyListEditorState extends State<DenyListEditor> {
         ],
       ),
       builder: (context, submit) => TextField(
-        scrollPhysics: const BouncingScrollPhysics(),
         controller: controller,
         keyboardType: TextInputType.multiline,
         maxLines: null,

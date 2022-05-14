@@ -44,7 +44,6 @@ class PoolDialog extends StatelessWidget {
             maxHeight: constraints.maxHeight * 0.5,
           ),
           child: SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,

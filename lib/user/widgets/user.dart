@@ -97,7 +97,6 @@ class _UserPageState extends State<UserPage>
         ],
       ),
       body: NestedScrollView(
-        physics: const BouncingScrollPhysics(),
         headerSliverBuilder: (context, innerBoxIsScrolled) => [
           SliverOverlapAbsorber(
             handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
@@ -229,7 +228,6 @@ class UserInfo extends StatelessWidget {
     }
 
     return ListView(
-      physics: const BouncingScrollPhysics(),
       padding:
           defaultActionListPadding.add(LimitedWidthLayout.of(context)!.padding),
       children: [

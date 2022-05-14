@@ -17,7 +17,6 @@ class _AdvancedSettingsPageState extends State<AdvancedSettingsPage> {
           leading: BackButton(),
         ),
         body: ListView(
-          physics: const BouncingScrollPhysics(),
           padding: defaultActionListPadding
               .add(LimitedWidthLayout.of(context)!.padding),
           children: [

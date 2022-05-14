@@ -146,7 +146,6 @@ class NavigationDrawer extends StatelessWidget {
       child: PrimaryScrollController(
         controller: ScrollController(),
         child: ListView(
-          physics: const BouncingScrollPhysics(),
           children: children,
         ),
       ),

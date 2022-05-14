@@ -50,7 +50,6 @@ class _FollowingPageState extends State<FollowingPage> {
               return ListView.builder(
                 padding: defaultActionListPadding
                     .add(LimitedWidthLayout.of(context)!.padding),
-                physics: const BouncingScrollPhysics(),
                 itemCount: followController.items.length,
                 itemBuilder: (context, index) => FollowListTile(
                   follow: followController.items[index],
@@ -107,7 +106,6 @@ class _FollowEditorState extends State<FollowEditor> {
     return AlertDialog(
       title: const Text('Following'),
       content: TextField(
-        scrollPhysics: const BouncingScrollPhysics(),
         controller: controller,
         keyboardType: TextInputType.multiline,
         maxLines: null,

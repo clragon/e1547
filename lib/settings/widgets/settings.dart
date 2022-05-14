@@ -25,7 +25,6 @@ class _SettingsPageState extends State<SettingsPage> {
           leading: BackButton(),
         ),
         body: ListView(
-          physics: const BouncingScrollPhysics(),
           padding: defaultActionListPadding
               .add(LimitedWidthLayout.of(context)!.padding),
           children: [
