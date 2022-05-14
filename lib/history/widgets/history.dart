@@ -14,10 +14,10 @@ enum HistoryFilter {
 }
 
 class HistoryPage extends StatefulWidget {
-  const HistoryPage({Key? key}) : super(key: key);
+  const HistoryPage();
 
   @override
-  _HistoryPageState createState() => _HistoryPageState();
+  State<HistoryPage> createState() => _HistoryPageState();
 }
 
 class _HistoryPageState extends State<HistoryPage> {
@@ -78,8 +78,7 @@ class _HistoryPageState extends State<HistoryPage> {
                 child: DefaultAppBar(
                   leading: const BackButton(),
                   title: Text(
-                    'History' +
-                        (search != null ? ' - ${dateOrName(search!)}' : ''),
+                    'History${search != null ? ' - ${dateOrName(search!)}' : ''}',
                   ),
                   actions: const [
                     ContextDrawerButton(),

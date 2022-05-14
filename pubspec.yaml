@@ -4,7 +4,7 @@ version: 10.1.3+59
 publish_to: none
 
 environment:
-  sdk: '>=2.15.0 <3.0.0'
+  sdk: '>=2.17.0 <3.0.0'
 
 dependencies:
 
@@ -41,7 +41,7 @@ dependencies:
   url_launcher: ^6.1.0
   store_checker: ^1.0.0
   dio_http_cache: ^0.3.0
-  package_info_plus: 1.3.0 # 1.3.1-1.4.x is broken
+  package_info_plus: ^1.4.2
   permission_handler: ^9.2.0
   sqflite_common_ffi: ^2.1.0
   shared_preferences: ^2.0.11
@@ -56,9 +56,10 @@ dependencies:
 
   flutter:
     sdk: flutter
+  sqflite: ^2.0.2+1
 
 dev_dependencies:
-  flutter_lints: ^1.0.4
+  flutter_lints: ^2.0.1
   flutter_launcher_icons: ^0.9.0
   flutter_native_splash: ^2.0.2
 

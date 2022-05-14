@@ -107,7 +107,6 @@ class _DenyListPageState extends State<DenyListPage> {
             builder: (context) => AnimatedBuilder(
               animation: sheetController,
               builder: (context, child) => FloatingActionButton(
-                child: Icon(sheetController.isShown ? Icons.check : Icons.add),
                 onPressed: sheetController.isLoading
                     ? null
                     : sheetController.action ??
@@ -126,6 +125,7 @@ class _DenyListPageState extends State<DenyListPage> {
                                 }
                               },
                             ),
+                child: Icon(sheetController.isShown ? Icons.check : Icons.add),
               ),
             ),
           ),

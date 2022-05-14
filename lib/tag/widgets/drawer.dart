@@ -94,6 +94,13 @@ class DrawerCounterBody extends StatelessWidget {
                     showChild: children != null,
                     builder: (context) => CrossFade(
                       showChild: children!.isNotEmpty,
+                      secondChild: Text(
+                        'no tags',
+                        style: TextStyle(
+                          fontStyle: FontStyle.italic,
+                          color: dimTextColor(context),
+                        ),
+                      ),
                       child: Padding(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 12, vertical: 8),
@@ -105,13 +112,6 @@ class DrawerCounterBody extends StatelessWidget {
                               ),
                             )
                           ],
-                        ),
-                      ),
-                      secondChild: Text(
-                        'no tags',
-                        style: TextStyle(
-                          fontStyle: FontStyle.italic,
-                          color: dimTextColor(context),
                         ),
                       ),
                     ),

@@ -37,15 +37,15 @@ class WikiDialog extends StatelessWidget {
           ],
         ),
         content: ConstrainedBox(
-          child: WikiBody(tag: tag),
           constraints: BoxConstraints(
             maxHeight: constraints.maxHeight * 0.5,
           ),
+          child: WikiBody(tag: tag),
         ),
         actions: [
           TextButton(
-            child: const Text('OK'),
             onPressed: Navigator.of(context).maybePop,
+            child: const Text('OK'),
           ),
         ],
       ),

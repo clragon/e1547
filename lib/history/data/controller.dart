@@ -8,7 +8,7 @@ import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
 
-late final HistoryController historyController = HistoryController();
+final HistoryController historyController = HistoryController();
 
 class HistoryController extends ChangeNotifier {
   late final ValueNotifier<Map<String, HistoryCollection>> _source;

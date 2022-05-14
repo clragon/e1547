@@ -50,13 +50,13 @@ class TagCard extends StatelessWidget {
                 ),
                 child: CrossFade(
                   showChild: editing,
+                  secondChild: Container(width: 5),
                   child: IconButton(
                     constraints: const BoxConstraints(),
                     padding: EdgeInsets.zero,
                     icon: const Icon(Icons.clear, size: 16),
                     onPressed: onRemove,
                   ),
-                  secondChild: Container(width: 5),
                 ),
               ),
             Flexible(

@@ -12,7 +12,7 @@ class PoolPage extends StatefulWidget {
   const PoolPage({required this.pool, this.reversed = false});
 
   @override
-  _PoolPageState createState() => _PoolPageState();
+  State<PoolPage> createState() => _PoolPageState();
 }
 
 class _PoolPageState extends State<PoolPage> {

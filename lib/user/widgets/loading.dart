@@ -13,7 +13,7 @@ class UserLoadingPage extends StatefulWidget {
   });
 
   @override
-  _UserLoadingPageState createState() => _UserLoadingPageState();
+  State<UserLoadingPage> createState() => _UserLoadingPageState();
 }
 
 class _UserLoadingPageState extends State<UserLoadingPage> {

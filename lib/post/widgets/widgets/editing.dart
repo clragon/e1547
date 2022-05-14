@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 
 class PostEditorData extends InheritedNotifier<PostEditingController> {
   const PostEditorData(
-      {required Widget child, required PostEditingController controller})
-      : super(child: child, notifier: controller);
+      {required super.child, required PostEditingController controller})
+      : super(notifier: controller);
 }
 
 class PostEditor extends StatelessWidget {

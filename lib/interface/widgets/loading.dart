@@ -171,7 +171,7 @@ class FuturePageLoader<T> extends StatelessWidget {
     return FutureBuilder<T>(
       future: future,
       builder: (context, snapshot) => PageLoader(
-        builder: (context) => builder(context, snapshot.data!),
+        builder: (context) => builder(context, snapshot.data as T),
         loadingBuilder: (context, child) => Scaffold(
           appBar: title != null
               ? DefaultAppBar(
@@ -206,7 +206,7 @@ class LoadingTile extends StatefulWidget {
   });
 
   @override
-  _LoadingTileState createState() => _LoadingTileState();
+  State<LoadingTile> createState() => _LoadingTileState();
 }
 
 class _LoadingTileState extends State<LoadingTile> {
@@ -218,9 +218,9 @@ class _LoadingTileState extends State<LoadingTile> {
       leading: widget.leading,
       title: widget.title,
       trailing: CrossFade(
-        child: const SizedCircularProgressIndicator(size: 24),
         secondChild: widget.trailing ?? const Icon(Icons.arrow_right),
         showChild: isLoading,
+        child: const SizedCircularProgressIndicator(size: 24),
       ),
       onTap: isLoading
           ? null

@@ -12,11 +12,11 @@ class TileLayoutData extends InheritedWidget {
   final GridQuilt stagger;
 
   const TileLayoutData({
-    required Widget child,
+    required super.child,
     required this.tileHeightFactor,
     required this.crossAxisCount,
     required this.stagger,
-  }) : super(child: child);
+  });
 
   @override
   bool updateShouldNotify(covariant TileLayoutData oldWidget) =>

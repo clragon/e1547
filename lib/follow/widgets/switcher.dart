@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 class FollowsPage extends StatefulWidget {
   @override
-  _FollowsPageState createState() => _FollowsPageState();
+  State<FollowsPage> createState() => _FollowsPageState();
 }
 
 class _FollowsPageState extends State<FollowsPage> {

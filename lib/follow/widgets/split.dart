@@ -6,7 +6,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class FollowsSplitPage extends StatefulWidget {
   @override
-  _FollowsSplitPageState createState() => _FollowsSplitPageState();
+  State<FollowsSplitPage> createState() => _FollowsSplitPageState();
 }
 
 class _FollowsSplitPageState extends State<FollowsSplitPage>
@@ -20,7 +20,7 @@ class _FollowsSplitPageState extends State<FollowsSplitPage>
       };
 
   Future<void> updateRefresh() async {
-    WidgetsBinding.instance!.addPostFrameCallback((_) async {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (controller.updating && mounted) {
         if (refreshController.headerMode?.value == RefreshStatus.idle) {
           await refreshController.requestRefresh(

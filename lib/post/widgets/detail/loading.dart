@@ -11,7 +11,7 @@ class PostLoadingPage extends StatefulWidget {
   const PostLoadingPage(this.id);
 
   @override
-  _PostLoadingPageState createState() => _PostLoadingPageState();
+  State<PostLoadingPage> createState() => _PostLoadingPageState();
 }
 
 class _PostLoadingPageState extends State<PostLoadingPage> {

@@ -162,7 +162,7 @@ class _AppState extends State<App> {
       path: '/topics',
       name: 'Forum',
       icon: const Icon(Icons.forum),
-      builder: (context) => TopicsPage(),
+      builder: (context) => const TopicsPage(),
       visible: (context) => settings.showBeta.value,
       unique: true,
       group: DrawerGroup.collection.name,

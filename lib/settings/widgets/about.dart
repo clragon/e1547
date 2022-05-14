@@ -81,19 +81,19 @@ class AboutPage extends StatelessWidget {
                       IconButton(
                         icon: const FaIcon(FontAwesomeIcons.github),
                         onPressed: () =>
-                            launch('https://github.com/' + appInfo.github!),
+                            launch('https://github.com/${appInfo.github!}'),
                       ),
                     if (appInfo.discord != null)
                       IconButton(
                         icon: const FaIcon(FontAwesomeIcons.discord),
                         onPressed: () => launch(
-                            'https://discord.com/invite/' + appInfo.discord!),
+                            'https://discord.com/invite/${appInfo.discord!}'),
                       ),
                     if (Platform.isAndroid) const PlaystoreButton(),
                     if (appInfo.website != null)
                       IconButton(
                         icon: const FaIcon(FontAwesomeIcons.globe),
-                        onPressed: () => launch('https://' + appInfo.website!),
+                        onPressed: () => launch('https://${appInfo.website!}'),
                       ),
                   ],
                 ),
@@ -110,7 +110,7 @@ class NewVersionsButton extends StatefulWidget {
   const NewVersionsButton();
 
   @override
-  _NewVersionsButtonState createState() => _NewVersionsButtonState();
+  State<NewVersionsButton> createState() => _NewVersionsButtonState();
 }
 
 class _NewVersionsButtonState extends State<NewVersionsButton> {
@@ -163,8 +163,8 @@ class NewVersionsDialog extends StatelessWidget {
     Widget body;
     List<Widget> actions = [
       TextButton(
-        child: const Text('OK'),
         onPressed: Navigator.of(context).maybePop,
+        child: const Text('OK'),
       )
     ];
 
@@ -239,7 +239,7 @@ class NewVersionsDialog extends StatelessWidget {
 }
 
 class PlaystoreButton extends StatefulWidget {
-  const PlaystoreButton({Key? key}) : super(key: key);
+  const PlaystoreButton();
 
   @override
   State<PlaystoreButton> createState() => _PlaystoreButtonState();
@@ -261,8 +261,7 @@ class _PlaystoreButtonState extends State<PlaystoreButton> {
             child: FaIcon(FontAwesomeIcons.googlePlay),
           ),
           onPressed: () => launch(
-            'https://play.google.com/store/apps/details?id=' +
-                appInfo.packageName,
+            'https://play.google.com/store/apps/details?id=${appInfo.packageName}',
           ),
         ),
       ),

@@ -16,7 +16,7 @@ class WikiBody extends StatefulWidget {
   const WikiBody({required this.tag, this.controller});
 
   @override
-  _WikiBodyState createState() => _WikiBodyState();
+  State<WikiBody> createState() => _WikiBodyState();
 }
 
 class _WikiBodyState extends State<WikiBody> {
@@ -81,7 +81,7 @@ class WikiTagDisplay extends StatefulWidget {
   const WikiTagDisplay({required this.tag});
 
   @override
-  _WikiTagDisplayState createState() => _WikiTagDisplayState();
+  State<WikiTagDisplay> createState() => _WikiTagDisplayState();
 }
 
 class _WikiTagDisplayState extends State<WikiTagDisplay> {

@@ -182,7 +182,7 @@ class RefreshablePage extends StatefulWidget {
         floatingActionButton = null;
 
   @override
-  _RefreshablePageState createState() => _RefreshablePageState();
+  State<RefreshablePage> createState() => _RefreshablePageState();
 }
 
 class _RefreshablePageState extends State<RefreshablePage> {
@@ -204,8 +204,8 @@ class _RefreshablePageState extends State<RefreshablePage> {
         controller: refreshController,
         physics: const BouncingScrollPhysics(),
         onRefresh: widget.refresh,
-        child: widget.builder?.call(context),
         header: widget.refreshHeader ?? const RefreshablePageDefaultHeader(),
+        child: widget.builder?.call(context),
       );
     }
 

@@ -10,7 +10,7 @@ class TopicLoadingPage extends StatefulWidget {
   const TopicLoadingPage(this.id, {this.orderByOldest = true});
 
   @override
-  _TopicLoadingPageState createState() => _TopicLoadingPageState();
+  State<TopicLoadingPage> createState() => _TopicLoadingPageState();
 }
 
 class _TopicLoadingPageState extends State<TopicLoadingPage> {
@@ -37,7 +37,7 @@ class ReplyLoadingPage extends StatefulWidget {
   const ReplyLoadingPage(this.id);
 
   @override
-  _ReplyLoadingPageState createState() => _ReplyLoadingPageState();
+  State<ReplyLoadingPage> createState() => _ReplyLoadingPageState();
 }
 
 class _ReplyLoadingPageState extends State<ReplyLoadingPage> {

@@ -24,7 +24,7 @@ class RangeDialog extends StatefulWidget {
   });
 
   @override
-  _RangeDialogState createState() => _RangeDialogState();
+  State<RangeDialog> createState() => _RangeDialogState();
 }
 
 class _RangeDialogState extends State<RangeDialog> with ListenerCallbackMixin {
@@ -91,8 +91,8 @@ class _RangeDialogState extends State<RangeDialog> with ListenerCallbackMixin {
       ),
       actions: [
         TextButton(
-          child: const Text('CANCEL'),
           onPressed: Navigator.of(context).maybePop,
+          child: const Text('CANCEL'),
         ),
         TextButton(
           child: const Text('OK'),

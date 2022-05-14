@@ -31,7 +31,7 @@ class TagInput extends StatefulWidget {
   });
 
   @override
-  _TagInputState createState() => _TagInputState();
+  State<TagInput> createState() => _TagInputState();
 }
 
 class _TagInputState extends State<TagInput> {
@@ -43,7 +43,7 @@ class _TagInputState extends State<TagInput> {
     controller = widget.controller ?? TextEditingController();
     controller.text = sortTags(controller.text);
     if (controller.text != '') {
-      controller.text = controller.text + ' ';
+      controller.text = '${controller.text} ';
     }
     controller.setFocusToEnd();
   }
@@ -100,7 +100,7 @@ class _TagInputState extends State<TagInput> {
             break;
           }
         }
-        controller.text = tags.join(' ') + ' ';
+        controller.text = '${tags.join(' ')} ';
         controller.setFocusToEnd();
       },
       itemBuilder: (context, itemData) => Row(
@@ -176,7 +176,7 @@ class AdvancedTagInput extends StatefulWidget {
   });
 
   @override
-  _AdvancedTagInputState createState() => _AdvancedTagInputState();
+  State<AdvancedTagInput> createState() => _AdvancedTagInputState();
 }
 
 class _AdvancedTagInputState extends State<AdvancedTagInput> {
@@ -208,13 +208,12 @@ class _AdvancedTagInputState extends State<AdvancedTagInput> {
   }
 
   Future<void> withTags(Future<Tagset> Function(Tagset tags) editor) async {
-    controller.text =
-        (await editor(Tagset.parse(controller.text))).toString() + ' ';
+    controller.text = '${await editor(Tagset.parse(controller.text))} ';
     controller.setFocusToEnd();
   }
 
   List<PopupMenuEntry<String>> popMenuFromMap(Map<String, String> strings) =>
-      strings.keys.map((e) => PopupMenuItem(child: Text(e), value: e)).toList();
+      strings.keys.map((e) => PopupMenuItem(value: e, child: Text(e))).toList();
 
   @override
   Widget build(BuildContext context) {

@@ -19,7 +19,7 @@ import 'package:flutter/material.dart';
 
 export 'package:dio/dio.dart' show DioError;
 
-late final Client client = Client();
+final Client client = Client();
 
 class Client extends ChangeNotifier {
   String get host => settings.host.value;
@@ -395,8 +395,7 @@ class Client extends ChangeNotifier {
     await initialized;
     Map body = await dio
         .getWithCache(
-          (unsafe ? 'https://${settings.customHost.value}/' : '') +
-              'posts/$postId.json',
+          '${unsafe ? 'https://${settings.customHost.value}/' : ''}posts/$postId.json',
           cacheManager,
           forceRefresh: force,
         )
@@ -593,7 +592,7 @@ class Client extends ChangeNotifier {
     } else {
       List<AutocompleteTag> tags = [];
       for (final tag in await this.tags(
-        search + '*',
+        '$search*',
         category: category,
         force: force,
       )) {

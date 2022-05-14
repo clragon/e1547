@@ -30,7 +30,7 @@ class DrawerMultiDenySwitch extends StatefulWidget {
   const DrawerMultiDenySwitch({required this.controllers});
 
   @override
-  _DrawerMultiDenySwitchState createState() => _DrawerMultiDenySwitchState();
+  State<DrawerMultiDenySwitch> createState() => _DrawerMultiDenySwitchState();
 }
 
 class _DrawerMultiDenySwitchState extends State<DrawerMultiDenySwitch> {

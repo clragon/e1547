@@ -29,14 +29,10 @@ class NavigationDrawerDestination extends NavigationRouteDestination {
     this.icon,
     this.group,
     this.visible,
-    required String path,
-    required WidgetBuilder builder,
-    bool unique = false,
-  }) : super(
-          path: path,
-          builder: builder,
-          unique: unique,
-        );
+    required super.path,
+    required super.builder,
+    super.unique,
+  });
 }
 
 class NavigationController {
@@ -82,8 +78,7 @@ class NavigationController {
 class NavigationData extends InheritedWidget {
   final NavigationController controller;
 
-  const NavigationData({required Widget child, required this.controller})
-      : super(child: child);
+  const NavigationData({required super.child, required this.controller});
 
   static NavigationController of(BuildContext context) {
     return context
@@ -166,6 +161,14 @@ class ProfileHeader extends StatelessWidget {
       animation: client,
       builder: (context, child) => DrawerHeader(
         child: GestureDetector(
+          onTap: client.credentials != null
+              ? () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          UserLoadingPage(client.credentials!.username),
+                    ),
+                  )
+              : null,
           child: Row(
             children: [
               const SizedBox(
@@ -203,14 +206,6 @@ class ProfileHeader extends StatelessWidget {
               ),
             ],
           ),
-          onTap: client.credentials != null
-              ? () => Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          UserLoadingPage(client.credentials!.username),
-                    ),
-                  )
-              : null,
         ),
       ),
     );
@@ -219,7 +214,7 @@ class ProfileHeader extends StatelessWidget {
 
 class DrawerUpdateIcon extends StatefulWidget {
   @override
-  _DrawerUpdateIconState createState() => _DrawerUpdateIconState();
+  State<DrawerUpdateIcon> createState() => _DrawerUpdateIconState();
 }
 
 class _DrawerUpdateIconState extends State<DrawerUpdateIcon> {

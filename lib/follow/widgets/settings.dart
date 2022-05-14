@@ -76,10 +76,10 @@ class _FollowingPageState extends State<FollowingPage> {
                 builder: (context) => AnimatedBuilder(
                   animation: SheetActions.of(context)!,
                   builder: (context, child) => FloatingActionButton(
+                    onPressed: SheetActions.of(context)!.action ?? addTags,
                     child: Icon(SheetActions.of(context)!.isShown
                         ? Icons.check
                         : Icons.add),
-                    onPressed: SheetActions.of(context)!.action ?? addTags,
                   ),
                 ),
               ),
@@ -92,7 +92,7 @@ class _FollowingPageState extends State<FollowingPage> {
 }
 
 class FollowEditor extends StatefulWidget {
-  const FollowEditor({Key? key}) : super(key: key);
+  const FollowEditor();
 
   @override
   State<FollowEditor> createState() => _FollowEditorState();
@@ -114,8 +114,8 @@ class _FollowEditorState extends State<FollowEditor> {
       ),
       actions: [
         TextButton(
-          child: const Text('CANCEL'),
           onPressed: Navigator.of(context).maybePop,
+          child: const Text('CANCEL'),
         ),
         TextButton(
           child: const Text('OK'),

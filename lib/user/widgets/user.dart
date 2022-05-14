@@ -24,7 +24,7 @@ class UserPage extends StatefulWidget {
   });
 
   @override
-  _UserPageState createState() => _UserPageState();
+  State<UserPage> createState() => _UserPageState();
 }
 
 class _UserPageState extends State<UserPage>

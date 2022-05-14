@@ -4,7 +4,6 @@ import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
 
-
 class PostDetailImage extends StatelessWidget {
   final Post post;
 
@@ -68,7 +67,7 @@ class PostDetailImageToggle extends StatefulWidget {
   const PostDetailImageToggle({required this.post, required this.controller});
 
   @override
-  _PostDetailImageToggleState createState() => _PostDetailImageToggleState();
+  State<PostDetailImageToggle> createState() => _PostDetailImageToggleState();
 }
 
 class _PostDetailImageToggleState extends State<PostDetailImageToggle> {
@@ -196,7 +195,6 @@ class PostDetailImageButtons extends StatelessWidget {
     }
 
     return AnimatedBuilder(
-      child: child,
       animation: Listenable.merge([post.controller]),
       builder: (context, child) {
         Widget fullscreenButton() {
@@ -249,6 +247,9 @@ class PostDetailImageButtons extends StatelessWidget {
               child: IgnorePointer(child: child),
             ),
             Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 4),
                 child: Row(
@@ -264,13 +265,11 @@ class PostDetailImageButtons extends StatelessWidget {
                   ],
                 ),
               ),
-              bottom: 0,
-              left: 0,
-              right: 0,
             )
           ],
         );
       },
+      child: child,
     );
   }
 }

@@ -51,8 +51,8 @@ class FrameController extends ChangeNotifier {
 }
 
 class FrameData extends InheritedNotifier<FrameController> {
-  const FrameData({required Widget child, required FrameController controller})
-      : super(child: child, notifier: controller);
+  const FrameData({required super.child, required FrameController controller})
+      : super(notifier: controller);
 }
 
 class PostFullscreenFrame extends StatefulWidget {
@@ -67,7 +67,7 @@ class PostFullscreenFrame extends StatefulWidget {
   });
 
   @override
-  _PostFullscreenFrameState createState() => _PostFullscreenFrameState();
+  State<PostFullscreenFrame> createState() => _PostFullscreenFrameState();
 }
 
 class _PostFullscreenFrameState extends State<PostFullscreenFrame> {
@@ -165,9 +165,9 @@ class FrameChild extends StatelessWidget {
 
     if (controller != null) {
       return AnimatedBuilder(
-        child: child,
         animation: controller,
         builder: (context, child) => body(),
+        child: child,
       );
     } else {
       return body();
@@ -179,7 +179,7 @@ class FrameAppBar extends StatelessWidget with AppBarBuilderWidget {
   @override
   final PreferredSizeWidget child;
 
-  const FrameAppBar({Key? key, required this.child}) : super(key: key);
+  const FrameAppBar({required this.child});
 
   @override
   Widget build(BuildContext context) {

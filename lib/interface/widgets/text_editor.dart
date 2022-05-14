@@ -127,7 +127,6 @@ class _TextEditorState extends State<TextEditor>
         builder: (context) => FloatingActionButton(
           heroTag: 'float',
           backgroundColor: Theme.of(context).cardColor,
-          child: Icon(Icons.check, color: Theme.of(context).iconTheme.color),
           onPressed: isLoading
               ? null
               : () async {
@@ -142,6 +141,7 @@ class _TextEditorState extends State<TextEditor>
                     isLoading = false;
                   });
                 },
+          child: Icon(Icons.check, color: Theme.of(context).iconTheme.color),
         ),
       );
     }
@@ -206,7 +206,7 @@ class DTextEditorBar extends StatefulWidget {
   const DTextEditorBar({required this.controller});
 
   @override
-  _DTextEditorBarState createState() => _DTextEditorBarState();
+  State<DTextEditorBar> createState() => _DTextEditorBarState();
 }
 
 class _DTextEditorBarState extends State<DTextEditorBar> {
@@ -323,13 +323,13 @@ class _DTextEditorBarState extends State<DTextEditorBar> {
         children: [
           CrossFade(
             showChild: showBlocks,
-            child: blockButtons(),
             secondChild: textButtons(),
+            child: blockButtons(),
           ),
           CrossFade(
             showChild: showBlocks,
-            child: textButtons(),
             secondChild: blockButtons(),
+            child: textButtons(),
           ),
           const SizedBox(
             width: 48,

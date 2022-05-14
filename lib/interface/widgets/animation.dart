@@ -129,7 +129,7 @@ class AnimatedSelector extends StatefulWidget {
       this.child});
 
   @override
-  _AnimatedSelectorState createState() => _AnimatedSelectorState();
+  State<AnimatedSelector> createState() => _AnimatedSelectorState();
 }
 
 class _AnimatedSelectorState extends State<AnimatedSelector> {

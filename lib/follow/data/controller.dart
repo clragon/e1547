@@ -10,7 +10,7 @@ import 'package:e1547/settings/settings.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 
-late final FollowController followController =
+final FollowController followController =
     FollowController(settings: settings.follows);
 
 class FollowController extends DataUpdater<List<Follow>> with HostableUpdater {

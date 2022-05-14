@@ -29,16 +29,12 @@ class AppInfo extends PackageInfo with AppDeveloper {
     required this.github,
     required this.discord,
     required this.website,
-    required String appName,
-    required String packageName,
-    required String version,
-    required String buildNumber,
+    required super.appName,
+    required super.packageName,
+    required super.version,
+    required super.buildNumber,
     String buildSignature = '',
   }) : super(
-          appName: appName,
-          packageName: packageName,
-          version: version,
-          buildNumber: buildNumber,
           buildSignature: buildNumber,
         );
 

@@ -39,7 +39,7 @@ class UserAvatar extends StatelessWidget {
       User user = await client.user(id.toString());
 
       if (user.avatarId == null) {
-        return Future.value(null);
+        return null;
       }
       return await client.post(user.avatarId!);
     });
@@ -56,7 +56,7 @@ class PostAvatar extends StatelessWidget {
     return AvatarLoader(
       (context) async {
         if (id == null) {
-          return Future.value(null);
+          return null;
         }
         return await client.post(id!);
       },

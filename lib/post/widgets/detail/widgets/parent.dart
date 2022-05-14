@@ -147,7 +147,7 @@ class ParentEditor extends StatefulWidget {
   const ParentEditor({required this.editingController});
 
   @override
-  _ParentEditorState createState() => _ParentEditorState();
+  State<ParentEditor> createState() => _ParentEditorState();
 }
 
 class _ParentEditorState extends State<ParentEditor> {

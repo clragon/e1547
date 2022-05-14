@@ -23,7 +23,6 @@ class CommentDisplay extends StatelessWidget {
                 children: [
                   Expanded(
                     child: OutlinedButton(
-                      child: Text('COMMENTS ($count)'),
                       onPressed: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(
@@ -37,6 +36,7 @@ class CommentDisplay extends StatelessWidget {
                         overlayColor: MaterialStateProperty.all(
                             Theme.of(context).splashColor),
                       ),
+                      child: Text('COMMENTS ($count)'),
                     ),
                   )
                 ],

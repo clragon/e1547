@@ -62,7 +62,7 @@ class PostReportScreen extends StatefulWidget {
   const PostReportScreen({required this.post});
 
   @override
-  _PostReportScreenState createState() => _PostReportScreenState();
+  State<PostReportScreen> createState() => _PostReportScreenState();
 }
 
 class _PostReportScreenState extends State<PostReportScreen> {
@@ -90,7 +90,6 @@ class _PostReportScreenState extends State<PostReportScreen> {
         ),
         floatingActionButton: Builder(
           builder: (context) => FloatingActionButton(
-            child: const Icon(Icons.check),
             onPressed: isLoading
                 ? null
                 : () async {
@@ -129,6 +128,7 @@ class _PostReportScreenState extends State<PostReportScreen> {
                       });
                     }
                   },
+            child: const Icon(Icons.check),
           ),
         ),
         body: LayoutBuilder(
@@ -178,7 +178,7 @@ class PostFlagScreen extends StatefulWidget {
   const PostFlagScreen({required this.post});
 
   @override
-  _PostFlagScreenState createState() => _PostFlagScreenState();
+  State<PostFlagScreen> createState() => _PostFlagScreenState();
 }
 
 class _PostFlagScreenState extends State<PostFlagScreen> {
@@ -206,7 +206,6 @@ class _PostFlagScreenState extends State<PostFlagScreen> {
         ),
         floatingActionButton: Builder(
           builder: (context) => FloatingActionButton(
-            child: const Icon(Icons.check),
             onPressed: isLoading
                 ? null
                 : () async {
@@ -245,6 +244,7 @@ class _PostFlagScreenState extends State<PostFlagScreen> {
                       });
                     }
                   },
+            child: const Icon(Icons.check),
           ),
         ),
         body: LayoutBuilder(

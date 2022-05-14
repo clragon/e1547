@@ -20,7 +20,7 @@ class ControlledTextWrapper extends StatefulWidget {
   });
 
   @override
-  _ControlledTextWrapperState createState() => _ControlledTextWrapperState();
+  State<ControlledTextWrapper> createState() => _ControlledTextWrapperState();
 }
 
 class _ControlledTextWrapperState extends State<ControlledTextWrapper> {

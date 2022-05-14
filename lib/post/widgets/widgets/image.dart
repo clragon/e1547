@@ -69,14 +69,14 @@ class PostImageWidget extends StatelessWidget {
                   Positioned.fill(child: child),
                   if (progress.progress != null)
                     Positioned(
+                      top: 0,
+                      right: 0,
+                      left: 0,
                       child: LinearProgressIndicator(
                         value: progress.progress,
                         minHeight: scale * 0.01,
                         backgroundColor: Colors.transparent,
                       ),
-                      top: 0,
-                      right: 0,
-                      left: 0,
                     ),
                 ],
               ),

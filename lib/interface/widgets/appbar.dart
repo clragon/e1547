@@ -15,8 +15,7 @@ class AppBarBuilder extends StatelessWidget with AppBarBuilderWidget {
   final Widget Function(BuildContext context, PreferredSizeWidget child)
       builder;
 
-  const AppBarBuilder({Key? key, required this.child, required this.builder})
-      : super(key: key);
+  const AppBarBuilder({required this.child, required this.builder});
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +33,7 @@ class AppBarPadding extends StatelessWidget with AppBarBuilderWidget {
         child.preferredSize.height + defaultAppBarTopPadding,
       );
 
-  const AppBarPadding({Key? key, required this.child}) : super(key: key);
+  const AppBarPadding({required this.child});
 
   @override
   Widget build(BuildContext context) {
@@ -114,6 +113,13 @@ class ScrollToTop extends StatelessWidget {
       ScrollController? controller = this.controller ??
           (primary ? PrimaryScrollController.of(context) : null);
       return GestureDetector(
+        onDoubleTap: controller != null
+            ? () => controller.animateTo(
+                  0,
+                  duration: defaultAnimationDuration,
+                  curve: Curves.easeOut,
+                )
+            : null,
         child: Container(
           height: height,
           color: Colors.transparent,
@@ -132,13 +138,6 @@ class ScrollToTop extends StatelessWidget {
                 )
               : null,
         ),
-        onDoubleTap: controller != null
-            ? () => controller.animateTo(
-                  0,
-                  duration: defaultAnimationDuration,
-                  curve: Curves.easeOut,
-                )
-            : null,
       );
     }
 
@@ -181,7 +180,7 @@ class TransparentAppBar extends StatelessWidget with AppBarBuilderWidget {
 class SliverAppBarPadding extends StatelessWidget {
   final Widget child;
 
-  const SliverAppBarPadding({Key? key, required this.child}) : super(key: key);
+  const SliverAppBarPadding({required this.child});
 
   @override
   Widget build(BuildContext context) {

@@ -11,9 +11,8 @@ class HistoryTile extends StatelessWidget {
   final HistoryEntry entry;
 
   const HistoryTile({
-    Key? key,
     required this.entry,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

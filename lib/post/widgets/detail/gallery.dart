@@ -12,7 +12,7 @@ class PostDetailGallery extends StatefulWidget {
   const PostDetailGallery({required this.controller, this.initialPage = 0});
 
   @override
-  _PostDetailGalleryState createState() => _PostDetailGalleryState();
+  State<PostDetailGallery> createState() => _PostDetailGalleryState();
 }
 
 class _PostDetailGalleryState extends State<PostDetailGallery>
@@ -45,7 +45,7 @@ class _PostDetailGalleryState extends State<PostDetailGallery>
 
       if (widget.controller.nextPageKey != null &&
           index >= newPageRequestTriggerIndex) {
-        WidgetsBinding.instance!.addPostFrameCallback((_) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
           widget.controller
               .notifyPageRequestListeners(widget.controller.nextPageKey!);
         });

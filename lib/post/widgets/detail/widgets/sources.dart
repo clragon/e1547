@@ -4,7 +4,6 @@ import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-
 class SourceDisplay extends StatelessWidget {
   final Post post;
 

@@ -6,12 +6,11 @@ import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-
 class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
+  const LoginPage();
 
   @override
-  _LoginPageState createState() => _LoginPageState();
+  State<LoginPage> createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginPage> {
@@ -272,7 +271,7 @@ class LoginLoadingDialog extends StatefulWidget {
   });
 
   @override
-  _LoginLoadingDialogState createState() => _LoginLoadingDialogState();
+  State<LoginLoadingDialog> createState() => _LoginLoadingDialogState();
 }
 
 class _LoginLoadingDialogState extends State<LoginLoadingDialog> {

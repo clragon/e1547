@@ -63,9 +63,9 @@ DTextParser blockParser = DTextParser.builder(
           break;
         case TextBlock.section:
           blocked = SectionWrap(
-            child: Text.rich(parseDText(context, between, state)),
             title: tag.value,
             expanded: tag.expanded,
+            child: Text.rich(parseDText(context, between, state)),
           );
           break;
         case TextBlock.quote:

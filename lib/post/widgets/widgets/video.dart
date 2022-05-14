@@ -13,7 +13,7 @@ class VideoButton extends StatefulWidget {
       : super(key: ObjectKey(videoController));
 
   @override
-  _VideoButtonState createState() => _VideoButtonState();
+  State<VideoButton> createState() => _VideoButtonState();
 }
 
 class _VideoButtonState extends State<VideoButton>
@@ -74,15 +74,6 @@ class _VideoButtonState extends State<VideoButton>
                       duration: const Duration(milliseconds: 100),
                       showChild:
                           !widget.videoController.value.isPlaying || !loading,
-                      child: AnimatedBuilder(
-                        animation: animationController,
-                        builder: (context, child) => AnimatedIcon(
-                          icon: AnimatedIcons.play_pause,
-                          progress: animationController,
-                          size: widget.size,
-                          color: Colors.white,
-                        ),
-                      ),
                       secondChild: Center(
                         child: SizedBox(
                           height: widget.size * 0.7,
@@ -91,6 +82,15 @@ class _VideoButtonState extends State<VideoButton>
                             padding: EdgeInsets.all(8),
                             child: CircularProgressIndicator(),
                           ),
+                        ),
+                      ),
+                      child: AnimatedBuilder(
+                        animation: animationController,
+                        builder: (context, child) => AnimatedIcon(
+                          icon: AnimatedIcons.play_pause,
+                          progress: animationController,
+                          size: widget.size,
+                          color: Colors.white,
                         ),
                       ),
                     ),
@@ -210,7 +210,7 @@ class VideoGesture extends StatefulWidget {
   const VideoGesture({required this.forward, required this.videoController});
 
   @override
-  _VideoGestureState createState() => _VideoGestureState();
+  State<VideoGesture> createState() => _VideoGestureState();
 }
 
 class _VideoGestureState extends State<VideoGesture>
@@ -320,7 +320,7 @@ class VideoGestures extends StatefulWidget {
   const VideoGestures({required this.videoController, required this.child});
 
   @override
-  _VideoGesturesState createState() => _VideoGesturesState();
+  State<VideoGestures> createState() => _VideoGesturesState();
 }
 
 class _VideoGesturesState extends State<VideoGestures> {
@@ -365,7 +365,7 @@ class PostVideoLoader extends StatefulWidget {
   const PostVideoLoader({required this.post, required this.child});
 
   @override
-  _PostVideoLoaderState createState() => _PostVideoLoaderState();
+  State<PostVideoLoader> createState() => _PostVideoLoaderState();
 }
 
 class _PostVideoLoaderState extends State<PostVideoLoader> {
@@ -431,7 +431,7 @@ class VideoVolumeControl extends StatefulWidget {
   const VideoVolumeControl({required this.videoController});
 
   @override
-  _VideoVolumeControlState createState() => _VideoVolumeControlState();
+  State<VideoVolumeControl> createState() => _VideoVolumeControlState();
 }
 
 class _VideoVolumeControlState extends State<VideoVolumeControl> {
@@ -470,7 +470,7 @@ class VideoGlobalVolumeControl extends StatefulWidget {
   const VideoGlobalVolumeControl({required this.videoController});
 
   @override
-  _VideoGlobalVolumeControlState createState() =>
+  State<VideoGlobalVolumeControl> createState() =>
       _VideoGlobalVolumeControlState();
 }
 

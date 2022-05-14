@@ -11,11 +11,11 @@ class SelectionLayoutData<T> extends InheritedWidget {
   final SelectionChanged<T> onChanged;
 
   const SelectionLayoutData({
-    required Widget child,
+    required super.child,
     required this.selections,
     required this.onChanged,
     required this.items,
-  }) : super(child: child);
+  });
 
   @override
   bool updateShouldNotify(covariant SelectionLayoutData oldWidget) =>
@@ -38,7 +38,7 @@ class SelectionLayout<T> extends StatefulWidget {
   }
 
   @override
-  _SelectionLayoutState<T> createState() => _SelectionLayoutState<T>();
+  State<SelectionLayout<T>> createState() => _SelectionLayoutState<T>();
 }
 
 class _SelectionLayoutState<T> extends State<SelectionLayout<T>> {
