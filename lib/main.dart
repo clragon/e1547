@@ -105,8 +105,6 @@ class _AppState extends State<App> {
         ),
       );
 
-  void handleLink(Uri? url) {}
-
   late final NavigationController navigationController =
       NavigationController(destinations: rootDestintations);
 
