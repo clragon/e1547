@@ -1,3 +1,4 @@
+import 'package:e1547/client/client.dart';
 import 'package:e1547/denylist/denylist.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/wiki/wiki.dart';
@@ -36,6 +37,7 @@ class _DenyListEditorState extends State<DenyListEditor> {
         List<String> tags = controller.text.split('\n');
         tags = tags.trim();
         tags.removeWhere((tag) => tag.isEmpty);
+        await denylistController.edit(tags);
         if (!await validateCall(() => denylistController.edit(tags))) {
           throw const ActionControllerException(
               message: 'Failed to update blacklist!');

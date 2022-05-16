@@ -51,7 +51,6 @@ class SourceDisplay extends StatelessWidget {
                                     title: '#${post.id} sources',
                                     content: editingController.value!.sources
                                         .join('\n'),
-                                    dtext: false,
                                     onSubmit: (context, text) {
                                       editingController.value =
                                           editingController.value!.copyWith(

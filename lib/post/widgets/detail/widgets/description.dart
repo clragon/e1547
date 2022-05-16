@@ -41,7 +41,7 @@ class DescriptionDisplay extends StatelessWidget {
                       onPressed: editingController!.canEdit
                           ? () => Navigator.of(context).push(
                                 MaterialPageRoute(
-                                  builder: (context) => TextEditor(
+                                  builder: (context) => DTextEditor(
                                     title: '#${post.id} description',
                                     content:
                                         editingController.value!.description,

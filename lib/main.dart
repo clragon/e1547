@@ -105,8 +105,12 @@ class _AppState extends State<App> {
         ),
       );
 
-  late final NavigationController navigationController =
-      NavigationController(destinations: rootDestintations);
+  late final NavigationController navigationController = NavigationController(
+      destinations: rootDestintations, drawerHeader: UserDrawerHeader());
+
+  static const String drawerSearchGroup = 'search';
+  static const String drawerCollectionsGroup = 'collections';
+  static const String drawerSettingsGroup = 'settings';
 
   final List<NavigationRouteDestination> rootDestintations = [
     NavigationDrawerDestination(
@@ -115,7 +119,7 @@ class _AppState extends State<App> {
       icon: const Icon(Icons.home),
       builder: (context) => const HomePage(),
       unique: true,
-      group: DrawerGroup.search.name,
+      group: drawerSearchGroup,
     ),
     NavigationDrawerDestination(
       path: '/hot',
@@ -123,14 +127,14 @@ class _AppState extends State<App> {
       icon: const Icon(Icons.whatshot),
       builder: (context) => const HotPage(),
       unique: true,
-      group: DrawerGroup.search.name,
+      group: drawerSearchGroup,
     ),
     NavigationDrawerDestination(
       path: '/search',
       name: 'Search',
       icon: const Icon(Icons.search),
       builder: (context) => const SearchPage(),
-      group: DrawerGroup.search.name,
+      group: drawerSearchGroup,
     ),
     NavigationDrawerDestination(
       path: '/fav',
@@ -138,7 +142,7 @@ class _AppState extends State<App> {
       icon: const Icon(Icons.favorite),
       builder: (context) => const FavPage(),
       unique: true,
-      group: DrawerGroup.collection.name,
+      group: drawerCollectionsGroup,
     ),
     NavigationDrawerDestination(
       path: '/follows',
@@ -146,7 +150,7 @@ class _AppState extends State<App> {
       icon: const Icon(Icons.turned_in),
       builder: (context) => FollowsPage(),
       unique: true,
-      group: DrawerGroup.collection.name,
+      group: drawerCollectionsGroup,
     ),
     NavigationDrawerDestination(
       path: '/pools',
@@ -154,7 +158,7 @@ class _AppState extends State<App> {
       icon: const Icon(Icons.collections),
       builder: (context) => PoolsPage(),
       unique: true,
-      group: DrawerGroup.collection.name,
+      group: drawerCollectionsGroup,
     ),
     NavigationDrawerDestination(
       path: '/topics',
@@ -163,7 +167,7 @@ class _AppState extends State<App> {
       builder: (context) => const TopicsPage(),
       visible: (context) => settings.showBeta.value,
       unique: true,
-      group: DrawerGroup.collection.name,
+      group: drawerCollectionsGroup,
     ),
     NavigationDrawerDestination(
       path: '/history',
@@ -171,21 +175,21 @@ class _AppState extends State<App> {
       icon: const Icon(Icons.history),
       builder: (context) => const HistoryPage(),
       visible: (context) => settings.writeHistory.value,
-      group: DrawerGroup.settings.name,
+      group: drawerSettingsGroup,
     ),
     NavigationDrawerDestination(
       path: '/settings',
       name: 'Settings',
       icon: const Icon(Icons.settings),
       builder: (context) => SettingsPage(),
-      group: DrawerGroup.settings.name,
+      group: drawerSettingsGroup,
     ),
     NavigationDrawerDestination(
       path: '/about',
       name: 'About',
       icon: DrawerUpdateIcon(),
       builder: (context) => AboutPage(),
-      group: DrawerGroup.settings.name,
+      group: drawerSettingsGroup,
     ),
     NavigationRouteDestination(
       path: '/login',

@@ -267,3 +267,42 @@ class _PlaystoreButtonState extends State<PlaystoreButton> {
     );
   }
 }
+
+class DrawerUpdateIcon extends StatefulWidget {
+  @override
+  State<DrawerUpdateIcon> createState() => _DrawerUpdateIconState();
+}
+
+class _DrawerUpdateIconState extends State<DrawerUpdateIcon> {
+  Future<List<AppVersion>?> newVersions = getNewVersions();
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<List<AppVersion>?>(
+      future: newVersions,
+      builder: (context, snapshot) {
+        if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+          return Stack(
+            children: [
+              const Icon(Icons.update),
+              Positioned(
+                bottom: 0,
+                left: 0,
+                child: Container(
+                  height: 10,
+                  width: 10,
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.red,
+                  ),
+                ),
+              ),
+            ],
+          );
+        } else {
+          return const Icon(Icons.info);
+        }
+      },
+    );
+  }
+}

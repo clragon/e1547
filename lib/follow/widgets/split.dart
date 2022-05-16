@@ -1,3 +1,4 @@
+import 'package:e1547/client/client.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
@@ -86,8 +87,8 @@ class _FollowsSplitPageState extends State<FollowsSplitPage>
             itemCount: controller.items.length,
             itemBuilder: (context, index) =>
                 FollowTile(follow: controller.items[index]),
-            staggeredTileBuilder: (index) => StaggeredTile.count(
-                1, 1 * TileLayout.of(context).tileHeightFactor),
+            staggeredTileBuilder: (index) =>
+                StaggeredTile.count(1, TileLayout.of(context).tileHeightFactor),
           ),
           appBar: const DefaultAppBar(
             title: Text('Following'),

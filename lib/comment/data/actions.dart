@@ -1,5 +1,5 @@
 import 'package:e1547/client/client.dart';
-import 'package:e1547/interface/interface.dart';
+import 'package:e1547/dtext/dtext.dart';
 import 'package:flutter/material.dart';
 
 import 'comment.dart';
@@ -33,7 +33,7 @@ Future<bool> writeComment({
   bool sent = false;
   await Navigator.of(context).push(
     MaterialPageRoute(
-      builder: (context) => TextEditor(
+      builder: (context) => DTextEditor(
         title: '#$postId comment',
         content: text ?? (comment?.body),
         onSubmit: (context, text) async {

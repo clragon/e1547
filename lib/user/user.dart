@@ -6,3 +6,4 @@ export 'data/actions.dart';
 export 'widgets/avatar.dart';
 export 'widgets/user.dart';
 export 'widgets/loading.dart';
+export 'widgets/drawer.dart';

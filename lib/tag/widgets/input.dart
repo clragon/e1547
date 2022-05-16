@@ -9,8 +9,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:intl/intl.dart';
 
-typedef SubmitString = FutureOr<void> Function(String result);
-
 class TagInput extends StatefulWidget {
   final String? labelText;
   final SubmitString submit;

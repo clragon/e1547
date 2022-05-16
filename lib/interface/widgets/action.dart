@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:e1547/interface/interface.dart';
-import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
+
+typedef SubmitString = FutureOr<void> Function(String result);
 
 class ControlledTextWrapper extends StatefulWidget {
   final SubmitString submit;

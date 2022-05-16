@@ -1,7 +1,3 @@
-import 'package:e1547/client/client.dart';
-import 'package:e1547/interface/interface.dart';
-import 'package:e1547/settings/settings.dart';
-import 'package:e1547/user/user.dart';
 import 'package:flutter/material.dart';
 
 double defaultDrawerEdge(double screenWidth) => screenWidth * 0.1;
@@ -39,12 +35,14 @@ class NavigationController {
   final List<NavigationRouteDestination> destinations;
   late final Map<String, WidgetBuilder> routes;
 
+  final Widget? drawerHeader;
+
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
   final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
 
   late String drawerSelection;
 
-  NavigationController({required this.destinations}) {
+  NavigationController({required this.destinations, this.drawerHeader}) {
     drawerSelection =
         destinations.singleWhere((element) => element.path == '/').path;
     routes = _generateRoutes(destinations);
@@ -91,12 +89,6 @@ class NavigationData extends InheritedWidget {
       oldWidget.controller != controller;
 }
 
-enum DrawerGroup {
-  search,
-  collection,
-  settings,
-}
-
 class NavigationDrawer extends StatelessWidget {
   const NavigationDrawer();
 
@@ -113,7 +105,9 @@ class NavigationDrawer extends StatelessWidget {
     final NavigationController controller = NavigationData.of(context);
 
     List<Widget> children = [];
-    children.add(ProfileHeader());
+    if (controller.drawerHeader != null) {
+      children.add(controller.drawerHeader!);
+    }
 
     List<NavigationDrawerDestination> destinations =
         getDrawerDestinations(controller.destinations);
@@ -149,103 +143,6 @@ class NavigationDrawer extends StatelessWidget {
           children: children,
         ),
       ),
-    );
-  }
-}
-
-class ProfileHeader extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: client,
-      builder: (context, child) => DrawerHeader(
-        child: GestureDetector(
-          onTap: client.credentials != null
-              ? () => Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          UserLoadingPage(client.credentials!.username),
-                    ),
-                  )
-              : null,
-          child: Row(
-            children: [
-              const SizedBox(
-                height: 72,
-                width: 72,
-                child: CurrentUserAvatar(),
-              ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: CrossFade.builder(
-                    showChild: client.credentials?.username != null,
-                    builder: (context) => Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            client.credentials!.username,
-                            style: Theme.of(context).textTheme.headline6,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
-                    ),
-                    secondChild: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: OutlinedButton(
-                        child: const Text('LOGIN'),
-                        onPressed: () =>
-                            Navigator.popAndPushNamed(context, '/login'),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class DrawerUpdateIcon extends StatefulWidget {
-  @override
-  State<DrawerUpdateIcon> createState() => _DrawerUpdateIconState();
-}
-
-class _DrawerUpdateIconState extends State<DrawerUpdateIcon> {
-  Future<List<AppVersion>?> newVersions = getNewVersions();
-
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder<List<AppVersion>?>(
-      future: newVersions,
-      builder: (context, snapshot) {
-        if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-          return Stack(
-            children: [
-              const Icon(Icons.update),
-              Positioned(
-                bottom: 0,
-                left: 0,
-                child: Container(
-                  height: 10,
-                  width: 10,
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.red,
-                  ),
-                ),
-              ),
-            ],
-          );
-        } else {
-          return const Icon(Icons.info);
-        }
-      },
     );
   }
 }
