@@ -44,7 +44,7 @@ final DTextParser blockParser = DTextParser.builder(
         after = '';
       }
 
-      between = between.replaceAllMapped(RegExp(r'(^\n+)|(\n+$)'), (_) => '');
+      between = between.trim();
 
       Widget blocked;
 
@@ -75,7 +75,7 @@ final DTextParser blockParser = DTextParser.builder(
           break;
       }
 
-      after = after.replaceAllMapped(RegExp(r'^[ \n]*'), (_) => '');
+      after = after.trim();
 
       return DTextParserResult(
         span: WidgetSpan(
