@@ -92,9 +92,13 @@ class AboutPage extends StatelessWidget {
                       ),
                     if (Platform.isAndroid) const PlaystoreButton(),
                     if (appInfo.website != null)
-                      IconButton(
-                        icon: const FaIcon(FontAwesomeIcons.globe),
-                        onPressed: () => launch('https://${appInfo.website!}'),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                        child: IconButton(
+                          icon: const FaIcon(FontAwesomeIcons.globe),
+                          onPressed: () =>
+                              launch('https://${appInfo.website!}'),
+                        ),
                       ),
                   ],
                 ),

@@ -6,7 +6,7 @@ Future<void> initializeAppInfo() async => appInfo = await AppInfo.fromPlatform(
       developer: 'binaryfloof',
       github: 'clragon/e1547',
       discord: 'MRwKGqfmUz',
-      website: null,
+      website: 'e1547.clynamic.net',
     );
 
 abstract class AppDeveloper {
