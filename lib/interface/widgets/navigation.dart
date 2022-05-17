@@ -14,7 +14,8 @@ class NavigationRouteDestination {
   });
 }
 
-class NavigationDrawerDestination extends NavigationRouteDestination {
+class NavigationDrawerDestination<T extends Widget>
+    extends NavigationRouteDestination {
   final String name;
   final bool Function(BuildContext context)? visible;
   final Widget? icon;
@@ -26,9 +27,9 @@ class NavigationDrawerDestination extends NavigationRouteDestination {
     this.group,
     this.visible,
     required super.path,
-    required super.builder,
+    required T Function(BuildContext context) builder,
     super.unique,
-  });
+  }) : super(builder: builder);
 }
 
 class NavigationController {
@@ -40,36 +41,22 @@ class NavigationController {
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
   final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
 
-  late String drawerSelection;
+  late String _drawerSelection = '/';
 
-  NavigationController({required this.destinations, this.drawerHeader}) {
-    drawerSelection =
-        destinations.singleWhere((element) => element.path == '/').path;
-    routes = _generateRoutes(destinations);
-  }
+  String get drawerSelection => _drawerSelection;
 
-  WidgetBuilder _getDestinationBuilder(
-      NavigationRouteDestination destintation) {
-    if (destintation.unique) {
-      return (context) {
-        drawerSelection = destintation.path;
-        return destintation.builder(context);
-      };
-    } else {
-      return destintation.builder;
+  void setDrawerSelection<T extends Widget>() {
+    List<NavigationDrawerDestination> targets = destinations
+        .whereType<NavigationDrawerDestination<T>>()
+        .where((e) => e.unique)
+        .toList();
+    if (targets.length == 1) {
+      _drawerSelection = targets.first.path;
     }
   }
 
-  Map<String, WidgetBuilder> _generateRoutes(
-      List<NavigationRouteDestination> destinations) {
-    return Map.fromEntries(
-      destinations.map(
-        (element) => MapEntry(
-          element.path,
-          _getDestinationBuilder(element),
-        ),
-      ),
-    );
+  NavigationController({required this.destinations, this.drawerHeader}) {
+    routes = {for (final e in destinations) e.path: e.builder};
   }
 }
 
@@ -82,6 +69,12 @@ class NavigationData extends InheritedWidget {
     return context
         .dependOnInheritedWidgetOfExactType<NavigationData>()!
         .controller;
+  }
+
+  static NavigationController? maybeOf(BuildContext context) {
+    return context
+        .dependOnInheritedWidgetOfExactType<NavigationData>()
+        ?.controller;
   }
 
   @override
@@ -144,5 +137,15 @@ class NavigationDrawer extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+mixin DrawerEntry<T extends StatefulWidget> on State<T> {
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (ModalRoute.of(context)!.isFirst) {
+      NavigationData.maybeOf(context)?.setDrawerSelection<T>();
+    }
   }
 }

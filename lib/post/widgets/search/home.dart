@@ -10,7 +10,8 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> with ListenerCallbackMixin {
+class _HomePageState extends State<HomePage>
+    with ListenerCallbackMixin, DrawerEntry {
   PostController controller = PostController(search: settings.homeTags.value);
 
   @override

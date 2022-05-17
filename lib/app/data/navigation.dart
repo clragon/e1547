@@ -42,7 +42,7 @@ final List<NavigationRouteDestination> rootDestintations = [
     group: _drawerSearchGroup,
   ),
   NavigationDrawerDestination(
-    path: '/fav',
+    path: '/favorites',
     name: 'Favorites',
     icon: const Icon(Icons.favorite),
     builder: (context) => const FavPage(),
@@ -51,7 +51,7 @@ final List<NavigationRouteDestination> rootDestintations = [
   ),
   NavigationDrawerDestination(
     path: '/follows',
-    name: 'Following',
+    name: 'Follows',
     icon: const Icon(Icons.turned_in),
     builder: (context) => FollowsPage(),
     unique: true,
@@ -66,7 +66,7 @@ final List<NavigationRouteDestination> rootDestintations = [
     group: _drawerCollectionsGroup,
   ),
   NavigationDrawerDestination(
-    path: '/topics',
+    path: '/forum',
     name: 'Forum',
     icon: const Icon(Icons.forum),
     builder: (context) => const TopicsPage(),

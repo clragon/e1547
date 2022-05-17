@@ -54,6 +54,29 @@ class AppBarPadding extends StatelessWidget with AppBarBuilderWidget {
   }
 }
 
+Widget? withDefaultLeading({
+  required BuildContext context,
+  Widget? leading,
+  bool automaticallyImplyLeading = true,
+}) {
+  if (leading == null && automaticallyImplyLeading) {
+    bool hasDrawer = Scaffold.maybeOf(context)?.hasDrawer ?? false;
+    bool isFirst = ModalRoute.of(context)?.isFirst ?? false;
+    bool canPop = ModalRoute.of(context)?.canPop ?? false;
+
+    if (hasDrawer && isFirst) {
+      leading = IconButton(
+        icon: const Icon(Icons.menu),
+        onPressed: Scaffold.of(context).openDrawer,
+        tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
+      );
+    } else if (canPop) {
+      leading = const BackButton();
+    }
+  }
+  return leading;
+}
+
 class DefaultAppBar extends StatelessWidget with PreferredSizeWidget {
   final Widget? leading;
   final List<Widget>? actions;
@@ -78,11 +101,15 @@ class DefaultAppBar extends StatelessWidget with PreferredSizeWidget {
   Widget build(BuildContext context) {
     return AppBarPadding(
       child: AppBar(
-        leading: leading,
+        leading: withDefaultLeading(
+          context: context,
+          leading: leading,
+          automaticallyImplyLeading: automaticallyImplyLeading,
+        ),
         actions: actions,
         title: IgnorePointer(child: title),
         elevation: elevation,
-        automaticallyImplyLeading: automaticallyImplyLeading,
+        automaticallyImplyLeading: false,
         flexibleSpace: ScrollToTop(controller: scrollController),
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(4)),
@@ -245,14 +272,18 @@ class DefaultSliverAppBar extends StatelessWidget {
     return SliverAppBarPadding(
       child: SliverAppBar(
         title: IgnorePointer(child: title),
-        automaticallyImplyLeading: automaticallyImplyLeading,
+        automaticallyImplyLeading: false,
         elevation: elevation,
         forceElevated: forceElevated,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(4)),
         ),
         expandedHeight: expandedHeight,
-        leading: leading,
+        leading: withDefaultLeading(
+          context: context,
+          leading: leading,
+          automaticallyImplyLeading: automaticallyImplyLeading,
+        ),
         floating: floating,
         pinned: pinned,
         snap: snap,
