@@ -58,7 +58,7 @@ List<LinkParser> allLinkParsers() => [
         '$_queryRegex',
         (context, arguments) => LinkParserResult(
           (context) => SearchPage(
-            tags: arguments['tags'] as String,
+            tags: (arguments['tags'] as String).replaceAll('+', ' '),
           ),
         ),
       ),
@@ -141,7 +141,7 @@ final List<LinkParser> forumLinkParsers = [
     r'/forum_topics?' + _singleQueryValue(r'search[title_matches]=:search'),
     (context, arguments) => LinkParserResult(
       (context) => TopicsPage(
-        search: arguments['search'] as String,
+        search: (arguments['search'] as String).replaceAll('+', ' '),
       ),
       root: true,
     ),
@@ -158,7 +158,7 @@ final List<LinkParser> forumLinkParsers = [
     r'/forum_posts' + _singleQueryValue('search[topic_title_matches]=:search'),
     (context, arguments) => LinkParserResult(
       (context) => TopicsPage(
-        search: arguments['search'] as String,
+        search: (arguments['search'] as String).replaceAll('+', ' '),
       ),
       root: true,
     ),
