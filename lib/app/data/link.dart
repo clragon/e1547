@@ -5,6 +5,7 @@ import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:e1547/topic/topic.dart';
 import 'package:e1547/user/user.dart';
+import 'package:e1547/wiki/wiki.dart';
 import 'package:flutter/material.dart';
 import 'package:path_to_regexp/path_to_regexp.dart';
 import 'package:url_launcher/url_launcher.dart' as urls;
@@ -110,6 +111,17 @@ List<LinkParser> allLinkParsers() => [
         ),
       ),
       // TODO: add user search page
+      LinkParser(
+        r'/wiki_pages'
+        r'/:name'
+        '$_queryRegex'
+        '$_anyUrlRegex',
+        (context, arguments) => LinkParserResult(
+          (context) => WikiLoadingPage(
+            arguments['name'] as String,
+          ),
+        ),
+      ),
       if (settings.showBeta.value) ...forumLinkParsers,
     ];
 

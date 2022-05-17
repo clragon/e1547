@@ -1,5 +1,7 @@
 import 'package:e1547/dtext/dtext.dart';
 import 'package:e1547/post/post.dart';
+import 'package:e1547/tag/tag.dart';
+import 'package:e1547/wiki/wiki.dart';
 import 'package:flutter/material.dart';
 
 final DTextParser anchorParser = DTextParser(
@@ -14,11 +16,19 @@ final DTextParser anchorParser = DTextParser(
     VoidCallback? onTap;
 
     if (!anchor) {
-      onTap = () => Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => SearchPage(tags: tags),
-            ),
-          );
+      if (!tags.contains(' ') && wikiMetaTags.any((e) => tags.startsWith(e))) {
+        onTap = () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => WikiLoadingPage(tags),
+              ),
+            );
+      } else {
+        onTap = () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => SearchPage(tags: tags),
+              ),
+            );
+      }
     }
 
     return plainText(

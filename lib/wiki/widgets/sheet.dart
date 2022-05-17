@@ -25,25 +25,22 @@ class WikiSheet extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: InkWell(
-                      onTap: () {
-                        Navigator.of(context).maybePop();
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => SearchPage(tags: wiki.title),
-                          ),
-                        );
-                      },
-                      child: Text(
-                        tagToTitle(wiki.title),
-                        style: Theme.of(context).textTheme.headline6,
-                        softWrap: true,
-                      ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.of(context).maybePop();
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => SearchPage(tags: wiki.title),
+                        ),
+                      );
+                    },
+                    child: Text(
+                      tagToTitle(wiki.title),
+                      style: Theme.of(context).textTheme.headline6,
+                      softWrap: true,
                     ),
                   ),
                 ),

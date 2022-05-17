@@ -13,12 +13,8 @@ class WikiPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: DefaultAppBar(
-        title: Flexible(
-          child: Text(
-            tagToTitle(wiki.title),
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
+        leading: const BackButton(),
+        title: Text(tagToTitle(wiki.title)),
         actions: [
           IconButton(
             icon: const Icon(Icons.info_outline),
@@ -28,6 +24,8 @@ class WikiPage extends StatelessWidget {
         ],
       ),
       body: SingleChildScrollView(
+        padding: defaultActionListPadding
+            .add(const EdgeInsets.symmetric(horizontal: 12)),
         child: DText(wiki.body),
       ),
     );
