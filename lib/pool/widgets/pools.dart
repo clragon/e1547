@@ -7,12 +7,16 @@ import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'tile.dart';
 
 class PoolsPage extends StatefulWidget {
+  final String? search;
+
+  const PoolsPage({this.search});
+
   @override
   State<StatefulWidget> createState() => _PoolsPageState();
 }
 
 class _PoolsPageState extends State<PoolsPage> {
-  PoolController controller = PoolController();
+  late PoolController controller = PoolController(search: widget.search);
 
   @override
   void dispose() {

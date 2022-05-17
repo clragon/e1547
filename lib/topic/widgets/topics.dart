@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
 class TopicsPage extends StatefulWidget {
-  const TopicsPage();
+  final String? search;
+
+  const TopicsPage({this.search});
 
   @override
   State<StatefulWidget> createState() {
@@ -13,7 +15,7 @@ class TopicsPage extends StatefulWidget {
 }
 
 class _TopicsPageState extends State<TopicsPage> {
-  TopicController controller = TopicController();
+  late TopicController controller = TopicController(search: widget.search);
 
   @override
   void dispose() {

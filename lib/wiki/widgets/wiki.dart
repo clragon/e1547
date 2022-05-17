@@ -1,15 +1,13 @@
+import 'package:e1547/dtext/dtext.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/tag/tag.dart';
+import 'package:e1547/wiki/wiki.dart';
 import 'package:flutter/material.dart';
 
-import 'actions.dart';
-import 'body.dart';
-
 class WikiPage extends StatelessWidget {
-  final String tag;
-  final bool actions;
+  final Wiki wiki;
 
-  const WikiPage({required this.tag, required this.actions});
+  const WikiPage({required this.wiki});
 
   @override
   Widget build(BuildContext context) {
@@ -17,13 +15,21 @@ class WikiPage extends StatelessWidget {
       appBar: DefaultAppBar(
         title: Flexible(
           child: Text(
-            tagToTitle(tag),
+            tagToTitle(wiki.title),
             overflow: TextOverflow.ellipsis,
           ),
         ),
-        actions: actions ? [TagListActions(tag: tag)] : null,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.info_outline),
+            tooltip: 'Info',
+            onPressed: () => wikiSheet(context, wiki),
+          ),
+        ],
       ),
-      body: WikiBody(tag: tag),
+      body: SingleChildScrollView(
+        child: DText(wiki.body),
+      ),
     );
   }
 }

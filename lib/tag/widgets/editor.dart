@@ -41,7 +41,7 @@ class _TagEditorState extends State<TagEditor> {
       textInputAction: TextInputAction.done,
       submit: (_) => widget.controller.action!(),
       controller: controller,
-      category: categories[widget.category!],
+      category: TagCategory.byName(widget.category!).id,
     );
   }
 }

@@ -42,7 +42,9 @@ class TagCard extends StatelessWidget {
                 height: 26,
                 decoration: BoxDecoration(
                   color: stripeColor ??
-                      (category != null ? getCategoryColor(category!) : null),
+                      (category != null
+                          ? TagCategory.byName(category!).color
+                          : null),
                   borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(4),
                     bottomLeft: Radius.circular(4),

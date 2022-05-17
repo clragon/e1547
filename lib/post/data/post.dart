@@ -69,14 +69,14 @@ class Post {
       return;
     }
 
-    if (loadedVideos.length >= 6) {
+    if (loadedVideos.length >= 3) {
       loadedVideos.first.disposeVideo();
     }
 
     while (true) {
       if (loadedVideos.fold<int>(
               0, (current, post) => current += post.file.size) <
-          2 * pow(10, 8)) {
+          5 * pow(10, 7)) {
         break;
       }
       await loadedVideos.first.disposeVideo();

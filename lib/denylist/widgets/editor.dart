@@ -1,7 +1,7 @@
 import 'package:e1547/client/client.dart';
 import 'package:e1547/denylist/denylist.dart';
 import 'package:e1547/interface/interface.dart';
-import 'package:e1547/wiki/wiki.dart';
+import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 
 class DenyListEditor extends StatefulWidget {
@@ -24,7 +24,8 @@ class _DenyListEditorState extends State<DenyListEditor> {
           const Text('Blacklist'),
           IconButton(
             icon: const Icon(Icons.help_outline),
-            onPressed: () => wikiSheet(context: context, tag: 'e621:blacklist'),
+            onPressed: () =>
+                tagSearchSheet(context: context, tag: 'e621:blacklist'),
           )
         ],
       ),

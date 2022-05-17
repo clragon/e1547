@@ -1,7 +1,7 @@
 import 'package:e1547/dtext/dtext.dart';
 import 'package:flutter/material.dart';
 
-DTextParser blockParser = DTextParser.builder(
+final DTextParser blockParser = DTextParser.builder(
   regex: TextTag.toRegex(),
   tranformer: (context, match, state) {
     TextTag? tag = TextTag.fromMatch(match);
@@ -93,7 +93,7 @@ DTextParser blockParser = DTextParser.builder(
   },
 );
 
-DTextParser tagParser = DTextParser.builder(
+final DTextParser tagParser = DTextParser.builder(
   regex: TextTag.toRegex(),
   tranformer: (context, match, state) {
     TextTag? tag = TextTag.fromMatch(match);

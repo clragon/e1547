@@ -6,3 +6,4 @@ export 'search/pool.dart';
 export 'search/search.dart';
 export 'search/widgets.dart';
 export 'search/headless.dart';
+export 'search/sheet.dart';

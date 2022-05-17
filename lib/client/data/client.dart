@@ -456,6 +456,19 @@ class Client extends ChangeNotifier {
     return body.map((entry) => Wiki.fromMap(entry)).toList();
   }
 
+  Future<Wiki> wiki(String name, {bool? force}) async {
+    await initialized;
+    Map<String, dynamic> body = await dio
+        .getWithCache(
+          'wiki_pages/$name.json',
+          cacheManager,
+          forceRefresh: force,
+        )
+        .then((response) => response.data);
+
+    return Wiki.fromMap(body);
+  }
+
   Future<User> user(String name, {bool? force}) async {
     await initialized;
     Map<String, dynamic> body = await dio

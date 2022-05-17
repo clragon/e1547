@@ -5,7 +5,6 @@ import 'package:e1547/dtext/dtext.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/ticket/ticket.dart';
-import 'package:e1547/wiki/wiki.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -145,7 +144,7 @@ class _PostReportScreenState extends State<PostReportScreen> {
                 title: const Text('Report'),
                 icon: IconButton(
                   onPressed: () =>
-                      wikiSheet(context: context, tag: 'e621:report_post'),
+                      tagSearchSheet(context: context, tag: 'e621:report_post'),
                   icon: const Icon(Icons.info_outline),
                 ),
               ),
@@ -259,7 +258,7 @@ class _PostFlagScreenState extends State<PostFlagScreen> {
               ReportFormHeader(
                 title: const Text('Flag'),
                 icon: IconButton(
-                  onPressed: () => wikiSheet(
+                  onPressed: () => tagSearchSheet(
                       context: context, tag: 'e621:flag_for_deletion'),
                   icon: const Icon(Icons.info_outline),
                 ),

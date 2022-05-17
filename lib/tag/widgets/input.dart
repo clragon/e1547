@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:collection/collection.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
@@ -104,10 +105,9 @@ class _TagInputState extends State<TagInput> {
       itemBuilder: (context, itemData) => Row(
         children: [
           Container(
-            color: getCategoryColor(categories.entries
-                .firstWhere((e) => e.value == itemData.category,
-                    orElse: () => const MapEntry('', 0))
-                .key),
+            color: TagCategory.values
+                .firstWhereOrNull((e) => e.id == itemData.category)
+                ?.color,
             height: 54,
             width: 5,
           ),
