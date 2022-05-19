@@ -40,7 +40,7 @@ class _AppState extends State<App> {
                     (_) => followController.update(),
                     (_) => initializeDateFormatting(),
                   ],
-                  child: AppLinkHandler(child: child!),
+                  child: LockScreen(child: AppLinkHandler(child: child!)),
                 ),
               ),
             ),

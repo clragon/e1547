@@ -117,4 +117,9 @@ class Settings with SharedPrefsSettings {
       createSetting<bool>(key: 'upvoteFavs', initialValue: false);
   late final ValueNotifier<bool> muteVideos =
       createSetting<bool>(key: 'muteVideos', initialValue: true);
+
+  late final ValueNotifier<String?> appPin =
+      createSetting(key: 'appPin', initialValue: null);
+  late final ValueNotifier<bool> biometricAuth =
+      createSetting<bool>(key: 'biometricAuth', initialValue: false);
 }

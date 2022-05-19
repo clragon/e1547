@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:e1547/app/widgets/lock.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
@@ -54,6 +57,39 @@ class _AdvancedSettingsPageState extends State<AdvancedSettingsPage> {
                 onChanged: (value) => settings.muteVideos.value = value,
               ),
             ),
+            const Divider(),
+            const SettingsHeader(title: 'Lockscreen'),
+            ValueListenableBuilder<String?>(
+              valueListenable: settings.appPin,
+              builder: (context, value, child) => SwitchListTile(
+                title: const Text('PIN lock'),
+                subtitle: Text(value != null ? 'PIN enabled' : 'PIN disabled'),
+                secondary: const Icon(Icons.pin),
+                value: value != null,
+                onChanged: (value) async {
+                  if (value) {
+                    String? pin = await registerPin(context);
+                    if (pin != null) {
+                      settings.appPin.value = pin;
+                    }
+                  } else {
+                    settings.appPin.value = null;
+                  }
+                },
+              ),
+            ),
+            if (Platform.isAndroid || Platform.isIOS)
+              ValueListenableBuilder<bool>(
+                valueListenable: settings.biometricAuth,
+                builder: (context, value, child) => SwitchListTile(
+                  title: const Text('Biometric lock'),
+                  subtitle: Text(
+                      value ? 'biometrics enabled' : 'biometrics disabled'),
+                  secondary: const Icon(Icons.fingerprint),
+                  value: value,
+                  onChanged: (value) => settings.biometricAuth.value = value,
+                ),
+              ),
             const Divider(),
             const SettingsHeader(title: 'Beta'),
             ValueListenableBuilder<bool>(
