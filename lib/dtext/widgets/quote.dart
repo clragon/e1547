@@ -1,3 +1,4 @@
+import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
 
 class QuoteWrap extends StatelessWidget {
@@ -9,14 +10,27 @@ class QuoteWrap extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       color: Theme.of(context).canvasColor,
-      child: Padding(
-        padding: const EdgeInsets.all(8),
+      clipBehavior: Clip.antiAlias,
+      child: IntrinsicHeight(
         child: Row(
           children: [
+            Container(
+              width: 5,
+              decoration: BoxDecoration(
+                color: dimTextColor(context),
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(4),
+                  bottomLeft: Radius.circular(4),
+                ),
+              ),
+            ),
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [child],
+              child: Padding(
+                padding: const EdgeInsets.all(8),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [child],
+                ),
               ),
             ),
           ],
