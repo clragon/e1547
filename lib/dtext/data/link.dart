@@ -79,7 +79,7 @@ InlineSpan parseDTextLink({
 
     // forum topics need generated names
     UsernameGenerator? usernameGenerator = UsernameGeneratorData.of(context);
-    RegExp userRegex = RegExp(r'/users/(?<id>\d+)');
+    RegExp userRegex = RegExp(r'/user(s|/show)/(?<id>\d+)');
     RegExpMatch? match = userRegex.firstMatch(link);
     if (usernameGenerator != null && match != null) {
       display = usernameGenerator.generate(int.parse(match.namedGroup('id')!));
