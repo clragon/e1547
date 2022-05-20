@@ -150,23 +150,22 @@ class Client extends ChangeNotifier {
       username = credentials?.username;
     }
 
-    Map<RegExp, Future<List<Post>> Function(RegExpMatch match, String? result)>
-        regexes = {
-      poolRegex(): (match, result) => poolPosts(
+    Map<RegExp, Future<List<Post>> Function(RegExpMatch match)> regexes = {
+      poolRegex(): (match) => poolPosts(
             int.parse(match.namedGroup('id')!),
             page,
             reverse: reversePools ?? false,
             force: force,
           ),
       if (username != null)
-        favRegex(username): (match, result) =>
+        favRegex(username): (match) =>
             favorites(page, limit: limit, force: force),
     };
 
     for (final entry in regexes.entries) {
       RegExpMatch? match = entry.key.firstMatch(search!.trim());
       if (match != null) {
-        return entry.value(match, search);
+        return entry.value(match);
       }
     }
 
@@ -362,33 +361,6 @@ class Client extends ChangeNotifier {
       posts.addAll(await follows(page + 1, attempt: attempt + 1));
     }
     return posts;
-  }
-
-  Future<List<Post>> follow(
-    String tag, {
-    bool? force,
-    Duration age = const Duration(hours: 1),
-    int limit = 5,
-  }) async {
-    await initialized;
-    Map body = await dio
-        .getWithCache(
-          'posts.json',
-          cacheManager,
-          queryParameters: {
-            'tags': tag,
-            'page': 1,
-            'limit': limit,
-          },
-          forceRefresh: force,
-          maxAge: age,
-          maxStale: const Duration(hours: 4),
-        )
-        .then(
-          (response) => response.data,
-        );
-
-    return postsFromJson(body['posts']);
   }
 
   Future<Post> post(int postId, {bool unsafe = false, bool? force}) async {
