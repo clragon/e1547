@@ -6,7 +6,9 @@ import 'package:flutter/services.dart';
 Future<void> initializeApp() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-  await initializeSettings();
-  await initializeAppInfo();
-  initializeHttpCache();
+  await Future.wait([
+    initializeAppInfo(),
+    initializeSettings(),
+    initializeHttpCache(),
+  ]);
 }

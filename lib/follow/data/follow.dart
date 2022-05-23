@@ -1,12 +1,10 @@
-import 'package:collection/collection.dart';
-import 'package:e1547/tag/tag.dart';
+import 'package:copy_with_extension/copy_with_extension.dart';
+import 'package:json_annotation/json_annotation.dart';
 
-enum FollowType {
-  update,
-  notify,
-  bookmark,
-}
+part 'follow.g.dart';
 
+@JsonSerializable()
+@CopyWith()
 class Follow {
   final String tags;
   final String? alias;
@@ -14,49 +12,19 @@ class Follow {
   final Map<String, FollowStatus> statuses;
 
   Follow({
-    required String tags,
+    required this.tags,
     this.alias,
-    FollowType? type,
-    Map<String, FollowStatus>? statuses,
-  })  : tags = sortTags(tags),
-        statuses = Map.unmodifiable(statuses ?? {}),
-        type = type ?? FollowType.update;
+    this.type = FollowType.update,
+    this.statuses = const {},
+  });
 
-  factory Follow.fromString(String tags) => Follow(tags: tags);
+  factory Follow.fromJson(Map<String, dynamic> json) => _$FollowFromJson(json);
 
-  Follow copyWith({
-    String? tags,
-    String? alias,
-    Map<String, FollowStatus>? statuses,
-    FollowType? type,
-  }) =>
-      Follow(
-        tags: tags ?? this.tags,
-        alias: alias ?? this.alias,
-        statuses: statuses ?? this.statuses,
-        type: type ?? this.type,
-      );
-
-  factory Follow.fromJson(Map<String, dynamic> json) => Follow(
-        tags: json["tags"],
-        alias: json["alias"],
-        statuses: json["statuses"] != null
-            ? Map.from(json["statuses"]).map((k, v) =>
-                MapEntry<String, FollowStatus>(k, FollowStatus.fromJson(v)))
-            : null,
-        type: FollowType.values
-            .firstWhereOrNull((element) => element.name == json['type']),
-      );
-
-  Map<String, dynamic> toJson() => {
-        "tags": tags,
-        "alias": alias,
-        "statuses": Map.from(statuses)
-            .map((k, v) => MapEntry<String, dynamic>(k, v.toJson())),
-        "type": type.name,
-      };
+  Map<String, dynamic> toJson() => _$FollowToJson(this);
 }
 
+@JsonSerializable()
+@CopyWith()
 class FollowStatus {
   final int? latest;
   final int? unseen;
@@ -70,30 +38,15 @@ class FollowStatus {
     this.updated,
   });
 
-  FollowStatus copyWith({
-    int? latest,
-    int? unseen,
-    String? thumbnail,
-    DateTime? updated,
-  }) =>
-      FollowStatus(
-        latest: latest ?? this.latest,
-        unseen: unseen ?? this.unseen,
-        thumbnail: thumbnail ?? this.thumbnail,
-        updated: updated ?? this.updated,
-      );
+  factory FollowStatus.fromJson(Map<String, dynamic> json) =>
+      _$FollowStatusFromJson(json);
 
-  factory FollowStatus.fromJson(Map<String, dynamic> json) => FollowStatus(
-        latest: json["latest"],
-        unseen: json["unseen"],
-        thumbnail: json["thumbnail"],
-        updated: DateTime.tryParse(json["updated"] ?? ''),
-      );
+  Map<String, dynamic> toJson() => _$FollowStatusToJson(this);
+}
 
-  Map<String, dynamic> toJson() => {
-        "latest": latest,
-        "unseen": unseen,
-        "thumbnail": thumbnail,
-        "updated": updated?.toIso8601String(),
-      };
+@JsonEnum()
+enum FollowType {
+  update,
+  notify,
+  bookmark,
 }

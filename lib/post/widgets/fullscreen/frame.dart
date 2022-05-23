@@ -111,7 +111,7 @@ class _PostFullscreenFrameState extends State<PostFullscreenFrame> {
               behavior: HitTestBehavior.translucent,
               onTap: () {
                 controller.toggleFrame();
-                if ((widget.post.controller?.value.isPlaying ?? false) &&
+                if ((widget.post.getVideo(context)?.value.isPlaying ?? false) &&
                     controller.visible) {
                   controller.hideFrame(duration: const Duration(seconds: 2));
                 }
@@ -120,14 +120,18 @@ class _PostFullscreenFrameState extends State<PostFullscreenFrame> {
                 alignment: Alignment.center,
                 children: [
                   child!,
-                  if (widget.post.controller != null) ...[
+                  if (widget.post.getVideo(context) != null) ...[
                     Positioned(
                       bottom: 0,
                       right: 0,
                       left: 0,
-                      child: VideoBar(videoController: widget.post.controller!),
+                      child: VideoBar(
+                        videoController: widget.post.getVideo(context)!,
+                      ),
                     ),
-                    VideoButton(videoController: widget.post.controller!),
+                    VideoButton(
+                      videoController: widget.post.getVideo(context)!,
+                    ),
                   ]
                 ],
               ),

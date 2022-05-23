@@ -4,6 +4,7 @@ export 'data/count.dart';
 export 'data/regex.dart';
 export 'data/set.dart';
 export 'data/tag.dart';
+export 'data/tag_suggestion.dart';
 // widgets
 export 'widgets/card.dart';
 export 'widgets/editor.dart';

@@ -1,5 +1,10 @@
-import 'dart:convert';
+import 'package:copy_with_extension/copy_with_extension.dart';
+import 'package:json_annotation/json_annotation.dart';
 
+part 'topic.g.dart';
+
+@JsonSerializable()
+@CopyWith()
 class Topic {
   Topic({
     required this.id,
@@ -15,47 +20,19 @@ class Topic {
     required this.categoryId,
   });
 
-  int id;
-  int creatorId;
-  int updaterId;
-  String title;
-  int responseCount;
-  bool isSticky;
-  bool isLocked;
-  bool isHidden;
-  DateTime createdAt;
-  DateTime updatedAt;
-  int categoryId;
+  final int id;
+  final int creatorId;
+  final int updaterId;
+  final String title;
+  final int responseCount;
+  final bool isSticky;
+  final bool isLocked;
+  final bool isHidden;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final int categoryId;
 
-  factory Topic.fromJson(String str) => Topic.fromMap(json.decode(str));
+  factory Topic.fromJson(Map<String, dynamic> json) => _$TopicFromJson(json);
 
-  String toJson() => json.encode(toMap());
-
-  factory Topic.fromMap(Map<String, dynamic> json) => Topic(
-        id: json["id"],
-        creatorId: json["creator_id"],
-        updaterId: json["updater_id"],
-        title: json["title"],
-        responseCount: json["response_count"],
-        isSticky: json["is_sticky"],
-        isLocked: json["is_locked"],
-        isHidden: json["is_hidden"],
-        createdAt: DateTime.parse(json["created_at"]),
-        updatedAt: DateTime.parse(json["updated_at"]),
-        categoryId: json["category_id"],
-      );
-
-  Map<String, dynamic> toMap() => {
-        "id": id,
-        "creator_id": creatorId,
-        "updater_id": updaterId,
-        "title": title,
-        "response_count": responseCount,
-        "is_sticky": isSticky,
-        "is_locked": isLocked,
-        "is_hidden": isHidden,
-        "created_at": createdAt.toIso8601String(),
-        "updated_at": updatedAt.toIso8601String(),
-        "category_id": categoryId,
-      };
+  Map<String, dynamic> toJson() => _$TopicToJson(this);
 }

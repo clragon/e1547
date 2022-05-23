@@ -204,7 +204,7 @@ class FollowListTile extends StatelessWidget {
         ControlledTextWrapper(
           submit: (value) async {
             value = value.trim();
-            Follow result = Follow.fromString(value);
+            Follow result = Follow(tags: value);
             if (value.isNotEmpty) {
               followController.replace(follow, result);
             } else {

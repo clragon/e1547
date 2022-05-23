@@ -68,7 +68,7 @@ class _TagInputState extends State<TagInput> {
 
   @override
   Widget build(BuildContext context) {
-    return TypeAheadField<AutocompleteTag>(
+    return TypeAheadField<TagSuggestion>(
       direction: AxisDirection.up,
       hideOnEmpty: true,
       hideOnError: true,

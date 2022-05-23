@@ -37,7 +37,7 @@ class PostFullscreen extends StatelessWidget {
                 child: PostVideoLoader(
                   post: post,
                   child: VideoGestures(
-                    videoController: post.controller!,
+                    videoController: post.getVideo(context)!,
                     child: PostVideoWidget(post: post),
                   ),
                 ),

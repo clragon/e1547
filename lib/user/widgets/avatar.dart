@@ -79,7 +79,11 @@ class _AvatarLoaderState extends State<AvatarLoader>
 
   @override
   Map<Listenable, VoidCallback> get initListeners => {
-        client: () => avatar = widget.provider(context),
+        client: () {
+          if (mounted) {
+            avatar = widget.provider(context);
+          }
+        },
       };
 
   @override

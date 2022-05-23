@@ -40,7 +40,16 @@ class _AppState extends State<App> {
                     (_) => followController.update(),
                     (_) => initializeDateFormatting(),
                   ],
-                  child: LockScreen(child: AppLinkHandler(child: child!)),
+                  child: LockScreen(
+                    child: AppLinkHandler(
+                      child: VideoHandlerData(
+                        handler: VideoHandler(
+                          muteVideos: settings.muteVideos.value,
+                        ),
+                        child: child!,
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ),

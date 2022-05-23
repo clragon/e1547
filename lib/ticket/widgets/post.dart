@@ -104,7 +104,7 @@ class _PostReportScreenState extends State<PostReportScreen> {
                       if (await validateCall(
                         () => client.reportPost(
                           widget.post.id,
-                          reportIds[type!]!,
+                          type!.id,
                           reasonController.text.trim(),
                         ),
                         allowRedirect: true,
@@ -150,7 +150,7 @@ class _PostReportScreenState extends State<PostReportScreen> {
               ),
               ReportFormDropdown<ReportType?>(
                 type: type,
-                types: reportTypes,
+                types: {for (final e in ReportType.values) e: e.title},
                 onChanged: (value) {
                   setState(() {
                     type = value;
@@ -219,7 +219,7 @@ class _PostFlagScreenState extends State<PostFlagScreen> {
                       if (await validateCall(
                         () => client.flagPost(
                           widget.post.id,
-                          flagName[type]!,
+                          type!.title,
                           parent: int.tryParse(parentController.text),
                         ),
                         allowRedirect: true,
@@ -265,7 +265,7 @@ class _PostFlagScreenState extends State<PostFlagScreen> {
               ),
               ReportFormDropdown<FlagType?>(
                 type: type,
-                types: flagTypes,
+                types: {for (final e in FlagType.values) e: e.title},
                 onChanged: (value) {
                   setState(() {
                     type = value;
@@ -312,7 +312,7 @@ class _PostFlagScreenState extends State<PostFlagScreen> {
                         child: Card(
                           child: Padding(
                             padding: const EdgeInsets.all(16),
-                            child: DText(flagDescriptions[type]!),
+                            child: DText(type!.description),
                           ),
                         ),
                       )

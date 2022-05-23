@@ -1,5 +1,10 @@
-import 'dart:convert';
+import 'package:copy_with_extension/copy_with_extension.dart';
+import 'package:json_annotation/json_annotation.dart';
 
+part 'current.g.dart';
+
+@JsonSerializable()
+@CopyWith()
 class CurrentUser {
   CurrentUser({
     required this.wikiPageVersionCount,
@@ -69,210 +74,74 @@ class CurrentUser {
     required this.tagQueryLimit,
   });
 
-  int wikiPageVersionCount;
-  int artistVersionCount;
-  int poolVersionCount;
-  int forumPostCount;
-  int commentCount;
-  int flagCount;
-  int positiveFeedbackCount;
-  int neutralFeedbackCount;
-  int negativeFeedbackCount;
-  int uploadLimit;
-  int id;
-  DateTime createdAt;
-  String name;
-  int level;
-  int baseUploadLimit;
-  int postUploadCount;
-  int postUpdateCount;
-  int noteUpdateCount;
-  bool isBanned;
-  bool canApprovePosts;
-  bool canUploadFree;
-  String levelString;
-  int? avatarId;
-  bool showAvatars;
-  bool blacklistAvatars;
-  bool blacklistUsers;
-  bool descriptionCollapsedInitially;
-  bool hideComments;
-  bool showHiddenComments;
-  bool showPostStatistics;
-  bool hasMail;
-  bool receiveEmailNotifications;
-  bool enableKeyboardNavigation;
-  bool enablePrivacyMode;
-  bool styleUsernames;
-  bool enableAutoComplete;
-  bool hasSavedSearches;
-  bool disableCroppedThumbnails;
-  bool disableMobileGestures;
-  bool enableSafeMode;
-  bool disableResponsiveMode;
-  bool disablePostTooltips;
-  bool noFlagging;
-  bool noFeedback;
-  bool disableUserDmails;
-  bool enableCompactUploader;
-  DateTime updatedAt;
-  String email;
-  DateTime lastLoggedInAt;
-  DateTime? lastForumReadAt;
-  String? recentTags;
-  int commentThreshold;
-  String defaultImageSize;
-  String? favoriteTags;
-  String blacklistedTags;
-  String timeZone;
-  int perPage;
-  String? customStyle;
-  int favoriteCount;
-  int apiRegenMultiplier;
-  int apiBurstLimit;
-  int remainingApiLimit;
-  int statementTimeout;
-  int favoriteLimit;
-  int tagQueryLimit;
+  final int wikiPageVersionCount;
+  final int artistVersionCount;
+  final int poolVersionCount;
+  final int forumPostCount;
+  final int commentCount;
+  final int flagCount;
+  final int positiveFeedbackCount;
+  final int neutralFeedbackCount;
+  final int negativeFeedbackCount;
+  final int uploadLimit;
+  final int id;
+  final DateTime createdAt;
+  final String name;
+  final int level;
+  final int baseUploadLimit;
+  final int postUploadCount;
+  final int postUpdateCount;
+  final int noteUpdateCount;
+  final bool isBanned;
+  final bool canApprovePosts;
+  final bool canUploadFree;
+  final String levelString;
+  final int? avatarId;
+  final bool showAvatars;
+  final bool blacklistAvatars;
+  final bool blacklistUsers;
+  final bool descriptionCollapsedInitially;
+  final bool hideComments;
+  final bool showHiddenComments;
+  final bool showPostStatistics;
+  final bool hasMail;
+  final bool receiveEmailNotifications;
+  final bool enableKeyboardNavigation;
+  final bool enablePrivacyMode;
+  final bool styleUsernames;
+  final bool enableAutoComplete;
+  final bool hasSavedSearches;
+  final bool disableCroppedThumbnails;
+  final bool disableMobileGestures;
+  final bool enableSafeMode;
+  final bool disableResponsiveMode;
+  final bool disablePostTooltips;
+  final bool noFlagging;
+  final bool noFeedback;
+  final bool disableUserDmails;
+  final bool enableCompactUploader;
+  final DateTime updatedAt;
+  final String email;
+  final DateTime lastLoggedInAt;
+  final DateTime? lastForumReadAt;
+  final String? recentTags;
+  final int commentThreshold;
+  final String defaultImageSize;
+  final String? favoriteTags;
+  final String blacklistedTags;
+  final String timeZone;
+  final int perPage;
+  final String? customStyle;
+  final int favoriteCount;
+  final int apiRegenMultiplier;
+  final int apiBurstLimit;
+  final int remainingApiLimit;
+  final int statementTimeout;
+  final int favoriteLimit;
+  final int tagQueryLimit;
 
-  factory CurrentUser.fromJson(String str) =>
-      CurrentUser.fromMap(json.decode(str));
+  factory CurrentUser.fromJson(Map<String, dynamic> json) =>
+      _$CurrentUserFromJson(json);
 
-  String toJson() => json.encode(toMap());
-
-  factory CurrentUser.fromMap(Map<String, dynamic> json) => CurrentUser(
-        wikiPageVersionCount: json["wiki_page_version_count"],
-        artistVersionCount: json["artist_version_count"],
-        poolVersionCount: json["pool_version_count"],
-        forumPostCount: json["forum_post_count"],
-        commentCount: json["comment_count"],
-        flagCount: json["flag_count"],
-        positiveFeedbackCount: json["positive_feedback_count"],
-        neutralFeedbackCount: json["neutral_feedback_count"],
-        negativeFeedbackCount: json["negative_feedback_count"],
-        uploadLimit: json["upload_limit"],
-        id: json["id"],
-        createdAt: DateTime.parse(json["created_at"]),
-        name: json["name"],
-        level: json["level"],
-        baseUploadLimit: json["base_upload_limit"],
-        postUploadCount: json["post_upload_count"],
-        postUpdateCount: json["post_update_count"],
-        noteUpdateCount: json["note_update_count"],
-        isBanned: json["is_banned"],
-        canApprovePosts: json["can_approve_posts"],
-        canUploadFree: json["can_upload_free"],
-        levelString: json["level_string"],
-        avatarId: json["avatar_id"],
-        showAvatars: json["show_avatars"],
-        blacklistAvatars: json["blacklist_avatars"],
-        blacklistUsers: json["blacklist_users"],
-        descriptionCollapsedInitially: json["description_collapsed_initially"],
-        hideComments: json["hide_comments"],
-        showHiddenComments: json["show_hidden_comments"],
-        showPostStatistics: json["show_post_statistics"],
-        hasMail: json["has_mail"],
-        receiveEmailNotifications: json["receive_email_notifications"],
-        enableKeyboardNavigation: json["enable_keyboard_navigation"],
-        enablePrivacyMode: json["enable_privacy_mode"],
-        styleUsernames: json["style_usernames"],
-        enableAutoComplete: json["enable_auto_complete"],
-        hasSavedSearches: json["has_saved_searches"],
-        disableCroppedThumbnails: json["disable_cropped_thumbnails"],
-        disableMobileGestures: json["disable_mobile_gestures"],
-        enableSafeMode: json["enable_safe_mode"],
-        disableResponsiveMode: json["disable_responsive_mode"],
-        disablePostTooltips: json["disable_post_tooltips"],
-        noFlagging: json["no_flagging"],
-        noFeedback: json["no_feedback"],
-        disableUserDmails: json["disable_user_dmails"],
-        enableCompactUploader: json["enable_compact_uploader"],
-        updatedAt: DateTime.parse(json["updated_at"]),
-        email: json["email"],
-        lastLoggedInAt: DateTime.parse(json["last_logged_in_at"]),
-        lastForumReadAt: DateTime.parse(json["last_forum_read_at"]),
-        recentTags: json["recent_tags"],
-        commentThreshold: json["comment_threshold"],
-        defaultImageSize: json["default_image_size"],
-        favoriteTags: json["favorite_tags"],
-        blacklistedTags: json["blacklisted_tags"],
-        timeZone: json["time_zone"],
-        perPage: json["per_page"],
-        customStyle: json["custom_style"],
-        favoriteCount: json["favorite_count"],
-        apiRegenMultiplier: json["api_regen_multiplier"],
-        apiBurstLimit: json["api_burst_limit"],
-        remainingApiLimit: json["remaining_api_limit"],
-        statementTimeout: json["statement_timeout"],
-        favoriteLimit: json["favorite_limit"],
-        tagQueryLimit: json["tag_query_limit"],
-      );
-
-  Map<String, dynamic> toMap() => {
-        "wiki_page_version_count": wikiPageVersionCount,
-        "artist_version_count": artistVersionCount,
-        "pool_version_count": poolVersionCount,
-        "forum_post_count": forumPostCount,
-        "comment_count": commentCount,
-        "flag_count": flagCount,
-        "positive_feedback_count": positiveFeedbackCount,
-        "neutral_feedback_count": neutralFeedbackCount,
-        "negative_feedback_count": negativeFeedbackCount,
-        "upload_limit": uploadLimit,
-        "id": id,
-        "created_at": createdAt.toIso8601String(),
-        "name": name,
-        "level": level,
-        "base_upload_limit": baseUploadLimit,
-        "post_upload_count": postUploadCount,
-        "post_update_count": postUpdateCount,
-        "note_update_count": noteUpdateCount,
-        "is_banned": isBanned,
-        "can_approve_posts": canApprovePosts,
-        "can_upload_free": canUploadFree,
-        "level_string": levelString,
-        "avatar_id": avatarId,
-        "show_avatars": showAvatars,
-        "blacklist_avatars": blacklistAvatars,
-        "blacklist_users": blacklistUsers,
-        "description_collapsed_initially": descriptionCollapsedInitially,
-        "hide_comments": hideComments,
-        "show_hidden_comments": showHiddenComments,
-        "show_post_statistics": showPostStatistics,
-        "has_mail": hasMail,
-        "receive_email_notifications": receiveEmailNotifications,
-        "enable_keyboard_navigation": enableKeyboardNavigation,
-        "enable_privacy_mode": enablePrivacyMode,
-        "style_usernames": styleUsernames,
-        "enable_auto_complete": enableAutoComplete,
-        "has_saved_searches": hasSavedSearches,
-        "disable_cropped_thumbnails": disableCroppedThumbnails,
-        "disable_mobile_gestures": disableMobileGestures,
-        "enable_safe_mode": enableSafeMode,
-        "disable_responsive_mode": disableResponsiveMode,
-        "disable_post_tooltips": disablePostTooltips,
-        "no_flagging": noFlagging,
-        "no_feedback": noFeedback,
-        "disable_user_dmails": disableUserDmails,
-        "enable_compact_uploader": enableCompactUploader,
-        "updated_at": updatedAt.toIso8601String(),
-        "email": email,
-        "last_logged_in_at": lastLoggedInAt.toIso8601String(),
-        "last_forum_read_at": lastForumReadAt?.toIso8601String(),
-        "recent_tags": recentTags,
-        "comment_threshold": commentThreshold,
-        "default_image_size": defaultImageSize,
-        "favorite_tags": favoriteTags,
-        "blacklisted_tags": blacklistedTags,
-        "time_zone": timeZone,
-        "per_page": perPage,
-        "custom_style": customStyle,
-        "favorite_count": favoriteCount,
-        "api_regen_multiplier": apiRegenMultiplier,
-        "api_burst_limit": apiBurstLimit,
-        "remaining_api_limit": remainingApiLimit,
-        "statement_timeout": statementTimeout,
-        "favorite_limit": favoriteLimit,
-        "tag_query_limit": tagQueryLimit,
-      };
+  Map<String, dynamic> toJson() => _$CurrentUserToJson(this);
 }

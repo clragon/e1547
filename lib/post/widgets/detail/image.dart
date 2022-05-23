@@ -31,10 +31,10 @@ class PostDetailVideo extends StatelessWidget {
       post: post,
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
-        onTap: post.controller != null
-            ? () => post.controller!.value.isPlaying
-                ? post.controller!.pause()
-                : post.controller!.play()
+        onTap: post.getVideo(context) != null
+            ? () => post.getVideo(context)!.value.isPlaying
+                ? post.getVideo(context)!.pause()
+                : post.getVideo(context)!.play()
             : null,
         child: Stack(
           alignment: Alignment.center,
@@ -44,11 +44,12 @@ class PostDetailVideo extends StatelessWidget {
             Positioned.fill(
               child: Center(
                 child: CrossFade.builder(
-                  showChild: post.controller != null,
+                  showChild: post.getVideo(context) != null,
                   builder: (context) => Padding(
                     padding:
                         const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
-                    child: VideoButton(videoController: post.controller!),
+                    child:
+                        VideoButton(videoController: post.getVideo(context)!),
                   ),
                   secondChild: const SizedCircularProgressIndicator(size: 24),
                 ),
@@ -88,27 +89,35 @@ class _PostDetailImageToggleState extends State<PostDetailImageToggle> {
       }
       if (settings.customHost.value != null) {
         replacement ??= await client.post(post.id, unsafe: true);
-        post.file.url = replacement!.file.url;
-        post.preview.url = replacement!.preview.url;
-        post.sample.url = replacement!.sample.url;
         if (!controller.isDenied(post)) {
           controller.allow(post);
         }
-        controller.updateItem(controller.itemList!.indexOf(post), post);
+        controller.updateItem(
+          controller.itemList!.indexOf(post),
+          post.copyWith(
+            file: post.file.copyWith.url(replacement!.file.url),
+            preview: post.preview.copyWith.url(replacement!.preview.url),
+            sample: post.sample.copyWith.url(replacement!.sample.url),
+          ),
+        );
       }
     } else {
       if (controller.isAllowed(post)) {
         controller.unallow(post);
         if (replacement != null) {
-          post.file.url = null;
-          post.preview.url = null;
-          post.sample.url = null;
+          controller.updateItem(
+            controller.itemList!.indexOf(post),
+            post.copyWith(
+              file: post.file.copyWith.url(null),
+              preview: post.preview.copyWith.url(null),
+              sample: post.sample.copyWith.url(null),
+            ),
+          );
         }
       } else {
         controller.allow(post);
       }
-      post.controller?.pause();
-      controller.updateItem(controller.itemList!.indexOf(post), post);
+      post.getVideo(context)?.pause();
     }
     setState(() {
       loading = false;
@@ -118,9 +127,8 @@ class _PostDetailImageToggleState extends State<PostDetailImageToggle> {
   @override
   Widget build(BuildContext context) {
     if (!post.flags.deleted) {
-      return AnimatedSelector(
+      return AnimatedBuilder(
         animation: controller,
-        selector: () => [controller.isAllowed(post), post.file.url],
         builder: (context, child) => CrossFade(
           showChild: post.file.url == null ||
               (!post.isFavorited &&
@@ -184,20 +192,20 @@ class PostDetailImageButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    VoidCallback? onTap;
-
-    bool visible = post.file.url != null &&
-        (!(controller?.isDenied(post) ?? false) || post.isFavorited);
-
-    if (visible) {
-      onTap = post.type == PostType.unsupported
-          ? () => launch(post.file.url!)
-          : onOpen;
-    }
-
     return AnimatedBuilder(
-      animation: Listenable.merge([post.controller]),
+      animation: Listenable.merge([controller, post.getVideo(context)]),
       builder: (context, child) {
+        VoidCallback? onTap;
+
+        bool visible = post.file.url != null &&
+            (!(controller?.isDenied(post) ?? false) || post.isFavorited);
+
+        if (visible) {
+          onTap = post.type == PostType.unsupported
+              ? () => launch(post.file.url!)
+              : onOpen;
+        }
+
         Widget fullscreenButton() {
           if (post.type == PostType.video && onTap != null) {
             return CrossFade(
@@ -229,8 +237,8 @@ class PostDetailImageButtons extends StatelessWidget {
             builder: (context) => Card(
               elevation: 0,
               color: Colors.black12,
-              child: VideoGlobalVolumeControl(
-                videoController: post.controller!,
+              child: VideoHandlerVolumeControl(
+                videoController: post.getVideo(context)!,
               ),
             ),
           );
@@ -241,9 +249,9 @@ class PostDetailImageButtons extends StatelessWidget {
           children: [
             InkWell(
               onTap: post.type == PostType.video
-                  ? () => post.controller!.value.isPlaying
-                      ? post.controller!.pause()
-                      : post.controller!.play()
+                  ? () => post.getVideo(context)!.value.isPlaying
+                      ? post.getVideo(context)!.pause()
+                      : post.getVideo(context)!.play()
                   : onTap,
               child: IgnorePointer(child: child),
             ),
@@ -288,22 +296,19 @@ class PostDetailImageDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: Listenable.merge([controller]),
-      builder: (context, child) => PostDetailImageButtons(
-        onOpen: onTap,
+    return PostDetailImageButtons(
+      onOpen: onTap,
+      post: post,
+      controller: controller,
+      child: ImageOverlay(
         post: post,
         controller: controller,
-        child: ImageOverlay(
-          post: post,
-          controller: controller,
-          builder: (context) => Center(
-            child: Hero(
-              tag: post.hero,
-              child: post.type == PostType.video
-                  ? PostDetailVideo(post: post)
-                  : PostDetailImage(post: post),
-            ),
+        builder: (context) => Center(
+          child: Hero(
+            tag: post.hero,
+            child: post.type == PostType.video
+                ? PostDetailVideo(post: post)
+                : PostDetailImage(post: post),
           ),
         ),
       ),

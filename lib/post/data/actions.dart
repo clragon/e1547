@@ -13,6 +13,7 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:media_scanner/media_scanner.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:video_player/video_player.dart';
 
 extension Tagging on Post {
   bool hasTag(String tag) {
@@ -159,6 +160,55 @@ extension Downloading on Post {
       return true;
     } on Exception {
       return false;
+    }
+  }
+}
+
+enum PostType {
+  image,
+  video,
+  unsupported,
+}
+
+extension Typing on Post {
+  PostType get type {
+    switch (file.ext) {
+      case 'mp4':
+      case 'webm':
+        if (Platform.isWindows) return PostType.unsupported;
+        return PostType.video;
+      case 'swf':
+        return PostType.unsupported;
+      default:
+        return PostType.image;
+    }
+  }
+}
+
+extension Video on Post {
+  VideoConfig? get videoConfig => type == PostType.video
+      ? VideoConfig(
+          url: file.url!,
+          size: file.size,
+        )
+      : null;
+
+  VideoPlayerController? getVideo(BuildContext context) {
+    if (videoConfig != null) {
+      return VideoHandler.of(context).getVideo(videoConfig!);
+    }
+    return null;
+  }
+
+  Future<void> loadVideo(BuildContext context) async {
+    if (videoConfig != null) {
+      await VideoHandler.of(context).loadVideo(videoConfig!);
+    }
+  }
+
+  Future<void> disposeVideo(BuildContext context) async {
+    if (videoConfig != null) {
+      await VideoHandler.of(context).disposeVideo(videoConfig!);
     }
   }
 }

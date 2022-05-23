@@ -137,7 +137,7 @@ class VideoBar extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      VideoGlobalVolumeControl(
+                      VideoHandlerVolumeControl(
                         videoController: videoController,
                       ),
                       const SizedBox(
@@ -370,14 +370,8 @@ class PostVideoLoader extends StatefulWidget {
 
 class _PostVideoLoaderState extends State<PostVideoLoader> {
   Future<void> ensureVideo() async {
-    if (widget.post.controller == null) {
-      await widget.post.initVideo();
-    }
-    if (mounted) {
-      setState(() {});
-    }
-    if (!widget.post.controller!.value.isInitialized) {
-      await widget.post.loadVideo();
+    if (!widget.post.getVideo(context)!.value.isInitialized) {
+      await widget.post.loadVideo(context);
     }
     if (mounted) {
       setState(() {});
@@ -385,8 +379,8 @@ class _PostVideoLoaderState extends State<PostVideoLoader> {
   }
 
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     ensureVideo();
   }
 
@@ -410,13 +404,13 @@ class PostVideoWidget extends StatelessWidget {
       );
     }
 
-    if (post.controller != null) {
+    if (post.getVideo(context) != null) {
       return AnimatedBuilder(
-        animation: post.controller!,
-        builder: (context, child) => post.controller!.value.isInitialized
+        animation: post.getVideo(context)!,
+        builder: (context, child) => post.getVideo(context)!.value.isInitialized
             ? AspectRatio(
-                aspectRatio: post.controller!.value.aspectRatio,
-                child: VideoPlayer(post.controller!),
+                aspectRatio: post.getVideo(context)!.value.aspectRatio,
+                child: VideoPlayer(post.getVideo(context)!),
               )
             : placeholder(),
       );
@@ -456,42 +450,6 @@ class _VideoVolumeControlState extends State<VideoVolumeControl> {
                 size: 24,
                 color: Colors.white,
               ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-}
-
-class VideoGlobalVolumeControl extends StatefulWidget {
-  final VideoPlayerController videoController;
-
-  const VideoGlobalVolumeControl({required this.videoController});
-
-  @override
-  State<VideoGlobalVolumeControl> createState() =>
-      _VideoGlobalVolumeControlState();
-}
-
-class _VideoGlobalVolumeControlState extends State<VideoGlobalVolumeControl> {
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedSelector(
-      animation: widget.videoController,
-      selector: () => [
-        widget.videoController.value.volume,
-      ],
-      builder: (context, child) {
-        bool muted = Post.muteVideos;
-        return InkWell(
-          onTap: () => setState(() => Post.muteVideos = !muted),
-          child: Padding(
-            padding: const EdgeInsets.all(4),
-            child: Icon(
-              muted ? Icons.volume_off : Icons.volume_up,
-              size: 24,
-              color: Colors.white,
             ),
           ),
         );

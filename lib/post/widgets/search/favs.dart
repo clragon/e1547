@@ -11,7 +11,8 @@ class FavPage extends StatefulWidget {
   State<FavPage> createState() => _FavPageState();
 }
 
-class _FavPageState extends State<FavPage> with ListenerCallbackMixin, DrawerEntry {
+class _FavPageState extends State<FavPage>
+    with ListenerCallbackMixin, DrawerEntry {
   bool orderFavorites = false;
   PostController? controller;
 

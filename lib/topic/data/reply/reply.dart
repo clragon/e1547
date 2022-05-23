@@ -1,5 +1,10 @@
-import 'dart:convert';
+import 'package:copy_with_extension/copy_with_extension.dart';
+import 'package:json_annotation/json_annotation.dart';
 
+part 'reply.g.dart';
+
+@JsonSerializable()
+@CopyWith()
 class Reply {
   Reply({
     required this.id,
@@ -14,44 +19,25 @@ class Reply {
     required this.warningUserId,
   });
 
-  int id;
-  DateTime createdAt;
-  DateTime updatedAt;
-  String body;
-  int creatorId;
-  int? updaterId;
-  int topicId;
-  bool isHidden;
-  dynamic warningType;
-  dynamic warningUserId;
+  final int id;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final String body;
+  final int creatorId;
+  final int? updaterId;
+  final int topicId;
+  final bool isHidden;
+  final WarningType warningType;
+  final int? warningUserId;
 
-  factory Reply.fromJson(String str) => Reply.fromMap(json.decode(str));
+  factory Reply.fromJson(Map<String, dynamic> json) => _$ReplyFromJson(json);
 
-  String toJson() => json.encode(toMap());
+  Map<String, dynamic> toJson() => _$ReplyToJson(this);
+}
 
-  factory Reply.fromMap(Map<String, dynamic> json) => Reply(
-        id: json["id"],
-        createdAt: DateTime.parse(json["created_at"]),
-        updatedAt: DateTime.parse(json["updated_at"]),
-        body: json["body"],
-        creatorId: json["creator_id"],
-        updaterId: json["updater_id"],
-        topicId: json["topic_id"],
-        isHidden: json["is_hidden"],
-        warningType: json["warning_type"],
-        warningUserId: json["warning_user_id"],
-      );
-
-  Map<String, dynamic> toMap() => {
-        "id": id,
-        "created_at": createdAt.toIso8601String(),
-        "updated_at": updatedAt.toIso8601String(),
-        "body": body,
-        "creator_id": creatorId,
-        "updater_id": updaterId,
-        "topic_id": topicId,
-        "is_hidden": isHidden,
-        "warning_type": warningType,
-        "warning_user_id": warningUserId,
-      };
+@JsonEnum()
+enum WarningType {
+  warning,
+  record,
+  ban,
 }

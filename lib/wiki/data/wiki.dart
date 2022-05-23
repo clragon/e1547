@@ -1,5 +1,10 @@
-import 'dart:convert';
+import 'package:copy_with_extension/copy_with_extension.dart';
+import 'package:json_annotation/json_annotation.dart';
 
+part 'wiki.g.dart';
+
+@JsonSerializable()
+@CopyWith()
 class Wiki {
   Wiki({
     required this.id,
@@ -16,50 +21,20 @@ class Wiki {
     required this.categoryName,
   });
 
-  int id;
-  DateTime createdAt;
-  DateTime? updatedAt;
-  String title;
-  String body;
-  int creatorId;
-  bool isLocked;
-  int? updaterId;
-  bool isDeleted;
-  List<String> otherNames;
-  String creatorName;
-  int categoryName;
+  final int id;
+  final DateTime createdAt;
+  final DateTime? updatedAt;
+  final String title;
+  final String body;
+  final int creatorId;
+  final bool isLocked;
+  final int? updaterId;
+  final bool isDeleted;
+  final List<String> otherNames;
+  final String creatorName;
+  final int categoryName;
 
-  factory Wiki.fromJson(String str) => Wiki.fromMap(json.decode(str));
+  factory Wiki.fromJson(Map<String, dynamic> json) => _$WikiFromJson(json);
 
-  String toJson() => json.encode(toMap());
-
-  factory Wiki.fromMap(Map<String, dynamic> json) => Wiki(
-        id: json["id"],
-        createdAt: DateTime.parse(json["created_at"]),
-        updatedAt: DateTime.parse(json["updated_at"]),
-        title: json["title"],
-        body: json["body"],
-        creatorId: json["creator_id"],
-        isLocked: json["is_locked"],
-        updaterId: json["updater_id"],
-        isDeleted: json["is_deleted"],
-        otherNames: List<String>.from(json["other_names"].map((x) => x)),
-        creatorName: json["creator_name"],
-        categoryName: json["category_name"],
-      );
-
-  Map<String, dynamic> toMap() => {
-        "id": id,
-        "created_at": createdAt.toIso8601String(),
-        "updated_at": updatedAt!.toIso8601String(),
-        "title": title,
-        "body": body,
-        "creator_id": creatorId,
-        "is_locked": isLocked,
-        "updater_id": updaterId,
-        "is_deleted": isDeleted,
-        "other_names": List<dynamic>.from(otherNames.map((x) => x)),
-        "creator_name": creatorName,
-        "category_name": categoryName,
-      };
+  Map<String, dynamic> toJson() => _$WikiToJson(this);
 }

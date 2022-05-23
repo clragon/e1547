@@ -103,7 +103,7 @@ class Client extends ChangeNotifier {
   Future<List<Post>> postsFromJson(List<dynamic> json) async {
     List<Post> posts = [];
     for (Map<String, dynamic> raw in json) {
-      Post post = Post.fromMap(raw);
+      Post post = Post.fromJson(raw);
       if (postIsIgnored(post)) {
         continue;
       }
@@ -240,7 +240,7 @@ class Client extends ChangeNotifier {
   }
 
   Future<List<Pool>> pools(int page, {String? search, bool? force}) async {
-    List body = await dio
+    List<dynamic> body = await dio
         .getWithCache(
           'pools.json',
           cacheManager,
@@ -256,8 +256,8 @@ class Client extends ChangeNotifier {
         .then((response) => response.data);
 
     List<Pool> pools = [];
-    for (Map<String, dynamic> rawPool in body) {
-      Pool pool = Pool.fromMap(rawPool);
+    for (Map<String, dynamic> raw in body) {
+      Pool pool = Pool.fromJson(raw);
       pools.add(pool);
     }
 
@@ -273,7 +273,7 @@ class Client extends ChangeNotifier {
         )
         .then((response) => response.data);
 
-    return Pool.fromMap(body);
+    return Pool.fromJson(body);
   }
 
   Future<List<Post>> poolPosts(
@@ -373,7 +373,7 @@ class Client extends ChangeNotifier {
         )
         .then((response) => response.data);
 
-    Post post = Post.fromMap(body['post']);
+    Post post = Post.fromJson(body['post']);
     return post;
   }
 
@@ -425,7 +425,7 @@ class Client extends ChangeNotifier {
         )
         .then((response) => response.data);
 
-    return body.map((entry) => Wiki.fromMap(entry)).toList();
+    return body.map((entry) => Wiki.fromJson(entry)).toList();
   }
 
   Future<Wiki> wiki(String name, {bool? force}) async {
@@ -438,7 +438,7 @@ class Client extends ChangeNotifier {
         )
         .then((response) => response.data);
 
-    return Wiki.fromMap(body);
+    return Wiki.fromJson(body);
   }
 
   Future<User> user(String name, {bool? force}) async {
@@ -451,7 +451,7 @@ class Client extends ChangeNotifier {
         )
         .then((response) => response.data);
 
-    return User.fromMap(body);
+    return User.fromJson(body);
   }
 
   Future<void> reportUser(int userId, String reason) async {
@@ -477,7 +477,7 @@ class Client extends ChangeNotifier {
           return null;
         }
 
-        return CurrentUser.fromMap(
+        return CurrentUser.fromJson(
           await dio
               .get('users/${credentials!.username}.json')
               .then((response) => response.data),
@@ -548,7 +548,7 @@ class Client extends ChangeNotifier {
     return tags;
   }
 
-  Future<List<AutocompleteTag>> autocomplete(String search,
+  Future<List<TagSuggestion>> autocomplete(String search,
       {int? category, bool? force}) async {
     await initialized;
     if (category == null) {
@@ -566,23 +566,23 @@ class Client extends ChangeNotifier {
             forceRefresh: force,
           )
           .then((response) => response.data);
-      List<AutocompleteTag> tags = [];
+      List<TagSuggestion> tags = [];
       if (body is List) {
         for (final tag in body) {
-          tags.add(AutocompleteTag.fromJson(tag));
+          tags.add(TagSuggestion.fromJson(tag));
         }
       }
       tags = tags.take(3).toList();
       return tags;
     } else {
-      List<AutocompleteTag> tags = [];
+      List<TagSuggestion> tags = [];
       for (final tag in await this.tags(
         '$search*',
         category: category,
         force: force,
       )) {
         tags.add(
-          AutocompleteTag(
+          TagSuggestion(
             id: tag.id,
             name: tag.name,
             postCount: tag.postCount,
@@ -616,7 +616,7 @@ class Client extends ChangeNotifier {
     List<Comment> comments = [];
     if (body is List) {
       for (Map<String, dynamic> rawComment in body) {
-        comments.add(Comment.fromMap(rawComment));
+        comments.add(Comment.fromJson(rawComment));
       }
     }
 
@@ -633,7 +633,7 @@ class Client extends ChangeNotifier {
         )
         .then((response) => response.data);
 
-    return Comment.fromMap(body);
+    return Comment.fromJson(body);
   }
 
   Future<bool> voteComment(int commentId, bool upvote, bool replace) async {
@@ -715,7 +715,7 @@ class Client extends ChangeNotifier {
     List<Topic> threads = [];
     if (body is List) {
       for (Map<String, dynamic> raw in body) {
-        threads.add(Topic.fromMap(raw));
+        threads.add(Topic.fromJson(raw));
       }
     }
 
@@ -732,7 +732,7 @@ class Client extends ChangeNotifier {
         )
         .then((response) => response.data);
 
-    return Topic.fromMap(body);
+    return Topic.fromJson(body);
   }
 
   Future<List<Reply>> replies(int topicId, String page, {bool? force}) async {
@@ -756,7 +756,7 @@ class Client extends ChangeNotifier {
     List<Reply> replies = [];
     if (body is List) {
       for (Map<String, dynamic> raw in body) {
-        replies.add(Reply.fromMap(raw));
+        replies.add(Reply.fromJson(raw));
       }
     }
 
@@ -773,6 +773,6 @@ class Client extends ChangeNotifier {
         )
         .then((response) => response.data);
 
-    return Reply.fromMap(body);
+    return Reply.fromJson(body);
   }
 }
