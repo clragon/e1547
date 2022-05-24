@@ -1,40 +1,25 @@
-import 'package:copy_with_extension/copy_with_extension.dart';
-import 'package:json_annotation/json_annotation.dart';
+import 'package:flutter/foundation.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
+part 'wiki.freezed.dart';
 part 'wiki.g.dart';
 
-@JsonSerializable()
-@CopyWith()
-class Wiki {
-  Wiki({
-    required this.id,
-    required this.createdAt,
-    required this.updatedAt,
-    required this.title,
-    required this.body,
-    required this.creatorId,
-    required this.isLocked,
-    required this.updaterId,
-    required this.isDeleted,
-    required this.otherNames,
-    required this.creatorName,
-    required this.categoryName,
-  });
-
-  final int id;
-  final DateTime createdAt;
-  final DateTime? updatedAt;
-  final String title;
-  final String body;
-  final int creatorId;
-  final bool isLocked;
-  final int? updaterId;
-  final bool isDeleted;
-  final List<String> otherNames;
-  final String creatorName;
-  final int categoryName;
+@freezed
+class Wiki with _$Wiki {
+  const factory Wiki({
+    required int id,
+    required DateTime createdAt,
+    required DateTime? updatedAt,
+    required String title,
+    required String body,
+    required int creatorId,
+    required bool isLocked,
+    required int? updaterId,
+    required bool isDeleted,
+    required List<String> otherNames,
+    required String creatorName,
+    required int categoryName,
+  }) = _Wiki;
 
   factory Wiki.fromJson(Map<String, dynamic> json) => _$WikiFromJson(json);
-
-  Map<String, dynamic> toJson() => _$WikiToJson(this);
 }

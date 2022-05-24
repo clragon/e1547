@@ -1,38 +1,25 @@
-import 'package:copy_with_extension/copy_with_extension.dart';
-import 'package:json_annotation/json_annotation.dart';
+import 'package:flutter/foundation.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
+part 'reply.freezed.dart';
 part 'reply.g.dart';
 
-@JsonSerializable()
-@CopyWith()
-class Reply {
-  Reply({
-    required this.id,
-    required this.createdAt,
-    required this.updatedAt,
-    required this.body,
-    required this.creatorId,
-    required this.updaterId,
-    required this.topicId,
-    required this.isHidden,
-    required this.warningType,
-    required this.warningUserId,
-  });
-
-  final int id;
-  final DateTime createdAt;
-  final DateTime updatedAt;
-  final String body;
-  final int creatorId;
-  final int? updaterId;
-  final int topicId;
-  final bool isHidden;
-  final WarningType warningType;
-  final int? warningUserId;
+@freezed
+class Reply with _$Reply {
+  const factory Reply({
+    required int id,
+    required DateTime createdAt,
+    required DateTime updatedAt,
+    required String body,
+    required int creatorId,
+    required int? updaterId,
+    required int topicId,
+    required bool isHidden,
+    required WarningType warningType,
+    required int? warningUserId,
+  }) = _Reply;
 
   factory Reply.fromJson(Map<String, dynamic> json) => _$ReplyFromJson(json);
-
-  Map<String, dynamic> toJson() => _$ReplyToJson(this);
 }
 
 @JsonEnum()

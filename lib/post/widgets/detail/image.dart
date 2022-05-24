@@ -95,9 +95,9 @@ class _PostDetailImageToggleState extends State<PostDetailImageToggle> {
         controller.updateItem(
           controller.itemList!.indexOf(post),
           post.copyWith(
-            file: post.file.copyWith.url(replacement!.file.url),
-            preview: post.preview.copyWith.url(replacement!.preview.url),
-            sample: post.sample.copyWith.url(replacement!.sample.url),
+            fileRaw: post.fileRaw.copyWith(url: replacement!.fileRaw.url),
+            preview: post.preview.copyWith(url: replacement!.preview.url),
+            sample: post.sample.copyWith(url: replacement!.sample.url),
           ),
         );
       }
@@ -108,9 +108,9 @@ class _PostDetailImageToggleState extends State<PostDetailImageToggle> {
           controller.updateItem(
             controller.itemList!.indexOf(post),
             post.copyWith(
-              file: post.file.copyWith.url(null),
-              preview: post.preview.copyWith.url(null),
-              sample: post.sample.copyWith.url(null),
+              fileRaw: post.fileRaw.copyWith(url: null),
+              preview: post.preview.copyWith(url: null),
+              sample: post.sample.copyWith(url: null),
             ),
           );
         }

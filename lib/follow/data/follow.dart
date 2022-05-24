@@ -1,47 +1,32 @@
-import 'package:copy_with_extension/copy_with_extension.dart';
-import 'package:json_annotation/json_annotation.dart';
+import 'package:flutter/foundation.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
+part 'follow.freezed.dart';
 part 'follow.g.dart';
 
-@JsonSerializable()
-@CopyWith()
-class Follow {
-  final String tags;
-  final String? alias;
-  final FollowType type;
-  final Map<String, FollowStatus> statuses;
-
-  Follow({
-    required this.tags,
-    this.alias,
-    this.type = FollowType.update,
-    this.statuses = const {},
-  });
+@freezed
+class Follow with _$Follow {
+  const factory Follow({
+    required String tags,
+    String? alias,
+    @Default(FollowType.update) FollowType type,
+    @Default({}) Map<String, FollowStatus> statuses,
+  }) = _Follow;
 
   factory Follow.fromJson(Map<String, dynamic> json) => _$FollowFromJson(json);
-
-  Map<String, dynamic> toJson() => _$FollowToJson(this);
 }
 
-@JsonSerializable()
-@CopyWith()
-class FollowStatus {
-  final int? latest;
-  final int? unseen;
-  final String? thumbnail;
-  final DateTime? updated;
-
-  FollowStatus({
-    this.latest,
-    this.unseen,
-    this.thumbnail,
-    this.updated,
-  });
+@freezed
+class FollowStatus with _$FollowStatus {
+  const factory FollowStatus({
+    int? latest,
+    int? unseen,
+    String? thumbnail,
+    DateTime? updated,
+  }) = _FollowStatus;
 
   factory FollowStatus.fromJson(Map<String, dynamic> json) =>
       _$FollowStatusFromJson(json);
-
-  Map<String, dynamic> toJson() => _$FollowStatusToJson(this);
 }
 
 @JsonEnum()

@@ -54,7 +54,7 @@ List<PopupMenuItem<VoidCallback>> postMenuUserActions(
           callback: () async {
             if (await writeComment(context: context, postId: post.id)) {
               controller.updateItem(controller.itemList!.indexOf(post),
-                  post.copyWith.commentCount(post.commentCount + 1));
+                  post.copyWith(commentCount: post.commentCount + 1));
             }
           },
           error: 'You must be logged in to comment!',

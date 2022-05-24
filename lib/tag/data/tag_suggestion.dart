@@ -1,27 +1,19 @@
-import 'package:copy_with_extension/copy_with_extension.dart';
-import 'package:json_annotation/json_annotation.dart';
+import 'package:flutter/foundation.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
+part 'tag_suggestion.freezed.dart';
 part 'tag_suggestion.g.dart';
 
-@JsonSerializable()
-@CopyWith()
-class TagSuggestion {
-  TagSuggestion({
-    required this.id,
-    required this.name,
-    required this.postCount,
-    required this.category,
-    required this.antecedentName,
-  });
-
-  final int id;
-  final String name;
-  final int postCount;
-  final int category;
-  final String? antecedentName;
+@freezed
+class TagSuggestion with _$TagSuggestion {
+  const factory TagSuggestion({
+    required int id,
+    required String name,
+    required int postCount,
+    required int category,
+    required String? antecedentName,
+  }) = _TagSuggestion;
 
   factory TagSuggestion.fromJson(Map<String, dynamic> json) =>
       _$TagSuggestionFromJson(json);
-
-  Map<String, dynamic> toJson() => _$TagSuggestionToJson(this);
 }

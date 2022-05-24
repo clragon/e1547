@@ -1,34 +1,22 @@
-import 'package:copy_with_extension/copy_with_extension.dart';
-import 'package:json_annotation/json_annotation.dart';
+import 'package:flutter/foundation.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
+part 'tag.freezed.dart';
 part 'tag.g.dart';
 
-@JsonSerializable()
-@CopyWith()
-class Tag {
-  Tag({
-    required this.id,
-    required this.name,
-    required this.postCount,
-    required this.relatedTags,
-    required this.relatedTagsUpdatedAt,
-    required this.category,
-    required this.isLocked,
-    required this.createdAt,
-    required this.updatedAt,
-  });
-
-  final int id;
-  final String name;
-  final int postCount;
-  final String relatedTags;
-  final DateTime relatedTagsUpdatedAt;
-  final int category;
-  final bool isLocked;
-  final DateTime createdAt;
-  final DateTime updatedAt;
+@freezed
+class Tag with _$Tag {
+  const factory Tag({
+    required int id,
+    required String name,
+    required int postCount,
+    required String relatedTags,
+    required DateTime relatedTagsUpdatedAt,
+    required int category,
+    required bool isLocked,
+    required DateTime createdAt,
+    required DateTime updatedAt,
+  }) = _Tag;
 
   factory Tag.fromJson(Map<String, dynamic> json) => _$TagFromJson(json);
-
-  Map<String, dynamic> toJson() => _$TagToJson(this);
 }

@@ -1,52 +1,31 @@
-import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:e1547/interface/interface.dart';
-import 'package:json_annotation/json_annotation.dart';
+import 'package:flutter/foundation.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
+part 'comment.freezed.dart';
 part 'comment.g.dart';
 
-@JsonSerializable()
-@CopyWith()
-class Comment {
-  @JsonKey(ignore: true)
-  final VoteStatus voteStatus;
-
-  const Comment({
-    required this.id,
-    required this.createdAt,
-    required this.postId,
-    required this.creatorId,
-    required this.body,
-    required this.score,
-    required this.updatedAt,
-    required this.updaterId,
-    required this.doNotBumpPost,
-    required this.isHidden,
-    required this.isSticky,
-    this.warningType,
-    this.warningUserId,
-    required this.creatorName,
-    required this.updaterName,
-    this.voteStatus = VoteStatus.unknown,
-  });
-
-  final int id;
-  final DateTime createdAt;
-  final int postId;
-  final int creatorId;
-  final String body;
-  final int score;
-  final DateTime updatedAt;
-  final int updaterId;
-  final bool doNotBumpPost;
-  final bool isHidden;
-  final bool isSticky;
-  final int? warningType;
-  final int? warningUserId;
-  final String creatorName;
-  final String updaterName;
+@freezed
+class Comment with _$Comment {
+  const factory Comment({
+    required int id,
+    required DateTime createdAt,
+    required int postId,
+    required int creatorId,
+    required String body,
+    required int score,
+    required DateTime updatedAt,
+    required int updaterId,
+    required bool doNotBumpPost,
+    required bool isHidden,
+    required bool isSticky,
+    required int? warningType,
+    required int? warningUserId,
+    required String creatorName,
+    required String updaterName,
+    @JsonKey(ignore: true) @Default(VoteStatus.unknown) VoteStatus voteStatus,
+  }) = _Comment;
 
   factory Comment.fromJson(Map<String, dynamic> json) =>
       _$CommentFromJson(json);
-
-  Map<String, dynamic> toJson() => _$CommentToJson(this);
 }

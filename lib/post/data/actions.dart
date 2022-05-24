@@ -175,8 +175,10 @@ extension Typing on Post {
     switch (file.ext) {
       case 'mp4':
       case 'webm':
-        if (Platform.isWindows) return PostType.unsupported;
-        return PostType.video;
+        if (Platform.isAndroid || Platform.isIOS) {
+          return PostType.video;
+        }
+        return PostType.unsupported;
       case 'swf':
         return PostType.unsupported;
       default:

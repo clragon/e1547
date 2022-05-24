@@ -101,7 +101,7 @@ class _PostDetailState extends State<PostDetail>
         await client.updatePost(controller.post.id, body);
         widget.controller!.updateItem(
           widget.controller!.itemList!.indexOf(widget.post),
-          widget.post.copyWith.tags(controller.value!.tags),
+          widget.post.copyWith(tags: controller.value!.tags),
         );
         await widget.controller!.resetPost(controller.post);
         controller.stopEditing();

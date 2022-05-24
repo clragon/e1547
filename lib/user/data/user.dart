@@ -1,62 +1,36 @@
-import 'package:copy_with_extension/copy_with_extension.dart';
-import 'package:json_annotation/json_annotation.dart';
+import 'package:flutter/foundation.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
+part 'user.freezed.dart';
 part 'user.g.dart';
 
-@JsonSerializable()
-@CopyWith()
-class User {
-  User({
-    required this.wikiPageVersionCount,
-    required this.artistVersionCount,
-    required this.poolVersionCount,
-    required this.forumPostCount,
-    required this.commentCount,
-    required this.flagCount,
-    required this.positiveFeedbackCount,
-    required this.neutralFeedbackCount,
-    required this.negativeFeedbackCount,
-    required this.uploadLimit,
-    required this.id,
-    required this.createdAt,
-    required this.name,
-    required this.level,
-    required this.baseUploadLimit,
-    required this.postUploadCount,
-    required this.postUpdateCount,
-    required this.noteUpdateCount,
-    required this.isBanned,
-    required this.canApprovePosts,
-    required this.canUploadFree,
-    required this.levelString,
-    required this.avatarId,
-  });
-
-  final int wikiPageVersionCount;
-  final int artistVersionCount;
-  final int poolVersionCount;
-  final int forumPostCount;
-  final int commentCount;
-  final int flagCount;
-  final int positiveFeedbackCount;
-  final int neutralFeedbackCount;
-  final int negativeFeedbackCount;
-  final int uploadLimit;
-  final int id;
-  final DateTime createdAt;
-  final String name;
-  final int level;
-  final int baseUploadLimit;
-  final int postUploadCount;
-  final int postUpdateCount;
-  final int noteUpdateCount;
-  final bool isBanned;
-  final bool canApprovePosts;
-  final bool canUploadFree;
-  final String levelString;
-  final int? avatarId;
+@freezed
+class User with _$User {
+  const factory User({
+    required int wikiPageVersionCount,
+    required int artistVersionCount,
+    required int poolVersionCount,
+    required int forumPostCount,
+    required int commentCount,
+    required int flagCount,
+    required int positiveFeedbackCount,
+    required int neutralFeedbackCount,
+    required int negativeFeedbackCount,
+    required int uploadLimit,
+    required int id,
+    required DateTime createdAt,
+    required String name,
+    required int level,
+    required int baseUploadLimit,
+    required int postUploadCount,
+    required int postUpdateCount,
+    required int noteUpdateCount,
+    required bool isBanned,
+    required bool canApprovePosts,
+    required bool canUploadFree,
+    required String levelString,
+    required int? avatarId,
+  }) = _User;
 
   factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
-
-  Map<String, dynamic> toJson() => _$UserToJson(this);
 }

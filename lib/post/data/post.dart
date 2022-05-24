@@ -1,75 +1,51 @@
 import 'dart:io';
 
-import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:e1547/interface/interface.dart';
-import 'package:json_annotation/json_annotation.dart';
+import 'package:flutter/foundation.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
+part 'post.freezed.dart';
 part 'post.g.dart';
 
-@JsonSerializable()
-@CopyWith()
-class Post {
-  final VoteStatus voteStatus;
+@freezed
+class Post with _$Post {
+  const Post._();
 
-  Post({
-    required this.id,
-    required this.createdAt,
-    required this.updatedAt,
-    required PostSourceFile file,
-    required this.preview,
-    required this.sample,
-    required this.score,
-    required this.tags,
-    required this.lockedTags,
-    required this.changeSeq,
-    required this.flags,
-    required this.rating,
-    required this.favCount,
-    required this.sources,
-    required this.pools,
-    required this.relationships,
-    required this.approverId,
-    required this.uploaderId,
-    required this.description,
-    required this.commentCount,
-    required this.isFavorited,
-    required this.hasNotes,
-    required this.duration,
-    this.voteStatus = VoteStatus.unknown,
-  }) : file = Platform.isIOS && file.ext == 'webm'
-            ? file.copyWith(
-                ext: 'mp4',
-                url: file.url!.replaceAll('.webm', '.mp4'),
-              )
-            : file;
-
-  final int id;
-  final DateTime createdAt;
-  final DateTime? updatedAt;
-  final PostSourceFile file;
-  final PostPreviewFile preview;
-  final PostSampleFile sample;
-  final Score score;
-  final Map<String, List<String>> tags;
-  final List<String>? lockedTags;
-  final int? changeSeq;
-  final Flags flags;
-  final Rating rating;
-  final int favCount;
-  final List<String> sources;
-  final List<int> pools;
-  final Relationships relationships;
-  final int? approverId;
-  final int uploaderId;
-  final String description;
-  final int commentCount;
-  final bool isFavorited;
-  final bool hasNotes;
-  final double? duration;
+  const factory Post({
+    required int id,
+    required DateTime createdAt,
+    required DateTime? updatedAt,
+    @JsonKey(name: 'file') required PostSourceFile fileRaw,
+    required PostPreviewFile preview,
+    required PostSampleFile sample,
+    required Score score,
+    required Map<String, List<String>> tags,
+    required List<String>? lockedTags,
+    required int? changeSeq,
+    required Flags flags,
+    required Rating rating,
+    required int favCount,
+    required List<String> sources,
+    required List<int> pools,
+    required Relationships relationships,
+    required int? approverId,
+    required int uploaderId,
+    required String description,
+    required int commentCount,
+    required bool isFavorited,
+    required bool hasNotes,
+    required double? duration,
+    @JsonKey(ignore: true) @Default(VoteStatus.unknown) VoteStatus voteStatus,
+  }) = _Post;
 
   factory Post.fromJson(Map<String, dynamic> json) => _$PostFromJson(json);
 
-  Map<String, dynamic> toJson() => _$PostToJson(this);
+  PostSourceFile get file => Platform.isIOS && fileRaw.ext == 'webm'
+      ? fileRaw.copyWith(
+          ext: 'mp4',
+          url: fileRaw.url!.replaceAll('.webm', '.mp4'),
+        )
+      : fileRaw;
 }
 
 mixin PostFile {
@@ -78,142 +54,83 @@ mixin PostFile {
   abstract final String? url;
 }
 
-@JsonSerializable()
-@CopyWith()
-class PostPreviewFile with PostFile {
-  PostPreviewFile({
-    required this.width,
-    required this.height,
-    this.url,
-  });
-
-  @override
-  final int width;
-  @override
-  final int height;
-  @override
-  final String? url;
+@freezed
+class PostPreviewFile with _$PostPreviewFile, PostFile {
+  const factory PostPreviewFile({
+    required int width,
+    required int height,
+    required String? url,
+  }) = _PostPreviewFile;
 
   factory PostPreviewFile.fromJson(Map<String, dynamic> json) =>
       _$PostPreviewFileFromJson(json);
-
-  Map<String, dynamic> toJson() => _$PostPreviewFileToJson(this);
 }
 
-@JsonSerializable()
-@CopyWith()
-class PostSampleFile with PostFile {
-  PostSampleFile({
-    required this.has,
-    required this.height,
-    required this.width,
-    this.url,
-  });
-
-  final bool has;
-  @override
-  final int height;
-  @override
-  final int width;
-  @override
-  final String? url;
+@freezed
+class PostSampleFile with _$PostSampleFile, PostFile {
+  const factory PostSampleFile({
+    required bool has,
+    required int height,
+    required int width,
+    required String? url,
+  }) = _PostSampleFile;
 
   factory PostSampleFile.fromJson(Map<String, dynamic> json) =>
       _$PostSampleFileFromJson(json);
-
-  Map<String, dynamic> toJson() => _$PostSampleFileToJson(this);
 }
 
-@JsonSerializable()
-@CopyWith()
-class PostSourceFile with PostFile {
-  PostSourceFile({
-    required this.width,
-    required this.height,
-    required this.ext,
-    required this.size,
-    required this.md5,
-    this.url,
-  });
-
-  @override
-  final int width;
-  @override
-  final int height;
-  final String ext;
-  final int size;
-  final String md5;
-  @override
-  final String? url;
+@freezed
+class PostSourceFile with _$PostSourceFile, PostFile {
+  const factory PostSourceFile({
+    required int width,
+    required int height,
+    required String ext,
+    required int size,
+    required String md5,
+    required String? url,
+  }) = _PostSourceFile;
 
   factory PostSourceFile.fromJson(Map<String, dynamic> json) =>
       _$PostSourceFileFromJson(json);
-
-  Map<String, dynamic> toJson() => _$PostSourceFileToJson(this);
 }
 
-@JsonSerializable()
-@CopyWith()
-class Flags {
-  Flags({
-    required this.pending,
-    required this.flagged,
-    required this.noteLocked,
-    required this.statusLocked,
-    required this.ratingLocked,
-    required this.deleted,
-  });
-
-  final bool pending;
-  final bool flagged;
-  final bool noteLocked;
-  final bool statusLocked;
-  final bool ratingLocked;
-  final bool deleted;
+@freezed
+class Flags with _$Flags {
+  const factory Flags({
+    required bool pending,
+    required bool flagged,
+    required bool noteLocked,
+    required bool statusLocked,
+    required bool ratingLocked,
+    required bool deleted,
+  }) = _Flags;
 
   factory Flags.fromJson(Map<String, dynamic> json) => _$FlagsFromJson(json);
-
-  Map<String, dynamic> toJson() => _$FlagsToJson(this);
 }
 
 @JsonEnum()
 enum Rating { s, e, q }
 
-@JsonSerializable()
-@CopyWith()
-class Relationships {
-  Relationships({
-    required this.parentId,
-    required this.hasChildren,
-    required this.hasActiveChildren,
-    required this.children,
-  });
-
-  final int? parentId;
-  final bool hasChildren;
-  final bool hasActiveChildren;
-  final List<int> children;
+@freezed
+class Relationships with _$Relationships {
+  const factory Relationships({
+    required int? parentId,
+    required bool hasChildren,
+    required bool hasActiveChildren,
+    required List<int> children,
+  }) = _Relationships;
 
   factory Relationships.fromJson(Map<String, dynamic> json) =>
       _$RelationshipsFromJson(json);
-
-  Map<String, dynamic> toJson() => _$RelationshipsToJson(this);
 }
 
-@JsonSerializable()
-@CopyWith()
-class Score {
-  Score({
-    required this.up,
-    required this.down,
-    required this.total,
-  });
-
-  final int up;
-  final int down;
-  final int total;
+@freezed
+class Score with _$Score {
+  const factory Score({
+    required int up,
+    required int down,
+    required int total,
+  }) = _Score;
 
   factory Score.fromJson(Map<String, dynamic> json) => _$ScoreFromJson(json);
-
-  Map<String, dynamic> toJson() => _$ScoreToJson(this);
 }
