@@ -15,7 +15,7 @@ class Reply with _$Reply {
     required int? updaterId,
     required int topicId,
     required bool isHidden,
-    required WarningType warningType,
+    required WarningType? warningType,
     required int? warningUserId,
   }) = _Reply;
 

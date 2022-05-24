@@ -15,7 +15,8 @@ _$_Reply _$$_ReplyFromJson(Map<String, dynamic> json) => _$_Reply(
       updaterId: json['updater_id'] as int?,
       topicId: json['topic_id'] as int,
       isHidden: json['is_hidden'] as bool,
-      warningType: $enumDecode(_$WarningTypeEnumMap, json['warning_type']),
+      warningType:
+          $enumDecodeNullable(_$WarningTypeEnumMap, json['warning_type']),
       warningUserId: json['warning_user_id'] as int?,
     );
 
