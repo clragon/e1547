@@ -370,18 +370,13 @@ class PostVideoLoader extends StatefulWidget {
 
 class _PostVideoLoaderState extends State<PostVideoLoader> {
   Future<void> ensureVideo() async {
-    if (!widget.post.getVideo(context)!.value.isInitialized) {
-      await widget.post.loadVideo(context);
-    }
-    if (mounted) {
-      setState(() {});
-    }
+    await widget.post.loadVideo(context);
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    ensureVideo();
+    WidgetsBinding.instance.addPostFrameCallback((_) => ensureVideo());
   }
 
   @override
