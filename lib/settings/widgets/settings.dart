@@ -253,7 +253,39 @@ class _SettingsPageState extends State<SettingsPage> {
                   builder: (context) => AdvancedSettingsPage(),
                 ),
               ),
-            )
+            ),
+            ValueListenableBuilder<SettingsInitPage>(
+              valueListenable: settings.initPage,
+              builder: (context, value, child) => ListTile(
+                title: const Text('Theme'),
+                subtitle: Text(value.name),
+                leading: const Icon(Icons.wysiwyg_rounded),
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => SimpleDialog(
+                      title: const Text('Init page'),
+                      children: [
+                        Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: SettingsInitPage.values
+                              .map(
+                                (val) => ListTile(
+                                  title: Text(val.name),
+                                  onTap: () {
+                                    settings.initPage.value = val;
+                                    Navigator.of(context).maybePop();
+                                  },
+                                ),
+                              )
+                              .toList(),
+                        )
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
           ],
         ),
       ),

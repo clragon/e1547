@@ -14,6 +14,8 @@ Future<void> initializeSettings() async {
   await settings.initialize();
 }
 
+enum SettingsInitPage { home, follows, hot }
+
 class Settings with SharedPrefsSettings {
   late final ValueNotifier<Credentials?> credentials = createSetting(
     key: 'credentials',
@@ -117,4 +119,9 @@ class Settings with SharedPrefsSettings {
       createSetting<bool>(key: 'upvoteFavs', initialValue: false);
   late final ValueNotifier<bool> muteVideos =
       createSetting<bool>(key: 'muteVideos', initialValue: true);
+
+  /// init into page
+  late final ValueNotifier<SettingsInitPage> initPage =
+      createSetting<SettingsInitPage>(
+          key: 'initPage', initialValue: SettingsInitPage.home);
 }
