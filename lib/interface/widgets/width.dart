@@ -7,10 +7,10 @@ class LimitedWidthLayoutData extends InheritedWidget {
   EdgeInsets get padding => EdgeInsets.symmetric(horizontal: space);
 
   const LimitedWidthLayoutData({
-    required Widget child,
+    required super.child,
     required this.maxWidth,
     required this.space,
-  }) : super(child: child);
+  });
 
   @override
   bool updateShouldNotify(covariant LimitedWidthLayoutData oldWidget) {
@@ -24,14 +24,12 @@ class LimitedWidthLayout extends StatefulWidget {
   final WidgetBuilder builder;
 
   const LimitedWidthLayout.builder({
-    Key? key,
     required this.builder,
     this.maxWidth = 600,
     this.tolerance = 100,
-  }) : super(key: key);
+  });
 
   factory LimitedWidthLayout({
-    Key? key,
     required Widget child,
     double maxWidth = 600,
     double tolerance = 100,
@@ -40,7 +38,6 @@ class LimitedWidthLayout extends StatefulWidget {
       builder: (context) => child,
       maxWidth: maxWidth,
       tolerance: tolerance,
-      key: key,
     );
   }
 
@@ -62,9 +59,9 @@ class _LimitedWidthLayoutState extends State<LimitedWidthLayout> {
           padding = 0;
         }
         return LimitedWidthLayoutData(
-          child: Builder(builder: widget.builder),
           space: padding,
           maxWidth: widget.maxWidth,
+          child: Builder(builder: widget.builder),
         );
       },
     );
@@ -74,7 +71,7 @@ class _LimitedWidthLayoutState extends State<LimitedWidthLayout> {
 class LimitedWidthChild extends StatelessWidget {
   final Widget child;
 
-  const LimitedWidthChild({Key? key, required this.child}) : super(key: key);
+  const LimitedWidthChild({required this.child});
 
   @override
   Widget build(BuildContext context) {

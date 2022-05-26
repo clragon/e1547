@@ -77,8 +77,8 @@ class _PostsPageState extends State<PostsPage> {
         child: RefreshablePage(
           refreshController: widget.controller.refreshController,
           appBar: PostSelectionAppBar(
-            child: widget.appBar,
             controller: widget.controller,
+            child: widget.appBar,
           ),
           drawer: const NavigationDrawer(),
           endDrawer: endDrawer(),

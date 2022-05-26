@@ -13,13 +13,13 @@ Map<String, int> countTags(List<String> tags, [Map<String, int>? counts]) {
 
 List<CountedTag> countTagsByPosts(List<Post> posts) {
   Map<String, Map<String, int>> categoryCounts = {};
-  for (String category in categories.keys) {
+  for (String category in TagCategory.names) {
     categoryCounts[category] = {};
   }
   List<CountedTag> counted = [];
 
   for (Post post in posts) {
-    for (String category in categories.keys) {
+    for (String category in TagCategory.names) {
       List<String> tags = post.tags[category]!;
       categoryCounts[category] = countTags(tags, categoryCounts[category]);
     }

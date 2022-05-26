@@ -6,10 +6,11 @@ class HotPage extends StatefulWidget {
   const HotPage();
 
   @override
-  _HotPageState createState() => _HotPageState();
+  State<HotPage> createState() => _HotPageState();
 }
 
-class _HotPageState extends State<HotPage> with ListenerCallbackMixin {
+class _HotPageState extends State<HotPage>
+    with ListenerCallbackMixin, DrawerEntry {
   PostController controller = PostController(search: "order:rank");
 
   @override

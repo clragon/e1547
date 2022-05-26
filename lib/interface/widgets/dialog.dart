@@ -40,7 +40,7 @@ class LoadingDialog extends StatefulWidget {
   });
 
   @override
-  _LoadingDialogState createState() => _LoadingDialogState();
+  State<LoadingDialog> createState() => _LoadingDialogState();
 }
 
 class _LoadingDialogState extends State<LoadingDialog> {
@@ -115,12 +115,12 @@ class _LoadingDialogState extends State<LoadingDialog> {
         ),
         actions: [
           TextButton(
-            child: const Text('CANCEL'),
             onPressed: Navigator.of(context).maybePop,
+            child: const Text('CANCEL'),
           ),
           TextButton(
-            child: const Text('OK'),
             onPressed: controller.isLoading ? null : controller.action,
+            child: const Text('OK'),
           ),
         ],
       ),

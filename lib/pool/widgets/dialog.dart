@@ -44,7 +44,6 @@ class PoolDialog extends StatelessWidget {
             maxHeight: constraints.maxHeight * 0.5,
           ),
           child: SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
@@ -71,8 +70,8 @@ class PoolDialog extends StatelessWidget {
                 Share.share(pool.url(client.host).toString()),
           ),
           TextButton(
-            child: const Text('OK'),
             onPressed: Navigator.of(context).maybePop,
+            child: const Text('OK'),
           ),
         ],
       ),

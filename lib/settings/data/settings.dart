@@ -124,4 +124,8 @@ class Settings with SharedPrefsSettings {
   late final ValueNotifier<SettingsInitPage> initPage =
       createSetting<SettingsInitPage>(
           key: 'initPage', initialValue: SettingsInitPage.home);
+  late final ValueNotifier<String?> appPin =
+      createSetting(key: 'appPin', initialValue: null);
+  late final ValueNotifier<bool> biometricAuth =
+      createSetting<bool>(key: 'biometricAuth', initialValue: false);
 }

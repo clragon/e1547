@@ -1,5 +1,6 @@
 // data
 export 'data/actions.dart';
+export 'data/image.dart';
 export 'data/controller.dart';
 export 'data/post.dart';
 export 'data/editing.dart';

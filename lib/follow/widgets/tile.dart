@@ -4,7 +4,6 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:e1547/tag/tag.dart';
-import 'package:e1547/wiki/wiki.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -147,7 +146,7 @@ class FollowTile extends StatelessWidget {
                   ),
                 ),
               ),
-              onLongPress: () => wikiSheet(
+              onLongPress: () => tagSearchSheet(
                 context: context,
                 tag: follow.tags,
               ),
@@ -205,7 +204,7 @@ class FollowListTile extends StatelessWidget {
         ControlledTextWrapper(
           submit: (value) async {
             value = value.trim();
-            Follow result = Follow.fromString(value);
+            Follow result = Follow(tags: value);
             if (value.isNotEmpty) {
               followController.replace(follow, result);
             } else {
@@ -305,7 +304,7 @@ class FollowListTile extends StatelessWidget {
           builder: (context) => SearchPage(tags: follow.tags),
         ),
       ),
-      onLongPress: () => wikiSheet(context: context, tag: follow.tags),
+      onLongPress: () => tagSearchSheet(context: context, tag: follow.tags),
       child: ListTile(
         title: Padding(
           padding: const EdgeInsets.all(8),

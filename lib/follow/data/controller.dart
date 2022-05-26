@@ -10,7 +10,7 @@ import 'package:e1547/settings/settings.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 
-late final FollowController followController =
+final FollowController followController =
     FollowController(settings: settings.follows);
 
 class FollowController extends DataUpdater<List<Follow>> with HostableUpdater {
@@ -114,7 +114,7 @@ class FollowController extends DataUpdater<List<Follow>> with HostableUpdater {
       withData((data) => data..add(follow));
 
   Future<void> addTag(String tag) async =>
-      withData((data) => data..add(Follow.fromString(tag)));
+      withData((data) => data..add(Follow(tags: tag)));
 
   Future<void> remove(Follow follow) async => ((data) => data..remove(follow));
 
@@ -173,7 +173,7 @@ class FollowController extends DataUpdater<List<Follow>> with HostableUpdater {
             if (match != null) {
               edited.add(match);
             } else {
-              edited.add(Follow.fromString(tags));
+              edited.add(Follow(tags: tags));
             }
           }
           return edited;

@@ -1,9 +1,6 @@
+import 'package:e1547/app/app.dart';
+import 'package:e1547/client/client.dart';
 import 'package:e1547/dtext/dtext.dart';
-import 'package:e1547/pool/pool.dart';
-import 'package:e1547/post/post.dart';
-import 'package:e1547/settings/settings.dart';
-import 'package:e1547/topic/topic.dart';
-import 'package:e1547/user/user.dart';
 import 'package:flutter/material.dart';
 
 enum LinkWord {
@@ -18,11 +15,40 @@ enum LinkWord {
   takedown,
   record,
   ticket,
-  category,
-  thumb,
+  thumb;
+
+  String toLink(int id) {
+    switch (this) {
+      case thumb:
+      case post:
+        return '/posts/$id';
+      case pool:
+        return '/pools/$id';
+      case user:
+        return '/users/$id';
+      case forum:
+        return '/forum_posts/$id';
+      case topic:
+        return '/forum_topics/$id';
+      case comment:
+        return '/comments/$id';
+      case set:
+        return '/post_sets/$id';
+      case record:
+        return '/user_feedbacks/$id';
+      case blip:
+        return '/blips/$id';
+      case ticket:
+        return '/tickets/$id';
+      case takedown:
+        return '/takedowns/$id';
+      default:
+        return '';
+    }
+  }
 }
 
-List<DTextParser> linkWordParsers() => LinkWord.values
+final List<DTextParser> linkWordParsers = LinkWord.values
     .map(
       (word) => DTextParser(
         regex: RegExp(RegExp.escape(word.name) + r' #(?<id>\d+)',
@@ -38,49 +64,6 @@ List<DTextParser> linkWordParsers() => LinkWord.values
     )
     .toList();
 
-VoidCallback? getLinkWordTap(BuildContext context, LinkWord word, int id) {
-  switch (word) {
-    case LinkWord.thumb:
-    // replace thumb with picture widget some day
-    case LinkWord.post:
-      return () => Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => PostLoadingPage(id),
-            ),
-          );
-    case LinkWord.pool:
-      return () => Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => PoolLoadingPage(id),
-            ),
-          );
-    case LinkWord.user:
-      return () => Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => UserLoadingPage(id.toString()),
-            ),
-          );
-    case LinkWord.forum:
-      return settings.showBeta.value
-          ? () => Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => ReplyLoadingPage(id),
-                ),
-              )
-          : null;
-    case LinkWord.topic:
-      return settings.showBeta.value
-          ? () => Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => TopicLoadingPage(id),
-                ),
-              )
-          : null;
-    default:
-      return null;
-  }
-}
-
 InlineSpan parseWord({
   required BuildContext context,
   required LinkWord word,
@@ -88,7 +71,13 @@ InlineSpan parseWord({
   required String result,
   required TextState state,
 }) {
-  VoidCallback? onTap = getLinkWordTap(context, word, id);
+  VoidCallback? onTap =
+      () => launch('https://${client.host}${word.toLink(id)}');
+  LinkParserResult? link = parseLink(context, word.toLink(id));
+  if (link != null) {
+    onTap = () =>
+        Navigator.of(context).push(MaterialPageRoute(builder: link.builder));
+  }
 
   return plainText(
     context: context,

@@ -8,7 +8,7 @@ class DTextParser {
   final RegExp regex;
   final DTextTransformer tranformer;
 
-  DTextParser.builder({required this.regex, required this.tranformer});
+  const DTextParser.builder({required this.regex, required this.tranformer});
 
   factory DTextParser({
     required RegExp regex,
@@ -34,7 +34,7 @@ class DTextParserResult {
   final String text;
   final TextState state;
 
-  DTextParserResult({
+  const DTextParserResult({
     required this.span,
     required this.text,
     required this.state,

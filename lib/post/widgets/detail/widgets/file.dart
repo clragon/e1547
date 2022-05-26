@@ -30,9 +30,9 @@ class FileDisplay extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               TagGesture(
-                child: Text(ratingTexts[post.rating]!),
                 tag: 'rating:${post.rating.name}',
                 controller: controller,
+                child: Text(ratingTexts[post.rating]!),
               ),
               Text('${post.file.width} x ${post.file.height}'),
             ],
@@ -57,9 +57,9 @@ class FileDisplay extends StatelessWidget {
                 Text(getCurrentDateTimeFormat()
                     .format(post.updatedAt!.toLocal())),
               TagGesture(
-                child: Text(post.file.ext),
                 tag: 'type:${post.file.ext}',
                 controller: controller,
+                child: Text(post.file.ext),
               ),
             ],
           ),

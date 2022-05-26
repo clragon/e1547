@@ -9,7 +9,7 @@ class CommentLoadingPage extends StatefulWidget {
   const CommentLoadingPage(this.id);
 
   @override
-  _CommentLoadingPageState createState() => _CommentLoadingPageState();
+  State<CommentLoadingPage> createState() => _CommentLoadingPageState();
 }
 
 class _CommentLoadingPageState extends State<CommentLoadingPage> {

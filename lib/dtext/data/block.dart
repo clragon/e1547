@@ -1,7 +1,7 @@
 import 'package:e1547/dtext/dtext.dart';
 import 'package:flutter/material.dart';
 
-DTextParser blockParser = DTextParser.builder(
+final DTextParser blockParser = DTextParser.builder(
   regex: TextTag.toRegex(),
   tranformer: (context, match, state) {
     TextTag? tag = TextTag.fromMatch(match);
@@ -44,7 +44,7 @@ DTextParser blockParser = DTextParser.builder(
         after = '';
       }
 
-      between = between.replaceAllMapped(RegExp(r'(^\n+)|(\n+$)'), (_) => '');
+      between = between.trim();
 
       Widget blocked;
 
@@ -63,9 +63,9 @@ DTextParser blockParser = DTextParser.builder(
           break;
         case TextBlock.section:
           blocked = SectionWrap(
-            child: Text.rich(parseDText(context, between, state)),
             title: tag.value,
             expanded: tag.expanded,
+            child: Text.rich(parseDText(context, between, state)),
           );
           break;
         case TextBlock.quote:
@@ -75,7 +75,7 @@ DTextParser blockParser = DTextParser.builder(
           break;
       }
 
-      after = after.replaceAllMapped(RegExp(r'^[ \n]*'), (_) => '');
+      after = after.trim();
 
       return DTextParserResult(
         span: WidgetSpan(
@@ -93,7 +93,7 @@ DTextParser blockParser = DTextParser.builder(
   },
 );
 
-DTextParser tagParser = DTextParser.builder(
+final DTextParser tagParser = DTextParser.builder(
   regex: TextTag.toRegex(),
   tranformer: (context, match, state) {
     TextTag? tag = TextTag.fromMatch(match);

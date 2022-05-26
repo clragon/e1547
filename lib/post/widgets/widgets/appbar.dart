@@ -1,3 +1,4 @@
+import 'package:e1547/app/app.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/comment/comment.dart';
 import 'package:e1547/interface/interface.dart';
@@ -52,8 +53,8 @@ List<PopupMenuItem<VoidCallback>> postMenuUserActions(
           context: context,
           callback: () async {
             if (await writeComment(context: context, postId: post.id)) {
-              post.commentCount++;
-              controller.updateItem(controller.itemList!.indexOf(post), post);
+              controller.updateItem(controller.itemList!.indexOf(post),
+                  post.copyWith(commentCount: post.commentCount + 1));
             }
           },
           error: 'You must be logged in to comment!',

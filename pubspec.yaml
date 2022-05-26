@@ -4,24 +4,26 @@ version: 10.1.3+59
 publish_to: none
 
 environment:
-  sdk: '>=2.15.0 <3.0.0'
+  sdk: '>=2.17.0 <3.0.0'
 
 dependencies:
 
   # widgets
+  local_auth: ^2.0.2
   expandable: ^5.0.1
   like_button: ^2.0.4
   photo_view: ^0.13.0
-  grouped_list: ^4.1.0
+  grouped_list: ^5.0.1
   video_player: ^2.3.0
   sliver_tools: ^0.2.5
   overflow_view: ^0.3.1
   sliding_sheet: ^0.5.0
   decorated_icon: ^1.2.0
   pull_to_refresh: ^2.0.0
-  flutter_typeahead: ^3.2.4
+  flutter_typeahead: ^4.0.0
   flutter_custom_tabs: ^1.0.4
-  cached_network_image: ^3.2.0
+  flutter_screen_lock: ^5.0.12
+  cached_network_image: ^3.2.1
   font_awesome_flutter: ^10.1.0
   flutter_cache_manager: ^3.3.0
   flutter_staggered_grid_view: ^0.4.1 # 5.x.x-6.x.x is breaking
@@ -35,13 +37,16 @@ dependencies:
   crypto: ^3.0.1
   timeago: ^3.1.0
   filesize: ^2.0.1
+  sqflite: ^2.0.2+1
   app_links: ^3.0.2
   wakelock: ^0.6.1+2
   collection: ^1.15.0
   url_launcher: ^6.1.0
   store_checker: ^1.0.0
   dio_http_cache: ^0.3.0
-  package_info_plus: 1.3.0 # 1.3.1-1.4.x is broken
+  path_to_regexp: ^0.4.0
+  package_info_plus: ^1.4.2
+  freezed_annotation: ^2.0.3
   permission_handler: ^9.2.0
   sqflite_common_ffi: ^2.1.0
   shared_preferences: ^2.0.11
@@ -58,9 +63,17 @@ dependencies:
     sdk: flutter
 
 dev_dependencies:
-  flutter_lints: ^1.0.4
+  flutter_lints: ^2.0.1
   flutter_launcher_icons: ^0.9.0
-  flutter_native_splash: ^2.0.2
+  flutter_native_splash: ^2.2.0+1
+
+  # dart run build_runner build
+  build_runner: ^2.1.11
+  freezed: ^2.0.3+1
+
+dependency_overrides:
+  json_serializable: ^6.2.0
+  json_annotation: ^4.5.0
 
 flutter:
   uses-material-design: true

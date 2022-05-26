@@ -1,99 +1,37 @@
-import 'package:collection/collection.dart';
-import 'package:e1547/tag/tag.dart';
+import 'package:flutter/foundation.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-enum FollowType {
-  update,
-  notify,
-  bookmark,
-}
+part 'follow.freezed.dart';
+part 'follow.g.dart';
 
-class Follow {
-  final String tags;
-  final String? alias;
-  final FollowType type;
-  final Map<String, FollowStatus> statuses;
-
-  Follow({
+@freezed
+class Follow with _$Follow {
+  const factory Follow({
     required String tags,
-    this.alias,
-    FollowType? type,
-    Map<String, FollowStatus>? statuses,
-  })  : tags = sortTags(tags),
-        statuses = Map.unmodifiable(statuses ?? {}),
-        type = type ?? FollowType.update;
-
-  factory Follow.fromString(String tags) => Follow(tags: tags);
-
-  Follow copyWith({
-    String? tags,
     String? alias,
-    Map<String, FollowStatus>? statuses,
-    FollowType? type,
-  }) =>
-      Follow(
-        tags: tags ?? this.tags,
-        alias: alias ?? this.alias,
-        statuses: statuses ?? this.statuses,
-        type: type ?? this.type,
-      );
+    @Default(FollowType.update) FollowType type,
+    @Default({}) Map<String, FollowStatus> statuses,
+  }) = _Follow;
 
-  factory Follow.fromJson(Map<String, dynamic> json) => Follow(
-        tags: json["tags"],
-        alias: json["alias"],
-        statuses: json["statuses"] != null
-            ? Map.from(json["statuses"]).map((k, v) =>
-                MapEntry<String, FollowStatus>(k, FollowStatus.fromJson(v)))
-            : null,
-        type: FollowType.values
-            .firstWhereOrNull((element) => element.name == json['type']),
-      );
-
-  Map<String, dynamic> toJson() => {
-        "tags": tags,
-        "alias": alias,
-        "statuses": Map.from(statuses)
-            .map((k, v) => MapEntry<String, dynamic>(k, v.toJson())),
-        "type": type.name,
-      };
+  factory Follow.fromJson(Map<String, dynamic> json) => _$FollowFromJson(json);
 }
 
-class FollowStatus {
-  final int? latest;
-  final int? unseen;
-  final String? thumbnail;
-  final DateTime? updated;
-
-  FollowStatus({
-    this.latest,
-    this.unseen,
-    this.thumbnail,
-    this.updated,
-  });
-
-  FollowStatus copyWith({
+@freezed
+class FollowStatus with _$FollowStatus {
+  const factory FollowStatus({
     int? latest,
     int? unseen,
     String? thumbnail,
     DateTime? updated,
-  }) =>
-      FollowStatus(
-        latest: latest ?? this.latest,
-        unseen: unseen ?? this.unseen,
-        thumbnail: thumbnail ?? this.thumbnail,
-        updated: updated ?? this.updated,
-      );
+  }) = _FollowStatus;
 
-  factory FollowStatus.fromJson(Map<String, dynamic> json) => FollowStatus(
-        latest: json["latest"],
-        unseen: json["unseen"],
-        thumbnail: json["thumbnail"],
-        updated: DateTime.tryParse(json["updated"] ?? ''),
-      );
+  factory FollowStatus.fromJson(Map<String, dynamic> json) =>
+      _$FollowStatusFromJson(json);
+}
 
-  Map<String, dynamic> toJson() => {
-        "latest": latest,
-        "unseen": unseen,
-        "thumbnail": thumbnail,
-        "updated": updated?.toIso8601String(),
-      };
+@JsonEnum()
+enum FollowType {
+  update,
+  notify,
+  bookmark,
 }

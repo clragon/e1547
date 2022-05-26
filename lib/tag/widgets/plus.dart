@@ -14,7 +14,7 @@ class TagAddCard extends StatefulWidget {
   });
 
   @override
-  _TagAddCardState createState() => _TagAddCardState();
+  State<TagAddCard> createState() => _TagAddCardState();
 }
 
 class _TagAddCardState extends State<TagAddCard> {

@@ -3,7 +3,6 @@ import 'package:e1547/history/history.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
-import 'package:e1547/wiki/wiki.dart';
 import 'package:flutter/material.dart';
 import 'package:share/share.dart';
 
@@ -11,9 +10,8 @@ class HistoryTile extends StatelessWidget {
   final HistoryEntry entry;
 
   const HistoryTile({
-    Key? key,
     required this.entry,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -112,7 +110,7 @@ class HistoryTile extends StatelessWidget {
                   PopupMenuTile(
                     title: 'Wiki',
                     icon: Icons.info,
-                    value: () => wikiSheet(
+                    value: () => tagSearchSheet(
                       context: context,
                       tag: entry.tags,
                     ),

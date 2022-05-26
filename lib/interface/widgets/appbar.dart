@@ -15,8 +15,7 @@ class AppBarBuilder extends StatelessWidget with AppBarBuilderWidget {
   final Widget Function(BuildContext context, PreferredSizeWidget child)
       builder;
 
-  const AppBarBuilder({Key? key, required this.child, required this.builder})
-      : super(key: key);
+  const AppBarBuilder({required this.child, required this.builder});
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +33,7 @@ class AppBarPadding extends StatelessWidget with AppBarBuilderWidget {
         child.preferredSize.height + defaultAppBarTopPadding,
       );
 
-  const AppBarPadding({Key? key, required this.child}) : super(key: key);
+  const AppBarPadding({required this.child});
 
   @override
   Widget build(BuildContext context) {
@@ -53,6 +52,29 @@ class AppBarPadding extends StatelessWidget with AppBarBuilderWidget {
       ),
     );
   }
+}
+
+Widget? withDefaultLeading({
+  required BuildContext context,
+  Widget? leading,
+  bool automaticallyImplyLeading = true,
+}) {
+  if (leading == null && automaticallyImplyLeading) {
+    bool hasDrawer = Scaffold.maybeOf(context)?.hasDrawer ?? false;
+    bool isFirst = ModalRoute.of(context)?.isFirst ?? false;
+    bool canPop = ModalRoute.of(context)?.canPop ?? false;
+
+    if (hasDrawer && isFirst) {
+      leading = IconButton(
+        icon: const Icon(Icons.menu),
+        onPressed: Scaffold.of(context).openDrawer,
+        tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
+      );
+    } else if (canPop) {
+      leading = const BackButton();
+    }
+  }
+  return leading;
 }
 
 class DefaultAppBar extends StatelessWidget with PreferredSizeWidget {
@@ -79,11 +101,15 @@ class DefaultAppBar extends StatelessWidget with PreferredSizeWidget {
   Widget build(BuildContext context) {
     return AppBarPadding(
       child: AppBar(
-        leading: leading,
+        leading: withDefaultLeading(
+          context: context,
+          leading: leading,
+          automaticallyImplyLeading: automaticallyImplyLeading,
+        ),
         actions: actions,
         title: IgnorePointer(child: title),
         elevation: elevation,
-        automaticallyImplyLeading: automaticallyImplyLeading,
+        automaticallyImplyLeading: false,
         flexibleSpace: ScrollToTop(controller: scrollController),
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(4)),
@@ -114,6 +140,13 @@ class ScrollToTop extends StatelessWidget {
       ScrollController? controller = this.controller ??
           (primary ? PrimaryScrollController.of(context) : null);
       return GestureDetector(
+        onDoubleTap: controller != null
+            ? () => controller.animateTo(
+                  0,
+                  duration: defaultAnimationDuration,
+                  curve: Curves.easeOut,
+                )
+            : null,
         child: Container(
           height: height,
           color: Colors.transparent,
@@ -132,13 +165,6 @@ class ScrollToTop extends StatelessWidget {
                 )
               : null,
         ),
-        onDoubleTap: controller != null
-            ? () => controller.animateTo(
-                  0,
-                  duration: defaultAnimationDuration,
-                  curve: Curves.easeOut,
-                )
-            : null,
       );
     }
 
@@ -181,7 +207,7 @@ class TransparentAppBar extends StatelessWidget with AppBarBuilderWidget {
 class SliverAppBarPadding extends StatelessWidget {
   final Widget child;
 
-  const SliverAppBarPadding({Key? key, required this.child}) : super(key: key);
+  const SliverAppBarPadding({required this.child});
 
   @override
   Widget build(BuildContext context) {
@@ -246,14 +272,18 @@ class DefaultSliverAppBar extends StatelessWidget {
     return SliverAppBarPadding(
       child: SliverAppBar(
         title: IgnorePointer(child: title),
-        automaticallyImplyLeading: automaticallyImplyLeading,
+        automaticallyImplyLeading: false,
         elevation: elevation,
         forceElevated: forceElevated,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(4)),
         ),
         expandedHeight: expandedHeight,
-        leading: leading,
+        leading: withDefaultLeading(
+          context: context,
+          leading: leading,
+          automaticallyImplyLeading: automaticallyImplyLeading,
+        ),
         floating: floating,
         pinned: pinned,
         snap: snap,

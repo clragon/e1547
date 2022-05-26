@@ -1,3 +1,4 @@
+import 'package:e1547/app/app.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/denylist/denylist.dart';
 import 'package:e1547/interface/interface.dart';
@@ -24,7 +25,7 @@ class UserPage extends StatefulWidget {
   });
 
   @override
-  _UserPageState createState() => _UserPageState();
+  State<UserPage> createState() => _UserPageState();
 }
 
 class _UserPageState extends State<UserPage>
@@ -97,7 +98,6 @@ class _UserPageState extends State<UserPage>
         ],
       ),
       body: NestedScrollView(
-        physics: const BouncingScrollPhysics(),
         headerSliverBuilder: (context, innerBoxIsScrolled) => [
           SliverOverlapAbsorber(
             handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
@@ -229,7 +229,6 @@ class UserInfo extends StatelessWidget {
     }
 
     return ListView(
-      physics: const BouncingScrollPhysics(),
       padding:
           defaultActionListPadding.add(LimitedWidthLayout.of(context)!.padding),
       children: [

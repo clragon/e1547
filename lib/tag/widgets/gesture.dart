@@ -1,6 +1,5 @@
 import 'package:e1547/denylist/denylist.dart';
 import 'package:e1547/post/post.dart';
-import 'package:e1547/wiki/wiki.dart';
 import 'package:flutter/material.dart';
 
 class TagGesture extends StatelessWidget {
@@ -21,7 +20,7 @@ class TagGesture extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     void sheet() =>
-        wikiSheet(context: context, tag: tag, controller: controller);
+        tagSearchSheet(context: context, tag: tag, controller: controller);
 
     return InkWell(
       onTap: () async {

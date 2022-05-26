@@ -142,7 +142,6 @@ class PostPresenterTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return ImageTile(
       thumbnails: [if (thumbnail != null) thumbnail!],
-      child: child,
       onTap: onTap ??
           (postId != null
               ? () => Navigator.of(context).push(
@@ -152,6 +151,7 @@ class PostPresenterTile extends StatelessWidget {
                   )
               : null),
       onLongPress: onLongPress,
+      child: child,
     );
   }
 }

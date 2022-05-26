@@ -4,7 +4,6 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/tag/tag.dart';
-import 'package:e1547/wiki/wiki.dart';
 import 'package:flutter/material.dart';
 
 class SearchPage extends StatefulWidget {
@@ -14,7 +13,7 @@ class SearchPage extends StatefulWidget {
   const SearchPage({this.tags, this.reversePools = false});
 
   @override
-  _SearchPageState createState() => _SearchPageState();
+  State<SearchPage> createState() => _SearchPageState();
 }
 
 class _SearchPageState extends State<SearchPage> with ListenerCallbackMixin {
@@ -130,7 +129,7 @@ class _SearchPageState extends State<SearchPage> with ListenerCallbackMixin {
                     icon: const Icon(Icons.info_outline),
                     onPressed: pool != null
                         ? () => poolSheet(context, pool!)
-                        : () => wikiSheet(
+                        : () => tagSearchSheet(
                               context: context,
                               tag: controller.search.value,
                               controller: controller,

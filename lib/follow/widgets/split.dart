@@ -1,3 +1,4 @@
+import 'package:e1547/client/client.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
@@ -6,7 +7,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class FollowsSplitPage extends StatefulWidget {
   @override
-  _FollowsSplitPageState createState() => _FollowsSplitPageState();
+  State<FollowsSplitPage> createState() => _FollowsSplitPageState();
 }
 
 class _FollowsSplitPageState extends State<FollowsSplitPage>
@@ -20,7 +21,7 @@ class _FollowsSplitPageState extends State<FollowsSplitPage>
       };
 
   Future<void> updateRefresh() async {
-    WidgetsBinding.instance!.addPostFrameCallback((_) async {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (controller.updating && mounted) {
         if (refreshController.headerMode?.value == RefreshStatus.idle) {
           await refreshController.requestRefresh(
@@ -81,14 +82,13 @@ class _FollowsSplitPageState extends State<FollowsSplitPage>
           builder: (context) => StaggeredGridView.countBuilder(
             key: joinKeys(['follows', TileLayout.of(context).crossAxisCount]),
             padding: defaultListPadding,
-            physics: const BouncingScrollPhysics(),
             addAutomaticKeepAlives: false,
             crossAxisCount: TileLayout.of(context).crossAxisCount,
             itemCount: controller.items.length,
             itemBuilder: (context, index) =>
                 FollowTile(follow: controller.items[index]),
-            staggeredTileBuilder: (index) => StaggeredTile.count(
-                1, 1 * TileLayout.of(context).tileHeightFactor),
+            staggeredTileBuilder: (index) =>
+                StaggeredTile.count(1, TileLayout.of(context).tileHeightFactor),
           ),
           appBar: const DefaultAppBar(
             title: Text('Following'),

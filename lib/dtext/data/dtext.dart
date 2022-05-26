@@ -1,7 +1,7 @@
 import 'package:e1547/dtext/dtext.dart';
 import 'package:flutter/material.dart';
 
-final List<DTextParser> allParsers = [
+final List<DTextParser> allDtextParsers = [
   blockParser,
   tagParser,
   codeParser,
@@ -11,12 +11,12 @@ final List<DTextParser> allParsers = [
   headerParser,
   linkParser,
   localLinkParser,
-  ...linkWordParsers(),
+  ...linkWordParsers,
 ];
 
 InlineSpan parseDText(BuildContext context, String text, TextState state,
     {List<DTextParser>? parsers}) {
-  parsers ??= allParsers;
+  parsers ??= allDtextParsers;
 
   if (text.isEmpty) {
     return const TextSpan();

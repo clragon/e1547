@@ -15,7 +15,7 @@ class PostFullscreenGallery extends StatefulWidget {
   });
 
   @override
-  _PostFullscreenGalleryState createState() => _PostFullscreenGalleryState();
+  State<PostFullscreenGallery> createState() => _PostFullscreenGalleryState();
 }
 
 class _PostFullscreenGalleryState extends State<PostFullscreenGallery>
@@ -83,9 +83,9 @@ class _PostFullscreenGalleryState extends State<PostFullscreenGallery>
         ),
         child: widget.controller.itemList != null
             ? PostFullscreenFrame(
-                child: child!,
                 post: widget.controller.itemList![value],
                 controller: frameController,
+                child: child!,
               )
             : const SizedBox.shrink(),
       ),

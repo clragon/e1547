@@ -2,8 +2,6 @@ import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-export 'package:e1547/client/client.dart' show validateCall;
-
 class RefreshableControllerPage<T extends RefreshableController>
     extends StatelessWidget {
   final WidgetBuilder? builder;
@@ -182,7 +180,7 @@ class RefreshablePage extends StatefulWidget {
         floatingActionButton = null;
 
   @override
-  _RefreshablePageState createState() => _RefreshablePageState();
+  State<RefreshablePage> createState() => _RefreshablePageState();
 }
 
 class _RefreshablePageState extends State<RefreshablePage> {
@@ -202,10 +200,9 @@ class _RefreshablePageState extends State<RefreshablePage> {
     Widget body() {
       return SmartRefresher(
         controller: refreshController,
-        physics: const BouncingScrollPhysics(),
         onRefresh: widget.refresh,
-        child: widget.builder?.call(context),
         header: widget.refreshHeader ?? const RefreshablePageDefaultHeader(),
+        child: widget.builder?.call(context),
       );
     }
 

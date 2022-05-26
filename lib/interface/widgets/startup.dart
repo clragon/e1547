@@ -9,7 +9,7 @@ class StartupActions extends StatefulWidget {
   const StartupActions({required this.child, required this.actions});
 
   @override
-  _StartupActionsState createState() => _StartupActionsState();
+  State<StartupActions> createState() => _StartupActionsState();
 }
 
 class _StartupActionsState extends State<StartupActions> {

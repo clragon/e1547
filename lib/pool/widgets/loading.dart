@@ -10,7 +10,7 @@ class PoolLoadingPage extends StatefulWidget {
   const PoolLoadingPage(this.id);
 
   @override
-  _PoolLoadingPageState createState() => _PoolLoadingPageState();
+  State<PoolLoadingPage> createState() => _PoolLoadingPageState();
 }
 
 class _PoolLoadingPageState extends State<PoolLoadingPage> {

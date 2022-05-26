@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 
 class FollowsCombinedPage extends StatefulWidget {
   @override
-  _FollowsCombinedPageState createState() => _FollowsCombinedPageState();
+  State<FollowsCombinedPage> createState() => _FollowsCombinedPageState();
 }
 
 class _FollowsCombinedPageState extends State<FollowsCombinedPage>

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:e1547/app/app.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
@@ -81,19 +82,23 @@ class AboutPage extends StatelessWidget {
                       IconButton(
                         icon: const FaIcon(FontAwesomeIcons.github),
                         onPressed: () =>
-                            launch('https://github.com/' + appInfo.github!),
+                            launch('https://github.com/${appInfo.github!}'),
                       ),
                     if (appInfo.discord != null)
                       IconButton(
                         icon: const FaIcon(FontAwesomeIcons.discord),
                         onPressed: () => launch(
-                            'https://discord.com/invite/' + appInfo.discord!),
+                            'https://discord.com/invite/${appInfo.discord!}'),
                       ),
                     if (Platform.isAndroid) const PlaystoreButton(),
                     if (appInfo.website != null)
-                      IconButton(
-                        icon: const FaIcon(FontAwesomeIcons.globe),
-                        onPressed: () => launch('https://' + appInfo.website!),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                        child: IconButton(
+                          icon: const FaIcon(FontAwesomeIcons.globe),
+                          onPressed: () =>
+                              launch('https://${appInfo.website!}'),
+                        ),
                       ),
                   ],
                 ),
@@ -110,7 +115,7 @@ class NewVersionsButton extends StatefulWidget {
   const NewVersionsButton();
 
   @override
-  _NewVersionsButtonState createState() => _NewVersionsButtonState();
+  State<NewVersionsButton> createState() => _NewVersionsButtonState();
 }
 
 class _NewVersionsButtonState extends State<NewVersionsButton> {
@@ -163,8 +168,8 @@ class NewVersionsDialog extends StatelessWidget {
     Widget body;
     List<Widget> actions = [
       TextButton(
-        child: const Text('OK'),
         onPressed: Navigator.of(context).maybePop,
+        child: const Text('OK'),
       )
     ];
 
@@ -182,7 +187,6 @@ class NewVersionsDialog extends StatelessWidget {
       body = Text('You have the newest version (${appInfo.version})');
     } else {
       body = SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -239,7 +243,7 @@ class NewVersionsDialog extends StatelessWidget {
 }
 
 class PlaystoreButton extends StatefulWidget {
-  const PlaystoreButton({Key? key}) : super(key: key);
+  const PlaystoreButton();
 
   @override
   State<PlaystoreButton> createState() => _PlaystoreButtonState();
@@ -261,11 +265,49 @@ class _PlaystoreButtonState extends State<PlaystoreButton> {
             child: FaIcon(FontAwesomeIcons.googlePlay),
           ),
           onPressed: () => launch(
-            'https://play.google.com/store/apps/details?id=' +
-                appInfo.packageName,
+            'https://play.google.com/store/apps/details?id=${appInfo.packageName}',
           ),
         ),
       ),
+    );
+  }
+}
+
+class DrawerUpdateIcon extends StatefulWidget {
+  @override
+  State<DrawerUpdateIcon> createState() => _DrawerUpdateIconState();
+}
+
+class _DrawerUpdateIconState extends State<DrawerUpdateIcon> {
+  Future<List<AppVersion>?> newVersions = getNewVersions();
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<List<AppVersion>?>(
+      future: newVersions,
+      builder: (context, snapshot) {
+        if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+          return Stack(
+            children: [
+              const Icon(Icons.update),
+              Positioned(
+                bottom: 0,
+                left: 0,
+                child: Container(
+                  height: 10,
+                  width: 10,
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.red,
+                  ),
+                ),
+              ),
+            ],
+          );
+        } else {
+          return const Icon(Icons.info);
+        }
+      },
     );
   }
 }

@@ -51,8 +51,8 @@ class FrameController extends ChangeNotifier {
 }
 
 class FrameData extends InheritedNotifier<FrameController> {
-  const FrameData({required Widget child, required FrameController controller})
-      : super(child: child, notifier: controller);
+  const FrameData({required super.child, required FrameController controller})
+      : super(notifier: controller);
 }
 
 class PostFullscreenFrame extends StatefulWidget {
@@ -67,7 +67,7 @@ class PostFullscreenFrame extends StatefulWidget {
   });
 
   @override
-  _PostFullscreenFrameState createState() => _PostFullscreenFrameState();
+  State<PostFullscreenFrame> createState() => _PostFullscreenFrameState();
 }
 
 class _PostFullscreenFrameState extends State<PostFullscreenFrame> {
@@ -111,7 +111,7 @@ class _PostFullscreenFrameState extends State<PostFullscreenFrame> {
               behavior: HitTestBehavior.translucent,
               onTap: () {
                 controller.toggleFrame();
-                if ((widget.post.controller?.value.isPlaying ?? false) &&
+                if ((widget.post.getVideo(context)?.value.isPlaying ?? false) &&
                     controller.visible) {
                   controller.hideFrame(duration: const Duration(seconds: 2));
                 }
@@ -120,14 +120,18 @@ class _PostFullscreenFrameState extends State<PostFullscreenFrame> {
                 alignment: Alignment.center,
                 children: [
                   child!,
-                  if (widget.post.controller != null) ...[
+                  if (widget.post.getVideo(context) != null) ...[
                     Positioned(
                       bottom: 0,
                       right: 0,
                       left: 0,
-                      child: VideoBar(videoController: widget.post.controller!),
+                      child: VideoBar(
+                        videoController: widget.post.getVideo(context)!,
+                      ),
                     ),
-                    VideoButton(videoController: widget.post.controller!),
+                    VideoButton(
+                      videoController: widget.post.getVideo(context)!,
+                    ),
                   ]
                 ],
               ),
@@ -165,9 +169,9 @@ class FrameChild extends StatelessWidget {
 
     if (controller != null) {
       return AnimatedBuilder(
-        child: child,
         animation: controller,
         builder: (context, child) => body(),
+        child: child,
       );
     } else {
       return body();
@@ -179,7 +183,7 @@ class FrameAppBar extends StatelessWidget with AppBarBuilderWidget {
   @override
   final PreferredSizeWidget child;
 
-  const FrameAppBar({Key? key, required this.child}) : super(key: key);
+  const FrameAppBar({required this.child});
 
   @override
   Widget build(BuildContext context) {

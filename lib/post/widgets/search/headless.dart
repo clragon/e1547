@@ -18,7 +18,6 @@ class PostGrid extends StatelessWidget {
 Widget postGrid(BuildContext context, PostController controller) {
   return PagedStaggeredGridView(
     key: joinKeys(['posts', TileLayout.of(context).crossAxisCount]),
-    physics: const BouncingScrollPhysics(),
     showNewPageErrorIndicatorAsGridChild: false,
     showNewPageProgressIndicatorAsGridChild: false,
     showNoMoreItemsIndicatorAsGridChild: false,

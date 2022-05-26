@@ -42,7 +42,9 @@ class TagCard extends StatelessWidget {
                 height: 26,
                 decoration: BoxDecoration(
                   color: stripeColor ??
-                      (category != null ? getCategoryColor(category!) : null),
+                      (category != null
+                          ? TagCategory.byName(category!).color
+                          : null),
                   borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(4),
                     bottomLeft: Radius.circular(4),
@@ -50,13 +52,13 @@ class TagCard extends StatelessWidget {
                 ),
                 child: CrossFade(
                   showChild: editing,
+                  secondChild: Container(width: 5),
                   child: IconButton(
                     constraints: const BoxConstraints(),
                     padding: EdgeInsets.zero,
                     icon: const Icon(Icons.clear, size: 16),
                     onPressed: onRemove,
                   ),
-                  secondChild: Container(width: 5),
                 ),
               ),
             Flexible(

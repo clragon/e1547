@@ -38,8 +38,8 @@ class TagListActions extends StatelessWidget {
                 },
                 icon: CrossFade(
                   showChild: following,
-                  child: const Icon(Icons.turned_in),
                   secondChild: const Icon(Icons.turned_in_not),
+                  child: const Icon(Icons.turned_in),
                 ),
                 tooltip: following ? 'Unfollow tag' : 'Follow tag',
               ),
@@ -59,8 +59,8 @@ class TagListActions extends StatelessWidget {
                 },
                 icon: CrossFade(
                   showChild: denied,
-                  child: const Icon(Icons.check),
                   secondChild: const Icon(Icons.block),
+                  child: const Icon(Icons.check),
                 ),
                 tooltip: denied ? 'Unblock tag' : 'Block tag',
               ),
@@ -75,6 +75,7 @@ class TagListActions extends StatelessWidget {
 class RemoveTagAction extends StatelessWidget {
   final PostController controller;
   final String tag;
+
   const RemoveTagAction({required this.controller, required this.tag});
 
   @override
@@ -95,6 +96,7 @@ class RemoveTagAction extends StatelessWidget {
 class AddTagAction extends StatelessWidget {
   final PostController controller;
   final String tag;
+
   const AddTagAction({required this.controller, required this.tag});
 
   @override
@@ -114,6 +116,7 @@ class AddTagAction extends StatelessWidget {
 class SubtractTagAction extends StatelessWidget {
   final PostController controller;
   final String tag;
+
   const SubtractTagAction({required this.controller, required this.tag});
 
   @override

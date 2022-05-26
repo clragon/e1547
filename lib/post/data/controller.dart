@@ -140,6 +140,7 @@ class PostController extends DataController<Post>
   void updateItem(int index, Post item, {bool force = false}) {
     assertHasItems();
     _posts![_posts!.indexOf(itemList![index])] = item;
+    reapplyFilter();
     super.updateItem(index, item, force: force);
   }
 
@@ -155,7 +156,7 @@ class PostController extends DataController<Post>
 
   bool isDenied(Post post) {
     _assertItemOwnership(post);
-    return _deniedPosts!.values.any((element) => element.contains(post));
+    return _deniedPosts!.values.any((e) => e.contains(post));
   }
 
   bool isAllowed(Post post) {
@@ -182,9 +183,14 @@ class PostController extends DataController<Post>
     if (await client.addFavorite(post.id)) {
       // cooldown avoids interference with animation
       await Future.delayed(cooldown);
-      post.isFavorited = true;
-      post.favCount += 1;
-      updateItem(itemList!.indexOf(post), post, force: true);
+      updateItem(
+        itemList!.indexOf(post),
+        post.copyWith(
+          isFavorited: true,
+          favCount: post.favCount + 1,
+        ),
+        force: true,
+      );
       if (settings.upvoteFavs.value) {
         Future.delayed(const Duration(seconds: 1) - cooldown).then(
           (_) =>
@@ -193,9 +199,13 @@ class PostController extends DataController<Post>
       }
       return true;
     } else {
-      post.favCount -= 1;
-      post.isFavorited = false;
-      updateItem(itemList!.indexOf(post), post);
+      updateItem(
+        itemList!.indexOf(post),
+        post.copyWith(
+          isFavorited: false,
+          favCount: post.favCount - 1,
+        ),
+      );
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           duration: const Duration(seconds: 1),
@@ -209,14 +219,23 @@ class PostController extends DataController<Post>
   Future<bool> unfav(BuildContext context, Post post) async {
     _assertItemOwnership(post);
     if (await client.removeFavorite(post.id)) {
-      post.isFavorited = false;
-      post.favCount -= 1;
-      updateItem(itemList!.indexOf(post), post, force: true);
+      updateItem(
+        itemList!.indexOf(post),
+        post.copyWith(
+          isFavorited: false,
+          favCount: post.favCount - 1,
+        ),
+        force: true,
+      );
       return true;
     } else {
-      post.favCount += 1;
-      post.isFavorited = true;
-      updateItem(itemList!.indexOf(post), post);
+      updateItem(
+        itemList!.indexOf(post),
+        post.copyWith(
+          isFavorited: true,
+          favCount: post.favCount + 1,
+        ),
+      );
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           duration: const Duration(seconds: 1),
@@ -235,42 +254,67 @@ class PostController extends DataController<Post>
   }) async {
     _assertItemOwnership(post);
     if (await client.votePost(post.id, upvote, replace)) {
+      Post updated = post.copyWith();
       if (post.voteStatus == VoteStatus.unknown) {
         if (upvote) {
-          post.score.total += 1;
-          post.score.up += 1;
-          post.voteStatus = VoteStatus.upvoted;
+          updated = updated.copyWith(
+            score: post.score.copyWith(
+              total: post.score.total + 1,
+              up: post.score.up + 1,
+            ),
+            voteStatus: VoteStatus.upvoted,
+          );
         } else {
-          post.score.total -= 1;
-          post.score.down += 1;
-          post.voteStatus = VoteStatus.downvoted;
+          updated = updated.copyWith(
+            score: post.score.copyWith(
+              total: post.score.total - 1,
+              down: post.score.down + 1,
+            ),
+            voteStatus: VoteStatus.downvoted,
+          );
         }
       } else {
         if (upvote) {
           if (post.voteStatus == VoteStatus.upvoted) {
-            post.score.total -= 1;
-            post.score.down += 1;
-            post.voteStatus = VoteStatus.unknown;
+            updated = updated.copyWith(
+              score: post.score.copyWith(
+                total: post.score.total - 1,
+                down: post.score.down + 1,
+              ),
+              voteStatus: VoteStatus.unknown,
+            );
           } else {
-            post.score.total += 2;
-            post.score.up += 1;
-            post.score.down -= 1;
-            post.voteStatus = VoteStatus.upvoted;
+            updated = updated.copyWith(
+              score: post.score.copyWith(
+                total: post.score.total + 2,
+                up: post.score.up + 1,
+                down: post.score.down - 1,
+              ),
+              voteStatus: VoteStatus.upvoted,
+            );
           }
         } else {
           if (post.voteStatus == VoteStatus.upvoted) {
-            post.score.total -= 2;
-            post.score.up -= 1;
-            post.score.down *= 1;
-            post.voteStatus = VoteStatus.downvoted;
+            updated = updated.copyWith(
+              score: post.score.copyWith(
+                total: post.score.total - 2,
+                up: post.score.up - 1,
+                down: post.score.down + 1,
+              ),
+              voteStatus: VoteStatus.downvoted,
+            );
           } else {
-            post.score.total += 1;
-            post.score.up += 1;
-            post.voteStatus = VoteStatus.unknown;
+            updated = updated.copyWith(
+              score: post.score.copyWith(
+                total: post.score.total + 1,
+                up: post.score.up + 1,
+              ),
+              voteStatus: VoteStatus.unknown,
+            );
           }
         }
       }
-      updateItem(itemList!.indexOf(post), post, force: true);
+      updateItem(itemList!.indexOf(post), updated, force: true);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         duration: const Duration(seconds: 1),

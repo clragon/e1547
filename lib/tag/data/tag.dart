@@ -1,80 +1,22 @@
-class Tag {
-  Tag({
-    required this.id,
-    required this.name,
-    required this.postCount,
-    required this.relatedTags,
-    required this.relatedTagsUpdatedAt,
-    required this.category,
-    required this.isLocked,
-    required this.createdAt,
-    required this.updatedAt,
-  });
+import 'package:flutter/foundation.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-  final int id;
-  final String name;
-  final int postCount;
-  final String relatedTags;
-  final DateTime relatedTagsUpdatedAt;
-  final int category;
-  final bool isLocked;
-  final DateTime createdAt;
-  final DateTime updatedAt;
+part 'tag.freezed.dart';
+part 'tag.g.dart';
 
-  factory Tag.fromJson(Map<String, dynamic> json) => Tag(
-        id: json["id"],
-        name: json["name"],
-        postCount: json["post_count"],
-        relatedTags: json["related_tags"],
-        relatedTagsUpdatedAt: DateTime.parse(json["related_tags_updated_at"]),
-        category: json["category"],
-        isLocked: json["is_locked"],
-        createdAt: DateTime.parse(json["created_at"]),
-        updatedAt: DateTime.parse(json["updated_at"]),
-      );
+@freezed
+class Tag with _$Tag {
+  const factory Tag({
+    required int id,
+    required String name,
+    required int postCount,
+    required String relatedTags,
+    required DateTime relatedTagsUpdatedAt,
+    required int category,
+    required bool isLocked,
+    required DateTime createdAt,
+    required DateTime updatedAt,
+  }) = _Tag;
 
-  Map<String, dynamic> toJson() => {
-        "id": id,
-        "name": name,
-        "post_count": postCount,
-        "related_tags": relatedTags,
-        "related_tags_updated_at": relatedTagsUpdatedAt.toIso8601String(),
-        "category": category,
-        "is_locked": isLocked,
-        "created_at": createdAt.toIso8601String(),
-        "updated_at": updatedAt.toIso8601String(),
-      };
-}
-
-class AutocompleteTag {
-  AutocompleteTag({
-    required this.id,
-    required this.name,
-    required this.postCount,
-    required this.category,
-    required this.antecedentName,
-  });
-
-  final int id;
-  final String name;
-  final int postCount;
-  final int category;
-  final String? antecedentName;
-
-  factory AutocompleteTag.fromJson(Map<String, dynamic> json) =>
-      AutocompleteTag(
-        id: json["id"],
-        name: json["name"],
-        postCount: json["post_count"],
-        category: json["category"],
-        antecedentName: json["antecedent_name"],
-      );
-
-  Map<String, dynamic> toJson() => {
-        "id": id,
-        "name": name,
-        "post_count": postCount,
-        "category": category,
-        "antecedent_name": antecedentName,
-      };
+  factory Tag.fromJson(Map<String, dynamic> json) => _$TagFromJson(json);
 }

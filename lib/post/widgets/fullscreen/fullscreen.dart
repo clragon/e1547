@@ -24,10 +24,10 @@ class PostFullscreen extends StatelessWidget {
                     const BoxDecoration(color: Colors.transparent),
                 childSize: Size(
                     post.file.width.toDouble(), post.file.height.toDouble()),
-                child: PostImageWidget(post: post, size: ImageSize.file),
                 initialScale: PhotoViewComputedScale.contained,
                 minScale: PhotoViewComputedScale.contained,
                 maxScale: PhotoViewComputedScale.covered * 6,
+                child: PostImageWidget(post: post, size: ImageSize.file),
               ),
             );
           case PostType.video:
@@ -37,8 +37,8 @@ class PostFullscreen extends StatelessWidget {
                 child: PostVideoLoader(
                   post: post,
                   child: VideoGestures(
+                    videoController: post.getVideo(context)!,
                     child: PostVideoWidget(post: post),
-                    videoController: post.controller!,
                   ),
                 ),
               ),

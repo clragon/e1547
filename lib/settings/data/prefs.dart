@@ -103,8 +103,8 @@ class _SharedSetting<T> {
 /// }
 /// ```
 ///
-/// Since there is only ever one [SharedPreferences] and therefore [SharedPrefsSettings],
-/// You should create a final global instance of your Settings object and inject it with imports, where it is needed.
+/// There can only ever be one [SharedPreferences] and therefore [SharedPrefsSettings].
+/// You should therefore treat it as a quasi global variable in your state management.
 ///
 /// ```dart
 /// final Settings settings = Settings();

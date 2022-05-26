@@ -5,7 +5,6 @@ import 'package:e1547/dtext/dtext.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/ticket/ticket.dart';
-import 'package:e1547/wiki/wiki.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -62,7 +61,7 @@ class PostReportScreen extends StatefulWidget {
   const PostReportScreen({required this.post});
 
   @override
-  _PostReportScreenState createState() => _PostReportScreenState();
+  State<PostReportScreen> createState() => _PostReportScreenState();
 }
 
 class _PostReportScreenState extends State<PostReportScreen> {
@@ -90,7 +89,6 @@ class _PostReportScreenState extends State<PostReportScreen> {
         ),
         floatingActionButton: Builder(
           builder: (context) => FloatingActionButton(
-            child: const Icon(Icons.check),
             onPressed: isLoading
                 ? null
                 : () async {
@@ -106,7 +104,7 @@ class _PostReportScreenState extends State<PostReportScreen> {
                       if (await validateCall(
                         () => client.reportPost(
                           widget.post.id,
-                          reportIds[type!]!,
+                          type!.id,
                           reasonController.text.trim(),
                         ),
                         allowRedirect: true,
@@ -129,13 +127,13 @@ class _PostReportScreenState extends State<PostReportScreen> {
                       });
                     }
                   },
+            child: const Icon(Icons.check),
           ),
         ),
         body: LayoutBuilder(
           builder: (context, constraints) => ListView(
             controller: scrollController,
             padding: defaultFormScreenPadding,
-            physics: const BouncingScrollPhysics(),
             children: [
               PostReportImage(
                 post: widget.post,
@@ -146,13 +144,13 @@ class _PostReportScreenState extends State<PostReportScreen> {
                 title: const Text('Report'),
                 icon: IconButton(
                   onPressed: () =>
-                      wikiSheet(context: context, tag: 'e621:report_post'),
+                      tagSearchSheet(context: context, tag: 'e621:report_post'),
                   icon: const Icon(Icons.info_outline),
                 ),
               ),
               ReportFormDropdown<ReportType?>(
                 type: type,
-                types: reportTypes,
+                types: {for (final e in ReportType.values) e: e.title},
                 onChanged: (value) {
                   setState(() {
                     type = value;
@@ -178,7 +176,7 @@ class PostFlagScreen extends StatefulWidget {
   const PostFlagScreen({required this.post});
 
   @override
-  _PostFlagScreenState createState() => _PostFlagScreenState();
+  State<PostFlagScreen> createState() => _PostFlagScreenState();
 }
 
 class _PostFlagScreenState extends State<PostFlagScreen> {
@@ -206,7 +204,6 @@ class _PostFlagScreenState extends State<PostFlagScreen> {
         ),
         floatingActionButton: Builder(
           builder: (context) => FloatingActionButton(
-            child: const Icon(Icons.check),
             onPressed: isLoading
                 ? null
                 : () async {
@@ -222,7 +219,7 @@ class _PostFlagScreenState extends State<PostFlagScreen> {
                       if (await validateCall(
                         () => client.flagPost(
                           widget.post.id,
-                          flagName[type]!,
+                          type!.title,
                           parent: int.tryParse(parentController.text),
                         ),
                         allowRedirect: true,
@@ -245,13 +242,13 @@ class _PostFlagScreenState extends State<PostFlagScreen> {
                       });
                     }
                   },
+            child: const Icon(Icons.check),
           ),
         ),
         body: LayoutBuilder(
           builder: (context, constraints) => ListView(
             controller: scrollController,
             padding: defaultFormScreenPadding,
-            physics: const BouncingScrollPhysics(),
             children: [
               PostReportImage(
                 post: widget.post,
@@ -261,14 +258,14 @@ class _PostFlagScreenState extends State<PostFlagScreen> {
               ReportFormHeader(
                 title: const Text('Flag'),
                 icon: IconButton(
-                  onPressed: () => wikiSheet(
+                  onPressed: () => tagSearchSheet(
                       context: context, tag: 'e621:flag_for_deletion'),
                   icon: const Icon(Icons.info_outline),
                 ),
               ),
               ReportFormDropdown<FlagType?>(
                 type: type,
-                types: flagTypes,
+                types: {for (final e in FlagType.values) e: e.title},
                 onChanged: (value) {
                   setState(() {
                     type = value;
@@ -315,7 +312,7 @@ class _PostFlagScreenState extends State<PostFlagScreen> {
                         child: Card(
                           child: Padding(
                             padding: const EdgeInsets.all(16),
-                            child: DText(flagDescriptions[type]!),
+                            child: DText(type!.description),
                           ),
                         ),
                       )

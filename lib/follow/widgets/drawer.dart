@@ -7,7 +7,7 @@ class FollowMarkReadTile extends StatefulWidget {
   const FollowMarkReadTile();
 
   @override
-  _FollowMarkReadTileState createState() => _FollowMarkReadTileState();
+  State<FollowMarkReadTile> createState() => _FollowMarkReadTileState();
 }
 
 class _FollowMarkReadTileState extends State<FollowMarkReadTile>
@@ -49,7 +49,7 @@ class FollowSplitSwitchTile extends StatefulWidget {
   const FollowSplitSwitchTile();
 
   @override
-  _FollowSplitSwitchTileState createState() => _FollowSplitSwitchTileState();
+  State<FollowSplitSwitchTile> createState() => _FollowSplitSwitchTileState();
 }
 
 class _FollowSplitSwitchTileState extends State<FollowSplitSwitchTile> {

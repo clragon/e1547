@@ -94,7 +94,7 @@ class TagDisplay extends StatelessWidget {
 
         return Column(
           mainAxisSize: MainAxisSize.min,
-          children: categories.keys
+          children: TagCategory.names
               .where((category) =>
                   tags[category]!.isNotEmpty ||
                   (isEditing && category != 'invalid'))
@@ -130,9 +130,8 @@ Future<bool> onPostTagsEdit(
         if (tags.isEmpty) {
           target = 'general';
         } else if (tags.first.name == tag &&
-            tags.first.category != categories[category]) {
-          target = categories.keys
-              .firstWhere((k) => tags.first.category == categories[k]);
+            tags.first.category != TagCategory.byName(category).id) {
+          target = TagCategory.byId(tags.first.category).name;
         }
         if (target != null) {
           Map<String, List<String>> tags = Map.from(controller.value!.tags);

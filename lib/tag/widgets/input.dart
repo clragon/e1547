@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:collection/collection.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
@@ -8,8 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:intl/intl.dart';
-
-typedef SubmitString = FutureOr<void> Function(String result);
 
 class TagInput extends StatefulWidget {
   final String? labelText;
@@ -31,7 +30,7 @@ class TagInput extends StatefulWidget {
   });
 
   @override
-  _TagInputState createState() => _TagInputState();
+  State<TagInput> createState() => _TagInputState();
 }
 
 class _TagInputState extends State<TagInput> {
@@ -43,7 +42,7 @@ class _TagInputState extends State<TagInput> {
     controller = widget.controller ?? TextEditingController();
     controller.text = sortTags(controller.text);
     if (controller.text != '') {
-      controller.text = controller.text + ' ';
+      controller.text = '${controller.text} ';
     }
     controller.setFocusToEnd();
   }
@@ -69,7 +68,7 @@ class _TagInputState extends State<TagInput> {
 
   @override
   Widget build(BuildContext context) {
-    return TypeAheadField<AutocompleteTag>(
+    return TypeAheadField<TagSuggestion>(
       direction: AxisDirection.up,
       hideOnEmpty: true,
       hideOnError: true,
@@ -100,16 +99,15 @@ class _TagInputState extends State<TagInput> {
             break;
           }
         }
-        controller.text = tags.join(' ') + ' ';
+        controller.text = '${tags.join(' ')} ';
         controller.setFocusToEnd();
       },
       itemBuilder: (context, itemData) => Row(
         children: [
           Container(
-            color: getCategoryColor(categories.entries
-                .firstWhere((e) => e.value == itemData.category,
-                    orElse: () => const MapEntry('', 0))
-                .key),
+            color: TagCategory.values
+                .firstWhereOrNull((e) => e.id == itemData.category)
+                ?.color,
             height: 54,
             width: 5,
           ),
@@ -176,7 +174,7 @@ class AdvancedTagInput extends StatefulWidget {
   });
 
   @override
-  _AdvancedTagInputState createState() => _AdvancedTagInputState();
+  State<AdvancedTagInput> createState() => _AdvancedTagInputState();
 }
 
 class _AdvancedTagInputState extends State<AdvancedTagInput> {
@@ -208,13 +206,12 @@ class _AdvancedTagInputState extends State<AdvancedTagInput> {
   }
 
   Future<void> withTags(Future<Tagset> Function(Tagset tags) editor) async {
-    controller.text =
-        (await editor(Tagset.parse(controller.text))).toString() + ' ';
+    controller.text = '${await editor(Tagset.parse(controller.text))} ';
     controller.setFocusToEnd();
   }
 
   List<PopupMenuEntry<String>> popMenuFromMap(Map<String, String> strings) =>
-      strings.keys.map((e) => PopupMenuItem(child: Text(e), value: e)).toList();
+      strings.keys.map((e) => PopupMenuItem(value: e, child: Text(e))).toList();
 
   @override
   Widget build(BuildContext context) {

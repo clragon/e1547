@@ -127,4 +127,16 @@ final Map<AppTheme, ThemeData> appThemeMap = {
 class DesktopScrollBehaviour extends ScrollBehavior {
   @override
   Set<PointerDeviceKind> get dragDevices => PointerDeviceKind.values.toSet();
+
+  @override
+  Widget buildOverscrollIndicator(
+      BuildContext context, Widget child, ScrollableDetails details) {
+    if (getPlatform(context) == TargetPlatform.android) {
+      return StretchingOverscrollIndicator(
+        axisDirection: details.direction,
+        child: child,
+      );
+    }
+    return super.buildOverscrollIndicator(context, child, details);
+  }
 }

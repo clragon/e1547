@@ -1,18 +1,17 @@
+import 'package:e1547/app/app.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/dtext/dtext.dart';
-import 'package:e1547/interface/interface.dart';
-import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:username_generator/username_generator.dart';
 
-DTextParser linkParser = DTextParser(
+final DTextParser linkParser = DTextParser(
   regex: RegExp(
     linkWrap(
       r'(?<link>(http(s)?):\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*))',
       false,
     ),
   ),
-  tranformer: (context, match, state) => parseLink(
+  tranformer: (context, match, state) => parseDTextLink(
     context: context,
     name: match.namedGroup('name'),
     link: match.namedGroup('link')!,
@@ -20,11 +19,11 @@ DTextParser linkParser = DTextParser(
   ),
 );
 
-DTextParser localLinkParser = DTextParser(
+final DTextParser localLinkParser = DTextParser(
   regex: RegExp(
     linkWrap(r'(?<link>[-a-zA-Z0-9()@:%_\+.~#?&//=]*)'),
   ),
-  tranformer: (context, match, state) => parseLink(
+  tranformer: (context, match, state) => parseDTextLink(
     context: context,
     name: match.namedGroup('name'),
     link: match.namedGroup('link')!,
@@ -65,7 +64,7 @@ String linkToDisplay(String link) {
   return display;
 }
 
-InlineSpan parseLink({
+InlineSpan parseDTextLink({
   required BuildContext context,
   required String link,
   required String? name,
@@ -73,22 +72,23 @@ InlineSpan parseLink({
   bool insite = false,
 }) {
   String? display = name ?? linkToDisplay(link);
-  int? id = parseLinkId(link);
-  LinkWord? word = parseLinkToWord(link);
 
   VoidCallback? onTap = () => launch(link);
   if (insite) {
     onTap = () async => launch('https://${client.host}$link');
 
-    UsernameGenerator? usernameGenerator = UsernameGeneratorData.of(context);
     // forum topics need generated names
-    if (usernameGenerator != null && word == LinkWord.user) {
-      display = usernameGenerator.generate(id!);
+    UsernameGenerator? usernameGenerator = UsernameGeneratorData.of(context);
+    RegExp userRegex = RegExp(r'/user(s|/show)/(?<id>\d+)');
+    RegExpMatch? match = userRegex.firstMatch(link);
+    if (usernameGenerator != null && match != null) {
+      display = usernameGenerator.generate(int.parse(match.namedGroup('id')!));
     }
   }
 
-  if (word != null && id != null) {
-    onTap = getLinkWordTap(context, word, id);
+  VoidCallback? callback = parseLinkOnTap(context, link);
+  if (callback != null) {
+    onTap = callback;
   }
 
   return TextSpan(
@@ -104,43 +104,4 @@ InlineSpan parseLink({
       ),
     ],
   );
-}
-
-int? parseLinkId(String link) {
-  return int.tryParse(link.split('/').last.split('?').first);
-}
-
-LinkWord? parseLinkToWord(String link) {
-  String siteMatch = r'((e621|e926)\.net)?';
-
-  Map<String, LinkWord> links = {
-    r'/post(s|/show)/\d+': LinkWord.post,
-    r'/pool(s|/show)/\d+': LinkWord.pool,
-    r'/user(s|/show)/\d+': LinkWord.user,
-    if (settings.showBeta.value) ...{
-      r'/forum_topics/\d+': LinkWord.topic,
-      r'/forum_posts/\d+': LinkWord.forum,
-    }
-  };
-
-  for (final entry in links.entries) {
-    RegExpMatch? match =
-        RegExp(siteMatch + entry.key, caseSensitive: false).firstMatch(link);
-    if (match != null) {
-      return entry.value;
-    }
-  }
-
-  return null;
-}
-
-VoidCallback? getLinkAction(BuildContext context, String link) {
-  int? id = parseLinkId(link);
-  LinkWord? word = parseLinkToWord(link);
-
-  if (word != null && id != null) {
-    return getLinkWordTap(context, word, id);
-  }
-
-  return null;
 }

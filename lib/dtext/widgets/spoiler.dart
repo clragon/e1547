@@ -7,7 +7,7 @@ class SpoilerWrap extends StatefulWidget {
   const SpoilerWrap({required this.child});
 
   @override
-  _SpoilerWrapState createState() => _SpoilerWrapState();
+  State<SpoilerWrap> createState() => _SpoilerWrapState();
 }
 
 class _SpoilerWrapState extends State<SpoilerWrap> {

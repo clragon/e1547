@@ -47,7 +47,7 @@ class ReasonReportScreen extends StatefulWidget {
   });
 
   @override
-  _ReasonReportScreenState createState() => _ReasonReportScreenState();
+  State<ReasonReportScreen> createState() => _ReasonReportScreenState();
 }
 
 class _ReasonReportScreenState extends State<ReasonReportScreen> {
@@ -74,7 +74,6 @@ class _ReasonReportScreenState extends State<ReasonReportScreen> {
         ),
         floatingActionButton: Builder(
           builder: (context) => FloatingActionButton(
-            child: const Icon(Icons.check),
             onPressed: isLoading
                 ? null
                 : () async {
@@ -106,11 +105,11 @@ class _ReasonReportScreenState extends State<ReasonReportScreen> {
                       });
                     }
                   },
+            child: const Icon(Icons.check),
           ),
         ),
         body: LayoutBuilder(
           builder: (context, constraints) => ListView(
-            physics: const BouncingScrollPhysics(),
             controller: scrollController,
             padding: defaultFormScreenPadding,
             children: [

@@ -26,34 +26,47 @@ class CommentController extends CursorDataController<Comment>
     required bool replace,
   }) async {
     if (await client.voteComment(comment.id, upvote, replace)) {
+      Comment updated = comment.copyWith();
       if (comment.voteStatus == VoteStatus.unknown) {
         if (upvote) {
-          comment.score += 1;
-          comment.voteStatus = VoteStatus.upvoted;
+          updated = updated.copyWith(
+            score: updated.score + 1,
+            voteStatus: VoteStatus.upvoted,
+          );
         } else {
-          comment.score -= 1;
-          comment.voteStatus = VoteStatus.downvoted;
+          updated = updated.copyWith(
+            score: updated.score - 1,
+            voteStatus: VoteStatus.downvoted,
+          );
         }
       } else {
         if (upvote) {
           if (comment.voteStatus == VoteStatus.upvoted) {
-            comment.score -= 1;
-            comment.voteStatus = VoteStatus.unknown;
+            updated = updated.copyWith(
+              score: updated.score - 1,
+              voteStatus: VoteStatus.unknown,
+            );
           } else {
-            comment.score += 2;
-            comment.voteStatus = VoteStatus.upvoted;
+            updated = updated.copyWith(
+              score: updated.score + 2,
+              voteStatus: VoteStatus.upvoted,
+            );
           }
         } else {
           if (comment.voteStatus == VoteStatus.upvoted) {
-            comment.score -= 2;
-            comment.voteStatus = VoteStatus.downvoted;
+            updated = updated.copyWith(
+              score: updated.score - 2,
+              voteStatus: VoteStatus.downvoted,
+            );
           } else {
-            comment.score += 1;
-            comment.voteStatus = VoteStatus.unknown;
+            updated = updated.copyWith(
+              score: updated.score + 1,
+              voteStatus: VoteStatus.unknown,
+            );
           }
         }
       }
-      updateItem(itemList!.indexOf(comment), comment, force: true);
+      updateItem(itemList!.indexOf(comment), updated, force: true);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         duration: const Duration(seconds: 1),

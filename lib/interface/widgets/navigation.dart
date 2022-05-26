@@ -1,7 +1,3 @@
-import 'package:e1547/client/client.dart';
-import 'package:e1547/interface/interface.dart';
-import 'package:e1547/settings/settings.dart';
-import 'package:e1547/user/user.dart';
 import 'package:flutter/material.dart';
 
 double defaultDrawerEdge(double screenWidth) => screenWidth * 0.1;
@@ -18,7 +14,8 @@ class NavigationRouteDestination {
   });
 }
 
-class NavigationDrawerDestination extends NavigationRouteDestination {
+class NavigationDrawerDestination<T extends Widget>
+    extends NavigationRouteDestination {
   final String name;
   final bool Function(BuildContext context)? visible;
   final Widget? icon;
@@ -29,61 +26,44 @@ class NavigationDrawerDestination extends NavigationRouteDestination {
     this.icon,
     this.group,
     this.visible,
-    required String path,
-    required WidgetBuilder builder,
-    bool unique = false,
-  }) : super(
-          path: path,
-          builder: builder,
-          unique: unique,
-        );
+    required super.path,
+    required T Function(BuildContext context) builder,
+    super.unique,
+  }) : super(builder: builder);
 }
 
 class NavigationController {
   final List<NavigationRouteDestination> destinations;
   late final Map<String, WidgetBuilder> routes;
 
+  final Widget? drawerHeader;
+
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
   final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
 
-  late String drawerSelection;
+  late String _drawerSelection = '/';
 
-  NavigationController({required this.destinations}) {
-    drawerSelection =
-        destinations.singleWhere((element) => element.path == '/').path;
-    routes = _generateRoutes(destinations);
-  }
+  String get drawerSelection => _drawerSelection;
 
-  WidgetBuilder _getDestinationBuilder(
-      NavigationRouteDestination destintation) {
-    if (destintation.unique) {
-      return (context) {
-        drawerSelection = destintation.path;
-        return destintation.builder(context);
-      };
-    } else {
-      return destintation.builder;
+  void setDrawerSelection<T extends Widget>() {
+    List<NavigationDrawerDestination> targets = destinations
+        .whereType<NavigationDrawerDestination<T>>()
+        .where((e) => e.unique)
+        .toList();
+    if (targets.length == 1) {
+      _drawerSelection = targets.first.path;
     }
   }
 
-  Map<String, WidgetBuilder> _generateRoutes(
-      List<NavigationRouteDestination> destinations) {
-    return Map.fromEntries(
-      destinations.map(
-        (element) => MapEntry(
-          element.path,
-          _getDestinationBuilder(element),
-        ),
-      ),
-    );
+  NavigationController({required this.destinations, this.drawerHeader}) {
+    routes = {for (final e in destinations) e.path: e.builder};
   }
 }
 
 class NavigationData extends InheritedWidget {
   final NavigationController controller;
 
-  const NavigationData({required Widget child, required this.controller})
-      : super(child: child);
+  const NavigationData({required super.child, required this.controller});
 
   static NavigationController of(BuildContext context) {
     return context
@@ -91,15 +71,15 @@ class NavigationData extends InheritedWidget {
         .controller;
   }
 
+  static NavigationController? maybeOf(BuildContext context) {
+    return context
+        .dependOnInheritedWidgetOfExactType<NavigationData>()
+        ?.controller;
+  }
+
   @override
   bool updateShouldNotify(covariant NavigationData oldWidget) =>
       oldWidget.controller != controller;
-}
-
-enum DrawerGroup {
-  search,
-  collection,
-  settings,
 }
 
 class NavigationDrawer extends StatelessWidget {
@@ -118,7 +98,9 @@ class NavigationDrawer extends StatelessWidget {
     final NavigationController controller = NavigationData.of(context);
 
     List<Widget> children = [];
-    children.add(ProfileHeader());
+    if (controller.drawerHeader != null) {
+      children.add(controller.drawerHeader!);
+    }
 
     List<NavigationDrawerDestination> destinations =
         getDrawerDestinations(controller.destinations);
@@ -151,7 +133,6 @@ class NavigationDrawer extends StatelessWidget {
       child: PrimaryScrollController(
         controller: ScrollController(),
         child: ListView(
-          physics: const BouncingScrollPhysics(),
           children: children,
         ),
       ),
@@ -159,99 +140,12 @@ class NavigationDrawer extends StatelessWidget {
   }
 }
 
-class ProfileHeader extends StatelessWidget {
+mixin DrawerEntry<T extends StatefulWidget> on State<T> {
   @override
-  Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: client,
-      builder: (context, child) => DrawerHeader(
-        child: GestureDetector(
-          child: Row(
-            children: [
-              const SizedBox(
-                height: 72,
-                width: 72,
-                child: CurrentUserAvatar(),
-              ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: CrossFade.builder(
-                    showChild: client.credentials?.username != null,
-                    builder: (context) => Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            client.credentials!.username,
-                            style: Theme.of(context).textTheme.headline6,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
-                    ),
-                    secondChild: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: OutlinedButton(
-                        child: const Text('LOGIN'),
-                        onPressed: () =>
-                            Navigator.popAndPushNamed(context, '/login'),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          onTap: client.credentials != null
-              ? () => Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          UserLoadingPage(client.credentials!.username),
-                    ),
-                  )
-              : null,
-        ),
-      ),
-    );
-  }
-}
-
-class DrawerUpdateIcon extends StatefulWidget {
-  @override
-  _DrawerUpdateIconState createState() => _DrawerUpdateIconState();
-}
-
-class _DrawerUpdateIconState extends State<DrawerUpdateIcon> {
-  Future<List<AppVersion>?> newVersions = getNewVersions();
-
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder<List<AppVersion>?>(
-      future: newVersions,
-      builder: (context, snapshot) {
-        if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-          return Stack(
-            children: [
-              const Icon(Icons.update),
-              Positioned(
-                bottom: 0,
-                left: 0,
-                child: Container(
-                  height: 10,
-                  width: 10,
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.red,
-                  ),
-                ),
-              ),
-            ],
-          );
-        } else {
-          return const Icon(Icons.info);
-        }
-      },
-    );
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (ModalRoute.of(context)!.isFirst) {
+      NavigationData.maybeOf(context)?.setDrawerSelection<T>();
+    }
   }
 }

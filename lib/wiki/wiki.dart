@@ -1,6 +1,7 @@
 // data
 export 'data/wiki.dart';
 // widgets
-export 'widgets/dialog.dart';
-export 'widgets/sheet.dart';
+export 'widgets/loading.dart';
 export 'widgets/wiki.dart';
+export 'widgets/info.dart';
+export 'widgets/sheet.dart';

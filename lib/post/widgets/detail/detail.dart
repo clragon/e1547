@@ -3,6 +3,7 @@ import 'package:e1547/history/history.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
+import 'package:video_player/video_player.dart';
 
 import 'appbar.dart';
 
@@ -23,6 +24,7 @@ class _PostDetailState extends State<PostDetail>
       widget.controller != null ? PostEditingController(widget.post) : null;
   bool keepPlaying = false;
 
+  late VideoPlayerController? videoController;
   late NavigationController navigation;
   late NavigatorState navigator;
   late ModalRoute route;
@@ -33,7 +35,8 @@ class _PostDetailState extends State<PostDetail>
       };
 
   Future<void> onPageChange() async {
-    if (!(widget.controller!.itemList?.contains(widget.post) ?? false)) {
+    if (!(widget.controller!.itemList?.any((e) => e.id == widget.post.id) ??
+        false)) {
       if (route.isCurrent) {
         navigator.pop();
       } else if (route.isActive) {
@@ -45,7 +48,7 @@ class _PostDetailState extends State<PostDetail>
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance!.addPostFrameCallback(
+    WidgetsBinding.instance.addPostFrameCallback(
       (_) => historyController.addPost(widget.post),
     );
   }
@@ -57,6 +60,7 @@ class _PostDetailState extends State<PostDetail>
     route = ModalRoute.of(context)!;
     navigation = NavigationData.of(context);
     navigation.routeObserver.subscribe(this, route as PageRoute);
+    videoController = widget.post.getVideo(context);
   }
 
   @override
@@ -73,7 +77,7 @@ class _PostDetailState extends State<PostDetail>
   @override
   void dispose() {
     navigation.routeObserver.unsubscribe(this);
-    widget.post.controller?.pause();
+    videoController?.pause();
     editingController?.dispose();
     super.dispose();
   }
@@ -84,7 +88,7 @@ class _PostDetailState extends State<PostDetail>
     if (keepPlaying) {
       keepPlaying = false;
     } else {
-      widget.post.controller?.pause();
+      videoController?.pause();
     }
   }
 
@@ -95,9 +99,10 @@ class _PostDetailState extends State<PostDetail>
     if (body != null) {
       try {
         await client.updatePost(controller.post.id, body);
-        widget.post.tags = controller.value!.tags;
         widget.controller!.updateItem(
-            widget.controller!.itemList!.indexOf(widget.post), widget.post);
+          widget.controller!.itemList!.indexOf(widget.post),
+          widget.post.copyWith(tags: controller.value!.tags),
+        );
         await widget.controller!.resetPost(controller.post);
         controller.stopEditing();
       } on DioError {
@@ -189,7 +194,6 @@ class _PostDetailState extends State<PostDetail>
             removeTop: true,
             child: LayoutBuilder(
               builder: (context, constraints) => ListView(
-                physics: const BouncingScrollPhysics(),
                 padding: EdgeInsets.only(
                   top: MediaQuery.of(context).padding.top,
                   bottom: kBottomNavigationBarHeight + 24,

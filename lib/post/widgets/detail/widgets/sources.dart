@@ -1,9 +1,9 @@
+import 'package:e1547/app/app.dart';
 import 'package:e1547/dtext/dtext.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-
 
 class SourceDisplay extends StatelessWidget {
   final Post post;
@@ -52,7 +52,6 @@ class SourceDisplay extends StatelessWidget {
                                     title: '#${post.id} sources',
                                     content: editingController.value!.sources
                                         .join('\n'),
-                                    dtext: false,
                                     onSubmit: (context, text) {
                                       editingController.value =
                                           editingController.value!.copyWith(

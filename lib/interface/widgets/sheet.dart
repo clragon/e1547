@@ -5,8 +5,8 @@ import 'package:sliding_sheet/sliding_sheet.dart';
 class SheetActions extends InheritedNotifier {
   final SheetActionController controller;
 
-  const SheetActions({required Widget child, required this.controller})
-      : super(child: child, notifier: controller);
+  const SheetActions({required super.child, required this.controller})
+      : super(notifier: controller);
 
   static SheetActionController? of(BuildContext context) {
     return context
@@ -33,14 +33,14 @@ class SheetActionController extends ActionController {
 
   @override
   void setAction(ActionControllerCallback submit) {
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       super.setAction(submit);
     });
   }
 
   void show(BuildContext context, Widget child) {
     sheetController = Scaffold.of(context).showBottomSheet(
-      (context) => ActionBottomSheet(child: child, controller: this),
+      (context) => ActionBottomSheet(controller: this, child: child),
     );
     sheetController!.closed.then((_) => reset());
   }
@@ -109,7 +109,7 @@ class SheetFloatingActionButton extends StatefulWidget {
       this.confirmIcon});
 
   @override
-  _SheetFloatingActionButtonState createState() =>
+  State<SheetFloatingActionButton> createState() =>
       _SheetFloatingActionButtonState();
 }
 
@@ -127,9 +127,6 @@ class _SheetFloatingActionButtonState extends State<SheetFloatingActionButton> {
     return AnimatedBuilder(
       animation: controller,
       builder: (context, child) => FloatingActionButton(
-        child: controller.isShown
-            ? Icon(widget.confirmIcon ?? Icons.check)
-            : Icon(widget.actionIcon),
         onPressed: controller.isLoading
             ? null
             : controller.action ??
@@ -139,6 +136,9 @@ class _SheetFloatingActionButtonState extends State<SheetFloatingActionButton> {
                     widget.builder(context, controller),
                   );
                 },
+        child: controller.isShown
+            ? Icon(widget.confirmIcon ?? Icons.check)
+            : Icon(widget.actionIcon),
       ),
     );
   }
@@ -182,11 +182,10 @@ class DefaultSheetBody extends StatelessWidget {
   final Widget body;
 
   const DefaultSheetBody({
-    Key? key,
     this.title,
     this.actions,
     required this.body,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -204,8 +203,8 @@ class DefaultSheetBody extends StatelessWidget {
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8),
                       child: DefaultTextStyle(
-                        child: title!,
                         style: Theme.of(context).textTheme.headline6!,
+                        child: title!,
                       ),
                     ),
                   ),

@@ -23,7 +23,7 @@ class _FollowingPageState extends State<FollowingPage> {
                 ControlledTextWrapper(
                   submit: (value) async {
                     value = value.trim();
-                    Follow result = Follow.fromString(value);
+                    Follow result = Follow(tags: value);
                     if (value.isNotEmpty) {
                       followController.add(result);
                     }
@@ -50,7 +50,6 @@ class _FollowingPageState extends State<FollowingPage> {
               return ListView.builder(
                 padding: defaultActionListPadding
                     .add(LimitedWidthLayout.of(context)!.padding),
-                physics: const BouncingScrollPhysics(),
                 itemCount: followController.items.length,
                 itemBuilder: (context, index) => FollowListTile(
                   follow: followController.items[index],
@@ -76,10 +75,10 @@ class _FollowingPageState extends State<FollowingPage> {
                 builder: (context) => AnimatedBuilder(
                   animation: SheetActions.of(context)!,
                   builder: (context, child) => FloatingActionButton(
+                    onPressed: SheetActions.of(context)!.action ?? addTags,
                     child: Icon(SheetActions.of(context)!.isShown
                         ? Icons.check
                         : Icons.add),
-                    onPressed: SheetActions.of(context)!.action ?? addTags,
                   ),
                 ),
               ),
@@ -92,7 +91,7 @@ class _FollowingPageState extends State<FollowingPage> {
 }
 
 class FollowEditor extends StatefulWidget {
-  const FollowEditor({Key? key}) : super(key: key);
+  const FollowEditor();
 
   @override
   State<FollowEditor> createState() => _FollowEditorState();
@@ -107,15 +106,14 @@ class _FollowEditorState extends State<FollowEditor> {
     return AlertDialog(
       title: const Text('Following'),
       content: TextField(
-        scrollPhysics: const BouncingScrollPhysics(),
         controller: controller,
         keyboardType: TextInputType.multiline,
         maxLines: null,
       ),
       actions: [
         TextButton(
-          child: const Text('CANCEL'),
           onPressed: Navigator.of(context).maybePop,
+          child: const Text('CANCEL'),
         ),
         TextButton(
           child: const Text('OK'),

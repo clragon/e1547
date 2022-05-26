@@ -16,8 +16,8 @@ abstract class RawDataController<KeyType, ItemType>
   late final List<Listenable> _refreshListeners = getRefreshListeners();
 
   RawDataController({
-    required KeyType firstPageKey,
-  }) : super(firstPageKey: firstPageKey) {
+    required super.firstPageKey,
+  }) {
     super.addPageRequestListener(loadPage);
     _refreshListeners.forEach((element) => element.addListener(refresh));
   }
@@ -117,7 +117,6 @@ abstract class RawDataController<KeyType, ItemType>
         value = PagingState(
           nextPageKey: provideNextPageKey(page, items),
           itemList: items,
-          error: null,
         );
       } else {
         if (items.isEmpty) {
@@ -137,7 +136,7 @@ abstract class RawDataController<KeyType, ItemType>
 }
 
 abstract class DataController<T> extends RawDataController<int, T> {
-  DataController({int firstPageKey = 1}) : super(firstPageKey: firstPageKey);
+  DataController({super.firstPageKey = 1});
 
   @override
   @protected
