@@ -67,7 +67,7 @@ class PostController extends DataController<Post>
     }
 
     _deniedPosts ??= {};
-    List<Post> remaining = List.from(items);
+    List<Post> remaining = items.toSet().toList();
     for (Post item in items) {
       if (_allowedPosts.contains(item)) {
         continue;
