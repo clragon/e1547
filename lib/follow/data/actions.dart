@@ -41,7 +41,7 @@ extension Updating on Follow {
 
   Follow withTimestamp(String host) {
     Follow updated = this;
-    FollowStatus status = updated.resolve(host) ?? FollowStatus();
+    FollowStatus status = updated.resolve(host) ?? const FollowStatus();
     if (status.updated == null ||
         DateTime.now().difference(status.updated!) > const Duration(hours: 1)) {
       updated = updated.withStatus(
@@ -54,7 +54,7 @@ extension Updating on Follow {
 
   Follow withLatest(String host, Post? post, {bool foreground = false}) {
     Follow updated = this;
-    FollowStatus status = statuses[host] ?? FollowStatus();
+    FollowStatus status = statuses[host] ?? const FollowStatus();
 
     int? latest;
     int? unseen;
@@ -88,7 +88,7 @@ extension Updating on Follow {
 
   Follow withUnseen(String host, List<Post> posts) {
     Follow updated = this;
-    FollowStatus status = updated.resolve(host) ?? FollowStatus();
+    FollowStatus status = updated.resolve(host) ?? const FollowStatus();
     if (posts.isNotEmpty) {
       posts.sort((a, b) => b.id.compareTo(a.id));
       if (status.latest != null) {

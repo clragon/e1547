@@ -7,8 +7,8 @@ export 'data/tag.dart';
 export 'data/tag_suggestion.dart';
 // widgets
 export 'widgets/card.dart';
+export 'widgets/drawer.dart';
 export 'widgets/editor.dart';
 export 'widgets/gesture.dart';
 export 'widgets/input.dart';
 export 'widgets/plus.dart';
-export 'widgets/drawer.dart';

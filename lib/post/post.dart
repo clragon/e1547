@@ -1,9 +1,9 @@
 // data
 export 'data/actions.dart';
-export 'data/image.dart';
 export 'data/controller.dart';
-export 'data/post.dart';
 export 'data/editing.dart';
+export 'data/image.dart';
+export 'data/post.dart';
 // widgets
 export 'widgets/detail.dart';
 export 'widgets/fullscreen.dart';

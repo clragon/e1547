@@ -7,9 +7,9 @@ import 'package:e1547/topic/topic.dart';
 import 'package:e1547/user/user.dart';
 import 'package:e1547/wiki/wiki.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_custom_tabs/flutter_custom_tabs.dart' as tabs;
 import 'package:path_to_regexp/path_to_regexp.dart';
 import 'package:url_launcher/url_launcher.dart' as urls;
-import 'package:flutter_custom_tabs/flutter_custom_tabs.dart' as tabs;
 
 Future<void> launch(String uri) async {
   if ((Platform.isAndroid || Platform.isIOS) &&

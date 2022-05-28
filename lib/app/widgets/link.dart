@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:app_links/app_links.dart';
 import 'package:e1547/app/app.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
-import 'package:app_links/app_links.dart';
 
 typedef LinkCallback = FutureOr<void> Function(Uri? url);
 
