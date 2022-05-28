@@ -42,6 +42,7 @@ dependencies:
   wakelock: ^0.6.1+2
   collection: ^1.15.0
   url_launcher: ^6.1.0
+  media_scanner: ^2.1.0
   store_checker: ^1.0.0
   dio_http_cache: ^0.3.0
   path_to_regexp: ^0.4.0
@@ -54,8 +55,6 @@ dependencies:
 
   infinite_scroll_pagination:
     git: https://github.com/clragon/infinite_scroll_pagination.git
-  media_scanner:
-    git: https://github.com/clragon/media_scanner.git
   username_generator:
     git: https://github.com/clragon/username_generator.git
 
