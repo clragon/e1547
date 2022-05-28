@@ -12,5 +12,6 @@ linter:
     directives_ordering: true
 
 analyzer:
+  exclude: [build/**, lib/**.freezed.dart, lib/**.g.dart]
   errors:
     invalid_annotation_target: ignore
