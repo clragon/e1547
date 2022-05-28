@@ -19,10 +19,7 @@ extension Updating on Follow {
   Follow withStatus(String host, FollowStatus status) {
     Follow updated = this;
     FollowStatus? old = updated.statuses[host];
-    if (old?.latest != status.latest ||
-        old?.unseen != status.unseen ||
-        old?.thumbnail != status.thumbnail ||
-        old?.updated != status.updated) {
+    if (old != status) {
       updated = updated.copyWith(
         statuses: Map.from(statuses)..[host] = status,
       );
@@ -56,32 +53,35 @@ extension Updating on Follow {
     Follow updated = this;
     FollowStatus status = statuses[host] ?? const FollowStatus();
 
-    int? latest;
-    int? unseen;
-    String? thumbnail;
-
-    if (foreground && unseen != 0) {
-      unseen = 0;
+    if (foreground && status.unseen != 0) {
+      updated = updated.withStatus(
+        host,
+        status.copyWith(
+          unseen: 0,
+        ),
+      );
     }
     if (post != null) {
       if (status.latest == null || status.latest! < post.id) {
-        latest = post.id;
-        thumbnail = post.sample.url;
+        updated = updated.withStatus(
+          host,
+          status.copyWith(
+            latest: post.id,
+            thumbnail: post.sample.url,
+          ),
+        );
       } else {
         if (status.thumbnail != post.sample.url) {
-          thumbnail = post.sample.url;
+          updated = updated.withStatus(
+            host,
+            status.copyWith(
+              thumbnail: post.sample.url,
+            ),
+          );
         }
       }
     }
 
-    updated = updated.withStatus(
-      host,
-      status.copyWith(
-        latest: latest,
-        unseen: unseen,
-        thumbnail: thumbnail,
-      ),
-    );
     updated = updated.withTimestamp(host);
     return updated;
   }
