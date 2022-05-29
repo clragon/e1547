@@ -11,8 +11,8 @@ class FollowsSplitPage extends StatefulWidget {
 }
 
 class _FollowsSplitPageState extends State<FollowsSplitPage>
-    with ListenerCallbackMixin {
-  RefreshController refreshController = RefreshController();
+    with ListenerCallbackMixin, DrawerEntry {
+  final RefreshController refreshController = RefreshController();
   final FollowController controller = followController;
 
   @override
@@ -105,7 +105,6 @@ class _FollowsSplitPageState extends State<FollowsSplitPage>
           endDrawer: const ContextDrawer(
             title: Text('Follows'),
             children: [
-              FollowSplitSwitchTile(),
               FollowMarkReadTile(),
               Divider(),
               FollowSettingsTile(),

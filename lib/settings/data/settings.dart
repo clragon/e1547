@@ -107,8 +107,6 @@ class Settings with SharedPrefsSettings {
     values: GridQuilt.values,
   );
 
-  late final ValueNotifier<bool> splitFollows =
-      createSetting(key: 'splitFollows', initialValue: true);
   late final ValueNotifier<bool> showPostInfo =
       createSetting<bool>(key: 'showPostInfo', initialValue: false);
   late final ValueNotifier<bool> showBeta =

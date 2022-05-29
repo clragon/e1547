@@ -1,6 +1,5 @@
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/interface/interface.dart';
-import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
 
 class FollowMarkReadTile extends StatefulWidget {
@@ -27,10 +26,10 @@ class _FollowMarkReadTileState extends State<FollowMarkReadTile>
           leading: Icon(unseen != 0 ? Icons.mark_email_read : Icons.drafts),
           title: const Text('unseen posts'),
           subtitle: unseen != 0
-              ? TweenAnimationBuilder(
+              ? TweenAnimationBuilder<int>(
                   tween: IntTween(begin: 0, end: unseen),
                   duration: defaultAnimationDuration,
-                  builder: (context, int value, child) {
+                  builder: (context, value, child) {
                     return Text('mark $value posts as seen');
                   },
                 )
@@ -41,32 +40,6 @@ class _FollowMarkReadTileState extends State<FollowMarkReadTile>
           },
         );
       },
-    );
-  }
-}
-
-class FollowSplitSwitchTile extends StatefulWidget {
-  const FollowSplitSwitchTile();
-
-  @override
-  State<FollowSplitSwitchTile> createState() => _FollowSplitSwitchTileState();
-}
-
-class _FollowSplitSwitchTileState extends State<FollowSplitSwitchTile> {
-  @override
-  Widget build(BuildContext context) {
-    return ValueListenableBuilder<bool>(
-      valueListenable: settings.splitFollows,
-      builder: (context, value, child) => SwitchListTile(
-        secondary: Icon(value ? Icons.view_comfy : Icons.view_compact),
-        title: const Text('split tags'),
-        subtitle: value ? const Text('separated') : const Text('combined'),
-        value: value,
-        onChanged: (value) async {
-          await Navigator.of(context).maybePop();
-          settings.splitFollows.value = value;
-        },
-      ),
     );
   }
 }
