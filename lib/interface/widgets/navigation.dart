@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 
 double defaultDrawerEdge(double screenWidth) => screenWidth * 0.1;
@@ -32,7 +33,7 @@ class NavigationDrawerDestination<T extends Widget>
   }) : super(builder: builder);
 }
 
-class NavigationController {
+class NavigationController extends ChangeNotifier {
   final List<NavigationRouteDestination> destinations;
   late final Map<String, WidgetBuilder> routes;
 
@@ -46,12 +47,12 @@ class NavigationController {
   String get drawerSelection => _drawerSelection;
 
   void setDrawerSelection<T extends Widget>() {
-    List<NavigationDrawerDestination> targets = destinations
+    NavigationDrawerDestination? target = destinations
         .whereType<NavigationDrawerDestination<T>>()
-        .where((e) => e.unique)
-        .toList();
-    if (targets.length == 1) {
-      _drawerSelection = targets.first.path;
+        .firstWhereOrNull((e) => e.unique);
+    if (target != null && _drawerSelection != target.path) {
+      _drawerSelection = target.path;
+      WidgetsBinding.instance.addPostFrameCallback((_) => notifyListeners());
     }
   }
 
@@ -60,10 +61,11 @@ class NavigationController {
   }
 }
 
-class NavigationData extends InheritedWidget {
+class NavigationData extends InheritedNotifier<NavigationController> {
   final NavigationController controller;
 
-  const NavigationData({required super.child, required this.controller});
+  const NavigationData({required super.child, required this.controller})
+      : super(notifier: controller);
 
   static NavigationController of(BuildContext context) {
     return context
