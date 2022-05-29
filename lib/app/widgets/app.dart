@@ -19,35 +19,35 @@ class App extends StatefulWidget {
 
 class _AppState extends State<App> {
   @override
-  Widget build(context) => NavigationData(
-        controller: navigationController,
-        child: ValueListenableBuilder<AppTheme>(
-          valueListenable: settings.theme,
-          builder: (context, value, child) => ExcludeSemantics(
-            child: AnnotatedRegion<SystemUiOverlayStyle>(
-              value: appThemeMap[value]!.appBarTheme.systemOverlayStyle!,
-              child: MaterialApp(
-                title: appInfo.appName,
-                theme: appThemeMap[value],
-                routes: NavigationData.of(context).routes,
-                navigatorObservers: [NavigationData.of(context).routeObserver],
-                navigatorKey: NavigationData.of(context).navigatorKey,
-                scrollBehavior: DesktopScrollBehaviour(),
-                builder: (context, child) => StartupActions(
-                  actions: [
-                    initializeUserAvatar,
-                    (_) => denylistController.update(),
-                    (_) => followController.update(),
-                    (_) => initializeDateFormatting(),
-                  ],
-                  child: LockScreen(
-                    child: AppLinkHandler(
-                      child: VideoHandlerData(
-                        handler: VideoHandler(
-                          muteVideos: settings.muteVideos.value,
-                        ),
-                        child: child!,
+  Widget build(BuildContext context) {
+    return NavigationData(
+      controller: navigationController,
+      child: ValueListenableBuilder<AppTheme>(
+        valueListenable: settings.theme,
+        builder: (context, value, child) => ExcludeSemantics(
+          child: AnnotatedRegion<SystemUiOverlayStyle>(
+            value: appThemeMap[value]!.appBarTheme.systemOverlayStyle!,
+            child: MaterialApp(
+              title: appInfo.appName,
+              theme: appThemeMap[value],
+              routes: NavigationData.of(context).routes,
+              navigatorObservers: [NavigationData.of(context).routeObserver],
+              navigatorKey: NavigationData.of(context).navigatorKey,
+              scrollBehavior: DesktopScrollBehaviour(),
+              builder: (context, child) => StartupActions(
+                actions: [
+                  initializeUserAvatar,
+                  (_) => denylistController.update(),
+                  (_) => followController.update(),
+                  (_) => initializeDateFormatting(),
+                ],
+                child: LockScreen(
+                  child: AppLinkHandler(
+                    child: VideoHandlerData(
+                      handler: VideoHandler(
+                        muteVideos: settings.muteVideos.value,
                       ),
+                      child: child!,
                     ),
                   ),
                 ),
@@ -55,5 +55,7 @@ class _AppState extends State<App> {
             ),
           ),
         ),
-      );
+      ),
+    );
+  }
 }
