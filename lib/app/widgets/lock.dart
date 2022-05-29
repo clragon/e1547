@@ -17,15 +17,14 @@ class LockScreen extends StatefulWidget {
   State<LockScreen> createState() => _LockScreenState();
 }
 
-class _LockScreenState extends State<LockScreen>
-    with WidgetsBindingObserver, ListenerCallbackMixin {
+class _LockScreenState extends State<LockScreen> with ListenerCallbackMixin {
   @override
   Map<Listenable, VoidCallback> get listeners => {
         settings.appPin: () => setState(() {}),
         settings.biometricAuth: () => setState(() {}),
       };
 
-  Object instance = Object();
+  Object _instance = Object();
 
   bool get biometrics =>
       (settings.biometricAuth.value && (Platform.isAndroid || Platform.isIOS));
@@ -40,28 +39,7 @@ class _LockScreenState extends State<LockScreen>
 
   void unlock() {
     setState(() => locked = false);
-    instance = Object();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addObserver(this);
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.paused) {
-      lock();
-    }
-
-    super.didChangeAppLifecycleState(state);
-  }
-
-  @override
-  void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
-    super.dispose();
+    _instance = Object();
   }
 
   @override
@@ -80,6 +58,7 @@ class _LockScreenState extends State<LockScreen>
                   onSuccess: unlock,
                 )
             : null,
+        // TODO: didOpened
         didUnlocked: unlock,
         canCancel: false,
         screenLockConfig: ScreenLockConfig(
@@ -125,7 +104,7 @@ class _LockScreenState extends State<LockScreen>
             child: widget.child,
           ),
         ),
-        if (showLock) KeyedSubtree(key: ObjectKey(instance), child: lock)
+        if (showLock) KeyedSubtree(key: ObjectKey(_instance), child: lock)
       ],
     );
   }
