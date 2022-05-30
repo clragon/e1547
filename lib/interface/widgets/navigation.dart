@@ -42,9 +42,8 @@ class NavigationController extends ChangeNotifier {
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
   final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
 
-  late String _drawerSelection = '/';
-
-  String get drawerSelection => _drawerSelection;
+  String? _drawerSelection;
+  String? get drawerSelection => _drawerSelection;
 
   void setDrawerSelection<T extends Widget>() {
     NavigationDrawerDestination? target = destinations
