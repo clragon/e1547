@@ -121,9 +121,10 @@ class Settings with SharedPrefsSettings {
       createSetting<bool>(key: 'muteVideos', initialValue: true);
 
   /// init into page
-  late final ValueNotifier<SettingsInitPage> initPage =
-      createSetting<SettingsInitPage>(
-          key: 'initPage', initialValue: SettingsInitPage.home);
+  late final ValueNotifier<SettingsInitPage> initPage = createEnumSetting(
+      key: 'initPage',
+      initialValue: SettingsInitPage.home,
+      values: SettingsInitPage.values);
   late final ValueNotifier<String?> appPin =
       createSetting(key: 'appPin', initialValue: null);
   late final ValueNotifier<bool> biometricAuth =

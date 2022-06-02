@@ -19,7 +19,7 @@ const String _drawerSettingsGroup = 'settings';
 
 final List<NavigationRouteDestination> rootDestintations = [
   NavigationDrawerDestination(
-    path: '/',
+    path: '/home',
     name: 'Home',
     icon: const Icon(Icons.home),
     builder: (context) => const HomePage(),
