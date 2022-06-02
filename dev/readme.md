@@ -76,3 +76,11 @@
 // 传入valueListenable用来监听该值变化，然后更新视图
 ValueListenableBuilder<T> class
 ```
+
+# layout
+## drawer 
+![](assets/header.png)
+
+- 主体  lib/interface/widgets/navigation.dart `NavigationDrawer`
+  - lib/user/widgets/drawer.dart `UserDrawerHeader`
+  - lib/interface/widgets/navigation.dart:111   生成下面的路由列表

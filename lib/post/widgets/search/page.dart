@@ -4,6 +4,7 @@ import 'package:e1547/post/post.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 
+// 公用带搜索栏的page，用在home，hot，search页面
 class PostsPage extends StatefulWidget {
   final bool canSelect;
   final PostController controller;
