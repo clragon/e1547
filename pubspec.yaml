@@ -22,7 +22,7 @@ dependencies:
   pull_to_refresh: ^2.0.0
   flutter_typeahead: ^4.0.0
   flutter_custom_tabs: ^1.0.4
-  flutter_screen_lock: ^5.0.12
+  flutter_screen_lock: ^6.0.0
   cached_network_image: ^3.2.1
   font_awesome_flutter: ^10.1.0
   flutter_cache_manager: ^3.3.0

@@ -58,9 +58,13 @@ class _LockScreenState extends State<LockScreen> with ListenerCallbackMixin {
                   onSuccess: unlock,
                 )
             : null,
-        // TODO: didOpened
+        didOpened: biometrics
+            ? () => tryLocalAuth(
+                  context: context,
+                  onSuccess: unlock,
+                )
+            : null,
         didUnlocked: unlock,
-        canCancel: false,
         screenLockConfig: ScreenLockConfig(
           themeData: Theme.of(context).copyWith(
             textTheme: TextTheme(
@@ -191,7 +195,6 @@ Future<void> tryLocalAuth({
 
 Future<String?> registerPin(BuildContext context) async {
   Completer<String?> completer = Completer();
-  // TODO: canceling results in memory leak
   screenLock(
     title: const HeadingTitle(text: 'Enter new PIN'),
     confirmTitle: const HeadingTitle(text: 'Confirm new PIN'),
@@ -200,6 +203,10 @@ Future<String?> registerPin(BuildContext context) async {
     confirmation: true,
     didConfirmed: (result) {
       completer.complete(result);
+      Navigator.of(context).pop();
+    },
+    didCancelled: () {
+      completer.complete(null);
       Navigator.of(context).pop();
     },
     screenLockConfig: ScreenLockConfig(
