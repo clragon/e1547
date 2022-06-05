@@ -4,16 +4,16 @@ import 'package:e1547/tag/tag.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 
-class DrawerCounter extends StatelessWidget {
+class DrawerTagCounter extends StatelessWidget {
   final PostController controller;
 
-  const DrawerCounter({required this.controller});
+  const DrawerTagCounter({required this.controller});
 
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: controller,
-      builder: (context, child) => DrawerCounterBody(
+      builder: (context, child) => DrawerTagCounterBody(
         posts: controller.itemList,
         controller: controller,
       ),
@@ -21,10 +21,10 @@ class DrawerCounter extends StatelessWidget {
   }
 }
 
-class DrawerMultiCounter extends StatelessWidget {
+class DrawerMultiTagCounter extends StatelessWidget {
   final List<PostController> controllers;
 
-  const DrawerMultiCounter({required this.controllers});
+  const DrawerMultiTagCounter({required this.controllers});
 
   @override
   Widget build(BuildContext context) {
@@ -38,18 +38,18 @@ class DrawerMultiCounter extends StatelessWidget {
             posts.addAll(controller.itemList!);
           }
         }
-        return DrawerCounterBody(posts: posts);
+        return DrawerTagCounterBody(posts: posts);
       },
     );
   }
 }
 
-class DrawerCounterBody extends StatelessWidget {
+class DrawerTagCounterBody extends StatelessWidget {
   final int limit;
   final List<Post>? posts;
   final PostController? controller;
 
-  const DrawerCounterBody(
+  const DrawerTagCounterBody(
       {required this.posts, this.limit = 15, this.controller});
 
   @override

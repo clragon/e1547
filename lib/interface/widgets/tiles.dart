@@ -1,10 +1,12 @@
 import 'package:e1547/interface/interface.dart';
-import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
-const double defaultTileHeightFactor = 1.2;
+enum GridQuilt {
+  square,
+  vertical,
+  omni,
+}
 
 class TileLayoutData extends InheritedWidget {
   final double tileHeightFactor;
@@ -26,25 +28,23 @@ class TileLayoutData extends InheritedWidget {
 }
 
 class TileLayout extends StatelessWidget {
+  final Widget child;
   final double tileHeightFactor;
   final int? tileSize;
   final GridQuilt? stagger;
 
-  final Widget child;
-
   const TileLayout({
     required this.child,
-    this.tileHeightFactor = defaultTileHeightFactor,
+    this.tileHeightFactor = 1.2,
     this.tileSize,
     this.stagger,
   });
 
-  static TileLayoutData of(BuildContext context) {
-    final TileLayoutData? result =
-        context.dependOnInheritedWidgetOfExactType<TileLayoutData>();
-    assert(result != null, 'No TileLayoutData found in context');
-    return result!;
-  }
+  static TileLayoutData of(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<TileLayoutData>()!;
+
+  static TileLayoutData? maybeOf(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<TileLayoutData>();
 
   @override
   Widget build(BuildContext context) {
@@ -68,30 +68,4 @@ class TileLayout extends StatelessWidget {
       ),
     );
   }
-}
-
-IndexedStaggeredTileBuilder postStaggeredTileBuilder(
-    BuildContext context, Post Function(int index) postFromIndex) {
-  return (int index) {
-    TileLayoutData layoutData = TileLayout.of(context);
-    PostFile image = postFromIndex(index).sample;
-
-    Size size = Size(image.width.toDouble(), image.height.toDouble());
-    double widthRatio = size.width / size.height;
-    double heightRatio = size.height / size.width;
-
-    switch (layoutData.stagger) {
-      case GridQuilt.square:
-        return StaggeredTile.count(1, 1 * layoutData.tileHeightFactor);
-      case GridQuilt.vertical:
-        return StaggeredTile.count(1, heightRatio);
-      case GridQuilt.omni:
-        if (layoutData.crossAxisCount == 1) {
-          return StaggeredTile.count(1, heightRatio);
-        } else {
-          return StaggeredTile.count(notZero(widthRatio),
-              notZero(heightRatio) * layoutData.tileHeightFactor);
-        }
-    }
-  };
 }

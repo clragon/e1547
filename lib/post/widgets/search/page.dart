@@ -5,16 +5,16 @@ import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 
 class PostsPage extends StatefulWidget {
-  final bool canSelect;
   final PostController controller;
   final PreferredSizeWidget appBar;
   final List<Widget>? drawerActions;
+  final bool canSelect;
 
   PostsPage({
-    this.canSelect = true,
     required this.controller,
     required this.appBar,
     this.drawerActions,
+    this.canSelect = true,
   }) : super(key: ObjectKey(controller));
 
   @override
@@ -61,7 +61,7 @@ class _PostsPageState extends State<PostsPage> {
           ),
           if (widget.controller.denyMode != DenyListMode.unavailable)
             DrawerDenySwitch(controller: widget.controller),
-          DrawerCounter(controller: widget.controller),
+          DrawerTagCounter(controller: widget.controller),
         ],
       );
     }

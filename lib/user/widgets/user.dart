@@ -89,7 +89,7 @@ class _UserPageState extends State<UserPage>
               uploadPostController,
             ],
           ),
-          DrawerMultiCounter(
+          DrawerMultiTagCounter(
             controllers: [
               favoritePostController,
               uploadPostController,
