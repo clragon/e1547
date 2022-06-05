@@ -98,7 +98,7 @@ packages:
       name: build_resolvers
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.8"
+    version: "2.0.9"
   build_runner:
     dependency: "direct dev"
     description:
@@ -189,7 +189,7 @@ packages:
       name: convert
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.0.1"
+    version: "3.0.2"
   crypto:
     dependency: "direct main"
     description:
@@ -203,7 +203,7 @@ packages:
       name: csslib
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.17.1"
+    version: "0.17.2"
   dart_style:
     dependency: transitive
     description:
@@ -348,7 +348,7 @@ packages:
       name: flutter_native_splash
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.2.2"
+    version: "2.2.3"
   flutter_plugin_android_lifecycle:
     dependency: transitive
     description:
@@ -478,7 +478,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "3da855e1edece1cb17cdc282b22c428fecc70647"
+      resolved-ref: "670dfebcc104d0a1c376fc982d258ce2b24e2a1b"
       url: "https://github.com/clragon/infinite_scroll_pagination.git"
     source: git
     version: "4.0.0"
@@ -719,7 +719,7 @@ packages:
       name: path_provider_linux
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.1.6"
+    version: "2.1.7"
   path_provider_macos:
     dependency: transitive
     description:
@@ -740,7 +740,7 @@ packages:
       name: path_provider_windows
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.6"
+    version: "2.0.7"
   path_to_regexp:
     dependency: "direct main"
     description:
@@ -866,7 +866,7 @@ packages:
       name: rxdart
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.27.3"
+    version: "0.27.4"
   share:
     dependency: "direct main"
     description:
@@ -1188,7 +1188,7 @@ packages:
       name: video_player_android
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.3.4"
+    version: "2.3.5"
   video_player_avfoundation:
     dependency: transitive
     description:
@@ -1279,7 +1279,7 @@ packages:
       name: xml
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "6.0.1"
+    version: "6.1.0"
   yaml:
     dependency: transitive
     description:
