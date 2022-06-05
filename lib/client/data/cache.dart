@@ -85,16 +85,16 @@ class CacheKeyInterceptor extends Interceptor {
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     RequestOptions nextOptions = options.copyWith();
-    Map<String, dynamic>? keys = options.extra[primaryCacheKeyExtras];
+    Map<String, dynamic>? keys = nextOptions.extra[primaryCacheKeyExtras];
     if (keys == null) {
       return handler.next(nextOptions);
     }
     String? cacheKey =
-        getCacheKey(options.path, options: options, keyExtras: keys);
+        getCacheKey(nextOptions.path, options: nextOptions, keyExtras: keys);
     if (cacheKey == null) {
       return handler.next(nextOptions);
     }
-    options.extra[DIO_CACHE_KEY_PRIMARY_KEY] = cacheKey;
+    nextOptions.extra[DIO_CACHE_KEY_PRIMARY_KEY] = cacheKey;
     return handler.next(nextOptions);
   }
 }
