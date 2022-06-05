@@ -20,8 +20,8 @@ class LockScreen extends StatefulWidget {
 class _LockScreenState extends State<LockScreen> with ListenerCallbackMixin {
   @override
   Map<Listenable, VoidCallback> get listeners => {
-        settings.appPin: () => setState(() {}),
-        settings.biometricAuth: () => setState(() {}),
+        settings.appPin: lock,
+        settings.biometricAuth: lock,
       };
 
   Object _instance = Object();
@@ -34,12 +34,13 @@ class _LockScreenState extends State<LockScreen> with ListenerCallbackMixin {
   late bool locked = enabled;
 
   void lock() {
+    _instance = Object();
     setState(() => locked = true);
   }
 
   void unlock() {
-    setState(() => locked = false);
     _instance = Object();
+    setState(() => locked = false);
   }
 
   @override
