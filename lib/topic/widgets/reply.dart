@@ -44,17 +44,15 @@ class ReplyTile extends StatelessWidget {
               ),
             ),
           ),
-          Text(
-            () {
-              String time = ' • ${format(reply.createdAt)}';
-              if (reply.createdAt != reply.updatedAt) {
-                time += ' (edited)';
-              }
-              return time;
-            }(),
-            style: TextStyle(
-              color: dimTextColor(context),
-              fontSize: 12,
+          Flexible(
+            child: Text(
+              ' • ${format(reply.createdAt)}'
+              '${reply.createdAt != reply.updatedAt ? ' (edited)' : ''}',
+              style: TextStyle(
+                color: dimTextColor(context),
+                fontSize: 12,
+              ),
+              overflow: TextOverflow.ellipsis,
             ),
           ),
         ],

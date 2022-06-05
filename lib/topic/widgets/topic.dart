@@ -15,48 +15,49 @@ class TopicTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget title() {
-      return Row(
-        children: [
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Text(
-                topic.title,
-                style: Theme.of(context).textTheme.subtitle1,
-              ),
-            ),
-          ),
-          InkWell(
-            onTap: onCountPressed,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(
-                    topic.responseCount.toString(),
-                    style: Theme.of(context).textTheme.subtitle1,
-                  ),
-                  Text(
-                    format(topic.updatedAt),
-                    style: const TextStyle(
-                      fontSize: 12,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      );
-    }
-
     return Card(
       child: InkWell(
         onTap: onPressed,
         onLongPress: () => topicSheet(context, topic),
-        child: title(),
+        child: IntrinsicHeight(
+          child: Row(
+            children: [
+              Expanded(
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: Text(
+                    topic.title,
+                    style: Theme.of(context).textTheme.subtitle1,
+                  ),
+                ),
+              ),
+              InkWell(
+                onTap: onCountPressed,
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        topic.responseCount.toString(),
+                        style: Theme.of(context).textTheme.subtitle1,
+                      ),
+                      Text(
+                        format(topic.updatedAt),
+                        style: const TextStyle(
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
