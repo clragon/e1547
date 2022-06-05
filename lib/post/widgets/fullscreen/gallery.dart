@@ -4,26 +4,29 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class PostFullscreenGallery extends StatefulWidget {
-  final int initialPage;
   final PostController controller;
-  final Function(int index)? onPageChanged;
+  final int? initialPage;
+  final PageController? pageController;
+  final ValueChanged<int>? onPageChanged;
 
   const PostFullscreenGallery({
     required this.controller,
-    this.initialPage = 0,
+    this.initialPage,
+    this.pageController,
     this.onPageChanged,
-  });
+  }) : assert(initialPage == null || pageController == null);
 
   @override
   State<PostFullscreenGallery> createState() => _PostFullscreenGalleryState();
 }
 
 class _PostFullscreenGalleryState extends State<PostFullscreenGallery>
-    with RouteAware {
-  late PageController pageController =
-      PageController(initialPage: widget.initialPage);
-  late ValueNotifier<int> currentPage = ValueNotifier(widget.initialPage);
+    with RouteAware, ImagePreloader {
+  late PageController pageController = widget.pageController ??
+      PageController(initialPage: widget.initialPage ?? 0);
+  late ValueNotifier<int> currentPage = ValueNotifier(widget.initialPage ?? 0);
   late FrameController frameController;
+  late NavigationController navigation;
 
   Future<void> toggleFrame(bool shown) async {
     if (shown) {
@@ -42,8 +45,6 @@ class _PostFullscreenGalleryState extends State<PostFullscreenGallery>
         (hidden) async => frameController.toggleFrame(shown: !hidden));
   }
 
-  late NavigationController navigation;
-
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -57,7 +58,6 @@ class _PostFullscreenGalleryState extends State<PostFullscreenGallery>
     navigation.routeObserver.unsubscribe(this);
     SystemChrome.setSystemUIChangeCallback(null);
     frameController.dispose();
-    pageController.dispose();
     currentPage.dispose();
     super.dispose();
   }
@@ -93,8 +93,8 @@ class _PostFullscreenGalleryState extends State<PostFullscreenGallery>
         animation: widget.controller,
         builder: (context, child) => PageView.builder(
           itemCount: widget.controller.itemList?.length,
-          controller: pageController,
-          itemBuilder: (context, index) => PostFullscreen(
+          controller: widget.pageController ?? pageController,
+          itemBuilder: (context, index) => PostFullscreenBody(
             post: widget.controller.itemList![index],
             controller: widget.controller,
           ),
@@ -103,7 +103,6 @@ class _PostFullscreenGalleryState extends State<PostFullscreenGallery>
             widget.onPageChanged?.call(index);
             if (widget.controller.itemList != null) {
               preloadImages(
-                context: context,
                 index: index,
                 posts: widget.controller.itemList!,
                 size: ImageSize.file,

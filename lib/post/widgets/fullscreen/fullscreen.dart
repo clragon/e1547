@@ -6,7 +6,25 @@ class PostFullscreen extends StatelessWidget {
   final Post post;
   final PostController? controller;
 
-  const PostFullscreen({required this.post, this.controller});
+  const PostFullscreen({super.key, required this.post, this.controller});
+
+  @override
+  Widget build(BuildContext context) {
+    return PostFullscreenFrame(
+      post: post,
+      child: PostFullscreenBody(
+        post: post,
+        controller: controller,
+      ),
+    );
+  }
+}
+
+class PostFullscreenBody extends StatelessWidget {
+  final Post post;
+  final PostController? controller;
+
+  const PostFullscreenBody({required this.post, this.controller});
 
   @override
   Widget build(BuildContext context) {

@@ -10,9 +10,9 @@ import 'appbar.dart';
 class PostDetail extends StatefulWidget {
   final Post post;
   final PostController? controller;
-  final void Function(int index)? onPageChanged;
+  final VoidCallback? onTapImage;
 
-  const PostDetail({required this.post, this.controller, this.onPageChanged});
+  const PostDetail({required this.post, this.controller, this.onTapImage});
 
   @override
   State<StatefulWidget> createState() => _PostDetailState();
@@ -158,24 +158,6 @@ class _PostDetailState extends State<PostDetail>
     );
   }
 
-  Widget fullscreen() {
-    if (widget.controller == null || (editingController?.editing ?? false)) {
-      return PostFullscreenFrame(
-        post: widget.post,
-        child: PostFullscreen(
-          post: widget.post,
-          controller: widget.controller,
-        ),
-      );
-    } else {
-      return PostFullscreenGallery(
-        controller: widget.controller!,
-        initialPage: widget.controller!.itemList!.indexOf(widget.post),
-        onPageChanged: widget.onPageChanged,
-      );
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -215,11 +197,19 @@ class _PostDetailState extends State<PostDetail>
                           controller: widget.controller,
                           onTap: () {
                             keepPlaying = true;
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => fullscreen(),
-                              ),
-                            );
+                            if (!(editingController?.editing ?? false) &&
+                                widget.onTapImage != null) {
+                              widget.onTapImage!();
+                            } else {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => PostFullscreen(
+                                    post: widget.post,
+                                    controller: widget.controller,
+                                  ),
+                                ),
+                              );
+                            }
                           },
                         ),
                       ),

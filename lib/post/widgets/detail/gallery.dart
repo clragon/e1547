@@ -7,19 +7,26 @@ import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
 class PostDetailGallery extends StatefulWidget {
   final PostController controller;
-  final int initialPage;
+  final int? initialPage;
+  final PageController? pageController;
+  final ValueChanged<int>? onPageChanged;
 
-  const PostDetailGallery({required this.controller, this.initialPage = 0});
+  const PostDetailGallery({
+    required this.controller,
+    this.initialPage,
+    this.pageController,
+    this.onPageChanged,
+  }) : assert(initialPage == null || pageController == null);
 
   @override
   State<PostDetailGallery> createState() => _PostDetailGalleryState();
 }
 
 class _PostDetailGalleryState extends State<PostDetailGallery>
-    with ListenerCallbackMixin {
+    with ListenerCallbackMixin, ImagePreloader {
   bool hasRequestedNextPage = false;
-  late PageController pageController =
-      PageController(initialPage: widget.initialPage);
+  late PageController pageController = widget.pageController ??
+      PageController(initialPage: widget.initialPage ?? 0);
 
   @override
   Map<Listenable, VoidCallback> get listeners => {
@@ -30,12 +37,6 @@ class _PostDetailGalleryState extends State<PostDetailGallery>
     if (widget.controller.value.status == PagingStatus.ongoing) {
       hasRequestedNextPage = false;
     }
-  }
-
-  @override
-  void dispose() {
-    pageController.dispose();
-    super.dispose();
   }
 
   void loadNextPage(int index) {
@@ -67,23 +68,24 @@ class _PostDetailGalleryState extends State<PostDetailGallery>
             child: PostDetail(
               post: widget.controller.itemList![index],
               controller: widget.controller,
-              onPageChanged: (index) => ModalRoute.of(context)!.isCurrent
-                  ? pageController.animateToPage(index,
-                      duration: defaultAnimationDuration,
-                      curve: Curves.easeInOut)
-                  : pageController.jumpToPage(index),
+              onTapImage: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => PostFullscreenGallery(
+                    controller: widget.controller,
+                    initialPage: index,
+                    onPageChanged: pageController.jumpToPage,
+                  ),
+                ),
+              ),
             ),
           );
         },
         itemCount: widget.controller.itemList?.length ?? 0,
-        onPageChanged: (index) {
-          preloadImages(
-            context: context,
-            index: index,
-            posts: widget.controller.itemList!,
-            size: ImageSize.sample,
-          );
-        },
+        onPageChanged: (index) => preloadImages(
+          index: index,
+          posts: widget.controller.itemList!,
+          size: ImageSize.sample,
+        ),
       ),
     );
   }
