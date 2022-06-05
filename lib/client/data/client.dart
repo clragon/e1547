@@ -52,8 +52,8 @@ class Client extends ChangeNotifier {
       ),
     );
     currentUser(force: true);
-    dio.interceptors.add(CacheKeyInterceptor());
     cacheManager = DioCacheManager(CacheConfig(baseUrl: host));
+    dio.interceptors.add(CacheKeyInterceptor(cacheManager));
     dio.interceptors.add(cacheManager.interceptor);
     notifyListeners();
     if (credentials != null && !await tryLogin(credentials)) {
@@ -194,9 +194,8 @@ class Client extends ChangeNotifier {
       return false;
     }
 
-    await clearCacheKey(
+    await cacheManager.deleteByExtras(
       'posts/$postId.json',
-      cacheManager,
       options: dio.options,
     );
 
@@ -212,9 +211,8 @@ class Client extends ChangeNotifier {
       return false;
     }
 
-    await clearCacheKey(
+    await cacheManager.deleteByExtras(
       'posts/$postId.json',
-      cacheManager,
       options: dio.options,
     );
 
@@ -228,9 +226,8 @@ class Client extends ChangeNotifier {
       return false;
     }
 
-    await clearCacheKey(
+    await cacheManager.deleteByExtras(
       'posts/$postId.json',
-      cacheManager,
       options: dio.options,
     );
 
@@ -331,9 +328,8 @@ class Client extends ChangeNotifier {
       return;
     }
 
-    await clearCacheKey(
+    await cacheManager.deleteByExtras(
       'posts/$postId.json',
-      cacheManager,
       options: dio.options,
     );
 
@@ -613,9 +609,8 @@ class Client extends ChangeNotifier {
       return;
     }
 
-    await clearCacheKey(
+    await cacheManager.deleteByExtras(
       'comments.json',
-      cacheManager,
       keyExtras: {'search[post_id]': postId},
       options: dio.options,
     );
@@ -625,11 +620,10 @@ class Client extends ChangeNotifier {
       'comment[post_id]': postId,
       'commit': 'Submit',
     };
-    Future request;
+    Future<Response> request;
     if (comment != null) {
-      await clearCacheKey(
+      await cacheManager.deleteByExtras(
         'comments.json/${comment.id}.json',
-        cacheManager,
         options: dio.options,
       );
 

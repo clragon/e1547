@@ -38,29 +38,30 @@ String? getCacheKey(
   return primaryKey?.toString();
 }
 
-Future<void> clearCacheKey(
-  String path,
-  DioCacheManager cacheManager, {
-  OptionsMixin? options,
-  String requestMethod = 'get',
-  Map<String, dynamic>? keyExtras,
-}) async {
-  String? cacheKey = getCacheKey(
-    path,
-    options: options,
-    keyExtras: keyExtras,
-  );
-
-  if (cacheKey != null) {
-    await cacheManager.delete(
-      cacheKey,
-      requestMethod: requestMethod,
-    );
-  } else {
-    await cacheManager.deleteByPrimaryKey(
+extension Extras on DioCacheManager {
+  Future<void> deleteByExtras(
+    String path, {
+    OptionsMixin? options,
+    String? requestMethod,
+    Map<String, dynamic>? keyExtras,
+  }) async {
+    String? cacheKey = getCacheKey(
       path,
-      requestMethod: requestMethod,
+      options: options,
+      keyExtras: keyExtras,
     );
+
+    if (cacheKey != null) {
+      await deleteByPrimaryKey(
+        cacheKey,
+        requestMethod: requestMethod,
+      );
+    } else {
+      await deleteByPrimaryKeyAndSubKeyWithUri(
+        Uri.parse(path),
+        requestMethod: requestMethod,
+      );
+    }
   }
 }
 
@@ -82,6 +83,10 @@ Options? buildKeyCacheOptions({
 }
 
 class CacheKeyInterceptor extends Interceptor {
+  final DioCacheManager cacheManager;
+
+  CacheKeyInterceptor(this.cacheManager);
+
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     RequestOptions nextOptions = options.copyWith();
@@ -93,6 +98,14 @@ class CacheKeyInterceptor extends Interceptor {
         getCacheKey(nextOptions.path, options: nextOptions, keyExtras: keys);
     if (cacheKey == null) {
       return handler.next(nextOptions);
+    }
+    if (nextOptions.extra[DIO_CACHE_KEY_FORCE_REFRESH] == true) {
+      cacheManager.deleteByExtras(
+        options.path,
+        keyExtras: keys,
+        options: options,
+        requestMethod: options.method,
+      );
     }
     nextOptions.extra[DIO_CACHE_KEY_PRIMARY_KEY] = cacheKey;
     return handler.next(nextOptions);
