@@ -28,7 +28,7 @@ String? getCacheKey(
       host = options?.baseUrl ?? '';
     }
     primaryKey = Uri.parse(host);
-    primaryKey.replace(
+    primaryKey = primaryKey.replace(
       queryParameters: keyExtras.map(
         (key, value) => MapEntry(key, value.toString()),
       ),
@@ -45,6 +45,10 @@ extension Extras on DioCacheManager {
     String? requestMethod,
     Map<String, dynamic>? keyExtras,
   }) async {
+    if (options is RequestOptions) {
+      requestMethod ??= options.method;
+    }
+
     String? cacheKey = getCacheKey(
       path,
       options: options,
@@ -52,13 +56,13 @@ extension Extras on DioCacheManager {
     );
 
     if (cacheKey != null) {
-      await deleteByPrimaryKey(
+      await delete(
         cacheKey,
         requestMethod: requestMethod,
       );
     } else {
-      await deleteByPrimaryKeyAndSubKeyWithUri(
-        Uri.parse(path),
+      await deleteByPrimaryKeyAndSubKey(
+        path,
         requestMethod: requestMethod,
       );
     }
@@ -73,8 +77,9 @@ Options? buildKeyCacheOptions({
   bool? forceRefresh,
 }) {
   return buildConfigurableCacheOptions(
-    options: options?.copyWith(
-      extra: Map.of(options.extra ?? {})..addAll({primaryCacheKeyExtras: keys}),
+    options: (options ?? Options()).copyWith(
+      extra: Map.of(options?.extra ?? {})
+        ..addAll({primaryCacheKeyExtras: keys}),
     ),
     maxAge: maxAge ?? defaultMaxAge,
     maxStale: maxStale ?? defaultMaxStale,
@@ -104,7 +109,6 @@ class CacheKeyInterceptor extends Interceptor {
         options.path,
         keyExtras: keys,
         options: options,
-        requestMethod: options.method,
       );
     }
     nextOptions.extra[DIO_CACHE_KEY_PRIMARY_KEY] = cacheKey;
