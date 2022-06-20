@@ -21,7 +21,7 @@ class _AdvancedSettingsPageState extends State<AdvancedSettingsPage> {
         ),
         body: ListView(
           padding: defaultActionListPadding
-              .add(LimitedWidthLayout.of(context)!.padding),
+              .add(LimitedWidthLayout.of(context).padding),
           children: [
             const SettingsHeader(title: 'Server'),
             ValueListenableBuilder<bool>(

@@ -26,7 +26,7 @@ class _SettingsPageState extends State<SettingsPage> {
         ),
         body: ListView(
           padding: defaultActionListPadding
-              .add(LimitedWidthLayout.of(context)!.padding),
+              .add(LimitedWidthLayout.of(context).padding),
           children: [
             const SettingsHeader(title: 'Server'),
             GestureDetector(

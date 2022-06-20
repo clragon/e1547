@@ -212,7 +212,7 @@ class UserInfo extends StatelessWidget {
 
     return ListView(
       padding:
-          defaultActionListPadding.add(LimitedWidthLayout.of(context)!.padding),
+          defaultActionListPadding.add(LimitedWidthLayout.of(context).padding),
       children: [
         info(
           Icons.tag,

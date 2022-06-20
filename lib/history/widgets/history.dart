@@ -88,7 +88,7 @@ class _HistoryPageState extends State<HistoryPage> {
               body: isNotEmpty
                   ? GroupedListView<HistoryEntry, DateTime>(
                       padding: defaultActionListPadding
-                          .add(LimitedWidthLayout.of(context)!.padding),
+                          .add(LimitedWidthLayout.of(context).padding),
                       elements: entries,
                       order: GroupedListOrder.DESC,
                       controller: PrimaryScrollController.of(context),

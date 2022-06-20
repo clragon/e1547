@@ -60,7 +60,7 @@ class _DenyListPageState extends State<DenyListPage> {
           ),
           builder: (context) => ListView.builder(
             padding: defaultActionListPadding
-                .add(LimitedWidthLayout.of(context)!.padding),
+                .add(LimitedWidthLayout.of(context).padding),
             itemCount: denylistController.items.length,
             itemBuilder: (context, index) => DenylistTile(
               tag: denylistController.items[index],

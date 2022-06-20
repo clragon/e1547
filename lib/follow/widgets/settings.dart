@@ -49,7 +49,7 @@ class _FollowingPageState extends State<FollowingPage> {
 
               return ListView.builder(
                 padding: defaultActionListPadding
-                    .add(LimitedWidthLayout.of(context)!.padding),
+                    .add(LimitedWidthLayout.of(context).padding),
                 itemCount: followController.items.length,
                 itemBuilder: (context, index) => FollowListTile(
                   follow: followController.items[index],
