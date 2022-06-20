@@ -43,8 +43,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   return SwitchListTile(
                     title: const Text('Host'),
                     subtitle: Text(settings.host.value),
-                    secondary:
-                        Icon(useCustomHost ? Icons.warning : Icons.security),
+                    secondary: const Icon(Icons.storage),
                     value: useCustomHost,
                     onChanged: (value) async {
                       if (settings.customHost.value == null) {
