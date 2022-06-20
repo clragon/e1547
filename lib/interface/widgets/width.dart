@@ -44,9 +44,11 @@ class LimitedWidthLayout extends StatefulWidget {
   @override
   State<LimitedWidthLayout> createState() => _LimitedWidthLayoutState();
 
-  static LimitedWidthLayoutData? of(BuildContext context) {
-    return context.dependOnInheritedWidgetOfExactType<LimitedWidthLayoutData>();
-  }
+  static LimitedWidthLayoutData of(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<LimitedWidthLayoutData>()!;
+
+  static LimitedWidthLayoutData? maybeOf(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<LimitedWidthLayoutData>();
 }
 
 class _LimitedWidthLayoutState extends State<LimitedWidthLayout> {
@@ -77,7 +79,7 @@ class LimitedWidthChild extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.symmetric(
-        horizontal: LimitedWidthLayout.of(context)!.space,
+        horizontal: LimitedWidthLayout.of(context).space,
       ),
       child: child,
     );

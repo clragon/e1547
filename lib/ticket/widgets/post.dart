@@ -130,39 +130,43 @@ class _PostReportScreenState extends State<PostReportScreen> {
             child: const Icon(Icons.check),
           ),
         ),
-        body: LayoutBuilder(
-          builder: (context, constraints) => ListView(
-            controller: scrollController,
-            padding: defaultFormScreenPadding,
-            children: [
-              PostReportImage(
-                post: widget.post,
-                height: constraints.maxHeight,
-                isLoading: isLoading,
-              ),
-              ReportFormHeader(
-                title: const Text('Report'),
-                icon: IconButton(
-                  onPressed: () =>
-                      tagSearchSheet(context: context, tag: 'e621:report_post'),
-                  icon: const Icon(Icons.info_outline),
+        body: LimitedWidthLayout(
+          child: LayoutBuilder(
+            builder: (context, constraints) => ListView(
+              controller: scrollController,
+              padding: LimitedWidthLayout.of(context)
+                  .padding
+                  .add(defaultFormScreenPadding),
+              children: [
+                PostReportImage(
+                  post: widget.post,
+                  height: constraints.maxHeight,
+                  isLoading: isLoading,
                 ),
-              ),
-              ReportFormDropdown<ReportType?>(
-                type: type,
-                types: {for (final e in ReportType.values) e: e.title},
-                onChanged: (value) {
-                  setState(() {
-                    type = value;
-                  });
-                },
-                isLoading: isLoading,
-              ),
-              ReportFormReason(
-                controller: reasonController,
-                isLoading: isLoading,
-              ),
-            ],
+                ReportFormHeader(
+                  title: const Text('Report'),
+                  icon: IconButton(
+                    onPressed: () => tagSearchSheet(
+                        context: context, tag: 'e621:report_post'),
+                    icon: const Icon(Icons.info_outline),
+                  ),
+                ),
+                ReportFormDropdown<ReportType?>(
+                  type: type,
+                  types: {for (final e in ReportType.values) e: e.title},
+                  onChanged: (value) {
+                    setState(() {
+                      type = value;
+                    });
+                  },
+                  isLoading: isLoading,
+                ),
+                ReportFormReason(
+                  controller: reasonController,
+                  isLoading: isLoading,
+                ),
+              ],
+            ),
           ),
         ),
       ),

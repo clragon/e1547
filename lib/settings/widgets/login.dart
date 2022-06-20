@@ -201,55 +201,60 @@ class _LoginPageState extends State<LoginPage> {
         elevation: 0,
       ),
       body: Form(
-        child: LayoutBuilder(
-          builder: (context, constraints) => ListView(
-            padding: const EdgeInsets.all(16),
-            children: [
-              ConstrainedBox(
-                constraints: BoxConstraints(
-                  maxHeight: constraints.maxHeight * 0.4,
-                ),
-                child: const Center(
-                  child: AppIcon(
-                    radius: 64,
+        child: LimitedWidthLayout(
+          child: LayoutBuilder(
+            builder: (context, constraints) => ListView(
+              padding: LimitedWidthLayout.of(context)
+                  .padding
+                  .add(const EdgeInsets.all(16)),
+              children: [
+                ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxHeight: constraints.maxHeight * 0.4,
+                  ),
+                  child: const Center(
+                    child: AppIcon(
+                      radius: 64,
+                    ),
                   ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 32, right: 32, bottom: 12),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'Login',
-                      style: TextStyle(
-                        fontSize: 20,
+                Padding(
+                  padding:
+                      const EdgeInsets.only(left: 32, right: 32, bottom: 12),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Login',
+                        style: TextStyle(
+                          fontSize: 20,
+                        ),
                       ),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.launch),
-                      color: Colors.grey,
-                      onPressed: () {
-                        if (usernameController.text.isNotEmpty) {
-                          launch(
-                              'https://${client.host}/users/${usernameController.text}/api_key');
-                        } else {
-                          launch('https://${client.host}/session/new');
-                        }
-                      },
-                    ),
+                      IconButton(
+                        icon: const Icon(Icons.launch),
+                        color: Colors.grey,
+                        onPressed: () {
+                          if (usernameController.text.isNotEmpty) {
+                            launch(
+                                'https://${client.host}/users/${usernameController.text}/api_key');
+                          } else {
+                            launch('https://${client.host}/session/new');
+                          }
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    usernameField(),
+                    apiKeyField(),
+                    loginButton(),
                   ],
                 ),
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  usernameField(),
-                  apiKeyField(),
-                  loginButton(),
-                ],
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -302,6 +307,7 @@ class _LoginLoadingDialogState extends State<LoginLoadingDialog> {
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Row(
+          mainAxisSize: MainAxisSize.min,
           children: [
             const Padding(
               padding: EdgeInsets.all(4),

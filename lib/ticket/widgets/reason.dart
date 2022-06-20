@@ -108,33 +108,37 @@ class _ReasonReportScreenState extends State<ReasonReportScreen> {
             child: const Icon(Icons.check),
           ),
         ),
-        body: LayoutBuilder(
-          builder: (context, constraints) => ListView(
-            controller: scrollController,
-            padding: defaultFormScreenPadding,
-            children: [
-              ConstrainedBox(
-                constraints: const BoxConstraints(
-                  minHeight: defaultFormTargetHeight,
+        body: LimitedWidthLayout(
+          child: LayoutBuilder(
+            builder: (context, constraints) => ListView(
+              controller: scrollController,
+              padding: LimitedWidthLayout.of(context)
+                  .padding
+                  .add(defaultFormScreenPadding),
+              children: [
+                ConstrainedBox(
+                  constraints: const BoxConstraints(
+                    minHeight: defaultFormTargetHeight,
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Padding(
+                        padding: defaultFormPadding,
+                        child: widget.previewBuilder(context, isLoading),
+                      ),
+                    ],
+                  ),
                 ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Padding(
-                      padding: defaultFormPadding,
-                      child: widget.previewBuilder(context, isLoading),
-                    ),
-                  ],
+                const ReportFormHeader(
+                  title: Text('Report'),
                 ),
-              ),
-              const ReportFormHeader(
-                title: Text('Report'),
-              ),
-              ReportFormReason(
-                controller: reasonController,
-                isLoading: isLoading,
-              ),
-            ],
+                ReportFormReason(
+                  controller: reasonController,
+                  isLoading: isLoading,
+                ),
+              ],
+            ),
           ),
         ),
       ),
