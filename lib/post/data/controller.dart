@@ -20,6 +20,7 @@ class PostController extends DataController<Post>
     with SearchableController, HostableController, RefreshableController {
   late final PostProviderCallback _provider;
 
+  Map<String, List<Post>>? _previousDeniedPosts;
   Map<String, List<Post>>? _deniedPosts;
   Map<String, List<Post>>? get deniedPosts =>
       _deniedPosts != null ? Map.unmodifiable(_deniedPosts!) : null;
@@ -81,12 +82,15 @@ class PostController extends DataController<Post>
         remaining.remove(item);
       }
     }
+    _previousDeniedPosts = null;
+
     return remaining;
   }
 
   @protected
   void reapplyFilter() {
     if (_posts != null) {
+      _previousDeniedPosts = _deniedPosts;
       _deniedPosts = null;
       value = PagingState(
         nextPageKey: nextPageKey,
@@ -116,6 +120,7 @@ class PostController extends DataController<Post>
       return;
     }
     _posts = null;
+    _previousDeniedPosts = _deniedPosts;
     _deniedPosts = null;
     _allowedPosts = [];
     await super.refresh(background: background, force: force);
@@ -155,7 +160,9 @@ class PostController extends DataController<Post>
 
   bool isDenied(Post post) {
     _assertItemOwnership(post);
-    return _deniedPosts!.values.any((e) => e.contains(post));
+    return (_deniedPosts ?? _previousDeniedPosts!)
+        .values
+        .any((e) => e.contains(post));
   }
 
   bool isAllowed(Post post) {
