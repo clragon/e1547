@@ -49,7 +49,7 @@ class _LockScreenState extends State<LockScreen> with ListenerCallbackMixin {
 
     if (pin != null) {
       lock = ScreenLock(
-        title: const HeadingTitle(text: 'Enter PIN'),
+        title: const Text('Enter PIN'),
         correctString: pin!,
         customizedButtonChild:
             biometrics ? const Icon(Icons.fingerprint) : null,
@@ -83,12 +83,14 @@ class _LockScreenState extends State<LockScreen> with ListenerCallbackMixin {
             enabledColor: Theme.of(context).textTheme.bodyText2!.color!,
           ),
         ),
-        inputButtonConfig: const InputButtonConfig(
-          textStyle: TextStyle(
-            fontSize: 36,
+        keyPadConfig: const KeyPadConfig(
+          buttonConfig: StyledInputConfig(
+            textStyle: TextStyle(
+              fontSize: 36,
+            ),
+            height: 68,
+            width: 68,
           ),
-          height: 68,
-          width: 68,
         ),
       );
     } else if (biometrics) {
@@ -197,18 +199,18 @@ Future<void> tryLocalAuth({
 Future<String?> registerPin(BuildContext context) async {
   Completer<String?> completer = Completer();
   screenLock(
-    title: const HeadingTitle(text: 'Enter new PIN'),
-    confirmTitle: const HeadingTitle(text: 'Confirm new PIN'),
+    title: const Text('Enter new PIN'),
+    confirmTitle: const Text('Confirm new PIN'),
     context: context,
     correctString: '',
     confirmation: true,
     didConfirmed: (result) {
       completer.complete(result);
-      Navigator.of(context).pop();
+      Navigator.of(context).maybePop();
     },
     didCancelled: () {
       completer.complete(null);
-      Navigator.of(context).pop();
+      Navigator.of(context).maybePop();
     },
     screenLockConfig: ScreenLockConfig(
       themeData: Theme.of(context).copyWith(
@@ -227,10 +229,14 @@ Future<String?> registerPin(BuildContext context) async {
         enabledColor: Theme.of(context).textTheme.bodyText2!.color!,
       ),
     ),
-    inputButtonConfig: const InputButtonConfig(
-      textStyle: TextStyle(fontSize: 36),
-      height: 68,
-      width: 68,
+    keyPadConfig: const KeyPadConfig(
+      buttonConfig: StyledInputConfig(
+        textStyle: TextStyle(
+          fontSize: 36,
+        ),
+        height: 68,
+        width: 68,
+      ),
     ),
   );
 
