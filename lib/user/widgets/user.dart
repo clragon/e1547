@@ -200,31 +200,13 @@ class UserInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget info(IconData icon, String tag, Widget value) {
-      return IconTheme(
-        data: const IconThemeData(
-          color: Colors.grey,
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 6),
-          child: Row(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: Icon(icon),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: Text(tag),
-              ),
-              const Spacer(),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: value,
-              ),
-            ],
-          ),
-        ),
+    Widget info(IconData icon, String title, String value,
+        {VoidCallback? onLongPress}) {
+      return UserInfoTile(
+        icon: icon,
+        title: title,
+        value: value,
+        onLongPress: onLongPress,
       );
     }
 
@@ -235,23 +217,74 @@ class UserInfo extends StatelessWidget {
         info(
           Icons.tag,
           'id',
-          InkWell(
-            onLongPress: () {
-              Clipboard.setData(ClipboardData(text: user.id.toString()));
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                duration: const Duration(seconds: 1),
-                content: Text('Copied user id #${user.id}'),
-              ));
-            },
-            child: Text('#${user.id}'),
-          ),
+          user.id.toString(),
+          onLongPress: () {
+            Clipboard.setData(ClipboardData(text: user.id.toString()));
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              duration: const Duration(seconds: 1),
+              content: Text('Copied user id #${user.id}'),
+            ));
+          },
         ),
-        info(Icons.shield, 'rank', Text(user.levelString.toLowerCase())),
-        info(Icons.upload, 'posts', Text(user.postUploadCount.toString())),
-        info(Icons.edit, 'edits', Text(user.postUpdateCount.toString())),
-        info(Icons.comment, 'comments', Text(user.commentCount.toString())),
-        info(Icons.forum, 'forum', Text(user.forumPostCount.toString())),
+        info(Icons.shield, 'rank', user.levelString.toLowerCase()),
+        info(Icons.upload, 'posts', user.postUploadCount.toString()),
+        info(Icons.edit, 'edits', user.postUpdateCount.toString()),
+        info(Icons.comment, 'comments', user.commentCount.toString()),
+        info(Icons.forum, 'forum', user.forumPostCount.toString()),
       ],
     );
+  }
+}
+
+class UserInfoTile extends StatelessWidget {
+  final String value;
+  final String title;
+  final IconData icon;
+  final VoidCallback? onLongPress;
+  final double maxWidth;
+
+  const UserInfoTile({
+    super.key,
+    required this.value,
+    required this.title,
+    required this.icon,
+    this.onLongPress,
+    this.maxWidth = 500,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(builder: (context, constraints) {
+      if (constraints.maxWidth >= maxWidth) {
+        return IconTheme(
+          data: const IconThemeData(
+            color: Colors.grey,
+          ),
+          child: ListTile(
+            leading: Icon(icon),
+            title: Text(title),
+            trailing: DefaultTextStyle(
+              style: Theme.of(context).textTheme.subtitle1!,
+              child: InkWell(
+                onLongPress: onLongPress,
+                child: Text(value),
+              ),
+            ),
+          ),
+        );
+      } else {
+        return IconTheme(
+          data: const IconThemeData(
+            color: Colors.grey,
+          ),
+          child: ListTile(
+            leading: Icon(icon),
+            title: Text(value),
+            subtitle: Text(title),
+            onLongPress: onLongPress,
+          ),
+        );
+      }
+    });
   }
 }
