@@ -28,7 +28,7 @@ mixin _$Reply {
   int? get updaterId => throw _privateConstructorUsedError;
   int get topicId => throw _privateConstructorUsedError;
   bool get isHidden => throw _privateConstructorUsedError;
-  WarningType? get warningType => throw _privateConstructorUsedError;
+  int? get warningType => throw _privateConstructorUsedError;
   int? get warningUserId => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -49,7 +49,7 @@ abstract class $ReplyCopyWith<$Res> {
       int? updaterId,
       int topicId,
       bool isHidden,
-      WarningType? warningType,
+      int? warningType,
       int? warningUserId});
 }
 
@@ -110,7 +110,7 @@ class _$ReplyCopyWithImpl<$Res> implements $ReplyCopyWith<$Res> {
       warningType: warningType == freezed
           ? _value.warningType
           : warningType // ignore: cast_nullable_to_non_nullable
-              as WarningType?,
+              as int?,
       warningUserId: warningUserId == freezed
           ? _value.warningUserId
           : warningUserId // ignore: cast_nullable_to_non_nullable
@@ -133,7 +133,7 @@ abstract class _$$_ReplyCopyWith<$Res> implements $ReplyCopyWith<$Res> {
       int? updaterId,
       int topicId,
       bool isHidden,
-      WarningType? warningType,
+      int? warningType,
       int? warningUserId});
 }
 
@@ -195,7 +195,7 @@ class __$$_ReplyCopyWithImpl<$Res> extends _$ReplyCopyWithImpl<$Res>
       warningType: warningType == freezed
           ? _value.warningType
           : warningType // ignore: cast_nullable_to_non_nullable
-              as WarningType?,
+              as int?,
       warningUserId: warningUserId == freezed
           ? _value.warningUserId
           : warningUserId // ignore: cast_nullable_to_non_nullable
@@ -239,7 +239,7 @@ class _$_Reply with DiagnosticableTreeMixin implements _Reply {
   @override
   final bool isHidden;
   @override
-  final WarningType? warningType;
+  final int? warningType;
   @override
   final int? warningUserId;
 
@@ -320,7 +320,7 @@ abstract class _Reply implements Reply {
       required final int? updaterId,
       required final int topicId,
       required final bool isHidden,
-      required final WarningType? warningType,
+      required final int? warningType,
       required final int? warningUserId}) = _$_Reply;
 
   factory _Reply.fromJson(Map<String, dynamic> json) = _$_Reply.fromJson;
@@ -342,7 +342,7 @@ abstract class _Reply implements Reply {
   @override
   bool get isHidden => throw _privateConstructorUsedError;
   @override
-  WarningType? get warningType => throw _privateConstructorUsedError;
+  int? get warningType => throw _privateConstructorUsedError;
   @override
   int? get warningUserId => throw _privateConstructorUsedError;
   @override

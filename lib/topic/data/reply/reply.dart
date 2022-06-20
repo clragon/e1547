@@ -15,16 +15,9 @@ class Reply with _$Reply {
     required int? updaterId,
     required int topicId,
     required bool isHidden,
-    required WarningType? warningType,
+    required int? warningType,
     required int? warningUserId,
   }) = _Reply;
 
   factory Reply.fromJson(Map<String, dynamic> json) => _$ReplyFromJson(json);
-}
-
-@JsonEnum()
-enum WarningType {
-  warning,
-  record,
-  ban,
 }

@@ -1,5 +1,6 @@
 import 'package:e1547/client/client.dart';
 import 'package:e1547/comment/comment.dart';
+import 'package:e1547/comment/data/warning.dart';
 import 'package:e1547/dtext/dtext.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/ticket/ticket.dart';
@@ -227,6 +228,28 @@ class CommentTile extends StatelessWidget {
                       ),
                     ],
                   )
+                ],
+              ),
+            ),
+          if (comment.warningType != null)
+            Padding(
+              padding: const EdgeInsets.only(left: 24),
+              child: Row(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: Icon(
+                      Icons.warning_amber,
+                      size: iconSize,
+                      color: Theme.of(context).errorColor,
+                    ),
+                  ),
+                  Text(
+                    MessageWarning.byId(comment.warningType!).message,
+                    style: Theme.of(context).textTheme.bodyText2!.copyWith(
+                          color: Theme.of(context).errorColor,
+                        ),
+                  ),
                 ],
               ),
             ),
