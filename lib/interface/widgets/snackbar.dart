@@ -50,9 +50,16 @@ Future<void> loadingNotification<T>({
   final ValueNotifier<int> progress = ValueNotifier(0);
 
   ScaffoldMessengerState messenger = ScaffoldMessenger.of(context);
+  Color? iconColor = (Theme.of(context).snackBarTheme.contentTextStyle ??
+          ThemeData(
+            brightness: Theme.of(context).brightness == Brightness.dark
+                ? Brightness.light
+                : Brightness.dark,
+          ).textTheme.subtitle1)
+      ?.color;
 
-  messenger.showMaterialBanner(
-    MaterialBanner(
+  messenger.showSnackBar(
+    SnackBar(
       content: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8),
         child: LoadingNotification(
@@ -62,15 +69,13 @@ Future<void> loadingNotification<T>({
           animationDuration: timeout,
         ),
       ),
-      leading: icon,
-      padding: const EdgeInsets.all(8),
-      leadingPadding: const EdgeInsets.all(8),
-      actions: [
-        TextButton(
-          onPressed: () => status = LoadingNotificationStatus.cancelled,
-          child: const Text('CANCEL'),
-        ),
-      ],
+      action: SnackBarAction(
+        label: 'CANCEL',
+        onPressed: () {
+          status = LoadingNotificationStatus.cancelled;
+        },
+      ),
+      duration: const Duration(days: 1),
     ),
   );
 
@@ -93,22 +98,23 @@ Future<void> loadingNotification<T>({
     status = LoadingNotificationStatus.done;
   }
 
-  messenger.hideCurrentMaterialBanner();
-  messenger.showMaterialBanner(
-    MaterialBanner(
-      content: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8),
-        child: Text(getStatus(status, progress.value)),
+  messenger.hideCurrentSnackBar();
+  messenger.showSnackBar(
+    SnackBar(
+      content: Row(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: Icon(
+              getStatusIcon(status),
+              color: iconColor,
+            ),
+          ),
+          Flexible(child: Text(getStatus(status, progress.value))),
+        ],
       ),
-      leading: Icon(getStatusIcon(status)),
       padding: const EdgeInsets.all(8),
-      leadingPadding: const EdgeInsets.all(8),
-      actions: [
-        TextButton(
-          onPressed: messenger.hideCurrentMaterialBanner,
-          child: const Text('DISMISS'),
-        ),
-      ],
+      duration: const Duration(milliseconds: 500),
     ),
   );
 
@@ -135,6 +141,7 @@ class LoadingNotification extends StatelessWidget {
       valueListenable: progress,
       builder: (context, value, child) {
         return Column(
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(

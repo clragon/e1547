@@ -160,112 +160,110 @@ class _PostDetailState extends State<PostDetail>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: PostEditor(
-        editingController: editingController,
-        child: Scaffold(
-          extendBodyBehindAppBar: true,
-          appBar: PostDetailAppBar(
-            post: widget.post,
-            controller: widget.controller,
-          ),
-          floatingActionButton:
-              client.hasLogin && widget.controller != null ? fab() : null,
-          body: MediaQuery.removeViewInsets(
-            context: context,
-            removeTop: true,
-            child: LayoutBuilder(
-              builder: (context, constraints) => ListView(
-                padding: EdgeInsets.only(
-                  top: MediaQuery.of(context).padding.top,
-                  bottom: kBottomNavigationBarHeight + 24,
-                ),
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 10),
-                    child: ConstrainedBox(
-                      constraints: BoxConstraints(
-                        minHeight: (constraints.maxHeight / 2),
-                        maxHeight: constraints.maxWidth > constraints.maxHeight
-                            ? constraints.maxHeight * 0.8
-                            : double.infinity,
-                      ),
-                      child: AnimatedSize(
-                        duration: defaultAnimationDuration,
-                        child: PostDetailImageDisplay(
-                          post: widget.post,
-                          controller: widget.controller,
-                          onTap: () {
-                            keepPlaying = true;
-                            if (!(editingController?.editing ?? false) &&
-                                widget.onTapImage != null) {
-                              widget.onTapImage!();
-                            } else {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) => PostFullscreen(
-                                    post: widget.post,
-                                    controller: widget.controller,
-                                  ),
+    return PostEditor(
+      editingController: editingController,
+      child: Scaffold(
+        extendBodyBehindAppBar: true,
+        appBar: PostDetailAppBar(
+          post: widget.post,
+          controller: widget.controller,
+        ),
+        floatingActionButton:
+            client.hasLogin && widget.controller != null ? fab() : null,
+        body: MediaQuery.removeViewInsets(
+          context: context,
+          removeTop: true,
+          child: LayoutBuilder(
+            builder: (context, constraints) => ListView(
+              padding: EdgeInsets.only(
+                top: MediaQuery.of(context).padding.top,
+                bottom: kBottomNavigationBarHeight + 24,
+              ),
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minHeight: (constraints.maxHeight / 2),
+                      maxHeight: constraints.maxWidth > constraints.maxHeight
+                          ? constraints.maxHeight * 0.8
+                          : double.infinity,
+                    ),
+                    child: AnimatedSize(
+                      duration: defaultAnimationDuration,
+                      child: PostDetailImageDisplay(
+                        post: widget.post,
+                        controller: widget.controller,
+                        onTap: () {
+                          keepPlaying = true;
+                          if (!(editingController?.editing ?? false) &&
+                              widget.onTapImage != null) {
+                            widget.onTapImage!();
+                          } else {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => PostFullscreen(
+                                  post: widget.post,
+                                  controller: widget.controller,
                                 ),
-                              );
-                            }
-                          },
-                        ),
+                              ),
+                            );
+                          }
+                        },
                       ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Column(
-                      children: [
-                        ArtistDisplay(
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Column(
+                    children: [
+                      ArtistDisplay(
+                        post: widget.post,
+                        controller: widget.controller,
+                      ),
+                      DescriptionDisplay(post: widget.post),
+                      PostEditorChild(
+                        shown: false,
+                        child: LikeDisplay(
                           post: widget.post,
                           controller: widget.controller,
                         ),
-                        DescriptionDisplay(post: widget.post),
-                        PostEditorChild(
-                          shown: false,
-                          child: LikeDisplay(
-                            post: widget.post,
-                            controller: widget.controller,
-                          ),
-                        ),
-                        PostEditorChild(
-                          shown: false,
-                          child: CommentDisplay(
-                            post: widget.post,
-                            controller: widget.controller,
-                          ),
-                        ),
-                        ParentDisplay(post: widget.post),
-                        PostEditorChild(
-                          shown: false,
-                          child: PoolDisplay(post: widget.post),
-                        ),
-                        TagDisplay(
+                      ),
+                      PostEditorChild(
+                        shown: false,
+                        child: CommentDisplay(
                           post: widget.post,
                           controller: widget.controller,
                         ),
-                        PostEditorChild(
-                          shown: false,
-                          child: FileDisplay(
-                            post: widget.post,
-                            controller: widget.controller,
-                          ),
+                      ),
+                      ParentDisplay(post: widget.post),
+                      PostEditorChild(
+                        shown: false,
+                        child: PoolDisplay(post: widget.post),
+                      ),
+                      TagDisplay(
+                        post: widget.post,
+                        controller: widget.controller,
+                      ),
+                      PostEditorChild(
+                        shown: false,
+                        child: FileDisplay(
+                          post: widget.post,
+                          controller: widget.controller,
                         ),
-                        PostEditorChild(
-                          shown: true,
-                          child: RatingDisplay(
-                            post: widget.post,
-                          ),
+                      ),
+                      PostEditorChild(
+                        shown: true,
+                        child: RatingDisplay(
+                          post: widget.post,
                         ),
-                        SourceDisplay(post: widget.post),
-                      ],
-                    ),
-                  )
-                ],
-              ),
+                      ),
+                      SourceDisplay(post: widget.post),
+                    ],
+                  ),
+                )
+              ],
             ),
           ),
         ),
