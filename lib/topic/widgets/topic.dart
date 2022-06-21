@@ -1,6 +1,6 @@
 import 'package:e1547/topic/topic.dart';
 import 'package:flutter/material.dart';
-import 'package:timeago/timeago.dart';
+import 'package:relative_time/relative_time.dart';
 
 class TopicTile extends StatelessWidget {
   final Topic topic;
@@ -46,7 +46,7 @@ class TopicTile extends StatelessWidget {
                         style: Theme.of(context).textTheme.subtitle1,
                       ),
                       Text(
-                        format(topic.updatedAt),
+                        topic.updatedAt.relativeTime(context: context),
                         style: const TextStyle(
                           fontSize: 12,
                         ),

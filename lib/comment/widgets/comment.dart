@@ -7,7 +7,7 @@ import 'package:e1547/ticket/ticket.dart';
 import 'package:e1547/user/user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:timeago/timeago.dart';
+import 'package:relative_time/relative_time.dart';
 
 class CommentTile extends StatelessWidget {
   final Comment comment;
@@ -49,7 +49,7 @@ class CommentTile extends StatelessWidget {
               ),
             ),
             Text(
-              ' • ${format(comment.createdAt)}${comment.createdAt != comment.updatedAt ? ' (edited)' : ''}',
+              ' • ${comment.createdAt.relativeTime(context: context)}${comment.createdAt != comment.updatedAt ? ' (edited)' : ''}',
               style: const TextStyle(
                 fontSize: 12,
               ),

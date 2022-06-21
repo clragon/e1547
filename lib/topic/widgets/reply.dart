@@ -3,7 +3,7 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/topic/topic.dart';
 import 'package:e1547/user/user.dart';
 import 'package:flutter/material.dart';
-import 'package:timeago/timeago.dart';
+import 'package:relative_time/relative_time.dart';
 import 'package:username_generator/username_generator.dart';
 
 class ReplyTile extends StatelessWidget {
@@ -46,7 +46,7 @@ class ReplyTile extends StatelessWidget {
           ),
           Flexible(
             child: Text(
-              ' • ${format(reply.createdAt)}'
+              ' • ${reply.createdAt.relativeTime(context: context)}'
               '${reply.createdAt != reply.updatedAt ? ' (edited)' : ''}',
               style: TextStyle(
                 color: dimTextColor(context),

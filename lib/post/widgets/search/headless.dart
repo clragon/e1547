@@ -44,7 +44,6 @@ Widget postGrid(BuildContext context, PostController controller) {
   );
 }
 
-
 IndexedStaggeredTileBuilder postStaggeredTileBuilder(
     BuildContext context, Post Function(int index) postFromIndex) {
   return (int index) {
