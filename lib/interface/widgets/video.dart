@@ -31,8 +31,15 @@ class VideoHandler {
     );
   }
 
-  VideoPlayerController getVideo(VideoConfig key) =>
-      _videos.putIfAbsent(key, () => VideoPlayerController.network(key.url));
+  VideoPlayerController getVideo(VideoConfig key) => _videos.putIfAbsent(
+        key,
+        () => VideoPlayerController.network(
+          key.url,
+          videoPlayerOptions: VideoPlayerOptions(
+            mixWithOthers: true,
+          ),
+        ),
+      );
 
   Future<void> loadVideo(VideoConfig key) async {
     await _loadingLock.acquire();
