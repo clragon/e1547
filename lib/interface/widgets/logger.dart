@@ -5,6 +5,8 @@ import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:share/share.dart';
 import 'package:talker/talker.dart';
 
@@ -60,7 +62,25 @@ class LoggerPage extends StatelessWidget {
               ),
         floatingActionButton: talker.history.isNotEmpty
             ? FloatingActionButton(
-                onPressed: () => Share.share(talker.history.text),
+                onPressed: () async {
+                  if (Platform.isAndroid || Platform.isIOS) {
+                    Directory temp = await getTemporaryDirectory();
+                    File log = File(join(temp.path,
+                        '${getCurrentDateFormat().format(DateTime.now())}.log'));
+                    log.writeAsString(talker.history.text, flush: true);
+                    Share.shareFiles([log.path]);
+                  } else {
+                    Clipboard.setData(
+                      ClipboardData(text: talker.history.text),
+                    );
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        duration: Duration(seconds: 1),
+                        content: Text('Copied to clipboard'),
+                      ),
+                    );
+                  }
+                },
                 child: const Icon(Icons.file_download),
               )
             : null,
