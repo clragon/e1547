@@ -1,5 +1,6 @@
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 Future<void> postDownloadingNotification(
@@ -10,7 +11,18 @@ Future<void> postDownloadingNotification(
     context: context,
     icon: const Icon(Icons.download),
     timeout: const Duration(milliseconds: 100),
-    process: (Post item) => item.download(),
+    process: (item) async {
+      try {
+        item.download();
+        return true;
+      } catch (exception, stacktrace) {
+        if (kDebugMode) {
+          rethrow;
+        }
+        Logger.maybeOf(context)?.handle(exception, stacktrace);
+        return false;
+      }
+    },
     items: items,
     onDone: (items) => items.length == 1
         ? 'Downloaded post #${items.first.id}'

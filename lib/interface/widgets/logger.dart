@@ -68,7 +68,8 @@ class LoggerPage extends StatelessWidget {
                     File log = File(join(temp.path,
                         '${getCurrentDateFormat().format(DateTime.now())}.log'));
                     log.writeAsString(talker.history.text, flush: true);
-                    Share.shareFiles([log.path]);
+                    await Share.shareFiles([log.path]);
+                    log.delete();
                   } else {
                     Clipboard.setData(
                       ClipboardData(text: talker.history.text),

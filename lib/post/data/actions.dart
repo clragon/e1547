@@ -7,7 +7,7 @@ import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:e1547/tag/tag.dart';
-import 'package:flutter/foundation.dart';
+import 'package:external_path/external_path.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
@@ -128,40 +128,34 @@ extension Denying on Post {
 }
 
 extension Downloading on Post {
-  Future<bool> download() async {
-    try {
-      if (!await Permission.storage.request().isGranted) {
-        return false;
+  Future<void> download() async {
+    if (!await Permission.storage.request().isGranted) {
+      return;
+    }
+    File download = await DefaultCacheManager().getSingleFile(file.url!);
+    if (Platform.isAndroid) {
+      String directory = join(
+          (await ExternalPath.getExternalStoragePublicDirectory(
+              ExternalPath.DIRECTORY_PICTURES)),
+          appInfo.appName);
+      await Directory(directory).create();
+      File target = File(join(directory, _downloadName()));
+      if (!await target.exists() ||
+          md5.convert(await download.readAsBytes()) !=
+              md5.convert(await target.readAsBytes())) {
+        await download.copy(target.path);
+        MediaScanner.loadMedia(path: directory);
       }
-      File download = await DefaultCacheManager().getSingleFile(file.url!);
-      if (Platform.isAndroid) {
-        String directory = join((await getExternalStorageDirectory())!.path,
-            'Pictures', appInfo.appName);
-        await Directory(directory).create();
-        File target = File(join(directory, _downloadName()));
-        if (!await target.exists() ||
-            md5.convert(await download.readAsBytes()) !=
-                md5.convert(await target.readAsBytes())) {
-          await download.copy(target.path);
-          MediaScanner.loadMedia(path: directory);
-        }
-      } else if (Platform.isIOS) {
-        await ImageGallerySaver.saveFile(download.path);
-      } else {
-        String directory = (await getDownloadsDirectory())!.path;
-        File target = File(join(directory, _downloadName()));
-        if (!await target.exists() ||
-            md5.convert(await download.readAsBytes()) !=
-                md5.convert(await target.readAsBytes())) {
-          await download.copy(target.path);
-        }
+    } else if (Platform.isIOS) {
+      await ImageGallerySaver.saveFile(download.path);
+    } else {
+      String directory = (await getDownloadsDirectory())!.path;
+      File target = File(join(directory, _downloadName()));
+      if (!await target.exists() ||
+          md5.convert(await download.readAsBytes()) !=
+              md5.convert(await target.readAsBytes())) {
+        await download.copy(target.path);
       }
-      return true;
-    } on Exception {
-      if (kDebugMode) {
-        rethrow;
-      }
-      return false;
     }
   }
 
