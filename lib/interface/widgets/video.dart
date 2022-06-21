@@ -60,7 +60,6 @@ class VideoHandler {
     _loadingLock.release();
   }
 
-  // TODO: fix disposing videos
   Future<void> disposeVideo(VideoConfig key) async {
     VideoPlayerController? controller = _videos[key];
     if (controller != null) {
