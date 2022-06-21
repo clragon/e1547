@@ -1,7 +1,5 @@
-import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 class PostFullscreenGallery extends StatefulWidget {
   final PostController controller;
@@ -21,51 +19,10 @@ class PostFullscreenGallery extends StatefulWidget {
 }
 
 class _PostFullscreenGalleryState extends State<PostFullscreenGallery>
-    with RouteAware, ImagePreloader {
+    with ImagePreloader {
   late PageController pageController = widget.pageController ??
       PageController(initialPage: widget.initialPage ?? 0);
   late ValueNotifier<int> currentPage = ValueNotifier(widget.initialPage ?? 0);
-  late FrameController frameController;
-  late NavigationController navigation;
-
-  Future<void> toggleFrame(bool shown) async {
-    if (shown) {
-      await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-    } else {
-      await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    toggleFrame(false);
-    frameController = FrameController(onToggle: toggleFrame);
-    SystemChrome.setSystemUIChangeCallback(
-        (hidden) async => frameController.toggleFrame(shown: !hidden));
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    navigation = NavigationData.of(context);
-    navigation.routeObserver
-        .subscribe(this, ModalRoute.of(context) as PageRoute);
-  }
-
-  @override
-  void dispose() {
-    navigation.routeObserver.unsubscribe(this);
-    SystemChrome.setSystemUIChangeCallback(null);
-    frameController.dispose();
-    currentPage.dispose();
-    super.dispose();
-  }
-
-  @override
-  void didPop() {
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -84,7 +41,6 @@ class _PostFullscreenGalleryState extends State<PostFullscreenGallery>
         child: widget.controller.itemList != null
             ? PostFullscreenFrame(
                 post: widget.controller.itemList![value],
-                controller: frameController,
                 child: child!,
               )
             : const SizedBox.shrink(),

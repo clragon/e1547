@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'appbar.dart';
 
@@ -70,8 +71,53 @@ class PostFullscreenFrame extends StatefulWidget {
   State<PostFullscreenFrame> createState() => _PostFullscreenFrameState();
 }
 
-class _PostFullscreenFrameState extends State<PostFullscreenFrame> {
+class _PostFullscreenFrameState extends State<PostFullscreenFrame>
+    with RouteAware, ListenerCallbackMixin {
   late FrameController controller = widget.controller ?? FrameController();
+  late NavigationController navigation;
+
+  @override
+  Map<Listenable, VoidCallback> get initListeners => {
+        controller: () => toggleFrame(controller.visible),
+      };
+
+  Future<void> toggleFrame(bool shown) async {
+    if (shown) {
+      await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    } else {
+      await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    SystemChrome.setSystemUIChangeCallback(
+        (hidden) async => controller.toggleFrame(shown: !hidden));
+  }
+
+  @override
+  void didPop() {
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    navigation = NavigationData.of(context);
+    navigation.routeObserver
+        .subscribe(this, ModalRoute.of(context) as PageRoute);
+  }
+
+  @override
+  void dispose() {
+    navigation.routeObserver.unsubscribe(this);
+    SystemChrome.setSystemUIChangeCallback(null);
+    if (widget.controller == null) {
+      controller.dispose();
+    }
+    super.dispose();
+  }
 
   @override
   void didUpdateWidget(PostFullscreenFrame oldWidget) {
@@ -83,15 +129,9 @@ class _PostFullscreenFrameState extends State<PostFullscreenFrame> {
         controller.dispose();
       }
       controller = widget.controller ?? FrameController();
+      SystemChrome.setSystemUIChangeCallback(
+          (hidden) async => controller.toggleFrame(shown: !hidden));
     }
-  }
-
-  @override
-  void dispose() {
-    if (widget.controller == null) {
-      controller.dispose();
-    }
-    super.dispose();
   }
 
   @override
