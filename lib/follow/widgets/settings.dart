@@ -16,74 +16,65 @@ class _FollowingPageState extends State<FollowingPage> {
         controller: SheetActionController(),
         child: AnimatedBuilder(
           animation: followController,
-          builder: (context, child) {
-            void addTags() {
-              SheetActions.of(context)!.show(
-                context,
-                ControlledTextWrapper(
-                  submit: (value) async {
-                    value = value.trim();
-                    Follow result = Follow(tags: value);
-                    if (value.isNotEmpty) {
-                      followController.add(result);
-                    }
-                  },
-                  actionController: SheetActions.of(context)!,
-                  builder: (context, controller, submit) => TagInput(
-                    controller: controller,
-                    textInputAction: TextInputAction.done,
-                    labelText: 'Add to follows',
-                    submit: submit,
+          builder: (context, child) => Scaffold(
+            appBar: DefaultAppBar(
+              title: const Text('Following'),
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.edit),
+                  onPressed: () async => showDialog(
+                    context: context,
+                    builder: (context) => const FollowEditor(),
                   ),
                 ),
-              );
-            }
-
-            Widget body() {
-              if (followController.items.isEmpty) {
-                return const IconMessage(
-                  icon: Icon(Icons.bookmark),
-                  title: Text('You are not following any tags'),
-                );
-              }
-
-              return ListView.builder(
-                padding: defaultActionListPadding
-                    .add(LimitedWidthLayout.of(context).padding),
-                itemCount: followController.items.length,
-                itemBuilder: (context, index) => FollowListTile(
-                  follow: followController.items[index],
-                ),
-              );
-            }
-
-            return Scaffold(
-              appBar: DefaultAppBar(
-                title: const Text('Following'),
-                actions: [
-                  IconButton(
-                    icon: const Icon(Icons.edit),
-                    onPressed: () async => showDialog(
-                      context: context,
-                      builder: (context) => const FollowEditor(),
+              ],
+            ),
+            body: followController.items.isNotEmpty
+                ? ListView.builder(
+                    padding: defaultActionListPadding
+                        .add(LimitedWidthLayout.of(context).padding),
+                    itemCount: followController.items.length,
+                    itemBuilder: (context, index) => FollowListTile(
+                      follow: followController.items[index],
                     ),
+                  )
+                : const IconMessage(
+                    icon: Icon(Icons.bookmark),
+                    title: Text('You are not following any tags'),
                   ),
-                ],
-              ),
-              body: body(),
-              floatingActionButton: Builder(
-                builder: (context) => AnimatedBuilder(
-                  animation: SheetActions.of(context)!,
-                  builder: (context, child) => FloatingActionButton(
-                    onPressed: SheetActions.of(context)!.action ?? addTags,
-                    child: Icon(SheetActions.of(context)!.isShown
-                        ? Icons.check
-                        : Icons.add),
-                  ),
+            floatingActionButton: Builder(
+              builder: (context) => AnimatedBuilder(
+                animation: SheetActions.of(context)!,
+                builder: (context, child) => FloatingActionButton(
+                  onPressed: SheetActions.of(context)!.action ??
+                      () {
+                        SheetActions.of(context)!.show(
+                          context,
+                          ControlledTextWrapper(
+                            submit: (value) async {
+                              value = value.trim();
+                              Follow result = Follow(tags: value);
+                              if (value.isNotEmpty) {
+                                followController.add(result);
+                              }
+                            },
+                            actionController: SheetActions.of(context)!,
+                            builder: (context, controller, submit) => TagInput(
+                              controller: controller,
+                              textInputAction: TextInputAction.done,
+                              labelText: 'Add to follows',
+                              submit: submit,
+                            ),
+                          ),
+                        );
+                      },
+                  child: Icon(SheetActions.of(context)!.isShown
+                      ? Icons.check
+                      : Icons.add),
                 ),
               ),
-            );
-          },
+            ),
+          ),
         ),
       ),
     );
