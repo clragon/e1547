@@ -206,11 +206,11 @@ Future<String?> registerPin(BuildContext context) async {
     confirmation: true,
     didConfirmed: (result) {
       completer.complete(result);
-      Navigator.of(context).maybePop();
+      Navigator.of(context).pop();
     },
     didCancelled: () {
       completer.complete(null);
-      Navigator.of(context).maybePop();
+      Navigator.of(context).pop();
     },
     screenLockConfig: ScreenLockConfig(
       themeData: Theme.of(context).copyWith(
