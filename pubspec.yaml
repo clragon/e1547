@@ -36,6 +36,7 @@ dependencies:
   mutex: ^3.0.0
   crypto: ^3.0.1
   timeago: ^3.1.0
+  talker: ^1.0.0+1
   filesize: ^2.0.1
   sqflite: ^2.0.2+1
   app_links: ^3.0.2

@@ -251,7 +251,19 @@ class _SettingsPageState extends State<SettingsPage> {
                   builder: (context) => AdvancedSettingsPage(),
                 ),
               ),
-            )
+            ),
+            if (Logger.maybeOf(context) != null)
+              ListTile(
+                leading: const Icon(Icons.format_list_numbered),
+                title: const Text('Logs'),
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => LoggerPage(
+                      talker: Logger.of(context),
+                    ),
+                  ),
+                ),
+              ),
           ],
         ),
       ),
