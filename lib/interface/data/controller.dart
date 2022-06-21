@@ -12,12 +12,11 @@ abstract class RawDataController<KeyType, ItemType>
   final Mutex _requestLock = Mutex();
   bool _isRefreshing = false;
   bool _isForceRefreshing = false;
+  bool _disposed = false;
 
   late final List<Listenable> _refreshListeners = getRefreshListeners();
 
-  RawDataController({
-    required super.firstPageKey,
-  }) {
+  RawDataController({required super.firstPageKey}) {
     super.addPageRequestListener(loadPage);
     _refreshListeners.forEach((element) => element.addListener(refresh));
   }
@@ -26,6 +25,7 @@ abstract class RawDataController<KeyType, ItemType>
   void dispose() {
     super.removePageRequestListener(loadPage);
     _refreshListeners.forEach((element) => element.removeListener(refresh));
+    _disposed = true;
     super.dispose();
   }
 
@@ -113,6 +113,9 @@ abstract class RawDataController<KeyType, ItemType>
     try {
       await _requestLock.acquire();
       List<ItemType> items = sort(await provide(page, _isForceRefreshing));
+      if (_disposed) {
+        return;
+      }
       if (reset) {
         value = PagingState(
           nextPageKey: provideNextPageKey(page, items),
