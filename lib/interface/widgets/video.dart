@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
+import 'package:mutex/mutex.dart';
 import 'package:video_player/video_player.dart';
 import 'package:wakelock/wakelock.dart';
 
@@ -13,6 +14,8 @@ class VideoHandler {
   final int maxLoaded = 3;
   // 50mb
   final int maxSize = 5 * pow(10, 7).toInt();
+
+  final Mutex _loadingLock = Mutex();
 
   VideoHandler({bool muteVideos = false}) : _muteVideos = muteVideos;
 
@@ -32,8 +35,10 @@ class VideoHandler {
       _videos.putIfAbsent(key, () => VideoPlayerController.network(key.url));
 
   Future<void> loadVideo(VideoConfig key) async {
+    await _loadingLock.acquire();
     VideoPlayerController? controller = getVideo(key);
     if (controller.value.isInitialized) {
+      _loadingLock.release();
       return;
     }
 
@@ -52,6 +57,7 @@ class VideoHandler {
     await controller.setLooping(true);
     await controller.setVolume(muteVideos ? 0 : 1);
     await controller.initialize();
+    _loadingLock.release();
   }
 
   // TODO: fix disposing videos
