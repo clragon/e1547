@@ -67,9 +67,9 @@ class LoggerPage extends StatelessWidget {
                     Directory temp = await getTemporaryDirectory();
                     File log = File(join(
                         temp.path, '${DateTime.now().toIso8601String()}.log'));
-                    log.writeAsString(talker.history.text, flush: true);
+                    await log.writeAsString(talker.history.text, flush: true);
                     await Share.shareFiles([log.path]);
-                    log.delete();
+                    await log.delete();
                   } else {
                     Clipboard.setData(
                       ClipboardData(text: talker.history.text),
