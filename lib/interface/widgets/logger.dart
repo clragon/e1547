@@ -252,7 +252,7 @@ extension Messages on TalkerDataInterface {
   }
 
   String get logTitle {
-    return '$displayTitle | ${(DateFormat.jms(Platform.localeName)).format(time)}.${time.millisecond}';
+    return '$displayTitle | ${DateFormat('HH:mm:ss.SSS').format(time)}';
   }
 
   String get logMessage {
