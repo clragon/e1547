@@ -65,8 +65,8 @@ class LoggerPage extends StatelessWidget {
                 onPressed: () async {
                   if (Platform.isAndroid || Platform.isIOS) {
                     Directory temp = await getTemporaryDirectory();
-                    File log = File(join(temp.path,
-                        '${getCurrentDateFormat().format(DateTime.now())}.log'));
+                    File log = File(join(
+                        temp.path, '${DateTime.now().toIso8601String()}.log'));
                     log.writeAsString(talker.history.text, flush: true);
                     await Share.shareFiles([log.path]);
                     log.delete();
