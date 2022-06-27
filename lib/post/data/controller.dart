@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/denylist/denylist.dart';
 import 'package:e1547/interface/interface.dart';
@@ -58,20 +59,31 @@ class PostController extends DataController<Post>
     }
   }
 
+  @override
+  void appendPage(List<Post> newItems, int? nextPageKey) {
+    _posts ??= [];
+    _posts!.addAll(newItems);
+    List<Post> itemList = (value.itemList ?? []) + newItems;
+    value = PagingState(
+      itemList: filter(itemList),
+      nextPageKey: nextPageKey,
+    );
+  }
+
   @protected
   List<Post> filter(List<Post> items) {
     List<String> denylist = [];
     if (denying && denyMode != DenyListMode.unavailable) {
-      denylist = denylistController.items
-          .where((line) => !_allowedTags.contains(line))
-          .toList();
+      denylist =
+          denylistController.items.whereNot(_allowedTags.contains).toList();
     }
 
     _deniedPosts ??= {};
-    List<Post> remaining = items.toSet().toList();
-    for (Post item in items) {
+    List<Post> result = {for (final p in items) p.id: p}.values.toList();
+
+    result.removeWhere((item) {
       if (_allowedPosts.contains(item)) {
-        continue;
+        return false;
       }
       List<String> deniers = item.getDeniers(denylist);
       for (final denier in deniers) {
@@ -79,12 +91,13 @@ class PostController extends DataController<Post>
         _deniedPosts![denier]!.add(item);
       }
       if (deniers.isNotEmpty && denyMode != DenyListMode.plain) {
-        remaining.remove(item);
+        return true;
       }
-    }
-    _previousDeniedPosts = null;
+      return false;
+    });
 
-    return remaining;
+    _previousDeniedPosts = null;
+    return result;
   }
 
   @protected
@@ -103,15 +116,11 @@ class PostController extends DataController<Post>
   @override
   @protected
   Future<List<Post>> provide(int page, bool force) async {
-    List<Post> nextPage;
     if (_provider != null) {
-      nextPage = await _provider!(search.value, page, force);
+      return _provider!(search.value, page, force);
     } else {
-      nextPage = await client.posts(page, search: search.value, force: force);
+      return client.posts(page, search: search.value, force: force);
     }
-    _posts ??= [];
-    _posts!.addAll(nextPage);
-    return filter(nextPage);
   }
 
   @override

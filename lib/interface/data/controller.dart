@@ -49,9 +49,6 @@ abstract class RawDataController<KeyType, ItemType>
   @protected
   KeyType provideNextPageKey(KeyType current, List<ItemType> items);
 
-  @protected
-  List<ItemType> sort(List<ItemType> items) => items;
-
   @mustCallSuper
   @protected
   void assertHasItems() {
@@ -112,7 +109,7 @@ abstract class RawDataController<KeyType, ItemType>
   Future<void> loadPage(KeyType page, {bool reset = false}) async {
     try {
       await _requestLock.acquire();
-      List<ItemType> items = sort(await provide(page, _isForceRefreshing));
+      List<ItemType> items = await provide(page, _isForceRefreshing);
       if (_disposed) {
         return;
       }
@@ -188,12 +185,11 @@ abstract class CursorDataController<T> extends RawDataController<String, T> {
       super.getRefreshListeners()..add(orderByOldest);
 
   @override
-  @protected
-  List<T> sort(List<T> items) {
+  void appendPage(List<T> newItems, String? nextPageKey) {
     if (orderByOldest.value) {
-      items.sort((a, b) => getId(a).compareTo(getId(b)));
+      newItems.sort((a, b) => getId(a).compareTo(getId(b)));
     }
-    return items;
+    super.appendPage(newItems, nextPageKey);
   }
 }
 
