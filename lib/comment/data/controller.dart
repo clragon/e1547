@@ -19,14 +19,14 @@ class CommentController extends CursorDataController<Comment>
   @protected
   int getId(Comment item) => item.id;
 
-  Future<void> vote({
-    required BuildContext context,
+  Future<bool> vote({
     required Comment comment,
     required bool upvote,
     required bool replace,
   }) async {
-    if (await client.voteComment(comment.id, upvote, replace)) {
-      Comment updated = comment.copyWith();
+    try {
+      await client.voteComment(comment.id, upvote, replace);
+      Comment updated = comment;
       if (comment.voteStatus == VoteStatus.unknown) {
         if (upvote) {
           updated = updated.copyWith(
@@ -67,11 +67,10 @@ class CommentController extends CursorDataController<Comment>
         }
       }
       updateItem(itemList!.indexOf(comment), updated, force: true);
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        duration: const Duration(seconds: 1),
-        content: Text('Failed to vote on comment #${comment.id}'),
-      ));
+      return true;
+    } on DioError {
+      // TODO: undo vote?
+      return false;
     }
   }
 }

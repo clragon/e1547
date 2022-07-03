@@ -5,10 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:like_button/like_button.dart';
 
 class LikeDisplay extends StatelessWidget {
-  final Post post;
-  final PostController? controller;
+  final PostController post;
 
-  const LikeDisplay({required this.post, this.controller});
+  const LikeDisplay({required this.post});
 
   @override
   Widget build(BuildContext context) {
@@ -18,47 +17,51 @@ class LikeDisplay extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             AnimatedSelector(
-              animation: Listenable.merge([controller]),
-              selector: () => [post.voteStatus],
+              animation: post,
+              selector: () => [post.value.voteStatus],
               builder: (context, child) => VoteDisplay(
-                status: post.voteStatus,
-                score: post.score.total,
-                onUpvote: controller != null
-                    ? (isLiked) async {
-                        if (client.hasLogin) {
-                          controller!.vote(
-                              context: context,
-                              post: post,
-                              upvote: true,
-                              replace: !isLiked);
-                          return !isLiked;
-                        } else {
-                          return false;
-                        }
+                status: post.value.voteStatus,
+                score: post.value.score.total,
+                onUpvote: (isLiked) async {
+                  if (client.hasLogin) {
+                    post.vote(upvote: true, replace: !isLiked).then((value) {
+                      if (!value) {
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          duration: const Duration(seconds: 1),
+                          content:
+                              Text('Failed to upvote Post #${post.value.id}'),
+                        ));
                       }
-                    : null,
-                onDownvote: controller != null
-                    ? (isLiked) async {
-                        if (client.hasLogin) {
-                          controller!.vote(
-                              context: context,
-                              post: post,
-                              upvote: false,
-                              replace: !isLiked);
-                          return !isLiked;
-                        } else {
-                          return false;
-                        }
+                    });
+                    return !isLiked;
+                  } else {
+                    return false;
+                  }
+                },
+                onDownvote: (isLiked) async {
+                  if (client.hasLogin) {
+                    post.vote(upvote: false, replace: !isLiked).then((value) {
+                      if (!value) {
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          duration: const Duration(seconds: 1),
+                          content:
+                              Text('Failed to downvote Post #${post.value.id}'),
+                        ));
                       }
-                    : null,
+                    });
+                    return !isLiked;
+                  } else {
+                    return false;
+                  }
+                },
               ),
             ),
             AnimatedSelector(
-              animation: Listenable.merge([controller]),
-              selector: () => [post.isFavorited],
+              animation: post,
+              selector: () => [post.value.isFavorited],
               builder: (context, child) => Row(
                 children: [
-                  Text(post.favCount.toString()),
+                  Text(post.value.favCount.toString()),
                   const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 8),
                     child: Icon(Icons.favorite),
@@ -75,18 +78,17 @@ class LikeDisplay extends StatelessWidget {
 }
 
 class FavoriteButton extends StatelessWidget {
-  final Post post;
-  final PostController controller;
+  final PostController post;
 
-  const FavoriteButton({required this.post, required this.controller});
+  const FavoriteButton({required this.post});
 
   @override
   Widget build(BuildContext context) {
     return AnimatedSelector(
-      animation: Listenable.merge([controller]),
-      selector: () => [post.isFavorited],
+      animation: post,
+      selector: () => [post.value.isFavorited],
       builder: (context, child) => LikeButton(
-        isLiked: post.isFavorited,
+        isLiked: post.value.isFavorited,
         circleColor: const CircleColor(start: Colors.pink, end: Colors.red),
         bubblesColor: const BubblesColor(
             dotPrimaryColor: Colors.pink, dotSecondaryColor: Colors.red),
@@ -97,14 +99,30 @@ class FavoriteButton extends StatelessWidget {
         ),
         onTap: (isLiked) async {
           if (isLiked) {
-            controller.unfav(context, post);
+            post.unfav().then((value) {
+              if (!value) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    duration: const Duration(seconds: 1),
+                    content: Text(
+                        'Failed to remove Post #${post.value.id} from favorites'),
+                  ),
+                );
+              }
+            });
             return false;
           } else {
-            controller.fav(
-              context,
-              post,
-              cooldown: const Duration(seconds: 1),
-            );
+            post.fav().then((value) {
+              if (!value) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    duration: const Duration(seconds: 1),
+                    content: Text(
+                        'Failed to add Post #${post.value.id} to favorites'),
+                  ),
+                );
+              }
+            });
             return true;
           }
         },

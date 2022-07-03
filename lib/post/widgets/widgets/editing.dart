@@ -17,7 +17,13 @@ class PostEditor extends StatelessWidget {
     this.editingController,
   });
 
-  static PostEditingController? of(BuildContext context) {
+  static PostEditingController of(BuildContext context) {
+    return context
+        .dependOnInheritedWidgetOfExactType<PostEditorData>()!
+        .notifier!;
+  }
+
+  static PostEditingController? maybeOf(BuildContext context) {
     return context
         .dependOnInheritedWidgetOfExactType<PostEditorData>()
         ?.notifier;
@@ -57,9 +63,8 @@ class PostEditorChild extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    PostEditingController? controller = PostEditor.of(context);
     return CrossFade(
-      showChild: shown == (controller?.editing ?? false),
+      showChild: shown == (PostEditor.maybeOf(context)?.editing ?? false),
       child: child,
     );
   }

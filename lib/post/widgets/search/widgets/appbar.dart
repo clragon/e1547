@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:like_button/like_button.dart';
 
 class PostSelectionAppBar extends StatelessWidget with AppBarBuilderWidget {
-  final PostController controller;
+  final PostsController controller;
   @override
   final PreferredSizeWidget child;
 

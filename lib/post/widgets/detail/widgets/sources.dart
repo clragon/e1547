@@ -12,7 +12,7 @@ class SourceDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    PostEditingController? editingController = PostEditor.of(context);
+    PostEditingController? editingController = PostEditor.maybeOf(context);
 
     return AnimatedSelector(
       animation: Listenable.merge([editingController]),

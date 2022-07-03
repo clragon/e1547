@@ -63,10 +63,9 @@ class PostDetailVideo extends StatelessWidget {
 }
 
 class PostDetailImageToggle extends StatefulWidget {
-  final Post post;
-  final PostController controller;
+  final PostController post;
 
-  const PostDetailImageToggle({required this.post, required this.controller});
+  const PostDetailImageToggle({required this.post});
 
   @override
   State<PostDetailImageToggle> createState() => _PostDetailImageToggleState();
@@ -76,8 +75,10 @@ class _PostDetailImageToggleState extends State<PostDetailImageToggle> {
   bool loading = false;
   Post? replacement;
 
-  Post get post => widget.post;
-  PostController get controller => widget.controller;
+  Post get post => widget.post.value;
+
+  // TODO: make denying available in PostController
+  PostsController get controller => widget.post.parent!;
 
   Future<void> onToggle() async {
     setState(() {
@@ -92,26 +93,20 @@ class _PostDetailImageToggleState extends State<PostDetailImageToggle> {
         if (!controller.isDenied(post)) {
           controller.allow(post);
         }
-        controller.updateItem(
-          controller.itemList!.indexOf(post),
-          post.copyWith(
-            fileRaw: post.fileRaw.copyWith(url: replacement!.fileRaw.url),
-            preview: post.preview.copyWith(url: replacement!.preview.url),
-            sample: post.sample.copyWith(url: replacement!.sample.url),
-          ),
+        widget.post.value = post.copyWith(
+          fileRaw: post.fileRaw.copyWith(url: replacement!.fileRaw.url),
+          preview: post.preview.copyWith(url: replacement!.preview.url),
+          sample: post.sample.copyWith(url: replacement!.sample.url),
         );
       }
     } else {
       if (controller.isAllowed(post)) {
         controller.unallow(post);
         if (replacement != null) {
-          controller.updateItem(
-            controller.itemList!.indexOf(post),
-            post.copyWith(
-              fileRaw: post.fileRaw.copyWith(url: null),
-              preview: post.preview.copyWith(url: null),
-              sample: post.sample.copyWith(url: null),
-            ),
+          widget.post.value = post.copyWith(
+            fileRaw: post.fileRaw.copyWith(url: null),
+            preview: post.preview.copyWith(url: null),
+            sample: post.sample.copyWith(url: null),
           );
         }
       } else {
@@ -178,36 +173,35 @@ class _PostDetailImageToggleState extends State<PostDetailImageToggle> {
 }
 
 class PostDetailImageButtons extends StatelessWidget {
-  final Post post;
-  final PostController? controller;
+  final PostController post;
   final Widget child;
   final VoidCallback? onOpen;
 
   const PostDetailImageButtons({
     required this.post,
     required this.child,
-    this.controller,
     this.onOpen,
   });
 
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
-      animation: Listenable.merge([controller, post.getVideo(context)]),
+      animation: Listenable.merge([post, post.value.getVideo(context)]),
       builder: (context, child) {
         VoidCallback? onTap;
 
-        bool visible = post.file.url != null &&
-            (!(controller?.isDenied(post) ?? false) || post.isFavorited);
+        // TODO: make denying available in PostController
+        bool visible = post.value.file.url != null &&
+            (!post.parent!.isDenied(post.value) || post.value.isFavorited);
 
         if (visible) {
-          onTap = post.type == PostType.unsupported
-              ? () => launch(post.file.url!)
+          onTap = post.value.type == PostType.unsupported
+              ? () => launch(post.value.file.url!)
               : onOpen;
         }
 
         Widget fullscreenButton() {
-          if (post.type == PostType.video && onTap != null) {
+          if (post.value.type == PostType.video && onTap != null) {
             return CrossFade(
               showChild: visible,
               child: Card(
@@ -233,12 +227,13 @@ class PostDetailImageButtons extends StatelessWidget {
 
         Widget muteButton() {
           return CrossFade.builder(
-            showChild: post.type == PostType.video && post.file.url != null,
+            showChild: post.value.type == PostType.video &&
+                post.value.file.url != null,
             builder: (context) => Card(
               elevation: 0,
               color: Colors.black12,
               child: VideoHandlerVolumeControl(
-                videoController: post.getVideo(context)!,
+                videoController: post.value.getVideo(context)!,
               ),
             ),
           );
@@ -248,10 +243,10 @@ class PostDetailImageButtons extends StatelessWidget {
           fit: StackFit.passthrough,
           children: [
             InkWell(
-              onTap: post.type == PostType.video
-                  ? () => post.getVideo(context)!.value.isPlaying
-                      ? post.getVideo(context)!.pause()
-                      : post.getVideo(context)!.play()
+              onTap: post.value.type == PostType.video
+                  ? () => post.value.getVideo(context)!.value.isPlaying
+                      ? post.value.getVideo(context)!.pause()
+                      : post.value.getVideo(context)!.play()
                   : onTap,
               child: IgnorePointer(child: child),
             ),
@@ -266,11 +261,7 @@ class PostDetailImageButtons extends StatelessWidget {
                     muteButton(),
                     const Spacer(),
                     fullscreenButton(),
-                    if (controller != null)
-                      PostDetailImageToggle(
-                        post: post,
-                        controller: controller!,
-                      ),
+                    PostDetailImageToggle(post: post),
                   ],
                 ),
               ),
@@ -284,13 +275,11 @@ class PostDetailImageButtons extends StatelessWidget {
 }
 
 class PostDetailImageDisplay extends StatelessWidget {
-  final Post post;
-  final PostController? controller;
+  final PostController post;
   final VoidCallback? onTap;
 
   const PostDetailImageDisplay({
     required this.post,
-    required this.controller,
     this.onTap,
   });
 
@@ -299,16 +288,14 @@ class PostDetailImageDisplay extends StatelessWidget {
     return PostDetailImageButtons(
       onOpen: onTap,
       post: post,
-      controller: controller,
       child: ImageOverlay(
         post: post,
-        controller: controller,
         builder: (context) => Center(
           child: Hero(
-            tag: post.hero,
-            child: post.type == PostType.video
-                ? PostDetailVideo(post: post)
-                : PostDetailImage(post: post),
+            tag: post.value.hero,
+            child: post.value.type == PostType.video
+                ? PostDetailVideo(post: post.value)
+                : PostDetailImage(post: post.value),
           ),
         ),
       ),

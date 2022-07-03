@@ -9,7 +9,7 @@ class TagCard extends StatelessWidget {
   final Color? stripeColor;
   final VoidCallback? onRemove;
   final bool editing;
-  final PostController? controller;
+  final PostsController? controller;
   final bool wiki;
   final List<Widget>? extra;
 
@@ -83,7 +83,7 @@ class TagCounterCard extends StatelessWidget {
   final String tag;
   final int count;
   final String? category;
-  final PostController? controller;
+  final PostsController? controller;
 
   const TagCounterCard({
     required this.tag,

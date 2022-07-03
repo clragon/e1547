@@ -7,7 +7,7 @@ class TagGesture extends StatelessWidget {
   final bool wiki;
   final String tag;
   final Widget child;
-  final PostController? controller;
+  final PostsController? controller;
 
   const TagGesture({
     required this.child,

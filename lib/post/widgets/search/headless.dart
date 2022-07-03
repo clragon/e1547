@@ -5,7 +5,7 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
 class PostGrid extends StatelessWidget {
-  final PostController controller;
+  final PostsController controller;
 
   const PostGrid({required this.controller});
 
@@ -16,7 +16,7 @@ class PostGrid extends StatelessWidget {
 }
 
 // This is needed because SmartRefresher needs the ScrollView as direct child
-Widget postGrid(BuildContext context, PostController controller) {
+Widget postGrid(BuildContext context, PostsController controller) {
   return PagedStaggeredGridView(
     key: joinKeys(['posts', TileLayout.of(context).crossAxisCount]),
     showNewPageErrorIndicatorAsGridChild: false,
@@ -30,8 +30,21 @@ Widget postGrid(BuildContext context, PostController controller) {
       onEmpty: const Text('No posts'),
       onError: const Text('Failed to load posts'),
       itemBuilder: (context, item, index) => PostTile(
-        post: item,
-        controller: controller,
+        post: PostController(
+          id: item.id,
+          parent: controller,
+        ),
+        onTap: () => Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => PostDetailConnector(
+              controller: controller,
+              child: PostDetailGallery(
+                controller: controller,
+                initialPage: index,
+              ),
+            ),
+          ),
+        ),
       ),
     ),
     gridDelegateBuilder: (childCount) =>

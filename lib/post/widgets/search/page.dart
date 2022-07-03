@@ -5,7 +5,7 @@ import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 
 class PostsPage extends StatefulWidget {
-  final PostController controller;
+  final PostsController controller;
   final PreferredSizeWidget appBar;
   final List<Widget>? drawerActions;
   final bool canSelect;

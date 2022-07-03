@@ -2,7 +2,7 @@ import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 
 class PostFullscreenGallery extends StatefulWidget {
-  final PostController controller;
+  final PostsController controller;
   final int? initialPage;
   final PageController? pageController;
   final ValueChanged<int>? onPageChanged;
@@ -51,8 +51,10 @@ class _PostFullscreenGalleryState extends State<PostFullscreenGallery>
           itemCount: widget.controller.itemList?.length,
           controller: widget.pageController ?? pageController,
           itemBuilder: (context, index) => PostFullscreenBody(
-            post: widget.controller.itemList![index],
-            controller: widget.controller,
+            post: PostController(
+              id: widget.controller.itemList![index].id,
+              parent: widget.controller,
+            ),
           ),
           onPageChanged: (index) {
             currentPage.value = index;

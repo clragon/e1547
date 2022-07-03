@@ -5,17 +5,13 @@ import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 
 class TagDisplay extends StatelessWidget {
-  final Post post;
-  final PostController? controller;
+  final PostController post;
 
-  const TagDisplay({
-    required this.post,
-    required this.controller,
-  });
+  const TagDisplay({required this.post});
 
   @override
   Widget build(BuildContext context) {
-    PostEditingController? editingController = PostEditor.of(context);
+    PostEditingController? editingController = PostEditor.maybeOf(context);
 
     return AnimatedSelector(
       animation: Listenable.merge([editingController]),
@@ -26,7 +22,7 @@ class TagDisplay extends StatelessWidget {
       builder: (context, child) {
         bool isEditing = (editingController?.editing ?? false);
         Map<String, List<String>>? tags =
-            editingController?.value?.tags ?? post.tags;
+            editingController?.value?.tags ?? post.value.tags;
 
         Widget title(String category) {
           return Padding(
@@ -47,7 +43,7 @@ class TagDisplay extends StatelessWidget {
                 (tag) => TagCard(
                   tag: tag,
                   category: category,
-                  controller: controller,
+                  controller: post.parent,
                   editing: isEditing,
                   onRemove: editingController!.canEdit
                       ? () {

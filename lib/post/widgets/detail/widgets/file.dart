@@ -5,10 +5,9 @@ import 'package:filesize/filesize.dart';
 import 'package:flutter/material.dart';
 
 class FileDisplay extends StatelessWidget {
-  final Post post;
-  final PostController? controller;
+  final PostController post;
 
-  const FileDisplay({required this.post, this.controller});
+  const FileDisplay({required this.post});
 
   @override
   Widget build(BuildContext context) {
@@ -30,11 +29,11 @@ class FileDisplay extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               TagGesture(
-                tag: 'rating:${post.rating.name}',
-                controller: controller,
-                child: Text(ratingTexts[post.rating]!),
+                tag: 'rating:${post.value.rating.name}',
+                controller: post.parent,
+                child: Text(ratingTexts[post.value.rating]!),
               ),
-              Text('${post.file.width} x ${post.file.height}'),
+              Text('${post.value.file.width} x ${post.value.file.height}'),
             ],
           ),
         ),
@@ -43,8 +42,9 @@ class FileDisplay extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(getCurrentDateTimeFormat().format(post.createdAt.toLocal())),
-              Text(filesize(post.file.size, 1)),
+              Text(getCurrentDateTimeFormat()
+                  .format(post.value.createdAt.toLocal())),
+              Text(filesize(post.value.file.size, 1)),
             ],
           ),
         ),
@@ -53,13 +53,13 @@ class FileDisplay extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              if (post.updatedAt != null)
+              if (post.value.updatedAt != null)
                 Text(getCurrentDateTimeFormat()
-                    .format(post.updatedAt!.toLocal())),
+                    .format(post.value.updatedAt!.toLocal())),
               TagGesture(
-                tag: 'type:${post.file.ext}',
-                controller: controller,
-                child: Text(post.file.ext),
+                tag: 'type:${post.value.file.ext}',
+                controller: post.parent,
+                child: Text(post.value.file.ext),
               ),
             ],
           ),

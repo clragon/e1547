@@ -11,7 +11,7 @@ class HotPage extends StatefulWidget {
 
 class _HotPageState extends State<HotPage>
     with ListenerCallbackMixin, DrawerEntry {
-  PostController controller = PostController(search: "order:rank");
+  PostsController controller = PostsController(search: "order:rank");
 
   @override
   Map<ChangeNotifier, VoidCallback> get initListeners => {

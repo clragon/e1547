@@ -95,6 +95,12 @@ class Client extends ChangeNotifier {
     settings.credentials.value = null;
   }
 
+  Future<void> ensureLogin() async {
+    if (!await isLoggedIn) {
+      throw StateError('User is not logged in!');
+    }
+  }
+
   bool postIsIgnored(Post post) {
     return (post.file.url == null && !post.flags.deleted) ||
         post.file.ext == 'swf';
@@ -189,54 +195,38 @@ class Client extends ChangeNotifier {
     return (postsFromJson(body['posts']));
   }
 
-  Future<bool> addFavorite(int postId) async {
-    if (!await isLoggedIn) {
-      return false;
-    }
-
+  Future<void> addFavorite(int postId) async {
     await cacheManager.deleteByExtras(
       'posts/$postId.json',
       options: dio.options,
     );
 
-    return validateCall(
-      () => dio.post('favorites.json', queryParameters: {
-        'post_id': postId,
-      }),
-    );
+    await dio.post('favorites.json', queryParameters: {'post_id': postId});
   }
 
-  Future<bool> removeFavorite(int postId) async {
-    if (!await isLoggedIn) {
-      return false;
-    }
+  Future<void> removeFavorite(int postId) async {
+    await ensureLogin();
 
     await cacheManager.deleteByExtras(
       'posts/$postId.json',
       options: dio.options,
     );
 
-    return validateCall(
-      () => dio.delete('favorites/$postId.json'),
-    );
+    dio.delete('favorites/$postId.json');
   }
 
-  Future<bool> votePost(int postId, bool upvote, bool replace) async {
-    if (!await isLoggedIn) {
-      return false;
-    }
+  Future<void> votePost(int postId, bool upvote, bool replace) async {
+    await ensureLogin();
 
     await cacheManager.deleteByExtras(
       'posts/$postId.json',
       options: dio.options,
     );
 
-    return validateCall(
-      () => dio.post('posts/$postId/votes.json', queryParameters: {
-        'score': upvote ? 1 : -1,
-        'no_unvote': replace,
-      }),
-    );
+    await dio.post('posts/$postId/votes.json', queryParameters: {
+      'score': upvote ? 1 : -1,
+      'no_unvote': replace,
+    });
   }
 
   Future<List<Pool>> pools(int page, {String? search, bool? force}) async {
@@ -588,19 +578,15 @@ class Client extends ChangeNotifier {
     return Comment.fromJson(body);
   }
 
-  Future<bool> voteComment(int commentId, bool upvote, bool replace) async {
-    if (!await isLoggedIn) {
-      return false;
-    }
+  Future<void> voteComment(int commentId, bool upvote, bool replace) async {
+    await ensureLogin();
 
-    return validateCall(
-      () => dio.post(
-        'comments/$commentId/votes.json',
-        queryParameters: {
-          'score': upvote ? 1 : -1,
-          'no_unvote': replace,
-        },
-      ),
+    await dio.post(
+      'comments/$commentId/votes.json',
+      queryParameters: {
+        'score': upvote ? 1 : -1,
+        'no_unvote': replace,
+      },
     );
   }
 

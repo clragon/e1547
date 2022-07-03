@@ -3,20 +3,16 @@ import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 
 class PostDetailAppBar extends StatelessWidget with PreferredSizeWidget {
-  final Post post;
-  final PostController? controller;
+  final PostController post;
 
   @override
   Size get preferredSize => const Size.fromHeight(defaultAppBarHeight);
 
-  PostDetailAppBar({
-    required this.post,
-    this.controller,
-  });
+  PostDetailAppBar({required this.post});
 
   @override
   Widget build(BuildContext context) {
-    bool isEditing = PostEditor.of(context)?.editing ?? false;
+    bool isEditing = PostEditor.maybeOf(context)?.editing ?? false;
     return TransparentAppBar(
       child: DefaultAppBar(
         leading: isEditing
@@ -39,11 +35,10 @@ class PostDetailAppBar extends StatelessWidget with PreferredSizeWidget {
                   ),
                   onSelected: (value) => value(),
                   itemBuilder: (context) => [
-                    ...postMenuPostActions(context, post),
+                    ...postMenuPostActions(context, post.value),
                     ...postMenuUserActions(
                       context,
                       post,
-                      controller: controller,
                     ),
                   ],
                 ),

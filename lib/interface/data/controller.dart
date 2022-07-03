@@ -7,6 +7,8 @@ import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:mutex/mutex.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
+export 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart' show PagingState;
+
 abstract class RawDataController<KeyType, ItemType>
     extends PagingController<KeyType, ItemType> {
   final Mutex _requestLock = Mutex();

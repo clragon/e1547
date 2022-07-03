@@ -39,7 +39,7 @@ Future<void> postDownloadingNotification(
 Future<void> postFavoritingNotification(
   BuildContext context,
   Set<Post> items,
-  PostController controller,
+  PostsController controller,
   bool isLiked,
 ) {
   return loadingNotification<Post>(
@@ -47,21 +47,23 @@ Future<void> postFavoritingNotification(
     icon: const Icon(Icons.favorite),
     items: items,
     timeout: const Duration(milliseconds: 300),
-    process: isLiked
-        ? (post) async {
-            if (post.isFavorited) {
-              return controller.unfav(context, post);
-            } else {
-              return true;
-            }
-          }
-        : (post) async {
-            if (!post.isFavorited) {
-              return controller.fav(context, post);
-            } else {
-              return true;
-            }
-          },
+    process: (post) async {
+      PostController postController =
+          PostController(id: post.id, parent: controller);
+      if (isLiked) {
+        if (post.isFavorited) {
+          return postController.unfav();
+        } else {
+          return true;
+        }
+      } else {
+        if (!post.isFavorited) {
+          return postController.fav();
+        } else {
+          return true;
+        }
+      }
+    },
     onDone: isLiked
         ? (items) => items.length == 1
             ? 'Unfavorited post #${items.first.id}'

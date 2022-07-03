@@ -11,7 +11,7 @@ class ParentDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    PostEditingController? editingController = PostEditor.of(context);
+    PostEditingController? editingController = PostEditor.maybeOf(context);
 
     return AnimatedSelector(
       animation: Listenable.merge([editingController]),
@@ -59,8 +59,8 @@ class ParentDisplay extends StatelessWidget {
                     onTap: () async {
                       if (parentId != null) {
                         try {
-                          PostController controller =
-                              singlePostController(parentId);
+                          PostsController controller =
+                              PostsController.single(parentId);
                           await controller.loadFirstPage();
                           Navigator.of(context).push(
                             MaterialPageRoute(
@@ -110,8 +110,8 @@ class ParentDisplay extends StatelessWidget {
                       title: Text(child.toString()),
                       onTap: () async {
                         try {
-                          PostController controller =
-                              singlePostController(child);
+                          PostsController controller =
+                              PostsController.single(child);
                           await controller.loadFirstPage();
                           Navigator.of(context).push(
                             MaterialPageRoute(
