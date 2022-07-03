@@ -21,7 +21,7 @@ class _SearchPageState extends State<SearchPage> with ListenerCallbackMixin {
   bool loadingInfo = true;
   Pool? pool;
 
-  late PostController controller = PostController(
+  late PostsController controller = PostsController(
     search: widget.tags,
     provider: (tags, page, force) => client.posts(
       page,

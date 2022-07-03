@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
 class PostDetailGallery extends StatefulWidget {
-  final PostController controller;
+  final PostsController controller;
   final int? initialPage;
   final PageController? pageController;
   final ValueChanged<int>? onPageChanged;
@@ -66,14 +66,19 @@ class _PostDetailGalleryState extends State<PostDetailGallery>
           return PrimaryScrollController(
             controller: ScrollController(),
             child: PostDetail(
-              post: widget.controller.itemList![index],
-              controller: widget.controller,
+              post: PostController(
+                id: widget.controller.itemList![index].id,
+                parent: widget.controller,
+              ),
               onTapImage: () => Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (context) => PostFullscreenGallery(
+                  builder: (context) => PostDetailConnector(
                     controller: widget.controller,
-                    initialPage: index,
-                    onPageChanged: pageController.jumpToPage,
+                    child: PostFullscreenGallery(
+                      controller: widget.controller,
+                      initialPage: index,
+                      onPageChanged: pageController.jumpToPage,
+                    ),
                   ),
                 ),
               ),
@@ -89,4 +94,43 @@ class _PostDetailGalleryState extends State<PostDetailGallery>
       ),
     );
   }
+}
+
+class PostDetailConnector extends StatefulWidget {
+  final PostsController controller;
+  final Widget child;
+
+  const PostDetailConnector({
+    super.key,
+    required this.controller,
+    required this.child,
+  });
+
+  @override
+  State<PostDetailConnector> createState() => _PostDetailConnectorState();
+}
+
+class _PostDetailConnectorState extends State<PostDetailConnector>
+    with ListenerCallbackMixin {
+  late List<Post>? pageItems = widget.controller.itemList;
+
+  @override
+  Map<Listenable, VoidCallback> get listeners => {
+        widget.controller: updatePages,
+      };
+
+  void updatePages() {
+    if (pageItems == null || widget.controller.itemList == null) {
+      Navigator.of(context).pop();
+    }
+    for (int i = 0; i < pageItems!.length; i++) {
+      if (pageItems![i].id != widget.controller.itemList![i].id) {
+        Navigator.of(context).pop();
+      }
+    }
+    pageItems = widget.controller.itemList;
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.child;
 }

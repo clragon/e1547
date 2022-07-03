@@ -4,17 +4,16 @@ import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 
 class CommentDisplay extends StatelessWidget {
-  final Post post;
-  final PostController? controller;
+  final PostController post;
 
-  const CommentDisplay({required this.post, this.controller});
+  const CommentDisplay({required this.post});
 
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
-      animation: Listenable.merge([controller]),
+      animation: Listenable.merge([post]),
       builder: (context, child) {
-        int count = post.commentCount;
+        int count = post.value.commentCount;
         return CrossFade(
           showChild: count > 0,
           child: Column(
@@ -23,13 +22,12 @@ class CommentDisplay extends StatelessWidget {
                 children: [
                   Expanded(
                     child: OutlinedButton(
-                      onPressed: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => CommentsPage(postId: post.id),
-                          ),
-                        );
-                      },
+                      onPressed: () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              CommentsPage(postId: post.value.id),
+                        ),
+                      ),
                       style: ButtonStyle(
                         foregroundColor: MaterialStateProperty.all(
                             Theme.of(context).textTheme.bodyText2!.color),

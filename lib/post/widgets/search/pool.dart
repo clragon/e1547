@@ -17,7 +17,7 @@ class PoolPage extends StatefulWidget {
 
 class _PoolPageState extends State<PoolPage> {
   late bool reversePool = widget.reversed;
-  late PostController controller = PostController(
+  late PostsController controller = PostsController(
     provider: (tags, page, force) => client.poolPosts(
       widget.pool.id,
       page,

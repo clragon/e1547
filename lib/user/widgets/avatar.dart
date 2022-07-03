@@ -104,7 +104,8 @@ class Avatar extends StatelessWidget {
   Widget build(BuildContext context) {
     if (post != null && post!.sample.url != null) {
       return PostTileOverlay(
-        post: post!,
+        // TODO: make denying available in PostController
+        post: PostController.single(post!),
         child: Hero(
           tag: post!.hero,
           child: CircleAvatar(

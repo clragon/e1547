@@ -12,7 +12,7 @@ import 'actions.dart';
 Future<void> tagSearchSheet({
   required BuildContext context,
   required String tag,
-  PostController? controller,
+  PostsController? controller,
 }) async {
   return showDefaultSlidingBottomSheet(
     context,
@@ -25,7 +25,7 @@ Future<void> tagSearchSheet({
 
 class TagSearchSheet extends StatelessWidget {
   final String tag;
-  final PostController? controller;
+  final PostsController? controller;
 
   const TagSearchSheet({required this.tag, this.controller});
 

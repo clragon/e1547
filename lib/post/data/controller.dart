@@ -3,10 +3,8 @@ import 'package:e1547/client/client.dart';
 import 'package:e1547/denylist/denylist.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
-import 'package:e1547/settings/settings.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
-import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
 enum DenyListMode {
   unavailable,
@@ -17,19 +15,19 @@ enum DenyListMode {
 typedef PostProviderCallback = Future<List<Post>> Function(
     String search, int page, bool force)?;
 
-class PostController extends DataController<Post>
+class PostsController extends DataController<Post>
     with SearchableController, HostableController, RefreshableController {
-  late final PostProviderCallback _provider;
+  final PostProviderCallback _provider;
 
   Map<String, List<Post>>? _previousDeniedPosts;
   Map<String, List<Post>>? _deniedPosts;
   Map<String, List<Post>>? get deniedPosts =>
       _deniedPosts != null ? Map.unmodifiable(_deniedPosts!) : null;
 
-  late bool _denying;
+  bool _denying;
   bool get denying => _denying;
 
-  late final DenyListMode denyMode;
+  final DenyListMode denyMode;
 
   List<String> _allowedTags = [];
   List<String> get allowedTags => List.unmodifiable(_allowedTags);
@@ -40,23 +38,35 @@ class PostController extends DataController<Post>
   List<Post>? _posts;
 
   @override
-  late ValueNotifier<String> search;
+  ValueNotifier<String> search;
   bool canSearch;
 
   late final List<Listenable> _filterNotifiers = [denylistController];
 
-  PostController({
+  PostsController({
     PostProviderCallback provider,
     String? search,
     bool denying = true,
     this.canSearch = true,
     this.denyMode = DenyListMode.filtering,
-  }) : search = ValueNotifier(sortTags(search ?? '')) {
-    _provider = provider;
-    _denying = denying;
+  })  : _provider = provider,
+        _denying = denying,
+        search = ValueNotifier(sortTags(search ?? '')) {
     for (final element in _filterNotifiers) {
       element.addListener(reapplyFilter);
     }
+  }
+
+  factory PostsController.single(int id) {
+    late PostsController controller;
+    controller = PostsController(
+      provider: (search, page, force) async => page == controller.firstPageKey
+          ? [await client.post(id, force: force)]
+          : [],
+      canSearch: false,
+      denyMode: DenyListMode.plain,
+    );
+    return controller;
   }
 
   @override
@@ -190,157 +200,139 @@ class PostController extends DataController<Post>
     _allowedPosts.remove(post);
     reapplyFilter();
   }
+}
 
-  Future<bool> fav(BuildContext context, Post post,
-      {Duration? cooldown}) async {
-    _assertItemOwnership(post);
-    cooldown ??= const Duration();
-    if (await client.addFavorite(post.id)) {
-      // cooldown avoids interference with animation
-      await Future.delayed(cooldown);
-      updateItem(
-        itemList!.indexOf(post),
-        post.copyWith(
-          isFavorited: true,
-          favCount: post.favCount + 1,
-        ),
+class PostController extends ProxyValueNotifier<Post, PostsController> {
+  final int? id;
+
+  PostController({required this.id, required super.parent});
+
+  PostController.single(super.value)
+      : id = null,
+        super.single();
+
+  @override
+  Post? fromParent() =>
+      parent?.itemList?.firstWhereOrNull((value) => value.id == id);
+
+  @override
+  void toParent(Post value) {
+    if (!orphan) {
+      parent!.updateItem(
+        parent!.itemList!.indexOf(this.value),
+        value,
         force: true,
       );
-      if (settings.upvoteFavs.value) {
-        Future.delayed(const Duration(seconds: 1) - cooldown).then(
-          (_) =>
-              vote(context: context, post: post, upvote: true, replace: true),
-        );
-      }
+    }
+  }
+
+  Future<bool> fav() async {
+    value = value.copyWith(
+      isFavorited: true,
+      favCount: value.favCount + 1,
+    );
+    try {
+      await client.addFavorite(value.id);
       return true;
-    } else {
-      updateItem(
-        itemList!.indexOf(post),
-        post.copyWith(
-          isFavorited: false,
-          favCount: post.favCount - 1,
-        ),
-      );
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          duration: const Duration(seconds: 1),
-          content: Text('Failed to add Post #${post.id} to favorites'),
-        ),
+    } on DioError {
+      value = value.copyWith(
+        isFavorited: false,
+        favCount: value.favCount - 1,
       );
       return false;
     }
   }
 
-  Future<bool> unfav(BuildContext context, Post post) async {
-    _assertItemOwnership(post);
-    if (await client.removeFavorite(post.id)) {
-      updateItem(
-        itemList!.indexOf(post),
-        post.copyWith(
-          isFavorited: false,
-          favCount: post.favCount - 1,
-        ),
-        force: true,
-      );
+  Future<bool> unfav() async {
+    value = value.copyWith(
+      isFavorited: false,
+      favCount: value.favCount - 1,
+    );
+    try {
+      await client.removeFavorite(value.id);
       return true;
-    } else {
-      updateItem(
-        itemList!.indexOf(post),
-        post.copyWith(
-          isFavorited: true,
-          favCount: post.favCount + 1,
-        ),
-      );
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          duration: const Duration(seconds: 1),
-          content: Text('Failed to remove Post #${post.id} from favorites'),
-        ),
+    } on DioError {
+      value = value.copyWith(
+        isFavorited: true,
+        favCount: value.favCount + 1,
       );
       return false;
     }
   }
 
-  Future<void> vote({
-    required BuildContext context,
-    required Post post,
+  Future<bool> vote({
     required bool upvote,
     required bool replace,
   }) async {
-    _assertItemOwnership(post);
-    if (await client.votePost(post.id, upvote, replace)) {
-      Post updated = post.copyWith();
-      if (post.voteStatus == VoteStatus.unknown) {
+    try {
+      await client.votePost(value.id, upvote, replace);
+      if (value.voteStatus == VoteStatus.unknown) {
         if (upvote) {
-          updated = updated.copyWith(
-            score: post.score.copyWith(
-              total: post.score.total + 1,
-              up: post.score.up + 1,
+          value = value.copyWith(
+            score: value.score.copyWith(
+              total: value.score.total + 1,
+              up: value.score.up + 1,
             ),
             voteStatus: VoteStatus.upvoted,
           );
         } else {
-          updated = updated.copyWith(
-            score: post.score.copyWith(
-              total: post.score.total - 1,
-              down: post.score.down + 1,
+          value = value.copyWith(
+            score: value.score.copyWith(
+              total: value.score.total - 1,
+              down: value.score.down + 1,
             ),
             voteStatus: VoteStatus.downvoted,
           );
         }
       } else {
         if (upvote) {
-          if (post.voteStatus == VoteStatus.upvoted) {
-            updated = updated.copyWith(
-              score: post.score.copyWith(
-                total: post.score.total - 1,
-                down: post.score.down + 1,
+          if (value.voteStatus == VoteStatus.upvoted) {
+            value = value.copyWith(
+              score: value.score.copyWith(
+                total: value.score.total - 1,
+                down: value.score.down + 1,
               ),
               voteStatus: VoteStatus.unknown,
             );
           } else {
-            updated = updated.copyWith(
-              score: post.score.copyWith(
-                total: post.score.total + 2,
-                up: post.score.up + 1,
-                down: post.score.down - 1,
+            value = value.copyWith(
+              score: value.score.copyWith(
+                total: value.score.total + 2,
+                up: value.score.up + 1,
+                down: value.score.down - 1,
               ),
               voteStatus: VoteStatus.upvoted,
             );
           }
         } else {
-          if (post.voteStatus == VoteStatus.upvoted) {
-            updated = updated.copyWith(
-              score: post.score.copyWith(
-                total: post.score.total - 2,
-                up: post.score.up - 1,
-                down: post.score.down + 1,
+          if (value.voteStatus == VoteStatus.upvoted) {
+            value = value.copyWith(
+              score: value.score.copyWith(
+                total: value.score.total - 2,
+                up: value.score.up - 1,
+                down: value.score.down + 1,
               ),
               voteStatus: VoteStatus.downvoted,
             );
           } else {
-            updated = updated.copyWith(
-              score: post.score.copyWith(
-                total: post.score.total + 1,
-                up: post.score.up + 1,
+            value = value.copyWith(
+              score: value.score.copyWith(
+                total: value.score.total + 1,
+                up: value.score.up + 1,
               ),
               voteStatus: VoteStatus.unknown,
             );
           }
         }
       }
-      updateItem(itemList!.indexOf(post), updated, force: true);
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        duration: const Duration(seconds: 1),
-        content: Text('Failed to vote on Post #${post.id}'),
-      ));
+      return true;
+    } on DioError {
+      // TODO: undo vote?
+      return false;
     }
   }
 
-  Future<void> resetPost(Post post) async {
-    _assertItemOwnership(post);
-    Post reset = await client.post(post.id, force: true);
-    updateItem(itemList!.indexOf(post), reset, force: true);
+  Future<void> reset() async {
+    value = await client.post(value.id, force: true);
   }
 }

@@ -225,7 +225,7 @@ extension Transitioning on Post {
   String get hero => getPostHero(id);
 }
 
-String getPostHero(int id) => 'image_$id';
+String getPostHero(int id) => 'post_$id';
 
 extension Linking on Post {
   Uri url(String host) => getPostUri(host, id);
@@ -234,7 +234,7 @@ extension Linking on Post {
 Uri getPostUri(String host, int id) =>
     Uri(scheme: 'https', host: host, path: '/posts/$id');
 
-extension History on PostController {
+extension History on PostsController {
   Future<void> addToHistory(BuildContext context, [Pool? pool]) async {
     await waitForFirstPage();
     if (pool != null) {

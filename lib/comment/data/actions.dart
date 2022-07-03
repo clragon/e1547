@@ -40,8 +40,7 @@ Future<bool> writeComment({
           if (text.isNotEmpty) {
             try {
               await client.postComment(postId, text, comment: comment);
-              sent = true;
-              return true;
+              return sent = true;
             } on DioError {
               ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                 duration: Duration(seconds: 1),

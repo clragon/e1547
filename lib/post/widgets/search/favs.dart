@@ -14,7 +14,7 @@ class FavPage extends StatefulWidget {
 class _FavPageState extends State<FavPage>
     with ListenerCallbackMixin, DrawerEntry {
   bool orderFavorites = false;
-  PostController? controller;
+  PostsController? controller;
 
   @override
   Map<ChangeNotifier, VoidCallback> get initListeners => {
@@ -29,7 +29,7 @@ class _FavPageState extends State<FavPage>
     Credentials? credentials = client.credentials;
     if (credentials != null) {
       setState(() {
-        controller = PostController(
+        controller = PostsController(
           provider: (tags, page, force) => client.posts(page,
               search: tags, orderFavorites: orderFavorites, force: force),
           search: 'fav:${credentials.username}',

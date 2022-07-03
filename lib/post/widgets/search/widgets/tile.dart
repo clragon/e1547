@@ -4,20 +4,18 @@ import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
 
 class PostTile extends StatelessWidget {
-  final Post post;
-  final PostController? controller;
-  final VoidCallback? onPressed;
+  final PostController post;
+  final VoidCallback? onTap;
 
   const PostTile({
     required this.post,
-    this.controller,
-    this.onPressed,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     Widget tag() {
-      if (post.file.ext == 'gif') {
+      if (post.value.file.ext == 'gif') {
         return Container(
           color: Colors.black12,
           child: const Icon(
@@ -26,7 +24,7 @@ class PostTile extends StatelessWidget {
           ),
         );
       }
-      if (post.type == PostType.video) {
+      if (post.value.type == PostType.video) {
         return Container(
           color: Colors.black12,
           child: const Icon(
@@ -44,14 +42,13 @@ class PostTile extends StatelessWidget {
         children: [
           Expanded(
             child: AnimatedBuilder(
-              animation: Listenable.merge([controller]),
+              animation: Listenable.merge([post]),
               builder: (context, value) => PostTileOverlay(
                 post: post,
-                controller: controller,
                 child: Hero(
-                  tag: post.hero,
+                  tag: post.value.hero,
                   child: PostImageWidget(
-                    post: post,
+                    post: post.value,
                     size: ImageSize.sample,
                     fit: BoxFit.cover,
                     showProgress: false,
@@ -79,11 +76,7 @@ class PostTile extends StatelessWidget {
                   Expanded(
                     child: image(),
                   ),
-                  if (value)
-                    PostInfoBar(
-                      post: post,
-                      controller: controller,
-                    ),
+                  if (value) PostInfoBar(post: post),
                 ],
               ),
             ),
@@ -91,20 +84,12 @@ class PostTile extends StatelessWidget {
             Material(
               type: MaterialType.transparency,
               child: InkWell(
-                onTap: onPressed ??
-                    (controller != null
-                        ? () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => PostDetailGallery(
-                                  controller: controller!,
-                                  initialPage:
-                                      controller!.itemList!.indexOf(post),
-                                ),
-                              ),
-                            );
-                          }
-                        : null),
+                onTap: onTap ??
+                    () => Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => PostDetail(post: post),
+                          ),
+                        ),
               ),
             ),
           ],
@@ -115,25 +100,24 @@ class PostTile extends StatelessWidget {
 }
 
 class PostTileOverlay extends StatelessWidget {
-  final Post post;
+  final PostController post;
   final Widget child;
-  final PostController? controller;
 
-  const PostTileOverlay(
-      {required this.post, required this.child, this.controller});
+  const PostTileOverlay({required this.post, required this.child});
 
   @override
   Widget build(BuildContext context) {
-    if (post.flags.deleted) {
+    if (post.value.flags.deleted) {
       return const Center(child: Text('deleted'));
     }
-    if (post.type == PostType.unsupported) {
+    if (post.value.type == PostType.unsupported) {
       return const Center(child: Text('unsupported'));
     }
-    if (post.file.url == null) {
+    if (post.value.file.url == null) {
       return const Center(child: Text('unsafe'));
     }
-    if (controller?.isDenied(post) ?? false) {
+    // TODO: make denying available in PostController
+    if (post.parent!.isDenied(post.value)) {
       return const Center(child: Text('blacklisted'));
     }
     return child;
@@ -141,10 +125,9 @@ class PostTileOverlay extends StatelessWidget {
 }
 
 class PostInfoBar extends StatelessWidget {
-  final Post post;
-  final PostController? controller;
+  final PostController post;
 
-  const PostInfoBar({required this.post, this.controller});
+  const PostInfoBar({required this.post});
 
   @override
   Widget build(BuildContext context) {
@@ -161,20 +144,20 @@ class PostInfoBar extends StatelessWidget {
                   alignment: WrapAlignment.spaceEvenly,
                   children: [
                     AnimatedSelector(
-                      animation: Listenable.merge([controller]),
-                      selector: () => [post.voteStatus],
+                      animation: Listenable.merge([post]),
+                      selector: () => [post.value.voteStatus],
                       builder: (context, child) => Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text(post.score.total.toString()),
+                          Text(post.value.score.total.toString()),
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 4),
                             child: Icon(
-                              post.score.total >= 0
+                              post.value.score.total >= 0
                                   ? Icons.arrow_upward
                                   : Icons.arrow_downward,
                               color: () {
-                                switch (post.voteStatus) {
+                                switch (post.value.voteStatus) {
                                   case VoteStatus.upvoted:
                                     return Colors.deepOrange;
                                   case VoteStatus.downvoted:
@@ -189,18 +172,19 @@ class PostInfoBar extends StatelessWidget {
                       ),
                     ),
                     AnimatedSelector(
-                      animation: Listenable.merge([controller]),
-                      selector: () => [post.isFavorited],
+                      animation: Listenable.merge([post]),
+                      selector: () => [post.value.isFavorited],
                       builder: (context, child) => Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text(post.favCount.toString()),
+                          Text(post.value.favCount.toString()),
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 4),
                             child: Icon(
                               Icons.favorite,
-                              color:
-                                  post.isFavorited ? Colors.pinkAccent : null,
+                              color: post.value.isFavorited
+                                  ? Colors.pinkAccent
+                                  : null,
                             ),
                           ),
                         ],
@@ -209,7 +193,7 @@ class PostInfoBar extends StatelessWidget {
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text(post.commentCount.toString()),
+                        Text(post.value.commentCount.toString()),
                         const Padding(
                           padding: EdgeInsets.symmetric(horizontal: 4),
                           child: Icon(Icons.comment),
@@ -219,10 +203,10 @@ class PostInfoBar extends StatelessWidget {
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text(post.rating.name.toUpperCase()),
+                        Text(post.value.rating.name.toUpperCase()),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 4),
-                          child: Icon(ratingIcons[post.rating]!),
+                          child: Icon(ratingIcons[post.value.rating]!),
                         ),
                       ],
                     ),

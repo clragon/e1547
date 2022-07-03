@@ -12,7 +12,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage>
     with ListenerCallbackMixin, DrawerEntry {
-  PostController controller = PostController(search: settings.homeTags.value);
+  PostsController controller = PostsController(search: settings.homeTags.value);
 
   @override
   Map<ChangeNotifier, VoidCallback> get listeners => {

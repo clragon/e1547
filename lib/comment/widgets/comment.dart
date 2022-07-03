@@ -138,12 +138,20 @@ class CommentTile extends StatelessWidget {
                           onUpvote: controller != null
                               ? (isLiked) async {
                                   if (client.hasLogin) {
-                                    controller!.vote(
-                                      context: context,
+                                    controller!
+                                        .vote(
                                       comment: comment,
                                       upvote: true,
                                       replace: !isLiked,
-                                    );
+                                    )
+                                        .then((value) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(SnackBar(
+                                        duration: const Duration(seconds: 1),
+                                        content: Text(
+                                            'Failed to upvote comment #${comment.id}'),
+                                      ));
+                                    });
                                     return !isLiked;
                                   } else {
                                     return false;
@@ -153,12 +161,20 @@ class CommentTile extends StatelessWidget {
                           onDownvote: controller != null
                               ? (isLiked) async {
                                   if (client.hasLogin) {
-                                    controller!.vote(
-                                      context: context,
+                                    controller!
+                                        .vote(
                                       comment: comment,
                                       upvote: false,
                                       replace: !isLiked,
-                                    );
+                                    )
+                                        .then((value) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(SnackBar(
+                                        duration: const Duration(seconds: 1),
+                                        content: Text(
+                                            'Failed to downvote comment #${comment.id}'),
+                                      ));
+                                    });
                                     return !isLiked;
                                   } else {
                                     return false;

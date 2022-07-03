@@ -9,15 +9,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class PostReportImage extends StatelessWidget {
-  final Post post;
-  final PostController? controller;
+  final PostController post;
   final bool isLoading;
   final double height;
 
   const PostReportImage({
     required this.post,
     required this.height,
-    this.controller,
     this.isLoading = false,
   });
 
@@ -37,11 +35,10 @@ class PostReportImage extends StatelessWidget {
               isLoading: isLoading,
               child: ImageOverlay(
                 post: post,
-                controller: controller,
                 builder: (context) => Hero(
-                  tag: post.hero,
+                  tag: post.value.hero,
                   child: PostImageWidget(
-                    post: post,
+                    post: post.value,
                     size: ImageSize.sample,
                     fit: BoxFit.cover,
                   ),
@@ -56,7 +53,7 @@ class PostReportImage extends StatelessWidget {
 }
 
 class PostReportScreen extends StatefulWidget {
-  final Post post;
+  final PostController post;
 
   const PostReportScreen({required this.post});
 
@@ -103,7 +100,7 @@ class _PostReportScreenState extends State<PostReportScreen> {
                       );
                       if (await validateCall(
                         () => client.reportPost(
-                          widget.post.id,
+                          widget.post.value.id,
                           type!.id,
                           reasonController.text.trim(),
                         ),
@@ -175,7 +172,7 @@ class _PostReportScreenState extends State<PostReportScreen> {
 }
 
 class PostFlagScreen extends StatefulWidget {
-  final Post post;
+  final PostController post;
 
   const PostFlagScreen({required this.post});
 
@@ -222,7 +219,7 @@ class _PostFlagScreenState extends State<PostFlagScreen> {
                       );
                       if (await validateCall(
                         () => client.flagPost(
-                          widget.post.id,
+                          widget.post.value.id,
                           type!.title,
                           parent: int.tryParse(parentController.text),
                         ),

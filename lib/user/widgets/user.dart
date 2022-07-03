@@ -30,10 +30,10 @@ class UserPage extends StatefulWidget {
 
 class _UserPageState extends State<UserPage>
     with TickerProviderStateMixin, ListenerCallbackMixin {
-  late PostController favoritePostController =
-      PostController(search: 'fav:${widget.user.name}', canSearch: false);
-  late PostController uploadPostController =
-      PostController(search: 'user:${widget.user.name}', canSearch: false);
+  late PostsController favoritePostController =
+      PostsController(search: 'fav:${widget.user.name}', canSearch: false);
+  late PostsController uploadPostController =
+      PostsController(search: 'user:${widget.user.name}', canSearch: false);
   late TabController tabController;
 
   @override

@@ -3,60 +3,56 @@ import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view.dart';
 
 class PostFullscreen extends StatelessWidget {
-  final Post post;
-  final PostController? controller;
+  final PostController post;
 
-  const PostFullscreen({super.key, required this.post, this.controller});
+  const PostFullscreen({super.key, required this.post});
 
   @override
   Widget build(BuildContext context) {
     return PostFullscreenFrame(
-      post: post,
+      post: post.value,
       child: PostFullscreenBody(
         post: post,
-        controller: controller,
       ),
     );
   }
 }
 
 class PostFullscreenBody extends StatelessWidget {
-  final Post post;
-  final PostController? controller;
+  final PostController post;
 
-  const PostFullscreenBody({required this.post, this.controller});
+  const PostFullscreenBody({required this.post});
 
   @override
   Widget build(BuildContext context) {
     return ImageOverlay(
       post: post,
-      controller: controller,
       builder: (context) {
-        switch (post.type) {
+        switch (post.value.type) {
           case PostType.image:
             return PhotoViewGestureDetectorScope(
               axis: Axis.horizontal,
               child: PhotoView.customChild(
-                heroAttributes: PhotoViewHeroAttributes(tag: post.hero),
+                heroAttributes: PhotoViewHeroAttributes(tag: post.value.hero),
                 backgroundDecoration:
                     const BoxDecoration(color: Colors.transparent),
-                childSize: Size(
-                    post.file.width.toDouble(), post.file.height.toDouble()),
+                childSize: Size(post.value.file.width.toDouble(),
+                    post.value.file.height.toDouble()),
                 initialScale: PhotoViewComputedScale.contained,
                 minScale: PhotoViewComputedScale.contained,
                 maxScale: PhotoViewComputedScale.covered * 6,
-                child: PostImageWidget(post: post, size: ImageSize.file),
+                child: PostImageWidget(post: post.value, size: ImageSize.file),
               ),
             );
           case PostType.video:
             return Center(
               child: Hero(
-                tag: post.hero,
+                tag: post.value.hero,
                 child: PostVideoLoader(
-                  post: post,
+                  post: post.value,
                   child: VideoGestures(
-                    videoController: post.getVideo(context)!,
-                    child: PostVideoWidget(post: post),
+                    videoController: post.value.getVideo(context)!,
+                    child: PostVideoWidget(post: post.value),
                   ),
                 ),
               ),

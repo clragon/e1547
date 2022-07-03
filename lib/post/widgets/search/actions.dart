@@ -73,7 +73,7 @@ class TagListActions extends StatelessWidget {
 }
 
 class RemoveTagAction extends StatelessWidget {
-  final PostController controller;
+  final PostsController controller;
   final String tag;
 
   const RemoveTagAction({required this.controller, required this.tag});
@@ -94,7 +94,7 @@ class RemoveTagAction extends StatelessWidget {
 }
 
 class AddTagAction extends StatelessWidget {
-  final PostController controller;
+  final PostsController controller;
   final String tag;
 
   const AddTagAction({required this.controller, required this.tag});
@@ -114,7 +114,7 @@ class AddTagAction extends StatelessWidget {
 }
 
 class SubtractTagAction extends StatelessWidget {
-  final PostController controller;
+  final PostsController controller;
   final String tag;
 
   const SubtractTagAction({required this.controller, required this.tag});
@@ -135,7 +135,7 @@ class SubtractTagAction extends StatelessWidget {
 
 class TagSearchActions extends StatelessWidget {
   final String tag;
-  final PostController controller;
+  final PostsController controller;
 
   const TagSearchActions({required this.tag, required this.controller});
 

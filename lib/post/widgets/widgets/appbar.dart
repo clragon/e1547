@@ -31,35 +31,33 @@ List<PopupMenuItem<VoidCallback>> postMenuPostActions(
 
 List<PopupMenuItem<VoidCallback>> postMenuUserActions(
   BuildContext context,
-  Post post, {
-  PostController? controller,
-}) {
+  PostController post,
+) {
   return [
-    if (PostEditor.of(context) != null)
+    if (PostEditor.maybeOf(context) != null)
       PopupMenuTile(
         title: 'Edit',
         icon: Icons.edit,
         value: () => guardWithLogin(
           context: context,
-          callback: PostEditor.of(context)!.startEditing,
+          callback: PostEditor.of(context).startEditing,
           error: 'You must be logged in to edit posts!',
         ),
       ),
-    if (controller != null)
-      PopupMenuTile(
-        title: 'Comment',
-        icon: Icons.comment,
-        value: () => guardWithLogin(
-          context: context,
-          callback: () async {
-            if (await writeComment(context: context, postId: post.id)) {
-              controller.updateItem(controller.itemList!.indexOf(post),
-                  post.copyWith(commentCount: post.commentCount + 1));
-            }
-          },
-          error: 'You must be logged in to comment!',
-        ),
+    PopupMenuTile(
+      title: 'Comment',
+      icon: Icons.comment,
+      value: () => guardWithLogin(
+        context: context,
+        callback: () async {
+          if (await writeComment(context: context, postId: post.value.id)) {
+            post.value =
+                post.value.copyWith(commentCount: post.value.commentCount + 1);
+          }
+        },
+        error: 'You must be logged in to comment!',
       ),
+    ),
     PopupMenuTile(
       title: 'Report',
       icon: Icons.report,
