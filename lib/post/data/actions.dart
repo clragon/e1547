@@ -236,7 +236,11 @@ Uri getPostUri(String host, int id) =>
 
 extension History on PostsController {
   Future<void> addToHistory(BuildContext context, [Pool? pool]) async {
-    await waitForFirstPage();
+    try {
+      await waitForFirstPage();
+    } on ControllerLoadingException {
+      return;
+    }
     if (pool != null) {
       historyController.addTag(
         pool.search,

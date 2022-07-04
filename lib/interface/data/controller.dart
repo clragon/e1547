@@ -261,7 +261,7 @@ extension Loading<K, T> on RawDataController<K, T> {
         case PagingStatus.firstPageError:
         case PagingStatus.subsequentPageError:
           removeListener(onUpdate);
-          completer.completeError(error);
+          completer.completeError(ControllerLoadingException(error));
           break;
       }
     }
@@ -280,5 +280,16 @@ extension Loading<K, T> on RawDataController<K, T> {
   Future<T> loadFirstItem() async {
     await loadFirstPage();
     return itemList!.first;
+  }
+}
+
+class ControllerLoadingException implements Exception {
+  final Exception inner;
+
+  ControllerLoadingException(this.inner);
+
+  @override
+  String toString() {
+    return 'ControllerLoadingException($inner)';
   }
 }
