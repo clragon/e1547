@@ -1,7 +1,6 @@
-import 'package:e1547/client/client.dart';
 import 'package:e1547/interface/interface.dart';
+
 import 'package:e1547/post/post.dart';
-import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 
 class FavPage extends StatefulWidget {
@@ -13,53 +12,26 @@ class FavPage extends StatefulWidget {
 
 class _FavPageState extends State<FavPage>
     with ListenerCallbackMixin, DrawerEntry {
-  bool orderFavorites = false;
-  PostsController? controller;
+  final FavoritePostsController controller = FavoritePostsController();
 
   @override
   Map<ChangeNotifier, VoidCallback> get initListeners => {
-        client: updateUsername,
+        controller: () async => controller.addToHistory(context),
       };
-
-  Future<void> addToHistory() async {
-    controller!.addToHistory(context);
-  }
-
-  void updateUsername() {
-    Credentials? credentials = client.credentials;
-    if (credentials != null) {
-      setState(() {
-        controller = PostsController(
-          provider: (tags, page, force) => client.posts(page,
-              search: tags, orderFavorites: orderFavorites, force: force),
-          search: 'fav:${credentials.username}',
-          denyMode: DenyListMode.unavailable,
-        );
-        controller!.search.addListener(addToHistory);
-        addToHistory();
-      });
-    } else {
-      setState(() {
-        controller?.search.removeListener(addToHistory);
-        controller?.dispose();
-        controller = null;
-      });
-    }
-  }
 
   @override
   void dispose() {
-    controller?.dispose();
     super.dispose();
+    controller.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
-      animation: client,
+      animation: controller,
       builder: (context, child) => PageLoader(
-        isEmpty: controller == null,
-        isError: controller == null,
+        isEmpty: controller.error is NoUserLoginException,
+        isError: controller.error is NoUserLoginException,
         onError: Column(
           children: [
             const Padding(
@@ -78,35 +50,30 @@ class _FavPageState extends State<FavPage>
           body: Center(child: child),
           drawer: const NavigationDrawer(),
         ),
-        builder: (context) => ValueListenableBuilder<String>(
-          valueListenable: controller!.search,
-          builder: (context, value, child) => PostsPage(
-            controller: controller!,
-            appBar: const DefaultAppBar(
-              title: Text('Favorites'),
-              actions: [ContextDrawerButton()],
-            ),
-            drawerActions: [
-              if (favRegex(client.credentials!.username)
-                  .hasMatch(controller!.search.value))
-                SwitchListTile(
-                  secondary: const Icon(Icons.sort),
-                  title: Text(
-                    'Favorite order',
-                    style: Theme.of(context).textTheme.subtitle1,
-                  ),
-                  subtitle: Text(orderFavorites ? 'added order' : 'id order'),
-                  value: orderFavorites,
-                  onChanged: (value) {
-                    setState(() {
-                      orderFavorites = !orderFavorites;
-                    });
-                    controller!.refresh();
-                    Navigator.of(context).maybePop();
-                  },
-                ),
-            ],
+        builder: (context) => PostsPage(
+          controller: controller,
+          appBar: const DefaultAppBar(
+            title: Text('Favorites'),
+            actions: [ContextDrawerButton()],
           ),
+          drawerActions: [
+            if (controller.isFavoriteSearch)
+              SwitchListTile(
+                secondary: const Icon(Icons.sort),
+                title: Text(
+                  'Favorite order',
+                  style: Theme.of(context).textTheme.subtitle1,
+                ),
+                subtitle: Text(controller.orderFavorites.value
+                    ? 'added order'
+                    : 'id order'),
+                value: controller.orderFavorites.value,
+                onChanged: (value) {
+                  controller.orderFavorites.value = value;
+                  Navigator.of(context).maybePop();
+                },
+              ),
+          ],
         ),
       ),
     );
