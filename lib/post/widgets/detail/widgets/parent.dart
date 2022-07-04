@@ -21,8 +21,12 @@ class ParentDisplay extends StatelessWidget {
       ],
       builder: (context, child) {
         bool isEditing = editingController?.editing ?? false;
-        int? parentId =
-            editingController?.value?.parentId ?? post.relationships.parentId;
+        int? parentId;
+        if (isEditing) {
+          parentId = editingController?.value?.parentId;
+        } else {
+          parentId = post.relationships.parentId;
+        }
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
