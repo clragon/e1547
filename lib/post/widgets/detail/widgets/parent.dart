@@ -59,13 +59,11 @@ class ParentDisplay extends StatelessWidget {
                     onTap: () async {
                       if (parentId != null) {
                         try {
-                          PostsController controller =
-                              PostsController.single(parentId);
-                          await controller.loadFirstPage();
+                          Post post = await client.post(parentId);
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (context) => PostDetailGallery(
-                                controller: controller,
+                              builder: (context) => PostDetail(
+                                post: PostController.single(post),
                               ),
                             ),
                           );
@@ -110,13 +108,11 @@ class ParentDisplay extends StatelessWidget {
                       title: Text(child.toString()),
                       onTap: () async {
                         try {
-                          PostsController controller =
-                              PostsController.single(child);
-                          await controller.loadFirstPage();
+                          Post post = await client.post(child);
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (context) => PostDetailGallery(
-                                controller: controller,
+                              builder: (context) => PostDetail(
+                                post: PostController.single(post),
                               ),
                             ),
                           );

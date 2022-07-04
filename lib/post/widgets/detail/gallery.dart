@@ -30,26 +30,21 @@ class _PostDetailGalleryState extends State<PostDetailGallery>
 
   @override
   Map<Listenable, VoidCallback> get listeners => {
-        widget.controller: updateRequest,
+        widget.controller: () {
+          if (widget.controller.value.status == PagingStatus.ongoing) {
+            hasRequestedNextPage = false;
+          }
+        },
       };
-
-  void updateRequest() {
-    if (widget.controller.value.status == PagingStatus.ongoing) {
-      hasRequestedNextPage = false;
-    }
-  }
 
   void loadNextPage(int index) {
     if (!hasRequestedNextPage) {
       int newPageRequestTriggerIndex =
           max(0, widget.controller.itemList?.length ?? 0 - 3);
-
       if (widget.controller.nextPageKey != null &&
           index >= newPageRequestTriggerIndex) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          widget.controller
-              .notifyPageRequestListeners(widget.controller.nextPageKey!);
-        });
+        WidgetsBinding.instance.addPostFrameCallback((_) => widget.controller
+            .notifyPageRequestListeners(widget.controller.nextPageKey!));
         hasRequestedNextPage = true;
       }
     }
@@ -86,59 +81,15 @@ class _PostDetailGalleryState extends State<PostDetailGallery>
           );
         },
         itemCount: widget.controller.itemList?.length ?? 0,
-        onPageChanged: (index) => preloadImages(
-          index: index,
-          posts: widget.controller.itemList!,
-          size: ImageSize.sample,
-        ),
+        onPageChanged: (index) {
+          widget.onPageChanged?.call(index);
+          preloadImages(
+            index: index,
+            posts: widget.controller.itemList!,
+            size: ImageSize.sample,
+          );
+        },
       ),
     );
   }
-}
-
-class PostDetailConnector extends StatefulWidget {
-  final PostsController controller;
-  final Widget child;
-
-  const PostDetailConnector({
-    super.key,
-    required this.controller,
-    required this.child,
-  });
-
-  @override
-  State<PostDetailConnector> createState() => _PostDetailConnectorState();
-}
-
-class _PostDetailConnectorState extends State<PostDetailConnector>
-    with ListenerCallbackMixin {
-  late List<Post>? pageItems = widget.controller.itemList;
-
-  @override
-  Map<Listenable, VoidCallback> get listeners => {
-        widget.controller: updatePages,
-      };
-
-  void popOrRemove() {
-    if (ModalRoute.of(context)!.isCurrent) {
-      Navigator.of(context).pop();
-    } else if (ModalRoute.of(context)!.isActive) {
-      Navigator.of(context).removeRoute(ModalRoute.of(context)!);
-    }
-  }
-
-  void updatePages() {
-    if (pageItems == null || widget.controller.itemList == null) {
-      return popOrRemove();
-    }
-    for (int i = 0; i < pageItems!.length; i++) {
-      if (pageItems![i].id != widget.controller.itemList![i].id) {
-        return popOrRemove();
-      }
-    }
-    pageItems = widget.controller.itemList;
-  }
-
-  @override
-  Widget build(BuildContext context) => widget.child;
 }

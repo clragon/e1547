@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
 
@@ -196,7 +198,7 @@ class LoadingTile extends StatefulWidget {
   final Widget? leading;
   final Widget title;
   final Widget? trailing;
-  final Function onTap;
+  final FutureOr<void> Function() onTap;
 
   const LoadingTile({
     required this.title,
