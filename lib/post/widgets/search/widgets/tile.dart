@@ -107,20 +107,25 @@ class PostTileOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (post.value.flags.deleted) {
-      return const Center(child: Text('deleted'));
-    }
-    if (post.value.type == PostType.unsupported) {
-      return const Center(child: Text('unsupported'));
-    }
-    if (post.value.file.url == null) {
-      return const Center(child: Text('unsafe'));
-    }
-    // TODO: make denying available in PostController
-    if (post.parent!.isDenied(post.value)) {
-      return const Center(child: Text('blacklisted'));
-    }
-    return child;
+    return AnimatedBuilder(
+      animation: post,
+      builder: (context, child) {
+        if (post.value.flags.deleted) {
+          return const Center(child: Text('deleted'));
+        }
+        if (post.value.type == PostType.unsupported) {
+          return const Center(child: Text('unsupported'));
+        }
+        if (post.value.file.url == null) {
+          return const Center(child: Text('unsafe'));
+        }
+        if (post.isDenied) {
+          return const Center(child: Text('blacklisted'));
+        }
+        return child!;
+      },
+      child: child,
+    );
   }
 }
 

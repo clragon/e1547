@@ -27,48 +27,42 @@ class DividerListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          child: ListTile(
-            title: title,
-            subtitle: subtitle,
-            leading: leading,
-            trailing: trailing,
-            onTap: onTap,
-            onLongPress: onLongPress,
-            contentPadding: contentPadding,
-          ),
-        ),
-        if (separated != null)
-          InkWell(
-            onTap: onTapSeparated,
-            onLongPress: onLongPressSeparated,
-            child: Container(
-              color: Colors.transparent,
-              height: 64,
-              width: 80,
-              child: Column(
-                children: [
-                  Expanded(
-                    child: Row(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          child: Container(
-                            color: Theme.of(context).dividerColor,
-                            width: 2,
-                          ),
-                        ),
-                        separated!,
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+    return IntrinsicHeight(
+      child: Row(
+        children: [
+          Expanded(
+            child: ListTile(
+              title: title,
+              subtitle: subtitle,
+              leading: leading,
+              trailing: trailing,
+              onTap: onTap,
+              onLongPress: onLongPress,
+              contentPadding: contentPadding,
             ),
           ),
-      ],
+          if (separated != null)
+            InkWell(
+              onTap: onTapSeparated,
+              onLongPress: onLongPressSeparated,
+              child: SizedBox(
+                width: 80,
+                child: Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      child: Container(
+                        color: Theme.of(context).dividerColor,
+                        width: 2,
+                      ),
+                    ),
+                    separated!,
+                  ],
+                ),
+              ),
+            ),
+        ],
+      ),
     );
   }
 }

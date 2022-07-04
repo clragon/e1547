@@ -77,9 +77,6 @@ class _PostDetailImageToggleState extends State<PostDetailImageToggle> {
 
   Post get post => widget.post.value;
 
-  // TODO: make denying available in PostController
-  PostsController get controller => widget.post.parent!;
-
   Future<void> onToggle() async {
     setState(() {
       loading = true;
@@ -90,8 +87,8 @@ class _PostDetailImageToggleState extends State<PostDetailImageToggle> {
       }
       if (settings.customHost.value != null) {
         replacement ??= await client.post(post.id, unsafe: true);
-        if (!controller.isDenied(post)) {
-          controller.allow(post);
+        if (!widget.post.isDenied) {
+          widget.post.isAllowed = true;
         }
         widget.post.value = post.copyWith(
           fileRaw: post.fileRaw.copyWith(url: replacement!.fileRaw.url),
@@ -100,8 +97,8 @@ class _PostDetailImageToggleState extends State<PostDetailImageToggle> {
         );
       }
     } else {
-      if (controller.isAllowed(post)) {
-        controller.unallow(post);
+      if (widget.post.isAllowed) {
+        widget.post.isAllowed = false;
         if (replacement != null) {
           widget.post.value = post.copyWith(
             fileRaw: post.fileRaw.copyWith(url: null),
@@ -110,7 +107,7 @@ class _PostDetailImageToggleState extends State<PostDetailImageToggle> {
           );
         }
       } else {
-        controller.allow(post);
+        widget.post.isAllowed = true;
       }
       post.getVideo(context)?.pause();
     }
@@ -123,16 +120,14 @@ class _PostDetailImageToggleState extends State<PostDetailImageToggle> {
   Widget build(BuildContext context) {
     if (!post.flags.deleted) {
       return AnimatedBuilder(
-        animation: controller,
+        animation: widget.post,
         builder: (context, child) => CrossFade(
           showChild: post.file.url == null ||
               (!post.isFavorited &&
-                  (controller.isDenied(post) || controller.isAllowed(post))),
+                  (widget.post.isDenied || widget.post.isAllowed)),
           duration: const Duration(milliseconds: 200),
           child: Card(
-            color: controller.isAllowed(post)
-                ? Colors.black12
-                : Colors.transparent,
+            color: widget.post.isAllowed ? Colors.black12 : Colors.transparent,
             elevation: 0,
             child: InkWell(
               onTap: onToggle,
@@ -143,7 +138,7 @@ class _PostDetailImageToggleState extends State<PostDetailImageToggle> {
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 2),
                       child: Icon(
-                        controller.isAllowed(post)
+                        widget.post.isAllowed
                             ? Icons.visibility_off
                             : Icons.visibility,
                         size: 16,
@@ -151,7 +146,7 @@ class _PostDetailImageToggleState extends State<PostDetailImageToggle> {
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 5),
-                      child: Text(controller.isAllowed(post) ? 'hide' : 'show'),
+                      child: Text(widget.post.isAllowed ? 'hide' : 'show'),
                     ),
                     CrossFade(
                       showChild: loading,
@@ -190,9 +185,8 @@ class PostDetailImageButtons extends StatelessWidget {
       builder: (context, child) {
         VoidCallback? onTap;
 
-        // TODO: make denying available in PostController
         bool visible = post.value.file.url != null &&
-            (!post.parent!.isDenied(post.value) || post.value.isFavorited);
+            (!post.isDenied || post.value.isFavorited);
 
         if (visible) {
           onTap = post.value.type == PostType.unsupported

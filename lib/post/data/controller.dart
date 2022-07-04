@@ -57,14 +57,17 @@ class PostsController extends DataController<Post>
     }
   }
 
-  factory PostsController.single(int id) {
+  factory PostsController.single(
+    int id, {
+    DenyListMode denyMode = DenyListMode.plain,
+  }) {
     late PostsController controller;
     controller = PostsController(
       provider: (search, page, force) async => page == controller.firstPageKey
           ? [await client.post(id, force: force)]
           : [],
       canSearch: false,
-      denyMode: DenyListMode.plain,
+      denyMode: denyMode,
     );
     return controller;
   }
@@ -205,11 +208,15 @@ class PostsController extends DataController<Post>
 class PostController extends ProxyValueNotifier<Post, PostsController> {
   final int? id;
 
-  PostController({required this.id, required super.parent});
+  PostController({required this.id, required super.parent}) {
+    _registerDenying();
+  }
 
   PostController.single(super.value)
       : id = null,
-        super.single();
+        super.single() {
+    _registerDenying();
+  }
 
   @override
   Post? fromParent() =>
@@ -223,6 +230,50 @@ class PostController extends ProxyValueNotifier<Post, PostsController> {
         value,
         force: true,
       );
+    }
+  }
+
+  void _registerDenying() {
+    if (!orphan) {
+      parent!.addListener(_updateDenied);
+      parent!.addListener(_updateAllowed);
+    } else {
+      denylistController.addListener(_updateDenied);
+    }
+    _updateDenied();
+    _updateAllowed();
+  }
+
+  void _updateDenied() {
+    if (!orphan) {
+      _isDenied = parent!.isDenied(value);
+    } else {
+      _isDenied = value.isDeniedBy(denylistController.items) && !_isAllowed;
+    }
+  }
+
+  void _updateAllowed() {
+    if (!orphan) {
+      _isAllowed = parent!.isAllowed(value);
+    }
+  }
+
+  bool _isDenied = false;
+  bool get isDenied => _isDenied;
+
+  bool _isAllowed = false;
+  bool get isAllowed => _isAllowed;
+  set isAllowed(bool value) {
+    if (!orphan) {
+      if (value) {
+        parent!.allow(this.value);
+      } else {
+        parent!.unallow(this.value);
+      }
+    } else {
+      _isAllowed = value;
+      _updateDenied();
+      notifyListeners();
     }
   }
 
@@ -334,5 +385,12 @@ class PostController extends ProxyValueNotifier<Post, PostsController> {
 
   Future<void> reset() async {
     value = await client.post(value.id, force: true);
+  }
+}
+
+extension Loading on PostsController {
+  Future<Post> loadSinglePost() async {
+    await loadFirstPage();
+    return itemList!.first;
   }
 }

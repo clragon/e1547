@@ -34,35 +34,26 @@ class _UserPageState extends State<UserPage>
       PostsController(search: 'fav:${widget.user.name}', canSearch: false);
   late PostsController uploadPostController =
       PostsController(search: 'user:${widget.user.name}', canSearch: false);
-  late TabController tabController;
+  late PostsController? profilePostController = widget.user.avatarId != null
+      ? PostsController.single(widget.user.avatarId!)
+      : null;
 
-  @override
-  void initState() {
-    super.initState();
-    int index = 0;
+  int _getInitialIndex() {
     switch (widget.initialPage) {
       case UserPageSection.favorites:
-        index = 0;
-        break;
+        return 0;
       case UserPageSection.uploads:
-        index = 1;
-        break;
+        return 1;
       case UserPageSection.info:
-        index = 2;
-        break;
+        return 2;
     }
-    tabController = TabController(
-      vsync: this,
-      length: 3,
-      initialIndex: index,
-    );
   }
 
   @override
   void dispose() {
-    tabController.dispose();
     favoritePostController.dispose();
     uploadPostController.dispose();
+    profilePostController?.dispose();
     super.dispose();
   }
 
@@ -78,113 +69,109 @@ class _UserPageState extends State<UserPage>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      drawer: const NavigationDrawer(),
-      endDrawer: ContextDrawer(
-        title: const Text('Posts'),
-        children: [
-          DrawerMultiDenySwitch(
-            controllers: [
-              favoritePostController,
-              uploadPostController,
-            ],
-          ),
-          DrawerMultiTagCounter(
-            controllers: [
-              favoritePostController,
-              uploadPostController,
-            ],
-          ),
-        ],
-      ),
-      body: NestedScrollView(
-        headerSliverBuilder: (context, innerBoxIsScrolled) => [
-          SliverOverlapAbsorber(
-            handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
-            sliver: DefaultSliverAppBar(
-              pinned: true,
-              leading: const BackButton(),
-              expandedHeight: 250,
-              flexibleSpaceBuilder: (context, extension) => FlexibleSpaceBar(
-                collapseMode: CollapseMode.pin,
-                title: Opacity(
-                  opacity: 1 - (extension * 6).clamp(0, 1),
-                  child: Text(widget.user.name),
-                ),
-                background: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                      height: 100,
-                      width: 100,
-                      child: GestureDetector(
-                        onTap: widget.user.avatarId != null
-                            ? () => Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        PostLoadingPage(widget.user.avatarId!),
-                                  ),
-                                )
-                            : null,
-                        child: PostAvatar(id: widget.user.avatarId),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 16, bottom: 32),
-                      child: Text(
-                        widget.user.name,
-                        style: Theme.of(context).textTheme.headline6,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              bottom: TabBar(
-                controller: tabController,
-                labelColor: Theme.of(context).iconTheme.color,
-                indicatorColor: Theme.of(context).iconTheme.color,
-                tabs: tabs.keys.toList(),
-              ),
-              actions: [
-                PopupMenuButton<VoidCallback>(
-                  icon: const Icon(Icons.more_vert),
-                  onSelected: (value) => value(),
-                  itemBuilder: (context) => [
-                    PopupMenuTile(
-                      title: 'Browse',
-                      icon: Icons.open_in_browser,
-                      value: () async => launch(
-                        widget.user.url(client.host).toString(),
-                      ),
-                    ),
-                    PopupMenuTile(
-                      title: 'Report',
-                      icon: Icons.report,
-                      value: () => guardWithLogin(
-                        context: context,
-                        callback: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => UserReportScreen(
-                                user: widget.user,
-                              ),
-                            ),
-                          );
-                        },
-                        error: 'You must be logged in to report users!',
-                      ),
-                    ),
-                  ],
-                ),
+    return DefaultTabController(
+      length: tabs.length,
+      initialIndex: _getInitialIndex(),
+      child: Scaffold(
+        drawer: const NavigationDrawer(),
+        endDrawer: ContextDrawer(
+          title: const Text('Posts'),
+          children: [
+            DrawerMultiDenySwitch(
+              controllers: [
+                favoritePostController,
+                uploadPostController,
+                if (profilePostController != null) profilePostController!,
               ],
             ),
-          ),
-        ],
-        body: LimitedWidthLayout(
-          child: TileLayout(
-            child: TabBarView(
-              controller: tabController,
-              children: tabs.values.toList(),
+            DrawerMultiTagCounter(
+              controllers: [
+                favoritePostController,
+                uploadPostController,
+                if (profilePostController != null) profilePostController!,
+              ],
+            ),
+          ],
+        ),
+        body: NestedScrollView(
+          headerSliverBuilder: (context, innerBoxIsScrolled) => [
+            SliverOverlapAbsorber(
+              handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
+              sliver: DefaultSliverAppBar(
+                pinned: true,
+                leading: const BackButton(),
+                expandedHeight: 250,
+                flexibleSpaceBuilder: (context, extension) => FlexibleSpaceBar(
+                  collapseMode: CollapseMode.pin,
+                  title: Opacity(
+                    opacity: 1 - (extension * 6).clamp(0, 1),
+                    child: Text(widget.user.name),
+                  ),
+                  background: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        height: 100,
+                        width: 100,
+                        child: UserAvatar(
+                          controller: profilePostController,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 16, bottom: 32),
+                        child: Text(
+                          widget.user.name,
+                          style: Theme.of(context).textTheme.headline6,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                bottom: TabBar(
+                  labelColor: Theme.of(context).iconTheme.color,
+                  indicatorColor: Theme.of(context).iconTheme.color,
+                  tabs: tabs.keys.toList(),
+                ),
+                actions: [
+                  PopupMenuButton<VoidCallback>(
+                    icon: const Icon(Icons.more_vert),
+                    onSelected: (value) => value(),
+                    itemBuilder: (context) => [
+                      PopupMenuTile(
+                        title: 'Browse',
+                        icon: Icons.open_in_browser,
+                        value: () async => launch(
+                          widget.user.url(client.host).toString(),
+                        ),
+                      ),
+                      PopupMenuTile(
+                        title: 'Report',
+                        icon: Icons.report,
+                        value: () => guardWithLogin(
+                          context: context,
+                          callback: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => UserReportScreen(
+                                  user: widget.user,
+                                ),
+                              ),
+                            );
+                          },
+                          error: 'You must be logged in to report users!',
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+          body: LimitedWidthLayout(
+            child: TileLayout(
+              child: TabBarView(
+                children: tabs.values.toList(),
+              ),
             ),
           ),
         ),
