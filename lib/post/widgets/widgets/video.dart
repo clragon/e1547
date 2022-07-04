@@ -17,30 +17,20 @@ class VideoButton extends StatefulWidget {
 }
 
 class _VideoButtonState extends State<VideoButton>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, ListenerCallbackMixin {
   late AnimationController animationController =
       AnimationController(vsync: this, duration: defaultAnimationDuration);
 
-  void videoUpdate() {
-    if (widget.videoController.value.isPlaying) {
-      animationController.forward();
-    } else {
-      animationController.reverse();
-    }
-  }
-
   @override
-  void initState() {
-    super.initState();
-    widget.videoController.addListener(videoUpdate);
-  }
-
-  @override
-  void dispose() {
-    animationController.dispose();
-    widget.videoController.removeListener(videoUpdate);
-    super.dispose();
-  }
+  Map<Listenable, VoidCallback> get listeners => {
+        widget.videoController: () {
+          if (widget.videoController.value.isPlaying) {
+            animationController.forward();
+          } else {
+            animationController.reverse();
+          }
+        }
+      };
 
   @override
   Widget build(BuildContext context) {
@@ -58,55 +48,44 @@ class _VideoButtonState extends State<VideoButton>
         return FrameChild(
           shown: shown,
           child: Material(
+            clipBehavior: Clip.antiAlias,
             shape: const CircleBorder(),
             color: Colors.transparent,
             elevation: 8,
-            child: Container(
-              clipBehavior: Clip.antiAlias,
-              decoration: const BoxDecoration(shape: BoxShape.circle),
-              child: Material(
-                type: MaterialType.transparency,
-                shape: const CircleBorder(),
-                child: IconButton(
-                  iconSize: widget.size,
-                  icon: Center(
-                    child: Replacer(
-                      duration: const Duration(milliseconds: 100),
-                      showChild:
-                          !widget.videoController.value.isPlaying || !loading,
-                      secondChild: Center(
-                        child: SizedBox(
-                          height: widget.size * 0.7,
-                          width: widget.size * 0.7,
-                          child: const Padding(
-                            padding: EdgeInsets.all(8),
-                            child: CircularProgressIndicator(),
-                          ),
-                        ),
-                      ),
-                      child: AnimatedBuilder(
-                        animation: animationController,
-                        builder: (context, child) => AnimatedIcon(
-                          icon: AnimatedIcons.play_pause,
-                          progress: animationController,
-                          size: widget.size,
-                          color: Colors.white,
-                        ),
-                      ),
+            child: IconButton(
+              iconSize: widget.size,
+              icon: Center(
+                child: Replacer(
+                  duration: const Duration(milliseconds: 100),
+                  showChild:
+                      !widget.videoController.value.isPlaying || !loading,
+                  secondChild: const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(8),
+                      child: CircularProgressIndicator(),
                     ),
                   ),
-                  onPressed: () {
-                    if (widget.videoController.value.isPlaying) {
-                      frameController?.cancel();
-                      widget.videoController.pause();
-                    } else {
-                      widget.videoController.play();
-                      frameController?.hideFrame(
-                          duration: const Duration(milliseconds: 500));
-                    }
-                  },
+                  child: AnimatedBuilder(
+                    animation: animationController,
+                    builder: (context, child) => AnimatedIcon(
+                      icon: AnimatedIcons.play_pause,
+                      progress: animationController,
+                      size: widget.size,
+                      color: Colors.white,
+                    ),
+                  ),
                 ),
               ),
+              onPressed: () {
+                if (widget.videoController.value.isPlaying) {
+                  frameController?.cancel();
+                  widget.videoController.pause();
+                } else {
+                  widget.videoController.play();
+                  frameController?.hideFrame(
+                      duration: const Duration(milliseconds: 500));
+                }
+              },
             ),
           ),
         );
@@ -159,13 +138,10 @@ class VideoBar extends StatelessWidget {
                               videoController.value.duration.inMilliseconds
                                   .toDouble(),
                             ),
-                        onChangeStart: (value) {
-                          FrameController.of(context)?.cancel();
-                        },
-                        onChanged: (value) {
-                          videoController
-                              .seekTo(Duration(milliseconds: value.toInt()));
-                        },
+                        onChangeStart: (value) =>
+                            FrameController.of(context)?.cancel(),
+                        onChanged: (value) => videoController
+                            .seekTo(Duration(milliseconds: value.toInt())),
                         onChangeEnd: (value) {
                           if (videoController.value.isPlaying) {
                             FrameController.of(context)?.hideFrame(

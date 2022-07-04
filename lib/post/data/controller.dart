@@ -250,11 +250,13 @@ class PostController extends ProxyValueNotifier<Post, PostsController> {
     } else {
       _isDenied = value.isDeniedBy(denylistController.items) && !_isAllowed;
     }
+    notifyListeners();
   }
 
   void _updateAllowed() {
     if (!orphan) {
       _isAllowed = parent!.isAllowed(value);
+      notifyListeners();
     }
   }
 
@@ -273,8 +275,15 @@ class PostController extends ProxyValueNotifier<Post, PostsController> {
     } else {
       _isAllowed = value;
       _updateDenied();
-      notifyListeners();
     }
+  }
+
+  @override
+  void dispose() {
+    parent?.addListener(_updateDenied);
+    parent?.addListener(_updateAllowed);
+    denylistController.removeListener(_updateDenied);
+    super.dispose();
   }
 
   Future<bool> fav() async {

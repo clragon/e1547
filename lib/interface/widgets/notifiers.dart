@@ -69,4 +69,10 @@ abstract class ProxyValueNotifier<T, P extends Listenable>
   ProxyValueNotifier.single(T value) : parent = null {
     _value = value;
   }
+
+  @override
+  void dispose() {
+    parent?.removeListener(_updateValue);
+    super.dispose();
+  }
 }
