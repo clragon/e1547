@@ -34,9 +34,7 @@ abstract class RawDataController<KeyType, ItemType>
 
   @mustCallSuper
   @protected
-  void failure(Exception error) {
-    this.error = error;
-  }
+  void failure(Exception error) => this.error = error;
 
   @mustCallSuper
   @protected

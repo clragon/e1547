@@ -2,6 +2,7 @@
 export 'data/actions.dart';
 export 'data/controller.dart';
 export 'data/editing.dart';
+export 'data/favorites.dart';
 export 'data/image.dart';
 export 'data/post.dart';
 // widgets
