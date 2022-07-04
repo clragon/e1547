@@ -32,8 +32,7 @@ class ImageOverlay extends StatelessWidget {
         if (post.value.file.url == null) {
           return centerText('Image unavailable in safe mode');
         }
-        // TODO: make denying available in PostController
-        if (post.parent!.isDenied(post.value) && !post.value.isFavorited) {
+        if (post.isDenied && !post.value.isFavorited) {
           return centerText('Post is blacklisted');
         }
 

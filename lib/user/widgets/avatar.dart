@@ -1,9 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e1547/client/client.dart';
-import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
-import 'package:e1547/user/user.dart';
 import 'package:flutter/material.dart';
 
 Future<void> initializeUserAvatar(BuildContext context) async {
@@ -16,100 +14,175 @@ Future<void> initializeUserAvatar(BuildContext context) async {
   }
 }
 
-class CurrentUserAvatar extends StatelessWidget {
+class CurrentUserAvatar extends StatefulWidget {
   const CurrentUserAvatar();
 
   @override
-  Widget build(BuildContext context) {
-    return AvatarLoader((context) async {
-      initializeUserAvatar(context);
-      return client.currentUserAvatar();
-    });
-  }
+  State<CurrentUserAvatar> createState() => _CurrentUserAvatarState();
 }
 
-class UserAvatar extends StatelessWidget {
-  final int id;
+class _CurrentUserAvatarState extends State<CurrentUserAvatar> {
+  final Future<PostsController?> controller = Future(() async {
+    int? id = (await client.currentUserAvatar())?.id;
+    if (id != null) {
+      PostsController controller = PostsController.single(
+        id,
+        denyMode: DenyListMode.unavailable,
+      );
+      await controller.loadSinglePost();
+      return controller;
+    }
+    return null;
+  });
 
-  const UserAvatar({required this.id});
+  @override
+  void initState() {
+    super.initState();
+    initializeUserAvatar(context);
+  }
 
   @override
   Widget build(BuildContext context) {
-    return AvatarLoader((context) async {
-      User user = await client.user(id.toString());
-
-      if (user.avatarId == null) {
-        return null;
-      }
-      return await client.post(user.avatarId!);
-    });
-  }
-}
-
-class PostAvatar extends StatelessWidget {
-  final int? id;
-
-  const PostAvatar({required this.id});
-
-  @override
-  Widget build(BuildContext context) {
-    return AvatarLoader(
-      (context) async {
-        if (id == null) {
-          return null;
-        }
-        return await client.post(id!);
+    return FutureBuilder<PostsController?>(
+      future: controller,
+      builder: (context, snapshot) {
+        return UserAvatar(controller: snapshot.data);
       },
     );
   }
 }
 
-class AvatarLoader extends StatefulWidget {
-  final Future<Post?> Function(BuildContext context) provider;
+class UserAvatar extends StatefulWidget {
+  final PostsController? controller;
 
-  const AvatarLoader(this.provider);
+  const UserAvatar({super.key, required this.controller});
 
   @override
-  State<AvatarLoader> createState() => _AvatarLoaderState();
+  State<UserAvatar> createState() => _UserAvatarState();
 }
 
-class _AvatarLoaderState extends State<AvatarLoader>
-    with ListenerCallbackMixin {
-  late Future<Post?> avatar;
+class _UserAvatarState extends State<UserAvatar> {
+  late Future<Post>? post = widget.controller?.loadSinglePost();
 
   @override
-  Map<Listenable, VoidCallback> get initListeners => {
-        client: () {
-          if (mounted) {
-            avatar = widget.provider(context);
-          }
-        },
-      };
+  void didUpdateWidget(covariant UserAvatar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.controller != widget.controller) {
+      post = widget.controller?.loadSinglePost();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<Post?>(
-      future: avatar,
-      builder: (context, snapshot) => Avatar(snapshot.data),
-    );
+    if (post != null) {
+      return FutureBuilder<Post>(
+        future: post,
+        builder: (context, snapshot) {
+          PostController? controller;
+          if (snapshot.hasData) {
+            controller = PostController(
+              id: snapshot.data!.id,
+              parent: widget.controller!,
+            );
+          }
+          return Avatar(
+            controller,
+            enabled: true,
+          );
+        },
+      );
+    }
+    return const AppIcon();
   }
 }
 
-class Avatar extends StatelessWidget {
-  final Post? post;
+class PostAvatar extends StatefulWidget {
+  final int? id;
 
-  const Avatar(this.post);
+  const PostAvatar({super.key, required this.id});
+
+  @override
+  State<PostAvatar> createState() => _PostAvatarState();
+}
+
+class _PostAvatarState extends State<PostAvatar> {
+  late PostsController? controller =
+      widget.id != null ? PostsController.single(widget.id!) : null;
+
+  @override
+  void didUpdateWidget(covariant PostAvatar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.id != widget.id) {
+      if (widget.id != null) {
+        controller = PostsController.single(widget.id!);
+      } else {
+        controller = null;
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    if (post != null && post!.sample.url != null) {
-      return PostTileOverlay(
-        // TODO: make denying available in PostController
-        post: PostController.single(post!),
-        child: Hero(
-          tag: post!.hero,
-          child: CircleAvatar(
-            foregroundImage: (CachedNetworkImageProvider(post!.sample.url!)),
+    return UserAvatar(controller: controller);
+  }
+}
+
+class PostIdAvatar extends StatefulWidget {
+  final int? id;
+  final PostsController controller;
+
+  const PostIdAvatar({required this.id, required this.controller});
+
+  @override
+  State<PostIdAvatar> createState() => _PostIdAvatarState();
+}
+
+class _PostIdAvatarState extends State<PostIdAvatar> {
+  late PostController controller = PostController(
+    id: widget.id,
+    parent: widget.controller,
+  );
+
+  @override
+  void didUpdateWidget(covariant PostIdAvatar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.controller != widget.controller) {
+      controller = PostController(
+        id: widget.id,
+        parent: widget.controller,
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) => Avatar(controller);
+}
+
+class Avatar extends StatelessWidget {
+  final PostController? post;
+  final bool enabled;
+
+  const Avatar(this.post, {this.enabled = false});
+
+  @override
+  Widget build(BuildContext context) {
+    if (post != null && post!.value.sample.url != null) {
+      return GestureDetector(
+        onTap: enabled
+            ? () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => PostDetail(post: post!),
+                  ),
+                )
+            : null,
+        child: PostTileOverlay(
+          post: post!,
+          child: Hero(
+            tag: post!.value.hero,
+            child: CircleAvatar(
+              foregroundImage:
+                  CachedNetworkImageProvider(post!.value.sample.url!),
+            ),
           ),
         ),
       );
