@@ -387,10 +387,3 @@ class PostController extends ProxyValueNotifier<Post, PostsController> {
     value = await client.post(value.id, force: true);
   }
 }
-
-extension Loading on PostsController {
-  Future<Post> loadSinglePost() async {
-    await loadFirstPage();
-    return itemList!.first;
-  }
-}
