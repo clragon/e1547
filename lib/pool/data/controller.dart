@@ -3,12 +3,12 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/pool/pool.dart';
 import 'package:flutter/material.dart';
 
-class PoolController extends DataController<Pool>
+class PoolsController extends DataController<Pool>
     with SearchableController, HostableController, RefreshableController {
   @override
   late ValueNotifier<String> search;
 
-  PoolController({String? search})
+  PoolsController({String? search})
       : search = ValueNotifier<String>(search ?? '');
 
   @override

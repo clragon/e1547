@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 
 import 'comment.dart';
 
-class CommentController extends CursorDataController<Comment>
+class CommentsController extends CursorDataController<Comment>
     with RefreshableController, HostableController {
   final int postId;
 
-  CommentController({required this.postId});
+  CommentsController({required this.postId});
 
   @override
   @protected
@@ -69,7 +69,6 @@ class CommentController extends CursorDataController<Comment>
       updateItem(itemList!.indexOf(comment), updated, force: true);
       return true;
     } on DioError {
-      // TODO: undo vote?
       return false;
     }
   }

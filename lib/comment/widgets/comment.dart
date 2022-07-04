@@ -11,7 +11,7 @@ import 'package:relative_time/relative_time.dart';
 
 class CommentTile extends StatelessWidget {
   final Comment comment;
-  final CommentController? controller;
+  final CommentsController? controller;
   final bool hasActions;
 
   const CommentTile({

@@ -14,7 +14,7 @@ class RepliesPage extends StatefulWidget {
 }
 
 class _RepliesPageState extends State<RepliesPage> {
-  late ReplyController controller = ReplyController(
+  late RepliesController controller = RepliesController(
       topicId: widget.topic.id, orderByOldest: widget.orderByOldest);
 
   @override

@@ -16,7 +16,7 @@ class PoolsPage extends StatefulWidget {
 }
 
 class _PoolsPageState extends State<PoolsPage> with DrawerEntry {
-  late PoolController controller = PoolController(search: widget.search);
+  late PoolsController controller = PoolsController(search: widget.search);
 
   @override
   void dispose() {

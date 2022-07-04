@@ -15,7 +15,7 @@ class TopicsPage extends StatefulWidget {
 }
 
 class _TopicsPageState extends State<TopicsPage> with DrawerEntry {
-  late TopicController controller = TopicController(search: widget.search);
+  late TopicsController controller = TopicsController(search: widget.search);
 
   @override
   void dispose() {
