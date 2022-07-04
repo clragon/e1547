@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e1547/client/client.dart';
+import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
@@ -29,7 +30,7 @@ class _CurrentUserAvatarState extends State<CurrentUserAvatar> {
         id,
         denyMode: DenyListMode.unavailable,
       );
-      await controller.loadSinglePost();
+      await controller.loadFirstItem();
       return controller;
     }
     return null;
@@ -62,13 +63,13 @@ class UserAvatar extends StatefulWidget {
 }
 
 class _UserAvatarState extends State<UserAvatar> {
-  late Future<Post>? post = widget.controller?.loadSinglePost();
+  late Future<Post>? post = widget.controller?.loadFirstItem();
 
   @override
   void didUpdateWidget(covariant UserAvatar oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.controller != widget.controller) {
-      post = widget.controller?.loadSinglePost();
+      post = widget.controller?.loadFirstItem();
     }
   }
 
