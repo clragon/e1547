@@ -378,7 +378,6 @@ class PostController extends ProxyValueNotifier<Post, PostsController> {
       }
       return true;
     } on DioError {
-      // TODO: undo vote?
       return false;
     }
   }

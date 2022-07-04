@@ -3,12 +3,12 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/topic/topic.dart';
 import 'package:flutter/material.dart';
 
-class TopicController extends DataController<Topic>
+class TopicsController extends DataController<Topic>
     with RefreshableController, SearchableController {
   @override
   late ValueNotifier<String> search;
 
-  TopicController({String? search})
+  TopicsController({String? search})
       : search = ValueNotifier<String>(search ?? '');
 
   @override

@@ -13,7 +13,7 @@ class FollowsSplitPage extends StatefulWidget {
 class _FollowsSplitPageState extends State<FollowsSplitPage>
     with ListenerCallbackMixin, DrawerEntry {
   final RefreshController refreshController = RefreshController();
-  final FollowController controller = followController;
+  final FollowsController controller = followController;
 
   @override
   Map<ChangeNotifier, VoidCallback> get listeners => {

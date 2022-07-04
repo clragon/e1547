@@ -14,7 +14,7 @@ class CommentsPage extends StatefulWidget {
 }
 
 class _CommentsPageState extends State<CommentsPage> {
-  late CommentController controller = CommentController(postId: widget.postId);
+  late CommentsController controller = CommentsController(postId: widget.postId);
 
   @override
   void dispose() {

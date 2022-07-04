@@ -10,10 +10,10 @@ import 'package:e1547/settings/settings.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 
-final FollowController followController =
-    FollowController(settings: settings.follows);
+final FollowsController followController =
+    FollowsController(settings: settings.follows);
 
-class FollowController extends DataUpdater<List<Follow>> with HostableUpdater {
+class FollowsController extends DataUpdater<List<Follow>> with HostableUpdater {
   late final ValueNotifier<List<Follow>> _source;
   late final SelectedValueNotifier<List<Follow>> _restarter =
       SelectedValueNotifier<List<Follow>>(
@@ -33,7 +33,7 @@ class FollowController extends DataUpdater<List<Follow>> with HostableUpdater {
 
   final int refreshAmount = 5;
 
-  FollowController({required ValueNotifier<List<Follow>> settings})
+  FollowsController({required ValueNotifier<List<Follow>> settings})
       : _source = settings {
     _source.addListener(notifyListeners);
     client.addListener(notifyListeners);
