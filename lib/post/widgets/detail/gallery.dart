@@ -119,13 +119,21 @@ class _PostDetailConnectorState extends State<PostDetailConnector>
         widget.controller: updatePages,
       };
 
+  void popOrRemove() {
+    if (ModalRoute.of(context)!.isCurrent) {
+      Navigator.of(context).pop();
+    } else if (ModalRoute.of(context)!.isActive) {
+      Navigator.of(context).removeRoute(ModalRoute.of(context)!);
+    }
+  }
+
   void updatePages() {
     if (pageItems == null || widget.controller.itemList == null) {
-      Navigator.of(context).pop();
+      return popOrRemove();
     }
     for (int i = 0; i < pageItems!.length; i++) {
       if (pageItems![i].id != widget.controller.itemList![i].id) {
-        Navigator.of(context).pop();
+        return popOrRemove();
       }
     }
     pageItems = widget.controller.itemList;
