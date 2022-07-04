@@ -16,7 +16,9 @@ Future<void> initializeUserAvatar(BuildContext context) async {
 }
 
 class CurrentUserAvatar extends StatefulWidget {
-  const CurrentUserAvatar();
+  final bool enabled;
+
+  const CurrentUserAvatar({this.enabled = false});
 
   @override
   State<CurrentUserAvatar> createState() => _CurrentUserAvatarState();
@@ -47,7 +49,10 @@ class _CurrentUserAvatarState extends State<CurrentUserAvatar> {
     return FutureBuilder<PostsController?>(
       future: controller,
       builder: (context, snapshot) {
-        return UserAvatar(controller: snapshot.data);
+        return UserAvatar(
+          controller: snapshot.data,
+          enabled: widget.enabled,
+        );
       },
     );
   }
@@ -55,8 +60,9 @@ class _CurrentUserAvatarState extends State<CurrentUserAvatar> {
 
 class UserAvatar extends StatefulWidget {
   final PostsController? controller;
+  final bool enabled;
 
-  const UserAvatar({super.key, required this.controller});
+  const UserAvatar({super.key, required this.controller, this.enabled = false});
 
   @override
   State<UserAvatar> createState() => _UserAvatarState();
@@ -88,7 +94,7 @@ class _UserAvatarState extends State<UserAvatar> {
           }
           return Avatar(
             controller,
-            enabled: true,
+            enabled: widget.enabled,
           );
         },
       );

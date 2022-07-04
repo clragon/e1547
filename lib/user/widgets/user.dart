@@ -115,6 +115,7 @@ class _UserPageState extends State<UserPage>
                         width: 100,
                         child: UserAvatar(
                           controller: profilePostController,
+                          enabled: true,
                         ),
                       ),
                       Padding(
