@@ -19,7 +19,7 @@ export 'widgets/navigation.dart';
 export 'widgets/notifiers.dart';
 export 'widgets/padding.dart';
 export 'widgets/pagination.dart';
-export 'widgets/pop_tile.dart';
+export 'widgets/popups.dart';
 export 'widgets/range_dialog.dart';
 export 'widgets/refreshing.dart';
 export 'widgets/selection.dart';

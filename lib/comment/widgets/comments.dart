@@ -46,14 +46,16 @@ class _CommentsPageState extends State<CommentsPage> {
             )
           : null,
       controller: controller,
-      builder: (context) => PagedListView(
+      builder: (context) => PagedListView<String, Comment>(
         padding: defaultActionListPadding,
         pagingController: controller,
         builderDelegate: defaultPagedChildBuilderDelegate(
           pagingController: controller,
-          itemBuilder: (context, Comment item, index) => CommentTile(
-            comment: item,
-            controller: controller,
+          itemBuilder: (context, item, index) => CommentTile(
+            comment: CommentController(
+              id: item.id,
+              parent: controller,
+            ),
           ),
           onEmpty: const Text('No comments'),
           onError: const Text('Failed to load comments'),

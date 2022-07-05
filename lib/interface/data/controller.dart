@@ -243,9 +243,9 @@ mixin RefreshableController<PageKeyType, ItemType>
   }
 }
 
-extension Loading<K, T> on RawDataController<K, T> {
-  Future<void> waitForFirstPage() {
-    Completer completer = Completer();
+extension Loading<T extends RawDataController> on T {
+  Future<T> waitForFirstPage() {
+    Completer<T> completer = Completer<T>();
 
     void onUpdate() {
       switch (value.status) {
@@ -256,7 +256,7 @@ extension Loading<K, T> on RawDataController<K, T> {
         case PagingStatus.noItemsFound:
         case PagingStatus.completed:
           removeListener(onUpdate);
-          completer.complete();
+          completer.complete(this);
           break;
         case PagingStatus.firstPageError:
         case PagingStatus.subsequentPageError:
@@ -271,15 +271,11 @@ extension Loading<K, T> on RawDataController<K, T> {
     return completer.future;
   }
 
-  Future<void> loadFirstPage() async {
+  Future<T> loadFirstPage() async {
     Future<void> loaded = waitForFirstPage();
-    notifyPageRequestListeners(nextPageKey as K);
-    return loaded;
-  }
-
-  Future<T> loadFirstItem() async {
-    await loadFirstPage();
-    return itemList!.first;
+    notifyPageRequestListeners(nextPageKey);
+    await loaded;
+    return this;
   }
 }
 
