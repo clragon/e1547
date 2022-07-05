@@ -207,15 +207,9 @@ class PostsController extends DataController<Post>
 }
 
 class PostController extends ProxyValueNotifier<Post, PostsController> {
-  final int? id;
+  final int id;
 
   PostController({required this.id, required super.parent}) {
-    _registerDenying();
-  }
-
-  PostController.single(super.value)
-      : id = null,
-        super.single() {
     _registerDenying();
   }
 

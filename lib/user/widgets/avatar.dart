@@ -32,7 +32,7 @@ class _CurrentUserAvatarState extends State<CurrentUserAvatar> {
         id,
         denyMode: DenyListMode.unavailable,
       );
-      await controller.loadFirstItem();
+      await controller.loadFirstPage();
       return controller;
     }
     return null;
@@ -69,13 +69,14 @@ class UserAvatar extends StatefulWidget {
 }
 
 class _UserAvatarState extends State<UserAvatar> {
-  late Future<Post>? post = widget.controller?.loadFirstItem();
+  late Future<Post>? post =
+      widget.controller?.loadFirstPage().then((c) => c.itemList!.first);
 
   @override
   void didUpdateWidget(covariant UserAvatar oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.controller != widget.controller) {
-      post = widget.controller?.loadFirstItem();
+      post = widget.controller?.loadFirstPage().then((c) => c.itemList!.first);
     }
   }
 
@@ -135,7 +136,7 @@ class _PostAvatarState extends State<PostAvatar> {
 }
 
 class PostIdAvatar extends StatefulWidget {
-  final int? id;
+  final int id;
   final PostsController controller;
 
   const PostIdAvatar({required this.id, required this.controller});

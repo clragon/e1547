@@ -12,7 +12,6 @@ class ParentDisplay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     PostEditingController? editingController = PostEditor.maybeOf(context);
-
     return AnimatedSelector(
       animation: Listenable.merge([editingController]),
       selector: () => [
@@ -63,11 +62,16 @@ class ParentDisplay extends StatelessWidget {
                     onTap: () async {
                       if (parentId != null) {
                         try {
-                          Post post = await client.post(parentId);
+                          PostsController controller =
+                              PostsController.single(parentId);
+                          await controller.loadFirstPage();
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (context) => PostDetail(
-                                post: PostController.single(post),
+                              builder: (context) => PostDetailConnector(
+                                controller: controller,
+                                child: PostDetailGallery(
+                                  controller: controller,
+                                ),
                               ),
                             ),
                           );
@@ -112,11 +116,16 @@ class ParentDisplay extends StatelessWidget {
                       title: Text(child.toString()),
                       onTap: () async {
                         try {
-                          Post post = await client.post(child);
+                          PostsController controller =
+                              PostsController.single(child);
+                          await controller.loadFirstPage();
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (context) => PostDetail(
-                                post: PostController.single(post),
+                              builder: (context) => PostDetailConnector(
+                                controller: controller,
+                                child: PostDetailGallery(
+                                  controller: controller,
+                                ),
                               ),
                             ),
                           );

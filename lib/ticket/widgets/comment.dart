@@ -4,7 +4,7 @@ import 'package:e1547/ticket/ticket.dart';
 import 'package:flutter/material.dart';
 
 class CommentReportScreen extends StatelessWidget {
-  final Comment comment;
+  final CommentController comment;
 
   const CommentReportScreen({required this.comment});
 
@@ -14,7 +14,7 @@ class CommentReportScreen extends StatelessWidget {
       title: Text('Comment #${comment.id}'),
       onReport: (reason) => validateCall(
         () => client.reportComment(
-          comment.id,
+          comment.value.id,
           reason,
         ),
         allowRedirect: true,
