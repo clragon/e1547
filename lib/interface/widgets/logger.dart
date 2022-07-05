@@ -10,6 +10,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:share/share.dart';
 import 'package:talker/talker.dart';
 
+export 'package:talker/talker.dart' show TalkerDataInterface;
+
 class Logger extends InheritedWidget {
   final Talker talker;
 
@@ -232,7 +234,13 @@ extension Messages on TalkerDataInterface {
       case TalkerError:
         return displayError;
       case TalkerLog:
-        return '${message?.substring(0, 30)}...';
+        if (message == null) {
+          return '';
+        }
+        if (message!.length >= 30) {
+          return '${message?.substring(0, 30)}...';
+        }
+        return message!;
       default:
         return '';
     }

@@ -253,16 +253,25 @@ class _SettingsPageState extends State<SettingsPage> {
               ),
             ),
             if (Logger.maybeOf(context) != null)
-              ListTile(
-                leading: const Icon(Icons.format_list_numbered),
-                title: const Text('Logs'),
-                onTap: () => Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => LoggerPage(
-                      talker: Logger.of(context),
+              StreamBuilder<TalkerDataInterface>(
+                stream: Logger.of(context).stream,
+                builder: (context, snapshot) {
+                  return ListTile(
+                    leading: const Icon(Icons.format_list_numbered),
+                    title: const Text('Logs'),
+                    subtitle: Logger.of(context).history.isNotEmpty
+                        ? Text(
+                            '${Logger.of(context).history.length} events logged')
+                        : null,
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => LoggerPage(
+                          talker: Logger.of(context),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
+                  );
+                },
               ),
           ],
         ),
