@@ -108,7 +108,6 @@ class PostsController extends DataController<Post>
       }
       return false;
     });
-
     _previousDeniedPosts = null;
     return result;
   }
@@ -142,7 +141,9 @@ class PostsController extends DataController<Post>
       return;
     }
     _posts = null;
-    _previousDeniedPosts = _deniedPosts;
+    if (_deniedPosts != null) {
+      _previousDeniedPosts = _deniedPosts;
+    }
     _deniedPosts = null;
     _allowedPosts = [];
     await super.refresh(background: background, force: force);
