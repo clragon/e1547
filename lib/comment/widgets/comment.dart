@@ -61,20 +61,15 @@ class CommentTile extends StatelessWidget {
             child: Icon(Icons.person),
           ),
           Expanded(
-            child: GestureDetector(
-              onTap: hasActions && client.hasLogin
-                  ? () => replyComment(context: context, comment: comment.value)
-                  : null,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  title(),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [Expanded(child: DText(comment.value.body))],
-                  ),
-                ],
-              ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                title(),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [Expanded(child: DText(comment.value.body))],
+                ),
+              ],
             ),
           ),
         ],
@@ -150,9 +145,14 @@ class CommentTile extends StatelessWidget {
                   PopupMenuTile(
                     title: 'Edit',
                     icon: Icons.edit,
-                    value: () => editComment(
+                    value: () => guardWithLogin(
                       context: context,
-                      comment: comment.value,
+                      // TODO refresh controller
+                      callback: () => editComment(
+                        context: context,
+                        comment: comment.value,
+                      ),
+                      error: 'You must be logged in to edit comments!',
                     ),
                   ),
                 PopupMenuTile(
@@ -160,6 +160,7 @@ class CommentTile extends StatelessWidget {
                   icon: Icons.reply,
                   value: () => guardWithLogin(
                     context: context,
+                    // TODO refresh controller
                     callback: () => replyComment(
                       context: context,
                       comment: comment.value,

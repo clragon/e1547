@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
 
+// TODO: replace with validator, remove pop
 typedef TextEditorSubmit = FutureOr<bool> Function(
     BuildContext context, String text);
 typedef TextEditorBuilder = Widget Function(
