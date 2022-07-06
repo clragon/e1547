@@ -39,6 +39,7 @@ class _CommentsPageState extends State<CommentsPage> {
               backgroundColor: Theme.of(context).cardColor,
               child:
                   Icon(Icons.comment, color: Theme.of(context).iconTheme.color),
+              // TODO: refresh controller?
               onPressed: () => writeComment(
                 context: context,
                 postId: widget.postId,

@@ -11,9 +11,12 @@ Future<bool> replyComment({
   String body = comment.body;
   body = body
       .replaceFirstMapped(
-          RegExp(r'\[quote\]".*?":/user/show/[0-9]* said:.*\[\/quote\]',
-              dotAll: true),
-          (match) => '')
+        RegExp(
+          r'\[quote\]".*?":/user/show/[0-9]* said:.*\[\/quote\]',
+          dotAll: true,
+        ),
+        (match) => '',
+      )
       .trim();
   body =
       '[quote]"${comment.creatorName}":/users/${comment.creatorId} said:\n$body[/quote]\n';
