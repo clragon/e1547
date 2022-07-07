@@ -9,6 +9,6 @@ Future<void> initializeApp() async {
   await Future.wait([
     initializeAppInfo(),
     initializeSettings(),
-    initializeHttpCache(),
+    initializeSql(),
   ]);
 }

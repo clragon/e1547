@@ -5,7 +5,7 @@ import 'package:dio_http_cache/dio_http_cache.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
-Future<void> initializeHttpCache() async {
+Future<void> initializeSql() async {
   if (Platform.isWindows || Platform.isLinux) {
     sqfliteFfiInit();
     databaseFactory = databaseFactoryFfi;
