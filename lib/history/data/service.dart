@@ -2,14 +2,18 @@ import 'package:collection/collection.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/denylist/denylist.dart';
 import 'package:e1547/history/history.dart';
+import 'package:e1547/interface/interface.dart';
 import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:e1547/tag/tag.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 class HistoriesService extends ChangeNotifier {
-  HistoriesService({String? path})
+  final Settings settings;
+  final Client client;
+
+  HistoriesService({required this.settings, required this.client, String? path})
       : _database = HistoriesDatabase.connect(path: path) {
     client.addListener(notifyListeners);
     settings.writeHistory.addListener(notifyListeners);
@@ -107,13 +111,15 @@ class HistoriesService extends ChangeNotifier {
       host: client.host, maxAmount: 3000, maxAge: const Duration(days: 30));
 }
 
-class HistoriesData extends InheritedNotifier<HistoriesService> {
-  const HistoriesData({required super.child, required HistoriesService service})
-      : super(notifier: service);
-
-  static HistoriesService of(BuildContext context) =>
-      context.dependOnInheritedWidgetOfExactType<HistoriesData>()!.notifier!;
-
-  static HistoriesService? maybeOf(BuildContext context) =>
-      context.dependOnInheritedWidgetOfExactType<HistoriesData>()?.notifier;
+class HistoriesProvider extends SelectiveChangeNotifierProvider2<Settings,
+    Client, HistoriesService> {
+  HistoriesProvider({String? path})
+      : super(
+          create: (context, settings, client) => HistoriesService(
+            path: path,
+            settings: settings,
+            client: client,
+          ),
+          dispose: (context, value) => value.dispose(),
+        );
 }

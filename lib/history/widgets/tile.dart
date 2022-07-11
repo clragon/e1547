@@ -1,11 +1,10 @@
 import 'package:e1547/app/app.dart';
-import 'package:e1547/client/client.dart';
 import 'package:e1547/history/history.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
-import 'package:share/share.dart';
+import 'package:provider/provider.dart';
 
 class HistoryTile extends StatelessWidget {
   final History entry;
@@ -80,7 +79,8 @@ class HistoryTile extends StatelessWidget {
               PopupMenuTile(
                 title: 'Delete',
                 icon: Icons.delete,
-                value: () => HistoriesData.of(context).remove(entry),
+                value: () =>
+                    Provider.of<HistoriesService>(context).remove(entry),
               ),
             ],
           ),

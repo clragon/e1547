@@ -1,4 +1,5 @@
 import 'package:e1547/app/app.dart';
+import 'package:e1547/client/client.dart';
 import 'package:e1547/denylist/denylist.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/history/history.dart';
@@ -9,24 +10,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:provider/provider.dart';
 import 'package:relative_time/relative_time.dart';
 
-class App extends StatefulWidget {
+class App extends StatelessWidget {
   const App();
 
   @override
-  State<App> createState() => _AppState();
-}
-
-class _AppState extends State<App> {
-  final HistoriesService historesService = HistoriesService();
-
-  @override
   Widget build(BuildContext context) {
-    return NavigationData(
-      controller: navigationController,
-      child: HistoriesData(
-        service: historesService,
+    return MultiProvider(
+      providers: [
+        Provider.value(value: appInfo),
+        Provider.value(value: settings),
+        ChangeNotifierProvider.value(value: client),
+        HistoriesProvider(),
+      ],
+      child: NavigationData(
+        controller: navigationController,
         child: ValueListenableBuilder<AppTheme>(
           valueListenable: settings.theme,
           builder: (context, value, child) => ExcludeSemantics(

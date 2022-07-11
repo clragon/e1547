@@ -9,6 +9,7 @@ environment:
 dependencies:
 
   # widgets
+  provider: ^6.0.3
   local_auth: ^2.0.2
   expandable: ^5.0.1
   like_button: ^2.0.4
