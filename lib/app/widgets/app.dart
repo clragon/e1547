@@ -24,20 +24,20 @@ class App extends StatelessWidget {
         Provider.value(value: settings),
         ChangeNotifierProvider.value(value: client),
         HistoriesProvider(),
+        Provider.value(value: navigationController),
       ],
-      child: NavigationData(
-        controller: navigationController,
-        child: ValueListenableBuilder<AppTheme>(
-          valueListenable: settings.theme,
-          builder: (context, value, child) => ExcludeSemantics(
-            child: AnnotatedRegion<SystemUiOverlayStyle>(
-              value: appThemeMap[value]!.appBarTheme.systemOverlayStyle!,
-              child: MaterialApp(
+      child: ValueListenableBuilder<AppTheme>(
+        valueListenable: settings.theme,
+        builder: (context, value, child) => ExcludeSemantics(
+          child: AnnotatedRegion<SystemUiOverlayStyle>(
+            value: appThemeMap[value]!.appBarTheme.systemOverlayStyle!,
+            child: Consumer<NavigationController>(
+              builder: (context, navigation, child) => MaterialApp(
                 title: appInfo.appName,
                 theme: appThemeMap[value],
-                routes: NavigationData.of(context).routes,
-                navigatorObservers: [NavigationData.of(context).routeObserver],
-                navigatorKey: NavigationData.of(context).navigatorKey,
+                routes: navigation.routes,
+                navigatorObservers: [navigation.routeObserver],
+                navigatorKey: navigation.navigatorKey,
                 scrollBehavior: DesktopScrollBehaviour(),
                 localizationsDelegates: const [
                   GlobalWidgetsLocalizations.delegate,

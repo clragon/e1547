@@ -1,5 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 double defaultDrawerEdge(double screenWidth) => screenWidth * 0.1;
 
@@ -60,29 +61,6 @@ class NavigationController extends ChangeNotifier {
   }
 }
 
-class NavigationData extends InheritedNotifier<NavigationController> {
-  final NavigationController controller;
-
-  const NavigationData({required super.child, required this.controller})
-      : super(notifier: controller);
-
-  static NavigationController of(BuildContext context) {
-    return context
-        .dependOnInheritedWidgetOfExactType<NavigationData>()!
-        .controller;
-  }
-
-  static NavigationController? maybeOf(BuildContext context) {
-    return context
-        .dependOnInheritedWidgetOfExactType<NavigationData>()
-        ?.controller;
-  }
-
-  @override
-  bool updateShouldNotify(covariant NavigationData oldWidget) =>
-      oldWidget.controller != controller;
-}
-
 class NavigationDrawer extends StatelessWidget {
   const NavigationDrawer();
 
@@ -96,7 +74,8 @@ class NavigationDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final NavigationController controller = NavigationData.of(context);
+    final NavigationController controller =
+        context.watch<NavigationController>();
 
     List<Widget> children = [];
     if (controller.drawerHeader != null) {
@@ -146,7 +125,7 @@ mixin DrawerEntry<T extends StatefulWidget> on State<T> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (ModalRoute.of(context)!.isFirst) {
-      NavigationData.maybeOf(context)?.setDrawerSelection<T>();
+      context.watch<NavigationController?>()?.setDrawerSelection<T>();
     }
   }
 }
