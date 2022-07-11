@@ -29,7 +29,7 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback(
-      (_) => historyController.addPost(widget.post.value),
+      (_) => HistoriesData.of(context).addPost(widget.post.value),
     );
   }
 

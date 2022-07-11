@@ -21,7 +21,8 @@ class _HomePageState extends State<HomePage>
 
   void update() {
     settings.homeTags.value = controller.search.value;
-    controller.addToHistory(context);
+    // TODO: reenable
+    // controller.addToHistory(context);
   }
 
   @override

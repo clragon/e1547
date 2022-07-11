@@ -453,38 +453,38 @@ abstract class _Comment implements Comment {
   factory _Comment.fromJson(Map<String, dynamic> json) = _$_Comment.fromJson;
 
   @override
-  int get id => throw _privateConstructorUsedError;
+  int get id;
   @override
-  DateTime get createdAt => throw _privateConstructorUsedError;
+  DateTime get createdAt;
   @override
-  int get postId => throw _privateConstructorUsedError;
+  int get postId;
   @override
-  int get creatorId => throw _privateConstructorUsedError;
+  int get creatorId;
   @override
-  String get body => throw _privateConstructorUsedError;
+  String get body;
   @override
-  int get score => throw _privateConstructorUsedError;
+  int get score;
   @override
-  DateTime get updatedAt => throw _privateConstructorUsedError;
+  DateTime get updatedAt;
   @override
-  int get updaterId => throw _privateConstructorUsedError;
+  int get updaterId;
   @override
-  bool get doNotBumpPost => throw _privateConstructorUsedError;
+  bool get doNotBumpPost;
   @override
-  bool get isHidden => throw _privateConstructorUsedError;
+  bool get isHidden;
   @override
-  bool get isSticky => throw _privateConstructorUsedError;
+  bool get isSticky;
   @override
-  int? get warningType => throw _privateConstructorUsedError;
+  int? get warningType;
   @override
-  int? get warningUserId => throw _privateConstructorUsedError;
+  int? get warningUserId;
   @override
-  String get creatorName => throw _privateConstructorUsedError;
+  String get creatorName;
   @override
-  String get updaterName => throw _privateConstructorUsedError;
+  String get updaterName;
   @override
   @JsonKey(ignore: true)
-  VoteStatus get voteStatus => throw _privateConstructorUsedError;
+  VoteStatus get voteStatus;
   @override
   @JsonKey(ignore: true)
   _$$_CommentCopyWith<_$_Comment> get copyWith =>

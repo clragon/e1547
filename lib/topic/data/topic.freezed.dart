@@ -346,27 +346,27 @@ abstract class _Topic implements Topic {
   factory _Topic.fromJson(Map<String, dynamic> json) = _$_Topic.fromJson;
 
   @override
-  int get id => throw _privateConstructorUsedError;
+  int get id;
   @override
-  int get creatorId => throw _privateConstructorUsedError;
+  int get creatorId;
   @override
-  int get updaterId => throw _privateConstructorUsedError;
+  int get updaterId;
   @override
-  String get title => throw _privateConstructorUsedError;
+  String get title;
   @override
-  int get responseCount => throw _privateConstructorUsedError;
+  int get responseCount;
   @override
-  bool get isSticky => throw _privateConstructorUsedError;
+  bool get isSticky;
   @override
-  bool get isLocked => throw _privateConstructorUsedError;
+  bool get isLocked;
   @override
-  bool get isHidden => throw _privateConstructorUsedError;
+  bool get isHidden;
   @override
-  DateTime get createdAt => throw _privateConstructorUsedError;
+  DateTime get createdAt;
   @override
-  DateTime get updatedAt => throw _privateConstructorUsedError;
+  DateTime get updatedAt;
   @override
-  int get categoryId => throw _privateConstructorUsedError;
+  int get categoryId;
   @override
   @JsonKey(ignore: true)
   _$$_TopicCopyWith<_$_Topic> get copyWith =>

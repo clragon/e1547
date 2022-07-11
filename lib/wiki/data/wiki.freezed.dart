@@ -372,29 +372,29 @@ abstract class _Wiki implements Wiki {
   factory _Wiki.fromJson(Map<String, dynamic> json) = _$_Wiki.fromJson;
 
   @override
-  int get id => throw _privateConstructorUsedError;
+  int get id;
   @override
-  DateTime get createdAt => throw _privateConstructorUsedError;
+  DateTime get createdAt;
   @override
-  DateTime? get updatedAt => throw _privateConstructorUsedError;
+  DateTime? get updatedAt;
   @override
-  String get title => throw _privateConstructorUsedError;
+  String get title;
   @override
-  String get body => throw _privateConstructorUsedError;
+  String get body;
   @override
-  int get creatorId => throw _privateConstructorUsedError;
+  int get creatorId;
   @override
-  bool get isLocked => throw _privateConstructorUsedError;
+  bool get isLocked;
   @override
-  int? get updaterId => throw _privateConstructorUsedError;
+  int? get updaterId;
   @override
-  bool get isDeleted => throw _privateConstructorUsedError;
+  bool get isDeleted;
   @override
-  List<String> get otherNames => throw _privateConstructorUsedError;
+  List<String> get otherNames;
   @override
-  String get creatorName => throw _privateConstructorUsedError;
+  String get creatorName;
   @override
-  int get categoryName => throw _privateConstructorUsedError;
+  int get categoryName;
   @override
   @JsonKey(ignore: true)
   _$$_WikiCopyWith<_$_Wiki> get copyWith => throw _privateConstructorUsedError;

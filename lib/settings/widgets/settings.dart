@@ -1,3 +1,4 @@
+import 'package:e1547/app/app.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/denylist/denylist.dart';
 import 'package:e1547/follow/follow.dart';
@@ -200,21 +201,17 @@ class _SettingsPageState extends State<SettingsPage> {
             const Divider(),
             const SettingsHeader(title: 'Listing'),
             AnimatedBuilder(
-              animation: historyController,
+              animation: HistoriesData.of(context),
               builder: (context, child) => DividerListTile(
                 title: const Text('History'),
-                subtitle: settings.writeHistory.value &&
-                        historyController.collection.entries.isNotEmpty
-                    ? Text(
-                        '${historyController.collection.entries.length} pages visited')
-                    : null,
                 leading: const Icon(Icons.history),
                 onTap: () => Navigator.pushNamed(context, '/history'),
-                onTapSeparated: () =>
-                    settings.writeHistory.value = !settings.writeHistory.value,
+                onTapSeparated: () => HistoriesData.of(context).enabled =
+                    !HistoriesData.of(context).enabled,
                 separated: Switch(
-                  value: settings.writeHistory.value,
-                  onChanged: (value) => settings.writeHistory.value = value,
+                  value: HistoriesData.of(context).enabled,
+                  onChanged: (value) =>
+                      HistoriesData.of(context).enabled = value,
                 ),
               ),
             ),

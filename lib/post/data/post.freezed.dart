@@ -706,55 +706,55 @@ abstract class _Post extends Post {
   factory _Post.fromJson(Map<String, dynamic> json) = _$_Post.fromJson;
 
   @override
-  int get id => throw _privateConstructorUsedError;
+  int get id;
   @override
-  DateTime get createdAt => throw _privateConstructorUsedError;
+  DateTime get createdAt;
   @override
-  DateTime? get updatedAt => throw _privateConstructorUsedError;
+  DateTime? get updatedAt;
   @override
   @JsonKey(name: 'file')
-  PostSourceFile get fileRaw => throw _privateConstructorUsedError;
+  PostSourceFile get fileRaw;
   @override
-  PostPreviewFile get preview => throw _privateConstructorUsedError;
+  PostPreviewFile get preview;
   @override
-  PostSampleFile get sample => throw _privateConstructorUsedError;
+  PostSampleFile get sample;
   @override
-  Score get score => throw _privateConstructorUsedError;
+  Score get score;
   @override
-  Map<String, List<String>> get tags => throw _privateConstructorUsedError;
+  Map<String, List<String>> get tags;
   @override
-  List<String>? get lockedTags => throw _privateConstructorUsedError;
+  List<String>? get lockedTags;
   @override
-  int? get changeSeq => throw _privateConstructorUsedError;
+  int? get changeSeq;
   @override
-  Flags get flags => throw _privateConstructorUsedError;
+  Flags get flags;
   @override
-  Rating get rating => throw _privateConstructorUsedError;
+  Rating get rating;
   @override
-  int get favCount => throw _privateConstructorUsedError;
+  int get favCount;
   @override
-  List<String> get sources => throw _privateConstructorUsedError;
+  List<String> get sources;
   @override
-  List<int> get pools => throw _privateConstructorUsedError;
+  List<int> get pools;
   @override
-  Relationships get relationships => throw _privateConstructorUsedError;
+  Relationships get relationships;
   @override
-  int? get approverId => throw _privateConstructorUsedError;
+  int? get approverId;
   @override
-  int get uploaderId => throw _privateConstructorUsedError;
+  int get uploaderId;
   @override
-  String get description => throw _privateConstructorUsedError;
+  String get description;
   @override
-  int get commentCount => throw _privateConstructorUsedError;
+  int get commentCount;
   @override
-  bool get isFavorited => throw _privateConstructorUsedError;
+  bool get isFavorited;
   @override
-  bool get hasNotes => throw _privateConstructorUsedError;
+  bool get hasNotes;
   @override
-  double? get duration => throw _privateConstructorUsedError;
+  double? get duration;
   @override
   @JsonKey(ignore: true)
-  VoteStatus get voteStatus => throw _privateConstructorUsedError;
+  VoteStatus get voteStatus;
   @override
   @JsonKey(ignore: true)
   _$$_PostCopyWith<_$_Post> get copyWith => throw _privateConstructorUsedError;
@@ -932,11 +932,11 @@ abstract class _PostPreviewFile implements PostPreviewFile {
       _$_PostPreviewFile.fromJson;
 
   @override
-  int get width => throw _privateConstructorUsedError;
+  int get width;
   @override
-  int get height => throw _privateConstructorUsedError;
+  int get height;
   @override
-  String? get url => throw _privateConstructorUsedError;
+  String? get url;
   @override
   @JsonKey(ignore: true)
   _$$_PostPreviewFileCopyWith<_$_PostPreviewFile> get copyWith =>
@@ -1135,13 +1135,13 @@ abstract class _PostSampleFile implements PostSampleFile {
       _$_PostSampleFile.fromJson;
 
   @override
-  bool get has => throw _privateConstructorUsedError;
+  bool get has;
   @override
-  int get height => throw _privateConstructorUsedError;
+  int get height;
   @override
-  int get width => throw _privateConstructorUsedError;
+  int get width;
   @override
-  String? get url => throw _privateConstructorUsedError;
+  String? get url;
   @override
   @JsonKey(ignore: true)
   _$$_PostSampleFileCopyWith<_$_PostSampleFile> get copyWith =>
@@ -1378,17 +1378,17 @@ abstract class _PostSourceFile implements PostSourceFile {
       _$_PostSourceFile.fromJson;
 
   @override
-  int get width => throw _privateConstructorUsedError;
+  int get width;
   @override
-  int get height => throw _privateConstructorUsedError;
+  int get height;
   @override
-  String get ext => throw _privateConstructorUsedError;
+  String get ext;
   @override
-  int get size => throw _privateConstructorUsedError;
+  int get size;
   @override
-  String get md5 => throw _privateConstructorUsedError;
+  String get md5;
   @override
-  String? get url => throw _privateConstructorUsedError;
+  String? get url;
   @override
   @JsonKey(ignore: true)
   _$$_PostSourceFileCopyWith<_$_PostSourceFile> get copyWith =>
@@ -1628,17 +1628,17 @@ abstract class _Flags implements Flags {
   factory _Flags.fromJson(Map<String, dynamic> json) = _$_Flags.fromJson;
 
   @override
-  bool get pending => throw _privateConstructorUsedError;
+  bool get pending;
   @override
-  bool get flagged => throw _privateConstructorUsedError;
+  bool get flagged;
   @override
-  bool get noteLocked => throw _privateConstructorUsedError;
+  bool get noteLocked;
   @override
-  bool get statusLocked => throw _privateConstructorUsedError;
+  bool get statusLocked;
   @override
-  bool get ratingLocked => throw _privateConstructorUsedError;
+  bool get ratingLocked;
   @override
-  bool get deleted => throw _privateConstructorUsedError;
+  bool get deleted;
   @override
   @JsonKey(ignore: true)
   _$$_FlagsCopyWith<_$_Flags> get copyWith =>
@@ -1850,13 +1850,13 @@ abstract class _Relationships implements Relationships {
       _$_Relationships.fromJson;
 
   @override
-  int? get parentId => throw _privateConstructorUsedError;
+  int? get parentId;
   @override
-  bool get hasChildren => throw _privateConstructorUsedError;
+  bool get hasChildren;
   @override
-  bool get hasActiveChildren => throw _privateConstructorUsedError;
+  bool get hasActiveChildren;
   @override
-  List<int> get children => throw _privateConstructorUsedError;
+  List<int> get children;
   @override
   @JsonKey(ignore: true)
   _$$_RelationshipsCopyWith<_$_Relationships> get copyWith =>
@@ -2024,11 +2024,11 @@ abstract class _Score implements Score {
   factory _Score.fromJson(Map<String, dynamic> json) = _$_Score.fromJson;
 
   @override
-  int get up => throw _privateConstructorUsedError;
+  int get up;
   @override
-  int get down => throw _privateConstructorUsedError;
+  int get down;
   @override
-  int get total => throw _privateConstructorUsedError;
+  int get total;
   @override
   @JsonKey(ignore: true)
   _$$_ScoreCopyWith<_$_Score> get copyWith =>

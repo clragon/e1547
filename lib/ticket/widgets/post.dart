@@ -36,7 +36,7 @@ class PostReportImage extends StatelessWidget {
               child: ImageOverlay(
                 post: post,
                 builder: (context) => Hero(
-                  tag: post.value.hero,
+                  tag: post.value.link,
                   child: PostImageWidget(
                     post: post.value,
                     size: ImageSize.sample,

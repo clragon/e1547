@@ -1,8 +1,8 @@
 import 'dart:convert';
 
+import 'package:e1547/app/app.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/follow/follow.dart';
-import 'package:e1547/history/history.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:flutter/foundation.dart';
@@ -60,35 +60,6 @@ class Settings with SharedPrefsSettings {
     ),
   );
 
-  late final ValueNotifier<Map<String, HistoryCollection>> history =
-      createSetting(
-    key: 'history',
-    initialValue: {},
-    getSetting: (prefs, key) {
-      String? value = prefs.getString(key);
-      if (value != null) {
-        return Map<String, HistoryCollection>.from(
-          json.decode(value).map(
-                (key, value) => MapEntry(key, HistoryCollection.fromMap(value)),
-              ),
-        );
-      } else {
-        return null;
-      }
-    },
-    setSetting: (prefs, key, value) async {
-      await prefs.setString(
-        key,
-        json.encode(
-          Map<String, dynamic>.from(
-            value.map(
-              (key, value) => MapEntry(key, value.toMap()),
-            ),
-          ),
-        ),
-      );
-    },
-  );
   late final ValueNotifier<bool> writeHistory =
       createSetting(key: 'writeHistory', initialValue: true);
 

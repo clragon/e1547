@@ -15,7 +15,8 @@ class _HotPageState extends State<HotPage>
 
   @override
   Map<ChangeNotifier, VoidCallback> get initListeners => {
-        controller.search: () => controller.addToHistory(context),
+    // TODO: reenable
+    // controller.search: () => controller.addToHistory(context),
       };
 
   @override

@@ -326,25 +326,25 @@ abstract class _Reply implements Reply {
   factory _Reply.fromJson(Map<String, dynamic> json) = _$_Reply.fromJson;
 
   @override
-  int get id => throw _privateConstructorUsedError;
+  int get id;
   @override
-  DateTime get createdAt => throw _privateConstructorUsedError;
+  DateTime get createdAt;
   @override
-  DateTime get updatedAt => throw _privateConstructorUsedError;
+  DateTime get updatedAt;
   @override
-  String get body => throw _privateConstructorUsedError;
+  String get body;
   @override
-  int get creatorId => throw _privateConstructorUsedError;
+  int get creatorId;
   @override
-  int? get updaterId => throw _privateConstructorUsedError;
+  int? get updaterId;
   @override
-  int get topicId => throw _privateConstructorUsedError;
+  int get topicId;
   @override
-  bool get isHidden => throw _privateConstructorUsedError;
+  bool get isHidden;
   @override
-  int? get warningType => throw _privateConstructorUsedError;
+  int? get warningType;
   @override
-  int? get warningUserId => throw _privateConstructorUsedError;
+  int? get warningUserId;
   @override
   @JsonKey(ignore: true)
   _$$_ReplyCopyWith<_$_Reply> get copyWith =>

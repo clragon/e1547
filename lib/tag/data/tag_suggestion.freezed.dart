@@ -233,15 +233,15 @@ abstract class _TagSuggestion implements TagSuggestion {
       _$_TagSuggestion.fromJson;
 
   @override
-  int get id => throw _privateConstructorUsedError;
+  int get id;
   @override
-  String get name => throw _privateConstructorUsedError;
+  String get name;
   @override
-  int get postCount => throw _privateConstructorUsedError;
+  int get postCount;
   @override
-  int get category => throw _privateConstructorUsedError;
+  int get category;
   @override
-  String? get antecedentName => throw _privateConstructorUsedError;
+  String? get antecedentName;
   @override
   @JsonKey(ignore: true)
   _$$_TagSuggestionCopyWith<_$_TagSuggestion> get copyWith =>
