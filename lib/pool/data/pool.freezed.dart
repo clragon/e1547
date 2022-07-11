@@ -371,29 +371,29 @@ abstract class _Pool implements Pool {
   factory _Pool.fromJson(Map<String, dynamic> json) = _$_Pool.fromJson;
 
   @override
-  int get id => throw _privateConstructorUsedError;
+  int get id;
   @override
-  String get name => throw _privateConstructorUsedError;
+  String get name;
   @override
-  DateTime get createdAt => throw _privateConstructorUsedError;
+  DateTime get createdAt;
   @override
-  DateTime get updatedAt => throw _privateConstructorUsedError;
+  DateTime get updatedAt;
   @override
-  int get creatorId => throw _privateConstructorUsedError;
+  int get creatorId;
   @override
-  String get description => throw _privateConstructorUsedError;
+  String get description;
   @override
-  bool get isActive => throw _privateConstructorUsedError;
+  bool get isActive;
   @override
-  Category get category => throw _privateConstructorUsedError;
+  Category get category;
   @override
-  bool get isDeleted => throw _privateConstructorUsedError;
+  bool get isDeleted;
   @override
-  List<int> get postIds => throw _privateConstructorUsedError;
+  List<int> get postIds;
   @override
-  String get creatorName => throw _privateConstructorUsedError;
+  String get creatorName;
   @override
-  int get postCount => throw _privateConstructorUsedError;
+  int get postCount;
   @override
   @JsonKey(ignore: true)
   _$$_PoolCopyWith<_$_Pool> get copyWith => throw _privateConstructorUsedError;

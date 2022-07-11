@@ -66,8 +66,7 @@ class PoolDialog extends StatelessWidget {
         actions: [
           TextButton(
             child: const Text('SHARE'),
-            onPressed: () async =>
-                Share.share(pool.url(client.host).toString()),
+            onPressed: () async => Share.share(client.withHost(pool.link)),
           ),
           TextButton(
             onPressed: Navigator.of(context).maybePop,

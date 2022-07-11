@@ -7,11 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:grouped_list/grouped_list.dart';
 import 'package:intl/intl.dart';
 
-enum HistoryFilter {
-  posts,
-  tags,
-  pools,
-}
 
 class HistoryPage extends StatefulWidget {
   const HistoryPage();
@@ -24,37 +19,29 @@ class _HistoryPageState extends State<HistoryPage> {
   DateTime? search;
   Set<HistoryFilter> filters = HistoryFilter.values.toSet();
 
-  List<HistoryEntry> filter(List<HistoryEntry> entries) {
+  List<History> filter(List<History> entries) {
     if (search != null) {
       entries.retainWhere(
         (element) =>
             DateUtils.dateOnly(element.visitedAt).isAtSameMomentAs(search!),
       );
     }
-    List<HistoryEntry> updated = [];
+    List<History> updated = [];
     for (final filter in filters) {
       switch (filter) {
         case HistoryFilter.posts:
           updated.addAll(
-            entries.whereType<PostHistoryEntry>(),
+            entries.where((e) => e.isPost),
           );
           break;
-        case HistoryFilter.tags:
+        case HistoryFilter.searches:
           updated.addAll(
-            entries.where(
-              (element) =>
-                  element is TagHistoryEntry &&
-                  !poolRegex().hasMatch(element.tags),
-            ),
+            entries.where((e) => e.isSearch),
           );
           break;
         case HistoryFilter.pools:
           updated.addAll(
-            entries.where(
-              (element) =>
-                  element is TagHistoryEntry &&
-                  poolRegex().hasMatch(element.tags),
-            ),
+            entries.where((e) => e.isPool),
           );
           break;
       }
@@ -64,14 +51,20 @@ class _HistoryPageState extends State<HistoryPage> {
 
   @override
   Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('eeee'),),
+      body: Center(
+        child: Text('balls'),
+      ),
+    );
+    /*
     return LimitedWidthLayout(
       child: AnimatedBuilder(
         animation: historyController,
         builder: (context, child) {
-          List<HistoryEntry> entries =
-              filter(historyController.collection.entries);
+          List<History> entries = filter(historyController.collection.entries);
           bool isNotEmpty = entries.isNotEmpty;
-          return SelectionLayout<HistoryEntry>(
+          return SelectionLayout<History>(
             items: entries,
             child: Scaffold(
               appBar: HistorySelectionAppBar(
@@ -86,7 +79,7 @@ class _HistoryPageState extends State<HistoryPage> {
                 ),
               ),
               body: isNotEmpty
-                  ? GroupedListView<HistoryEntry, DateTime>(
+                  ? GroupedListView<History, DateTime>(
                       padding: defaultActionListPadding
                           .add(LimitedWidthLayout.of(context).padding),
                       elements: entries,
@@ -108,10 +101,9 @@ class _HistoryPageState extends State<HistoryPage> {
               floatingActionButton: FloatingActionButton(
                 child: const Icon(Icons.search),
                 onPressed: () async {
-                  DateTime firstDate =
-                      historyController.collection.entries.first.visitedAt;
-                  DateTime lastDate =
-                      historyController.collection.entries.last.visitedAt;
+                  // TODO: add method to get first and last date?
+                  DateTime firstDate = DateTime.now();
+                  DateTime lastDate = DateTime.now();
 
                   DateTime? result = await showDatePicker(
                     context: context,
@@ -120,11 +112,6 @@ class _HistoryPageState extends State<HistoryPage> {
                     lastDate: lastDate,
                     locale: Localizations.localeOf(context),
                     initialEntryMode: DatePickerEntryMode.calendarOnly,
-                    selectableDayPredicate: (date) =>
-                        historyController.collection.entries.any(
-                      (element) => DateUtils.dateOnly(element.visitedAt)
-                          .isAtSameMomentAs(date),
-                    ),
                   );
 
                   ScrollController? scrollController =
@@ -149,10 +136,11 @@ class _HistoryPageState extends State<HistoryPage> {
                       Icons.info_outline,
                       color: dimTextColor(context),
                     ),
+                    // TODO: build setting for this
                     subtitle: Text(
                       'History entries are deleted when they are '
-                      'older than ${HistoryController.maxAge.inDays} days or '
-                      'there are more then ${NumberFormat.compact().format(HistoryController.maxCount)} entries.',
+                      'older than 30 days or '
+                      'there are more then ${NumberFormat.compact().format(3000)} entries.',
                       style: TextStyle(
                         color: dimTextColor(context),
                       ),
@@ -162,7 +150,8 @@ class _HistoryPageState extends State<HistoryPage> {
                   ListTile(
                     leading: const Icon(Icons.filter_alt),
                     title: const Text('Filter'),
-                    subtitle: Text('${entries.length} entries shown'),
+                    // TODO: impossible
+                    // subtitle: Text('${entries.length} entries shown'),
                   ),
                   const Divider(),
                   for (final filter in HistoryFilter.values)
@@ -187,8 +176,9 @@ class _HistoryPageState extends State<HistoryPage> {
                     ),
                   const Divider(),
                   Center(
+                    // TODO: fix this, somehow?
                     child: Text(
-                      'of ${historyController.collection.entries.length} entries',
+                      'of 0 entries',
                       style: TextStyle(
                         color: dimTextColor(context),
                       ),
@@ -201,5 +191,6 @@ class _HistoryPageState extends State<HistoryPage> {
         },
       ),
     );
+     */
   }
 }

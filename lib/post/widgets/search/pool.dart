@@ -30,7 +30,8 @@ class _PoolPageState extends State<PoolPage> {
   @override
   void initState() {
     super.initState();
-    controller.addToHistory(context, widget.pool);
+    // TODO: reenable
+    // controller.addToHistory(context, widget.pool);
   }
 
   @override

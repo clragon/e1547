@@ -305,23 +305,23 @@ abstract class _Tag implements Tag {
   factory _Tag.fromJson(Map<String, dynamic> json) = _$_Tag.fromJson;
 
   @override
-  int get id => throw _privateConstructorUsedError;
+  int get id;
   @override
-  String get name => throw _privateConstructorUsedError;
+  String get name;
   @override
-  int get postCount => throw _privateConstructorUsedError;
+  int get postCount;
   @override
-  String get relatedTags => throw _privateConstructorUsedError;
+  String get relatedTags;
   @override
-  DateTime get relatedTagsUpdatedAt => throw _privateConstructorUsedError;
+  DateTime get relatedTagsUpdatedAt;
   @override
-  int get category => throw _privateConstructorUsedError;
+  int get category;
   @override
-  bool get isLocked => throw _privateConstructorUsedError;
+  bool get isLocked;
   @override
-  DateTime get createdAt => throw _privateConstructorUsedError;
+  DateTime get createdAt;
   @override
-  DateTime get updatedAt => throw _privateConstructorUsedError;
+  DateTime get updatedAt;
   @override
   @JsonKey(ignore: true)
   _$$_TagCopyWith<_$_Tag> get copyWith => throw _privateConstructorUsedError;

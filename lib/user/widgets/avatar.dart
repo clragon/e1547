@@ -186,7 +186,7 @@ class Avatar extends StatelessWidget {
         child: PostTileOverlay(
           post: post!,
           child: Hero(
-            tag: post!.value.hero,
+            tag: post!.value.link,
             child: CircleAvatar(
               foregroundImage:
                   CachedNetworkImageProvider(post!.value.sample.url!),

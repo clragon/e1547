@@ -2,9 +2,9 @@
 export 'data/action.dart';
 export 'data/client.dart';
 export 'data/controller.dart';
+export 'data/database.dart';
 export 'data/hosts.dart';
 export 'data/text.dart';
-export 'data/theme.dart';
 export 'data/updater.dart';
 // widgets
 export 'widgets/action.dart';

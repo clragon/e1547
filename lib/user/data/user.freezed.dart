@@ -600,51 +600,51 @@ abstract class _User implements User {
   factory _User.fromJson(Map<String, dynamic> json) = _$_User.fromJson;
 
   @override
-  int get wikiPageVersionCount => throw _privateConstructorUsedError;
+  int get wikiPageVersionCount;
   @override
-  int get artistVersionCount => throw _privateConstructorUsedError;
+  int get artistVersionCount;
   @override
-  int get poolVersionCount => throw _privateConstructorUsedError;
+  int get poolVersionCount;
   @override
-  int get forumPostCount => throw _privateConstructorUsedError;
+  int get forumPostCount;
   @override
-  int get commentCount => throw _privateConstructorUsedError;
+  int get commentCount;
   @override
-  int get flagCount => throw _privateConstructorUsedError;
+  int get flagCount;
   @override
-  int get positiveFeedbackCount => throw _privateConstructorUsedError;
+  int get positiveFeedbackCount;
   @override
-  int get neutralFeedbackCount => throw _privateConstructorUsedError;
+  int get neutralFeedbackCount;
   @override
-  int get negativeFeedbackCount => throw _privateConstructorUsedError;
+  int get negativeFeedbackCount;
   @override
-  int get uploadLimit => throw _privateConstructorUsedError;
+  int get uploadLimit;
   @override
-  int get id => throw _privateConstructorUsedError;
+  int get id;
   @override
-  DateTime get createdAt => throw _privateConstructorUsedError;
+  DateTime get createdAt;
   @override
-  String get name => throw _privateConstructorUsedError;
+  String get name;
   @override
-  int get level => throw _privateConstructorUsedError;
+  int get level;
   @override
-  int get baseUploadLimit => throw _privateConstructorUsedError;
+  int get baseUploadLimit;
   @override
-  int get postUploadCount => throw _privateConstructorUsedError;
+  int get postUploadCount;
   @override
-  int get postUpdateCount => throw _privateConstructorUsedError;
+  int get postUpdateCount;
   @override
-  int get noteUpdateCount => throw _privateConstructorUsedError;
+  int get noteUpdateCount;
   @override
-  bool get isBanned => throw _privateConstructorUsedError;
+  bool get isBanned;
   @override
-  bool get canApprovePosts => throw _privateConstructorUsedError;
+  bool get canApprovePosts;
   @override
-  bool get canUploadFree => throw _privateConstructorUsedError;
+  bool get canUploadFree;
   @override
-  String get levelString => throw _privateConstructorUsedError;
+  String get levelString;
   @override
-  int? get avatarId => throw _privateConstructorUsedError;
+  int? get avatarId;
   @override
   @JsonKey(ignore: true)
   _$$_UserCopyWith<_$_User> get copyWith => throw _privateConstructorUsedError;

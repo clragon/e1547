@@ -46,7 +46,7 @@ class PostTile extends StatelessWidget {
               builder: (context, value) => PostTileOverlay(
                 post: post,
                 child: Hero(
-                  tag: post.value.hero,
+                  tag: post.value.link,
                   child: PostImageWidget(
                     post: post.value,
                     size: ImageSize.sample,

@@ -39,7 +39,7 @@ class FollowTile extends StatelessWidget {
         children: [
           Expanded(
             child: Hero(
-              tag: getPostHero(status.latest!),
+              tag: getPostLink(status.latest!),
               child: CachedNetworkImage(
                 imageUrl: status.thumbnail!,
                 errorWidget: defaultErrorBuilder,

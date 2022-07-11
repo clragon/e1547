@@ -92,15 +92,15 @@ class Client extends ChangeNotifier {
     }
   }
 
-  Future<void> logout() async {
-    settings.credentials.value = null;
-  }
+  Future<void> logout() async => settings.credentials.value = null;
 
   Future<void> ensureLogin() async {
     if (!await isLoggedIn) {
       throw StateError('User is not logged in!');
     }
   }
+
+  String withHost(String path) => '$host$path';
 
   bool postIsIgnored(Post post) {
     return (post.file.url == null && !post.flags.deleted) ||
@@ -120,7 +120,7 @@ class Client extends ChangeNotifier {
   }
 
   Future<List<Post>> postsRaw(int page,
-      {String? search, int? limit, bool force = false}) async {
+      {int? limit, String? search, bool force = false}) async {
     await initialized;
     String? tags = search != null ? sortTags(search) : '';
     Map body = await dio
@@ -143,8 +143,8 @@ class Client extends ChangeNotifier {
 
   Future<List<Post>> posts(
     int page, {
-    String? search,
     int? limit,
+    String? search,
     bool? reversePools,
     bool? orderFavorites,
     bool? force,

@@ -211,13 +211,13 @@ abstract class _Follow implements Follow {
   factory _Follow.fromJson(Map<String, dynamic> json) = _$_Follow.fromJson;
 
   @override
-  String get tags => throw _privateConstructorUsedError;
+  String get tags;
   @override
-  String? get alias => throw _privateConstructorUsedError;
+  String? get alias;
   @override
-  FollowType get type => throw _privateConstructorUsedError;
+  FollowType get type;
   @override
-  Map<String, FollowStatus> get statuses => throw _privateConstructorUsedError;
+  Map<String, FollowStatus> get statuses;
   @override
   @JsonKey(ignore: true)
   _$$_FollowCopyWith<_$_Follow> get copyWith =>
@@ -410,13 +410,13 @@ abstract class _FollowStatus implements FollowStatus {
       _$_FollowStatus.fromJson;
 
   @override
-  int? get latest => throw _privateConstructorUsedError;
+  int? get latest;
   @override
-  int? get unseen => throw _privateConstructorUsedError;
+  int? get unseen;
   @override
-  String? get thumbnail => throw _privateConstructorUsedError;
+  String? get thumbnail;
   @override
-  DateTime? get updated => throw _privateConstructorUsedError;
+  DateTime? get updated;
   @override
   @JsonKey(ignore: true)
   _$$_FollowStatusCopyWith<_$_FollowStatus> get copyWith =>

@@ -1478,135 +1478,135 @@ abstract class _CurrentUser implements CurrentUser {
       _$_CurrentUser.fromJson;
 
   @override
-  int get wikiPageVersionCount => throw _privateConstructorUsedError;
+  int get wikiPageVersionCount;
   @override
-  int get artistVersionCount => throw _privateConstructorUsedError;
+  int get artistVersionCount;
   @override
-  int get poolVersionCount => throw _privateConstructorUsedError;
+  int get poolVersionCount;
   @override
-  int get forumPostCount => throw _privateConstructorUsedError;
+  int get forumPostCount;
   @override
-  int get commentCount => throw _privateConstructorUsedError;
+  int get commentCount;
   @override
-  int get flagCount => throw _privateConstructorUsedError;
+  int get flagCount;
   @override
-  int get positiveFeedbackCount => throw _privateConstructorUsedError;
+  int get positiveFeedbackCount;
   @override
-  int get neutralFeedbackCount => throw _privateConstructorUsedError;
+  int get neutralFeedbackCount;
   @override
-  int get negativeFeedbackCount => throw _privateConstructorUsedError;
+  int get negativeFeedbackCount;
   @override
-  int get uploadLimit => throw _privateConstructorUsedError;
+  int get uploadLimit;
   @override
-  int get id => throw _privateConstructorUsedError;
+  int get id;
   @override
-  DateTime get createdAt => throw _privateConstructorUsedError;
+  DateTime get createdAt;
   @override
-  String get name => throw _privateConstructorUsedError;
+  String get name;
   @override
-  int get level => throw _privateConstructorUsedError;
+  int get level;
   @override
-  int get baseUploadLimit => throw _privateConstructorUsedError;
+  int get baseUploadLimit;
   @override
-  int get postUploadCount => throw _privateConstructorUsedError;
+  int get postUploadCount;
   @override
-  int get postUpdateCount => throw _privateConstructorUsedError;
+  int get postUpdateCount;
   @override
-  int get noteUpdateCount => throw _privateConstructorUsedError;
+  int get noteUpdateCount;
   @override
-  bool get isBanned => throw _privateConstructorUsedError;
+  bool get isBanned;
   @override
-  bool get canApprovePosts => throw _privateConstructorUsedError;
+  bool get canApprovePosts;
   @override
-  bool get canUploadFree => throw _privateConstructorUsedError;
+  bool get canUploadFree;
   @override
-  String get levelString => throw _privateConstructorUsedError;
+  String get levelString;
   @override
-  int? get avatarId => throw _privateConstructorUsedError;
+  int? get avatarId;
   @override
-  bool get showAvatars => throw _privateConstructorUsedError;
+  bool get showAvatars;
   @override
-  bool get blacklistAvatars => throw _privateConstructorUsedError;
+  bool get blacklistAvatars;
   @override
-  bool get blacklistUsers => throw _privateConstructorUsedError;
+  bool get blacklistUsers;
   @override
-  bool get descriptionCollapsedInitially => throw _privateConstructorUsedError;
+  bool get descriptionCollapsedInitially;
   @override
-  bool get hideComments => throw _privateConstructorUsedError;
+  bool get hideComments;
   @override
-  bool get showHiddenComments => throw _privateConstructorUsedError;
+  bool get showHiddenComments;
   @override
-  bool get showPostStatistics => throw _privateConstructorUsedError;
+  bool get showPostStatistics;
   @override
-  bool get hasMail => throw _privateConstructorUsedError;
+  bool get hasMail;
   @override
-  bool get receiveEmailNotifications => throw _privateConstructorUsedError;
+  bool get receiveEmailNotifications;
   @override
-  bool get enableKeyboardNavigation => throw _privateConstructorUsedError;
+  bool get enableKeyboardNavigation;
   @override
-  bool get enablePrivacyMode => throw _privateConstructorUsedError;
+  bool get enablePrivacyMode;
   @override
-  bool get styleUsernames => throw _privateConstructorUsedError;
+  bool get styleUsernames;
   @override
-  bool get enableAutoComplete => throw _privateConstructorUsedError;
+  bool get enableAutoComplete;
   @override
-  bool get hasSavedSearches => throw _privateConstructorUsedError;
+  bool get hasSavedSearches;
   @override
-  bool get disableCroppedThumbnails => throw _privateConstructorUsedError;
+  bool get disableCroppedThumbnails;
   @override
-  bool get disableMobileGestures => throw _privateConstructorUsedError;
+  bool get disableMobileGestures;
   @override
-  bool get enableSafeMode => throw _privateConstructorUsedError;
+  bool get enableSafeMode;
   @override
-  bool get disableResponsiveMode => throw _privateConstructorUsedError;
+  bool get disableResponsiveMode;
   @override
-  bool get disablePostTooltips => throw _privateConstructorUsedError;
+  bool get disablePostTooltips;
   @override
-  bool get noFlagging => throw _privateConstructorUsedError;
+  bool get noFlagging;
   @override
-  bool get noFeedback => throw _privateConstructorUsedError;
+  bool get noFeedback;
   @override
-  bool get disableUserDmails => throw _privateConstructorUsedError;
+  bool get disableUserDmails;
   @override
-  bool get enableCompactUploader => throw _privateConstructorUsedError;
+  bool get enableCompactUploader;
   @override
-  DateTime get updatedAt => throw _privateConstructorUsedError;
+  DateTime get updatedAt;
   @override
-  String get email => throw _privateConstructorUsedError;
+  String get email;
   @override
-  DateTime get lastLoggedInAt => throw _privateConstructorUsedError;
+  DateTime get lastLoggedInAt;
   @override
-  DateTime? get lastForumReadAt => throw _privateConstructorUsedError;
+  DateTime? get lastForumReadAt;
   @override
-  String? get recentTags => throw _privateConstructorUsedError;
+  String? get recentTags;
   @override
-  int get commentThreshold => throw _privateConstructorUsedError;
+  int get commentThreshold;
   @override
-  String get defaultImageSize => throw _privateConstructorUsedError;
+  String get defaultImageSize;
   @override
-  String? get favoriteTags => throw _privateConstructorUsedError;
+  String? get favoriteTags;
   @override
-  String get blacklistedTags => throw _privateConstructorUsedError;
+  String get blacklistedTags;
   @override
-  String get timeZone => throw _privateConstructorUsedError;
+  String get timeZone;
   @override
-  int get perPage => throw _privateConstructorUsedError;
+  int get perPage;
   @override
-  String? get customStyle => throw _privateConstructorUsedError;
+  String? get customStyle;
   @override
-  int get favoriteCount => throw _privateConstructorUsedError;
+  int get favoriteCount;
   @override
-  int get apiRegenMultiplier => throw _privateConstructorUsedError;
+  int get apiRegenMultiplier;
   @override
-  int get apiBurstLimit => throw _privateConstructorUsedError;
+  int get apiBurstLimit;
   @override
-  int get remainingApiLimit => throw _privateConstructorUsedError;
+  int get remainingApiLimit;
   @override
-  int get statementTimeout => throw _privateConstructorUsedError;
+  int get statementTimeout;
   @override
-  int get favoriteLimit => throw _privateConstructorUsedError;
+  int get favoriteLimit;
   @override
-  int get tagQueryLimit => throw _privateConstructorUsedError;
+  int get tagQueryLimit;
   @override
   @JsonKey(ignore: true)
   _$$_CurrentUserCopyWith<_$_CurrentUser> get copyWith =>

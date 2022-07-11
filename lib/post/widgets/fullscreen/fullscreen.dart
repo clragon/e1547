@@ -33,7 +33,7 @@ class PostFullscreenBody extends StatelessWidget {
             return PhotoViewGestureDetectorScope(
               axis: Axis.horizontal,
               child: PhotoView.customChild(
-                heroAttributes: PhotoViewHeroAttributes(tag: post.value.hero),
+                heroAttributes: PhotoViewHeroAttributes(tag: post.value.link),
                 backgroundDecoration:
                     const BoxDecoration(color: Colors.transparent),
                 childSize: Size(post.value.file.width.toDouble(),
@@ -47,7 +47,7 @@ class PostFullscreenBody extends StatelessWidget {
           case PostType.video:
             return Center(
               child: Hero(
-                tag: post.value.hero,
+                tag: post.value.link,
                 child: PostVideoLoader(
                   post: post.value,
                   child: VideoGestures(

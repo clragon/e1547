@@ -2,6 +2,7 @@
 export 'data/initialize.dart';
 export 'data/link.dart';
 export 'data/navigation.dart';
+export 'data/theme.dart';
 // widgets
 export 'widgets/app.dart';
 export 'widgets/link.dart';

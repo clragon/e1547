@@ -1,8 +1,12 @@
+import 'package:e1547/interface/interface.dart';
+
 class Tagset extends Iterable<StringTag> {
-  Tagset(Set<StringTag> tags) : _tags = {for (StringTag t in tags) t.name: t};
+  final Map<String, StringTag> _tags;
+
+  Tagset(Set<StringTag> tags) : _tags = {for (final t in tags) t.name: t};
 
   Tagset.parse(String tagString) : _tags = {} {
-    for (String ts in tagString.split(RegExp(r'\s+'))) {
+    for (final ts in tagString.split(' ').trim()) {
       if (ts.trim().isEmpty) {
         continue;
       }
@@ -11,19 +15,10 @@ class Tagset extends Iterable<StringTag> {
     }
   }
 
-  final Map<String, StringTag> _tags;
-
-  Uri url(String host) => Uri(
-        scheme: 'https',
-        host: host,
-        path: '/post',
-        queryParameters: {'tags': toString()},
-      );
+  String get link => '/post?tags=${toString()}';
 
   @override
-  bool contains(Object? element) {
-    return _tags.containsKey(element);
-  }
+  bool contains(Object? element) => _tags.containsKey(element);
 
   String? operator [](String? name) {
     StringTag? t = _tags[name!];
@@ -104,7 +99,7 @@ class StringTag {
   }
 
   @override
-  String toString() => value == null ? name : '$name:$value';
+  String toString() => '$name:${value ?? ''}';
 
   @override
   bool operator ==(Object other) =>

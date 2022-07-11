@@ -221,37 +221,8 @@ extension Video on Post {
   }
 }
 
-extension Transitioning on Post {
-  String get hero => getPostHero(id);
-}
-
-String getPostHero(int id) => 'post_$id';
-
 extension Linking on Post {
-  Uri url(String host) => getPostUri(host, id);
+  String get link => getPostLink(id);
 }
 
-Uri getPostUri(String host, int id) =>
-    Uri(scheme: 'https', host: host, path: '/posts/$id');
-
-extension History on PostsController {
-  Future<void> addToHistory(BuildContext context, [Pool? pool]) async {
-    try {
-      await waitForFirstPage();
-    } on ControllerLoadingException {
-      return;
-    }
-    if (pool != null) {
-      historyController.addTag(
-        pool.search,
-        alias: pool.name,
-        posts: itemList,
-      );
-    } else {
-      historyController.addTag(
-        search.value,
-        posts: itemList,
-      );
-    }
-  }
-}
+String getPostLink(int id) => '/posts/$id';

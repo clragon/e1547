@@ -16,7 +16,8 @@ class _FavPageState extends State<FavPage>
 
   @override
   Map<ChangeNotifier, VoidCallback> get initListeners => {
-        controller: () async => controller.addToHistory(context),
+        // TODO: reenable
+        // controller: () async => controller.addToHistory(context),
       };
 
   @override
