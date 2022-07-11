@@ -8,6 +8,7 @@ import 'package:e1547/settings/settings.dart';
 import 'package:e1547/user/user.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'grid.dart';
 
@@ -200,18 +201,15 @@ class _SettingsPageState extends State<SettingsPage> {
             ),
             const Divider(),
             const SettingsHeader(title: 'Listing'),
-            AnimatedBuilder(
-              animation: HistoriesData.of(context),
-              builder: (context, child) => DividerListTile(
+            Consumer<HistoriesService>(
+              builder: (context, service, child) => DividerListTile(
                 title: const Text('History'),
                 leading: const Icon(Icons.history),
                 onTap: () => Navigator.pushNamed(context, '/history'),
-                onTapSeparated: () => HistoriesData.of(context).enabled =
-                    !HistoriesData.of(context).enabled,
+                onTapSeparated: () => service.enabled = !service.enabled,
                 separated: Switch(
-                  value: HistoriesData.of(context).enabled,
-                  onChanged: (value) =>
-                      HistoriesData.of(context).enabled = value,
+                  value: service.enabled,
+                  onChanged: (value) => service.enabled = value,
                 ),
               ),
             ),

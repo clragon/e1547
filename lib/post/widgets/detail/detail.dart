@@ -3,6 +3,7 @@ import 'package:e1547/history/history.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 
 import 'appbar.dart';
@@ -29,7 +30,8 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback(
-      (_) => HistoriesData.of(context).addPost(widget.post.value),
+      (_) => Provider.of<HistoriesService>(context, listen: false)
+          .addPost(widget.post.value),
     );
   }
 

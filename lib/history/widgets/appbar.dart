@@ -1,6 +1,7 @@
 import 'package:e1547/history/history.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class HistorySelectionAppBar extends StatelessWidget with AppBarBuilderWidget {
   @override
@@ -21,7 +22,8 @@ class HistorySelectionAppBar extends StatelessWidget with AppBarBuilderWidget {
         IconButton(
           icon: const Icon(Icons.delete_outline),
           onPressed: () {
-            HistoriesData.of(context).removeAll(data.selections.toList());
+            Provider.of<HistoriesService>(context)
+                .removeAll(data.selections.toList());
             data.onChanged({});
           },
         ),
