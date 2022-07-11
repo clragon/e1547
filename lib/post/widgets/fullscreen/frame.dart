@@ -4,6 +4,7 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 import 'appbar.dart';
 
@@ -104,7 +105,7 @@ class _PostFullscreenFrameState extends State<PostFullscreenFrame>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    navigation = NavigationData.of(context);
+    navigation = context.watch<NavigationController>();
     navigation.routeObserver
         .subscribe(this, ModalRoute.of(context) as PageRoute);
   }

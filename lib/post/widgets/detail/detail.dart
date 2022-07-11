@@ -30,15 +30,14 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback(
-      (_) => Provider.of<HistoriesService>(context, listen: false)
-          .addPost(widget.post.value),
+      (_) => context.read<HistoriesService>().addPost(widget.post.value),
     );
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    navigation = NavigationData.of(context);
+    navigation = context.watch<NavigationController>();
     navigation.routeObserver
         .subscribe(this, ModalRoute.of(context) as PageRoute);
     videoController = widget.post.value.getVideo(context);

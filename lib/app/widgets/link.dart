@@ -5,6 +5,7 @@ import 'package:app_links/app_links.dart';
 import 'package:e1547/app/app.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 typedef LinkCallback = FutureOr<void> Function(Uri? url);
 
@@ -24,11 +25,12 @@ class _AppLinkHandlerState extends State<AppLinkHandler> {
   Future<void> onInitialLink(Uri? url) async {
     if (url != null) {
       VoidCallback? action = parseLinkOnTap(
-        NavigationData.of(context).navigatorKey.currentContext!,
+        context.watch<NavigationController>().navigatorKey.currentContext!,
         url.toString(),
       );
       if (action != null) {
-        NavigationData.of(context)
+        context
+            .watch<NavigationController>()
             .navigatorKey
             .currentState!
             .popUntil((route) => false);
@@ -42,7 +44,7 @@ class _AppLinkHandlerState extends State<AppLinkHandler> {
   Future<void> onLink(Uri? url) async {
     if (url != null) {
       if (!executeLink(
-        NavigationData.of(context).navigatorKey.currentContext!,
+        context.watch<NavigationController>().navigatorKey.currentContext!,
         url.toString(),
       )) {
         launch(url.toString());
