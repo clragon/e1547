@@ -3,6 +3,7 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class PoolLoadingPage extends StatefulWidget {
   final int id;
@@ -14,7 +15,7 @@ class PoolLoadingPage extends StatefulWidget {
 }
 
 class _PoolLoadingPageState extends State<PoolLoadingPage> {
-  late Future<Pool> pool = client.pool(widget.id);
+  late Future<Pool> pool = context.read<Client>().pool(widget.id);
 
   @override
   Widget build(BuildContext context) {

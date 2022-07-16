@@ -2,6 +2,7 @@ import 'package:e1547/client/client.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/wiki/wiki.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class WikiLoadingPage extends StatefulWidget {
   final String id;
@@ -13,7 +14,7 @@ class WikiLoadingPage extends StatefulWidget {
 }
 
 class _WikiLoadingPageState extends State<WikiLoadingPage> {
-  late Future<Wiki> wiki = client.wiki(widget.id);
+  late Future<Wiki> wiki = context.read<Client>().wiki(widget.id);
 
   @override
   Widget build(BuildContext context) {

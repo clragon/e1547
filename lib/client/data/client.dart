@@ -19,34 +19,37 @@ import 'package:flutter/material.dart';
 
 export 'package:dio/dio.dart' show DioError;
 
-final Client client = Client();
-
 class Client extends ChangeNotifier {
-  String get host => settings.host.value;
-  Credentials? get credentials => settings.credentials.value;
+  final AppInfo _appInfo;
+  final Settings _settings;
+
+  String get host => _settings.host.value;
+  Credentials? get credentials => _settings.credentials.value;
 
   late Dio dio;
   late DioCacheManager cacheManager;
 
   late Future<void> initialized;
 
-  Client() {
-    settings.host.addListener(initialize);
-    settings.credentials.addListener(initialize);
+  Client({required AppInfo appInfo, required Settings settings})
+      : _appInfo = appInfo,
+        _settings = settings {
+    _settings.host.addListener(initialize);
+    _settings.credentials.addListener(initialize);
     initialize();
   }
 
   Future<void> initialize() async {
     Completer completer = Completer();
     initialized = completer.future;
-    String host = 'https://${settings.host.value}/';
-    Credentials? credentials = settings.credentials.value;
+    String host = 'https://${_settings.host.value}/';
+    Credentials? credentials = _settings.credentials.value;
     dio = Dio(
       defaultDioOptions.copyWith(
         baseUrl: host,
         headers: {
           HttpHeaders.userAgentHeader:
-              '${appInfo.appName}/${appInfo.version} (${appInfo.developer})',
+              '${_appInfo.appName}/${_appInfo.version} (${_appInfo.developer})',
           if (credentials != null)
             HttpHeaders.authorizationHeader: credentials.toAuth(),
         },
@@ -85,14 +88,14 @@ class Client extends ChangeNotifier {
 
   Future<bool> login(Credentials credentials) async {
     if (await tryLogin(credentials)) {
-      settings.credentials.value = credentials;
+      _settings.credentials.value = credentials;
       return true;
     } else {
       return false;
     }
   }
 
-  Future<void> logout() async => settings.credentials.value = null;
+  Future<void> logout() async => _settings.credentials.value = null;
 
   Future<void> ensureLogin() async {
     if (!await isLoggedIn) {
@@ -100,7 +103,8 @@ class Client extends ChangeNotifier {
     }
   }
 
-  String withHost(String path) => '$host$path';
+  String withHost(String path) =>
+      Uri(scheme: 'https', host: host, path: path).toString();
 
   bool postIsIgnored(Post post) {
     return (post.file.url == null && !post.flags.deleted) ||
@@ -303,7 +307,7 @@ class Client extends ChangeNotifier {
     await initialized;
     Map body = await dio
         .get(
-          '${unsafe ? 'https://${settings.customHost.value}/' : ''}posts/$postId.json',
+          '${unsafe ? 'https://${_settings.customHost.value}/' : ''}posts/$postId.json',
           options: buildKeyCacheOptions(
             forceRefresh: force,
           ),
@@ -443,7 +447,7 @@ class Client extends ChangeNotifier {
 
       CurrentUser? user = await currentUser();
       if (user != null && user.avatarId != null) {
-        return client.post(user.avatarId!);
+        return post(user.avatarId!);
       }
 
       return null;
@@ -715,4 +719,13 @@ class Client extends ChangeNotifier {
 
     return Reply.fromJson(body);
   }
+}
+
+class ClientProvider
+    extends SelectiveChangeNotifierProvider2<AppInfo, Settings, Client> {
+  ClientProvider()
+      : super(
+          create: (context, appInfo, settings) =>
+              Client(appInfo: appInfo, settings: settings),
+        );
 }

@@ -6,6 +6,7 @@ import 'package:e1547/tag/tag.dart';
 import 'package:e1547/wiki/wiki.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'actions.dart';
 
@@ -128,7 +129,8 @@ class _SearchTagDisplayState extends State<SearchTagDisplay> {
   late Future<Wiki?> wiki = retrieveWiki();
 
   Future<Wiki?> retrieveWiki() async {
-    List<Wiki> results = await client.wikis(1, search: tagToName(widget.tag));
+    List<Wiki> results =
+        await context.read<Client>().wikis(1, search: tagToName(widget.tag));
     if (results.isNotEmpty && results.first.title == widget.tag) {
       return results.first;
     } else {

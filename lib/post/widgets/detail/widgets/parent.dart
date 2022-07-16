@@ -3,6 +3,7 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 class ParentDisplay extends StatelessWidget {
   final Post post;
@@ -62,17 +63,9 @@ class ParentDisplay extends StatelessWidget {
                     onTap: () async {
                       if (parentId != null) {
                         try {
-                          PostsController controller =
-                              PostsController.single(parentId);
-                          await controller.loadFirstPage();
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (context) => PostDetailConnector(
-                                controller: controller,
-                                child: PostDetailGallery(
-                                  controller: controller,
-                                ),
-                              ),
+                              builder: (context) => PostLoadingPage(parentId!),
                             ),
                           );
                         } on DioError {
@@ -116,17 +109,9 @@ class ParentDisplay extends StatelessWidget {
                       title: Text(child.toString()),
                       onTap: () async {
                         try {
-                          PostsController controller =
-                              PostsController.single(child);
-                          await controller.loadFirstPage();
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (context) => PostDetailConnector(
-                                controller: controller,
-                                child: PostDetailGallery(
-                                  controller: controller,
-                                ),
-                              ),
+                              builder: (context) => PostLoadingPage(child),
                             ),
                           );
                         } on DioError {
@@ -200,7 +185,8 @@ class _ParentEditorState extends State<ParentEditor> {
       return;
     }
     try {
-      Post parent = await client.post(int.parse(textController.text));
+      Post parent =
+          await context.read<Client>().post(int.parse(textController.text));
       widget.editingController.value = widget.editingController.value!.copyWith(
         parentId: parent.id,
       );

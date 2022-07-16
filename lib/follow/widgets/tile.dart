@@ -6,6 +6,7 @@ import 'package:e1547/settings/settings.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class FollowTile extends StatelessWidget {
   final Follow follow;
@@ -14,7 +15,8 @@ class FollowTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    FollowStatus? status = followController.status(follow);
+    // TODO: idiotic design, replace with database giving out pre-hosted objects
+    FollowStatus? status = context.watch<FollowsService>().status(follow);
     bool active = status?.thumbnail != null;
 
     String getStatusText(FollowStatus? status) {
@@ -22,7 +24,7 @@ class FollowTile extends StatelessWidget {
         return '';
       }
       String text = status.unseen.toString();
-      if (status.unseen == followController.refreshAmount) {
+      if (status.unseen == context.watch<FollowsService>().refreshAmount) {
         text += '+';
       }
       text += ' new post';
@@ -166,7 +168,8 @@ class FollowListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     SheetActionController? sheetController = SheetActions.of(context);
-    FollowStatus? status = followController.status(follow);
+    FollowsService follows = context.watch<FollowsService>();
+    FollowStatus? status = follows.status(follow);
 
     void editAlias() {
       sheetController!.show(
@@ -183,7 +186,7 @@ class FollowListTile extends StatelessWidget {
               } else {
                 alias = null;
               }
-              followController.replace(
+              follows.replace(
                 follow,
                 Follow(
                   tags: follow.tags,
@@ -206,9 +209,9 @@ class FollowListTile extends StatelessWidget {
             value = value.trim();
             Follow result = Follow(tags: value);
             if (value.isNotEmpty) {
-              followController.replace(follow, result);
+              follows.replace(follow, result);
             } else {
-              followController.remove(follow);
+              follows.remove(follow);
             }
           },
           actionController: sheetController,
@@ -237,7 +240,7 @@ class FollowListTile extends StatelessWidget {
           // disabled
           if (kDebugMode && !bookmarked)
             PopupMenuTile(
-              value: () => followController.replace(
+              value: () => follows.replace(
                 follow,
                 follow.copyWith(
                   type: !notified ? FollowType.notify : FollowType.update,
@@ -251,7 +254,7 @@ class FollowListTile extends StatelessWidget {
             ),
           if (!notified)
             PopupMenuTile(
-              value: () => followController.replace(
+              value: () => follows.replace(
                 follow,
                 follow.copyWith(
                   type: !bookmarked ? FollowType.bookmark : FollowType.update,
@@ -273,7 +276,7 @@ class FollowListTile extends StatelessWidget {
               icon: Icons.edit,
             ),
           PopupMenuTile(
-            value: () => followController.remove(follow),
+            value: () => follows.remove(follow),
             title: 'Delete',
             icon: Icons.delete,
           ),
@@ -286,7 +289,7 @@ class FollowListTile extends StatelessWidget {
         return '';
       }
       String text = status.unseen.toString();
-      if (status.unseen == followController.refreshAmount) {
+      if (status.unseen == follows.refreshAmount) {
         text += '+';
       }
       text += ' new post';

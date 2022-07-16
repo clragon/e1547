@@ -16,9 +16,11 @@ class _StartupActionsState extends State<StartupActions> {
   @override
   void initState() {
     super.initState();
-    for (final element in widget.actions) {
-      element(context);
-    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      for (final element in widget.actions) {
+        element(context);
+      }
+    });
   }
 
   @override

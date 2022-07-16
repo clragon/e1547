@@ -1,8 +1,8 @@
 // data
-export 'data/app_info.dart';
+export 'data/info.dart';
+export 'data/info.dart';
 export 'data/prefs.dart';
 export 'data/settings.dart';
-export 'data/version.dart';
 // widgets
 export 'widgets/about.dart';
 export 'widgets/advanced.dart';

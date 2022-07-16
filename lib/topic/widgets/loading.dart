@@ -3,6 +3,7 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/reply/reply.dart';
 import 'package:e1547/topic/topic.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class TopicLoadingPage extends StatefulWidget {
   final int id;
@@ -15,7 +16,7 @@ class TopicLoadingPage extends StatefulWidget {
 }
 
 class _TopicLoadingPageState extends State<TopicLoadingPage> {
-  late Future<Topic> topic = client.topic(widget.id);
+  late Future<Topic> topic = context.read<Client>().topic(widget.id);
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +43,7 @@ class ReplyLoadingPage extends StatefulWidget {
 }
 
 class _ReplyLoadingPageState extends State<ReplyLoadingPage> {
-  late Future<Reply> reply = client.reply(widget.id);
+  late Future<Reply> reply = context.read<Client>().reply(widget.id);
 
   @override
   Widget build(BuildContext context) {

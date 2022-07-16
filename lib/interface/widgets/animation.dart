@@ -1,4 +1,3 @@
-import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 
 const Duration defaultAnimationDuration = Duration(milliseconds: 200);
@@ -112,52 +111,6 @@ class Replacer extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-class AnimatedSelector extends StatefulWidget {
-  final Listenable animation;
-  final List<dynamic> Function() selector;
-  final TransitionBuilder builder;
-  final Widget? child;
-
-  const AnimatedSelector(
-      {required this.animation,
-      required this.selector,
-      required this.builder,
-      this.child});
-
-  @override
-  State<AnimatedSelector> createState() => _AnimatedSelectorState();
-}
-
-class _AnimatedSelectorState extends State<AnimatedSelector> {
-  List<dynamic>? values;
-  Widget? cache;
-  Widget? oldWidget;
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: widget.animation,
-      builder: (context, child) {
-        List<dynamic> selected = widget.selector();
-        bool shouldRebuild = [
-          oldWidget != widget,
-          !const DeepCollectionEquality().equals(values, selected),
-        ].any((element) => element);
-        if (shouldRebuild) {
-          values = selected;
-          oldWidget = widget;
-          cache = widget.builder(
-            context,
-            child,
-          );
-        }
-        return cache!;
-      },
-      child: widget.child,
     );
   }
 }

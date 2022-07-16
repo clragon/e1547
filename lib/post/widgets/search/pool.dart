@@ -4,6 +4,7 @@ import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class PoolPage extends StatefulWidget {
   final Pool pool;
@@ -17,15 +18,6 @@ class PoolPage extends StatefulWidget {
 
 class _PoolPageState extends State<PoolPage> {
   late bool reversePool = widget.reversed;
-  late PostsController controller = PostsController(
-    provider: (tags, page, force) => client.poolPosts(
-      widget.pool.id,
-      page,
-      reverse: reversePool,
-      force: force,
-    ),
-    canSearch: false,
-  );
 
   @override
   void initState() {
@@ -35,39 +27,44 @@ class _PoolPageState extends State<PoolPage> {
   }
 
   @override
-  void dispose() {
-    controller.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return PostsPage(
-      controller: controller,
-      appBar: DefaultAppBar(
-        title: Text(tagToTitle(widget.pool.name)),
-        leading: const BackButton(),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.info_outline),
-            tooltip: 'Info',
-            onPressed: () => poolSheet(context, widget.pool),
+    return PostsProvider(
+      provider: (tags, page, force) => context.read<Client>().poolPosts(
+            widget.pool.id,
+            page,
+            reverse: reversePool,
+            force: force,
           ),
-          const ContextDrawerButton(),
-        ],
-      ),
-      drawerActions: [
-        PoolOrderSwitch(
-          reversePool: reversePool,
-          onChange: (value) {
-            setState(() {
-              reversePool = value;
-            });
-            controller.refresh();
-            Navigator.of(context).maybePop();
-          },
+      canSearch: false,
+      child: Consumer<PostsController>(
+        builder: (context, controller, child) => PostsPage(
+          controller: controller,
+          appBar: DefaultAppBar(
+            title: Text(tagToTitle(widget.pool.name)),
+            leading: const BackButton(),
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.info_outline),
+                tooltip: 'Info',
+                onPressed: () => poolSheet(context, widget.pool),
+              ),
+              const ContextDrawerButton(),
+            ],
+          ),
+          drawerActions: [
+            PoolOrderSwitch(
+              reversePool: reversePool,
+              onChange: (value) {
+                setState(() {
+                  reversePool = value;
+                });
+                controller.refresh();
+                Navigator.of(context).maybePop();
+              },
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 }

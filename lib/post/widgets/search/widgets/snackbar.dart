@@ -1,7 +1,11 @@
+import 'package:e1547/client/client.dart';
+import 'package:e1547/denylist/denylist.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:talker/talker.dart';
 
 Future<void> postDownloadingNotification(
   BuildContext context,
@@ -19,7 +23,7 @@ Future<void> postDownloadingNotification(
         if (kDebugMode) {
           rethrow;
         }
-        Logger.maybeOf(context)?.handle(exception, stacktrace);
+        context.read<Talker?>()?.handle(exception, stacktrace);
         return false;
       }
     },
@@ -48,8 +52,12 @@ Future<void> postFavoritingNotification(
     items: items,
     timeout: const Duration(milliseconds: 300),
     process: (post) async {
-      PostController postController =
-          PostController(id: post.id, parent: controller);
+      PostController postController = PostController(
+        client: context.read<Client>(),
+        denylist: context.read<DenylistService>(),
+        id: post.id,
+        parent: controller,
+      );
       if (isLiked) {
         if (post.isFavorited) {
           return postController.unfav();

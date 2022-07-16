@@ -22,6 +22,7 @@ class SelectionLayoutData<T> extends InheritedWidget {
       (oldWidget.selections != selections || oldWidget.onChanged != onChanged);
 }
 
+// TODO: use Provider and an extension of ValueNotifier
 class SelectionLayout<T> extends StatefulWidget {
   final Widget child;
   final List<T>? items;

@@ -5,12 +5,17 @@ import 'package:flutter/material.dart';
 
 class RepliesController extends CursorDataController<Reply>
     with RefreshableController {
+  final Client client;
+
   final int topicId;
   @override
   final ValueNotifier<bool> orderByOldest;
 
-  RepliesController({required this.topicId, bool orderByOldest = true})
-      : orderByOldest = ValueNotifier(orderByOldest);
+  RepliesController({
+    required this.client,
+    required this.topicId,
+    bool orderByOldest = true,
+  }) : orderByOldest = ValueNotifier(orderByOldest);
 
   @override
   @protected
@@ -20,4 +25,18 @@ class RepliesController extends CursorDataController<Reply>
   @override
   @protected
   int getId(Reply item) => item.id;
+}
+
+class RepliesProvider
+    extends SelectiveChangeNotifierProvider<Client, RepliesController> {
+  RepliesProvider({
+    required int topicId,
+    bool orderByOldest = true,
+    super.child,
+    super.builder,
+  }) : super(
+          create: (context, client) => RepliesController(
+              client: client, topicId: topicId, orderByOldest: orderByOldest),
+          selector: (context, client) => [topicId, orderByOldest],
+        );
 }

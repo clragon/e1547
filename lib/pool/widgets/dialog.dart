@@ -2,6 +2,7 @@ import 'package:e1547/client/client.dart';
 import 'package:e1547/dtext/dtext.dart';
 import 'package:e1547/pool/pool.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:share/share.dart';
 
 import 'actions.dart';
@@ -66,7 +67,8 @@ class PoolDialog extends StatelessWidget {
         actions: [
           TextButton(
             child: const Text('SHARE'),
-            onPressed: () async => Share.share(client.withHost(pool.link)),
+            onPressed: () async =>
+                Share.share(context.read<Client>().withHost(pool.link)),
           ),
           TextButton(
             onPressed: Navigator.of(context).maybePop,

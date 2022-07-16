@@ -1,4 +1,6 @@
 import 'package:e1547/client/client.dart';
+import 'package:e1547/denylist/denylist.dart';
+import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
@@ -6,7 +8,7 @@ import 'package:flutter/material.dart';
 class FavoritePostsController extends PostsController {
   final ValueNotifier<bool> orderFavorites = ValueNotifier(false);
 
-  FavoritePostsController()
+  FavoritePostsController({required super.client, required super.denylist})
       : super(
           search: client.credentials != null
               ? 'fav:${client.credentials!.username}'
@@ -68,4 +70,17 @@ class NoUserLoginException implements Exception {
   String toString() {
     return 'NoUserLoginException($message)';
   }
+}
+
+class FavoritePostsProvider extends SelectiveChangeNotifierProvider2<Client,
+    DenylistService, PostsController> {
+  FavoritePostsProvider({
+    super.child,
+    super.builder,
+  }) : super(
+          create: (context, client, denylist) => FavoritePostsController(
+            client: client,
+            denylist: denylist,
+          ),
+        );
 }

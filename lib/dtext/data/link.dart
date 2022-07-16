@@ -2,6 +2,7 @@ import 'package:e1547/app/app.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/dtext/dtext.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:username_generator/username_generator.dart';
 
 final DTextParser linkParser = DTextParser(
@@ -75,7 +76,7 @@ InlineSpan parseDTextLink({
 
   VoidCallback? onTap = () => launch(link);
   if (insite) {
-    onTap = () async => launch('https://${client.host}$link');
+    onTap = () async => launch('https://${context.read<Client>().host}$link');
 
     // forum topics need generated names
     UsernameGenerator? usernameGenerator = UsernameGeneratorData.of(context);

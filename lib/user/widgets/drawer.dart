@@ -2,13 +2,13 @@ import 'package:e1547/client/client.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/user/user.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class UserDrawerHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: client,
-      builder: (context, child) => DrawerHeader(
+    return Consumer<Client>(
+      builder: (context, client, child) => DrawerHeader(
         child: GestureDetector(
           onTap: client.credentials != null
               ? () => Navigator.of(context).push(

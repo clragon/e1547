@@ -5,6 +5,7 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
 import 'package:store_checker/store_checker.dart';
 
 class AppIcon extends StatelessWidget {
@@ -25,87 +26,91 @@ class AppIcon extends StatelessWidget {
 }
 
 class AboutPage extends StatelessWidget {
+  const AboutPage();
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: const DefaultAppBar(
-        title: Text('About'),
-        leading: BackButton(),
-        actions: [NewVersionsButton()],
-      ),
-      body: Stack(
-        alignment: Alignment.center,
-        children: [
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.only(bottom: 100),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const AppIcon(radius: 64),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 24, bottom: 12),
-                    child: Text(
-                      appInfo.appName,
-                      style: const TextStyle(
-                        fontSize: 22,
-                      ),
-                    ),
-                  ),
-                  Text(
-                    appInfo.version,
-                    style: const TextStyle(
-                      fontSize: 16,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          Positioned(
-            bottom: 0,
-            child: Material(
-              color: Theme.of(context).cardColor,
-              elevation: 6,
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(5),
-                  topRight: Radius.circular(5),
-                ),
-              ),
+    return Consumer<AppInfo>(
+      builder: (context, appInfo, child) => Scaffold(
+        appBar: const DefaultAppBar(
+          title: Text('About'),
+          leading: BackButton(),
+          actions: [NewVersionsButton()],
+        ),
+        body: Stack(
+          alignment: Alignment.center,
+          children: [
+            Center(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
+                padding: const EdgeInsets.only(bottom: 100),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    if (appInfo.github != null)
-                      IconButton(
-                        icon: const FaIcon(FontAwesomeIcons.github),
-                        onPressed: () =>
-                            launch('https://github.com/${appInfo.github!}'),
-                      ),
-                    if (appInfo.discord != null)
-                      IconButton(
-                        icon: const FaIcon(FontAwesomeIcons.discord),
-                        onPressed: () => launch(
-                            'https://discord.com/invite/${appInfo.discord!}'),
-                      ),
-                    if (Platform.isAndroid) const PlaystoreButton(),
-                    if (appInfo.website != null)
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 4),
-                        child: IconButton(
-                          icon: const FaIcon(FontAwesomeIcons.globe),
-                          onPressed: () =>
-                              launch('https://${appInfo.website!}'),
+                    const AppIcon(radius: 64),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 24, bottom: 12),
+                      child: Text(
+                        appInfo.appName,
+                        style: const TextStyle(
+                          fontSize: 22,
                         ),
                       ),
+                    ),
+                    Text(
+                      appInfo.version,
+                      style: const TextStyle(
+                        fontSize: 16,
+                      ),
+                    ),
                   ],
                 ),
               ),
             ),
-          )
-        ],
+            Positioned(
+              bottom: 0,
+              child: Material(
+                color: Theme.of(context).cardColor,
+                elevation: 6,
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(5),
+                    topRight: Radius.circular(5),
+                  ),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (appInfo.github != null)
+                        IconButton(
+                          icon: const FaIcon(FontAwesomeIcons.github),
+                          onPressed: () =>
+                              launch('https://github.com/${appInfo.github!}'),
+                        ),
+                      if (appInfo.discord != null)
+                        IconButton(
+                          icon: const FaIcon(FontAwesomeIcons.discord),
+                          onPressed: () => launch(
+                              'https://discord.com/invite/${appInfo.discord!}'),
+                        ),
+                      if (Platform.isAndroid) const PlaystoreButton(),
+                      if (appInfo.website != null)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 4),
+                          child: IconButton(
+                            icon: const FaIcon(FontAwesomeIcons.globe),
+                            onPressed: () =>
+                                launch('https://${appInfo.website!}'),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
@@ -119,7 +124,8 @@ class NewVersionsButton extends StatefulWidget {
 }
 
 class _NewVersionsButtonState extends State<NewVersionsButton> {
-  Future<List<AppVersion>?> newVersions = getNewVersions();
+  late Future<List<AppVersion>?> newVersions =
+      context.read<AppInfo>().getNewVersions();
 
   @override
   Widget build(BuildContext context) {
@@ -184,7 +190,8 @@ class NewVersionsDialog extends StatelessWidget {
         ],
       );
     } else if (newVersions!.isEmpty) {
-      body = Text('You have the newest version (${appInfo.version})');
+      body = Text(
+          'You have the newest version (${context.watch<AppInfo>().version})');
     } else {
       body = SingleChildScrollView(
         child: Column(
@@ -221,15 +228,15 @@ class NewVersionsDialog extends StatelessWidget {
         ),
         TextButton(
           child: const Text('DOWNLOAD'),
-          onPressed: () =>
-              launch('https://github.com/${appInfo.github!}/releases/latest'),
+          onPressed: () => launch(
+              'https://github.com/${context.watch<AppInfo>().github!}/releases/latest'),
         )
       ];
     }
 
     return LayoutBuilder(
       builder: (context, constraints) => AlertDialog(
-        title: Text(appInfo.appName),
+        title: Text(context.watch<AppInfo>().appName),
         content: ConstrainedBox(
           constraints: BoxConstraints(
             maxHeight: constraints.maxHeight * 0.5,
@@ -265,7 +272,7 @@ class _PlaystoreButtonState extends State<PlaystoreButton> {
             child: FaIcon(FontAwesomeIcons.googlePlay),
           ),
           onPressed: () => launch(
-            'https://play.google.com/store/apps/details?id=${appInfo.packageName}',
+            'https://play.google.com/store/apps/details?id=${context.read<AppInfo>().packageName}',
           ),
         ),
       ),
@@ -279,7 +286,8 @@ class DrawerUpdateIcon extends StatefulWidget {
 }
 
 class _DrawerUpdateIconState extends State<DrawerUpdateIcon> {
-  Future<List<AppVersion>?> newVersions = getNewVersions();
+  late Future<List<AppVersion>?> newVersions =
+      context.read<AppInfo>().getNewVersions();
 
   @override
   Widget build(BuildContext context) {

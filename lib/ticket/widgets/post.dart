@@ -7,6 +7,7 @@ import 'package:e1547/post/post.dart';
 import 'package:e1547/ticket/ticket.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 class PostReportImage extends StatelessWidget {
   final PostController post;
@@ -99,11 +100,11 @@ class _PostReportScreenState extends State<PostReportScreen> {
                         curve: Curves.easeInOut,
                       );
                       if (await validateCall(
-                        () => client.reportPost(
-                          widget.post.value.id,
-                          type!.id,
-                          reasonController.text.trim(),
-                        ),
+                        () => context.read<Client>().reportPost(
+                              widget.post.value.id,
+                              type!.id,
+                              reasonController.text.trim(),
+                            ),
                         allowRedirect: true,
                       )) {
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -218,11 +219,11 @@ class _PostFlagScreenState extends State<PostFlagScreen> {
                         curve: Curves.easeInOut,
                       );
                       if (await validateCall(
-                        () => client.flagPost(
-                          widget.post.value.id,
-                          type!.title,
-                          parent: int.tryParse(parentController.text),
-                        ),
+                        () => context.read<Client>().flagPost(
+                              widget.post.value.id,
+                              type!.title,
+                              parent: int.tryParse(parentController.text),
+                            ),
                         allowRedirect: true,
                       )) {
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(

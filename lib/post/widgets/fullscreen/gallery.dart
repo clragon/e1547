@@ -1,5 +1,6 @@
 import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class PostFullscreenGallery extends StatefulWidget {
   final PostsController controller;
@@ -45,28 +46,32 @@ class _PostFullscreenGalleryState extends State<PostFullscreenGallery>
               )
             : const SizedBox.shrink(),
       ),
-      child: AnimatedBuilder(
-        animation: widget.controller,
-        builder: (context, child) => PageView.builder(
-          itemCount: widget.controller.itemList?.length,
-          controller: widget.pageController ?? pageController,
-          itemBuilder: (context, index) => PostFullscreenBody(
-            post: PostController(
-              id: widget.controller.itemList![index].id,
-              parent: widget.controller,
+      child: ChangeNotifierProvider.value(
+        value: widget.controller,
+        child: Consumer<PostsController>(
+          builder: (context, controller, child) => PageView.builder(
+            itemCount: controller.itemList?.length,
+            controller: widget.pageController ?? pageController,
+            itemBuilder: (context, index) => PostProvider(
+              id: controller.itemList![index].id,
+              child: Consumer<PostController>(
+                builder: (context, post, child) => PostFullscreenBody(
+                  post: post,
+                ),
+              ),
             ),
+            onPageChanged: (index) {
+              currentPage.value = index;
+              widget.onPageChanged?.call(index);
+              if (controller.itemList != null) {
+                preloadImages(
+                  index: index,
+                  posts: controller.itemList!,
+                  size: ImageSize.file,
+                );
+              }
+            },
           ),
-          onPageChanged: (index) {
-            currentPage.value = index;
-            widget.onPageChanged?.call(index);
-            if (widget.controller.itemList != null) {
-              preloadImages(
-                index: index,
-                posts: widget.controller.itemList!,
-                size: ImageSize.file,
-              );
-            }
-          },
         ),
       ),
     );

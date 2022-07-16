@@ -3,6 +3,7 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 import 'package:like_button/like_button.dart';
+import 'package:provider/provider.dart';
 
 class LikeDisplay extends StatelessWidget {
   final PostController post;
@@ -23,7 +24,7 @@ class LikeDisplay extends StatelessWidget {
                 status: post.value.voteStatus,
                 score: post.value.score.total,
                 onUpvote: (isLiked) async {
-                  if (client.hasLogin) {
+                  if (context.read<Client>().hasLogin) {
                     post.vote(upvote: true, replace: !isLiked).then((value) {
                       if (!value) {
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -39,7 +40,7 @@ class LikeDisplay extends StatelessWidget {
                   }
                 },
                 onDownvote: (isLiked) async {
-                  if (client.hasLogin) {
+                  if (context.read<Client>().hasLogin) {
                     post.vote(upvote: false, replace: !isLiked).then((value) {
                       if (!value) {
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(

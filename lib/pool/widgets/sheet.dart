@@ -4,6 +4,7 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/pool/pool.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:share/share.dart';
 
 import 'actions.dart';
@@ -45,7 +46,7 @@ class PoolSheet extends StatelessWidget {
                 IconButton(
                   icon: const Icon(Icons.share),
                   onPressed: () async =>
-                      Share.share(client.withHost(pool.link)),
+                      Share.share(context.read<Client>().withHost(pool.link)),
                   tooltip: 'Share',
                 ),
                 PoolFollowButton(pool),

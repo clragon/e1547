@@ -3,10 +3,11 @@ import 'package:e1547/dtext/dtext.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 Future<void> setCustomHost(BuildContext context) async {
   TextEditingController controller =
-      TextEditingController(text: settings.customHost.value);
+      TextEditingController(text: context.read<Settings>().customHost.value);
 
   Future<void> submit() async {
     String? error;
@@ -16,14 +17,14 @@ Future<void> setCustomHost(BuildContext context) async {
     Dio dio = Dio(defaultDioOptions);
 
     if (host.isEmpty) {
-      settings.customHost.value = null;
+      context.read<Settings>().customHost.value = null;
     } else {
       await Future.delayed(const Duration(seconds: 1));
       try {
         await dio.get('https://$host');
         switch (host) {
           case 'e621.net':
-            settings.customHost.value = host;
+            context.read<Settings>().customHost.value = host;
             error = null;
             break;
           case 'e926.net':

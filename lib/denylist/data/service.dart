@@ -4,10 +4,9 @@ import 'package:e1547/settings/settings.dart';
 import 'package:e1547/user/user.dart';
 import 'package:flutter/material.dart';
 
-DenylistController denylistController = DenylistController();
-
-class DenylistController extends DataUpdater<List<String>> {
-  late final ValueNotifier<List<String>> _source;
+class DenylistService extends DataUpdater<List<String>> {
+  final Client _client;
+  final ValueNotifier<List<String>> _source;
 
   List<String> get items => _source.value;
 
@@ -19,13 +18,16 @@ class DenylistController extends DataUpdater<List<String>> {
   @protected
   Future<void> write(List<String> value, {bool upload = true}) async {
     _source.value = value;
-    if (upload && client.hasLogin) {
-      await client.updateBlacklist(items);
+    if (upload && _client.hasLogin) {
+      await _client.updateBlacklist(items);
     }
   }
 
-  DenylistController() {
-    _source = settings.denylist;
+  DenylistService({
+    required Client client,
+    required ValueNotifier<List<String>> source,
+  })  : _client = client,
+        _source = source {
     _source.addListener(notifyListeners);
   }
 
@@ -37,8 +39,10 @@ class DenylistController extends DataUpdater<List<String>> {
 
   @override
   @protected
-  Future<void> withData(DataUpdate<List<String>> updater,
-      {bool upload = true}) async {
+  Future<void> withData(
+    DataUpdate<List<String>> updater, {
+    bool upload = true,
+  }) async {
     await resourceLock.acquire();
     List<String> updated = await updater(await read());
     await write(updated, upload: upload);
@@ -48,7 +52,7 @@ class DenylistController extends DataUpdater<List<String>> {
   @override
   @protected
   Future<void> run(bool force) async {
-    CurrentUser? user = await client.currentUser(force: force);
+    CurrentUser? user = await _client.currentUser(force: force);
     if (user != null) {
       try {
         withData((data) => user.blacklistedTags.split('\n').trim(),
@@ -76,4 +80,15 @@ class DenylistController extends DataUpdater<List<String>> {
       withData((data) => data..[index] = value);
 
   Future<void> edit(List<String> value) async => withData((data) => value);
+}
+
+class DenylistProvider extends SelectiveChangeNotifierProvider2<Settings,
+    Client, DenylistService> {
+  DenylistProvider()
+      : super(
+          create: (context, settings, client) => DenylistService(
+            client: client,
+            source: settings.denylist,
+          ),
+        );
 }

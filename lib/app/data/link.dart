@@ -9,6 +9,7 @@ import 'package:e1547/wiki/wiki.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_custom_tabs/flutter_custom_tabs.dart' as tabs;
 import 'package:path_to_regexp/path_to_regexp.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart' as urls;
 
 Future<void> launch(String uri) async {
@@ -47,7 +48,7 @@ class LinkParserResult {
   const LinkParserResult(this.builder, {this.root = false});
 }
 
-List<LinkParser> allLinkParsers() => [
+List<LinkParser> allLinkParsers(BuildContext context) => [
       LinkParser(
         r'/posts',
         (context, arguments) => LinkParserResult(
@@ -122,7 +123,7 @@ List<LinkParser> allLinkParsers() => [
           ),
         ),
       ),
-      if (settings.showBeta.value) ...forumLinkParsers,
+      if (context.watch<Settings>().showBeta.value) ...forumLinkParsers,
     ];
 
 final List<LinkParser> forumLinkParsers = [
@@ -193,7 +194,7 @@ LinkParserResult? parseLink(BuildContext context, String link) {
   }
   link = Uri.decodeFull(link);
 
-  for (LinkParser parser in allLinkParsers()) {
+  for (LinkParser parser in allLinkParsers(context)) {
     List<String> names = [];
     Match? match =
         pathToRegExp(parser.urlPattern, parameters: names).firstMatch(link);

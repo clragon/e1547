@@ -44,43 +44,11 @@ class TextEditor extends StatefulWidget {
   }
 }
 
-class _TextEditorState extends State<TextEditor>
-    with TickerProviderStateMixin, ListenerCallbackMixin {
-  bool showBar = true;
+class _TextEditorState extends State<TextEditor> {
+  late bool showBar = widget.bottomSheetBuilder != null;
   bool isLoading = false;
   late TextEditingController textController =
       TextEditingController(text: widget.content);
-  late TabController tabController;
-
-  void onTabChange() {
-    if (tabController.index == 0) {
-      setState(() {
-        showBar = true;
-      });
-    } else {
-      FocusScope.of(context).unfocus();
-      setState(() {
-        showBar = false;
-      });
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    tabController = TabController(
-      vsync: this,
-      length: 2,
-    );
-    tabController.addListener(onTabChange);
-  }
-
-  @override
-  void dispose() {
-    tabController.removeListener(onTabChange);
-    tabController.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -162,36 +130,61 @@ class _TextEditorState extends State<TextEditor>
       });
     }
 
-    return Scaffold(
-      floatingActionButton: fab(),
-      bottomSheet: isLoading
-          ? loadingBar()
-          : showBar
-              ? widget.bottomSheetBuilder?.call(context, textController)
-              : null,
-      body: NestedScrollView(
-        headerSliverBuilder: (context, innerBoxIsScrolled) => [
-          DefaultSliverAppBar(
-            floating: true,
-            leading: const CloseButton(),
-            title: Text(widget.title),
-            bottom: tabs.length > 1
-                ? TabBar(
-                    controller: tabController,
-                    tabs: tabs.keys.toList(),
-                    labelColor: Theme.of(context).iconTheme.color,
-                    indicatorColor: Theme.of(context).iconTheme.color,
-                  )
-                : null,
-          ),
-        ],
-        body: Padding(
-          padding: defaultActionListPadding,
-          child: TabBarView(
-            controller: tabController,
-            children: tabs.values.toList(),
-          ),
-        ),
+    return DefaultTabController(
+      length: tabs.length,
+      child: Builder(
+        builder: (context) {
+          TabController controller = DefaultTabController.of(context)!;
+          return ListenableListener(
+            listener: () {
+              if (controller.length > 1 && controller.index == 0) {
+                if (!showBar) {
+                  setState(() {
+                    showBar = true;
+                  });
+                }
+              } else {
+                if (showBar) {
+                  FocusScope.of(context).unfocus();
+                  setState(() {
+                    showBar = false;
+                  });
+                }
+              }
+            },
+            listenable: DefaultTabController.of(context)!,
+            child: Scaffold(
+              floatingActionButton: fab(),
+              bottomSheet: isLoading
+                  ? loadingBar()
+                  : showBar
+                      ? widget.bottomSheetBuilder?.call(context, textController)
+                      : null,
+              body: NestedScrollView(
+                headerSliverBuilder: (context, innerBoxIsScrolled) => [
+                  DefaultSliverAppBar(
+                    floating: true,
+                    leading: const CloseButton(),
+                    title: Text(widget.title),
+                    bottom: tabs.length > 1
+                        ? TabBar(
+                            tabs: tabs.keys.toList(),
+                            labelColor: Theme.of(context).iconTheme.color,
+                            indicatorColor: Theme.of(context).iconTheme.color,
+                          )
+                        : null,
+                  ),
+                ],
+                body: Padding(
+                  padding: defaultActionListPadding,
+                  child: TabBarView(
+                    children: tabs.values.toList(),
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }

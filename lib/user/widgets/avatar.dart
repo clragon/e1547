@@ -1,12 +1,14 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e1547/client/client.dart';
+import 'package:e1547/denylist/denylist.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 Future<void> initializeUserAvatar(BuildContext context) async {
-  Post? avatar = await client.currentUserAvatar();
+  Post? avatar = await context.read<Client>().currentUserAvatar();
   if (avatar?.sample.url != null) {
     precacheImage(
       CachedNetworkImageProvider(avatar!.sample.url!),
@@ -25,19 +27,6 @@ class CurrentUserAvatar extends StatefulWidget {
 }
 
 class _CurrentUserAvatarState extends State<CurrentUserAvatar> {
-  final Future<PostsController?> controller = Future(() async {
-    int? id = (await client.currentUserAvatar())?.id;
-    if (id != null) {
-      PostsController controller = PostsController.single(
-        id,
-        denyMode: DenyListMode.unavailable,
-      );
-      await controller.loadFirstPage();
-      return controller;
-    }
-    return null;
-  });
-
   @override
   void initState() {
     super.initState();
@@ -46,124 +35,133 @@ class _CurrentUserAvatarState extends State<CurrentUserAvatar> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<PostsController?>(
-      future: controller,
-      builder: (context, snapshot) {
-        return UserAvatar(
-          controller: snapshot.data,
-          enabled: widget.enabled,
-        );
-      },
+    return _CurrentUserAvatarProvider(
+      child: Consumer<Future<PostsController?>>(
+        builder: (context, controller, child) =>
+            FutureBuilder<PostsController?>(
+          future: controller,
+          builder: (context, snapshot) => UserAvatar(
+            controller: snapshot.data,
+            enabled: widget.enabled,
+          ),
+        ),
+      ),
     );
   }
 }
 
-class UserAvatar extends StatefulWidget {
+class _CurrentUserAvatarProvider extends SelectiveProvider2<Client,
+    DenylistService, Future<PostsController?>> {
+  // ignore: unused_element
+  _CurrentUserAvatarProvider({super.child, super.builder})
+      : super(
+          create: (context, client, denylist) async {
+            int? id = (await context.read<Client>().currentUserAvatar())?.id;
+            if (id != null) {
+              PostsController controller = PostsController.single(
+                client: client,
+                denylist: denylist,
+                id: id,
+                denyMode: DenyListMode.unavailable,
+              );
+              await controller.loadFirstPage();
+              return controller;
+            }
+            return null;
+          },
+          selector: (context, client, denylist) =>
+              [context.read<Client>().currentUserAvatar()],
+          dispose: (context, value) async => (await value)?.dispose(),
+        );
+}
+
+class UserAvatar extends StatelessWidget {
   final PostsController? controller;
   final bool enabled;
 
   const UserAvatar({super.key, required this.controller, this.enabled = false});
 
   @override
-  State<UserAvatar> createState() => _UserAvatarState();
-}
-
-class _UserAvatarState extends State<UserAvatar> {
-  late Future<Post>? post =
-      widget.controller?.loadFirstPage().then((c) => c.itemList!.first);
-
-  @override
-  void didUpdateWidget(covariant UserAvatar oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.controller != widget.controller) {
-      post = widget.controller?.loadFirstPage().then((c) => c.itemList!.first);
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
-    if (post != null) {
-      return FutureBuilder<Post>(
-        future: post,
-        builder: (context, snapshot) {
-          PostController? controller;
-          if (snapshot.hasData) {
-            controller = PostController(
-              id: snapshot.data!.id,
-              parent: widget.controller!,
-            );
-          }
-          return Avatar(
-            controller,
-            enabled: widget.enabled,
-          );
-        },
-      );
-    }
-    return const AppIcon();
+    return _UserAvatarProvider(
+      controller: controller,
+      child: Consumer<Future<PostController?>>(
+        builder: (context, controller, child) => FutureBuilder<PostController?>(
+          future: controller,
+          builder: (context, snapshot) => Avatar(
+            snapshot.data,
+            enabled: enabled,
+          ),
+        ),
+      ),
+    );
   }
 }
 
-class PostAvatar extends StatefulWidget {
+class _UserAvatarProvider extends SelectiveProvider2<Client, DenylistService,
+    Future<PostController?>> {
+  _UserAvatarProvider({
+    required PostsController? controller,
+    super.child,
+    super.builder, // ignore: unused_element
+  }) : super(
+          create: (context, client, denylist) async {
+            if (controller != null) {
+              await controller.loadFirstPage();
+              return PostController(
+                client: client,
+                denylist: denylist,
+                parent: controller,
+                id: controller.itemList!.first.id,
+              );
+            } else {
+              return null;
+            }
+          },
+          selector: (context, client, denylist) => [controller],
+          dispose: (context, value) async => (await value)?.dispose(),
+        );
+}
+
+class PostAvatar extends StatelessWidget {
   final int? id;
 
   const PostAvatar({super.key, required this.id});
 
   @override
-  State<PostAvatar> createState() => _PostAvatarState();
-}
-
-class _PostAvatarState extends State<PostAvatar> {
-  late PostsController? controller =
-      widget.id != null ? PostsController.single(widget.id!) : null;
-
-  @override
-  void didUpdateWidget(covariant PostAvatar oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.id != widget.id) {
-      if (widget.id != null) {
-        controller = PostsController.single(widget.id!);
-      } else {
-        controller = null;
-      }
+  Widget build(BuildContext context) {
+    if (id == null) {
+      return const UserAvatar(controller: null);
+    } else {
+      return PostsProvider.single(
+        id: id!,
+        child: Consumer<PostsController>(
+          builder: (context, controller, child) =>
+              UserAvatar(controller: controller),
+        ),
+      );
     }
   }
-
-  @override
-  Widget build(BuildContext context) {
-    return UserAvatar(controller: controller);
-  }
 }
 
-class PostIdAvatar extends StatefulWidget {
+class PostIdAvatar extends StatelessWidget {
   final int id;
   final PostsController controller;
 
   const PostIdAvatar({required this.id, required this.controller});
 
   @override
-  State<PostIdAvatar> createState() => _PostIdAvatarState();
-}
-
-class _PostIdAvatarState extends State<PostIdAvatar> {
-  late PostController controller = PostController(
-    id: widget.id,
-    parent: widget.controller,
-  );
-
-  @override
-  void didUpdateWidget(covariant PostIdAvatar oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.controller != widget.controller) {
-      controller = PostController(
-        id: widget.id,
-        parent: widget.controller,
-      );
-    }
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider.value(
+      value: controller,
+      child: PostProvider(
+        id: id,
+        child: Consumer<PostController>(
+          builder: (context, controller, child) => Avatar(controller),
+        ),
+      ),
+    );
   }
-
-  @override
-  Widget build(BuildContext context) => Avatar(controller);
 }
 
 class Avatar extends StatelessWidget {

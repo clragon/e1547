@@ -6,6 +6,7 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage();
@@ -235,10 +236,12 @@ class _LoginPageState extends State<LoginPage> {
                         color: Colors.grey,
                         onPressed: () {
                           if (usernameController.text.isNotEmpty) {
-                            launch(
-                                'https://${client.host}/users/${usernameController.text}/api_key');
+                            launch(context.read<Client>().withHost(
+                                '/users/${usernameController.text}/api_key'));
                           } else {
-                            launch('https://${client.host}/session/new');
+                            launch(context
+                                .read<Client>()
+                                .withHost('/session/new'));
                           }
                         },
                       ),
@@ -287,12 +290,12 @@ class _LoginLoadingDialogState extends State<LoginLoadingDialog> {
   }
 
   Future<void> login() async {
-    bool valid = await client.login(
-      Credentials(
-        username: widget.username,
-        password: widget.password,
-      ),
-    );
+    bool valid = await context.read<Client>().login(
+          Credentials(
+            username: widget.username,
+            password: widget.password,
+          ),
+        );
     await Navigator.of(context).maybePop();
     if (valid) {
       widget.onDone?.call();

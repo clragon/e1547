@@ -2,6 +2,7 @@ import 'package:e1547/client/client.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/user/user.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class UserLoadingPage extends StatefulWidget {
   final String id;
@@ -17,7 +18,7 @@ class UserLoadingPage extends StatefulWidget {
 }
 
 class _UserLoadingPageState extends State<UserLoadingPage> {
-  late Future<User> user = client.user(widget.id);
+  late Future<User> user = context.read<Client>().user(widget.id);
 
   @override
   Widget build(BuildContext context) {

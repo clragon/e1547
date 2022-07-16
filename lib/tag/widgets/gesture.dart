@@ -1,6 +1,7 @@
 import 'package:e1547/denylist/denylist.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class TagGesture extends StatelessWidget {
   final bool safe;
@@ -24,7 +25,7 @@ class TagGesture extends StatelessWidget {
 
     return InkWell(
       onTap: () async {
-        if (wiki || (safe && denylistController.denies(tag))) {
+        if (wiki || (safe && context.read<DenylistService>().denies(tag))) {
           sheet();
         } else {
           Navigator.of(context).push(MaterialPageRoute(

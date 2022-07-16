@@ -1,15 +1,18 @@
 import 'package:collection/collection.dart';
 import 'package:e1547/client/client.dart';
+import 'package:e1547/comment/comment.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
 
 import 'comment.dart';
 
 class CommentsController extends CursorDataController<Comment>
-    with RefreshableController, HostableController {
+    with RefreshableController {
+  final Client client;
+
   final int postId;
 
-  CommentsController({required this.postId});
+  CommentsController({required this.client, required this.postId});
 
   @override
   @protected
@@ -21,11 +24,27 @@ class CommentsController extends CursorDataController<Comment>
   int getId(Comment item) => item.id;
 }
 
+class CommentsProvider
+    extends SelectiveChangeNotifierProvider<Client, CommentsController> {
+  CommentsProvider({required int postId, super.child, super.builder})
+      : super(
+          create: (context, client) =>
+              CommentsController(client: client, postId: postId),
+          selector: (context, client) => [postId],
+        );
+}
+
 class CommentController
     extends ProxyValueNotifier<Comment, CommentsController> {
+  final Client client;
+
   final int id;
 
-  CommentController({required this.id, required super.parent});
+  CommentController({
+    required this.client,
+    required this.id,
+    required super.parent,
+  });
 
   @override
   Comment? fromParent() =>
@@ -92,4 +111,14 @@ class CommentController
       return false;
     }
   }
+}
+
+class CommentProvider extends SelectiveChangeNotifierProvider2<Client,
+    CommentsController, CommentController> {
+  CommentProvider({required int id, super.child, super.builder})
+      : super(
+          create: (context, client, parent) =>
+              CommentController(client: client, id: id, parent: parent),
+          selector: (context, client, parent) => [id],
+        );
 }
