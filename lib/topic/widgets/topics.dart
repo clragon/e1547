@@ -5,15 +5,20 @@ import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:provider/provider.dart';
 
-class TopicsPage extends StatelessWidget {
+class TopicsPage extends StatefulWidget {
   final String? search;
 
   const TopicsPage({this.search});
 
   @override
+  State<TopicsPage> createState() => _TopicsPageState();
+}
+
+class _TopicsPageState extends State<TopicsPage> with DrawerEntry {
+  @override
   Widget build(BuildContext context) {
     return TopicsProvider(
-      search: search,
+      search: widget.search,
       child: Consumer<TopicsController>(
         builder: (context, controller, child) => RefreshableControllerPage(
           appBar: const DefaultAppBar(title: Text('Topics')),
