@@ -73,7 +73,7 @@ class NoUserLoginException implements Exception {
 }
 
 class FavoritePostsProvider extends SelectiveChangeNotifierProvider2<Client,
-    DenylistService, PostsController> {
+    DenylistService, FavoritePostsController> {
   FavoritePostsProvider({
     super.child,
     super.builder,
