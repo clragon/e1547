@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:e1547/client/client.dart';
 import 'package:flutter/foundation.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:mutex/mutex.dart';
@@ -208,14 +207,6 @@ mixin SearchableController<PageKeyType, ItemType>
     super.dispose();
     search.dispose();
   }
-}
-
-mixin HostableController<PageKeyType, ItemType>
-    on RawDataController<PageKeyType, ItemType> {
-  @override
-  @protected
-  List<Listenable> getRefreshListeners() =>
-      super.getRefreshListeners()..add(client);
 }
 
 mixin RefreshableController<PageKeyType, ItemType>

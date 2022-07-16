@@ -4,6 +4,7 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class TagListActions extends StatelessWidget {
   final String tag;
@@ -15,11 +16,10 @@ class TagListActions extends StatelessWidget {
     if (wikiMetaTags.any((prefix) => tag.startsWith(prefix))) {
       return const SizedBox.shrink();
     }
-    return AnimatedBuilder(
-      animation: Listenable.merge([denylistController, followController]),
-      builder: (context, child) {
-        bool following = followController.follows(tag);
-        bool denied = denylistController.denies(tag);
+    return Consumer2<FollowsService, DenylistService>(
+      builder: (context, follows, denylist, child) {
+        bool following = follows.follows(tag);
+        bool denied = denylist.denies(tag);
         return Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -28,11 +28,11 @@ class TagListActions extends StatelessWidget {
               child: IconButton(
                 onPressed: () async {
                   if (following) {
-                    followController.removeTag(tag);
+                    follows.removeTag(tag);
                   } else {
-                    followController.addTag(tag);
+                    follows.addTag(tag);
                     if (denied) {
-                      await denylistController.remove(tag);
+                      await denylist.remove(tag);
                     }
                   }
                 },
@@ -49,12 +49,12 @@ class TagListActions extends StatelessWidget {
               child: IconButton(
                 onPressed: () async {
                   if (denied) {
-                    await denylistController.remove(tag);
+                    await denylist.remove(tag);
                   } else {
                     if (following) {
-                      followController.removeTag(tag);
+                      follows.removeTag(tag);
                     }
-                    await denylistController.add(tag);
+                    await denylist.add(tag);
                   }
                 },
                 icon: CrossFade(

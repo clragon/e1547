@@ -3,9 +3,12 @@ import 'package:e1547/denylist/denylist.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class DenyListPage extends StatefulWidget {
+  const DenyListPage();
+
   @override
   State<StatefulWidget> createState() {
     return _DenyListPageState();
@@ -42,9 +45,8 @@ class _DenyListPageState extends State<DenyListPage> {
   @override
   Widget build(BuildContext context) {
     return LimitedWidthLayout(
-      child: AnimatedBuilder(
-        animation: denylistController,
-        builder: (context, child) => RefreshablePageLoader(
+      child: Consumer<DenylistService>(
+        builder: (context, denylist, child) => RefreshablePageLoader(
           onEmptyIcon: const Icon(Icons.check),
           onEmpty: const Text('Your blacklist is empty'),
           onLoading: const Text('Loading blacklist'),
@@ -52,7 +54,7 @@ class _DenyListPageState extends State<DenyListPage> {
           isError: false,
           isLoading: false,
           isBuilt: true,
-          isEmpty: denylistController.items.isEmpty,
+          isEmpty: denylist.items.isEmpty,
           refreshController: refreshController,
           refreshHeader: const RefreshablePageDefaultHeader(
             completeText: 'refreshed blacklist',
@@ -61,11 +63,11 @@ class _DenyListPageState extends State<DenyListPage> {
           builder: (context) => ListView.builder(
             padding: defaultActionListPadding
                 .add(LimitedWidthLayout.of(context).padding),
-            itemCount: denylistController.items.length,
+            itemCount: denylist.items.length,
             itemBuilder: (context, index) => DenylistTile(
-              tag: denylistController.items[index],
+              tag: denylist.items[index],
               onEdit: () {
-                String tag = denylistController.items[index];
+                String tag = denylist.items[index];
                 edit(
                   context: context,
                   title: 'Edit tag',
@@ -74,9 +76,9 @@ class _DenyListPageState extends State<DenyListPage> {
                     value = value.trim();
                     try {
                       if (value.isEmpty) {
-                        await denylistController.remove(value);
+                        await denylist.remove(value);
                       } else {
-                        await denylistController.replace(tag, value);
+                        await denylist.replace(tag, value);
                       }
                     } on DioError {
                       throw const ActionControllerException(
@@ -85,9 +87,7 @@ class _DenyListPageState extends State<DenyListPage> {
                   },
                 );
               },
-              onDelete: () {
-                denylistController.removeAt(index);
-              },
+              onDelete: () => denylist.removeAt(index),
             ),
           ),
           appBar: DefaultAppBar(
@@ -116,7 +116,7 @@ class _DenyListPageState extends State<DenyListPage> {
                                 value = value.trim();
                                 try {
                                   if (value.isNotEmpty) {
-                                    await denylistController.add(value);
+                                    await denylist.add(value);
                                   }
                                 } on DioError {
                                   throw const ActionControllerException(
@@ -129,8 +129,7 @@ class _DenyListPageState extends State<DenyListPage> {
             ),
           ),
           refresh: () async {
-            if (await validateCall(
-                () => denylistController.update(force: true))) {
+            if (await validateCall(() => denylist.update(force: true))) {
               refreshController.refreshCompleted();
             } else {
               refreshController.refreshFailed();

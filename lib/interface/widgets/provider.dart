@@ -79,9 +79,7 @@ class _SelectiveProvider0State<R>
   List<dynamic>? dependencies;
   R? value;
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
+  void recreate() {
     final List<dynamic>? conditions = widget.selector?.call(context);
     final List<dynamic> values = [if (conditions != null) conditions];
     if (!const DeepCollectionEquality().equals(dependencies, values)) {
@@ -105,6 +103,7 @@ class _SelectiveProvider0State<R>
       widget.builder != null || child != null,
       '$runtimeType used outside of MultiProvider must specify a child',
     );
+    recreate();
     return Provider.value(
       value: value as R,
       child: widget.builder != null
@@ -260,14 +259,15 @@ class SelectiveProvider6<T, T2, T3, T4, T5, T6, R>
 
 class SelectiveChangeNotifierProvider0<R extends ChangeNotifier?>
     extends SelectiveProvider0<R> {
-  const SelectiveChangeNotifierProvider0({
+  SelectiveChangeNotifierProvider0({
     super.key,
     super.child,
     super.builder,
     required super.create,
-    super.dispose,
     super.selector,
-  });
+  }) : super(
+          dispose: (context, value) => value?.dispose(),
+        );
 
   @override
   State<SelectiveProvider0<R>> createState() =>
@@ -282,6 +282,7 @@ class _SelectiveChangeNotifierProvider0<R extends ChangeNotifier?>
       widget.builder != null || child != null,
       '$runtimeType used outside of MultiProvider must specify a child',
     );
+    recreate();
     return ChangeNotifierProvider.value(
       value: value as R,
       child: widget.builder != null
@@ -300,7 +301,6 @@ class SelectiveChangeNotifierProvider<T, R extends ChangeNotifier?>
     super.child,
     super.builder,
     required SelectiveProviderBuilder<T, R> create,
-    super.dispose,
     SelectiveProviderBuilder<T, List<dynamic>>? selector,
   }) : super(
           create: (context) => create(
@@ -320,7 +320,6 @@ class SelectiveChangeNotifierProvider2<T, T2, R extends ChangeNotifier?>
     super.child,
     super.builder,
     required SelectiveProviderBuilder2<T, T2, R> create,
-    super.dispose,
     SelectiveProviderBuilder2<T, T2, List<dynamic>>? selector,
   }) : super(
           create: (context, value) => create(
@@ -341,7 +340,6 @@ class SelectiveChangeNotifierProvider3<T, T2, T3, R extends ChangeNotifier?>
     super.child,
     super.builder,
     required SelectiveProviderBuilder3<T, T2, T3, R> create,
-    super.dispose,
     SelectiveProviderBuilder3<T, T2, T3, List<dynamic>>? selector,
   }) : super(
           create: (context, value, value2) => create(
@@ -364,7 +362,6 @@ class SelectiveChangeNotifierProvider4<T, T2, T3, T4, R extends ChangeNotifier?>
     super.child,
     super.builder,
     required SelectiveProviderBuilder4<T, T2, T3, T4, R> create,
-    super.dispose,
     SelectiveProviderBuilder4<T, T2, T3, T4, List<dynamic>>? selector,
   }) : super(
           create: (context, value, value2, value3) => create(
@@ -389,7 +386,6 @@ class SelectiveChangeNotifierProvider5<T, T2, T3, T4, T5,
     super.child,
     super.builder,
     required SelectiveProviderBuilder5<T, T2, T3, T4, T5, R> create,
-    super.dispose,
     SelectiveProviderBuilder5<T, T2, T3, T4, T5, List<dynamic>>? selector,
   }) : super(
           create: (context, value, value2, value3, value4) => create(
@@ -420,7 +416,6 @@ class SelectiveChangeNotifierProvider6<T, T2, T3, T4, T5, T6,
     super.child,
     super.builder,
     required SelectiveProviderBuilder6<T, T2, T3, T4, T5, T6, R> create,
-    super.dispose,
     SelectiveProviderBuilder6<T, T2, T3, T4, T5, T6, List<dynamic>>? selector,
   }) : super(
           create: (context, value, value2, value3, value4, value5) => create(

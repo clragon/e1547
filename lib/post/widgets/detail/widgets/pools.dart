@@ -3,6 +3,7 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class PoolDisplay extends StatelessWidget {
   final Post post;
@@ -24,7 +25,7 @@ class PoolDisplay extends StatelessWidget {
               leading: const Icon(Icons.group),
               title: Text(id.toString()),
               onTap: () async {
-                Pool pool = await client.pool(id);
+                Pool pool = await context.read<Client>().pool(id);
                 try {
                   Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => PoolPage(pool: pool),

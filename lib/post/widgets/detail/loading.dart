@@ -1,33 +1,48 @@
 import 'dart:async';
 
+import 'package:e1547/client/client.dart';
+import 'package:e1547/denylist/denylist.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-class PostLoadingPage extends StatefulWidget {
+class PostLoadingPage extends StatelessWidget {
   final int id;
 
   const PostLoadingPage(this.id);
 
   @override
-  State<PostLoadingPage> createState() => _PostLoadingPageState();
-}
-
-class _PostLoadingPageState extends State<PostLoadingPage> {
-  late Future<PostsController> post =
-      PostsController.single(widget.id).loadFirstPage();
-
-  @override
   Widget build(BuildContext context) {
-    return FuturePageLoader<PostsController>(
-      future: post,
-      builder: (context, value) => PostDetailConnector(
-        controller: value,
-        child: PostDetailGallery(controller: value),
+    return SingleFuturePostsProvider(
+      id: id,
+      child: Consumer<Future<PostsController>>(
+        builder: (context, controller, child) =>
+            FuturePageLoader<PostsController>(
+          future: controller,
+          builder: (context, value) => PostDetailConnector(
+            controller: value,
+            child: PostDetailGallery(controller: value),
+          ),
+          title: Text('Post #$id'),
+          onError: const Text('Failed to load post'),
+          onEmpty: const Text('Post not found'),
+        ),
       ),
-      title: Text('Post #${widget.id}'),
-      onError: const Text('Failed to load post'),
-      onEmpty: const Text('Post not found'),
     );
   }
+}
+
+class SingleFuturePostsProvider extends SelectiveProvider2<Client,
+    DenylistService, Future<PostsController>> {
+  SingleFuturePostsProvider({required int id, super.child, super.builder})
+      : super(
+          create: (context, client, denylist) => PostsController.single(
+            id: id,
+            client: client,
+            denylist: denylist,
+          ).loadFirstPage(),
+          selector: (context, client, denylist) => [id],
+          dispose: (context, value) async => (await value).dispose(),
+        );
 }

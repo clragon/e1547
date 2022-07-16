@@ -3,6 +3,7 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class DrawerDenySwitch extends StatelessWidget {
   final PostsController controller;
@@ -202,10 +203,9 @@ class DrawerDenySwitchBody extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              AnimatedBuilder(
-                animation: denylistController,
-                builder: (context, child) {
-                  int count = denylistController.items.length;
+              Consumer<DenylistService>(
+                builder: (context, denylist, child) {
+                  int count = denylist.items.length;
                   if (denying) {
                     count -= denied.keys.length;
                     count -= allowedList.length;

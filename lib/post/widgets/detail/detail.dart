@@ -83,7 +83,7 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
     Map<String, String?>? body = controller.compile();
     if (body != null) {
       try {
-        await client.updatePost(controller.post.id, body);
+        await context.read<Client>().updatePost(controller.post.id, body);
         widget.post.value =
             widget.post.value.copyWith(tags: controller.value!.tags);
         await widget.post.reset();
@@ -147,7 +147,7 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
         child: Scaffold(
           extendBodyBehindAppBar: true,
           appBar: PostDetailAppBar(post: widget.post),
-          floatingActionButton: client.hasLogin ? fab() : null,
+          floatingActionButton: context.read<Client>().hasLogin ? fab() : null,
           body: MediaQuery.removeViewInsets(
             context: context,
             removeTop: true,

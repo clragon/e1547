@@ -3,6 +3,7 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/ticket/ticket.dart';
 import 'package:e1547/user/user.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class UserReportScreen extends StatelessWidget {
   final User user;
@@ -14,10 +15,10 @@ class UserReportScreen extends StatelessWidget {
     return ReasonReportScreen(
       title: Text('User #${user.id}'),
       onReport: (reason) => validateCall(
-        () => client.reportUser(
-          user.id,
-          reason,
-        ),
+        () => context.read<Client>().reportUser(
+              user.id,
+              reason,
+            ),
         allowRedirect: true,
       ),
       onSuccess: 'Reported user #${user.id}',

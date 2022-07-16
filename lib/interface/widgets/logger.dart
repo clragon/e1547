@@ -12,22 +12,6 @@ import 'package:talker/talker.dart';
 
 export 'package:talker/talker.dart' show TalkerDataInterface;
 
-class Logger extends InheritedWidget {
-  final Talker talker;
-
-  const Logger({required super.child, required this.talker});
-
-  static Talker of(BuildContext context) =>
-      context.dependOnInheritedWidgetOfExactType<Logger>()!.talker;
-
-  static Talker? maybeOf(BuildContext context) =>
-      context.dependOnInheritedWidgetOfExactType<Logger>()?.talker;
-
-  @override
-  bool updateShouldNotify(covariant Logger oldWidget) =>
-      oldWidget.talker != talker;
-}
-
 class LoggerPage extends StatelessWidget {
   final Talker talker;
 

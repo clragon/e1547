@@ -1,11 +1,8 @@
 import 'dart:io';
 
 import 'package:crypto/crypto.dart';
-import 'package:e1547/history/history.dart';
 import 'package:e1547/interface/interface.dart';
-import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
-import 'package:e1547/settings/settings.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:external_path/external_path.dart';
 import 'package:flutter/material.dart';
@@ -134,10 +131,10 @@ extension Downloading on Post {
     }
     File download = await DefaultCacheManager().getSingleFile(file.url!);
     if (Platform.isAndroid) {
-      String directory = join(
-          (await ExternalPath.getExternalStoragePublicDirectory(
-              ExternalPath.DIRECTORY_PICTURES)),
-          appInfo.appName);
+      String directory =
+          join((await ExternalPath.getExternalStoragePublicDirectory(
+              // TODO: fetch appInfo.appname
+              ExternalPath.DIRECTORY_PICTURES)), 'e1547');
       await Directory(directory).create();
       File target = File(join(directory, _downloadName()));
       if (!await target.exists() ||

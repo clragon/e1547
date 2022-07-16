@@ -2,6 +2,7 @@ import 'package:e1547/client/client.dart';
 import 'package:e1547/comment/comment.dart';
 import 'package:e1547/ticket/ticket.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class CommentReportScreen extends StatelessWidget {
   final CommentController comment;
@@ -13,10 +14,10 @@ class CommentReportScreen extends StatelessWidget {
     return ReasonReportScreen(
       title: Text('Comment #${comment.id}'),
       onReport: (reason) => validateCall(
-        () => client.reportComment(
-          comment.value.id,
-          reason,
-        ),
+        () => context.read<Client>().reportComment(
+              comment.value.id,
+              reason,
+            ),
         allowRedirect: true,
       ),
       onSuccess: 'Reported comment #${comment.id}',

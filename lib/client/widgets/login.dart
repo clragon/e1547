@@ -1,7 +1,9 @@
 import 'package:e1547/client/client.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 Future<void> logout(BuildContext context) async {
+  final Client client = context.read<Client>();
   String? name = client.credentials?.username;
   await client.logout();
 
@@ -18,7 +20,7 @@ Future<void> guardWithLogin({
   required VoidCallback callback,
   String? error,
 }) async {
-  if (client.hasLogin) {
+  if (context.read<Client>().hasLogin) {
     callback();
   } else {
     ScaffoldMessenger.of(context).showSnackBar(

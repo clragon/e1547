@@ -12,9 +12,14 @@ import 'package:flutter/material.dart';
 class HistoriesService extends ChangeNotifier {
   final Settings settings;
   final Client client;
+  final DenylistService denylist;
 
-  HistoriesService({required this.settings, required this.client, String? path})
-      : _database = HistoriesDatabase.connect(path: path) {
+  HistoriesService({
+    required this.settings,
+    required this.client,
+    required this.denylist,
+    String? path,
+  }) : _database = HistoriesDatabase.connect(path: path) {
     client.addListener(notifyListeners);
     settings.writeHistory.addListener(notifyListeners);
   }
@@ -70,7 +75,7 @@ class HistoriesService extends ChangeNotifier {
 
   List<String> _getThumbnails(List<Post>? posts) =>
       posts
-          ?.where((e) => !e.isDeniedBy(denylistController.items))
+          ?.where((e) => !e.isDeniedBy(denylist.items))
           .map((e) => e.sample.url)
           .where((e) => e != null)
           .cast<String>()
@@ -111,15 +116,16 @@ class HistoriesService extends ChangeNotifier {
       host: client.host, maxAmount: 3000, maxAge: const Duration(days: 30));
 }
 
-class HistoriesProvider extends SelectiveChangeNotifierProvider2<Settings,
-    Client, HistoriesService> {
-  HistoriesProvider({String? path})
+class HistoriesProvider extends SelectiveChangeNotifierProvider3<Settings,
+    Client, DenylistService, HistoriesService> {
+  HistoriesProvider({String? path, super.child, super.builder})
       : super(
-          create: (context, settings, client) => HistoriesService(
+          create: (context, settings, client, denylist) => HistoriesService(
             path: path,
             settings: settings,
             client: client,
+            denylist: denylist,
           ),
-          dispose: (context, value) => value.dispose(),
+          selector: (context, settings, client, denylist) => [path],
         );
 }

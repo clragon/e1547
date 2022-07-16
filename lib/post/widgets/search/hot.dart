@@ -1,6 +1,7 @@
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class HotPage extends StatefulWidget {
   const HotPage();
@@ -9,30 +10,27 @@ class HotPage extends StatefulWidget {
   State<HotPage> createState() => _HotPageState();
 }
 
-class _HotPageState extends State<HotPage>
-    with ListenerCallbackMixin, DrawerEntry {
-  PostsController controller = PostsController(search: "order:rank");
-
-  @override
-  Map<ChangeNotifier, VoidCallback> get initListeners => {
-    // TODO: reenable
-    // controller.search: () => controller.addToHistory(context),
-      };
-
-  @override
-  void dispose() {
-    controller.dispose();
-    super.dispose();
-  }
-
+class _HotPageState extends State<HotPage> with DrawerEntry {
   @override
   Widget build(BuildContext context) {
-    return PostsPage(
-      appBar: const DefaultAppBar(
-        title: Text('Hot'),
-        actions: [SizedBox.shrink()],
+    return PostsProvider(
+      search: 'order:rank',
+      child: Consumer<PostsController>(
+        builder: (context, controller, child) => ListenableListener(
+          listener: () {
+            // TODO: reenable
+            // controller.addToHistory(context);
+          },
+          listenable: controller.search,
+          child: PostsPage(
+            appBar: const DefaultAppBar(
+              title: Text('Hot'),
+              actions: [SizedBox.shrink()],
+            ),
+            controller: controller,
+          ),
+        ),
       ),
-      controller: controller,
     );
   }
 }

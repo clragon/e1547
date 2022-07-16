@@ -3,6 +3,7 @@ import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
+import 'package:provider/provider.dart';
 
 class PostGrid extends StatelessWidget {
   final PostsController controller;
@@ -29,18 +30,21 @@ Widget postGrid(BuildContext context, PostsController controller) {
       pagingController: controller,
       onEmpty: const Text('No posts'),
       onError: const Text('Failed to load posts'),
-      itemBuilder: (context, item, index) => PostTile(
-        post: PostController(
-          id: item.id,
-          parent: controller,
-        ),
-        onTap: () => Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => PostDetailConnector(
-              controller: controller,
-              child: PostDetailGallery(
-                controller: controller,
-                initialPage: index,
+      itemBuilder: (context, item, index) => PostProvider(
+        id: item.id,
+        parent: controller,
+        child: Consumer<PostController>(
+          builder: (context, post, child) => PostTile(
+            post: post,
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => PostDetailConnector(
+                  controller: controller,
+                  child: PostDetailGallery(
+                    controller: controller,
+                    initialPage: index,
+                  ),
+                ),
               ),
             ),
           ),

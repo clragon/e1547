@@ -8,6 +8,7 @@ import 'package:e1547/settings/settings.dart';
 import 'package:e1547/topic/topic.dart';
 import 'package:e1547/user/user.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 final NavigationController navigationController = NavigationController(
     destinations: rootDestintations, drawerHeader: UserDrawerHeader());
@@ -52,7 +53,7 @@ final List<NavigationRouteDestination> rootDestintations = [
     path: '/follows',
     name: 'Follows',
     icon: const Icon(Icons.turned_in),
-    builder: (context) => FollowsSplitPage(),
+    builder: (context) => const FollowsSplitPage(),
     unique: true,
     group: _drawerCollectionsGroup,
   ),
@@ -69,7 +70,7 @@ final List<NavigationRouteDestination> rootDestintations = [
     name: 'Forum',
     icon: const Icon(Icons.forum),
     builder: (context) => const TopicsPage(),
-    visible: (context) => settings.showBeta.value,
+    visible: (context) => context.watch<Settings>().showBeta.value,
     unique: true,
     group: _drawerCollectionsGroup,
   ),
@@ -78,21 +79,21 @@ final List<NavigationRouteDestination> rootDestintations = [
     name: 'History',
     icon: const Icon(Icons.history),
     builder: (context) => const HistoryPage(),
-    visible: (context) => settings.writeHistory.value,
+    visible: (context) => context.watch<Settings>().writeHistory.value,
     group: _drawerSettingsGroup,
   ),
   NavigationDrawerDestination(
     path: '/settings',
     name: 'Settings',
     icon: const Icon(Icons.settings),
-    builder: (context) => SettingsPage(),
+    builder: (context) => const SettingsPage(),
     group: _drawerSettingsGroup,
   ),
   NavigationDrawerDestination(
     path: '/about',
     name: 'About',
     icon: DrawerUpdateIcon(),
-    builder: (context) => AboutPage(),
+    builder: (context) => const AboutPage(),
     group: _drawerSettingsGroup,
   ),
   NavigationRouteDestination(
@@ -101,10 +102,10 @@ final List<NavigationRouteDestination> rootDestintations = [
   ),
   NavigationRouteDestination(
     path: '/blacklist',
-    builder: (context) => DenyListPage(),
+    builder: (context) => const DenyListPage(),
   ),
   NavigationRouteDestination(
     path: '/following',
-    builder: (context) => FollowingPage(),
+    builder: (context) => const FollowingPage(),
   ),
 ];

@@ -1,6 +1,7 @@
 import 'package:e1547/client/client.dart';
 import 'package:e1547/dtext/dtext.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'comment.dart';
 
@@ -42,7 +43,9 @@ Future<bool> writeComment({
         onSubmit: (context, text) async {
           if (text.isNotEmpty) {
             try {
-              await client.postComment(postId, text, comment: comment);
+              await context
+                  .read<Client>()
+                  .postComment(postId, text, comment: comment);
               return sent = true;
             } on DioError {
               ScaffoldMessenger.of(context).showSnackBar(const SnackBar(

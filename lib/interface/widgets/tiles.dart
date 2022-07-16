@@ -1,6 +1,7 @@
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 enum GridQuilt {
   square,
@@ -49,9 +50,9 @@ class TileLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder<int>(
-      valueListenable: settings.tileSize,
+      valueListenable: context.watch<Settings>().tileSize,
       builder: (context, tileSize, child) => ValueListenableBuilder<GridQuilt>(
-        valueListenable: settings.quilt,
+        valueListenable: context.watch<Settings>().quilt,
         builder: (context, stagger, child) => LayoutBuilder(
           builder: (context, constraints) {
             tileSize = this.tileSize ?? tileSize;

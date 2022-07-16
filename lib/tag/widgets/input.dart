@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class TagInput extends StatefulWidget {
   final String? labelText;
@@ -150,7 +151,7 @@ class _TagInputState extends State<TagInput> {
         }
         if (tagToName(tags[selection].trim()).isNotEmpty &&
             !tags[selection].contains(':')) {
-          return client.autocomplete(tagToName(tags[selection]),
+          return context.read<Client>().autocomplete(tagToName(tags[selection]),
               category: widget.category);
         } else {
           return [];

@@ -20,19 +20,20 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        Provider.value(value: appInfo),
-        Provider.value(value: settings),
-        ChangeNotifierProvider.value(value: client),
+        ChangeNotifierProvider.value(value: navigationController),
+        ClientProvider(),
+        DenylistProvider(),
+        FollowsProvider(),
         HistoriesProvider(),
-        Provider.value(value: navigationController),
       ],
-      child: ValueListenableBuilder<AppTheme>(
-        valueListenable: settings.theme,
-        builder: (context, value, child) => ExcludeSemantics(
-          child: AnnotatedRegion<SystemUiOverlayStyle>(
-            value: appThemeMap[value]!.appBarTheme.systemOverlayStyle!,
-            child: Consumer<NavigationController>(
-              builder: (context, navigation, child) => MaterialApp(
+      child: Consumer3<AppInfo, Settings, NavigationController>(
+        builder: (context, appInfo, settings, navigation, child) =>
+            ValueListenableBuilder<AppTheme>(
+          valueListenable: settings.theme,
+          builder: (context, value, child) => ExcludeSemantics(
+            child: AnnotatedRegion<SystemUiOverlayStyle>(
+              value: appThemeMap[value]!.appBarTheme.systemOverlayStyle!,
+              child: MaterialApp(
                 title: appInfo.appName,
                 theme: appThemeMap[value],
                 routes: navigation.routes,
@@ -47,10 +48,10 @@ class App extends StatelessWidget {
                 ],
                 builder: (context, child) => StartupActions(
                   actions: [
-                    initializeUserAvatar,
-                    (_) => denylistController.update(),
-                    (_) => followController.update(),
                     (_) => initializeDateFormatting(),
+                    (_) => context.read<DenylistService>().update(),
+                    (_) => context.read<FollowsService>().update(),
+                    initializeUserAvatar,
                   ],
                   child: LockScreen(
                     child: AppLinkHandler(

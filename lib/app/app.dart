@@ -1,5 +1,5 @@
 // data
-export 'data/initialize.dart';
+export 'data/info.dart';
 export 'data/link.dart';
 export 'data/navigation.dart';
 export 'data/theme.dart';

@@ -1,25 +1,30 @@
 import 'dart:async';
 import 'package:e1547/app/app.dart';
-import 'package:e1547/interface/interface.dart';
+import 'package:e1547/client/client.dart';
+import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:talker/talker.dart';
 
 Future<void> main() async {
-  Talker logger = Talker();
+  Talker talker = Talker();
   await runZonedGuarded<Future<void>>(
     () async {
       WidgetsFlutterBinding.ensureInitialized();
       FlutterError.onError =
-          (details) => logger.handle(details.exception, details.stack);
-
-      await initializeApp();
+          (details) => talker.handle(details.exception, details.stack);
+      await initializeSql();
       runApp(
-        Logger(
-          talker: logger,
+        MultiProvider(
+          providers: [
+            Provider.value(value: await initializeAppInfo()),
+            Provider.value(value: await initializeSettings()),
+            Provider.value(value: talker),
+          ],
           child: const App(),
         ),
       );
     },
-    (error, stack) => logger.handle(error, stack),
+    (error, stack) => talker.handle(error, stack),
   );
 }

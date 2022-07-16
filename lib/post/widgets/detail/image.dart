@@ -4,6 +4,7 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class PostDetailImage extends StatelessWidget {
   final Post post;
@@ -82,11 +83,12 @@ class _PostDetailImageToggleState extends State<PostDetailImageToggle> {
       loading = true;
     });
     if (post.file.url == null) {
-      if (settings.customHost.value == null) {
+      if (context.read<Settings>().customHost.value == null) {
         await setCustomHost(context);
       }
-      if (settings.customHost.value != null) {
-        replacement ??= await client.post(post.id, unsafe: true);
+      if (context.read<Settings>().customHost.value != null) {
+        replacement ??=
+            await context.read<Client>().post(post.id, unsafe: true);
         if (!widget.post.isDenied) {
           widget.post.isAllowed = true;
         }

@@ -2,6 +2,7 @@ import 'package:e1547/client/client.dart';
 import 'package:e1547/comment/comment.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:flutter/widgets.dart';
+import 'package:provider/provider.dart';
 
 class CommentLoadingPage extends StatefulWidget {
   final int id;
@@ -13,7 +14,7 @@ class CommentLoadingPage extends StatefulWidget {
 }
 
 class _CommentLoadingPageState extends State<CommentLoadingPage> {
-  late Future<Comment> comment = client.comment(widget.id);
+  late Future<Comment> comment = context.read<Client>().comment(widget.id);
 
   @override
   Widget build(BuildContext context) {

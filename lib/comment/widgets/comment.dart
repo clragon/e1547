@@ -7,6 +7,7 @@ import 'package:e1547/ticket/ticket.dart';
 import 'package:e1547/user/user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import 'package:relative_time/relative_time.dart';
 
 class CommentTile extends StatelessWidget {
@@ -98,7 +99,7 @@ class CommentTile extends StatelessWidget {
                     padding: EdgeInsets.zero,
                     score: comment.value.score,
                     status: comment.value.voteStatus,
-                    onUpvote: client.hasLogin
+                    onUpvote: context.read<Client>().hasLogin
                         ? (isLiked) async {
                             comment
                                 .vote(upvote: true, replace: !isLiked)
@@ -113,7 +114,7 @@ class CommentTile extends StatelessWidget {
                             return !isLiked;
                           }
                         : null,
-                    onDownvote: client.hasLogin
+                    onDownvote: context.read<Client>().hasLogin
                         ? (isLiked) async {
                             comment
                                 .vote(upvote: false, replace: !isLiked)
@@ -141,7 +142,8 @@ class CommentTile extends StatelessWidget {
               ),
               onSelected: (value) => value(),
               itemBuilder: (context) => [
-                if (client.credentials?.username == comment.value.creatorName)
+                if (context.read<Client>().credentials?.username ==
+                    comment.value.creatorName)
                   PopupMenuTile(
                     title: 'Edit',
                     icon: Icons.edit,

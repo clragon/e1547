@@ -1,5 +1,5 @@
 // data
-export 'data/controller.dart';
+export 'data/service.dart';
 // widgets
 export 'widgets/drawer.dart';
 export 'widgets/editor.dart';

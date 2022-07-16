@@ -3,6 +3,7 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class TagDisplay extends StatelessWidget {
   final PostController post;
@@ -121,7 +122,7 @@ Future<bool> onPostTagsEdit(
   if (category != 'general') {
     Future(() async {
       for (String tag in edited) {
-        List<Tag> tags = await client.tags(tag);
+        List<Tag> tags = await context.read<Client>().tags(tag);
         String? target;
         if (tags.isEmpty) {
           target = 'general';

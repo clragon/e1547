@@ -10,11 +10,10 @@ import 'package:e1547/settings/settings.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 
-final FollowsController followController =
-    FollowsController(settings: settings.follows);
-
-class FollowsController extends DataUpdater<List<Follow>> with HostableUpdater {
-  late final ValueNotifier<List<Follow>> _source;
+class FollowsService extends DataUpdater<List<Follow>> {
+  final Client _client;
+  final DenylistService _denylist;
+  final ValueNotifier<List<Follow>> _source;
   late final SelectedValueNotifier<List<Follow>> _restarter =
       SelectedValueNotifier<List<Follow>>(
     source: _source,
@@ -33,29 +32,34 @@ class FollowsController extends DataUpdater<List<Follow>> with HostableUpdater {
 
   final int refreshAmount = 5;
 
-  FollowsController({required ValueNotifier<List<Follow>> settings})
-      : _source = settings {
+  FollowsService({
+    required Client client,
+    required DenylistService denylist,
+    required ValueNotifier<List<Follow>> source,
+  })  : _client = client,
+        _denylist = denylist,
+        _source = source {
     _source.addListener(notifyListeners);
-    client.addListener(notifyListeners);
+    _client.addListener(notifyListeners);
   }
 
   @override
   void dispose() {
     _source.removeListener(notifyListeners);
-    client.removeListener(notifyListeners);
+    _client.removeListener(notifyListeners);
     super.dispose();
   }
 
   @override
   List<Listenable> getRefreshListeners() =>
-      super.getRefreshListeners()..add(_restarter);
+      super.getRefreshListeners()..addAll([_client, _restarter]);
 
   bool _compare(List<Follow> old, List<Follow> value) {
     return old.length == value.length &&
         old.every((a) => value.any((b) => a.tags == b.tags));
   }
 
-  Future<void> _sort() => withData((items) => items..sortByNew(client.host));
+  Future<void> _sort() => withData((items) => items..sortByNew(_client.host));
 
   @override
   @protected
@@ -66,7 +70,7 @@ class FollowsController extends DataUpdater<List<Follow>> with HostableUpdater {
     for (Follow follow in data) {
       Follow? refreshed;
       if (follow.type != FollowType.bookmark) {
-        DateTime? updated = follow.statuses[client.host]?.updated;
+        DateTime? updated = follow.statuses[_client.host]?.updated;
         if (force ||
             updated == null ||
             now.difference(updated) > getFollowRefreshRate(data.length)) {
@@ -96,7 +100,7 @@ class FollowsController extends DataUpdater<List<Follow>> with HostableUpdater {
 
   bool follows(String tag) => getFollow(tag) != null;
 
-  FollowStatus? status(Follow follow) => follow.resolve(client.host);
+  FollowStatus? status(Follow follow) => follow.resolve(_client.host);
 
   Follow _syncUnseen(Follow follow) {
     Follow updated = follow;
@@ -143,18 +147,17 @@ class FollowsController extends DataUpdater<List<Follow>> with HostableUpdater {
 
   Future<Follow> refresh(Follow follow, {bool force = false}) async {
     Follow updated = follow;
-    List<Post> posts = await client.postsRaw(1,
+    List<Post> posts = await _client.postsRaw(1,
         search: updated.tags, limit: refreshAmount, force: force);
 
-    posts
-        .removeWhere((element) => element.isDeniedBy(denylistController.items));
-    updated = updated.withUnseen(client.host, posts);
+    posts.removeWhere((element) => element.isDeniedBy(_denylist.items));
+    updated = updated.withUnseen(_client.host, posts);
 
     if (!updated.tags.contains(' ') && updated.alias == null) {
       RegExpMatch? match = poolRegex().firstMatch(updated.tags);
       if (match != null) {
         updated = updated.withPool(
-          await client.pool(
+          await _client.pool(
             int.parse(match.namedGroup('id')!),
           ),
         );
@@ -187,7 +190,7 @@ class FollowsController extends DataUpdater<List<Follow>> with HostableUpdater {
             FollowStatus? status = this.status(follow);
             if (status != null) {
               data[i] =
-                  follow.withStatus(client.host, status.copyWith(unseen: 0));
+                  follow.withStatus(_client.host, status.copyWith(unseen: 0));
             }
           }
           return data;
@@ -215,4 +218,16 @@ class SelectedValueNotifier<T> extends ValueNotifier<T> {
     source.removeListener(_compare);
     super.dispose();
   }
+}
+
+class FollowsProvider extends SelectiveChangeNotifierProvider3<Client,
+    DenylistService, Settings, FollowsService> {
+  FollowsProvider()
+      : super(
+          create: (context, client, denylist, settings) => FollowsService(
+            client: client,
+            denylist: denylist,
+            source: settings.follows,
+          ),
+        );
 }

@@ -7,11 +7,10 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:flutter/foundation.dart';
 
-late final Settings settings;
-
-Future<void> initializeSettings() async {
-  settings = Settings();
+Future<Settings> initializeSettings() async {
+  Settings settings = Settings();
   await settings.initialize();
+  return settings;
 }
 
 class Settings with SharedPrefsSettings {

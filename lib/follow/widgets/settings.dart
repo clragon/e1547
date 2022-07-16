@@ -2,8 +2,11 @@ import 'package:e1547/follow/follow.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class FollowingPage extends StatefulWidget {
+  const FollowingPage();
+
   @override
   State<StatefulWidget> createState() => _FollowingPageState();
 }
@@ -14,9 +17,8 @@ class _FollowingPageState extends State<FollowingPage> {
     return LimitedWidthLayout(
       child: SheetActions(
         controller: SheetActionController(),
-        child: AnimatedBuilder(
-          animation: followController,
-          builder: (context, child) => Scaffold(
+        child: Consumer<FollowsService>(
+          builder: (context, follows, child) => Scaffold(
             appBar: DefaultAppBar(
               title: const Text('Following'),
               actions: [
@@ -29,13 +31,13 @@ class _FollowingPageState extends State<FollowingPage> {
                 ),
               ],
             ),
-            body: followController.items.isNotEmpty
+            body: follows.items.isNotEmpty
                 ? ListView.builder(
                     padding: defaultActionListPadding
                         .add(LimitedWidthLayout.of(context).padding),
-                    itemCount: followController.items.length,
+                    itemCount: follows.items.length,
                     itemBuilder: (context, index) => FollowListTile(
-                      follow: followController.items[index],
+                      follow: follows.items[index],
                     ),
                   )
                 : const IconMessage(
@@ -55,7 +57,7 @@ class _FollowingPageState extends State<FollowingPage> {
                               value = value.trim();
                               Follow result = Follow(tags: value);
                               if (value.isNotEmpty) {
-                                followController.add(result);
+                                follows.add(result);
                               }
                             },
                             actionController: SheetActions.of(context)!,
@@ -89,8 +91,8 @@ class FollowEditor extends StatefulWidget {
 }
 
 class _FollowEditorState extends State<FollowEditor> {
-  TextEditingController controller =
-      TextEditingController(text: followController.items.tags.join('\n'));
+  late TextEditingController controller = TextEditingController(
+      text: context.read<FollowsService>().items.tags.join('\n'));
 
   @override
   Widget build(BuildContext context) {
@@ -112,7 +114,7 @@ class _FollowEditorState extends State<FollowEditor> {
             List<String> tags = controller.text.split('\n');
             tags = tags.trim();
             tags.removeWhere((tag) => tag.isEmpty);
-            followController.edit(tags);
+            context.read<FollowsService>().edit(tags);
             Navigator.of(context).maybePop();
           },
         ),

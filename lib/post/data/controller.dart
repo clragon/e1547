@@ -5,6 +5,7 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 enum DenyListMode {
   unavailable,
@@ -16,7 +17,10 @@ typedef PostProviderCallback = Future<List<Post>> Function(
     String search, int page, bool force)?;
 
 class PostsController extends DataController<Post>
-    with SearchableController, HostableController, RefreshableController {
+    with SearchableController, RefreshableController {
+  final Client client;
+  final DenylistService denylist;
+
   final PostProviderCallback _provider;
 
   Map<String, List<Post>>? _previousDeniedPosts;
@@ -41,9 +45,16 @@ class PostsController extends DataController<Post>
   ValueNotifier<String> search;
   bool canSearch;
 
-  late final List<Listenable> _filterNotifiers = [denylistController];
+  @override
+  @protected
+  List<Listenable> getRefreshListeners() =>
+      super.getRefreshListeners()..add(client);
+
+  late final List<Listenable> _filterNotifiers = [denylist];
 
   PostsController({
+    required this.client,
+    required this.denylist,
     PostProviderCallback provider,
     String? search,
     bool denying = true,
@@ -57,12 +68,16 @@ class PostsController extends DataController<Post>
     }
   }
 
-  factory PostsController.single(
-    int id, {
+  factory PostsController.single({
+    required int id,
+    required Client client,
+    required DenylistService denylist,
     DenyListMode denyMode = DenyListMode.plain,
   }) {
     late PostsController controller;
     controller = PostsController(
+      client: client,
+      denylist: denylist,
       provider: (search, page, force) async => page == controller.firstPageKey
           ? [await client.post(id, force: force)]
           : [],
@@ -87,8 +102,7 @@ class PostsController extends DataController<Post>
   List<Post> filter(List<Post> items) {
     List<String> denylist = [];
     if (denying && denyMode != DenyListMode.unavailable) {
-      denylist =
-          denylistController.items.whereNot(_allowedTags.contains).toList();
+      denylist = this.denylist.items.whereNot(_allowedTags.contains).toList();
     }
 
     _deniedPosts ??= {};
@@ -206,10 +220,55 @@ class PostsController extends DataController<Post>
   }
 }
 
+class PostsProvider extends SelectiveChangeNotifierProvider2<Client,
+    DenylistService, PostsController> {
+  PostsProvider({
+    PostProviderCallback provider,
+    String? search,
+    bool denying = true,
+    bool canSearch = true,
+    DenyListMode denyMode = DenyListMode.filtering,
+    super.child,
+    super.builder,
+  }) : super(
+          create: (context, client, denylist) => PostsController(
+            client: client,
+            denylist: denylist,
+            provider: provider,
+            search: search,
+            denying: denying,
+            canSearch: canSearch,
+            denyMode: denyMode,
+          ),
+        );
+
+  PostsProvider.single({
+    required int id,
+    DenyListMode denyMode = DenyListMode.plain,
+    super.child,
+    super.builder,
+  }) : super(
+          create: (context, client, denylist) => PostsController.single(
+            id: id,
+            client: client,
+            denylist: denylist,
+            denyMode: denyMode,
+          ),
+        );
+}
+
 class PostController extends ProxyValueNotifier<Post, PostsController> {
+  final Client client;
+  final DenylistService denylist;
+
   final int id;
 
-  PostController({required this.id, required super.parent}) {
+  PostController({
+    required this.client,
+    required this.denylist,
+    required this.id,
+    required super.parent,
+  }) {
     _registerDenying();
   }
 
@@ -233,7 +292,7 @@ class PostController extends ProxyValueNotifier<Post, PostsController> {
       parent!.addListener(_updateDenied);
       parent!.addListener(_updateAllowed);
     } else {
-      denylistController.addListener(_updateDenied);
+      denylist.addListener(_updateDenied);
     }
     _updateDenied();
     _updateAllowed();
@@ -243,7 +302,7 @@ class PostController extends ProxyValueNotifier<Post, PostsController> {
     if (!orphan) {
       _isDenied = parent!.isDenied(value);
     } else {
-      _isDenied = value.isDeniedBy(denylistController.items) && !_isAllowed;
+      _isDenied = value.isDeniedBy(denylist.items) && !_isAllowed;
     }
     notifyListeners();
   }
@@ -275,9 +334,9 @@ class PostController extends ProxyValueNotifier<Post, PostsController> {
 
   @override
   void dispose() {
-    parent?.addListener(_updateDenied);
-    parent?.addListener(_updateAllowed);
-    denylistController.removeListener(_updateDenied);
+    parent?.removeListener(_updateDenied);
+    parent?.removeListener(_updateAllowed);
+    denylist.removeListener(_updateDenied);
     super.dispose();
   }
 
@@ -389,4 +448,23 @@ class PostController extends ProxyValueNotifier<Post, PostsController> {
   Future<void> reset() async {
     value = await client.post(value.id, force: true);
   }
+}
+
+class PostProvider extends SelectiveChangeNotifierProvider2<Client,
+    DenylistService, PostController> {
+  PostProvider({
+    required int id,
+    PostsController? parent,
+    super.child,
+    super.builder,
+  }) : super(
+          create: (context, client, denylist) => PostController(
+            client: client,
+            denylist: denylist,
+            id: id,
+            parent: parent ?? context.read<PostsController>(),
+          ),
+          selector: (context, client, denylist) =>
+              [id, parent ?? context.watch<PostsController>()],
+        );
 }

@@ -1,6 +1,7 @@
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class FollowMarkReadTile extends StatefulWidget {
   const FollowMarkReadTile();
@@ -13,13 +14,12 @@ class _FollowMarkReadTileState extends State<FollowMarkReadTile>
     with ListenerCallbackMixin {
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: followController,
-      builder: (context, child) {
-        int unseen = followController.items.fold<int>(
+    return Consumer<FollowsService>(
+      builder: (context, follows, child) {
+        int unseen = follows.items.fold<int>(
           0,
           (previousValue, element) =>
-              previousValue + (followController.status(element)?.unseen ?? 0),
+              previousValue + (follows.status(element)?.unseen ?? 0),
         );
         return ListTile(
           enabled: unseen != 0,
@@ -35,7 +35,7 @@ class _FollowMarkReadTileState extends State<FollowMarkReadTile>
                 )
               : const Text('no unseen posts'),
           onTap: () async {
-            followController.markAllAsRead();
+            follows.markAllAsRead();
             Navigator.of(context).maybePop();
           },
         );

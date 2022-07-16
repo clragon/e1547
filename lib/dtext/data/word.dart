@@ -2,6 +2,7 @@ import 'package:e1547/app/app.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/dtext/dtext.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 enum LinkWord {
   post,
@@ -72,7 +73,7 @@ InlineSpan parseWord({
   required TextState state,
 }) {
   VoidCallback? onTap =
-      () => launch('https://${client.host}${word.toLink(id)}');
+      () => launch('https://${context.read<Client>().host}${word.toLink(id)}');
   LinkParserResult? link = parseLink(context, word.toLink(id));
   if (link != null) {
     onTap = () =>

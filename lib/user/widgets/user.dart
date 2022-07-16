@@ -8,6 +8,7 @@ import 'package:e1547/ticket/ticket.dart';
 import 'package:e1547/user/user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 enum UserPageSection {
   favorites,
@@ -15,7 +16,7 @@ enum UserPageSection {
   info,
 }
 
-class UserPage extends StatefulWidget {
+class UserPage extends StatelessWidget {
   final User user;
   final UserPageSection initialPage;
 
@@ -25,160 +26,175 @@ class UserPage extends StatefulWidget {
   });
 
   @override
-  State<UserPage> createState() => _UserPageState();
-}
-
-class _UserPageState extends State<UserPage>
-    with TickerProviderStateMixin, ListenerCallbackMixin {
-  late PostsController favoritePostController =
-      PostsController(search: 'fav:${widget.user.name}', canSearch: false);
-  late PostsController uploadPostController =
-      PostsController(search: 'user:${widget.user.name}', canSearch: false);
-  late PostsController? profilePostController = widget.user.avatarId != null
-      ? PostsController.single(widget.user.avatarId!)
-      : null;
-
-  int _getInitialIndex() {
-    switch (widget.initialPage) {
-      case UserPageSection.favorites:
-        return 0;
-      case UserPageSection.uploads:
-        return 1;
-      case UserPageSection.info:
-        return 2;
-    }
-  }
-
-  @override
-  void dispose() {
-    favoritePostController.dispose();
-    uploadPostController.dispose();
-    profilePostController?.dispose();
-    super.dispose();
-  }
-
-  late Map<Widget, Widget> tabs = {
-    const Tab(text: 'Favorites'): PostGrid(
-      controller: favoritePostController,
-    ),
-    const Tab(text: 'Uploads'): PostGrid(
-      controller: uploadPostController,
-    ),
-    const Tab(text: 'About'): UserInfo(user: widget.user),
-  };
-
-  @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: tabs.length,
-      initialIndex: _getInitialIndex(),
-      child: Scaffold(
-        drawer: const NavigationDrawer(),
-        endDrawer: ContextDrawer(
-          title: const Text('Posts'),
-          children: [
-            DrawerMultiDenySwitch(
-              controllers: [
-                favoritePostController,
-                uploadPostController,
-                if (profilePostController != null) profilePostController!,
-              ],
+    return _UserPageProvider(
+      user: user,
+      child: Consumer<_UserPageControllers>(
+        builder: (context, controllers, child) {
+          Map<Widget, Widget> tabs = {
+            const Tab(text: 'Favorites'): PostGrid(
+              controller: controllers.favoritePosts,
             ),
-            DrawerMultiTagCounter(
-              controllers: [
-                favoritePostController,
-                uploadPostController,
-                if (profilePostController != null) profilePostController!,
-              ],
+            const Tab(text: 'Uploads'): PostGrid(
+              controller: controllers.uploadedPosts,
             ),
-          ],
-        ),
-        body: NestedScrollView(
-          headerSliverBuilder: (context, innerBoxIsScrolled) => [
-            SliverOverlapAbsorber(
-              handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
-              sliver: DefaultSliverAppBar(
-                pinned: true,
-                leading: const BackButton(),
-                expandedHeight: 250,
-                flexibleSpaceBuilder: (context, extension) => FlexibleSpaceBar(
-                  collapseMode: CollapseMode.pin,
-                  title: Opacity(
-                    opacity: 1 - (extension * 6).clamp(0, 1),
-                    child: Text(widget.user.name),
-                  ),
-                  background: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SizedBox(
-                        height: 100,
-                        width: 100,
-                        child: UserAvatar(
-                          controller: profilePostController,
-                          enabled: true,
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 16, bottom: 32),
-                        child: Text(
-                          widget.user.name,
-                          style: Theme.of(context).textTheme.headline6,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                bottom: TabBar(
-                  labelColor: Theme.of(context).iconTheme.color,
-                  indicatorColor: Theme.of(context).iconTheme.color,
-                  tabs: tabs.keys.toList(),
-                ),
-                actions: [
-                  PopupMenuButton<VoidCallback>(
-                    icon: const Icon(Icons.more_vert),
-                    onSelected: (value) => value(),
-                    itemBuilder: (context) => [
-                      PopupMenuTile(
-                        title: 'Browse',
-                        icon: Icons.open_in_browser,
-                        value: () async => launch(
-                          widget.user.url(client.host).toString(),
-                        ),
-                      ),
-                      PopupMenuTile(
-                        title: 'Report',
-                        icon: Icons.report,
-                        value: () => guardWithLogin(
-                          context: context,
-                          callback: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => UserReportScreen(
-                                  user: widget.user,
-                                ),
-                              ),
-                            );
-                          },
-                          error: 'You must be logged in to report users!',
-                        ),
-                      ),
-                    ],
-                  ),
+            const Tab(text: 'About'): UserInfo(user: user),
+          };
+
+          return DefaultTabController(
+            length: tabs.length,
+            initialIndex: initialPage.index,
+            child: Scaffold(
+              drawer: const NavigationDrawer(),
+              endDrawer: ContextDrawer(
+                title: const Text('Posts'),
+                children: [
+                  DrawerMultiDenySwitch(controllers: controllers.all),
+                  DrawerMultiTagCounter(controllers: controllers.all),
                 ],
               ),
-            ),
-          ],
-          body: LimitedWidthLayout(
-            child: TileLayout(
-              child: TabBarView(
-                children: tabs.values.toList(),
+              body: NestedScrollView(
+                headerSliverBuilder: (context, innerBoxIsScrolled) => [
+                  SliverOverlapAbsorber(
+                    handle: NestedScrollView.sliverOverlapAbsorberHandleFor(
+                        context),
+                    sliver: DefaultSliverAppBar(
+                      pinned: true,
+                      leading: const BackButton(),
+                      expandedHeight: 250,
+                      flexibleSpaceBuilder: (context, extension) =>
+                          FlexibleSpaceBar(
+                        collapseMode: CollapseMode.pin,
+                        title: Opacity(
+                          opacity: 1 - (extension * 6).clamp(0, 1),
+                          child: Text(user.name),
+                        ),
+                        background: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                              height: 100,
+                              width: 100,
+                              child: UserAvatar(
+                                controller: controllers.profilePost,
+                                enabled: true,
+                              ),
+                            ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.only(top: 16, bottom: 32),
+                              child: Text(
+                                user.name,
+                                style: Theme.of(context).textTheme.headline6,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      bottom: TabBar(
+                        labelColor: Theme.of(context).iconTheme.color,
+                        indicatorColor: Theme.of(context).iconTheme.color,
+                        tabs: tabs.keys.toList(),
+                      ),
+                      actions: [
+                        PopupMenuButton<VoidCallback>(
+                          icon: const Icon(Icons.more_vert),
+                          onSelected: (value) => value(),
+                          itemBuilder: (context) => [
+                            PopupMenuTile(
+                              title: 'Browse',
+                              icon: Icons.open_in_browser,
+                              value: () async => launch(
+                                context.read<Client>().withHost(user.link),
+                              ),
+                            ),
+                            PopupMenuTile(
+                              title: 'Report',
+                              icon: Icons.report,
+                              value: () => guardWithLogin(
+                                context: context,
+                                callback: () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) => UserReportScreen(
+                                        user: user,
+                                      ),
+                                    ),
+                                  );
+                                },
+                                error: 'You must be logged in to report users!',
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+                body: LimitedWidthLayout(
+                  child: TileLayout(
+                    child: TabBarView(
+                      children: tabs.values.toList(),
+                    ),
+                  ),
+                ),
               ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }
+}
+
+class _UserPageControllers {
+  _UserPageControllers({
+    required this.favoritePosts,
+    required this.uploadedPosts,
+    this.profilePost,
+  });
+
+  List<PostsController> get all => [
+        favoritePosts,
+        uploadedPosts,
+        if (profilePost != null) profilePost!,
+      ];
+
+  final PostsController favoritePosts;
+  final PostsController uploadedPosts;
+  final PostsController? profilePost;
+
+  void dispose() => all.forEach((e) => e.dispose());
+}
+
+class _UserPageProvider
+    extends SelectiveProvider2<Client, DenylistService, _UserPageControllers> {
+  // ignore: unused_element
+  _UserPageProvider({required User user, super.child, super.builder})
+      : super(
+          create: (context, client, denylist) => _UserPageControllers(
+            favoritePosts: PostsController(
+              client: client,
+              denylist: denylist,
+              search: 'fav:${user.name}',
+              canSearch: false,
+            ),
+            uploadedPosts: PostsController(
+              client: client,
+              denylist: denylist,
+              search: 'user:${user.name}',
+              canSearch: false,
+            ),
+            profilePost: user.avatarId != null
+                ? PostsController.single(
+                    client: client,
+                    denylist: denylist,
+                    id: user.avatarId!,
+                  )
+                : null,
+          ),
+          dispose: (context, value) => value.dispose(),
+        );
 }
 
 class UserInfo extends StatelessWidget {

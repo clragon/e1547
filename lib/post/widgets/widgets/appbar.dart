@@ -5,13 +5,15 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/ticket/ticket.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:share/share.dart';
 
 List<PopupMenuItem<VoidCallback>> postMenuPostActions(
     BuildContext context, Post post) {
   return [
     PopupMenuTile(
-      value: () async => Share.share(client.withHost(post.link)),
+      value: () async =>
+          Share.share(context.read<Client>().withHost(post.link)),
       title: 'Share',
       icon: Icons.share,
     ),
@@ -22,7 +24,7 @@ List<PopupMenuItem<VoidCallback>> postMenuPostActions(
         icon: Icons.file_download,
       ),
     PopupMenuTile(
-      value: () async => launch(client.withHost(post.link)),
+      value: () async => launch(context.read<Client>().withHost(post.link)),
       title: 'Browse',
       icon: Icons.open_in_browser,
     ),

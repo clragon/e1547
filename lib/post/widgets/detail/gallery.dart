@@ -4,6 +4,7 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
+import 'package:provider/provider.dart';
 
 class PostDetailGallery extends StatefulWidget {
   final PostsController controller;
@@ -52,43 +53,47 @@ class _PostDetailGalleryState extends State<PostDetailGallery>
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: widget.controller,
-      builder: (context, child) => PageView.builder(
-        controller: pageController,
-        itemBuilder: (context, index) {
-          loadNextPage(index);
-          return PrimaryScrollController(
-            controller: ScrollController(),
-            child: PostDetail(
-              post: PostController(
-                id: widget.controller.itemList![index].id,
-                parent: widget.controller,
-              ),
-              onTapImage: () => Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => PostDetailConnector(
-                    controller: widget.controller,
-                    child: PostFullscreenGallery(
-                      controller: widget.controller,
-                      initialPage: index,
-                      onPageChanged: pageController.jumpToPage,
+    return ChangeNotifierProvider.value(
+      value: widget.controller,
+      child: Consumer<PostsController>(
+        builder: (context, controller, child) => PageView.builder(
+          controller: pageController,
+          itemBuilder: (context, index) {
+            loadNextPage(index);
+            return PrimaryScrollController(
+              controller: ScrollController(),
+              child: PostProvider(
+                id: controller.itemList![index].id,
+                child: Consumer<PostController>(
+                  builder: (context, post, child) => PostDetail(
+                    post: post,
+                    onTapImage: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => PostDetailConnector(
+                          controller: controller,
+                          child: PostFullscreenGallery(
+                            controller: controller,
+                            initialPage: index,
+                            onPageChanged: pageController.jumpToPage,
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-          );
-        },
-        itemCount: widget.controller.itemList?.length ?? 0,
-        onPageChanged: (index) {
-          widget.onPageChanged?.call(index);
-          preloadImages(
-            index: index,
-            posts: widget.controller.itemList!,
-            size: ImageSize.sample,
-          );
-        },
+            );
+          },
+          itemCount: controller.itemList?.length ?? 0,
+          onPageChanged: (index) {
+            widget.onPageChanged?.call(index);
+            preloadImages(
+              index: index,
+              posts: controller.itemList!,
+              size: ImageSize.sample,
+            );
+          },
+        ),
       ),
     );
   }

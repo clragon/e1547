@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screen_lock/flutter_screen_lock.dart';
 import 'package:local_auth/local_auth.dart';
+import 'package:provider/provider.dart';
 
 class LockScreen extends StatefulWidget {
   final Widget child;
@@ -20,15 +21,15 @@ class LockScreen extends StatefulWidget {
 class _LockScreenState extends State<LockScreen> with ListenerCallbackMixin {
   @override
   Map<Listenable, VoidCallback> get listeners => {
-        settings.appPin: lock,
-        settings.biometricAuth: lock,
+        context.read<Settings>().appPin: lock,
+        context.read<Settings>().biometricAuth: lock,
       };
 
   Object _instance = Object();
 
-  bool get biometrics =>
-      (settings.biometricAuth.value && (Platform.isAndroid || Platform.isIOS));
-  String? get pin => settings.appPin.value;
+  bool get biometrics => (context.read<Settings>().biometricAuth.value &&
+      (Platform.isAndroid || Platform.isIOS));
+  String? get pin => context.read<Settings>().appPin.value;
   bool get enabled => pin != null || biometrics;
 
   late bool locked = enabled;

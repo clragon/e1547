@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:e1547/client/client.dart';
 import 'package:flutter/material.dart';
 import 'package:mutex/mutex.dart';
 
@@ -142,10 +141,4 @@ abstract class DataLock<T> {
     await write(updated);
     resourceLock.release();
   }
-}
-
-mixin HostableUpdater<T> on DataUpdater<T> {
-  @override
-  List<Listenable> getRefreshListeners() =>
-      super.getRefreshListeners()..add(client);
 }

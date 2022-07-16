@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:grouped_list/grouped_list.dart';
 import 'package:intl/intl.dart';
 
-
 class HistoryPage extends StatefulWidget {
   const HistoryPage();
 
@@ -52,8 +51,10 @@ class _HistoryPageState extends State<HistoryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('eeee'),),
-      body: Center(
+      appBar: AppBar(
+        title: const Text('eeee'),
+      ),
+      body: const Center(
         child: Text('balls'),
       ),
     );
