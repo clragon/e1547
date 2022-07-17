@@ -21,17 +21,8 @@ Future<void> launch(String uri) async {
   }
 }
 
-const String _anyUrlRegex = ':_(.*)';
-const String _queryRegex = r'([^&#]*)';
-
+const String _queryRegex = r'([^/&#]*)';
 const String _showEnding = r':_(s|/show)';
-
-String _singleQueryValue(String value) {
-  return '$_anyUrlRegex'
-      '$value'
-      '$_queryRegex'
-      '$_anyUrlRegex';
-}
 
 class Link {
   final String type;
@@ -50,18 +41,56 @@ class Link {
 }
 
 class LinkParser {
-  final String urlPattern;
-  final Link? Function(Map<String, Object> arguments) transformer;
+  final String path;
+  final List<String>? parameters;
+  final Link? Function(Map<String, String> arguments) transformer;
 
-  const LinkParser(this.urlPattern, this.transformer);
+  LinkParser({
+    required this.path,
+    this.parameters,
+    required this.transformer,
+  });
+
+  final RegExp _parameterPattern = RegExp(
+    r'^(?<name>[^ ()?]+)(?<pattern>\(\S+\))?(?<optional>\?)?',
+    caseSensitive: false,
+  );
 
   Link? parse(String link) {
+    Uri? url = Uri.tryParse(link);
+    if (url == null) {
+      return null;
+    }
+
     List<String> names = [];
-    Match? match = pathToRegExp(urlPattern, parameters: names).firstMatch(link);
+    Match? match = pathToRegExp(path, parameters: names, caseSensitive: false)
+        .firstMatch(url.path);
     if (match != null) {
-      Map<String, Object> arguments = extract(names, match);
+      Map<String, String> arguments = extract(names, match);
+
+      if (parameters != null) {
+        for (final argument in parameters!) {
+          RegExpMatch match = _parameterPattern.firstMatch(argument)!;
+          String name = match.namedGroup('name')!;
+          String? pattern = match.namedGroup('pattern');
+          bool optional = match.namedGroup('optional') != null;
+
+          String? value = url.queryParameters[name];
+          if (value == null) {
+            if (optional) continue;
+            return null;
+          }
+          if (pattern != null && !RegExp(pattern).hasMatch(value)) {
+            if (optional) continue;
+            return null;
+          }
+          arguments[name] = value;
+        }
+      }
+
       return transformer(arguments);
     }
+
     return null;
   }
 }
@@ -77,116 +106,94 @@ enum LinkType {
 
 final List<LinkParser> allLinkParsers = [
   LinkParser(
-    r'/posts',
-    (arguments) => Link(type: LinkType.post.name),
-  ),
-  LinkParser(
-    r'/posts?tags=:tags'
-    '$_queryRegex',
-    (arguments) => Link(
+    path: r'/post' '$_showEnding' r'/:id(\d+)',
+    parameters: [r'q?'],
+    transformer: (arguments) => Link(
       type: LinkType.post.name,
-      search: (arguments['tags'] as String).replaceAll('+', ' '),
+      id: int.parse(arguments['id']!),
+      search: arguments['q'],
     ),
   ),
   LinkParser(
-    r'/post'
-    '$_showEnding'
-    r'/:id(\d+)',
-    (arguments) => Link(
+    path: r'/posts',
+    parameters: [r'tags?'],
+    transformer: (arguments) => Link(
       type: LinkType.post.name,
-      id: int.parse(arguments['id'] as String),
+      search: arguments['tags'],
     ),
   ),
   LinkParser(
-    r'/pools',
-    (arguments) => Link(
+    path: r'/pool' '$_showEnding' r'/:id(\d+)',
+    transformer: (arguments) => Link(
       type: LinkType.pool.name,
+      id: int.parse(arguments['id']!),
     ),
   ),
   LinkParser(
-    r'/pool'
-    '$_showEnding'
-    r'/:id(\d+)',
-    (arguments) => Link(
+    path: r'/pools',
+    parameters: [r'search[name_matches]?'],
+    transformer: (arguments) => Link(
       type: LinkType.pool.name,
-      id: int.parse(arguments['id'] as String),
+      search: arguments['search[name_matches]']!,
     ),
   ),
   LinkParser(
-    r'/pools?' + _singleQueryValue(r'search[name_matches]=:name'),
-    (arguments) => Link(
-      type: LinkType.pool.name,
-      search: arguments['name'] as String,
-    ),
-  ),
-  LinkParser(
-    r'/user'
-    '$_showEnding'
-    r'/:name'
-    '$_queryRegex',
-    (arguments) {
-      int? id = int.tryParse(arguments['name'] as String);
+    path: r'/user'
+        '$_showEnding'
+        r'/:name'
+        '$_queryRegex',
+    transformer: (arguments) {
+      int? id = int.tryParse(arguments['name']!);
       return Link(
         type: LinkType.user.name,
         id: id,
-        name: id != null ? arguments['name'] as String : null,
+        name: id != null ? arguments['name']! : null,
       );
     },
   ),
   LinkParser(
-    r'/wiki_pages'
-    r'/:name'
-    '$_queryRegex'
-    '$_anyUrlRegex',
-    (arguments) {
-      int? id = int.tryParse(arguments['name'] as String);
+    path: r'/wiki_pages'
+        r'/:name'
+        '$_queryRegex',
+    transformer: (arguments) {
+      int? id = int.tryParse(arguments['name']!);
       return Link(
         type: LinkType.wiki.name,
         id: id,
-        name: id != null ? arguments['name'] as String : null,
+        name: id != null ? arguments['name']! : null,
       );
     },
   ),
   LinkParser(
-    r'/forum_topics',
-    (arguments) => Link(
+    path: r'/forum_topics/:id(\d+)',
+    parameters: [r'page(\d+)?'],
+    transformer: (arguments) => Link(
       type: LinkType.topic.name,
+      id: int.parse(arguments['id']!),
+      page: arguments['page'] != null ? int.parse(arguments['page']!) : null,
     ),
   ),
   LinkParser(
-    r'/forum_topics/:id(\d+)',
-    (arguments) => Link(
+    path: r'/forum_topics?',
+    parameters: [r'search[title_matches]'],
+    transformer: (arguments) => Link(
       type: LinkType.topic.name,
-      id: int.parse(arguments['id'] as String),
+      search: arguments[r'search[title_matches]']!,
     ),
   ),
   LinkParser(
-    r'/forum_topics/:id(\d+)?page=:index(\d+)',
-    (arguments) => Link(
-      type: LinkType.topic.name,
-      id: int.parse(arguments['id'] as String),
-      page: int.parse(arguments['index'] as String),
-    ),
-  ),
-  LinkParser(
-    r'/forum_topics?' + _singleQueryValue(r'search[title_matches]=:search'),
-    (arguments) => Link(
-      type: LinkType.topic.name,
-      search: (arguments['search'] as String).replaceAll('+', ' '),
-    ),
-  ),
-  LinkParser(
-    r'/forum_posts/:id(\d+)',
-    (arguments) => Link(
+    path: r'/forum_posts/:id(\d+)',
+    transformer: (arguments) => Link(
       type: LinkType.reply.name,
-      id: int.parse(arguments['id'] as String),
+      id: int.parse(arguments['id']!),
     ),
   ),
   LinkParser(
-    r'/forum_posts' + _singleQueryValue('search[topic_title_matches]=:search'),
-    (arguments) => Link(
+    path: r'/forum_posts',
+    parameters: [r'search[topic_title_matches]'],
+    transformer: (arguments) => Link(
       type: LinkType.reply.name,
-      search: (arguments['search'] as String).replaceAll('+', ' '),
+      search: arguments[r'search[topic_title_matches]'],
     ),
   ),
 ];
