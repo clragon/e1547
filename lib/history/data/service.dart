@@ -14,6 +14,12 @@ class HistoriesService extends ChangeNotifier {
   final Client client;
   final DenylistService denylist;
 
+  final HistoriesDatabase _database;
+
+  set enabled(bool value) => settings.writeHistory.value = value;
+  bool get enabled => settings.writeHistory.value;
+  String get host => client.host;
+
   HistoriesService({
     required this.settings,
     required this.client,
@@ -24,12 +30,33 @@ class HistoriesService extends ChangeNotifier {
     settings.writeHistory.addListener(notifyListeners);
   }
 
-  final HistoriesDatabase _database;
-  set enabled(bool value) => settings.writeHistory.value = value;
-  bool get enabled => settings.writeHistory.value;
-  String get host => client.host;
+  Future<int> length() async => _database.length(host: client.host);
+  Stream<int> watchLength() => _database.watchLength(host: client.host);
+
+  Future<List<DateTime>> dates() async => _database.dates(host: client.host);
 
   Future<History> get(int id) async => _database.get(id);
+  Stream<History> watch(int id) => _database.watch(id);
+
+  Future<List<History>> getAll({
+    String? linkRegex,
+    DateTime? day,
+  }) async =>
+      _database.getAll(
+        host: client.host,
+        linkRegex: linkRegex,
+        day: day,
+      );
+
+  Stream<List<History>> watchAll({
+    String? linkRegex,
+    DateTime? day,
+  }) =>
+      _database.watchAll(
+        host: client.host,
+        linkRegex: linkRegex,
+        day: day,
+      );
 
   Future<List<History>> page({
     int page = 1,
@@ -44,8 +71,6 @@ class HistoriesService extends ChangeNotifier {
         linkRegex: linkRegex,
         day: day,
       );
-
-  Future<int> get length => _database.length(host: client.host);
 
   Future<void> add(HistoryRequest item) async {
     if (!enabled) {
@@ -101,11 +126,15 @@ class HistoriesService extends ChangeNotifier {
         ),
       );
 
-  Future<void> addTag(String tag, {String? alias, List<Post>? posts}) async =>
+  Future<void> addPostSearch(
+    String search, {
+    String? alias,
+    List<Post>? posts,
+  }) async =>
       add(
         HistoryRequest(
           visitedAt: DateTime.now(),
-          link: Tagset.parse(tag).link,
+          link: Tagset.parse(search).link,
           thumbnails: _getThumbnails(posts),
           title: alias,
         ),

@@ -1,3 +1,5 @@
+import 'package:async_builder/async_builder.dart';
+import 'package:async_builder/init_builder.dart';
 import 'package:e1547/app/app.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/denylist/denylist.dart';
@@ -66,38 +68,41 @@ class _SettingsPageState extends State<SettingsPage> {
               ),
               Consumer<Client>(
                 builder: (context, client, child) =>
-                    FutureBuilder<CurrentUser?>(
-                  future: client.currentUser(),
-                  builder: (context, snapshot) => CrossFade.builder(
-                    duration: const Duration(milliseconds: 200),
-                    showChild: client.credentials != null,
-                    builder: (context) => DividerListTile(
-                      title: Text(client.credentials!.username),
-                      subtitle: snapshot.data?.levelString != null
-                          ? Text(snapshot.data!.levelString.toLowerCase())
-                          : null,
-                      leading: const CurrentUserAvatar(),
-                      separated: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
-                        child: IgnorePointer(
-                          child: IconButton(
-                            icon: const Icon(Icons.exit_to_app),
-                            onPressed: () => logout(context),
+                    InitBuilder<Future<CurrentUser?>>(
+                  getter: client.currentUser,
+                  builder: (context, future) => AsyncBuilder<CurrentUser?>(
+                    future: future,
+                    builder: (context, value) => CrossFade.builder(
+                      duration: const Duration(milliseconds: 200),
+                      showChild: client.credentials != null,
+                      builder: (context) => DividerListTile(
+                        title: Text(client.credentials!.username),
+                        subtitle: value?.levelString != null
+                            ? Text(value!.levelString.toLowerCase())
+                            : null,
+                        leading: const CurrentUserAvatar(),
+                        separated: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                          child: IgnorePointer(
+                            child: IconButton(
+                              icon: const Icon(Icons.exit_to_app),
+                              onPressed: () => logout(context),
+                            ),
                           ),
                         ),
-                      ),
-                      onTap: () => Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              UserLoadingPage(client.credentials!.username),
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                UserLoadingPage(client.credentials!.username),
+                          ),
                         ),
+                        onTapSeparated: () => logout(context),
                       ),
-                      onTapSeparated: () => logout(context),
-                    ),
-                    secondChild: ListTile(
-                      title: const Text('Login'),
-                      leading: const Icon(Icons.person_add),
-                      onTap: () => Navigator.pushNamed(context, '/login'),
+                      secondChild: ListTile(
+                        title: const Text('Login'),
+                        leading: const Icon(Icons.person_add),
+                        onTap: () => Navigator.pushNamed(context, '/login'),
+                      ),
                     ),
                   ),
                 ),
@@ -207,14 +212,23 @@ class _SettingsPageState extends State<SettingsPage> {
               const Divider(),
               const SettingsHeader(title: 'Listing'),
               Consumer<HistoriesService>(
-                builder: (context, service, child) => DividerListTile(
-                  title: const Text('History'),
-                  leading: const Icon(Icons.history),
-                  onTap: () => Navigator.pushNamed(context, '/history'),
-                  onTapSeparated: () => service.enabled = !service.enabled,
-                  separated: Switch(
-                    value: service.enabled,
-                    onChanged: (value) => service.enabled = value,
+                builder: (context, service, child) => InitBuilder<Stream<int>>(
+                  getter: service.watchLength,
+                  builder: (context, stream) => AsyncBuilder<int>(
+                    stream: stream,
+                    builder: (context, value) => DividerListTile(
+                      title: const Text('History'),
+                      subtitle: service.enabled && (value ?? 0) > 0
+                          ? Text('$value pages visited')
+                          : null,
+                      leading: const Icon(Icons.history),
+                      onTap: () => Navigator.pushNamed(context, '/history'),
+                      onTapSeparated: () => service.enabled = !service.enabled,
+                      separated: Switch(
+                        value: service.enabled,
+                        onChanged: (value) => service.enabled = value,
+                      ),
+                    ),
                   ),
                 ),
               ),

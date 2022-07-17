@@ -1,3 +1,4 @@
+import 'package:async_builder/async_builder.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/denylist/denylist.dart';
@@ -37,11 +38,10 @@ class _CurrentUserAvatarState extends State<CurrentUserAvatar> {
   Widget build(BuildContext context) {
     return _CurrentUserAvatarProvider(
       child: Consumer<Future<PostsController?>>(
-        builder: (context, controller, child) =>
-            FutureBuilder<PostsController?>(
+        builder: (context, controller, child) => AsyncBuilder<PostsController?>(
           future: controller,
-          builder: (context, snapshot) => UserAvatar(
-            controller: snapshot.data,
+          builder: (context, value) => UserAvatar(
+            controller: value,
             enabled: widget.enabled,
           ),
         ),
@@ -54,6 +54,7 @@ class _CurrentUserAvatarProvider extends SelectiveProvider2<Client,
     DenylistService, Future<PostsController?>> {
   // ignore: unused_element
   _CurrentUserAvatarProvider({super.child, super.builder})
+      // TODO: figure out why this recreates when logging out (good, but why?)
       : super(
           create: (context, client, denylist) async {
             int? id = (await context.read<Client>().currentUserAvatar())?.id;
@@ -69,8 +70,6 @@ class _CurrentUserAvatarProvider extends SelectiveProvider2<Client,
             }
             return null;
           },
-          selector: (context, client, denylist) =>
-              [context.read<Client>().currentUserAvatar()],
           dispose: (context, value) async => (await value)?.dispose(),
         );
 }
@@ -86,10 +85,10 @@ class UserAvatar extends StatelessWidget {
     return _UserAvatarProvider(
       controller: controller,
       child: Consumer<Future<PostController?>>(
-        builder: (context, controller, child) => FutureBuilder<PostController?>(
+        builder: (context, controller, child) => AsyncBuilder<PostController?>(
           future: controller,
-          builder: (context, snapshot) => Avatar(
-            snapshot.data,
+          builder: (context, value) => Avatar(
+            value,
             enabled: enabled,
           ),
         ),

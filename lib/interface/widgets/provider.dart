@@ -104,7 +104,7 @@ class _SelectiveProvider0State<R>
       '$runtimeType used outside of MultiProvider must specify a child',
     );
     recreate();
-    return Provider.value(
+    return InheritedProvider.value(
       value: value as R,
       child: widget.builder != null
           ? Builder(

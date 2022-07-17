@@ -66,7 +66,7 @@ class PostTile extends StatelessWidget {
     return Card(
       clipBehavior: Clip.antiAlias,
       child: SelectionItemOverlay(
-        item: post,
+        item: post.value,
         child: Stack(
           clipBehavior: Clip.none,
           children: [

@@ -3,13 +3,13 @@ import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 
 class ImageTile extends StatelessWidget {
-  final Widget child;
+  final Widget? child;
   final List<String>? thumbnails;
   final VoidCallback? onTap;
   final VoidCallback? onLongPress;
 
   const ImageTile({
-    required this.child,
+    this.child,
     this.onTap,
     this.onLongPress,
     this.thumbnails,

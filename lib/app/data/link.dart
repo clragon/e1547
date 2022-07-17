@@ -33,152 +33,165 @@ String _singleQueryValue(String value) {
       '$_anyUrlRegex';
 }
 
+class Link {
+  final String type;
+  final int? id;
+  final String? name;
+  final String? search;
+  final int? page;
+
+  const Link({
+    required this.type,
+    this.id,
+    this.name,
+    this.search,
+    this.page,
+  });
+}
+
 class LinkParser {
   final String urlPattern;
-  final LinkParserResult? Function(
-      BuildContext context, Map<String, Object> arguments) transformer;
+  final Link? Function(Map<String, Object> arguments) transformer;
 
-  LinkParser(this.urlPattern, this.transformer);
+  const LinkParser(this.urlPattern, this.transformer);
+
+  Link? parse(String link) {
+    List<String> names = [];
+    Match? match = pathToRegExp(urlPattern, parameters: names).firstMatch(link);
+    if (match != null) {
+      Map<String, Object> arguments = extract(names, match);
+      return transformer(arguments);
+    }
+    return null;
+  }
 }
 
-class LinkParserResult {
-  final WidgetBuilder builder;
-  final bool root;
-
-  const LinkParserResult(this.builder, {this.root = false});
+enum LinkType {
+  post,
+  pool,
+  user,
+  wiki,
+  topic,
+  reply,
 }
 
-List<LinkParser> allLinkParsers(BuildContext context) => [
-      LinkParser(
-        r'/posts',
-        (context, arguments) => LinkParserResult(
-          (context) => const SearchPage(),
-        ),
-      ),
-      LinkParser(
-        r'/posts?tags=:tags'
-        '$_queryRegex',
-        (context, arguments) => LinkParserResult(
-          (context) => SearchPage(
-            tags: (arguments['tags'] as String).replaceAll('+', ' '),
-          ),
-        ),
-      ),
-      LinkParser(
-        r'/post'
-        '$_showEnding'
-        r'/:id(\d+)',
-        (context, arguments) => LinkParserResult(
-          (context) => PostLoadingPage(
-            int.parse(arguments['id'] as String),
-          ),
-        ),
-      ),
-      LinkParser(
-        r'/pools',
-        (context, arguments) => LinkParserResult(
-          (context) => const PoolsPage(),
-          root: true,
-        ),
-      ),
-      LinkParser(
-        r'/pool'
-        '$_showEnding'
-        r'/:id(\d+)',
-        (context, arguments) => LinkParserResult(
-          (context) => PoolLoadingPage(
-            int.parse(arguments['id'] as String),
-          ),
-        ),
-      ),
-      LinkParser(
-        r'/pools?' + _singleQueryValue(r'search[name_matches]=:name'),
-        (context, arguments) => LinkParserResult(
-          (context) => PoolsPage(
-            search: arguments['name'] as String,
-          ),
-          root: true,
-        ),
-      ),
-      LinkParser(
-        r'/user'
-        '$_showEnding'
-        r'/:name'
-        '$_queryRegex',
-        (context, arguments) => LinkParserResult(
-          (context) => UserLoadingPage(
-            arguments['name'] as String,
-          ),
-        ),
-      ),
-      // TODO: add user search page
-      LinkParser(
-        r'/wiki_pages'
-        r'/:name'
-        '$_queryRegex'
-        '$_anyUrlRegex',
-        (context, arguments) => LinkParserResult(
-          (context) => WikiLoadingPage(
-            arguments['name'] as String,
-          ),
-        ),
-      ),
-      if (context.watch<Settings>().showBeta.value) ...forumLinkParsers,
-    ];
-
-final List<LinkParser> forumLinkParsers = [
+final List<LinkParser> allLinkParsers = [
+  LinkParser(
+    r'/posts',
+    (arguments) => Link(type: LinkType.post.name),
+  ),
+  LinkParser(
+    r'/posts?tags=:tags'
+    '$_queryRegex',
+    (arguments) => Link(
+      type: LinkType.post.name,
+      search: (arguments['tags'] as String).replaceAll('+', ' '),
+    ),
+  ),
+  LinkParser(
+    r'/post'
+    '$_showEnding'
+    r'/:id(\d+)',
+    (arguments) => Link(
+      type: LinkType.post.name,
+      id: int.parse(arguments['id'] as String),
+    ),
+  ),
+  LinkParser(
+    r'/pools',
+    (arguments) => Link(
+      type: LinkType.pool.name,
+    ),
+  ),
+  LinkParser(
+    r'/pool'
+    '$_showEnding'
+    r'/:id(\d+)',
+    (arguments) => Link(
+      type: LinkType.pool.name,
+      id: int.parse(arguments['id'] as String),
+    ),
+  ),
+  LinkParser(
+    r'/pools?' + _singleQueryValue(r'search[name_matches]=:name'),
+    (arguments) => Link(
+      type: LinkType.pool.name,
+      search: arguments['name'] as String,
+    ),
+  ),
+  LinkParser(
+    r'/user'
+    '$_showEnding'
+    r'/:name'
+    '$_queryRegex',
+    (arguments) {
+      int? id = int.tryParse(arguments['name'] as String);
+      return Link(
+        type: LinkType.user.name,
+        id: id,
+        name: id != null ? arguments['name'] as String : null,
+      );
+    },
+  ),
+  LinkParser(
+    r'/wiki_pages'
+    r'/:name'
+    '$_queryRegex'
+    '$_anyUrlRegex',
+    (arguments) {
+      int? id = int.tryParse(arguments['name'] as String);
+      return Link(
+        type: LinkType.wiki.name,
+        id: id,
+        name: id != null ? arguments['name'] as String : null,
+      );
+    },
+  ),
   LinkParser(
     r'/forum_topics',
-    (context, arguments) => LinkParserResult(
-      (context) => const TopicsPage(),
-      root: true,
+    (arguments) => Link(
+      type: LinkType.topic.name,
     ),
   ),
   LinkParser(
     r'/forum_topics/:id(\d+)',
-    (context, arguments) => LinkParserResult(
-      (context) => TopicLoadingPage(
-        int.parse(arguments['id'] as String),
-      ),
+    (arguments) => Link(
+      type: LinkType.topic.name,
+      id: int.parse(arguments['id'] as String),
     ),
   ),
   LinkParser(
     r'/forum_topics/:id(\d+)?page=:index(\d+)',
-    (context, arguments) => LinkParserResult(
-      (context) => ReplyLoadingPage(
-        int.parse(arguments['id'] as String),
-      ),
+    (arguments) => Link(
+      type: LinkType.topic.name,
+      id: int.parse(arguments['id'] as String),
+      page: int.parse(arguments['index'] as String),
     ),
   ),
   LinkParser(
     r'/forum_topics?' + _singleQueryValue(r'search[title_matches]=:search'),
-    (context, arguments) => LinkParserResult(
-      (context) => TopicsPage(
-        search: (arguments['search'] as String).replaceAll('+', ' '),
-      ),
-      root: true,
+    (arguments) => Link(
+      type: LinkType.topic.name,
+      search: (arguments['search'] as String).replaceAll('+', ' '),
     ),
   ),
   LinkParser(
     r'/forum_posts/:id(\d+)',
-    (context, arguments) => LinkParserResult(
-      (context) => ReplyLoadingPage(
-        int.parse(arguments['id'] as String),
-      ),
+    (arguments) => Link(
+      type: LinkType.reply.name,
+      id: int.parse(arguments['id'] as String),
     ),
   ),
   LinkParser(
     r'/forum_posts' + _singleQueryValue('search[topic_title_matches]=:search'),
-    (context, arguments) => LinkParserResult(
-      (context) => TopicsPage(
-        search: (arguments['search'] as String).replaceAll('+', ' '),
-      ),
-      root: true,
+    (arguments) => Link(
+      type: LinkType.reply.name,
+      search: (arguments['search'] as String).replaceAll('+', ' '),
     ),
   ),
 ];
 
-LinkParserResult? parseLink(BuildContext context, String link) {
+Link? parseLink(String link) {
   Uri? url = Uri.tryParse(link);
   if (url != null) {
     if (['e621.net', 'e926.net'].any((e) => e == url!.host)) {
@@ -194,32 +207,69 @@ LinkParserResult? parseLink(BuildContext context, String link) {
   }
   link = Uri.decodeFull(link);
 
-  for (LinkParser parser in allLinkParsers(context)) {
-    List<String> names = [];
-    Match? match =
-        pathToRegExp(parser.urlPattern, parameters: names).firstMatch(link);
-    if (match != null) {
-      Map<String, Object> arguments = extract(names, match);
-      LinkParserResult? result = parser.transformer(context, arguments);
-      if (result != null) {
-        return result;
-      }
+  for (LinkParser parser in allLinkParsers) {
+    Link? result = parser.parse(link);
+    if (result != null) {
+      return result;
     }
   }
   return null;
 }
 
 VoidCallback? parseLinkOnTap(BuildContext context, String link) {
-  LinkParserResult? result = parseLink(context, link);
+  final Link? result = parseLink(link);
   if (result != null) {
-    return () {
-      if (result.root) {
-        Navigator.of(context).popUntil((route) => false);
-      }
-      Navigator.of(context).push(
-        MaterialPageRoute(builder: result.builder),
-      );
-    };
+    LinkType? type = LinkType.values.asNameMap()[result.type];
+    if (!context.watch<Settings>().showBeta.value &&
+        [LinkType.topic, LinkType.reply].contains(type)) {
+      return null;
+    }
+
+    VoidCallback navWrapper(WidgetBuilder builder, [bool root = false]) {
+      return () {
+        if (root) {
+          Navigator.of(context).popUntil((route) => false);
+        }
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: builder),
+        );
+      };
+    }
+
+    switch (type) {
+      case LinkType.post:
+        if (result.id != null) {
+          return navWrapper((context) => PostLoadingPage(result.id!));
+        }
+        return navWrapper((context) => SearchPage(tags: result.search));
+      case LinkType.pool:
+        if (result.id != null) {
+          return navWrapper((context) => PoolLoadingPage(result.id!));
+        }
+        return navWrapper((context) => PoolsPage(search: result.search), true);
+      case LinkType.user:
+        if (result.name != null) {
+          return navWrapper((context) => UserLoadingPage(result.name!));
+        }
+        break;
+      case LinkType.wiki:
+        if (result.name != null) {
+          return navWrapper((context) => WikiLoadingPage(result.name!));
+        }
+        break;
+      case LinkType.topic:
+        if (result.id != null) {
+          return navWrapper((context) => TopicLoadingPage(result.id!));
+        }
+        return navWrapper((context) => TopicsPage(search: result.search), true);
+      case LinkType.reply:
+        if (result.id != null) {
+          return navWrapper((context) => ReplyLoadingPage(result.id!));
+        }
+        return navWrapper((context) => TopicsPage(search: result.search), true);
+      case null:
+        return null;
+    }
   }
   return null;
 }

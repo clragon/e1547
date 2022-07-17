@@ -1,4 +1,5 @@
 import 'package:e1547/app/app.dart';
+import 'package:e1547/dtext/dtext.dart';
 import 'package:e1547/history/history.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
@@ -41,33 +42,27 @@ class HistoryTile extends StatelessWidget {
       );
     }
 
-    // TODO: implement image + text tile combo
     return ImageTile(
       thumbnails: entry.thumbnails,
       onTap: parseLinkOnTap(context, entry.link),
       child: SelectionItemOverlay<History>(
         item: entry,
         child: ListTile(
-          title: true
-              ? titleText(entry.name)
-              : DefaultTextStyle(
-                  style: TextStyle(
-                    color: dimTextColor(context, 0.5),
-                    fontStyle: FontStyle.italic,
-                  ),
-                  child: titleText(
-                    'empty search',
-                  ),
-                ),
-          subtitle:
+          title: Row(
+            children: [
+              titleText(entry.name),
+              const SizedBox(width: 8),
               subtitleText(getCurrentTimeFormat().format(entry.visitedAt)),
+            ],
+          ),
+          subtitle: entry.subtitle != null ? DText(entry.subtitle!) : null,
           trailing: PopupMenuButton<VoidCallback>(
             icon: const ShadowIcon(
               Icons.more_vert,
             ),
             onSelected: (value) => value(),
             itemBuilder: (context) => [
-              if (true)
+              if (entry.isSearch(LinkType.post))
                 PopupMenuTile(
                   title: 'Wiki',
                   icon: Icons.info,
