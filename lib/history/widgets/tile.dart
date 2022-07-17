@@ -10,38 +10,10 @@ import 'package:provider/provider.dart';
 class HistoryTile extends StatelessWidget {
   final History entry;
 
-  const HistoryTile({
-    required this.entry,
-  });
+  const HistoryTile({required this.entry});
 
   @override
   Widget build(BuildContext context) {
-    Widget titleText(String text) {
-      return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8),
-        child: Text(
-          text,
-          style: TextStyle(
-            shadows: getTextShadows(),
-            color: Colors.white,
-          ),
-        ),
-      );
-    }
-
-    Widget subtitleText(String text) {
-      return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8),
-        child: Text(
-          text,
-          style: TextStyle(
-            shadows: getTextShadows(),
-            color: Colors.white70,
-          ),
-        ),
-      );
-    }
-
     return ImageTile(
       thumbnails: entry.thumbnails,
       onTap: parseLinkOnTap(context, entry.link),
@@ -49,10 +21,28 @@ class HistoryTile extends StatelessWidget {
         item: entry,
         child: ListTile(
           title: Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              titleText(entry.name),
-              const SizedBox(width: 8),
-              subtitleText(getCurrentTimeFormat().format(entry.visitedAt)),
+              Flexible(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: Text(
+                    entry.name,
+                    style: TextStyle(
+                      shadows: getTextShadows(),
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+              Text(
+                getCurrentTimeFormat().format(entry.visitedAt),
+                style: TextStyle(
+                  shadows: getTextShadows(),
+                  color: Colors.white70,
+                  fontSize: 14,
+                ),
+              ),
             ],
           ),
           subtitle: entry.subtitle != null ? DText(entry.subtitle!) : null,
