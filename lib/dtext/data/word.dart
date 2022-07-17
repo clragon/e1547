@@ -71,21 +71,15 @@ InlineSpan parseWord({
   required int id,
   required String result,
   required TextState state,
-}) {
-  VoidCallback? onTap =
-      () => launch('https://${context.read<Client>().host}${word.toLink(id)}');
-  LinkParserResult? link = parseLink(context, word.toLink(id));
-  if (link != null) {
-    onTap = () =>
-        Navigator.of(context).push(MaterialPageRoute(builder: link.builder));
-  }
-
-  return plainText(
-    context: context,
-    text: result,
-    state: state.copyWith(
-      link: true,
-      onTap: onTap,
-    ),
-  );
-}
+}) =>
+    plainText(
+      context: context,
+      text: result,
+      state: state.copyWith(
+        link: true,
+        onTap: parseLinkOnTap(context, word.toLink(id)) ??
+            () => launch(
+                  context.read<Client>().withHost(word.toLink(id)),
+                ),
+      ),
+    );

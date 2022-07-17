@@ -1,6 +1,5 @@
 // data
 export 'data/actions.dart';
-export 'data/controller.dart';
 export 'data/database.dart';
 export 'data/entry.dart';
 export 'data/service.dart';

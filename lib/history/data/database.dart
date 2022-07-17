@@ -53,19 +53,77 @@ class HistoriesDatabase extends _$HistoriesDatabase {
   Expression<bool?> _hostQuery($HistoriesTableTable tbl, String? host) =>
       Variable(host).isNull() | tbl.host.equals(host);
 
-  Future<int> length({String? host}) async {
+  Selectable<int> _lengthExpression({String? host}) {
     final Expression<int> count = historiesTable.id.count();
     final Expression<bool?> hosted = _hostQuery(historiesTable, host);
 
     return (selectOnly(historiesTable)
           ..where(hosted)
           ..addColumns([count]))
-        .map((row) => row.read(count))
-        .getSingle();
+        .map((row) => row.read(count));
   }
 
-  Future<History> get(int id) async =>
-      (select(historiesTable)..where((tbl) => tbl.id.equals(id))).getSingle();
+  Future<int> length({String? host}) async =>
+      _lengthExpression(host: host).getSingle();
+  Stream<int> watchLength({String? host}) =>
+      _lengthExpression(host: host).watchSingle();
+
+  Future<List<DateTime>> dates({String? host}) async {
+    final Expression<DateTime?> time = historiesTable.visitedAt;
+    final Expression<bool?> hosted = _hostQuery(historiesTable, host);
+
+    List<DateTime?> results = await (selectOnly(historiesTable)
+          ..where(hosted)
+          ..orderBy([OrderingTerm(expression: time)])
+          ..addColumns([time]))
+        .map((row) => row.read(time))
+        .get();
+    results.removeWhere((e) => e == null);
+    return results.cast<DateTime>();
+  }
+
+  Selectable<History> _itemExpression(int id) =>
+      (select(historiesTable)..where((tbl) => tbl.id.equals(id)));
+
+  Future<History> get(int id) async => _itemExpression(id).getSingle();
+  Stream<History> watch(int id) => _itemExpression(id).watchSingle();
+
+  SimpleSelectStatement<HistoriesTable, History> _queryExpression({
+    String? host,
+    String? linkRegex,
+    DateTime? day,
+  }) {
+    final selectable = select(historiesTable)
+      ..orderBy([(t) => OrderingTerm(expression: t.visitedAt)])
+      ..where((tbl) => _hostQuery(tbl, host));
+    if (linkRegex != null) {
+      selectable.where((tbl) => tbl.link.regexp(linkRegex));
+    }
+    if (day != null) {
+      day = DateTime(day.year, day.month, day.day);
+      selectable.where(
+        (tbl) => tbl.visitedAt.isBetweenValues(
+          day,
+          day!.add(const Duration(days: 1, milliseconds: -1)),
+        ),
+      );
+    }
+    return selectable;
+  }
+
+  Future<List<History>> getAll({
+    String? host,
+    String? linkRegex,
+    DateTime? day,
+  }) =>
+      _queryExpression(host: host, linkRegex: linkRegex, day: day).get();
+
+  Stream<List<History>> watchAll({
+    String? host,
+    String? linkRegex,
+    DateTime? day,
+  }) =>
+      _queryExpression(host: host, linkRegex: linkRegex, day: day).watch();
 
   Future<List<History>> page({
     String? host,
@@ -74,14 +132,8 @@ class HistoriesDatabase extends _$HistoriesDatabase {
     String? linkRegex,
     DateTime? day,
   }) async {
-    final selectable = select(historiesTable)
-      ..where((tbl) => _hostQuery(tbl, host));
-    if (linkRegex != null) {
-      selectable.where((tbl) => tbl.link.regexp(linkRegex));
-    }
-    if (day != null) {
-      selectable.where((tbl) => tbl.visitedAt.equals(day));
-    }
+    final selectable =
+        _queryExpression(host: host, linkRegex: linkRegex, day: day);
     selectable.limit(page, offset: (page - 1) * max(limit, 320));
     return selectable.get();
   }
@@ -91,13 +143,9 @@ class HistoriesDatabase extends _$HistoriesDatabase {
     int range = 15,
     Duration maxAge = const Duration(minutes: 10),
   }) =>
-      (select(historiesTable)
-            ..where((tbl) => _hostQuery(tbl, host))
-            ..orderBy([(t) => OrderingTerm(expression: t.visitedAt)])
-            ..where((tbl) => (tbl.visitedAt.secondsSinceEpoch -
-                    Variable(DateTime.now().millisecondsSinceEpoch ~/ 1000))
-                .abs()
-                .isSmallerOrEqual(Variable(maxAge.inSeconds)))
+      (_queryExpression(host: host)
+            ..where((tbl) => (tbl.visitedAt
+                .isBiggerThanValue(DateTime.now().subtract(maxAge))))
             ..limit(range))
           .get();
 
