@@ -20,14 +20,15 @@ class _HistoryPageState extends State<HistoryPage> {
   DateTime? search;
   Set<HistoryFilter> filters = HistoryFilter.values.toSet();
 
-  String? _buildFilter() => filters.map((e) => '($e)').join('|');
+  String _buildFilter() =>
+      r'^' + filters.map((e) => '(${e.regex})').join('|') + r'$';
 
   @override
   Widget build(BuildContext context) {
     return SelectiveProvider<HistoriesService, Stream<List<History>>>(
       create: (context, service) =>
           service.watchAll(linkRegex: _buildFilter(), day: search),
-      selector: (context, service) => [filters, search],
+      selector: (context, service) => [_buildFilter(), search],
       builder: (context, child) =>
           Consumer2<HistoriesService, Stream<List<History>>>(
         builder: (context, service, stream, child) => LimitedWidthLayout(
@@ -58,31 +59,35 @@ class _HistoryPageState extends State<HistoryPage> {
                         ),
                       ],
                     ),
-                    actions: const [
-                      ContextDrawerButton(),
-                    ],
+                    actions: const [ContextDrawerButton()],
                   ),
                 ),
-                body: histories?.isNotEmpty ?? false
-                    ? GroupedListView<History, DateTime>(
-                        padding: defaultActionListPadding
-                            .add(LimitedWidthLayout.of(context).padding),
-                        elements: histories!,
-                        order: GroupedListOrder.DESC,
-                        controller: PrimaryScrollController.of(context),
-                        groupBy: (element) =>
-                            DateUtils.dateOnly(element.visitedAt),
-                        groupHeaderBuilder: (element) => SettingsHeader(
-                            title: dateOrName(element.visitedAt)),
-                        itemComparator: (a, b) =>
-                            a.visitedAt.compareTo(b.visitedAt),
-                        itemBuilder: (context, element) =>
-                            HistoryTile(entry: element),
-                      )
-                    : const IconMessage(
-                        icon: Icon(Icons.history),
-                        title: Text('Your history is empty'),
-                      ),
+                body: AsyncBuilder<List<History>>(
+                  stream: stream,
+                  waiting: (context) => const Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                  builder: (context, histories) => histories!.isNotEmpty
+                      ? GroupedListView<History, DateTime>(
+                          padding: defaultActionListPadding
+                              .add(LimitedWidthLayout.of(context).padding),
+                          elements: histories,
+                          order: GroupedListOrder.DESC,
+                          controller: PrimaryScrollController.of(context),
+                          groupBy: (element) =>
+                              DateUtils.dateOnly(element.visitedAt),
+                          groupHeaderBuilder: (element) => SettingsHeader(
+                              title: dateOrName(element.visitedAt)),
+                          itemComparator: (a, b) =>
+                              a.visitedAt.compareTo(b.visitedAt),
+                          itemBuilder: (context, element) =>
+                              HistoryTile(entry: element),
+                        )
+                      : const IconMessage(
+                          icon: Icon(Icons.history),
+                          title: Text('Your history is empty'),
+                        ),
+                ),
                 floatingActionButton: FloatingActionButton(
                   child: const Icon(Icons.search),
                   onPressed: () async {
