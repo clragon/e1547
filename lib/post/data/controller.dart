@@ -220,8 +220,8 @@ class PostsController extends DataController<Post>
   }
 }
 
-class PostsProvider extends SelectiveChangeNotifierProvider2<Client,
-    DenylistService, PostsController> {
+class PostsProvider extends SubChangeNotifierProvider2<Client, DenylistService,
+    PostsController> {
   PostsProvider({
     PostProviderCallback provider,
     String? search,
@@ -450,8 +450,8 @@ class PostController extends ProxyValueNotifier<Post, PostsController> {
   }
 }
 
-class PostProvider extends SelectiveChangeNotifierProvider2<Client,
-    DenylistService, PostController> {
+class PostProvider extends SubChangeNotifierProvider2<Client, DenylistService,
+    PostController> {
   PostProvider({
     required int id,
     PostsController? parent,
@@ -464,7 +464,7 @@ class PostProvider extends SelectiveChangeNotifierProvider2<Client,
             id: id,
             parent: parent ?? context.read<PostsController>(),
           ),
-          selector: (context, client, denylist) =>
+          selector: (context) =>
               [id, parent ?? context.watch<PostsController>()],
         );
 }

@@ -82,8 +82,8 @@ class DenylistService extends DataUpdater<List<String>> {
   Future<void> edit(List<String> value) async => withData((data) => value);
 }
 
-class DenylistProvider extends SelectiveChangeNotifierProvider2<Settings,
-    Client, DenylistService> {
+class DenylistProvider
+    extends SubChangeNotifierProvider2<Settings, Client, DenylistService> {
   DenylistProvider()
       : super(
           create: (context, settings, client) => DenylistService(

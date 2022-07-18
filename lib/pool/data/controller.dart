@@ -24,14 +24,13 @@ class PoolsController extends DataController<Pool>
       client.pools(page, search: search.value, force: force);
 }
 
-class PoolsProvider
-    extends SelectiveChangeNotifierProvider<Client, PoolsController> {
+class PoolsProvider extends SubChangeNotifierProvider<Client, PoolsController> {
   PoolsProvider({String? search, super.child, super.builder})
       : super(
           create: (context, client) => PoolsController(
             client: client,
             search: search,
           ),
-          selector: (context, client) => [search],
+          selector: (context) => [search],
         );
 }

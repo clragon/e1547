@@ -50,8 +50,8 @@ class _CurrentUserAvatarState extends State<CurrentUserAvatar> {
   }
 }
 
-class _CurrentUserAvatarProvider extends SelectiveProvider2<Client,
-    DenylistService, Future<PostsController?>> {
+class _CurrentUserAvatarProvider
+    extends SubProvider2<Client, DenylistService, Future<PostsController?>> {
   // ignore: unused_element
   _CurrentUserAvatarProvider({super.child, super.builder})
       // TODO: figure out why this recreates when logging out (good, but why?)
@@ -97,8 +97,8 @@ class UserAvatar extends StatelessWidget {
   }
 }
 
-class _UserAvatarProvider extends SelectiveProvider2<Client, DenylistService,
-    Future<PostController?>> {
+class _UserAvatarProvider
+    extends SubProvider2<Client, DenylistService, Future<PostController?>> {
   _UserAvatarProvider({
     required PostsController? controller,
     super.child,
@@ -117,7 +117,7 @@ class _UserAvatarProvider extends SelectiveProvider2<Client, DenylistService,
               return null;
             }
           },
-          selector: (context, client, denylist) => [controller],
+          selector: (context) => [controller],
           dispose: (context, value) async => (await value)?.dispose(),
         );
 }

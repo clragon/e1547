@@ -25,167 +25,165 @@ class _HistoryPageState extends State<HistoryPage> {
 
   @override
   Widget build(BuildContext context) {
-    return SelectiveProvider<HistoriesService, Stream<List<History>>>(
-      create: (context, service) =>
-          service.watchAll(linkRegex: _buildFilter(), day: search),
-      selector: (context, service) => [_buildFilter(), search],
-      builder: (context, child) =>
-          Consumer2<HistoriesService, Stream<List<History>>>(
-        builder: (context, service, stream, child) => LimitedWidthLayout(
-          child: AsyncBuilder<List<History>>(
-            stream: stream,
-            builder: (context, histories) => SelectionLayout<History>(
-              items: histories,
-              child: Scaffold(
-                appBar: HistorySelectionAppBar(
-                  child: DefaultAppBar(
-                    leading: const BackButton(),
-                    title: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text('History'),
-                        CrossFade.builder(
-                          showChild: search != null,
-                          builder: (context) => Text(
-                            dateOrName(search!),
-                            style:
-                                Theme.of(context).textTheme.bodyText2!.copyWith(
-                                      color: Theme.of(context)
-                                          .textTheme
-                                          .caption!
-                                          .color,
-                                    ),
-                          ),
+    return Consumer<HistoriesService>(
+      builder: (context, service, child) =>
+          SubValueBuilder<Stream<List<History>>>(
+        create: (context) =>
+            service.watchAll(linkRegex: _buildFilter(), day: search),
+        selector: (context) => [service, _buildFilter(), search],
+        builder: (context, stream) => AsyncBuilder<List<History>>(
+          stream: stream,
+          builder: (context, histories) => SelectionLayout<History>(
+            items: histories,
+            child: Scaffold(
+              appBar: HistorySelectionAppBar(
+                child: DefaultAppBar(
+                  leading: const BackButton(),
+                  title: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('History'),
+                      CrossFade.builder(
+                        showChild: search != null,
+                        builder: (context) => Text(
+                          dateOrName(search!),
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyText2!
+                              .copyWith(
+                                color:
+                                    Theme.of(context).textTheme.caption!.color,
+                              ),
                         ),
-                      ],
+                      ),
+                    ],
+                  ),
+                  actions: const [ContextDrawerButton()],
+                ),
+              ),
+              body: AsyncBuilder<List<History>>(
+                stream: stream,
+                waiting: (context) => const Center(
+                  child: CircularProgressIndicator(),
+                ),
+                builder: (context, histories) => histories!.isNotEmpty
+                    ? GroupedListView<History, DateTime>(
+                        padding: defaultActionListPadding
+                            .add(LimitedWidthLayout.of(context).padding),
+                        elements: histories,
+                        order: GroupedListOrder.DESC,
+                        controller: PrimaryScrollController.of(context),
+                        groupBy: (element) =>
+                            DateUtils.dateOnly(element.visitedAt),
+                        groupHeaderBuilder: (element) => SettingsHeader(
+                            title: dateOrName(element.visitedAt)),
+                        itemComparator: (a, b) =>
+                            a.visitedAt.compareTo(b.visitedAt),
+                        itemBuilder: (context, element) =>
+                            HistoryTile(entry: element),
+                      )
+                    : const IconMessage(
+                        icon: Icon(Icons.history),
+                        title: Text('Your history is empty'),
+                      ),
+              ),
+              floatingActionButton: FloatingActionButton(
+                child: const Icon(Icons.search),
+                onPressed: () async {
+                  List<DateTime> dates = await service.dates();
+
+                  DateTime? result = await showDatePicker(
+                    context: context,
+                    initialDate: search ?? DateTime.now(),
+                    firstDate: dates.first,
+                    lastDate: dates.last,
+                    locale: Localizations.localeOf(context),
+                    initialEntryMode: DatePickerEntryMode.calendarOnly,
+                    selectableDayPredicate: (value) =>
+                        dates.any((e) => DateUtils.isSameDay(value, e)),
+                  );
+
+                  ScrollController? scrollController =
+                      PrimaryScrollController.of(context);
+                  if (result != search &&
+                      (scrollController?.hasClients ?? false)) {
+                    scrollController!.animateTo(0,
+                        duration: defaultAnimationDuration,
+                        curve: Curves.easeInOut);
+                  }
+
+                  setState(() {
+                    search = result;
+                  });
+                },
+              ),
+              endDrawer: ContextDrawer(
+                title: const Text('History'),
+                children: [
+                  ListTile(
+                    leading: Icon(
+                      Icons.info_outline,
+                      color: dimTextColor(context),
                     ),
-                    actions: const [ContextDrawerButton()],
-                  ),
-                ),
-                body: AsyncBuilder<List<History>>(
-                  stream: stream,
-                  waiting: (context) => const Center(
-                    child: CircularProgressIndicator(),
-                  ),
-                  builder: (context, histories) => histories!.isNotEmpty
-                      ? GroupedListView<History, DateTime>(
-                          padding: defaultActionListPadding
-                              .add(LimitedWidthLayout.of(context).padding),
-                          elements: histories,
-                          order: GroupedListOrder.DESC,
-                          controller: PrimaryScrollController.of(context),
-                          groupBy: (element) =>
-                              DateUtils.dateOnly(element.visitedAt),
-                          groupHeaderBuilder: (element) => SettingsHeader(
-                              title: dateOrName(element.visitedAt)),
-                          itemComparator: (a, b) =>
-                              a.visitedAt.compareTo(b.visitedAt),
-                          itemBuilder: (context, element) =>
-                              HistoryTile(entry: element),
-                        )
-                      : const IconMessage(
-                          icon: Icon(Icons.history),
-                          title: Text('Your history is empty'),
-                        ),
-                ),
-                floatingActionButton: FloatingActionButton(
-                  child: const Icon(Icons.search),
-                  onPressed: () async {
-                    List<DateTime> dates = await service.dates();
-
-                    DateTime? result = await showDatePicker(
-                      context: context,
-                      initialDate: search ?? DateTime.now(),
-                      firstDate: dates.first,
-                      lastDate: dates.last,
-                      locale: Localizations.localeOf(context),
-                      initialEntryMode: DatePickerEntryMode.calendarOnly,
-                      selectableDayPredicate: (value) =>
-                          dates.any((e) => DateUtils.isSameDay(value, e)),
-                    );
-
-                    ScrollController? scrollController =
-                        PrimaryScrollController.of(context);
-                    if (result != search &&
-                        (scrollController?.hasClients ?? false)) {
-                      scrollController!.animateTo(0,
-                          duration: defaultAnimationDuration,
-                          curve: Curves.easeInOut);
-                    }
-
-                    setState(() {
-                      search = result;
-                    });
-                  },
-                ),
-                endDrawer: ContextDrawer(
-                  title: const Text('History'),
-                  children: [
-                    ListTile(
-                      leading: Icon(
-                        Icons.info_outline,
+                    // TODO: build setting for this
+                    subtitle: Text(
+                      'History entries are deleted when they are '
+                      'older than 30 days or '
+                      'there are more then ${NumberFormat.compact().format(3000)} entries.',
+                      style: TextStyle(
                         color: dimTextColor(context),
                       ),
-                      // TODO: build setting for this
-                      subtitle: Text(
-                        'History entries are deleted when they are '
-                        'older than 30 days or '
-                        'there are more then ${NumberFormat.compact().format(3000)} entries.',
-                        style: TextStyle(
-                          color: dimTextColor(context),
-                        ),
-                      ),
                     ),
-                    const Divider(),
-                    ListTile(
-                      leading: const Icon(Icons.filter_alt),
-                      title: const Text('Filter'),
-                      subtitle: histories != null
-                          ? Text('${histories.length} entries shown')
-                          : null,
-                    ),
-                    const Divider(),
-                    for (final filter in HistoryFilter.values)
-                      Padding(
-                        padding: const EdgeInsets.only(left: 16),
-                        child: CheckboxListTile(
-                          title: Text(filter.name),
-                          value: filters.contains(filter),
-                          onChanged: (value) {
-                            if (value == null) {
-                              return;
+                  ),
+                  const Divider(),
+                  ListTile(
+                    leading: const Icon(Icons.filter_alt),
+                    title: const Text('Filter'),
+                    subtitle: histories != null
+                        ? Text('${histories.length} entries shown')
+                        : null,
+                  ),
+                  const Divider(),
+                  for (final filter in HistoryFilter.values)
+                    Padding(
+                      padding: const EdgeInsets.only(left: 16),
+                      child: CheckboxListTile(
+                        title: Text(filter.name),
+                        value: filters.contains(filter),
+                        onChanged: (value) {
+                          if (value == null) {
+                            return;
+                          }
+                          setState(() {
+                            if (value) {
+                              filters.add(filter);
+                            } else {
+                              filters.remove(filter);
                             }
-                            setState(() {
-                              if (value) {
-                                filters.add(filter);
-                              } else {
-                                filters.remove(filter);
-                              }
-                            });
-                          },
-                        ),
+                          });
+                        },
                       ),
-                    const Divider(),
-                    if (histories != null)
-                      InitBuilder<Stream<int>>(
-                        getter: service.watchLength,
-                        builder: (context, stream) => AsyncBuilder<int>(
-                          stream: stream,
-                          builder: (context, value) => CrossFade(
-                            showChild: value != null,
-                            child: Center(
-                              child: Text(
-                                'of ${value ?? 0} entries',
-                                style: TextStyle(
-                                  color: dimTextColor(context),
-                                ),
+                    ),
+                  const Divider(),
+                  if (histories != null)
+                    InitBuilder<Stream<int>>(
+                      getter: service.watchLength,
+                      builder: (context, stream) => AsyncBuilder<int>(
+                        stream: stream,
+                        builder: (context, value) => CrossFade(
+                          showChild: value != null,
+                          child: Center(
+                            child: Text(
+                              'of ${value ?? 0} entries',
+                              style: TextStyle(
+                                color: dimTextColor(context),
                               ),
                             ),
                           ),
                         ),
                       ),
-                  ],
-                ),
+                    ),
+                ],
               ),
             ),
           ),

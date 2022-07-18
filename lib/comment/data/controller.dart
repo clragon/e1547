@@ -25,12 +25,12 @@ class CommentsController extends CursorDataController<Comment>
 }
 
 class CommentsProvider
-    extends SelectiveChangeNotifierProvider<Client, CommentsController> {
+    extends SubChangeNotifierProvider<Client, CommentsController> {
   CommentsProvider({required int postId, super.child, super.builder})
       : super(
           create: (context, client) =>
               CommentsController(client: client, postId: postId),
-          selector: (context, client) => [postId],
+          selector: (context) => [postId],
         );
 }
 
@@ -113,12 +113,12 @@ class CommentController
   }
 }
 
-class CommentProvider extends SelectiveChangeNotifierProvider2<Client,
+class CommentProvider extends SubChangeNotifierProvider2<Client,
     CommentsController, CommentController> {
   CommentProvider({required int id, super.child, super.builder})
       : super(
           create: (context, client, parent) =>
               CommentController(client: client, id: id, parent: parent),
-          selector: (context, client, parent) => [id],
+          selector: (context) => [id],
         );
 }

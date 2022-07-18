@@ -20,11 +20,11 @@ class TopicsController extends DataController<Topic>
 }
 
 class TopicsProvider
-    extends SelectiveChangeNotifierProvider<Client, TopicsController> {
+    extends SubChangeNotifierProvider<Client, TopicsController> {
   TopicsProvider({String? search, super.child, super.builder})
       : super(
           create: (context, client) =>
               TopicsController(client: client, search: search),
-          selector: (context, client) => [search],
+          selector: (context) => [search],
         );
 }

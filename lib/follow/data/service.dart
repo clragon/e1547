@@ -220,7 +220,7 @@ class SelectedValueNotifier<T> extends ValueNotifier<T> {
   }
 }
 
-class FollowsProvider extends SelectiveChangeNotifierProvider3<Client,
+class FollowsProvider extends SubChangeNotifierProvider3<Client,
     DenylistService, Settings, FollowsService> {
   FollowsProvider()
       : super(
