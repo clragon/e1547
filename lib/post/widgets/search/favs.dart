@@ -1,3 +1,4 @@
+import 'package:e1547/history/history.dart';
 import 'package:e1547/interface/interface.dart';
 
 import 'package:e1547/post/post.dart';
@@ -17,11 +18,13 @@ class _FavPageState extends State<FavPage> with DrawerEntry {
     return FavoritePostsProvider(
       child: Consumer<FavoritePostsController>(
         builder: (context, controller, child) => ListenableListener(
-          listener: () {
-            // TODO: reenable
-            // controller: () async => controller.addToHistory(context);
+          listener: () async {
+            await controller.waitForFirstPage();
+            context.read<HistoriesService>().addPostSearch(
+                controller.search.value,
+                posts: controller.itemList);
           },
-          listenable: controller,
+          listenable: controller.search,
           child: PageLoader(
             isEmpty: controller.error is NoUserLoginException,
             isError: controller.error is NoUserLoginException,

@@ -1,5 +1,9 @@
 import 'package:e1547/app/data/link.dart';
+import 'package:e1547/client/client.dart';
 import 'package:e1547/history/history.dart';
+import 'package:e1547/tag/tag.dart';
+import 'package:flutter/widgets.dart';
+import 'package:provider/provider.dart';
 
 extension Identification on History {
   bool isItem(LinkType type) {
@@ -14,9 +18,9 @@ extension Identification on History {
         parsed?.search != null;
   }
 
-  String get name {
+  String getName(BuildContext context) {
     if (title != null) {
-      return title!;
+      return tagToTitle(title!);
     }
 
     Link? parsed = parseLink(link);
@@ -36,20 +40,43 @@ extension Identification on History {
       }
     }
 
-    if (parsed.id != null) {
+    int? id = parsed.id;
+    if (id != null) {
       switch (type) {
         case LinkType.post:
-          return 'Post #${parsed.id}';
+          return 'Post #$id';
         case LinkType.pool:
-          return 'Pool #${parsed.id}';
+          return 'Pool #$id';
         case LinkType.user:
-          return 'User #${parsed.id}';
+          return 'User #$id';
         case LinkType.wiki:
-          return 'Wiki #${parsed.id}';
+          return 'Wiki #$id';
         case LinkType.topic:
-          return 'Topic #${parsed.id}';
+          return 'Topic #$id';
         case LinkType.reply:
-          return 'Reply #${parsed.id}';
+          return 'Reply #$id';
+      }
+    }
+
+    String? search = parsed.search;
+    if (search != null) {
+      switch (type) {
+        case LinkType.post:
+          String? username = context.read<Client>().credentials?.username;
+          if (username != null && favRegex(username).hasMatch(search)) {
+            return 'Favorites';
+          }
+          return 'Posts - ${tagToTitle(search)}';
+        case LinkType.pool:
+          return 'Pools - $search';
+        case LinkType.user:
+          return 'Users - $search';
+        case LinkType.wiki:
+          return 'Wikis - $search';
+        case LinkType.topic:
+          return 'Topics - $search';
+        case LinkType.reply:
+          return 'Replies - $search';
       }
     }
 
