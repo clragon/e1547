@@ -722,7 +722,7 @@ class Client extends ChangeNotifier {
 }
 
 class ClientProvider
-    extends SelectiveChangeNotifierProvider2<AppInfo, Settings, Client> {
+    extends SubChangeNotifierProvider2<AppInfo, Settings, Client> {
   ClientProvider()
       : super(
           create: (context, appInfo, settings) =>

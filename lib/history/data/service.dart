@@ -143,8 +143,8 @@ class HistoriesService extends ChangeNotifier {
       host: client.host, maxAmount: 3000, maxAge: const Duration(days: 30));
 }
 
-class HistoriesProvider extends SelectiveChangeNotifierProvider3<Settings,
-    Client, DenylistService, HistoriesService> {
+class HistoriesProvider extends SubChangeNotifierProvider3<Settings, Client,
+    DenylistService, HistoriesService> {
   HistoriesProvider({String? path, super.child, super.builder})
       : super(
           create: (context, settings, client, denylist) => HistoriesService(
@@ -153,6 +153,6 @@ class HistoriesProvider extends SelectiveChangeNotifierProvider3<Settings,
             client: client,
             denylist: denylist,
           ),
-          selector: (context, settings, client, denylist) => [path],
+          selector: (context) => [path],
         );
 }

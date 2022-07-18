@@ -33,8 +33,8 @@ class PostLoadingPage extends StatelessWidget {
   }
 }
 
-class SingleFuturePostsProvider extends SelectiveProvider2<Client,
-    DenylistService, Future<PostsController>> {
+class SingleFuturePostsProvider
+    extends SubProvider2<Client, DenylistService, Future<PostsController>> {
   SingleFuturePostsProvider({required int id, super.child, super.builder})
       : super(
           create: (context, client, denylist) => PostsController.single(
@@ -42,7 +42,7 @@ class SingleFuturePostsProvider extends SelectiveProvider2<Client,
             client: client,
             denylist: denylist,
           ).loadFirstPage(),
-          selector: (context, client, denylist) => [id],
+          selector: (context) => [id],
           dispose: (context, value) async => (await value).dispose(),
         );
 }

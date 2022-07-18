@@ -168,7 +168,7 @@ class _UserPageControllers {
 }
 
 class _UserPageProvider
-    extends SelectiveProvider2<Client, DenylistService, _UserPageControllers> {
+    extends SubProvider2<Client, DenylistService, _UserPageControllers> {
   // ignore: unused_element
   _UserPageProvider({required User user, super.child, super.builder})
       : super(

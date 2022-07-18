@@ -28,7 +28,7 @@ class RepliesController extends CursorDataController<Reply>
 }
 
 class RepliesProvider
-    extends SelectiveChangeNotifierProvider<Client, RepliesController> {
+    extends SubChangeNotifierProvider<Client, RepliesController> {
   RepliesProvider({
     required int topicId,
     bool orderByOldest = true,
@@ -37,6 +37,6 @@ class RepliesProvider
   }) : super(
           create: (context, client) => RepliesController(
               client: client, topicId: topicId, orderByOldest: orderByOldest),
-          selector: (context, client) => [topicId, orderByOldest],
+          selector: (context) => [topicId, orderByOldest],
         );
 }
