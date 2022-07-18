@@ -57,7 +57,8 @@ class SourceDisplay extends StatelessWidget {
                                           editingController.value!.copyWith(
                                         sources: text.trim().split('\n'),
                                       );
-                                      return true;
+                                      Navigator.of(context).maybePop();
+                                      return null;
                                     },
                                   ),
                                 ),
