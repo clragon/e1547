@@ -3,8 +3,7 @@ import 'dart:async';
 import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
 
-// TODO: replace with validator, remove pop
-typedef TextEditorSubmit = FutureOr<bool> Function(
+typedef TextEditorSubmit = FutureOr<String?> Function(
     BuildContext context, String text);
 typedef TextEditorBuilder = Widget Function(
     BuildContext context, TextEditingController controller);
@@ -22,13 +21,12 @@ class TextEditor extends StatefulWidget {
     required TextEditorSubmit onSubmit,
     required String title,
     String? content,
-  }) {
-    return TextEditor.builder(
-      onSubmit: onSubmit,
-      title: title,
-      content: content,
-    );
-  }
+  }) =>
+      TextEditor.builder(
+        onSubmit: onSubmit,
+        title: title,
+        content: content,
+      );
 
   const TextEditor.builder({
     required this.onSubmit,
@@ -95,12 +93,17 @@ class _TextEditorState extends State<TextEditor> {
                   setState(() {
                     isLoading = true;
                   });
-                  if (await widget.onSubmit(context, text)) {
-                    Navigator.of(context).maybePop();
-                  }
+                  String? error = await widget.onSubmit(context, text);
                   setState(() {
                     isLoading = false;
                   });
+                  if (error != null) {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      duration: const Duration(seconds: 1),
+                      content: Text(error),
+                      behavior: SnackBarBehavior.floating,
+                    ));
+                  }
                 },
           child: Icon(Icons.check, color: Theme.of(context).iconTheme.color),
         ),
@@ -164,7 +167,9 @@ class _TextEditorState extends State<TextEditor> {
                 headerSliverBuilder: (context, innerBoxIsScrolled) => [
                   DefaultSliverAppBar(
                     floating: true,
-                    leading: const CloseButton(),
+                    leading: ModalRoute.of(context)!.canPop
+                        ? const CloseButton()
+                        : null,
                     title: Text(widget.title),
                     bottom: tabs.length > 1
                         ? TabBar(

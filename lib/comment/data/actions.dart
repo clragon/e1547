@@ -24,9 +24,15 @@ Future<bool> replyComment({
   return writeComment(context: context, postId: comment.postId, text: body);
 }
 
-Future<bool> editComment(
-        {required BuildContext context, required Comment comment}) =>
-    writeComment(postId: comment.postId, context: context, comment: comment);
+Future<bool> editComment({
+  required BuildContext context,
+  required Comment comment,
+}) =>
+    writeComment(
+      postId: comment.postId,
+      context: context,
+      comment: comment,
+    );
 
 Future<bool> writeComment({
   required BuildContext context,
@@ -46,17 +52,13 @@ Future<bool> writeComment({
               await context
                   .read<Client>()
                   .postComment(postId, text, comment: comment);
-              return sent = true;
+              sent = true;
+              Navigator.of(context).maybePop();
             } on DioError {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                duration: Duration(seconds: 1),
-                content: Text('Failed to send comment!'),
-                behavior: SnackBarBehavior.floating,
-              ));
-              return false;
+              return 'Failed to send comment!';
             }
           }
-          return false;
+          return null;
         },
       ),
     ),

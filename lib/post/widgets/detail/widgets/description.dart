@@ -50,7 +50,8 @@ class DescriptionDisplay extends StatelessWidget {
                                           editingController.value!.copyWith(
                                         description: text,
                                       );
-                                      return true;
+                                      Navigator.of(context).maybePop();
+                                      return null;
                                     },
                                   ),
                                 ),
