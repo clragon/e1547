@@ -65,7 +65,7 @@ class _SubValueBuilderState<T> extends State<SubValueBuilder<T>> {
   @override
   Widget build(BuildContext context) => widget.builder(
         context,
-        update(recreate(_value)),
+        _value = update(recreate(_value)),
       );
 }
 
@@ -170,7 +170,6 @@ typedef SubProviderUpdate6<T, T2, T3, T4, T5, T6, R> = R Function(
 typedef SelectiveBuilder = List<dynamic>? Function(BuildContext context);
 
 class SubProvider0<R> extends SingleChildStatelessWidget {
-  final Widget? child;
   final Widget Function(BuildContext context, Widget? child)? builder;
   final SubProviderCreate0<R> create;
   final R Function(BuildContext context, R previous)? update;
@@ -179,7 +178,7 @@ class SubProvider0<R> extends SingleChildStatelessWidget {
 
   const SubProvider0({
     super.key,
-    this.child,
+    super.child,
     this.builder,
     required this.create,
     this.update,
