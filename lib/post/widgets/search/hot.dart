@@ -1,3 +1,4 @@
+import 'package:e1547/history/history.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
@@ -17,9 +18,11 @@ class _HotPageState extends State<HotPage> with DrawerEntry {
       search: 'order:rank',
       child: Consumer<PostsController>(
         builder: (context, controller, child) => ListenableListener(
-          listener: () {
-            // TODO: reenable
-            // controller.addToHistory(context);
+          listener: () async {
+            await controller.waitForFirstPage();
+            context.read<HistoriesService>().addPostSearch(
+                controller.search.value,
+                posts: controller.itemList);
           },
           listenable: controller.search,
           child: PostsPage(

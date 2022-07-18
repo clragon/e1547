@@ -1,5 +1,6 @@
 import 'package:e1547/client/client.dart';
 import 'package:e1547/follow/follow.dart';
+import 'package:e1547/history/history.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
@@ -85,8 +86,15 @@ class _SearchPageState extends State<SearchPage> with ListenerCallbackMixin {
               await updatePool();
               await controller.waitForFirstPage();
               await updateFollow();
-              // TODO: reenable
-              // controller.addToHistory(context, pool);
+              if (pool != null) {
+                context
+                    .read<HistoriesService>()
+                    .addPool(pool!, posts: controller.itemList);
+              } else {
+                context.read<HistoriesService>().addPostSearch(
+                    controller.search.value,
+                    posts: controller.itemList);
+              }
             }
 
             String getTitle() {
@@ -104,7 +112,8 @@ class _SearchPageState extends State<SearchPage> with ListenerCallbackMixin {
             }
 
             return ListenableListener(
-              listener: updateSearch,
+              listener: () => WidgetsBinding.instance
+                  .addPostFrameCallback((_) => updateSearch()),
               listenable: controller,
               child: ListenableListener(
                 listener: updateFollow,

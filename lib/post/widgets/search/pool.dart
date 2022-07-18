@@ -1,4 +1,5 @@
 import 'package:e1547/client/client.dart';
+import 'package:e1547/history/history.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
@@ -20,13 +21,6 @@ class _PoolPageState extends State<PoolPage> {
   late bool reversePool = widget.reversed;
 
   @override
-  void initState() {
-    super.initState();
-    // TODO: reenable
-    // controller.addToHistory(context, widget.pool);
-  }
-
-  @override
   Widget build(BuildContext context) {
     return PostsProvider(
       provider: (tags, page, force) => context.read<Client>().poolPosts(
@@ -37,32 +31,41 @@ class _PoolPageState extends State<PoolPage> {
           ),
       canSearch: false,
       child: Consumer<PostsController>(
-        builder: (context, controller, child) => PostsPage(
-          controller: controller,
-          appBar: DefaultAppBar(
-            title: Text(tagToTitle(widget.pool.name)),
-            leading: const BackButton(),
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.info_outline),
-                tooltip: 'Info',
-                onPressed: () => poolSheet(context, widget.pool),
+        builder: (context, controller, child) => ListenableListener(
+          listener: () async {
+            await controller.waitForFirstPage();
+            context
+                .read<HistoriesService>()
+                .addPool(widget.pool, posts: controller.itemList);
+          },
+          listenable: controller.search,
+          child: PostsPage(
+            controller: controller,
+            appBar: DefaultAppBar(
+              title: Text(tagToTitle(widget.pool.name)),
+              leading: const BackButton(),
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.info_outline),
+                  tooltip: 'Info',
+                  onPressed: () => poolSheet(context, widget.pool),
+                ),
+                const ContextDrawerButton(),
+              ],
+            ),
+            drawerActions: [
+              PoolOrderSwitch(
+                reversePool: reversePool,
+                onChange: (value) {
+                  setState(() {
+                    reversePool = value;
+                  });
+                  controller.refresh();
+                  Navigator.of(context).maybePop();
+                },
               ),
-              const ContextDrawerButton(),
             ],
           ),
-          drawerActions: [
-            PoolOrderSwitch(
-              reversePool: reversePool,
-              onChange: (value) {
-                setState(() {
-                  reversePool = value;
-                });
-                controller.refresh();
-                Navigator.of(context).maybePop();
-              },
-            ),
-          ],
         ),
       ),
     );

@@ -197,7 +197,8 @@ class _HistoryPageState extends State<HistoryPage> {
 
 enum HistoryFilter {
   posts,
-  pools;
+  pools,
+  other;
 
   String? get regex {
     switch (this) {
@@ -205,6 +206,8 @@ enum HistoryFilter {
         return r'/posts/\d+';
       case pools:
         return r'/pools/\d+';
+      case other:
+        return '.*';
     }
   }
 }

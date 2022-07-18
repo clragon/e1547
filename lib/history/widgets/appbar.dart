@@ -16,13 +16,14 @@ class HistorySelectionAppBar extends StatelessWidget with AppBarBuilderWidget {
     return SelectionAppBar<History>(
       child: child,
       titleBuilder: (context, data) => data.selections.length == 1
-          ? Text(data.selections.first.name)
+          ? Text(data.selections.first.getName(context))
           : Text('${data.selections.length} entries'),
       actionBuilder: (context, data) => [
         IconButton(
           icon: const Icon(Icons.delete_outline),
           onPressed: () {
-            Provider.of<HistoriesService>(context)
+            context
+                .read<HistoriesService>()
                 .removeAll(data.selections.toList());
             data.onChanged({});
           },

@@ -27,7 +27,7 @@ class HistoryTile extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8),
                   child: Text(
-                    entry.name,
+                    entry.getName(context),
                     style: TextStyle(
                       shadows: getTextShadows(),
                       color: Colors.white,
@@ -35,17 +35,39 @@ class HistoryTile extends StatelessWidget {
                   ),
                 ),
               ),
-              Text(
-                getCurrentTimeFormat().format(entry.visitedAt),
-                style: TextStyle(
-                  shadows: getTextShadows(),
-                  color: Colors.white70,
-                  fontSize: 14,
-                ),
-              ),
             ],
           ),
-          subtitle: entry.subtitle != null ? DText(entry.subtitle!) : null,
+          subtitle: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  getCurrentTimeFormat().format(entry.visitedAt),
+                  style: TextStyle(
+                    shadows: getTextShadows(),
+                    color: Colors.white70,
+                  ),
+                ),
+                if (entry.subtitle != null)
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: IgnorePointer(
+                        child: DefaultTextStyle(
+                          style: TextStyle(
+                            shadows: getTextShadows(),
+                            color: Colors.white70,
+                          ),
+                          child: DText(
+                              '${entry.subtitle!.split('').take(200).join()}...'),
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
           trailing: PopupMenuButton<VoidCallback>(
             icon: const ShadowIcon(
               Icons.more_vert,
@@ -58,7 +80,7 @@ class HistoryTile extends StatelessWidget {
                   icon: Icons.info,
                   value: () => tagSearchSheet(
                     context: context,
-                    tag: entry.link,
+                    tag: parseLink(entry.link)!.search!,
                   ),
                 ),
               PopupMenuTile(

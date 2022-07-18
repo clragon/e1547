@@ -30,10 +30,10 @@ class HistoriesService extends ChangeNotifier {
     settings.writeHistory.addListener(notifyListeners);
   }
 
-  Future<int> length() async => _database.length(host: client.host);
-  Stream<int> watchLength() => _database.watchLength(host: client.host);
+  Future<int> length() async => _database.length(host: host);
+  Stream<int> watchLength() => _database.watchLength(host: host);
 
-  Future<List<DateTime>> dates() async => _database.dates(host: client.host);
+  Future<List<DateTime>> dates() async => _database.dates(host: host);
 
   Future<History> get(int id) async => _database.get(id);
   Stream<History> watch(int id) => _database.watch(id);
@@ -43,7 +43,7 @@ class HistoriesService extends ChangeNotifier {
     DateTime? day,
   }) async =>
       _database.getAll(
-        host: client.host,
+        host: host,
         linkRegex: linkRegex,
         day: day,
       );
@@ -53,7 +53,7 @@ class HistoriesService extends ChangeNotifier {
     DateTime? day,
   }) =>
       _database.watchAll(
-        host: client.host,
+        host: host,
         linkRegex: linkRegex,
         day: day,
       );
@@ -65,7 +65,7 @@ class HistoriesService extends ChangeNotifier {
     DateTime? day,
   }) async =>
       _database.page(
-        host: client.host,
+        host: host,
         page: page,
         limit: limit,
         linkRegex: linkRegex,
@@ -76,7 +76,7 @@ class HistoriesService extends ChangeNotifier {
     if (!enabled) {
       return;
     }
-    if ((await _database.getRecent(host: client.host)).any((e) =>
+    if ((await _database.getRecent(host: host)).any((e) =>
         e.link == item.link &&
         e.title == item.title &&
         e.subtitle == item.subtitle &&
@@ -85,13 +85,11 @@ class HistoriesService extends ChangeNotifier {
     }
     // TODO: enable this? check performance impact!
     // await trim();
-    return _database.add(client.host, item);
+    return _database.add(host, item);
   }
 
-  Future<void> addAll(List<HistoryRequest> items) async {
-    // TODO: implement this
-    throw UnimplementedError();
-  }
+  Future<void> addAll(List<HistoryRequest> items) async =>
+      _database.addAll(host, items);
 
   Future<void> remove(History item) async => _database.remove(item);
 

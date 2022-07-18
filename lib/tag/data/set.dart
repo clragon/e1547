@@ -15,7 +15,7 @@ class Tagset extends Iterable<StringTag> {
     }
   }
 
-  String get link => '/post?tags=${toString()}';
+  String get link => '/posts?tags=${toString()}';
 
   @override
   bool contains(Object? element) => _tags.containsKey(element);

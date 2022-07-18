@@ -1,3 +1,4 @@
+import 'package:e1547/history/history.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
@@ -18,12 +19,14 @@ class _HomePageState extends State<HomePage> with DrawerEntry {
       search: context.read<Settings>().homeTags.value,
       child: Consumer<PostsController>(
         builder: (context, controller, child) => ListenableListener(
-          listener: () {
+          listener: () async {
             context.read<Settings>().homeTags.value = controller.search.value;
-            // TODO: reenable
-            // controller.addToHistory(context);
+            await controller.waitForFirstPage();
+            context.read<HistoriesService>().addPostSearch(
+                controller.search.value,
+                posts: controller.itemList);
           },
-          listenable: controller,
+          listenable: controller.search,
           child: PostsPage(
             appBar: const DefaultAppBar(
               title: Text('Home'),
