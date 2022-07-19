@@ -86,8 +86,7 @@ class HistoryTile extends StatelessWidget {
               PopupMenuTile(
                 title: 'Delete',
                 icon: Icons.delete,
-                value: () =>
-                    Provider.of<HistoriesService>(context).remove(entry),
+                value: () => context.read<HistoriesService>().remove(entry),
               ),
             ],
           ),

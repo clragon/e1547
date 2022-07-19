@@ -1,6 +1,5 @@
 import 'package:async_builder/async_builder.dart';
 import 'package:async_builder/init_builder.dart';
-import 'package:collection/collection.dart';
 import 'package:e1547/history/history.dart';
 import 'package:e1547/history/widgets/appbar.dart';
 import 'package:e1547/interface/interface.dart';
@@ -19,7 +18,7 @@ class HistoryPage extends StatefulWidget {
 
 class _HistoryPageState extends State<HistoryPage> {
   DateTime? search;
-  Set<HistoryFilter> filters = HistoryFilter.values.toSet();
+  Set<HistoryItemFilter> filters = HistoryItemFilter.values.toSet();
 
   String _buildFilter() =>
       r'^' '${filters.map((e) => '(${e.regex})').join('|')}' r'$';
@@ -130,8 +129,8 @@ class _HistoryPageState extends State<HistoryPage> {
                       // TODO: build setting for this
                       subtitle: Text(
                         'History entries are deleted when they are '
-                        'older than 30 days or '
-                        'there are more then ${NumberFormat.compact().format(3000)} entries.',
+                        'older than ${null} days or '
+                        'there are more then ${true ? null : NumberFormat.compact().format(3000)} entries.',
                         style: TextStyle(
                           color: dimTextColor(context),
                         ),
@@ -149,7 +148,7 @@ class _HistoryPageState extends State<HistoryPage> {
                       ),
                     ),
                     const Divider(),
-                    for (final filter in HistoryFilter.values)
+                    for (final filter in HistoryItemFilter.values)
                       Padding(
                         padding: const EdgeInsets.only(left: 16),
                         child: CheckboxListTile(
@@ -199,19 +198,30 @@ class _HistoryPageState extends State<HistoryPage> {
   }
 }
 
-enum HistoryFilter {
+enum HistoryItemFilter {
   posts,
+  postSearch,
   pools,
-  other;
+  poolSearch,
+  users /* ,
+  wikis,
+  topics,
+  topicSearches,
+  replies */
+  ;
 
   String get title {
     switch (this) {
       case posts:
         return 'Posts';
+      case postSearch:
+        return 'Post searches';
       case pools:
         return 'Pools';
-      case other:
-        return 'Other';
+      case poolSearch:
+        return 'Pool searches';
+      case users:
+        return 'Users';
     }
   }
 
@@ -219,12 +229,14 @@ enum HistoryFilter {
     switch (this) {
       case posts:
         return r'/posts/\d+';
+      case postSearch:
+        return r'/posts(\?.+)?';
       case pools:
         return r'/pools/\d+';
-      case other:
-        return r'^(?:(?!'
-            '(${values.whereNot((e) => e == other).map((e) => e.regex).join('|')})'
-            r').)+$';
+      case poolSearch:
+        return r'/pools(\?.+)?';
+      case users:
+        return r'/users/\d+';
     }
   }
 }

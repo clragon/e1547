@@ -59,7 +59,7 @@ extension Identification on History {
     }
 
     String? search = parsed.search;
-    if (search != null) {
+    if (search != null && search.isNotEmpty) {
       switch (type) {
         case LinkType.post:
           String? username = context.read<Client>().credentials?.username;
