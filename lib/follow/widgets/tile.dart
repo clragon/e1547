@@ -34,108 +34,88 @@ class FollowTile extends StatelessWidget {
       return text;
     }
 
-    Widget image(FollowStatus status) {
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Expanded(
-            child: Hero(
-              tag: getPostLink(status.latest!),
-              child: CachedNetworkImage(
-                imageUrl: status.thumbnail!,
-                errorWidget: defaultErrorBuilder,
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
-        ],
-      );
-    }
-
-    Widget info(FollowStatus status) {
-      return Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              if (follow.type != FollowType.update)
-                Padding(
-                  padding: const EdgeInsets.only(right: 4),
-                  child: ShadowIcon(
-                    getFollowIcon(follow.type),
-                    size: 16,
-                    color: Colors.white,
-                  ),
-                ),
-              if ((status.unseen ?? 0) > 0)
-                Expanded(
-                  child: Text(
-                    getStatusText(status),
-                    style: Theme.of(context).textTheme.bodyText2!.copyWith(
-                          shadows: getTextShadows(),
-                          color: Colors.white,
-                        ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-            ],
-          ),
-          Text(
-            follow.name,
-            style: Theme.of(context).textTheme.headline6!.copyWith(
-                  shadows: getTextShadows(),
-                  color: Colors.white,
-                ),
-            overflow: TextOverflow.ellipsis,
-            maxLines: 1,
-            softWrap: true,
-          ),
-        ],
-      );
-    }
-
-    return Card(
-      clipBehavior: Clip.antiAliasWithSaveLayer,
+    return ClipRRect(
+      borderRadius: const BorderRadius.all(Radius.circular(4)),
       child: Stack(
+        fit: StackFit.passthrough,
         clipBehavior: Clip.none,
         alignment: Alignment.center,
         children: [
-          AnimatedOpacity(
-            opacity: active ? 1 : 0,
-            duration: defaultAnimationDuration,
-            child: active ? image(status!) : const SizedBox.shrink(),
-          ),
-          Positioned(
-            bottom: active ? -1 : null,
-            right: active ? -1 : null,
-            left: active ? -1 : null,
-            child: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                gradient: active
-                    ? LinearGradient(
-                        colors: [
-                          Colors.transparent,
-                          Colors.black.withOpacity(0.8),
-                        ],
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                      )
-                    : null,
-              ),
-              child: CrossFade.builder(
-                showChild: active,
-                builder: (context) => info(status!),
-                secondChild: Text(
-                  follow.name,
-                  style: Theme.of(context).textTheme.headline6,
-                  overflow: TextOverflow.ellipsis,
-                  softWrap: true,
+          Column(
+            children: [
+              AspectRatio(
+                aspectRatio: 1 / 1.2,
+                child: Card(
+                  clipBehavior: Clip.antiAlias,
+                  child: CrossFade.builder(
+                    showChild: active,
+                    secondChild: const Icon(Icons.image_not_supported_outlined),
+                    builder: (context) => Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Expanded(
+                          child: Hero(
+                            tag: getPostLink(status!.latest!),
+                            child: CachedNetworkImage(
+                              imageUrl: status.thumbnail!,
+                              errorWidget: defaultErrorBuilder,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
-            ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Flexible(
+                      child: Text(
+                        follow.name,
+                        style: Theme.of(context).textTheme.headline6,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                        softWrap: true,
+                      ),
+                    ),
+                    Flexible(
+                      child: Row(
+                        children: [
+                          if (follow.type != FollowType.update)
+                            Padding(
+                              padding: const EdgeInsets.only(right: 4),
+                              child: Icon(
+                                getFollowIcon(follow.type),
+                                size: 16,
+                                color: dimTextColor(context, 0.7),
+                              ),
+                            ),
+                          if ((status?.unseen ?? 0) > 0)
+                            Expanded(
+                              child: Text(
+                                getStatusText(status),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyText2!
+                                    .copyWith(
+                                      color: dimTextColor(context, 0.7),
+                                    ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
           Material(
             type: MaterialType.transparency,
