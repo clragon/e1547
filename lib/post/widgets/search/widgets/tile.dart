@@ -68,6 +68,7 @@ class PostTile extends StatelessWidget {
       child: SelectionItemOverlay(
         item: post.value,
         child: Stack(
+          fit: StackFit.passthrough,
           clipBehavior: Clip.none,
           children: [
             ValueListenableBuilder<bool>(

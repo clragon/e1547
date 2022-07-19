@@ -430,7 +430,7 @@ packages:
       name: flutter_staggered_grid_view
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.4.1"
+    version: "0.6.2"
   flutter_typeahead:
     dependency: "direct main"
     description:
@@ -539,7 +539,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "670dfebcc104d0a1c376fc982d258ce2b24e2a1b"
+      resolved-ref: b724d92800177c030e9ffc15162b3c19a06bc1c3
       url: "https://github.com/clragon/infinite_scroll_pagination.git"
     source: git
     version: "4.0.0"

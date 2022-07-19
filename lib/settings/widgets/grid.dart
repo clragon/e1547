@@ -13,8 +13,6 @@ class GridSettingsTile extends StatelessWidget {
         return 'tiles are quadratic';
       case GridQuilt.vertical:
         return 'tiles expand vertically';
-      case GridQuilt.omni:
-        return 'tiles adapt their size';
       default:
         return '???';
     }
@@ -26,8 +24,6 @@ class GridSettingsTile extends StatelessWidget {
         return Icons.view_module;
       case GridQuilt.vertical:
         return Icons.view_column;
-      case GridQuilt.omni:
-        return Icons.view_quilt;
       default:
         return Icons.help_outline;
     }

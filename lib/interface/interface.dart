@@ -13,6 +13,7 @@ export 'widgets/appbar.dart';
 export 'widgets/dialog.dart';
 export 'widgets/divider_tile.dart';
 export 'widgets/drawer.dart';
+export 'widgets/grid.dart';
 export 'widgets/loading.dart';
 export 'widgets/logger.dart';
 export 'widgets/navigation.dart';
