@@ -60,6 +60,7 @@ class _FollowsSplitPageState extends State<FollowsSplitPage> with DrawerEntry {
         listener: updateRefresh,
         listenable: follows,
         child: TileLayout(
+          tileHeightFactor: 1.55,
           child: AnimatedBuilder(
             animation: follows,
             builder: (context, child) => RefreshablePageLoader(
