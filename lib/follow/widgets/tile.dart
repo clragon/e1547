@@ -276,6 +276,33 @@ class FollowListTile extends StatelessWidget {
       return text;
     }
 
+    List<Widget> subtitles = [
+      if (follow.tags.split(' ').length > 1)
+        Row(
+          children: [
+            Expanded(
+              child: Wrap(
+                children: follow.tags
+                    .split(' ')
+                    .map((tag) => TagCard(tag: tag))
+                    .toList(),
+              ),
+            ),
+          ],
+        ),
+      if (status?.unseen != null && status!.unseen! > 0)
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                getStatusText(status),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
+    ];
+
     return Padding(
       padding: const EdgeInsets.all(4),
       child: ImageTile(
@@ -288,34 +315,11 @@ class FollowListTile extends StatelessWidget {
         ),
         onLongPress: () => tagSearchSheet(context: context, tag: follow.tags),
         title: Text(follow.name),
-        subtitle: Column(
-          children: [
-            if (follow.tags.split(' ').length > 1)
-              Row(
-                children: [
-                  Expanded(
-                    child: Wrap(
-                      children: follow.tags
-                          .split(' ')
-                          .map((tag) => TagCard(tag: tag))
-                          .toList(),
-                    ),
-                  ),
-                ],
-              ),
-            Row(
-              children: [
-                if (status?.unseen != null && status!.unseen! > 0)
-                  Expanded(
-                    child: Text(
-                      getStatusText(status),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-              ],
-            ),
-          ],
-        ),
+        subtitle: subtitles.isNotEmpty
+            ? Column(
+                children: subtitles,
+              )
+            : null,
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
