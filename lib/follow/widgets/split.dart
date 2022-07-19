@@ -2,7 +2,6 @@ import 'package:e1547/client/client.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -19,7 +18,8 @@ class _FollowsSplitPageState extends State<FollowsSplitPage> with DrawerEntry {
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration.zero, context.read<FollowsService>().update);
+    WidgetsBinding.instance
+        .addPostFrameCallback((_) => context.read<FollowsService>().update());
   }
 
   Future<void> updateRefresh() async {
@@ -75,17 +75,16 @@ class _FollowsSplitPageState extends State<FollowsSplitPage> with DrawerEntry {
                 refreshingText:
                     'Refreshing ${follows.progress} / ${follows.items.length}...',
               ),
-              builder: (context) => StaggeredGridView.countBuilder(
-                key: joinKeys(
-                    ['follows', TileLayout.of(context).crossAxisCount]),
+              builder: (context) => GridView.builder(
                 padding: defaultListPadding,
                 addAutomaticKeepAlives: false,
-                crossAxisCount: TileLayout.of(context).crossAxisCount,
                 itemCount: follows.items.length,
                 itemBuilder: (context, index) =>
                     FollowTile(follow: follows.items[index]),
-                staggeredTileBuilder: (index) => StaggeredTile.count(
-                    1, TileLayout.of(context).tileHeightFactor),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: TileLayout.of(context).crossAxisCount,
+                  childAspectRatio: 1 / TileLayout.of(context).tileHeightFactor,
+                ),
               ),
               appBar: const DefaultAppBar(
                 title: Text('Following'),
