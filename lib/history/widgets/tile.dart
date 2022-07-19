@@ -14,82 +14,53 @@ class HistoryTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ImageTile(
-      thumbnails: entry.thumbnails,
-      onTap: parseLinkOnTap(context, entry.link),
-      child: SelectionItemOverlay<History>(
-        item: entry,
-        child: ListTile(
-          title: Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Flexible(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: Text(
-                    entry.getName(context),
-                    style: TextStyle(
-                      shadows: getTextShadows(),
-                      color: Colors.white,
-                    ),
-                  ),
+    return Padding(
+      padding: const EdgeInsets.all(4),
+      child: ImageTile(
+        images: entry.thumbnails,
+        onTap: parseLinkOnTap(context, entry.link),
+        title: Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Flexible(
+              child: Text(entry.getName(context)),
+            ),
+          ],
+        ),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(getCurrentTimeFormat().format(entry.visitedAt)),
+            if (entry.subtitle != null) const SizedBox(height: 4),
+            if (entry.subtitle != null)
+              IgnorePointer(
+                child: DText(
+                  entry.subtitle!.length > 400
+                      ? '${entry.subtitle!.split('').take(400).join()}...'
+                      : entry.subtitle!,
                 ),
               ),
-            ],
-          ),
-          subtitle: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  getCurrentTimeFormat().format(entry.visitedAt),
-                  style: TextStyle(
-                    shadows: getTextShadows(),
-                    color: Colors.white70,
-                  ),
-                ),
-                if (entry.subtitle != null)
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: IgnorePointer(
-                        child: DefaultTextStyle(
-                          style: TextStyle(
-                            shadows: getTextShadows(),
-                            color: Colors.white70,
-                          ),
-                          child: DText(
-                              '${entry.subtitle!.split('').take(200).join()}...'),
-                        ),
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-          ),
-          trailing: PopupMenuButton<VoidCallback>(
-            icon: const ShadowIcon(
-              Icons.more_vert,
-            ),
-            onSelected: (value) => value(),
-            itemBuilder: (context) => [
-              if (entry.isSearch(LinkType.post))
-                PopupMenuTile(
-                  title: 'Wiki',
-                  icon: Icons.info,
-                  value: () => tagSearchSheet(
-                    context: context,
-                    tag: parseLink(entry.link)!.search!,
-                  ),
-                ),
+          ],
+        ),
+        trailing: PopupMenuButton<VoidCallback>(
+          icon: const Icon(Icons.more_vert),
+          onSelected: (value) => value(),
+          itemBuilder: (context) => [
+            if (entry.isSearch(LinkType.post))
               PopupMenuTile(
-                title: 'Delete',
-                icon: Icons.delete,
-                value: () => context.read<HistoriesService>().remove(entry),
+                title: 'Wiki',
+                icon: Icons.info,
+                value: () => tagSearchSheet(
+                  context: context,
+                  tag: parseLink(entry.link)!.search!,
+                ),
               ),
-            ],
-          ),
+            PopupMenuTile(
+              title: 'Delete',
+              icon: Icons.delete,
+              value: () => context.read<HistoriesService>().remove(entry),
+            ),
+          ],
         ),
       ),
     );

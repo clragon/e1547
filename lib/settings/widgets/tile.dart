@@ -2,18 +2,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 
-class ImageTile extends StatelessWidget {
-  final Widget child;
-  final List<String>? thumbnails;
-  final VoidCallback? onTap;
-  final VoidCallback? onLongPress;
+class ImageGrid extends StatelessWidget {
+  final List<String>? images;
 
-  const ImageTile({
-    required this.child,
-    this.onTap,
-    this.onLongPress,
-    this.thumbnails,
-  });
+  const ImageGrid({super.key, this.images});
 
   BorderRadius getGridBorderRadius({
     required int index,
@@ -44,114 +36,118 @@ class ImageTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 4),
-      child: Column(
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(5),
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                Positioned.fill(
-                  child: LayoutBuilder(
-                    builder: (context, constraints) {
-                      int count = thumbnails?.length.clamp(1, 4) ?? 1;
-                      if (count != 1) {
-                        count = (count / 2).round() * 2;
-                      }
-                      return GridView.builder(
-                        primary: false,
-                        physics: const NeverScrollableScrollPhysics(),
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: count.clamp(1, 2),
-                          mainAxisExtent: count > 2
-                              ? constraints.maxHeight * 0.5
-                              : constraints.maxHeight,
-                          mainAxisSpacing: 6,
-                          crossAxisSpacing: 6,
-                        ),
-                        itemCount: count,
-                        itemBuilder: (context, index) {
-                          if (thumbnails != null &&
-                              index < thumbnails!.length) {
-                            return ClipRRect(
-                              borderRadius: getGridBorderRadius(
-                                index: index,
-                                length: thumbnails!.length.clamp(0, 4),
-                                crossAxisCount: 2,
-                              ),
-                              child: Opacity(
-                                opacity: 0.8,
-                                child: CachedNetworkImage(
-                                  imageUrl: thumbnails![index],
-                                  errorWidget: defaultErrorBuilder,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            );
-                          } else {
-                            return const Center(
-                              child: Icon(Icons.image_not_supported_outlined),
-                            );
-                          }
-                        },
-                      );
-                    },
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        int count = images?.length.clamp(1, 4) ?? 1;
+        if (count != 1) {
+          count = (count / 2).round() * 2;
+        }
+        return GridView.builder(
+          primary: false,
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: count.clamp(1, 2),
+            mainAxisExtent:
+                count > 2 ? constraints.maxHeight * 0.5 : constraints.maxHeight,
+            mainAxisSpacing: 6,
+            crossAxisSpacing: 6,
+          ),
+          itemCount: count,
+          itemBuilder: (context, index) {
+            if (images != null && index < images!.length) {
+              return ClipRRect(
+                borderRadius: getGridBorderRadius(
+                  index: index,
+                  length: images!.length.clamp(0, 4),
+                  crossAxisCount: 2,
+                ),
+                child: Opacity(
+                  opacity: 0.8,
+                  child: CachedNetworkImage(
+                    imageUrl: images![index],
+                    errorWidget: defaultErrorBuilder,
+                    fit: BoxFit.cover,
                   ),
                 ),
-                Material(
-                  type: MaterialType.transparency,
-                  child: InkWell(
-                    onTap: onTap,
-                    onLongPress: onLongPress,
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(
-                        minHeight: 300,
-                      ),
-                      child: child,
-                    ),
-                  ),
-                )
-              ],
-            ),
-          ),
-          const Divider(),
-        ],
-      ),
+              );
+            } else {
+              return const Center(
+                child: Icon(Icons.image_not_supported_outlined),
+              );
+            }
+          },
+        );
+      },
     );
   }
 }
 
-class PostPresenterTile extends StatelessWidget {
-  final Widget child;
-  final String? thumbnail;
-  final int? postId;
+class ImageTile extends StatelessWidget {
+  final Widget title;
+  final Widget? subtitle;
+  final Widget? leading;
+  final Widget? trailing;
+  final List<String>? images;
   final VoidCallback? onTap;
   final VoidCallback? onLongPress;
+  final String? hero;
 
-  const PostPresenterTile({
-    required this.child,
-    this.thumbnail,
+  const ImageTile({
+    required this.images,
+    required this.title,
+    this.subtitle,
+    this.leading,
+    this.trailing,
     this.onTap,
     this.onLongPress,
-    this.postId,
+    this.hero,
   });
 
   @override
   Widget build(BuildContext context) {
-    return ImageTile(
-      thumbnails: [if (thumbnail != null) thumbnail!],
-      onTap: onTap ??
-          (postId != null
-              ? () => Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => PostLoadingPage(postId!),
+    return ClipRRect(
+      borderRadius: const BorderRadius.all(Radius.circular(4)),
+      child: Column(
+        children: [
+          Stack(
+            fit: StackFit.passthrough,
+            children: [
+              SizedBox(
+                height: images?.isNotEmpty ?? true ? 300 : 150,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: hero != null
+                          ? Hero(
+                              tag: hero!,
+                              child: ImageGrid(images: images),
+                            )
+                          : ImageGrid(images: images),
                     ),
-                  )
-              : null),
-      onLongPress: onLongPress,
-      child: child,
+                  ],
+                ),
+              ),
+              Positioned.fill(
+                child: Material(
+                  type: MaterialType.transparency,
+                  child: InkWell(
+                    onTap: onTap,
+                    onLongPress: onLongPress,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          ListTile(
+            title: title,
+            subtitle: subtitle,
+            trailing: trailing,
+            onTap: onTap,
+            onLongPress: onLongPress,
+          ),
+          const Divider(),
+        ],
+      ),
     );
   }
 }

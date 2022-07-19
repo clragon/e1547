@@ -211,10 +211,7 @@ class FollowListTile extends StatelessWidget {
       bool bookmarked = follow.type == FollowType.bookmark;
 
       return PopupMenuButton<VoidCallback>(
-        icon: const ShadowIcon(
-          Icons.more_vert,
-          color: Colors.white,
-        ),
+        icon: const Icon(Icons.more_vert),
         onSelected: (value) => value(),
         itemBuilder: (context) => [
           // disabled
@@ -279,64 +276,45 @@ class FollowListTile extends StatelessWidget {
       return text;
     }
 
-    return PostPresenterTile(
-      postId: status?.latest,
-      thumbnail: status?.thumbnail,
-      onTap: () => Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => SearchPage(tags: follow.tags),
-        ),
-      ),
-      onLongPress: () => tagSearchSheet(context: context, tag: follow.tags),
-      child: ListTile(
-        title: Padding(
-          padding: const EdgeInsets.all(8),
-          child: Text(
-            follow.name,
-            style: Theme.of(context).textTheme.headline6?.copyWith(
-                  shadows: getTextShadows(),
-                  color: Colors.white,
-                ),
+    return Padding(
+      padding: const EdgeInsets.all(4),
+      child: ImageTile(
+        hero: status?.latest != null ? getPostLink(status!.latest!) : null,
+        images: [if (status?.thumbnail != null) status!.thumbnail!],
+        onTap: () => Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => SearchPage(tags: follow.tags),
           ),
         ),
-        subtitle: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8),
-          child: Column(
-            children: [
-              if (follow.tags.split(' ').length > 1)
-                Row(
-                  children: [
-                    Expanded(
-                      child: Wrap(
-                        children: follow.tags
-                            .split(' ')
-                            .map((tag) => TagCard(tag: tag))
-                            .toList(),
-                      ),
+        onLongPress: () => tagSearchSheet(context: context, tag: follow.tags),
+        title: Text(follow.name),
+        subtitle: Column(
+          children: [
+            if (follow.tags.split(' ').length > 1)
+              Row(
+                children: [
+                  Expanded(
+                    child: Wrap(
+                      children: follow.tags
+                          .split(' ')
+                          .map((tag) => TagCard(tag: tag))
+                          .toList(),
                     ),
-                  ],
-                ),
-              Padding(
-                padding: const EdgeInsets.all(4),
-                child: Row(
-                  children: [
-                    if (status?.unseen != null && status!.unseen! > 0)
-                      Expanded(
-                        child: Text(
-                          getStatusText(status),
-                          style:
-                              Theme.of(context).textTheme.bodyText2!.copyWith(
-                                    shadows: getTextShadows(),
-                                    color: Colors.white,
-                                  ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
-          ),
+            Row(
+              children: [
+                if (status?.unseen != null && status!.unseen! > 0)
+                  Expanded(
+                    child: Text(
+                      getStatusText(status),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+              ],
+            ),
+          ],
         ),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
@@ -345,10 +323,7 @@ class FollowListTile extends StatelessWidget {
               showChild: follow.type != FollowType.update,
               child: Padding(
                 padding: const EdgeInsets.all(8),
-                child: ShadowIcon(
-                  getFollowIcon(follow.type),
-                  color: Colors.white,
-                ),
+                child: Icon(getFollowIcon(follow.type)),
               ),
             ),
             contextMenu(),
