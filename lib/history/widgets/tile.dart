@@ -16,51 +16,54 @@ class HistoryTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(4),
-      child: ImageTile(
-        images: entry.thumbnails,
-        onTap: parseLinkOnTap(context, entry.link),
-        title: Row(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Flexible(
-              child: Text(entry.getName(context)),
-            ),
-          ],
-        ),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(getCurrentTimeFormat().format(entry.visitedAt)),
-            if (entry.subtitle != null) const SizedBox(height: 4),
-            if (entry.subtitle != null)
-              IgnorePointer(
-                child: DText(
-                  entry.subtitle!.length > 400
-                      ? '${entry.subtitle!.split('').take(400).join()}...'
-                      : entry.subtitle!,
-                ),
+      child: SelectionItemOverlay<History>(
+        item: entry,
+        child: ImageTile(
+          images: entry.thumbnails,
+          onTap: parseLinkOnTap(context, entry.link),
+          title: Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Flexible(
+                child: Text(entry.getName(context)),
               ),
-          ],
-        ),
-        trailing: PopupMenuButton<VoidCallback>(
-          icon: const Icon(Icons.more_vert),
-          onSelected: (value) => value(),
-          itemBuilder: (context) => [
-            if (entry.isSearch(LinkType.post))
+            ],
+          ),
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(getCurrentTimeFormat().format(entry.visitedAt)),
+              if (entry.subtitle != null) const SizedBox(height: 4),
+              if (entry.subtitle != null)
+                IgnorePointer(
+                  child: DText(
+                    entry.subtitle!.length > 400
+                        ? '${entry.subtitle!.split('').take(400).join()}...'
+                        : entry.subtitle!,
+                  ),
+                ),
+            ],
+          ),
+          trailing: PopupMenuButton<VoidCallback>(
+            icon: const Icon(Icons.more_vert),
+            onSelected: (value) => value(),
+            itemBuilder: (context) => [
+              if (entry.isSearch(LinkType.post))
+                PopupMenuTile(
+                  title: 'Wiki',
+                  icon: Icons.info,
+                  value: () => tagSearchSheet(
+                    context: context,
+                    tag: parseLink(entry.link)!.search!,
+                  ),
+                ),
               PopupMenuTile(
-                title: 'Wiki',
-                icon: Icons.info,
-                value: () => tagSearchSheet(
-                  context: context,
-                  tag: parseLink(entry.link)!.search!,
-                ),
+                title: 'Delete',
+                icon: Icons.delete,
+                value: () => context.read<HistoriesService>().remove(entry),
               ),
-            PopupMenuTile(
-              title: 'Delete',
-              icon: Icons.delete,
-              value: () => context.read<HistoriesService>().remove(entry),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
