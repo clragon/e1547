@@ -6,7 +6,6 @@ import 'package:provider/provider.dart';
 enum GridQuilt {
   square,
   vertical,
-  omni,
 }
 
 class TileLayoutData extends InheritedWidget {
