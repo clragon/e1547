@@ -69,16 +69,10 @@ Widget postGrid(BuildContext context, PostsController controller) {
         padding: defaultListPadding,
         pagingController: controller,
         builderDelegate: buildBuilderDelegate(
-          (context, item, index) {
-            double aspectRatio = 1;
-            if (item.sample.has) {
-              aspectRatio = 1 / (item.sample.height / item.sample.width);
-            }
-            return AspectRatio(
-              aspectRatio: aspectRatio,
-              child: itemBuilder(context, item, index),
-            );
-          },
+          (context, item, index) => AspectRatio(
+            aspectRatio: 1 / (item.sample.height / item.sample.width),
+            child: itemBuilder(context, item, index),
+          ),
         ),
         crossAxisCount: TileLayout.of(context).crossAxisCount,
       );
