@@ -14,7 +14,11 @@ class ShadowIcon extends StatelessWidget {
       icon,
       size: size,
       color: color,
-      shadows: getTextShadows(),
+      shadows: const [
+        Shadow(
+          blurRadius: 9,
+        ),
+      ],
     );
   }
 }
@@ -44,33 +48,4 @@ class ShadowBackButton extends StatelessWidget {
       ),
     );
   }
-}
-
-List<Shadow> getTextShadows() {
-  const double blur = 5;
-  const double offset = 2;
-  const Color color = Colors.black38;
-
-  return [
-    const Shadow(
-      offset: Offset(offset, offset),
-      blurRadius: blur,
-      color: color,
-    ),
-    const Shadow(
-      offset: Offset(-offset, offset),
-      blurRadius: blur,
-      color: color,
-    ),
-    const Shadow(
-      offset: Offset(-offset, -offset),
-      blurRadius: blur,
-      color: color,
-    ),
-    const Shadow(
-      offset: Offset(offset, -offset),
-      blurRadius: blur,
-      color: color,
-    ),
-  ];
 }
