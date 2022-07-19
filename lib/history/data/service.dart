@@ -114,16 +114,6 @@ class HistoriesService extends ChangeNotifier {
         ),
       );
 
-  Future<void> addPool(Pool pool, {List<Post>? posts}) async => add(
-        HistoryRequest(
-          visitedAt: DateTime.now(),
-          link: pool.link,
-          thumbnails: _getThumbnails(posts),
-          title: pool.name,
-          subtitle: pool.description,
-        ),
-      );
-
   Future<void> addPostSearch(
     String search, {
     String? alias,
@@ -137,6 +127,30 @@ class HistoriesService extends ChangeNotifier {
           title: alias,
         ),
       );
+
+  Future<void> addPool(Pool pool, {List<Post>? posts}) async => add(
+        HistoryRequest(
+          visitedAt: DateTime.now(),
+          link: pool.link,
+          thumbnails: _getThumbnails(posts),
+          title: pool.name,
+          subtitle: pool.description,
+        ),
+      );
+
+  Future<void> addPoolSearch(
+    String search, {
+    List<Pool>? pools,
+  }) async {
+    add(
+      HistoryRequest(
+        visitedAt: DateTime.now(),
+        link: Uri(path: '/pools', queryParameters: {
+          'search[name_matches]': search,
+        }).toString(),
+      ),
+    );
+  }
 
   // TODO: create setting to regulate this
   Future<void> trim() async => _database.trim(
