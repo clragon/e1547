@@ -1,4 +1,5 @@
 import 'package:e1547/app/app.dart';
+import 'package:e1547/client/client.dart';
 import 'package:e1547/dtext/dtext.dart';
 import 'package:e1547/history/history.dart';
 import 'package:e1547/interface/interface.dart';
@@ -6,6 +7,7 @@ import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:share/share.dart';
 
 class HistoryTile extends StatelessWidget {
   final History entry;
@@ -57,6 +59,13 @@ class HistoryTile extends StatelessWidget {
                     tag: parseLink(entry.link)!.search!,
                   ),
                 ),
+              PopupMenuTile(
+                title: 'Share',
+                icon: Icons.share,
+                value: () async => Share.share(
+                  context.read<Client>().withHost(entry.link),
+                ),
+              ),
               PopupMenuTile(
                 title: 'Delete',
                 icon: Icons.delete,
