@@ -239,7 +239,7 @@ enum HistoryFilter {
       case poolSearch:
         return r'/pools(\?.+)?';
       case users:
-        return r'/users/\d+';
+        return r'/users/[^\s]+';
     }
   }
 }
