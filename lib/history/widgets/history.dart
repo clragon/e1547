@@ -18,10 +18,10 @@ class HistoryPage extends StatefulWidget {
 
 class _HistoryPageState extends State<HistoryPage> {
   DateTime? search;
-  Set<HistoryItemFilter> filters = HistoryItemFilter.values.toSet();
+  Set<HistoryFilter> filters = HistoryFilter.values.toSet();
 
   String _buildFilter() =>
-      r'^' '${filters.map((e) => '(${e.regex})').join('|')}' r'$';
+      filters.map((e) => r'^' '(${e.regex})' r'$').join('|');
 
   @override
   Widget build(BuildContext context) {
@@ -148,7 +148,7 @@ class _HistoryPageState extends State<HistoryPage> {
                       ),
                     ),
                     const Divider(),
-                    for (final filter in HistoryItemFilter.values)
+                    for (final filter in HistoryFilter.values)
                       Padding(
                         padding: const EdgeInsets.only(left: 16),
                         child: CheckboxListTile(
@@ -198,7 +198,7 @@ class _HistoryPageState extends State<HistoryPage> {
   }
 }
 
-enum HistoryItemFilter {
+enum HistoryFilter {
   posts,
   postSearch,
   pools,
