@@ -25,7 +25,7 @@ class CommentDisplay extends StatelessWidget {
                       onPressed: () => Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (context) =>
-                              CommentsPage(postId: post.value.id),
+                              PostCommentsPage(postId: post.value.id),
                         ),
                       ),
                       style: ButtonStyle(
