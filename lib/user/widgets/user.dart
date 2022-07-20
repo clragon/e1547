@@ -1,6 +1,7 @@
 import 'package:e1547/app/app.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/denylist/denylist.dart';
+import 'package:e1547/history/history.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/tag/tag.dart';
@@ -44,97 +45,108 @@ class UserPage extends StatelessWidget {
           return DefaultTabController(
             length: tabs.length,
             initialIndex: initialPage.index,
-            child: Scaffold(
-              drawer: const NavigationDrawer(),
-              endDrawer: ContextDrawer(
-                title: const Text('Posts'),
-                children: [
-                  DrawerMultiDenySwitch(controllers: controllers.all),
-                  DrawerMultiTagCounter(controllers: controllers.all),
-                ],
-              ),
-              body: NestedScrollView(
-                headerSliverBuilder: (context, innerBoxIsScrolled) => [
-                  SliverOverlapAbsorber(
-                    handle: NestedScrollView.sliverOverlapAbsorberHandleFor(
-                        context),
-                    sliver: DefaultSliverAppBar(
-                      pinned: true,
-                      leading: const BackButton(),
-                      expandedHeight: 250,
-                      flexibleSpaceBuilder: (context, extension) =>
-                          FlexibleSpaceBar(
-                        collapseMode: CollapseMode.pin,
-                        title: Opacity(
-                          opacity: 1 - (extension * 6).clamp(0, 1),
-                          child: Text(user.name),
+            child: ListenableListener(
+              listener: () async {
+                await controllers.profilePost?.waitForFirstPage();
+                context.read<HistoriesService>().addUser(
+                      user,
+                      avatar: controllers.profilePost?.itemList?.first,
+                    );
+              },
+              listenable: Listenable.merge([controllers.profilePost]),
+              child: Scaffold(
+                drawer: const NavigationDrawer(),
+                endDrawer: ContextDrawer(
+                  title: const Text('Posts'),
+                  children: [
+                    DrawerMultiDenySwitch(controllers: controllers.all),
+                    DrawerMultiTagCounter(controllers: controllers.all),
+                  ],
+                ),
+                body: NestedScrollView(
+                  headerSliverBuilder: (context, innerBoxIsScrolled) => [
+                    SliverOverlapAbsorber(
+                      handle: NestedScrollView.sliverOverlapAbsorberHandleFor(
+                          context),
+                      sliver: DefaultSliverAppBar(
+                        pinned: true,
+                        leading: const BackButton(),
+                        expandedHeight: 250,
+                        flexibleSpaceBuilder: (context, extension) =>
+                            FlexibleSpaceBar(
+                          collapseMode: CollapseMode.pin,
+                          title: Opacity(
+                            opacity: 1 - (extension * 6).clamp(0, 1),
+                            child: Text(user.name),
+                          ),
+                          background: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                height: 100,
+                                width: 100,
+                                child: UserAvatar(
+                                  controller: controllers.profilePost,
+                                  enabled: true,
+                                ),
+                              ),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.only(top: 16, bottom: 32),
+                                child: Text(
+                                  user.name,
+                                  style: Theme.of(context).textTheme.headline6,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                        background: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SizedBox(
-                              height: 100,
-                              width: 100,
-                              child: UserAvatar(
-                                controller: controllers.profilePost,
-                                enabled: true,
-                              ),
-                            ),
-                            Padding(
-                              padding:
-                                  const EdgeInsets.only(top: 16, bottom: 32),
-                              child: Text(
-                                user.name,
-                                style: Theme.of(context).textTheme.headline6,
-                              ),
-                            ),
-                          ],
+                        bottom: TabBar(
+                          labelColor: Theme.of(context).iconTheme.color,
+                          indicatorColor: Theme.of(context).iconTheme.color,
+                          tabs: tabs.keys.toList(),
                         ),
-                      ),
-                      bottom: TabBar(
-                        labelColor: Theme.of(context).iconTheme.color,
-                        indicatorColor: Theme.of(context).iconTheme.color,
-                        tabs: tabs.keys.toList(),
-                      ),
-                      actions: [
-                        PopupMenuButton<VoidCallback>(
-                          icon: const Icon(Icons.more_vert),
-                          onSelected: (value) => value(),
-                          itemBuilder: (context) => [
-                            PopupMenuTile(
-                              title: 'Browse',
-                              icon: Icons.open_in_browser,
-                              value: () async => launch(
-                                context.read<Client>().withHost(user.link),
+                        actions: [
+                          PopupMenuButton<VoidCallback>(
+                            icon: const Icon(Icons.more_vert),
+                            onSelected: (value) => value(),
+                            itemBuilder: (context) => [
+                              PopupMenuTile(
+                                title: 'Browse',
+                                icon: Icons.open_in_browser,
+                                value: () async => launch(
+                                  context.read<Client>().withHost(user.link),
+                                ),
                               ),
-                            ),
-                            PopupMenuTile(
-                              title: 'Report',
-                              icon: Icons.report,
-                              value: () => guardWithLogin(
-                                context: context,
-                                callback: () {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (context) => UserReportScreen(
-                                        user: user,
+                              PopupMenuTile(
+                                title: 'Report',
+                                icon: Icons.report,
+                                value: () => guardWithLogin(
+                                  context: context,
+                                  callback: () {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) => UserReportScreen(
+                                          user: user,
+                                        ),
                                       ),
-                                    ),
-                                  );
-                                },
-                                error: 'You must be logged in to report users!',
+                                    );
+                                  },
+                                  error:
+                                      'You must be logged in to report users!',
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ],
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
-                body: LimitedWidthLayout(
-                  child: TileLayout(
-                    child: TabBarView(
-                      children: tabs.values.toList(),
+                  ],
+                  body: LimitedWidthLayout(
+                    child: TileLayout(
+                      child: TabBarView(
+                        children: tabs.values.toList(),
+                      ),
                     ),
                   ),
                 ),

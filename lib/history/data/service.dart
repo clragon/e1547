@@ -7,7 +7,9 @@ import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:e1547/tag/tag.dart';
+import 'package:e1547/user/user.dart';
 import 'package:flutter/material.dart';
+import 'package:mutex/mutex.dart';
 
 class HistoriesService extends ChangeNotifier {
   final Settings settings;
@@ -24,6 +26,8 @@ class HistoriesService extends ChangeNotifier {
 
   final int trimAmount = 3000;
   final Duration trimAge = const Duration(days: 90);
+
+  final Mutex _lock = Mutex();
 
   HistoriesService({
     required this.settings,
@@ -86,28 +90,32 @@ class HistoriesService extends ChangeNotifier {
         day: day,
       );
 
-  Future<void> add(HistoryRequest item) async {
-    if (!enabled) {
-      return;
-    }
-    if ((await _database.getRecent(host: host)).any((e) =>
-        e.link == item.link &&
-        e.title == item.title &&
-        e.subtitle == item.subtitle &&
-        const DeepCollectionEquality().equals(e.thumbnails, item.thumbnails))) {
-      return;
-    }
-    await trim();
-    return _database.add(host, item);
-  }
+  Future<void> add(HistoryRequest item) async => _lock.protect(
+        () async {
+          if (!enabled) {
+            return;
+          }
+          if ((await _database.getRecent(host: host)).any((e) =>
+              e.link == item.link &&
+              e.title == item.title &&
+              e.subtitle == item.subtitle &&
+              const DeepCollectionEquality()
+                  .equals(e.thumbnails, item.thumbnails))) {
+            return;
+          }
+          await trim();
+          return _database.add(host, item);
+        },
+      );
 
   Future<void> addAll(List<HistoryRequest> items) async =>
-      _database.addAll(host, items);
+      _lock.protect(() async => _database.addAll(host, items));
 
-  Future<void> remove(History item) async => _database.remove(item);
+  Future<void> remove(History item) async =>
+      _lock.protect(() async => _database.remove(item));
 
   Future<void> removeAll(List<History> items) async =>
-      _database.removeAll(items);
+      _lock.protect(() async => _database.removeAll(items));
 
   List<String> _getThumbnails(List<Post>? posts) =>
       posts
@@ -154,16 +162,23 @@ class HistoriesService extends ChangeNotifier {
   Future<void> addPoolSearch(
     String search, {
     List<Pool>? pools,
-  }) async {
-    add(
-      HistoryRequest(
-        visitedAt: DateTime.now(),
-        link: Uri(path: '/pools', queryParameters: {
-          'search[name_matches]': search,
-        }).toString(),
-      ),
-    );
-  }
+  }) async =>
+      add(
+        HistoryRequest(
+          visitedAt: DateTime.now(),
+          link: Uri(path: '/pools', queryParameters: {
+            'search[name_matches]': search,
+          }).toString(),
+        ),
+      );
+
+  Future<void> addUser(User user, {Post? avatar}) async => add(
+        HistoryRequest(
+          visitedAt: DateTime.now(),
+          link: '/users/${user.name}',
+          thumbnails: [if (avatar?.sample.url != null) avatar!.sample.url!],
+        ),
+      );
 
   Future<void> trim() async =>
       _database.trim(host: client.host, maxAmount: trimAmount, maxAge: trimAge);

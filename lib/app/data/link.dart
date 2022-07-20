@@ -21,7 +21,7 @@ Future<void> launch(String uri) async {
   }
 }
 
-const String _queryRegex = r'([^/&#]*)';
+const String _queryRegex = r'([^/&#]+)';
 const String _showEnding = r':_(s|/show)';
 
 class Link {
@@ -147,7 +147,7 @@ final List<LinkParser> allLinkParsers = [
       return Link(
         type: LinkType.user.name,
         id: id,
-        name: id != null ? arguments['name']! : null,
+        name: id == null ? arguments['name']! : null,
       );
     },
   ),
@@ -160,7 +160,7 @@ final List<LinkParser> allLinkParsers = [
       return Link(
         type: LinkType.wiki.name,
         id: id,
-        name: id != null ? arguments['name']! : null,
+        name: id == null ? arguments['name']! : null,
       );
     },
   ),
