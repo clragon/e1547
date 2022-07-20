@@ -18,7 +18,12 @@ class HistoriesService extends ChangeNotifier {
 
   set enabled(bool value) => settings.writeHistory.value = value;
   bool get enabled => settings.writeHistory.value;
+  set trimming(bool value) => settings.trimHistory.value = value;
+  bool get trimming => settings.trimHistory.value;
   String get host => client.host;
+
+  final int trimAmount = 3000;
+  final Duration trimAge = const Duration(days: 90);
 
   HistoriesService({
     required this.settings,
@@ -28,6 +33,15 @@ class HistoriesService extends ChangeNotifier {
   }) : _database = HistoriesDatabase.connect(path: path) {
     client.addListener(notifyListeners);
     settings.writeHistory.addListener(notifyListeners);
+    settings.trimHistory.addListener(notifyListeners);
+  }
+
+  @override
+  void dispose() {
+    client.removeListener(notifyListeners);
+    settings.writeHistory.removeListener(notifyListeners);
+    settings.trimHistory.removeListener(notifyListeners);
+    super.dispose();
   }
 
   Future<int> length() async => _database.length(host: host);
@@ -83,8 +97,7 @@ class HistoriesService extends ChangeNotifier {
         const DeepCollectionEquality().equals(e.thumbnails, item.thumbnails))) {
       return;
     }
-    // TODO: enable this? check performance impact!
-    // await trim();
+    await trim();
     return _database.add(host, item);
   }
 
@@ -152,9 +165,8 @@ class HistoriesService extends ChangeNotifier {
     );
   }
 
-  // TODO: create setting to regulate this
-  Future<void> trim() async => _database.trim(
-      host: client.host, maxAmount: 3000, maxAge: const Duration(days: 30));
+  Future<void> trim() async =>
+      _database.trim(host: client.host, maxAmount: trimAmount, maxAge: trimAge);
 }
 
 class HistoriesProvider extends SubChangeNotifierProvider3<Settings, Client,

@@ -21,7 +21,8 @@ class _HistoryPageState extends State<HistoryPage> {
   Set<HistoryFilter> filters = HistoryFilter.values.toSet();
 
   String _buildFilter() =>
-      filters.map((e) => r'^' '(${e.regex})' r'$').join('|');
+      (filters.map((e) => r'^' '(${e.regex})' r'$').toList()..add(r'^$'))
+          .join('|');
 
   @override
   Widget build(BuildContext context) {
@@ -121,20 +122,22 @@ class _HistoryPageState extends State<HistoryPage> {
                 endDrawer: ContextDrawer(
                   title: const Text('History'),
                   children: [
-                    ListTile(
-                      leading: Icon(
-                        Icons.info_outline,
-                        color: dimTextColor(context),
+                    SwitchListTile(
+                      value: service.trimming,
+                      onChanged: (value) => service.trimming = value,
+                      secondary: Icon(
+                        service.trimming
+                            ? Icons.hourglass_bottom
+                            : Icons.hourglass_empty,
                       ),
-                      // TODO: build setting for this
-                      subtitle: Text(
-                        'History entries are deleted when they are '
-                        'older than ${null} days or '
-                        'there are more then ${true ? null : NumberFormat.compact().format(3000)} entries.',
-                        style: TextStyle(
-                          color: dimTextColor(context),
-                        ),
-                      ),
+                      title: const Text('Limit history'),
+                      subtitle: service.trimming
+                          ? Text(
+                              'history entries are deleted when they are '
+                              'older than ${service.trimAge.inDays ~/ 30} months or '
+                              'there are more then ${NumberFormat.compact().format(service.trimAmount)} entries.',
+                            )
+                          : const Text('history is infinite'),
                     ),
                     const Divider(),
                     ListTile(
