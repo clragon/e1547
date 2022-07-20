@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
 
@@ -166,13 +164,10 @@ class SelectionItemOverlay<T> extends StatelessWidget {
                   child: Container(
                     margin: padding,
                     color: Colors.black38,
-                    child: LayoutBuilder(
-                      builder: (context, constraint) => Icon(
-                        Icons.check_circle_outline,
-                        color: Colors.white,
-                        size: min(constraint.maxHeight, constraint.maxWidth) *
-                            0.4,
-                      ),
+                    child: const Icon(
+                      Icons.check_circle_outline,
+                      color: Colors.white,
+                      size: 60,
                     ),
                   ),
                 ),

@@ -61,6 +61,8 @@ class Settings with SharedPrefsSettings {
 
   late final ValueNotifier<bool> writeHistory =
       createSetting(key: 'writeHistory', initialValue: true);
+  late final ValueNotifier<bool> trimHistory =
+      createSetting(key: 'trimHistory', initialValue: false);
 
   late final ValueNotifier<String> host =
       createSetting(key: 'currentHost', initialValue: 'e926.net');
