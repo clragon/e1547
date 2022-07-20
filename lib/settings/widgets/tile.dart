@@ -109,35 +109,36 @@ class ImageTile extends StatelessWidget {
       borderRadius: const BorderRadius.all(Radius.circular(4)),
       child: Column(
         children: [
-          Stack(
-            fit: StackFit.passthrough,
-            children: [
-              SizedBox(
-                height: images?.isNotEmpty ?? true ? 300 : 150,
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: hero != null
-                          ? Hero(
-                              tag: hero!,
-                              child: ImageGrid(images: images),
-                            )
-                          : ImageGrid(images: images),
-                    ),
-                  ],
-                ),
-              ),
-              Positioned.fill(
-                child: Material(
-                  type: MaterialType.transparency,
-                  child: InkWell(
-                    onTap: onTap,
-                    onLongPress: onLongPress,
+          if (images?.isNotEmpty ?? false || subtitle == null)
+            Stack(
+              fit: StackFit.passthrough,
+              children: [
+                SizedBox(
+                  height: images?.isNotEmpty ?? true ? 300 : 150,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: hero != null
+                            ? Hero(
+                                tag: hero!,
+                                child: ImageGrid(images: images),
+                              )
+                            : ImageGrid(images: images),
+                      ),
+                    ],
                   ),
                 ),
-              ),
-            ],
-          ),
+                Positioned.fill(
+                  child: Material(
+                    type: MaterialType.transparency,
+                    child: InkWell(
+                      onTap: onTap,
+                      onLongPress: onLongPress,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ListTile(
             title: title,
             subtitle: subtitle,
