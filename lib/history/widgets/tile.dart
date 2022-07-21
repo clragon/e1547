@@ -20,15 +20,21 @@ class HistoryTile extends StatelessWidget {
       padding: const EdgeInsets.all(4),
       child: SelectionItemOverlay<History>(
         item: entry,
+        padding: const EdgeInsets.only(bottom: 16),
         child: ImageTile(
           images: entry.thumbnails,
           onTap: parseLinkOnTap(context, entry.link),
-          title: Text(entry.getName(context)),
+          title: Padding(
+            padding: const EdgeInsets.only(top: 8),
+            child: Text(entry.getName(context)),
+          ),
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(formatTime(entry.visitedAt)),
-              if (entry.subtitle != null) const SizedBox(height: 4),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 4),
+                child: Text(formatTime(entry.visitedAt)),
+              ),
               if (entry.subtitle != null)
                 IgnorePointer(
                   child: DText(
