@@ -18,11 +18,27 @@ class HistoryPage extends StatefulWidget {
 
 class _HistoryPageState extends State<HistoryPage> {
   DateTime? search;
-  Set<HistoryFilter> filters = HistoryFilter.values.toSet();
+  Set<HistorySearchFilter> searchFilters = HistorySearchFilter.values.toSet();
+  Set<HistoryFilter> itemFilters = HistoryFilter.values.toSet();
 
-  String _buildFilter() =>
-      (filters.map((e) => r'^' '(${e.regex})' r'$').toList()..add(r'^$'))
-          .join('|');
+  String _buildFilter() {
+    String? regexShell(String? regex) =>
+        regex != null ? r'^' '($regex)' r'$' : null;
+    List<String?> regexes = [];
+    for (final searchFilter in searchFilters) {
+      switch (searchFilter) {
+        case HistorySearchFilter.items:
+          regexes.addAll((itemFilters.map((e) => regexShell(e.regex))));
+          break;
+        case HistorySearchFilter.searches:
+          regexes.addAll((itemFilters.map((e) => regexShell(e.searchRegex))));
+          break;
+      }
+    }
+    regexes.removeWhere((e) => e == null);
+    regexes.add(r'^$');
+    return regexes.join('|');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -151,21 +167,44 @@ class _HistoryPageState extends State<HistoryPage> {
                       ),
                     ),
                     const Divider(),
-                    for (final filter in HistoryFilter.values)
+                    for (final filter in HistorySearchFilter.values)
                       Padding(
                         padding: const EdgeInsets.only(left: 16),
                         child: CheckboxListTile(
+                          secondary: filter.icon,
                           title: Text(filter.title),
-                          value: filters.contains(filter),
+                          value: searchFilters.contains(filter),
                           onChanged: (value) {
                             if (value == null) {
                               return;
                             }
                             setState(() {
                               if (value) {
-                                filters.add(filter);
+                                searchFilters.add(filter);
                               } else {
-                                filters.remove(filter);
+                                searchFilters.remove(filter);
+                              }
+                            });
+                          },
+                        ),
+                      ),
+                    const Divider(),
+                    for (final filter in HistoryFilter.values)
+                      Padding(
+                        padding: const EdgeInsets.only(left: 16),
+                        child: CheckboxListTile(
+                          secondary: filter.icon,
+                          title: Text(filter.title),
+                          value: itemFilters.contains(filter),
+                          onChanged: (value) {
+                            if (value == null) {
+                              return;
+                            }
+                            setState(() {
+                              if (value) {
+                                itemFilters.add(filter);
+                              } else {
+                                itemFilters.remove(filter);
                               }
                             });
                           },
@@ -201,37 +240,63 @@ class _HistoryPageState extends State<HistoryPage> {
   }
 }
 
+enum HistorySearchFilter {
+  items,
+  searches;
+
+  String get title {
+    switch (this) {
+      case HistorySearchFilter.items:
+        return 'Items';
+      case HistorySearchFilter.searches:
+        return 'Searches';
+    }
+  }
+
+  Widget? get icon {
+    switch (this) {
+      case HistorySearchFilter.items:
+        return const Icon(Icons.article);
+      case HistorySearchFilter.searches:
+        return const Icon(Icons.search);
+    }
+  }
+}
+
 enum HistoryFilter {
   posts,
-  postSearch,
   pools,
-  poolSearch,
   topics,
-  topicSearch,
   users,
-  wikis,
-  wikiSearch;
+  wikis;
 
   String get title {
     switch (this) {
       case posts:
         return 'Posts';
-      case postSearch:
-        return 'Post searches';
       case pools:
         return 'Pools';
-      case poolSearch:
-        return 'Pool searches';
       case topics:
         return 'Topics';
-      case topicSearch:
-        return 'Topic searches';
       case wikis:
         return 'Wikis';
-      case wikiSearch:
-        return 'Wiki search';
       case users:
         return 'Users';
+    }
+  }
+
+  Widget? get icon {
+    switch (this) {
+      case HistoryFilter.posts:
+        return const Icon(Icons.image);
+      case HistoryFilter.pools:
+        return const Icon(Icons.collections);
+      case HistoryFilter.topics:
+        return const Icon(Icons.forum);
+      case HistoryFilter.users:
+        return const Icon(Icons.person);
+      case HistoryFilter.wikis:
+        return const Icon(Icons.info_outlined);
     }
   }
 
@@ -239,22 +304,29 @@ enum HistoryFilter {
     switch (this) {
       case posts:
         return r'/posts/\d+';
-      case postSearch:
-        return r'/posts(\?.+)?';
       case pools:
         return r'/pools/\d+';
-      case poolSearch:
-        return r'/pools(\?.+)?';
       case topics:
         return r'/forum_topics/\d+';
-      case topicSearch:
-        return r'/forum_topics(\?.+)?';
       case wikis:
         return r'/wiki_pages/[^\s]+';
-      case wikiSearch:
-        return r'/wiki_pages(\?.+)?';
       case users:
         return r'/users/[^\s]+';
+    }
+  }
+
+  String? get searchRegex {
+    switch (this) {
+      case posts:
+        return r'/posts(\?.+)?';
+      case pools:
+        return r'/pools(\?.+)?';
+      case topics:
+        return r'/forum_topics(\?.+)?';
+      case wikis:
+        return r'/wiki_pages(\?.+)?';
+      case users:
+        return null;
     }
   }
 }
