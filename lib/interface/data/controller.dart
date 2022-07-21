@@ -235,7 +235,8 @@ mixin RefreshableController<PageKeyType, ItemType>
 }
 
 extension Loading<T extends RawDataController> on T {
-  Future<T> waitForFirstPage() {
+  Future<T> waitForFirstPage() async {
+    await Future.delayed(Duration.zero);
     Completer<T> completer = Completer<T>();
 
     void onUpdate() {

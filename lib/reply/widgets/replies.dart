@@ -23,8 +23,7 @@ class RepliesPage extends StatelessWidget {
             await controller.waitForFirstPage();
             context.read<HistoriesService>().addTopic(
                   topic,
-                  // TODO: figure out how this can be null
-                  replies: controller.itemList ?? [],
+                  replies: controller.itemList!,
                 );
           },
           listenable: controller.orderByOldest,

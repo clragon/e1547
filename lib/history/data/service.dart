@@ -130,11 +130,17 @@ class HistoriesService extends ChangeNotifier {
           .toList() ??
       [];
 
+  String _composeSearchSubtitle(Map<String, String> items) => items.entries
+      .take(5)
+      .map((e) => '* "${e.value.replaceAll(r'"', '\'')}":${e.key}')
+      .join('\n');
+
   Future<void> addPost(Post post) async => add(
         HistoryRequest(
           visitedAt: DateTime.now(),
           link: post.link,
           thumbnails: _getThumbnails([post]),
+          subtitle: post.description.isNotEmpty ? post.description : null,
         ),
       );
 
@@ -173,6 +179,11 @@ class HistoriesService extends ChangeNotifier {
               'search[name_matches]': search,
             },
           ).toString(),
+          subtitle: pools?.isNotEmpty ?? false
+              ? _composeSearchSubtitle({
+                  for (final value in pools!) value.link: tagToTitle(value.name)
+                })
+              : null,
         ),
       );
 
@@ -202,6 +213,11 @@ class HistoriesService extends ChangeNotifier {
               'search[title_matches]': search,
             },
           ).toString(),
+          subtitle: topics?.isNotEmpty ?? false
+              ? _composeSearchSubtitle(
+                  {for (final value in topics!) value.link: value.title},
+                )
+              : null,
         ),
       );
 
@@ -230,6 +246,10 @@ class HistoriesService extends ChangeNotifier {
               'search[title]': search,
             },
           ).toString(),
+          subtitle: wikis?.isNotEmpty ?? false
+              ? _composeSearchSubtitle(
+                  {for (final value in wikis!) value.link: value.title})
+              : null,
         ),
       );
 
