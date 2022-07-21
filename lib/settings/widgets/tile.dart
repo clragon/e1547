@@ -105,42 +105,59 @@ class ImageTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool centerTitle = images?.isEmpty ?? true;
     return ClipRRect(
       borderRadius: const BorderRadius.all(Radius.circular(4)),
       child: Column(
         children: [
-          if (images?.isNotEmpty ?? false || subtitle == null)
-            Stack(
-              fit: StackFit.passthrough,
-              children: [
-                SizedBox(
-                  height: images?.isNotEmpty ?? true ? 300 : 150,
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: hero != null
-                            ? Hero(
-                                tag: hero!,
-                                child: ImageGrid(images: images),
-                              )
-                            : ImageGrid(images: images),
-                      ),
-                    ],
+          Stack(
+            fit: StackFit.passthrough,
+            children: [
+              SizedBox(
+                height: images?.isNotEmpty ?? true ? 300 : 150,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    centerTitle
+                        ? Expanded(
+                            child: Card(
+                              child: Padding(
+                                padding: const EdgeInsets.all(16),
+                                child: Center(
+                                  child: DefaultTextStyle(
+                                    style:
+                                        Theme.of(context).textTheme.headline6!,
+                                    textAlign: TextAlign.center,
+                                    child: title,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          )
+                        : Expanded(
+                            child: hero != null
+                                ? Hero(
+                                    tag: hero!,
+                                    child: ImageGrid(images: images),
+                                  )
+                                : ImageGrid(images: images),
+                          ),
+                  ],
+                ),
+              ),
+              Positioned.fill(
+                child: Material(
+                  type: MaterialType.transparency,
+                  child: InkWell(
+                    onTap: onTap,
+                    onLongPress: onLongPress,
                   ),
                 ),
-                Positioned.fill(
-                  child: Material(
-                    type: MaterialType.transparency,
-                    child: InkWell(
-                      onTap: onTap,
-                      onLongPress: onLongPress,
-                    ),
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
+          ),
           ListTile(
-            title: title,
+            title: !centerTitle ? title : null,
             subtitle: subtitle,
             trailing: trailing,
             onTap: onTap,

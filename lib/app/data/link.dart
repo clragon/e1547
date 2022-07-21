@@ -174,7 +174,7 @@ final List<LinkParser> allLinkParsers = [
     ),
   ),
   LinkParser(
-    path: r'/forum_topics?',
+    path: r'/forum_topics',
     parameters: [r'search[title_matches]'],
     transformer: (arguments) => Link(
       type: LinkType.topic.name,

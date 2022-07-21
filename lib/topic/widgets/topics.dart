@@ -1,3 +1,4 @@
+import 'package:e1547/history/history.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/reply/reply.dart';
 import 'package:e1547/topic/topic.dart';
@@ -20,43 +21,54 @@ class _TopicsPageState extends State<TopicsPage> with DrawerEntry {
     return TopicsProvider(
       search: widget.search,
       child: Consumer<TopicsController>(
-        builder: (context, controller, child) => RefreshableControllerPage(
-          appBar: const DefaultAppBar(title: Text('Topics')),
-          floatingActionButton: SheetFloatingActionButton(
-            actionIcon: Icons.search,
-            builder: (context, actionController) => ControlledTextField(
-              labelText: 'Topic title',
-              actionController: actionController,
-              textController:
-                  TextEditingController(text: controller.search.value),
-              submit: (value) => controller.search.value = value,
+        builder: (context, controller, child) => ListenableListener(
+          listener: () async {
+            await controller.waitForFirstPage();
+            context.read<HistoriesService>().addTopicSearch(
+                  controller.search.value,
+                  // TODO: figure out how this can be null
+                  topics: controller.itemList ?? [],
+                );
+          },
+          listenable: controller.search,
+          child: RefreshableControllerPage(
+            appBar: const DefaultAppBar(title: Text('Topics')),
+            floatingActionButton: SheetFloatingActionButton(
+              actionIcon: Icons.search,
+              builder: (context, actionController) => ControlledTextField(
+                labelText: 'Topic title',
+                actionController: actionController,
+                textController:
+                    TextEditingController(text: controller.search.value),
+                submit: (value) => controller.search.value = value,
+              ),
             ),
-          ),
-          drawer: const NavigationDrawer(),
-          controller: controller,
-          builder: (context) => PagedListView(
-            padding: defaultListPadding,
-            pagingController: controller,
-            builderDelegate: defaultPagedChildBuilderDelegate<Topic>(
+            drawer: const NavigationDrawer(),
+            controller: controller,
+            builder: (context) => PagedListView(
+              padding: defaultListPadding,
               pagingController: controller,
-              itemBuilder: (context, item, index) => TopicTile(
-                topic: item,
-                onPressed: () => Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => RepliesPage(topic: item),
+              builderDelegate: defaultPagedChildBuilderDelegate<Topic>(
+                pagingController: controller,
+                itemBuilder: (context, item, index) => TopicTile(
+                  topic: item,
+                  onPressed: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => RepliesPage(topic: item),
+                    ),
                   ),
-                ),
-                onCountPressed: () => Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => RepliesPage(
-                      topic: item,
-                      orderByOldest: false,
+                  onCountPressed: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => RepliesPage(
+                        topic: item,
+                        orderByOldest: false,
+                      ),
                     ),
                   ),
                 ),
+                onEmpty: const Text('No topics'),
+                onError: const Text('Failed to load topics'),
               ),
-              onEmpty: const Text('No topics'),
-              onError: const Text('Failed to load topics'),
             ),
           ),
         ),
