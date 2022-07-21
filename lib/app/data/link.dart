@@ -257,13 +257,13 @@ VoidCallback? parseLinkOnTap(BuildContext context, String link) {
       case LinkType.user:
         String? name = result.name ?? result.id?.toString();
         if (name != null) {
-          return navWrapper((context) => UserLoadingPage(result.name!));
+          return navWrapper((context) => UserLoadingPage(name));
         }
         break;
       case LinkType.wiki:
         String? name = result.name ?? result.id?.toString();
         if (name != null) {
-          return navWrapper((context) => WikiLoadingPage(result.name!));
+          return navWrapper((context) => WikiLoadingPage(name));
         }
         break;
       case LinkType.topic:
