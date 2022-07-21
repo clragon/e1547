@@ -10,6 +10,7 @@ import 'package:e1547/settings/settings.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:e1547/topic/topic.dart';
 import 'package:e1547/user/user.dart';
+import 'package:e1547/wiki/wiki.dart';
 import 'package:flutter/material.dart';
 import 'package:mutex/mutex.dart';
 
@@ -168,17 +169,12 @@ class HistoriesService extends ChangeNotifier {
       add(
         HistoryRequest(
           visitedAt: DateTime.now(),
-          link: Uri(path: '/pools', queryParameters: {
-            'search[name_matches]': search,
-          }).toString(),
-        ),
-      );
-
-  Future<void> addUser(User user, {Post? avatar}) async => add(
-        HistoryRequest(
-          visitedAt: DateTime.now(),
-          link: '/users/${user.name}',
-          thumbnails: [if (avatar?.sample.url != null) avatar!.sample.url!],
+          link: Uri(
+            path: '/pools',
+            queryParameters: {
+              'search[name_matches]': search,
+            },
+          ).toString(),
         ),
       );
 
@@ -202,9 +198,41 @@ class HistoriesService extends ChangeNotifier {
       add(
         HistoryRequest(
           visitedAt: DateTime.now(),
-          link: Uri(path: '/forum_topics', queryParameters: {
-            'search[title_matches]': search,
-          }).toString(),
+          link: Uri(
+            path: '/forum_topics',
+            queryParameters: {
+              'search[title_matches]': search,
+            },
+          ).toString(),
+        ),
+      );
+
+  Future<void> addUser(User user, {Post? avatar}) async => add(
+        HistoryRequest(
+          visitedAt: DateTime.now(),
+          link: '/users/${user.name}',
+          thumbnails: [if (avatar?.sample.url != null) avatar!.sample.url!],
+        ),
+      );
+
+  Future<void> addWiki(Wiki wiki) async => add(
+        HistoryRequest(
+          visitedAt: DateTime.now(),
+          link: '/wiki_pages/${wiki.id}',
+          title: wiki.title,
+          subtitle: wiki.body,
+        ),
+      );
+
+  Future<void> addWikiSearch(String search, {List<Wiki>? wikis}) async => add(
+        HistoryRequest(
+          visitedAt: DateTime.now(),
+          link: Uri(
+            path: '/wiki_pages',
+            queryParameters: {
+              'search[title]': search,
+            },
+          ).toString(),
         ),
       );
 

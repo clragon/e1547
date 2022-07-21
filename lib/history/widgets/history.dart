@@ -208,9 +208,9 @@ enum HistoryFilter {
   poolSearch,
   topics,
   topicSearch,
-  users /*,
-  wikis*/
-  ;
+  users,
+  wikis,
+  wikiSearch;
 
   String get title {
     switch (this) {
@@ -226,6 +226,10 @@ enum HistoryFilter {
         return 'Topics';
       case topicSearch:
         return 'Topic searches';
+      case wikis:
+        return 'Wikis';
+      case wikiSearch:
+        return 'Wiki search';
       case users:
         return 'Users';
     }
@@ -245,6 +249,10 @@ enum HistoryFilter {
         return r'/forum_topics/\d+';
       case topicSearch:
         return r'/forum_topics(\?.+)?';
+      case wikis:
+        return r'/wiki_pages/[^\s]+';
+      case wikiSearch:
+        return r'/wiki_pages(\?.+)?';
       case users:
         return r'/users/[^\s]+';
     }

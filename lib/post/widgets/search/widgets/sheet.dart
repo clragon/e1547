@@ -1,5 +1,7 @@
+import 'package:collection/collection.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/dtext/dtext.dart';
+import 'package:e1547/history/history.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/tag/tag.dart';
@@ -131,11 +133,19 @@ class _SearchTagDisplayState extends State<SearchTagDisplay> {
   Future<Wiki?> retrieveWiki() async {
     List<Wiki> results =
         await context.read<Client>().wikis(1, search: tagToName(widget.tag));
-    if (results.isNotEmpty && results.first.title == widget.tag) {
-      return results.first;
-    } else {
-      return null;
-    }
+    return results.firstWhereOrNull((element) => element.title == widget.tag);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    wiki.then((value) {
+      if (value != null) {
+        context.read<HistoriesService>().addWiki(value);
+      } else {
+        context.read<HistoriesService>().addWikiSearch(widget.tag);
+      }
+    });
   }
 
   @override
