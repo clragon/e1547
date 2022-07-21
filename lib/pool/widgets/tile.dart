@@ -1,4 +1,5 @@
 import 'package:e1547/dtext/dtext.dart';
+import 'package:e1547/interface/interface.dart';
 import 'package:e1547/pool/pool.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
@@ -60,7 +61,7 @@ class PoolTile extends StatelessWidget {
                 child: IgnorePointer(
                   child: Opacity(
                     opacity: 0.35,
-                    child: DText(pool.description),
+                    child: DText(pool.description.ellipse(400)),
                   ),
                 ),
               ),

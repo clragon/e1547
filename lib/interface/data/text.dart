@@ -49,6 +49,16 @@ String dateOrName(DateTime date) {
   return title;
 }
 
+extension Ellipse on String {
+  String ellipse(int limit) {
+    if (length > limit) {
+      return '${split('').take(400).join()}...';
+    } else {
+      return this;
+    }
+  }
+}
+
 extension Trimming on List<String> {
   List<String> trim() =>
       map((e) => e.trim()).toList()..removeWhere((element) => element.isEmpty);
