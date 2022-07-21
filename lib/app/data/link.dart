@@ -165,6 +165,14 @@ final List<LinkParser> allLinkParsers = [
     },
   ),
   LinkParser(
+    path: r'/wiki_pages',
+    parameters: [r'search[title]'],
+    transformer: (arguments) => Link(
+      type: LinkType.wiki.name,
+      search: arguments[r'search[title]']!,
+    ),
+  ),
+  LinkParser(
     path: r'/forum_topics/:id(\d+)',
     parameters: [r'page(\d+)?'],
     transformer: (arguments) => Link(
