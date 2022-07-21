@@ -89,14 +89,14 @@ class _PostDetailImageToggleState extends State<PostDetailImageToggle> {
       if (context.read<Settings>().customHost.value != null) {
         replacement ??=
             await context.read<Client>().post(post.id, unsafe: true);
-        if (!widget.post.isDenied) {
-          widget.post.isAllowed = true;
-        }
         widget.post.value = post.copyWith(
           fileRaw: post.fileRaw.copyWith(url: replacement!.fileRaw.url),
           preview: post.preview.copyWith(url: replacement!.preview.url),
           sample: post.sample.copyWith(url: replacement!.sample.url),
         );
+        if (!widget.post.isDenied) {
+          widget.post.isAllowed = true;
+        }
       }
     } else {
       if (widget.post.isAllowed) {
@@ -123,45 +123,48 @@ class _PostDetailImageToggleState extends State<PostDetailImageToggle> {
     if (!post.flags.deleted) {
       return AnimatedBuilder(
         animation: widget.post,
-        builder: (context, child) => CrossFade(
-          showChild: post.file.url == null ||
-              (!post.isFavorited &&
-                  (widget.post.isDenied || widget.post.isAllowed)),
-          duration: const Duration(milliseconds: 200),
-          child: Card(
-            color: widget.post.isAllowed ? Colors.black12 : Colors.transparent,
-            elevation: 0,
-            child: InkWell(
-              onTap: onToggle,
-              child: Padding(
-                padding: const EdgeInsets.all(8),
-                child: Row(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 2),
-                      child: Icon(
-                        widget.post.isAllowed
-                            ? Icons.visibility_off
-                            : Icons.visibility,
-                        size: 16,
+        builder: (context, child) {
+          return CrossFade(
+            showChild: post.file.url == null ||
+                (!post.isFavorited &&
+                    (widget.post.isDenied || widget.post.isAllowed)),
+            duration: const Duration(milliseconds: 200),
+            child: Card(
+              color:
+                  widget.post.isAllowed ? Colors.black12 : Colors.transparent,
+              elevation: 0,
+              child: InkWell(
+                onTap: onToggle,
+                child: Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: Row(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 2),
+                        child: Icon(
+                          widget.post.isAllowed
+                              ? Icons.visibility_off
+                              : Icons.visibility,
+                          size: 16,
+                        ),
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 5),
-                      child: Text(widget.post.isAllowed ? 'hide' : 'show'),
-                    ),
-                    CrossFade(
-                      showChild: loading,
-                      child: const SizedCircularProgressIndicator(
-                        size: 16,
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 5),
+                        child: Text(widget.post.isAllowed ? 'hide' : 'show'),
                       ),
-                    ),
-                  ],
+                      CrossFade(
+                        showChild: loading,
+                        child: const SizedCircularProgressIndicator(
+                          size: 16,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-        ),
+          );
+        },
       );
     } else {
       return const SizedBox.shrink();
