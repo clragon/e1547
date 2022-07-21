@@ -26,8 +26,7 @@ class _TopicsPageState extends State<TopicsPage> with DrawerEntry {
             await controller.waitForFirstPage();
             context.read<HistoriesService>().addTopicSearch(
                   controller.search.value,
-                  // TODO: figure out how this can be null
-                  topics: controller.itemList ?? [],
+                  topics: controller.itemList!,
                 );
           },
           listenable: controller.search,
