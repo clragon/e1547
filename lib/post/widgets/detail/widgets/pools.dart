@@ -1,9 +1,6 @@
-import 'package:e1547/client/client.dart';
-import 'package:e1547/interface/interface.dart';
 import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class PoolDisplay extends StatelessWidget {
   final Post post;
@@ -21,22 +18,12 @@ class PoolDisplay extends StatelessWidget {
             child: Text('Pools', style: TextStyle(fontSize: 16)),
           ),
           ...post.pools.map(
-            (id) => LoadingTile(
+            (id) => ListTile(
               leading: const Icon(Icons.group),
               title: Text(id.toString()),
-              onTap: () async {
-                Pool pool = await context.read<Client>().pool(id);
-                try {
-                  Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => PoolPage(pool: pool),
-                  ));
-                } on DioError {
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    duration: const Duration(seconds: 1),
-                    content: Text('Coulnd\'t retrieve Pool #${pool.id}'),
-                  ));
-                }
-              },
+              onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => PoolLoadingPage(id),
+              )),
             ),
           ),
           const Divider(),

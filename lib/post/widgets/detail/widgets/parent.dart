@@ -42,7 +42,7 @@ class ParentDisplay extends StatelessWidget {
                       style: TextStyle(fontSize: 16),
                     ),
                   ),
-                  LoadingTile(
+                  ListTile(
                     leading: const Icon(Icons.supervisor_account),
                     title: Text(parentId?.toString() ?? 'none'),
                     trailing: isEditing && editingController != null
@@ -60,25 +60,11 @@ class ParentDisplay extends StatelessWidget {
                                 : null,
                           )
                         : null,
-                    onTap: () async {
-                      if (parentId != null) {
-                        try {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => PostLoadingPage(parentId!),
-                            ),
-                          );
-                        } on DioError {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              duration: const Duration(seconds: 1),
-                              content:
-                                  Text('Coulnd\'t retrieve Post #$parentId'),
-                            ),
-                          );
-                        }
-                      }
-                    },
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => PostLoadingPage(parentId!),
+                      ),
+                    ),
                   ),
                   const Divider(),
                 ],
@@ -104,24 +90,14 @@ class ParentDisplay extends StatelessWidget {
                     ),
                   ),
                   ...post.relationships.children.map(
-                    (child) => LoadingTile(
+                    (child) => ListTile(
                       leading: const Icon(Icons.supervised_user_circle),
                       title: Text(child.toString()),
-                      onTap: () async {
-                        try {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => PostLoadingPage(child),
-                            ),
-                          );
-                        } on DioError {
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            duration: const Duration(seconds: 1),
-                            content: Text(
-                                'Coulnd\'t retrieve Post #${child.toString()}'),
-                          ));
-                        }
-                      },
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => PostLoadingPage(child),
+                        ),
+                      ),
                     ),
                   ),
                   const Divider(),
