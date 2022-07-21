@@ -1,10 +1,10 @@
 import 'package:e1547/dtext/dtext.dart';
 
 final DTextParser listParser = DTextParser(
-  regex: RegExp(r'(^|\n)(?<dots>\*+) '),
+  regex: RegExp(r'(?<start>^|\n)(?<dots>\*+) '),
   tranformer: (context, match, state) => parseDText(
     context,
-    '\n${'  ' * ('*'.allMatches(match.between).length - 1)}• ',
+    '${match.namedGroup('start')!}${'  ' * (match.namedGroup('dots')!.length - 1)}• ',
     state,
   ),
 );
