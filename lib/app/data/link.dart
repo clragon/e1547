@@ -255,12 +255,14 @@ VoidCallback? parseLinkOnTap(BuildContext context, String link) {
         }
         return navWrapper((context) => PoolsPage(search: result.search), true);
       case LinkType.user:
-        if (result.name != null) {
+        String? name = result.name ?? result.id?.toString();
+        if (name != null) {
           return navWrapper((context) => UserLoadingPage(result.name!));
         }
         break;
       case LinkType.wiki:
-        if (result.name != null) {
+        String? name = result.name ?? result.id?.toString();
+        if (name != null) {
           return navWrapper((context) => WikiLoadingPage(result.name!));
         }
         break;
