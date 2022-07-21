@@ -5,8 +5,10 @@ import 'package:e1547/history/history.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
+import 'package:e1547/reply/reply.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:e1547/tag/tag.dart';
+import 'package:e1547/topic/topic.dart';
 import 'package:e1547/user/user.dart';
 import 'package:flutter/material.dart';
 import 'package:mutex/mutex.dart';
@@ -177,6 +179,32 @@ class HistoriesService extends ChangeNotifier {
           visitedAt: DateTime.now(),
           link: '/users/${user.name}',
           thumbnails: [if (avatar?.sample.url != null) avatar!.sample.url!],
+        ),
+      );
+
+  Future<void> addTopic(
+    Topic topic, {
+    List<Reply>? replies,
+  }) async =>
+      add(
+        HistoryRequest(
+          visitedAt: DateTime.now(),
+          link: '/forum_topics/${topic.id}',
+          title: topic.title,
+          subtitle: replies?.first.body,
+        ),
+      );
+
+  Future<void> addTopicSearch(
+    String search, {
+    List<Topic>? topics,
+  }) async =>
+      add(
+        HistoryRequest(
+          visitedAt: DateTime.now(),
+          link: Uri(path: '/forum_topics', queryParameters: {
+            'search[title_matches]': search,
+          }).toString(),
         ),
       );
 

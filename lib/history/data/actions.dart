@@ -19,14 +19,24 @@ extension Identification on History {
   }
 
   String getName(BuildContext context) {
-    if (title != null) {
-      return tagToTitle(title!);
-    }
-
     Link? parsed = parseLink(link);
     LinkType? type = LinkType.values.asNameMap()[parsed?.type];
     if (parsed == null || type == null) {
+      if (title != null) {
+        return title!;
+      }
       return link;
+    }
+
+    if (title != null) {
+      switch (type) {
+        case LinkType.pool:
+        case LinkType.wiki:
+          return tagToTitle(title!);
+        default:
+          break;
+      }
+      return title!;
     }
 
     if (parsed.name != null) {

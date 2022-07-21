@@ -23,14 +23,7 @@ class HistoryTile extends StatelessWidget {
         child: ImageTile(
           images: entry.thumbnails,
           onTap: parseLinkOnTap(context, entry.link),
-          title: Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Flexible(
-                child: Text(entry.getName(context)),
-              ),
-            ],
-          ),
+          title: Text(entry.getName(context)),
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
