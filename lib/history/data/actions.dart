@@ -76,6 +76,9 @@ extension Identification on History {
           if (username != null && favRegex(username).hasMatch(search)) {
             return 'Favorites';
           }
+          if (search == 'order:rank') {
+            return 'Hot posts';
+          }
           return 'Posts - ${tagToTitle(search)}';
         case LinkType.pool:
           return 'Pools - $search';

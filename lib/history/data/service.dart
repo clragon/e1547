@@ -140,7 +140,6 @@ class HistoriesService extends ChangeNotifier {
 
   Future<void> addPostSearch(
     String search, {
-    String? alias,
     List<Post>? posts,
   }) async =>
       add(
@@ -148,7 +147,6 @@ class HistoriesService extends ChangeNotifier {
           visitedAt: DateTime.now(),
           link: Tagset.parse(search).link,
           thumbnails: _getThumbnails(posts),
-          title: alias,
         ),
       );
 
@@ -218,8 +216,7 @@ class HistoriesService extends ChangeNotifier {
   Future<void> addWiki(Wiki wiki) async => add(
         HistoryRequest(
           visitedAt: DateTime.now(),
-          link: '/wiki_pages/${wiki.id}',
-          title: wiki.title,
+          link: '/wiki_pages/${wiki.title}',
           subtitle: wiki.body,
         ),
       );
