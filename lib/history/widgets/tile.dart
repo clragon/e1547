@@ -37,11 +37,7 @@ class HistoryTile extends StatelessWidget {
               ),
               if (entry.subtitle != null)
                 IgnorePointer(
-                  child: DText(
-                    entry.subtitle!.length > 400
-                        ? '${entry.subtitle!.split('').take(400).join()}...'
-                        : entry.subtitle!,
-                  ),
+                  child: DText(entry.subtitle!.ellipse(400)),
                 ),
             ],
           ),
