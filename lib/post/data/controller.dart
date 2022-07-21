@@ -182,6 +182,7 @@ class PostsController extends DataController<Post>
   void updateItem(int index, Post item, {bool force = false}) {
     assertHasItems();
     _posts![_posts!.indexOf(itemList![index])] = item;
+    reapplyFilter();
     super.updateItem(index, item, force: force);
   }
 
