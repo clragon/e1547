@@ -31,7 +31,7 @@ class PoolTile extends StatelessWidget {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
+              padding: const EdgeInsets.only(left: 4, right: 16),
               child: Text(
                 pool.postIds.length.toString(),
                 style: Theme.of(context).textTheme.subtitle1,

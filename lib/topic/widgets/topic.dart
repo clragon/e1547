@@ -36,7 +36,7 @@ class TopicTile extends StatelessWidget {
                 onTap: onCountPressed,
                 child: Padding(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      const EdgeInsets.only(left: 8, right: 16, top: 6, bottom: 6),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.end,
