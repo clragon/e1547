@@ -42,8 +42,7 @@ class FileDisplay extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(getCurrentDateTimeFormat()
-                  .format(post.value.createdAt.toLocal())),
+              Text(formatDateTime(post.value.createdAt.toLocal())),
               Text(filesize(post.value.file.size, 1)),
             ],
           ),
@@ -54,8 +53,7 @@ class FileDisplay extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               if (post.value.updatedAt != null)
-                Text(getCurrentDateTimeFormat()
-                    .format(post.value.updatedAt!.toLocal())),
+                Text(formatDateTime(post.value.updatedAt!.toLocal())),
               TagGesture(
                 tag: 'type:${post.value.file.ext}',
                 controller: post.parent,

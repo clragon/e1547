@@ -28,15 +28,15 @@ extension Selection on TextEditingController {
   }
 }
 
-DateFormat getCurrentDateTimeFormat() =>
-    DateFormat.yMd(Platform.localeName).add_jm();
-
-DateFormat getCurrentDateFormat() => DateFormat.yMd(Platform.localeName);
-
-DateFormat getCurrentTimeFormat() => DateFormat.jm(Platform.localeName);
+String formatDateTime(DateTime dateTime) =>
+    DateFormat.yMd(Platform.localeName).add_jm().format(dateTime);
+String formatDate(DateTime date) =>
+    DateFormat.yMd(Platform.localeName).format(date);
+String formatTime(DateTime time) =>
+    DateFormat.jm(Platform.localeName).format(time);
 
 String dateOrName(DateTime date) {
-  String title = getCurrentDateFormat().format(date);
+  String title = formatDate(date);
   DateTime today = DateUtils.dateOnly(DateTime.now());
   if (today.isAtSameMomentAs(DateUtils.dateOnly(date))) {
     title = 'Today';

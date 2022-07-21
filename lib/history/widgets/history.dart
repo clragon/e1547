@@ -206,9 +206,9 @@ enum HistoryFilter {
   postSearch,
   pools,
   poolSearch,
-  users,
   topics,
-  topicSearch /*,
+  topicSearch,
+  users /*,
   wikis*/
   ;
 
@@ -222,12 +222,12 @@ enum HistoryFilter {
         return 'Pools';
       case poolSearch:
         return 'Pool searches';
-      case users:
-        return 'Users';
       case topics:
         return 'Topics';
       case topicSearch:
         return 'Topic searches';
+      case users:
+        return 'Users';
     }
   }
 
@@ -241,12 +241,12 @@ enum HistoryFilter {
         return r'/pools/\d+';
       case poolSearch:
         return r'/pools(\?.+)?';
-      case users:
-        return r'/users/[^\s]+';
       case topics:
         return r'/forum_topics/\d+';
       case topicSearch:
         return r'/forum_topics(\?.+)?';
+      case users:
+        return r'/users/[^\s]+';
     }
   }
 }

@@ -27,7 +27,7 @@ class HistoryTile extends StatelessWidget {
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(getCurrentTimeFormat().format(entry.visitedAt)),
+              Text(formatTime(entry.visitedAt)),
               if (entry.subtitle != null) const SizedBox(height: 4),
               if (entry.subtitle != null)
                 IgnorePointer(
@@ -50,6 +50,15 @@ class HistoryTile extends StatelessWidget {
                   value: () => tagSearchSheet(
                     context: context,
                     tag: parseLink(entry.link)!.search!,
+                  ),
+                ),
+              if (entry.subtitle != null)
+                PopupMenuTile(
+                  title: 'Description',
+                  icon: Icons.description,
+                  value: () => historySheet(
+                    context: context,
+                    entry: entry,
                   ),
                 ),
               PopupMenuTile(

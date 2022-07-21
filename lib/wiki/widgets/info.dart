@@ -57,12 +57,12 @@ class WikiInfo extends StatelessWidget {
           ),
           textInfoRow(
             'created',
-            getCurrentDateTimeFormat().format(wiki.createdAt.toLocal()),
+            formatDateTime(wiki.createdAt.toLocal()),
           ),
           textInfoRow(
             'updated',
             wiki.updatedAt != null
-                ? getCurrentDateTimeFormat().format(
+                ? formatDateTime(
                     wiki.updatedAt!.toLocal(),
                   )
                 : 'never',
