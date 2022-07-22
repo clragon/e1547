@@ -27,7 +27,7 @@ class HistoriesService extends ChangeNotifier {
   bool get trimming => settings.trimHistory.value;
   String get host => client.host;
 
-  final int trimAmount = 3000;
+  final int trimAmount = 5000;
   final Duration trimAge = const Duration(days: 90);
 
   final Mutex _lock = Mutex();
@@ -106,7 +106,9 @@ class HistoriesService extends ChangeNotifier {
                   .equals(e.thumbnails, item.thumbnails))) {
             return;
           }
-          await trim();
+          if (trimming) {
+            await trim();
+          }
           return _database.add(host, item);
         },
       );
