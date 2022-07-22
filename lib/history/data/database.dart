@@ -94,7 +94,9 @@ class HistoriesDatabase extends _$HistoriesDatabase {
     DateTime? day,
   }) {
     final selectable = select(historiesTable)
-      ..orderBy([(t) => OrderingTerm(expression: t.visitedAt)])
+      ..orderBy([
+        (t) => OrderingTerm(expression: t.visitedAt, mode: OrderingMode.desc)
+      ])
       ..where((tbl) => _hostQuery(tbl, host));
     if (linkRegex != null) {
       selectable.where((tbl) => tbl.link.regexp(linkRegex));
@@ -195,6 +197,9 @@ class HistoriesDatabase extends _$HistoriesDatabase {
         (await getRecent(host: host, range: maxAmount, maxAge: maxAge))
             .map((e) => e.id)
             .toList();
-    await (delete(historiesTable)..where((tbl) => tbl.id.isNotIn(kept))).go();
+    await (delete(historiesTable)
+          ..where((tbl) => tbl.host.equals(host))
+          ..where((tbl) => tbl.id.isNotIn(kept)))
+        .go();
   }
 }
