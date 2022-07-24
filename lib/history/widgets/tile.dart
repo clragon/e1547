@@ -35,7 +35,7 @@ class HistoryTile extends StatelessWidget {
                 padding: const EdgeInsets.only(bottom: 4),
                 child: Text(formatTime(entry.visitedAt)),
               ),
-              if (entry.subtitle != null)
+              if (entry.subtitle?.isNotEmpty ?? false)
                 IgnorePointer(
                   child: DText(entry.subtitle!.ellipse(400)),
                 ),
