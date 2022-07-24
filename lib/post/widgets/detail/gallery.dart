@@ -24,24 +24,15 @@ class PostDetailGallery extends StatefulWidget {
 }
 
 class _PostDetailGalleryState extends State<PostDetailGallery>
-    with ListenerCallbackMixin, ImagePreloader {
+    with ImagePreloader {
   bool hasRequestedNextPage = false;
   late PageController pageController = widget.pageController ??
       PageController(initialPage: widget.initialPage ?? 0);
 
-  @override
-  Map<Listenable, VoidCallback> get listeners => {
-        widget.controller: () {
-          if (widget.controller.value.status == PagingStatus.ongoing) {
-            hasRequestedNextPage = false;
-          }
-        },
-      };
-
   void loadNextPage(int index) {
     if (!hasRequestedNextPage) {
       int newPageRequestTriggerIndex =
-          max(0, widget.controller.itemList?.length ?? 0 - 3);
+          max(0, ((widget.controller.itemList?.length ?? 0) - 3) - 1);
       if (widget.controller.nextPageKey != null &&
           index >= newPageRequestTriggerIndex) {
         WidgetsBinding.instance.addPostFrameCallback((_) => widget.controller
@@ -56,43 +47,51 @@ class _PostDetailGalleryState extends State<PostDetailGallery>
     return ChangeNotifierProvider.value(
       value: widget.controller,
       child: Consumer<PostsController>(
-        builder: (context, controller, child) => PageView.builder(
-          controller: pageController,
-          itemBuilder: (context, index) {
-            loadNextPage(index);
-            return PrimaryScrollController(
-              controller: ScrollController(),
-              child: PostProvider(
-                id: controller.itemList![index].id,
-                child: Consumer<PostController>(
-                  builder: (context, post, child) => PostDetail(
-                    post: post,
-                    onTapImage: () => Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => PostDetailConnector(
-                          controller: controller,
-                          child: PostFullscreenGallery(
+        builder: (context, controller, child) => ListenableListener(
+          listener: () {
+            if (widget.controller.value.status == PagingStatus.ongoing) {
+              hasRequestedNextPage = false;
+            }
+          },
+          listenable: controller,
+          child: PageView.builder(
+            controller: pageController,
+            itemBuilder: (context, index) {
+              loadNextPage(index);
+              return PrimaryScrollController(
+                controller: ScrollController(),
+                child: PostProvider(
+                  id: controller.itemList![index].id,
+                  child: Consumer<PostController>(
+                    builder: (context, post, child) => PostDetail(
+                      post: post,
+                      onTapImage: () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => PostDetailConnector(
                             controller: controller,
-                            initialPage: index,
-                            onPageChanged: pageController.jumpToPage,
+                            child: PostFullscreenGallery(
+                              controller: controller,
+                              initialPage: index,
+                              onPageChanged: pageController.jumpToPage,
+                            ),
                           ),
                         ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            );
-          },
-          itemCount: controller.itemList?.length ?? 0,
-          onPageChanged: (index) {
-            widget.onPageChanged?.call(index);
-            preloadImages(
-              index: index,
-              posts: controller.itemList!,
-              size: ImageSize.sample,
-            );
-          },
+              );
+            },
+            itemCount: controller.itemList?.length ?? 0,
+            onPageChanged: (index) {
+              widget.onPageChanged?.call(index);
+              preloadImages(
+                index: index,
+                posts: controller.itemList!,
+                size: ImageSize.sample,
+              );
+            },
+          ),
         ),
       ),
     );
