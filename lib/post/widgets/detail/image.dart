@@ -126,8 +126,8 @@ class _PostDetailImageToggleState extends State<PostDetailImageToggle> {
         builder: (context, child) {
           return CrossFade(
             showChild: post.file.url == null ||
-                (!post.isFavorited &&
-                    (widget.post.isDenied || widget.post.isAllowed)),
+                (!post.isFavorited && widget.post.isDenied) ||
+                widget.post.isAllowed,
             duration: const Duration(milliseconds: 200),
             child: Card(
               color:
