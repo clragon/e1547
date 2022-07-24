@@ -108,8 +108,7 @@ class SearchInputCutout extends ShapeBorder {
   }
 
   @override
-  void paint(Canvas canvas, Rect rect, {TextDirection? textDirection}) =>
-      throw UnimplementedError('$runtimeType cannot be painted');
+  void paint(Canvas canvas, Rect rect, {TextDirection? textDirection}) {}
 
   @override
   ShapeBorder scale(double t) => this;
