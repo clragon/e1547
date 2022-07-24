@@ -109,6 +109,9 @@ class _HistoryPageState extends State<HistoryPage> {
                   child: const Icon(Icons.search),
                   onPressed: () async {
                     List<DateTime> dates = await service.dates();
+                    if (dates.isEmpty) {
+                      dates.add(DateTime.now());
+                    }
 
                     DateTime? result = await showDatePicker(
                       context: context,
