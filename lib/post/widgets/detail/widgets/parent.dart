@@ -59,7 +59,7 @@ class ParentDisplay extends StatelessWidget {
                                   }
                                 : null,
                           )
-                        : null,
+                        : const Icon(Icons.arrow_right),
                     onTap: () => Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (context) => PostLoadingPage(parentId!),
@@ -93,6 +93,7 @@ class ParentDisplay extends StatelessWidget {
                     (child) => ListTile(
                       leading: const Icon(Icons.supervised_user_circle),
                       title: Text(child.toString()),
+                      trailing: const Icon(Icons.arrow_right),
                       onTap: () => Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (context) => PostLoadingPage(child),
