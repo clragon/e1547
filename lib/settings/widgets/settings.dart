@@ -212,8 +212,10 @@ class _SettingsPageState extends State<SettingsPage> {
               const Divider(),
               const SettingsHeader(title: 'Listing'),
               Consumer<HistoriesService>(
-                builder: (context, service, child) => InitBuilder<Stream<int>>(
-                  getter: service.watchLength,
+                builder: (context, service, child) =>
+                    SubValueBuilder<Stream<int>>(
+                  create: (context) => service.watchLength(),
+                  selector: (context) => [service, service.host],
                   builder: (context, stream) => AsyncBuilder<int>(
                     stream: stream,
                     builder: (context, value) => DividerListTile(
