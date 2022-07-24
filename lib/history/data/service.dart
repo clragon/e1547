@@ -140,7 +140,7 @@ class HistoriesService extends ChangeNotifier {
           visitedAt: DateTime.now(),
           link: post.link,
           thumbnails: _getThumbnails([post]),
-          subtitle: post.description.isNotEmpty ? post.description : null,
+          subtitle: post.description.nullWhenEmpty,
         ),
       );
 
@@ -162,7 +162,7 @@ class HistoriesService extends ChangeNotifier {
           link: pool.link,
           thumbnails: _getThumbnails(posts),
           title: pool.name,
-          subtitle: pool.description,
+          subtitle: pool.description.nullWhenEmpty,
         ),
       );
 
@@ -233,7 +233,7 @@ class HistoriesService extends ChangeNotifier {
         HistoryRequest(
           visitedAt: DateTime.now(),
           link: '/wiki_pages/${wiki.title}',
-          subtitle: wiki.body,
+          subtitle: wiki.body.nullWhenEmpty,
         ),
       );
 

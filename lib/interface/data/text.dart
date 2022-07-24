@@ -59,6 +59,15 @@ extension Ellipse on String {
   }
 }
 
+extension Nullifying on String {
+  String? get nullWhenEmpty {
+    if (isEmpty) {
+      return null;
+    }
+    return this;
+  }
+}
+
 extension Trimming on List<String> {
   List<String> trim() =>
       map((e) => e.trim()).toList()..removeWhere((element) => element.isEmpty);
