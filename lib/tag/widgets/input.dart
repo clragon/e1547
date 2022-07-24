@@ -7,7 +7,6 @@ import 'package:e1547/post/post.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -69,23 +68,15 @@ class _TagInputState extends State<TagInput> {
 
   @override
   Widget build(BuildContext context) {
-    return TypeAheadField<TagSuggestion>(
-      direction: AxisDirection.up,
-      hideOnEmpty: true,
-      hideOnError: true,
-      hideKeyboard: widget.readOnly,
-      keepSuggestionsOnSuggestionSelected: true,
-      textFieldConfiguration: TextFieldConfiguration(
-        controller: controller,
-        autofocus: true,
-        inputFormatters: [
-          LowercaseTextInputFormatter(),
-          if (!widget.multiInput) FilteringTextInputFormatter.deny(' '),
-        ],
-        decoration: InputDecoration(labelText: widget.labelText),
-        onSubmitted: (result) => widget.submit(sortTags(result)),
-        textInputAction: widget.textInputAction,
-      ),
+    return SearchInput<TagSuggestion>(
+      controller: widget.controller,
+      submit: (result) => widget.submit(sortTags(result)),
+      readOnly: widget.readOnly,
+      inputFormatters: [
+        LowercaseTextInputFormatter(),
+        if (!widget.multiInput) FilteringTextInputFormatter.deny(' '),
+      ],
+      textInputAction: widget.textInputAction,
       onSuggestionSelected: (suggestion) {
         List<String> tags = sortTags(controller.text).split(' ');
         List<String> before = [];
@@ -128,15 +119,6 @@ class _TagInputState extends State<TagInput> {
             ),
           ),
         ],
-      ),
-      loadingBuilder: (context) => const SizedBox(),
-      noItemsFoundBuilder: (context) => ListTile(
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
-            SizedCircularProgressIndicator(size: 24),
-          ],
-        ),
       ),
       suggestionsCallback: (pattern) async {
         List<String> tags = controller.text.split(' ');

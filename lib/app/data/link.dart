@@ -21,7 +21,8 @@ Future<void> launch(String uri) async {
   }
 }
 
-const String _queryRegex = r'([^/&#]+)';
+const String queryDivider = r'[^\s/?&#]';
+const String _queryRegex = queryDivider + r'+';
 const String _showEnding = r':_(s|/show)';
 
 class Link {
@@ -235,7 +236,7 @@ VoidCallback? parseLinkOnTap(BuildContext context, String link) {
   final Link? result = parseLink(link);
   if (result != null) {
     LinkType? type = LinkType.values.asNameMap()[result.type];
-    if (!context.watch<Settings>().showBeta.value &&
+    if (!context.read<Settings>().showBeta.value &&
         [LinkType.topic, LinkType.reply].contains(type)) {
       return null;
     }

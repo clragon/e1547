@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:math';
 
 import 'package:drift/drift.dart';
 import 'package:e1547/history/history.dart';
@@ -90,8 +89,11 @@ class HistoriesDatabase extends _$HistoriesDatabase {
 
   SimpleSelectStatement<HistoriesTable, History> _queryExpression({
     String? host,
-    String? linkRegex,
     DateTime? day,
+    String? linkRegex,
+    String? titleRegex,
+    String? subtitleRegex,
+    int? limit,
   }) {
     final selectable = select(historiesTable)
       ..orderBy([
@@ -99,7 +101,16 @@ class HistoriesDatabase extends _$HistoriesDatabase {
       ])
       ..where((tbl) => _hostQuery(tbl, host));
     if (linkRegex != null) {
-      selectable.where((tbl) => tbl.link.regexp(linkRegex));
+      selectable
+          .where((tbl) => tbl.link.regexp(linkRegex, caseSensitive: false));
+    }
+    if (titleRegex != null) {
+      selectable
+          .where((tbl) => tbl.title.regexp(titleRegex, caseSensitive: false));
+    }
+    if (subtitleRegex != null) {
+      selectable.where(
+          (tbl) => tbl.subtitle.regexp(subtitleRegex, caseSensitive: false));
     }
     if (day != null) {
       day = DateTime(day.year, day.month, day.day);
@@ -110,45 +121,55 @@ class HistoriesDatabase extends _$HistoriesDatabase {
         ),
       );
     }
+    if (limit != null) {
+      selectable.limit(limit);
+    }
     return selectable;
   }
 
   Future<List<History>> getAll({
     String? host,
-    String? linkRegex,
     DateTime? day,
+    String? linkRegex,
+    String? titleRegex,
+    String? subtitleRegex,
+    int? limit,
   }) =>
-      _queryExpression(host: host, linkRegex: linkRegex, day: day).get();
+      _queryExpression(
+        host: host,
+        day: day,
+        linkRegex: linkRegex,
+        titleRegex: titleRegex,
+        subtitleRegex: subtitleRegex,
+        limit: limit,
+      ).get();
 
   Stream<List<History>> watchAll({
     String? host,
-    String? linkRegex,
     DateTime? day,
+    String? linkRegex,
+    String? titleRegex,
+    String? subtitleRegex,
+    int? limit,
   }) =>
-      _queryExpression(host: host, linkRegex: linkRegex, day: day).watch();
-
-  Future<List<History>> page({
-    String? host,
-    int page = 1,
-    int limit = 80,
-    String? linkRegex,
-    DateTime? day,
-  }) async {
-    final selectable =
-        _queryExpression(host: host, linkRegex: linkRegex, day: day);
-    selectable.limit(page, offset: (page - 1) * max(limit, 320));
-    return selectable.get();
-  }
+      _queryExpression(
+        host: host,
+        day: day,
+        linkRegex: linkRegex,
+        titleRegex: titleRegex,
+        subtitleRegex: subtitleRegex,
+        limit: limit,
+      ).watch();
 
   Future<List<History>> getRecent({
     String? host,
-    int range = 15,
+    int limit = 15,
     Duration maxAge = const Duration(minutes: 10),
   }) =>
       (_queryExpression(host: host)
             ..where((tbl) => (tbl.visitedAt
                 .isBiggerThanValue(DateTime.now().subtract(maxAge))))
-            ..limit(range))
+            ..limit(limit))
           .get();
 
   Future<void> add(String host, HistoryRequest item) async =>
@@ -194,7 +215,7 @@ class HistoriesDatabase extends _$HistoriesDatabase {
     required Duration maxAge,
   }) async {
     List<int?> kept =
-        (await getRecent(host: host, range: maxAmount, maxAge: maxAge))
+        (await getRecent(host: host, limit: maxAmount, maxAge: maxAge))
             .map((e) => e.id)
             .toList();
     await (delete(historiesTable)
