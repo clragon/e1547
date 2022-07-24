@@ -123,6 +123,14 @@ class _SheetFloatingActionButtonState extends State<SheetFloatingActionButton> {
   }
 
   @override
+  void didUpdateWidget(covariant SheetFloatingActionButton oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.controller != widget.controller) {
+      controller = widget.controller ?? SheetActionController();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: controller,

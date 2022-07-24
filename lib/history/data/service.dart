@@ -60,37 +60,35 @@ class HistoriesService extends ChangeNotifier {
   Stream<History> watch(int id) => _database.watch(id);
 
   Future<List<History>> getAll({
-    String? linkRegex,
     DateTime? day,
+    String? linkRegex,
+    String? titleRegex,
+    String? subtitleRegex,
+    int? limit,
   }) async =>
       _database.getAll(
         host: host,
-        linkRegex: linkRegex,
         day: day,
+        linkRegex: linkRegex,
+        titleRegex: titleRegex,
+        subtitleRegex: subtitleRegex,
+        limit: limit,
       );
 
   Stream<List<History>> watchAll({
-    String? linkRegex,
     DateTime? day,
+    String? linkRegex,
+    String? titleRegex,
+    String? subtitleRegex,
+    int? limit,
   }) =>
       _database.watchAll(
         host: host,
-        linkRegex: linkRegex,
         day: day,
-      );
-
-  Future<List<History>> page({
-    int page = 1,
-    int limit = 80,
-    String? linkRegex,
-    DateTime? day,
-  }) async =>
-      _database.page(
-        host: host,
-        page: page,
+        linkRegex: linkRegex,
+        titleRegex: titleRegex,
+        subtitleRegex: subtitleRegex,
         limit: limit,
-        linkRegex: linkRegex,
-        day: day,
       );
 
   Future<void> add(HistoryRequest item) async => _lock.protect(
@@ -178,7 +176,7 @@ class HistoriesService extends ChangeNotifier {
           link: Uri(
             path: '/pools',
             queryParameters: {
-              'search[name_matches]': search,
+              if (search.isNotEmpty) 'search[name_matches]': search,
             },
           ).toString(),
           subtitle: pools?.isNotEmpty ?? false
@@ -212,7 +210,7 @@ class HistoriesService extends ChangeNotifier {
           link: Uri(
             path: '/forum_topics',
             queryParameters: {
-              'search[title_matches]': search,
+              if (search.isNotEmpty) 'search[title_matches]': search,
             },
           ).toString(),
           subtitle: topics?.isNotEmpty ?? false
@@ -245,7 +243,7 @@ class HistoriesService extends ChangeNotifier {
           link: Uri(
             path: '/wiki_pages',
             queryParameters: {
-              'search[title]': search,
+              if (search.isNotEmpty) 'search[title]': search,
             },
           ).toString(),
           subtitle: wikis?.isNotEmpty ?? false

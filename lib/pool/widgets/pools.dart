@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:provider/provider.dart';
 
+import 'input.dart';
 import 'tile.dart';
 
 class PoolsPage extends StatefulWidget {
@@ -36,12 +37,9 @@ class _PoolsPageState extends State<PoolsPage> with DrawerEntry {
             ),
             floatingActionButton: SheetFloatingActionButton(
               actionIcon: Icons.search,
-              builder: (context, actionController) => ControlledTextField(
-                labelText: 'Pool title',
+              builder: (context, actionController) => PoolSearchInput(
+                controller: controller,
                 actionController: actionController,
-                textController:
-                    TextEditingController(text: controller.search.value),
-                submit: (value) => controller.search.value = value,
               ),
             ),
             drawer: const NavigationDrawer(),
