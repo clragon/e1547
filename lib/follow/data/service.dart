@@ -69,7 +69,8 @@ class FollowsService extends DataUpdater<List<Follow>> {
     DateTime now = DateTime.now();
     for (Follow follow in data) {
       Follow? refreshed;
-      if (follow.type != FollowType.bookmark) {
+      if (follow.type != FollowType.bookmark ||
+          follow.statuses[_client.host] == null) {
         DateTime? updated = follow.statuses[_client.host]?.updated;
         if (force ||
             updated == null ||
