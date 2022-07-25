@@ -321,13 +321,13 @@ enum HistoryFilter {
   String? get searchRegex {
     switch (this) {
       case posts:
-        return r'/posts(\?.+)?';
+        return r'/posts(\?.*)?';
       case pools:
-        return r'/pools(\?.+)?';
+        return r'/pools(\?.*)?';
       case topics:
-        return r'/forum_topics(\?.+)?';
+        return r'/forum_topics(\?.*)?';
       case wikis:
-        return r'/wiki_pages(\?.+)?';
+        return r'/wiki_pages(\?.*)?';
       case users:
         return null;
     }

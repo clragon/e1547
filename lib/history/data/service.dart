@@ -175,9 +175,8 @@ class HistoriesService extends ChangeNotifier {
           visitedAt: DateTime.now(),
           link: Uri(
             path: '/pools',
-            queryParameters: {
-              if (search.isNotEmpty) 'search[name_matches]': search,
-            },
+            queryParameters:
+                search.isNotEmpty ? {'search[name_matches]': search} : null,
           ).toString(),
           subtitle: pools?.isNotEmpty ?? false
               ? _composeSearchSubtitle({
@@ -209,9 +208,8 @@ class HistoriesService extends ChangeNotifier {
           visitedAt: DateTime.now(),
           link: Uri(
             path: '/forum_topics',
-            queryParameters: {
-              if (search.isNotEmpty) 'search[title_matches]': search,
-            },
+            queryParameters:
+                search.isNotEmpty ? {'search[title_matches]': search} : null,
           ).toString(),
           subtitle: topics?.isNotEmpty ?? false
               ? _composeSearchSubtitle(
@@ -242,9 +240,8 @@ class HistoriesService extends ChangeNotifier {
           visitedAt: DateTime.now(),
           link: Uri(
             path: '/wiki_pages',
-            queryParameters: {
-              if (search.isNotEmpty) 'search[title]': search,
-            },
+            queryParameters:
+                search.isNotEmpty ? {'search[title]': search} : null,
           ).toString(),
           subtitle: wikis?.isNotEmpty ?? false
               ? _composeSearchSubtitle(
