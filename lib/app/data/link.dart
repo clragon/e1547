@@ -135,7 +135,7 @@ final List<LinkParser> allLinkParsers = [
     parameters: [r'search[name_matches]?'],
     transformer: (arguments) => Link(
       type: LinkType.pool.name,
-      search: arguments['search[name_matches]']!,
+      search: arguments['search[name_matches]'],
     ),
   ),
   LinkParser(
@@ -184,10 +184,10 @@ final List<LinkParser> allLinkParsers = [
   ),
   LinkParser(
     path: r'/forum_topics',
-    parameters: [r'search[title_matches]'],
+    parameters: [r'search[title_matches]?'],
     transformer: (arguments) => Link(
       type: LinkType.topic.name,
-      search: arguments[r'search[title_matches]']!,
+      search: arguments[r'search[title_matches]'],
     ),
   ),
   LinkParser(
