@@ -212,6 +212,10 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
                           shown: false,
                           child: PoolDisplay(post: widget.post.value),
                         ),
+                        PostEditorChild(
+                          shown: false,
+                          child: DenylistTagDisplay(post: widget.post),
+                        ),
                         TagDisplay(post: widget.post),
                         PostEditorChild(
                           shown: false,

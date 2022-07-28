@@ -133,7 +133,7 @@ class _SearchTagDisplayState extends State<SearchTagDisplay> {
   Future<Wiki?> retrieveWiki() async {
     List<Wiki> results =
         await context.read<Client>().wikis(1, search: tagToName(widget.tag));
-    return results.firstWhereOrNull((element) => element.title == widget.tag);
+    return results.firstWhereOrNull((e) => e.title == tagToName(widget.tag));
   }
 
   @override

@@ -89,9 +89,9 @@ extension Tagging on Post {
 }
 
 extension Denying on Post {
-  bool isDeniedBy(List<String> denylist) => getDeniers(denylist).isNotEmpty;
+  bool isDeniedBy(List<String> denylist) => getDeniers(denylist) != null;
 
-  List<String> getDeniers(List<String> denylist) {
+  List<String>? getDeniers(List<String> denylist) {
     List<String> deniers = [];
     for (String line in denylist) {
       List<String> deny = [];
@@ -119,6 +119,9 @@ extension Denying on Post {
       if (denied && optional && !allowed) {
         deniers.add(line);
       }
+    }
+    if (deniers.isEmpty) {
+      return null;
     }
     return deniers;
   }

@@ -105,12 +105,12 @@ class PostsController extends DataController<Post>
       if (_allowedPosts.contains(item)) {
         return false;
       }
-      List<String> deniers = item.getDeniers(denylist);
-      if (deniers.isNotEmpty) {
+      List<String>? deniers = item.getDeniers(denylist);
+      if (deniers != null) {
         _deniedPosts![item] = deniers;
-      }
-      if (deniers.isNotEmpty && denyMode != DenyListMode.plain) {
-        return true;
+        if (denyMode != DenyListMode.plain) {
+          return true;
+        }
       }
       return false;
     });
@@ -156,10 +156,12 @@ class PostsController extends DataController<Post>
     super.dispose();
   }
 
-  bool isDenied(Post post) {
+  List<String>? getDeniers(Post post) {
     assertOwnsItem(post);
-    return (_deniedPosts ?? _previousDeniedPosts!).keys.contains(post);
+    return (_deniedPosts ?? _previousDeniedPosts!)[post].maybeUnmodifiable();
   }
+
+  bool isDenied(Post post) => getDeniers(post) != null;
 
   bool isAllowed(Post post) {
     assertOwnsItem(post);
@@ -259,9 +261,13 @@ class PostController extends ProxyValueNotifier<Post, PostsController> {
 
   void _updateDenied() {
     if (!orphan) {
-      _isDenied = parent!.isDenied(value);
+      _deniers = parent!.getDeniers(value);
     } else {
-      _isDenied = value.isDeniedBy(denylist.items) && !_isAllowed;
+      if (_isAllowed) {
+        _deniers = null;
+      } else {
+        _deniers = value.getDeniers(denylist.items);
+      }
     }
     notifyListeners();
   }
@@ -273,8 +279,9 @@ class PostController extends ProxyValueNotifier<Post, PostsController> {
     }
   }
 
-  bool _isDenied = false;
-  bool get isDenied => _isDenied;
+  List<String>? _deniers;
+  List<String>? get deniers => _deniers.maybeUnmodifiable();
+  bool get isDenied => _deniers != null;
 
   bool _isAllowed = false;
   bool get isAllowed => _isAllowed;
