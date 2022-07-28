@@ -22,7 +22,7 @@ Future<void> launch(String uri) async {
 }
 
 const String queryDivider = r'[^\s/?&#]';
-const String _queryRegex = queryDivider + r'+';
+const String _queryRegex = r'(' + queryDivider + r'+)';
 const String _showEnding = r':_(s|/show)';
 
 class Link {
