@@ -21,7 +21,6 @@ final Map<IconData, List<String>> hostIcons = {
 IconData? getHostIcon(String url) {
   Uri? uri = Uri.tryParse(url);
   if (uri != null) {
-    // this is extremely primitive. wildcards should be introduced.
     for (final entry in hostIcons.entries) {
       for (final host in entry.value) {
         if (uri.host.contains(host)) {

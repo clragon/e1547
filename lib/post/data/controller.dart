@@ -17,41 +17,7 @@ typedef PostProviderCallback = Future<List<Post>> Function(
     String search, int page, bool force)?;
 
 class PostsController extends DataController<Post>
-    with SearchableController, RefreshableController {
-  final Client client;
-  final DenylistService denylist;
-
-  final PostProviderCallback _provider;
-
-  Map<String, List<Post>>? _previousDeniedPosts;
-  Map<String, List<Post>>? _deniedPosts;
-  Map<String, List<Post>>? get deniedPosts =>
-      _deniedPosts != null ? Map.unmodifiable(_deniedPosts!) : null;
-
-  bool _denying;
-  bool get denying => _denying;
-
-  final DenyListMode denyMode;
-
-  List<String> _allowedTags = [];
-  List<String> get allowedTags => List.unmodifiable(_allowedTags);
-
-  List<Post> _allowedPosts = [];
-  List<Post> get allowedPosts => List.unmodifiable(_allowedPosts);
-
-  List<Post>? _posts;
-
-  @override
-  ValueNotifier<String> search;
-  bool canSearch;
-
-  @override
-  @protected
-  List<Listenable> getRefreshListeners() =>
-      super.getRefreshListeners()..add(client);
-
-  late final List<Listenable> _filterNotifiers = [denylist];
-
+    with SearchableController, FilterableController, RefreshableController {
   PostsController({
     required this.client,
     required this.denylist,
@@ -63,9 +29,7 @@ class PostsController extends DataController<Post>
   })  : _provider = provider,
         _denying = denying,
         search = ValueNotifier(sortTags(search ?? '')) {
-    for (final element in _filterNotifiers) {
-      element.addListener(reapplyFilter);
-    }
+    _filterNotifiers.forEach((e) => e.addListener(refilter));
   }
 
   factory PostsController.single({
@@ -87,17 +51,46 @@ class PostsController extends DataController<Post>
     return controller;
   }
 
-  @override
-  void appendPage(List<Post> newItems, int? nextPageKey) {
-    _posts ??= [];
-    _posts!.addAll(newItems);
-    List<Post> itemList = (value.itemList ?? []) + newItems;
-    value = PagingState(
-      itemList: filter(itemList),
-      nextPageKey: nextPageKey,
-    );
+  final Client client;
+  final DenylistService denylist;
+
+  final PostProviderCallback _provider;
+
+  Map<Post, List<String>>? _previousDeniedPosts;
+  Map<Post, List<String>>? _deniedPosts;
+  Map<Post, List<String>>? get deniedPosts => _deniedPosts.maybeUnmodifiable();
+
+  bool _denying;
+  bool get denying => _denying;
+  set denying(bool value) {
+    _denying = denying;
+    refilter();
   }
 
+  final DenyListMode denyMode;
+
+  List<String> _allowedTags = [];
+  List<String> get allowedTags => List.unmodifiable(_allowedTags);
+  set allowedTags(List<String> value) {
+    _allowedTags = List.from(value);
+    refilter();
+  }
+
+  List<Post> _allowedPosts = [];
+  List<Post> get allowedPosts => List.unmodifiable(_allowedPosts);
+
+  @override
+  final ValueNotifier<String> search;
+  final bool canSearch;
+
+  @override
+  @protected
+  List<Listenable> getRefreshListeners() =>
+      super.getRefreshListeners()..add(client);
+
+  late final List<Listenable> _filterNotifiers = [denylist];
+
+  @override
   @protected
   List<Post> filter(List<Post> items) {
     List<String> denylist = [];
@@ -113,9 +106,8 @@ class PostsController extends DataController<Post>
         return false;
       }
       List<String> deniers = item.getDeniers(denylist);
-      for (final denier in deniers) {
-        _deniedPosts!.putIfAbsent(denier, () => []);
-        _deniedPosts![denier]!.add(item);
+      if (deniers.isNotEmpty) {
+        _deniedPosts![item] = deniers;
       }
       if (deniers.isNotEmpty && denyMode != DenyListMode.plain) {
         return true;
@@ -126,17 +118,14 @@ class PostsController extends DataController<Post>
     return result;
   }
 
+  @override
   @protected
-  void reapplyFilter() {
-    if (_posts != null) {
+  void refilter() {
+    if (rawItemList != null) {
       _previousDeniedPosts = _deniedPosts;
       _deniedPosts = null;
-      value = PagingState(
-        nextPageKey: nextPageKey,
-        itemList: filter(_posts!),
-        error: error,
-      );
     }
+    super.refilter();
   }
 
   @override
@@ -150,74 +139,43 @@ class PostsController extends DataController<Post>
   }
 
   @override
-  Future<void> refresh({bool background = false, bool force = false}) async {
-    if (!await canRefresh()) {
-      return;
-    }
-    _posts = null;
+  @protected
+  @mustCallSuper
+  void reset() {
     if (_deniedPosts != null) {
       _previousDeniedPosts = _deniedPosts;
     }
     _deniedPosts = null;
     _allowedPosts = [];
-    await super.refresh(background: background, force: force);
+    super.reset();
   }
 
   @override
   void dispose() {
-    for (final element in _filterNotifiers) {
-      element.removeListener(reapplyFilter);
-    }
+    _filterNotifiers.forEach((e) => e.removeListener(refilter));
     super.dispose();
   }
 
-  void _assertItemOwnership(Post item) {
-    assertHasItems();
-    if (!itemList!.contains(item)) {
-      throw StateError('Item isnt owned by this controller');
-    }
-  }
-
-  @override
-  void updateItem(int index, Post item, {bool force = false}) {
-    assertHasItems();
-    _posts![_posts!.indexOf(itemList![index])] = item;
-    reapplyFilter();
-    super.updateItem(index, item, force: force);
-  }
-
-  void setAllowedTags(List<String> value) {
-    _allowedTags = List.from(value);
-    reapplyFilter();
-  }
-
-  void setDenying(bool denying) {
-    _denying = denying;
-    reapplyFilter();
-  }
-
   bool isDenied(Post post) {
-    _assertItemOwnership(post);
-    return (_deniedPosts ?? _previousDeniedPosts!)
-        .values
-        .any((e) => e.contains(post));
+    assertOwnsItem(post);
+    return (_deniedPosts ?? _previousDeniedPosts!).keys.contains(post);
   }
 
   bool isAllowed(Post post) {
-    _assertItemOwnership(post);
+    assertOwnsItem(post);
     return _allowedPosts.contains(post);
   }
 
   void allow(Post post) {
-    _assertItemOwnership(post);
+    assertOwnsItem(post);
     _allowedPosts.add(post);
-    reapplyFilter();
+    refilter();
   }
 
   void unallow(Post post) {
-    _assertItemOwnership(post);
+    assertOwnsItem(post);
     _allowedPosts.remove(post);
-    reapplyFilter();
+    refilter();
   }
 }
 
