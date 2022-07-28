@@ -387,7 +387,7 @@ mixin FilterableController<PageKeyType, ItemType>
     _rawItemList = state.itemList;
     super.value = PagingState(
       nextPageKey: state.nextPageKey,
-      itemList: filter(_rawItemList!),
+      itemList: _rawItemList != null ? filter(_rawItemList!) : null,
       error: state.error,
     );
   }
