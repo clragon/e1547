@@ -17,8 +17,8 @@ class DrawerDenySwitch extends StatelessWidget {
       builder: (context, child) => DrawerDenySwitchBody(
         denying: controller.denying,
         denied: controller.deniedPosts ?? {},
-        updateAllowedList: controller.setAllowedTags,
-        updateDenying: controller.setDenying,
+        updateAllowedList: (value) => controller.allowedTags = value,
+        updateDenying: (value) => controller.denying = value,
         allowedList: controller.allowedTags,
       ),
     );
@@ -40,13 +40,12 @@ class _DrawerMultiDenySwitchState extends State<DrawerMultiDenySwitch> {
 
   void updateDenying(bool value) {
     denying = value;
-    widget.controllers.forEach((element) => element.setDenying(denying));
+    widget.controllers.forEach((e) => e.denying = denying);
   }
 
   void updateAllowedList(List<String> value) {
     allowedList = value;
-    widget.controllers
-        .forEach((element) => element.setAllowedTags(allowedList));
+    widget.controllers.forEach((e) => e.allowedTags = allowedList);
   }
 
   @override
@@ -60,7 +59,7 @@ class _DrawerMultiDenySwitchState extends State<DrawerMultiDenySwitch> {
     return AnimatedBuilder(
       animation: Listenable.merge(widget.controllers),
       builder: (context, child) {
-        Map<String, List<Post>> denied = {};
+        Map<Post, List<String>> denied = {};
         List<String> allowedList = [];
         for (PostsController controller in widget.controllers) {
           if (controller.deniedPosts != null) {
@@ -129,7 +128,7 @@ class DrawerDenyTile extends StatelessWidget {
 
 class DrawerDenySwitchBody extends StatelessWidget {
   final bool denying;
-  final Map<String, List<Post>> denied;
+  final Map<Post, List<String>> denied;
   final List<String> allowedList;
 
   final void Function(bool value) updateDenying;
@@ -145,19 +144,21 @@ class DrawerDenySwitchBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<MapEntry<String, List<Post>>> entries = [];
+    Map<String, List<Post>> entries = {};
 
-    entries.addAll(denied.entries);
-    entries.addAll(allowedList.map((e) => MapEntry(e, <Post>[])));
+    denied.forEach((key, value) {
+      for (final denier in value) {
+        entries.putIfAbsent(denier, () => []);
+        entries[denier]!.add(key);
+      }
+    });
+    entries.addAll({for (final e in allowedList) e: <Post>[]});
 
-    entries.sort((a, b) => a.key.compareTo(b.key));
+    entries = Map.fromEntries(
+      entries.entries.toList()..sort((a, b) => a.key.compareTo(b.key)),
+    );
 
-    int count = denied.values
-        .fold<List<Post>>(
-            [], (previousValue, element) => previousValue..addAll(element))
-        .toSet()
-        .toList()
-        .length;
+    int count = denied.keys.length;
 
     return Column(
       children: [
@@ -180,7 +181,7 @@ class DrawerDenySwitchBody extends StatelessWidget {
           child: Column(
             children: [
               const Divider(),
-              ...entries.map(
+              ...entries.entries.map(
                 (entry) => DrawerDenyTile(
                   entry: entry,
                   isAllowed: !allowedList.contains(entry.key),
