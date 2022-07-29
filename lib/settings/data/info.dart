@@ -2,13 +2,10 @@ import 'package:dio/dio.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:flutter/foundation.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:pub_semver/pub_semver.dart';
 
 class AppInfo extends PackageInfo {
-  final String developer;
-  final String? github;
-  final String? discord;
-  final String? website;
-
+  /// Represents application information.
   AppInfo({
     required this.developer,
     required this.github,
@@ -21,6 +18,7 @@ class AppInfo extends PackageInfo {
     super.buildSignature,
   });
 
+  /// Creates application information from platform info.
   static Future<AppInfo> fromPlatform({
     required String developer,
     required String? github,
@@ -41,29 +39,44 @@ class AppInfo extends PackageInfo {
     );
   }
 
+  /// Developer of the app.
+  final String developer;
+
+  /// Name of the app github (developer/repo, not full link).
+  final String? github;
+
+  /// Discord server invite link ID (link id only, not full link).
+  final String? discord;
+
+  /// Developer website link (without http/s).
+  final String? website;
+
+  /// Cached github version data.
   List<AppVersion>? _githubData;
 
+  /// Retrieves all app versions from github.
   Future<List<AppVersion>?> getVersions() async {
-    if (kDebugMode) {
-      return null;
-    }
+    if (kDebugMode) return null;
     if (_githubData == null) {
       Dio dio = Dio(defaultDioOptions.copyWith(
         baseUrl: 'https://api.github.com/',
       ));
       try {
-        List<dynamic> releases = await dio
-            .get('repos/$github/releases')
-            .then((response) => response.data);
+        List<dynamic> releases =
+            await dio.get('repos/$github/releases').then((e) => e.data);
         _githubData = [];
         for (Map release in releases) {
-          _githubData!.add(
-            AppVersion(
-              version: release['tag_name'],
-              name: release['name'],
-              description: release['body'],
-            ),
-          );
+          try {
+            _githubData!.add(
+              AppVersion(
+                name: release['name'],
+                description: release['body'],
+                version: Version.parse(release['tag_name']),
+              ),
+            );
+          } on FormatException {
+            continue;
+          }
         }
       } on DioError {
         _githubData = null;
@@ -72,60 +85,40 @@ class AppInfo extends PackageInfo {
     return _githubData;
   }
 
+  /// Retrieves versions which are newer than the currently installed one.
   Future<List<AppVersion>?> getNewVersions() async {
     List<AppVersion>? releases = await getVersions();
     if (releases != null) {
       releases = List.from(releases);
-      AppVersion current = AppVersion(version: version);
-      releases.removeWhere((release) => release.compareTo(current) < 1);
+      AppVersion current;
+      try {
+        current = AppVersion(version: Version.parse(version));
+      } on FormatException {
+        return null;
+      }
+      releases.removeWhere(
+        (e) => Version.prioritize(e.version, current.version) < 1,
+      );
     }
     return releases;
   }
 }
 
-class AppVersion extends Comparable<AppVersion> {
-  late int major;
-  late int minor;
-  late int patch;
-
-  String? name;
-  String? description;
-  String version;
-
+class AppVersion {
+  /// Represents an App version with name, description and version number.
+  /// Commonly pulled from GitHub.
   AppVersion({
-    required this.version,
     this.name,
     this.description,
-  }) {
-    if (version[0] == 'v') {
-      version = version.substring(1);
-    }
-    List<String> parts = version.split('.');
-    try {
-      major = int.parse(parts[0]);
-      minor = int.tryParse(parts[1]) ?? 0;
-      patch = int.tryParse(parts[2]) ?? 0;
-    } on FormatException {
-      major = 0;
-      minor = 0;
-      patch = 0;
-    }
-  }
+    required this.version,
+  });
 
-  @override
-  int compareTo(AppVersion other) {
-    int majorDelta = major.compareTo(other.major);
-    if (majorDelta != 0) {
-      return majorDelta;
-    }
-    int minorDelta = minor.compareTo(other.minor);
-    if (minorDelta != 0) {
-      return minorDelta;
-    }
-    int patchDelta = patch.compareTo(other.patch);
-    if (patchDelta != 0) {
-      return patchDelta;
-    }
-    return 0;
-  }
+  /// Name of this version.
+  final String? name;
+
+  /// Description of this version.
+  final String? description;
+
+  /// The version. Should follow pub.dev semver standards.
+  final Version version;
 }

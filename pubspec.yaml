@@ -43,6 +43,7 @@ dependencies:
   filesize: ^2.0.1
   sqflite: ^2.0.2+1
   app_links: ^3.0.2
+  pub_semver: ^2.1.1
   wakelock: ^0.6.1+2
   collection: ^1.15.0
   url_launcher: ^6.1.3
