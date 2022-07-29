@@ -43,11 +43,13 @@
 		</array>
 		<key>UIViewControllerBasedStatusBarAppearance</key>
 		<false/>
+		<key>CADisableMinimumFrameDurationOnPhone</key>
+		<true/>
 		<key>UIStatusBarHidden</key>
 		<false/>
 		<key>NSPhotoLibraryAddUsageDescription</key>
 		<string>Downloaded images will be saved in the gallery</string>
 		<key>NSFaceIDUsageDescription</key>
-        <string>App can be locked with local authentication</string>
+		<string>App can be locked with local authentication</string>
 	</dict>
 </plist>
