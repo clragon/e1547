@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoButton extends StatefulWidget {
@@ -17,20 +18,15 @@ class VideoButton extends StatefulWidget {
 }
 
 class _VideoButtonState extends State<VideoButton>
-    with SingleTickerProviderStateMixin, ListenerCallbackMixin {
+    with SingleTickerProviderStateMixin {
   late AnimationController animationController =
       AnimationController(vsync: this, duration: defaultAnimationDuration);
 
   @override
-  Map<Listenable, VoidCallback> get listeners => {
-        widget.videoController: () {
-          if (widget.videoController.value.isPlaying) {
-            animationController.forward();
-          } else {
-            animationController.reverse();
-          }
-        }
-      };
+  void dispose() {
+    animationController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -65,13 +61,23 @@ class _VideoButtonState extends State<VideoButton>
                       child: CircularProgressIndicator(),
                     ),
                   ),
-                  child: AnimatedBuilder(
-                    animation: animationController,
-                    builder: (context, child) => AnimatedIcon(
-                      icon: AnimatedIcons.play_pause,
-                      progress: animationController,
-                      size: widget.size,
-                      color: Colors.white,
+                  child: ListenableListener(
+                    listener: () {
+                      if (widget.videoController.value.isPlaying) {
+                        animationController.forward();
+                      } else {
+                        animationController.reverse();
+                      }
+                    },
+                    listenable: widget.videoController,
+                    child: AnimatedBuilder(
+                      animation: animationController,
+                      builder: (context, child) => AnimatedIcon(
+                        icon: AnimatedIcons.play_pause,
+                        progress: animationController,
+                        size: widget.size,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ),
@@ -332,6 +338,86 @@ class _VideoGesturesState extends State<VideoGestures> {
       ),
     );
   }
+}
+
+class PostVideoRoute extends StatefulWidget {
+  final Widget child;
+  final Post post;
+  final bool stopOnDispose;
+
+  const PostVideoRoute({
+    super.key,
+    required this.child,
+    required this.post,
+    this.stopOnDispose = true,
+  });
+
+  static PostVideoRouteState of(BuildContext context) =>
+      context.findAncestorStateOfType<PostVideoRouteState>()!;
+  static PostVideoRouteState? maybeOf(BuildContext context) =>
+      context.findAncestorStateOfType<PostVideoRouteState>();
+
+  @override
+  State<PostVideoRoute> createState() => PostVideoRouteState();
+}
+
+class PostVideoRouteState extends State<PostVideoRoute> with RouteAware {
+  late VideoPlayerController? _videoController;
+  late NavigationController _navigation;
+  late final bool _wasPlaying;
+  bool _keepPlaying = false;
+  void keepPlaying() => _keepPlaying = true;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _wasPlaying = widget.post.getVideo(context)?.value.isPlaying ?? false;
+      }
+    });
+  }
+
+  @override
+  void didPushNext() {
+    super.didPushNext();
+    if (_keepPlaying) {
+      _keepPlaying = false;
+    } else {
+      _videoController?.pause();
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _navigation = context.watch<NavigationController>();
+    _navigation.routeObserver
+        .subscribe(this, ModalRoute.of(context) as PageRoute);
+    _videoController = widget.post.getVideo(context);
+  }
+
+  @override
+  void reassemble() {
+    super.reassemble();
+    _navigation.routeObserver.unsubscribe(this);
+    _navigation.routeObserver
+        .subscribe(this, ModalRoute.of(context) as PageRoute);
+  }
+
+  @override
+  void dispose() {
+    _navigation.routeObserver.unsubscribe(this);
+    if (widget.stopOnDispose && !_wasPlaying) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _videoController?.pause();
+      });
+    }
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.child;
 }
 
 class PostVideoLoader extends StatefulWidget {

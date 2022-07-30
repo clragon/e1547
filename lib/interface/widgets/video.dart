@@ -26,9 +26,7 @@ class VideoHandler {
   bool get muteVideos => _muteVideos;
   set muteVideos(bool value) {
     _muteVideos = value;
-    _videos.values.forEach(
-      (element) => element.setVolume(muteVideos ? 0 : 1),
-    );
+    _videos.values.forEach((e) => e.setVolume(muteVideos ? 0 : 1));
   }
 
   VideoPlayerController getVideo(VideoConfig key) => _videos.putIfAbsent(

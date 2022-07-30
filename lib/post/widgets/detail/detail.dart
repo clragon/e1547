@@ -4,7 +4,6 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:video_player/video_player.dart';
 
 import 'appbar.dart';
 
@@ -21,64 +20,23 @@ class PostDetail extends StatefulWidget {
 class _PostDetailState extends State<PostDetail> with RouteAware {
   late PostEditingController editingController =
       PostEditingController(widget.post.value);
-  bool keepPlaying = false;
-
-  late VideoPlayerController? videoController;
-  late NavigationController navigation;
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback(
-      (_) {
-        if (mounted) {
-          context.read<HistoriesService>().addPost(widget.post.value);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        context.read<HistoriesService>().addPost(widget.post.value);
+        if (widget.post.value.type == PostType.image &&
+            widget.post.value.file.url != null) {
+          preloadImage(
+            context: context,
+            post: widget.post.value,
+            size: ImageSize.file,
+          );
         }
-      },
-    );
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    navigation = context.watch<NavigationController>();
-    navigation.routeObserver
-        .subscribe(this, ModalRoute.of(context) as PageRoute);
-    videoController = widget.post.value.getVideo(context);
-  }
-
-  @override
-  void reassemble() {
-    super.reassemble();
-    navigation.routeObserver.unsubscribe(this);
-    navigation.routeObserver
-        .subscribe(this, ModalRoute.of(context) as PageRoute);
-    if (widget.post.value.type == PostType.image &&
-        widget.post.value.file.url != null) {
-      preloadImage(
-        context: context,
-        post: widget.post.value,
-        size: ImageSize.file,
-      );
-    }
-  }
-
-  @override
-  void dispose() {
-    navigation.routeObserver.unsubscribe(this);
-    videoController?.pause();
-    editingController.dispose();
-    super.dispose();
-  }
-
-  @override
-  void didPushNext() {
-    super.didPushNext();
-    if (keepPlaying) {
-      keepPlaying = false;
-    } else {
-      videoController?.pause();
-    }
+      }
+    });
   }
 
   Future<void> editPost(
@@ -144,96 +102,101 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: widget.post,
-      builder: (context, child) => PostEditor(
-        editingController: editingController,
-        child: Scaffold(
-          extendBodyBehindAppBar: true,
-          appBar: PostDetailAppBar(post: widget.post),
-          floatingActionButton: context.read<Client>().hasLogin ? fab() : null,
-          body: MediaQuery.removeViewInsets(
-            context: context,
-            removeTop: true,
-            child: LayoutBuilder(
-              builder: (context, constraints) => ListView(
-                padding: EdgeInsets.only(
-                  top: MediaQuery.of(context).padding.top,
-                  bottom: kBottomNavigationBarHeight + 24,
-                ),
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 10),
-                    child: ConstrainedBox(
-                      constraints: BoxConstraints(
-                        minHeight: (constraints.maxHeight / 2),
-                        maxHeight: constraints.maxWidth > constraints.maxHeight
-                            ? constraints.maxHeight * 0.8
-                            : double.infinity,
-                      ),
-                      child: AnimatedSize(
-                        duration: defaultAnimationDuration,
-                        child: PostDetailImageDisplay(
-                          post: widget.post,
-                          onTap: () {
-                            keepPlaying = true;
-                            if (!(editingController.editing) &&
-                                widget.onTapImage != null) {
-                              widget.onTapImage!();
-                            } else {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      PostFullscreen(post: widget.post),
-                                ),
-                              );
-                            }
-                          },
-                        ),
-                      ),
-                    ),
+    return PostVideoRoute(
+      post: widget.post.value,
+      child: AnimatedBuilder(
+        animation: widget.post,
+        builder: (context, child) => PostEditor(
+          editingController: editingController,
+          child: Scaffold(
+            extendBodyBehindAppBar: true,
+            appBar: PostDetailAppBar(post: widget.post),
+            floatingActionButton:
+                context.read<Client>().hasLogin ? fab() : null,
+            body: MediaQuery.removeViewInsets(
+              context: context,
+              removeTop: true,
+              child: LayoutBuilder(
+                builder: (context, constraints) => ListView(
+                  padding: EdgeInsets.only(
+                    top: MediaQuery.of(context).padding.top,
+                    bottom: kBottomNavigationBarHeight + 24,
                   ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Column(
-                      children: [
-                        ArtistDisplay(post: widget.post),
-                        DescriptionDisplay(post: widget.post.value),
-                        PostEditorChild(
-                          shown: false,
-                          child: LikeDisplay(post: widget.post),
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 10),
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                          minHeight: (constraints.maxHeight / 2),
+                          maxHeight:
+                              constraints.maxWidth > constraints.maxHeight
+                                  ? constraints.maxHeight * 0.8
+                                  : double.infinity,
                         ),
-                        PostEditorChild(
-                          shown: false,
-                          child: CommentDisplay(post: widget.post),
-                        ),
-                        ParentDisplay(post: widget.post.value),
-                        PostEditorChild(
-                          shown: false,
-                          child: PoolDisplay(post: widget.post.value),
-                        ),
-                        PostEditorChild(
-                          shown: false,
-                          child: DenylistTagDisplay(post: widget.post),
-                        ),
-                        TagDisplay(post: widget.post),
-                        PostEditorChild(
-                          shown: false,
-                          child: FileDisplay(
+                        child: AnimatedSize(
+                          duration: defaultAnimationDuration,
+                          child: PostDetailImageDisplay(
                             post: widget.post,
+                            onTap: () {
+                              PostVideoRoute.of(context).keepPlaying();
+                              if (!(editingController.editing) &&
+                                  widget.onTapImage != null) {
+                                widget.onTapImage!();
+                              } else {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        PostFullscreen(post: widget.post),
+                                  ),
+                                );
+                              }
+                            },
                           ),
                         ),
-                        PostEditorChild(
-                          shown: true,
-                          child: RatingDisplay(
-                            post: widget.post.value,
-                          ),
-                        ),
-                        SourceDisplay(post: widget.post.value),
-                      ],
+                      ),
                     ),
-                  )
-                ],
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Column(
+                        children: [
+                          ArtistDisplay(post: widget.post),
+                          DescriptionDisplay(post: widget.post.value),
+                          PostEditorChild(
+                            shown: false,
+                            child: LikeDisplay(post: widget.post),
+                          ),
+                          PostEditorChild(
+                            shown: false,
+                            child: CommentDisplay(post: widget.post),
+                          ),
+                          ParentDisplay(post: widget.post.value),
+                          PostEditorChild(
+                            shown: false,
+                            child: PoolDisplay(post: widget.post.value),
+                          ),
+                          PostEditorChild(
+                            shown: false,
+                            child: DenylistTagDisplay(post: widget.post),
+                          ),
+                          TagDisplay(post: widget.post),
+                          PostEditorChild(
+                            shown: false,
+                            child: FileDisplay(
+                              post: widget.post,
+                            ),
+                          ),
+                          PostEditorChild(
+                            shown: true,
+                            child: RatingDisplay(
+                              post: widget.post.value,
+                            ),
+                          ),
+                          SourceDisplay(post: widget.post.value),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
               ),
             ),
           ),
