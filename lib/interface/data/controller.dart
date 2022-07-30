@@ -289,7 +289,7 @@ class PageLock<KeyType> {
   ///
   /// If the [key] is null, it will count as unused.
   ///
-  /// If the [key] does not match the currently acquired key, a [KeyMismatchException] will be thrown.
+  /// It is an error if the [key] to be released does not match the key that was acquired.
   ///
   /// If [reset] is true, all used keys will be cleared before usage.
   void release(KeyType? key) {
@@ -298,7 +298,8 @@ class PageLock<KeyType> {
         return;
       }
       if (key != _currentKey) {
-        throw KeyMismatchException(key);
+        throw StateError(
+            'Attempted to release $key, but current key was $_currentKey!');
       }
       _used.add(key);
       _currentKey = null;
@@ -342,31 +343,15 @@ class PageLock<KeyType> {
   Future<void> reset() async => _mutex.protect(() async => _used.clear());
 }
 
-abstract class PageLockException<KeyType> implements Exception {
-  /// The key that was attempted to be used.
-  abstract final KeyType key;
-}
-
-class KeyAlreadyUsedException<KeyType> implements PageLockException<KeyType> {
+class KeyAlreadyUsedException<KeyType> implements Exception {
   /// Exception thrown when a key was attempted to be used again in a [PageLock].
   const KeyAlreadyUsedException(this.key);
 
-  @override
+  /// The key that was attempted to be used.
   final KeyType key;
 
   @override
-  String toString() => "$runtimeType: $Key was already used!";
-}
-
-class KeyMismatchException<KeyType> implements PageLockException<KeyType> {
-  /// Exception thrown when a key was attempted to be releases which wasn't acquired in a [PageLock].
-  KeyMismatchException(this.key);
-
-  @override
-  final KeyType key;
-
-  @override
-  String toString() => "$runtimeType: $Key was never acquired!";
+  String toString() => "$runtimeType: $key was already used!";
 }
 
 mixin FilterableController<PageKeyType, ItemType>
