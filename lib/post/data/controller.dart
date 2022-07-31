@@ -63,7 +63,7 @@ class PostsController extends DataController<Post>
   bool _denying;
   bool get denying => _denying;
   set denying(bool value) {
-    _denying = denying;
+    _denying = value;
     refilter();
   }
 
@@ -102,9 +102,7 @@ class PostsController extends DataController<Post>
     List<Post> result = {for (final p in items) p.id: p}.values.toList();
 
     result.removeWhere((item) {
-      if (_allowedPosts.contains(item)) {
-        return false;
-      }
+      if (_allowedPosts.contains(item)) return false;
       List<String>? deniers = item.getDeniers(denylist);
       if (deniers != null) {
         _deniedPosts![item] = deniers;
@@ -121,10 +119,11 @@ class PostsController extends DataController<Post>
   @override
   @protected
   void refilter() {
-    if (rawItemList != null) {
+    if (rawItemList == null) return;
+    if (_deniedPosts != null) {
       _previousDeniedPosts = _deniedPosts;
-      _deniedPosts = null;
     }
+    _deniedPosts = null;
     super.refilter();
   }
 

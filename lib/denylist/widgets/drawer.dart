@@ -131,8 +131,8 @@ class DrawerDenySwitchBody extends StatelessWidget {
   final Map<Post, List<String>> denied;
   final List<String> allowedList;
 
-  final void Function(bool value) updateDenying;
-  final void Function(List<String> value) updateAllowedList;
+  final ValueChanged<bool> updateDenying;
+  final ValueChanged<List<String>> updateAllowedList;
 
   const DrawerDenySwitchBody({
     required this.denying,
