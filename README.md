@@ -70,25 +70,21 @@ or
 ### Installing on iOS
 
 - Follow the instructions on [AltStore](https://altstore.io/)
+- An altstore source file for automatic updates can be found on [e1547.clynamic.net](https://e1547.clynamic.net/assets/altstore.json)
 
 or 
 
-1. Grab [Cydia Impactor](http://www.cydiaimpactor.com/)
-2. Drag the downloaded .ipa file onto Cydia Impactor after opening it. 
-3. Enter your Apple ID and password. If the password fails, [use an App Specific 2fa Password](https://support.apple.com/en-us/HT204397#sections)
+1. Jailbreak your iPhone
+2. Install [AppSync Unified](https://cydia.akemi.ai/) in Cydia
+3. Sync the e1547 ipa file to your device and install it in AppSync Unified
 
 ## Compilation
 
-Compiling the app for yourself should be possible for both platforms, iOS and Android.
+You can compile the app from source:
 
 1. Install [Flutter](https://flutter.dev/docs/get-started/install)
-2. Clone the e1547 GitHub Repository
-
-3. run flutter build <br>
-   | OS      | command             |
-   |---      |---                  |
-   | android | `flutter build apk` |
-   | iOS     | `flutter build ipa` |
+2. Clone this github repository
+3. Run `flutter build <file>` where `<file>` is either `apk` or `ipa`
 
 
 ## Status
