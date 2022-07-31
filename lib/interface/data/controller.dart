@@ -58,6 +58,7 @@ abstract class RawDataController<KeyType, ItemType>
   @mustCallSuper
   void reset() {}
 
+  /// Calls [reset] if the [itemList] has been set to null.
   void _maybeReset() {
     if (value.itemList == null) {
       reset();
@@ -190,6 +191,7 @@ abstract class RawDataController<KeyType, ItemType>
 }
 
 abstract class DataController<T> extends RawDataController<int, T> {
+  /// A [RawDataController] that uses positive integers as page keys.
   DataController({super.firstPageKey = 1});
 
   @override
@@ -357,8 +359,13 @@ class KeyAlreadyUsedException<KeyType> implements Exception {
 
 mixin FilterableController<PageKeyType, ItemType>
     on RawDataController<PageKeyType, ItemType> {
+  /// List of actual items of this controller.
   List<ItemType>? _rawItemList;
+
+  /// List of actual items of this controller.
   List<ItemType>? get rawItemList => _rawItemList.maybeUnmodifiable();
+
+  /// List of actual items of this controller.
   set rawItemList(List<ItemType>? value) {
     _rawItemList = value;
     this.value = PagingState(
@@ -368,6 +375,11 @@ mixin FilterableController<PageKeyType, ItemType>
     );
   }
 
+  /// Corresponding to ValueNotifier.value.
+  ///
+  /// Passing filtered items for [itemList] in [PagingState] is an error,
+  /// because it will lead to those filtered items being excluded from the new [rawItemList]
+  /// and effectively being lost.
   @override
   set value(PagingState<PageKeyType, ItemType> state) {
     const equality = DeepCollectionEquality();
@@ -402,9 +414,11 @@ mixin FilterableController<PageKeyType, ItemType>
     super.updateItem(index, item, force: force);
   }
 
+  /// Filters items and returns the filtered list.
   @protected
   List<ItemType> filter(List<ItemType> items);
 
+  /// Reapplies filtering after the filter variables have changed.
   @protected
   void refilter() {
     if (_rawItemList == null) return;
@@ -426,6 +440,7 @@ mixin FilterableController<PageKeyType, ItemType>
 
 mixin SearchableController<PageKeyType, ItemType>
     on RawDataController<PageKeyType, ItemType> {
+  /// The current search of this controller.
   ValueNotifier<String> get search => ValueNotifier('');
 
   @override
@@ -442,6 +457,10 @@ mixin SearchableController<PageKeyType, ItemType>
 
 mixin RefreshableController<PageKeyType, ItemType>
     on RawDataController<PageKeyType, ItemType> {
+  /// The [RefreshController] for this controller.
+  ///
+  /// Will automatically be set to the right states (success and failure).
+  /// Note that it is not reusable.
   RefreshController refreshController = RefreshController();
 
   @override
@@ -466,6 +485,12 @@ mixin RefreshableController<PageKeyType, ItemType>
 }
 
 extension Loading<T extends RawDataController> on T {
+  /// Waits for the first Page of this controller to be loaded.
+  ///
+  /// If the controller has already loaded the page, will return immediately.
+  /// Does not trigger a new page load on it's own.
+  ///
+  /// If the page load fails, a [ControllerLoadingException] will be thrown.
   Future<T> waitForFirstPage() async {
     await Future.delayed(Duration.zero);
     Completer<T> completer = Completer<T>();
@@ -494,6 +519,10 @@ extension Loading<T extends RawDataController> on T {
     return completer.future;
   }
 
+  /// Requests and waits for the first Page of this controller to be loaded.
+  ///
+  /// Triggers a new page to be loaded.
+  /// If the page load fails, a [ControllerLoadingException] will be thrown.
   Future<T> loadFirstPage() async {
     Future<void> loaded = waitForFirstPage();
     notifyPageRequestListeners(nextPageKey);
@@ -503,9 +532,12 @@ extension Loading<T extends RawDataController> on T {
 }
 
 class ControllerLoadingException implements Exception {
-  final Exception inner;
-
+  /// This Exception is thrown when using [Loading.waitForFirstPage] or [Loading.loadFirstPage]
+  /// and the loading of the page fails.
   ControllerLoadingException(this.inner);
+
+  /// The exception that was thrown in the controller.
+  final Exception inner;
 
   @override
   String toString() {
