@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:collection/collection.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:flutter/foundation.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
@@ -369,6 +370,14 @@ mixin FilterableController<PageKeyType, ItemType>
 
   @override
   set value(PagingState<PageKeyType, ItemType> state) {
+    const equality = DeepCollectionEquality();
+    final bool rawItemsIsItems = equality.equals(_rawItemList, itemList);
+    final bool itemsIsNotNewItems = !equality.equals(itemList, state.itemList);
+    assert(
+      rawItemsIsItems || itemsIsNotNewItems,
+      'Filtering error in $runtimeType!\nDo not pass filtered items as [itemList] for [PagingState], '
+      'because this will lead to the erasure of filtered items!\n',
+    );
     _rawItemList = state.itemList;
     super.value = PagingState(
       nextPageKey: state.nextPageKey,
@@ -379,9 +388,8 @@ mixin FilterableController<PageKeyType, ItemType>
 
   @override
   void appendPage(List<ItemType> newItems, PageKeyType? nextPageKey) {
-    _rawItemList = (_rawItemList ?? []) + newItems;
     value = PagingState(
-      itemList: filter(_rawItemList!),
+      itemList: (_rawItemList ?? []) + newItems,
       nextPageKey: nextPageKey,
     );
   }
@@ -402,7 +410,7 @@ mixin FilterableController<PageKeyType, ItemType>
     if (_rawItemList == null) return;
     value = PagingState(
       nextPageKey: nextPageKey,
-      itemList: filter(_rawItemList!),
+      itemList: _rawItemList,
       error: error,
     );
   }
