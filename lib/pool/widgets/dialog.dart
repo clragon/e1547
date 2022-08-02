@@ -3,7 +3,7 @@ import 'package:e1547/dtext/dtext.dart';
 import 'package:e1547/pool/pool.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:share/share.dart';
+import 'package:share_plus/share_plus.dart';
 
 import 'actions.dart';
 import 'info.dart';

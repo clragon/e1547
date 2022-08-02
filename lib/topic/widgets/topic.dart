@@ -35,8 +35,8 @@ class TopicTile extends StatelessWidget {
               InkWell(
                 onTap: onCountPressed,
                 child: Padding(
-                  padding:
-                      const EdgeInsets.only(left: 8, right: 16, top: 6, bottom: 6),
+                  padding: const EdgeInsets.only(
+                      left: 8, right: 16, top: 6, bottom: 6),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.end,
