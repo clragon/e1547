@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:crypto/crypto.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
+import 'package:e1547/settings/settings.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:external_path/external_path.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +13,7 @@ import 'package:media_scanner/media_scanner.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 
 extension Tagging on Post {
@@ -128,16 +130,17 @@ extension Denying on Post {
 }
 
 extension Downloading on Post {
-  Future<void> download() async {
+  Future<void> download(BuildContext context) async {
     if (!await Permission.storage.request().isGranted) {
       return;
     }
     File download = await DefaultCacheManager().getSingleFile(file.url!);
     if (Platform.isAndroid) {
-      String directory =
-          join((await ExternalPath.getExternalStoragePublicDirectory(
-              // TODO: fetch appInfo.appname
-              ExternalPath.DIRECTORY_PICTURES)), 'e1547');
+      String directory = join(
+        (await ExternalPath.getExternalStoragePublicDirectory(
+            ExternalPath.DIRECTORY_PICTURES)),
+        context.read<AppInfo>().appName,
+      );
       await Directory(directory).create();
       File target = File(join(directory, _downloadName()));
       if (!await target.exists() ||

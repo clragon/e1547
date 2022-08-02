@@ -17,7 +17,7 @@ Future<void> postDownloadingNotification(
     timeout: const Duration(milliseconds: 100),
     process: (item) async {
       try {
-        item.download();
+        item.download(context);
         return true;
       } catch (exception, stacktrace) {
         if (kDebugMode) {
