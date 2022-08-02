@@ -5,6 +5,7 @@ export 'data/collection.dart';
 export 'data/controller.dart';
 export 'data/database.dart';
 export 'data/hosts.dart';
+export 'data/sql.dart';
 export 'data/text.dart';
 export 'data/updater.dart';
 // widgets

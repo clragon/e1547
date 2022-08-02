@@ -1,16 +1,5 @@
-import 'dart:io';
-
 import 'package:dio/dio.dart';
 import 'package:dio_http_cache/dio_http_cache.dart';
-import 'package:sqflite/sqflite.dart';
-import 'package:sqflite_common_ffi/sqflite_ffi.dart';
-
-Future<void> initializeSql() async {
-  if (Platform.isWindows || Platform.isLinux) {
-    sqfliteFfiInit();
-    databaseFactory = databaseFactoryFfi;
-  }
-}
 
 const Duration defaultMaxAge = Duration(minutes: 5);
 const Duration defaultMaxStale = Duration(minutes: 10);
