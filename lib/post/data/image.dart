@@ -8,7 +8,7 @@ enum ImageSize {
   file,
 }
 
-Future<void> preloadImage({
+Future<void> preloadPostImage({
   required BuildContext context,
   required Post post,
   required ImageSize size,
@@ -33,8 +33,8 @@ Future<void> preloadImage({
   }
 }
 
-mixin ImagePreloader<T extends StatefulWidget> on State<T> {
-  Future<void> preloadImages({
+mixin PostImagePreloader<T extends StatefulWidget> on State<T> {
+  Future<void> preloadPostImages({
     required int index,
     required List<Post> posts,
     required ImageSize size,
@@ -46,7 +46,10 @@ mixin ImagePreloader<T extends StatefulWidget> on State<T> {
       }
       int target = index + 1 + i;
       if (0 < target && target < posts.length) {
-        await preloadImage(context: context, post: posts[target], size: size);
+        Post post = posts[target];
+        if (post.type == PostType.image && post.file.url != null) {
+          await preloadPostImage(context: context, post: post, size: size);
+        }
       }
     }
   }

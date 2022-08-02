@@ -20,7 +20,7 @@ class PostFullscreenGallery extends StatefulWidget {
 }
 
 class _PostFullscreenGalleryState extends State<PostFullscreenGallery>
-    with ImagePreloader {
+    with PostImagePreloader {
   late PageController pageController = widget.pageController ??
       PageController(initialPage: widget.initialPage ?? 0);
   late ValueNotifier<int> currentPage = ValueNotifier(widget.initialPage ?? 0);
@@ -64,7 +64,7 @@ class _PostFullscreenGalleryState extends State<PostFullscreenGallery>
               currentPage.value = index;
               widget.onPageChanged?.call(index);
               if (controller.itemList != null) {
-                preloadImages(
+                preloadPostImages(
                   index: index,
                   posts: controller.itemList!,
                   size: ImageSize.file,

@@ -27,14 +27,11 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         context.read<HistoriesService>().addPost(widget.post.value);
-        if (widget.post.value.type == PostType.image &&
-            widget.post.value.file.url != null) {
-          preloadImage(
-            context: context,
-            post: widget.post.value,
-            size: ImageSize.file,
-          );
-        }
+        preloadPostImage(
+          context: context,
+          post: widget.post.value,
+          size: ImageSize.file,
+        );
       }
     });
   }
