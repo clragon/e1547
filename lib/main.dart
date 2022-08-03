@@ -5,6 +5,7 @@ import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:talker/talker.dart';
+import 'package:window_manager/window_manager.dart';
 
 Future<void> main() async {
   Talker talker = Talker();
@@ -14,11 +15,15 @@ Future<void> main() async {
       FlutterError.onError =
           (details) => talker.handle(details.exception, details.stack);
       await initializeSql();
+      AppInfo appInfo = await initializeAppInfo();
+      Settings settings = await initializeSettings();
+      WindowManager? windowManager = await initializeWindowManager();
       runApp(
         MultiProvider(
           providers: [
-            Provider.value(value: await initializeAppInfo()),
-            Provider.value(value: await initializeSettings()),
+            if (windowManager != null) Provider.value(value: windowManager),
+            Provider.value(value: appInfo),
+            Provider.value(value: settings),
             Provider.value(value: talker),
           ],
           child: const App(),

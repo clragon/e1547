@@ -46,20 +46,24 @@ class App extends StatelessWidget {
                   GlobalCupertinoLocalizations.delegate,
                   RelativeTimeLocalizations.delegate,
                 ],
-                builder: (context, child) => StartupActions(
-                  actions: [
-                    (_) => initializeDateFormatting(),
-                    (_) => context.read<DenylistService>().update(),
-                    (_) => context.read<FollowsService>().update(),
-                    initializeUserAvatar,
-                  ],
-                  child: LockScreen(
-                    child: AppLinkHandler(
-                      child: VideoHandlerData(
-                        handler: VideoHandler(
-                          muteVideos: settings.muteVideos.value,
+                builder: (context, child) => WindowFrame(
+                  child: WindowShortcuts(
+                    child: StartupActions(
+                      actions: [
+                        (_) => initializeDateFormatting(),
+                        (_) => context.read<DenylistService>().update(),
+                        (_) => context.read<FollowsService>().update(),
+                        initializeUserAvatar,
+                      ],
+                      child: LockScreen(
+                        child: AppLinkHandler(
+                          child: VideoHandlerData(
+                            handler: VideoHandler(
+                              muteVideos: settings.muteVideos.value,
+                            ),
+                            child: child!,
+                          ),
                         ),
-                        child: child!,
                       ),
                     ),
                   ),

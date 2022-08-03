@@ -153,7 +153,7 @@ class SelectionItemOverlay<T> extends StatelessWidget {
         children: [
           child,
           Positioned.fill(
-            child: GestureDetector(
+            child: TapRegion(
               behavior: HitTestBehavior.translucent,
               onTap: layoutData.selections.isNotEmpty ? select : null,
               onLongPress: select,

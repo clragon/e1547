@@ -11,7 +11,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 final NavigationController navigationController = NavigationController(
-    destinations: rootDestintations, drawerHeader: UserDrawerHeader());
+  destinations: rootDestintations,
+  drawerHeader: UserDrawerHeader(),
+);
 
 const String _drawerSearchGroup = 'search';
 const String _drawerCollectionsGroup = 'collections';

@@ -241,7 +241,8 @@ class PostDetailImageButtons extends StatelessWidget {
         return Stack(
           fit: StackFit.passthrough,
           children: [
-            InkWell(
+            TapRegion(
+              behavior: HitTestBehavior.opaque,
               onTap: post.value.type == PostType.video
                   ? () => post.value.getVideo(context)!.value.isPlaying
                       ? post.value.getVideo(context)!.pause()

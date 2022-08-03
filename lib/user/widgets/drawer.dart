@@ -9,7 +9,7 @@ class UserDrawerHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<Client>(
       builder: (context, client, child) => DrawerHeader(
-        child: GestureDetector(
+        child: TapRegion(
           onTap: client.credentials != null
               ? () => Navigator.of(context).push(
                     MaterialPageRoute(

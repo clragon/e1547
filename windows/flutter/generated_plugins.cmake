@@ -6,8 +6,10 @@ list(APPEND FLUTTER_PLUGIN_LIST
   app_links_windows
   local_auth_windows
   permission_handler_windows
+  screen_retriever
   sqlite3_flutter_libs
   url_launcher_windows
+  window_manager
 )
 
 list(APPEND FLUTTER_FFI_PLUGIN_LIST

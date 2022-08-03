@@ -5,5 +5,6 @@ export 'data/navigation.dart';
 export 'data/theme.dart';
 // widgets
 export 'widgets/app.dart';
+export 'widgets/frame.dart';
 export 'widgets/link.dart';
 export 'widgets/lock.dart';

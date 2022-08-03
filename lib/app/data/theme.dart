@@ -72,6 +72,9 @@ ThemeData prepareTheme(ThemeData theme) => theme.copyWith(
       bannerTheme: MaterialBannerThemeData(
         backgroundColor: theme.canvasColor,
       ),
+      tooltipTheme: const TooltipThemeData(
+        waitDuration: Duration(milliseconds: 400),
+      ),
     );
 
 final Map<AppTheme, ThemeData> appThemeMap = {

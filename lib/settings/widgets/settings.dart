@@ -37,7 +37,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 .add(LimitedWidthLayout.of(context).padding),
             children: [
               const SettingsHeader(title: 'Server'),
-              GestureDetector(
+              TapRegion(
                 behavior: HitTestBehavior.translucent,
                 onLongPress: () => setCustomHost(context),
                 child: AnimatedBuilder(
