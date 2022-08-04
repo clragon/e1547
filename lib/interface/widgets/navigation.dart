@@ -38,7 +38,7 @@ class NavigationController extends ChangeNotifier {
   final List<NavigationRouteDestination> destinations;
   late final Map<String, WidgetBuilder> routes;
 
-  final Widget? drawerHeader;
+  final WidgetBuilder? drawerHeader;
 
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
   final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
@@ -79,7 +79,7 @@ class NavigationDrawer extends StatelessWidget {
 
     List<Widget> children = [];
     if (controller.drawerHeader != null) {
-      children.add(controller.drawerHeader!);
+      children.add(controller.drawerHeader!(context));
     }
 
     List<NavigationDrawerDestination> destinations =

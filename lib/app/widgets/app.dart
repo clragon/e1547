@@ -20,11 +20,15 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider.value(value: navigationController),
         ClientProvider(),
+        NavigationProvider(
+          destinations: rootDestintations,
+          drawerHeader: (context) => UserDrawerHeader(),
+        ),
         DenylistProvider(),
         FollowsProvider(),
         HistoriesProvider(),
+        AdaptiveScaffoldScope(),
       ],
       child: Consumer3<AppInfo, Settings, NavigationController>(
         builder: (context, appInfo, settings, navigation, child) =>

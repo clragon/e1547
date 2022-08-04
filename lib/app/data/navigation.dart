@@ -6,14 +6,8 @@ import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:e1547/topic/topic.dart';
-import 'package:e1547/user/user.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-final NavigationController navigationController = NavigationController(
-  destinations: rootDestintations,
-  drawerHeader: UserDrawerHeader(),
-);
 
 const String _drawerSearchGroup = 'search';
 const String _drawerCollectionsGroup = 'collections';
@@ -111,3 +105,17 @@ final List<NavigationRouteDestination> rootDestintations = [
     builder: (context) => const FollowingPage(),
   ),
 ];
+
+class NavigationProvider extends ChangeNotifierProvider<NavigationController> {
+  NavigationProvider({
+    required List<NavigationRouteDestination> destinations,
+    WidgetBuilder? drawerHeader,
+    super.child,
+    super.builder,
+  }) : super(
+          create: (context) => NavigationController(
+            destinations: destinations,
+            drawerHeader: drawerHeader,
+          ),
+        );
+}
