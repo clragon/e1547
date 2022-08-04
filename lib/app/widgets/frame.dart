@@ -34,6 +34,12 @@ class _WindowFrameState extends State<WindowFrame> with WindowListener {
   /// Whether the frame is currently in fullscreen.
   bool isFullscreen = false;
 
+  /// Whether the frame is currently focused;
+  bool isFocused = false;
+
+  /// Whether the frame is currently maximized.
+  bool isMaximized = false;
+
   @override
   void initState() {
     super.initState();
@@ -45,7 +51,13 @@ class _WindowFrameState extends State<WindowFrame> with WindowListener {
           manager.addListener(this);
           manager.setTitleBarStyle(TitleBarStyle.hidden);
           bool fullscreen = await manager.isFullScreen();
-          setState(() => isFullscreen = fullscreen);
+          bool focused = await manager.isFocused();
+          bool maximized = await manager.isMaximized();
+          setState(() {
+            isFullscreen = fullscreen;
+            isFocused = focused;
+            isMaximized = maximized;
+          });
         }
       },
     );
@@ -68,16 +80,25 @@ class _WindowFrameState extends State<WindowFrame> with WindowListener {
   }
 
   @override
-  void onWindowEnterFullScreen() {
-    super.onWindowEnterFullScreen();
-    setState(() => isFullscreen = true);
-  }
+  void onWindowEnterFullScreen() => setState(() => isFullscreen = true);
 
   @override
-  void onWindowLeaveFullScreen() {
-    super.onWindowLeaveFullScreen();
-    setState(() => isFullscreen = false);
-  }
+  void onWindowLeaveFullScreen() => setState(() => isFullscreen = false);
+
+  @override
+  void onWindowFocus() => setState(() => isFocused = true);
+
+  @override
+  void onWindowBlur() => setState(() => isFocused = false);
+
+  @override
+  void onWindowRestore() => setState(() => isFocused = true);
+
+  @override
+  void onWindowMaximize() => setState(() => isMaximized = true);
+
+  @override
+  void onWindowUnmaximize() => setState(() => isMaximized = false);
 
   @override
   Widget build(BuildContext context) {
@@ -101,8 +122,19 @@ class _WindowFrameState extends State<WindowFrame> with WindowListener {
                             child: AppIcon(radius: 8),
                           ),
                           Expanded(
-                            child: Text(
-                              context.read<AppInfo>().appName,
+                            child: AnimatedDefaultTextStyle(
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyText2!
+                                  .copyWith(
+                                    color: isFocused
+                                        ? null
+                                        : dimTextColor(context),
+                                  ),
+                              duration: defaultAnimationDuration,
+                              child: Text(
+                                context.read<AppInfo>().appName,
+                              ),
                             ),
                           ),
                         ],
@@ -118,7 +150,9 @@ class _WindowFrameState extends State<WindowFrame> with WindowListener {
                       ),
                       TitleBarButton(
                         color: Colors.orange,
-                        icon: const Icon(Icons.fullscreen),
+                        icon: isMaximized
+                            ? const Icon(Icons.fullscreen_exit)
+                            : const Icon(Icons.fullscreen),
                         onPressed: () async {
                           if (await manager.isFullScreen()) {
                             await manager.setFullScreen(false);
