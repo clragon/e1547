@@ -103,7 +103,6 @@ abstract class RawDataController<KeyType, ItemType>
   /// Replaces the [item] at [index] in the [itemlist].
   ///
   /// If [force] is true, the cache is deleted.
-  @mustCallSuper
   void updateItem(int index, ItemType item, {bool force = false}) {
     assertHasItems();
     List<ItemType> updated = List.from(itemList!);
@@ -113,6 +112,7 @@ abstract class RawDataController<KeyType, ItemType>
       itemList: updated,
       error: error,
     );
+    // TODO: find a better way of renewing cache
     // this renews the cache
     if (force) {
       provide(firstPageKey, force);
@@ -411,7 +411,10 @@ mixin FilterableController<PageKeyType, ItemType>
     assertHasItems();
     _rawItemList![_rawItemList!.indexOf(itemList![index])] = item;
     refilter();
-    super.updateItem(index, item, force: force);
+    // this renews the cache
+    if (force) {
+      provide(firstPageKey, force);
+    }
   }
 
   /// Filters items and returns the filtered list.
