@@ -54,43 +54,47 @@ class _PostDetailGalleryState extends State<PostDetailGallery>
             }
           },
           listenable: controller,
-          child: PageView.builder(
+          child: PageViewShortcuts(
+            autoFocus: false,
             controller: pageController,
-            itemBuilder: (context, index) {
-              loadNextPage(index);
-              return PrimaryScrollController(
-                controller: ScrollController(),
-                child: PostProvider(
-                  id: controller.itemList![index].id,
-                  child: Consumer<PostController>(
-                    builder: (context, post, child) => PostDetail(
-                      post: post,
-                      onTapImage: () => Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => PostDetailConnector(
-                            controller: controller,
-                            child: PostFullscreenGallery(
+            child: PageView.builder(
+              controller: pageController,
+              itemBuilder: (context, index) {
+                loadNextPage(index);
+                return PrimaryScrollController(
+                  controller: ScrollController(),
+                  child: PostProvider(
+                    id: controller.itemList![index].id,
+                    child: Consumer<PostController>(
+                      builder: (context, post, child) => PostDetail(
+                        post: post,
+                        onTapImage: () => Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => PostDetailConnector(
                               controller: controller,
-                              initialPage: index,
-                              onPageChanged: pageController.jumpToPage,
+                              child: PostFullscreenGallery(
+                                controller: controller,
+                                initialPage: index,
+                                onPageChanged: pageController.jumpToPage,
+                              ),
                             ),
                           ),
                         ),
                       ),
                     ),
                   ),
-                ),
-              );
-            },
-            itemCount: controller.itemList?.length ?? 0,
-            onPageChanged: (index) {
-              widget.onPageChanged?.call(index);
-              preloadPostImages(
-                index: index,
-                posts: controller.itemList!,
-                size: ImageSize.sample,
-              );
-            },
+                );
+              },
+              itemCount: controller.itemList?.length ?? 0,
+              onPageChanged: (index) {
+                widget.onPageChanged?.call(index);
+                preloadPostImages(
+                  index: index,
+                  posts: controller.itemList!,
+                  size: ImageSize.sample,
+                );
+              },
+            ),
           ),
         ),
       ),

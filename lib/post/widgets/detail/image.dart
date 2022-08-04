@@ -124,12 +124,12 @@ class _PostDetailImageToggleState extends State<PostDetailImageToggle> {
       return AnimatedBuilder(
         animation: widget.post,
         builder: (context, child) {
-          return CrossFade(
+          return CrossFade.builder(
             showChild: post.file.url == null ||
                 (!post.isFavorited && widget.post.isDenied) ||
                 widget.post.isAllowed,
             duration: const Duration(milliseconds: 200),
-            child: Card(
+            builder: (context) => Card(
               color:
                   widget.post.isAllowed ? Colors.black12 : Colors.transparent,
               elevation: 0,
@@ -201,9 +201,9 @@ class PostDetailImageButtons extends StatelessWidget {
 
         Widget fullscreenButton() {
           if (post.value.type == PostType.video && onTap != null) {
-            return CrossFade(
+            return CrossFade.builder(
               showChild: visible,
-              child: Card(
+              builder: (context) => Card(
                 elevation: 0,
                 color: Colors.black12,
                 child: InkWell(
@@ -241,8 +241,8 @@ class PostDetailImageButtons extends StatelessWidget {
         return Stack(
           fit: StackFit.passthrough,
           children: [
-            TapRegion(
-              behavior: HitTestBehavior.opaque,
+            InkWell(
+              hoverColor: Colors.transparent,
               onTap: post.value.type == PostType.video
                   ? () => post.value.getVideo(context)!.value.isPlaying
                       ? post.value.getVideo(context)!.pause()

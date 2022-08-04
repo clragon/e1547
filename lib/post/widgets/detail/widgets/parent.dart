@@ -30,9 +30,9 @@ class ParentDisplay extends StatelessWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CrossFade(
+            CrossFade.builder(
               showChild: parentId != null || isEditing,
-              child: Column(
+              builder: (context) => Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Padding(
@@ -70,11 +70,11 @@ class ParentDisplay extends StatelessWidget {
                 ],
               ),
             ),
-            CrossFade(
+            CrossFade.builder(
               showChild: post.relationships.children.isNotEmpty &&
                   post.relationships.hasActiveChildren &&
                   !isEditing,
-              child: Column(
+              builder: (context) => Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Padding(

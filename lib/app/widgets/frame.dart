@@ -200,12 +200,12 @@ class WindowShortcuts extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Shortcuts(
-      shortcuts: {
-        LogicalKeySet(LogicalKeyboardKey.escape): const PopRouteIntent(),
-        LogicalKeySet(LogicalKeyboardKey.f11): const FullScreenIntent(),
+      shortcuts: const {
+        SingleActivator(LogicalKeyboardKey.escape): PopRouteIntent(),
+        SingleActivator(LogicalKeyboardKey.f11): FullScreenIntent(),
       },
       child: Actions(
-        actions: <Type, Action<Intent>>{
+        actions: {
           PopRouteIntent: CallbackAction<PopRouteIntent>(
             onInvoke: (intent) => context
                 .read<NavigationController>()

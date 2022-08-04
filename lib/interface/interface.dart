@@ -31,6 +31,7 @@ export 'widgets/refreshing.dart';
 export 'widgets/selection.dart';
 export 'widgets/shadows.dart';
 export 'widgets/sheet.dart';
+export 'widgets/shortcuts.dart';
 export 'widgets/snackbar.dart';
 export 'widgets/startup.dart';
 export 'widgets/text_editor.dart';
