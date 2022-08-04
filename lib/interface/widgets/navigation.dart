@@ -104,7 +104,10 @@ class NavigationDrawer extends StatelessWidget {
           onTap: destination.unique
               ? () => Navigator.of(context)
                   .pushNamedAndRemoveUntil(destination.path, (_) => false)
-              : () => Navigator.of(context).popAndPushNamed(destination.path),
+              : () {
+                  Scaffold.maybeOf(context)?.closeDrawer();
+                  Navigator.of(context).pushNamed(destination.path);
+                },
         ),
       );
     }

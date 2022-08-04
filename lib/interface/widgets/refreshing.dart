@@ -210,7 +210,7 @@ class _RefreshablePageState extends State<RefreshablePage> {
       return widget.pageBuilder!(context, body());
     } else {
       return LayoutBuilder(builder: (context, constraints) {
-        return Scaffold(
+        return AdaptiveScaffold(
           extendBodyBehindAppBar: widget.extendBodyBehindAppBar,
           appBar: widget.appBar,
           body: body(),
