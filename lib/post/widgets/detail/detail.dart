@@ -114,89 +114,85 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
               context: context,
               removeTop: true,
               child: LayoutBuilder(
-                builder: (context, constraints) => PostShortcuts(
-                  autoFocus: ModalRoute.of(context)!.isCurrent,
-                  post: widget.post,
-                  child: ListView(
-                    padding: EdgeInsets.only(
-                      top: MediaQuery.of(context).padding.top,
-                      bottom: kBottomNavigationBarHeight + 24,
-                    ),
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 10),
-                        child: ConstrainedBox(
-                          constraints: BoxConstraints(
-                            minHeight: (constraints.maxHeight / 2),
-                            maxHeight:
-                                constraints.maxWidth > constraints.maxHeight
-                                    ? constraints.maxHeight * 0.8
-                                    : double.infinity,
-                          ),
-                          child: AnimatedSize(
-                            duration: defaultAnimationDuration,
-                            child: PostDetailImageDisplay(
-                              post: widget.post,
-                              onTap: () {
-                                PostVideoRoute.of(context).keepPlaying();
-                                if (!(editingController.editing) &&
-                                    widget.onTapImage != null) {
-                                  widget.onTapImage!();
-                                } else {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          PostFullscreen(post: widget.post),
-                                    ),
-                                  );
-                                }
-                              },
-                            ),
+                builder: (context, constraints) => ListView(
+                  padding: EdgeInsets.only(
+                    top: MediaQuery.of(context).padding.top,
+                    bottom: kBottomNavigationBarHeight + 24,
+                  ),
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 10),
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                          minHeight: (constraints.maxHeight / 2),
+                          maxHeight:
+                              constraints.maxWidth > constraints.maxHeight
+                                  ? constraints.maxHeight * 0.8
+                                  : double.infinity,
+                        ),
+                        child: AnimatedSize(
+                          duration: defaultAnimationDuration,
+                          child: PostDetailImageDisplay(
+                            post: widget.post,
+                            onTap: () {
+                              PostVideoRoute.of(context).keepPlaying();
+                              if (!(editingController.editing) &&
+                                  widget.onTapImage != null) {
+                                widget.onTapImage!();
+                              } else {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        PostFullscreen(post: widget.post),
+                                  ),
+                                );
+                              }
+                            },
                           ),
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: Column(
-                          children: [
-                            ArtistDisplay(post: widget.post),
-                            DescriptionDisplay(post: widget.post.value),
-                            PostEditorChild(
-                              shown: false,
-                              child: LikeDisplay(post: widget.post),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Column(
+                        children: [
+                          ArtistDisplay(post: widget.post),
+                          DescriptionDisplay(post: widget.post.value),
+                          PostEditorChild(
+                            shown: false,
+                            child: LikeDisplay(post: widget.post),
+                          ),
+                          PostEditorChild(
+                            shown: false,
+                            child: CommentDisplay(post: widget.post),
+                          ),
+                          ParentDisplay(post: widget.post.value),
+                          PostEditorChild(
+                            shown: false,
+                            child: PoolDisplay(post: widget.post.value),
+                          ),
+                          PostEditorChild(
+                            shown: false,
+                            child: DenylistTagDisplay(post: widget.post),
+                          ),
+                          TagDisplay(post: widget.post),
+                          PostEditorChild(
+                            shown: false,
+                            child: FileDisplay(
+                              post: widget.post,
                             ),
-                            PostEditorChild(
-                              shown: false,
-                              child: CommentDisplay(post: widget.post),
+                          ),
+                          PostEditorChild(
+                            shown: true,
+                            child: RatingDisplay(
+                              post: widget.post.value,
                             ),
-                            ParentDisplay(post: widget.post.value),
-                            PostEditorChild(
-                              shown: false,
-                              child: PoolDisplay(post: widget.post.value),
-                            ),
-                            PostEditorChild(
-                              shown: false,
-                              child: DenylistTagDisplay(post: widget.post),
-                            ),
-                            TagDisplay(post: widget.post),
-                            PostEditorChild(
-                              shown: false,
-                              child: FileDisplay(
-                                post: widget.post,
-                              ),
-                            ),
-                            PostEditorChild(
-                              shown: true,
-                              child: RatingDisplay(
-                                post: widget.post.value,
-                              ),
-                            ),
-                            SourceDisplay(post: widget.post.value),
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
+                          ),
+                          SourceDisplay(post: widget.post.value),
+                        ],
+                      ),
+                    )
+                  ],
                 ),
               ),
             ),
