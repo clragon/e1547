@@ -40,6 +40,7 @@ class ContextDrawerButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (!Scaffold.of(context).hasEndDrawer) return const SizedBox();
     return Padding(
       padding: const EdgeInsets.only(right: 4),
       child: Builder(

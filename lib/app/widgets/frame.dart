@@ -106,9 +106,8 @@ class _WindowFrameState extends State<WindowFrame> with WindowListener {
     if (manager != null) {
       return Column(
         children: [
-          CrossFade(
-            showChild: !isFullscreen,
-            child: Material(
+          if (!isFullscreen)
+            Material(
               child: Row(
                 children: [
                   Expanded(
@@ -173,7 +172,6 @@ class _WindowFrameState extends State<WindowFrame> with WindowListener {
                 ],
               ),
             ),
-          ),
           Expanded(
             child: ClipRect(child: widget.child),
           ),
