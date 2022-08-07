@@ -209,17 +209,14 @@ class _RefreshablePageState extends State<RefreshablePage> {
     if (widget.pageBuilder != null) {
       return widget.pageBuilder!(context, body());
     } else {
-      return LayoutBuilder(builder: (context, constraints) {
-        return AdaptiveScaffold(
-          extendBodyBehindAppBar: widget.extendBodyBehindAppBar,
-          appBar: widget.appBar,
-          body: body(),
-          drawer: widget.drawer,
-          endDrawer: widget.endDrawer,
-          drawerEdgeDragWidth: defaultDrawerEdge(constraints.maxWidth),
-          floatingActionButton: widget.floatingActionButton,
-        );
-      });
+      return AdaptiveScaffold(
+        extendBodyBehindAppBar: widget.extendBodyBehindAppBar,
+        appBar: widget.appBar,
+        body: body(),
+        drawer: widget.drawer,
+        endDrawer: widget.endDrawer,
+        floatingActionButton: widget.floatingActionButton,
+      );
     }
   }
 }

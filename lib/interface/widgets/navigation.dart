@@ -2,8 +2,6 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-double defaultDrawerEdge(double screenWidth) => screenWidth * 0.1;
-
 class NavigationRouteDestination {
   final String path;
   final WidgetBuilder builder;
