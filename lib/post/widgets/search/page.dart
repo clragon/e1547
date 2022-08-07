@@ -85,7 +85,7 @@ class _PostsPageState extends State<PostsPage> {
               floatingActionButton: floatingActionButton(),
               refresh: () =>
                   widget.controller.refresh(background: true, force: true),
-              builder: (context) => postGrid(context, widget.controller),
+              child: postGrid(context, widget.controller),
             ),
           ),
         ),

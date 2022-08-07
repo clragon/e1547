@@ -41,17 +41,6 @@ class RepliesPage extends StatelessWidget {
               ],
             ),
             controller: controller,
-            builder: (context) => PagedListView(
-              padding: defaultActionListPadding,
-              pagingController: controller,
-              builderDelegate: defaultPagedChildBuilderDelegate<Reply>(
-                pagingController: controller,
-                itemBuilder: (context, item, index) =>
-                    ReplyTile(reply: item, topic: topic),
-                onEmpty: const Text('No replies'),
-                onError: const Text('Failed to load replies'),
-              ),
-            ),
             drawer: const NavigationDrawer(),
             endDrawer: ContextDrawer(
               title: const Text('Replies'),
@@ -70,6 +59,17 @@ class RepliesPage extends StatelessWidget {
                   ),
                 ),
               ],
+            ),
+            child: PagedListView(
+              padding: defaultActionListPadding,
+              pagingController: controller,
+              builderDelegate: defaultPagedChildBuilderDelegate<Reply>(
+                pagingController: controller,
+                itemBuilder: (context, item, index) =>
+                    ReplyTile(reply: item, topic: topic),
+                onEmpty: const Text('No replies'),
+                onError: const Text('Failed to load replies'),
+              ),
             ),
           ),
         ),

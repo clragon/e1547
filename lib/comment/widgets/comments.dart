@@ -37,22 +37,6 @@ class PostCommentsPage extends StatelessWidget {
                 )
               : null,
           controller: controller,
-          builder: (context) => PagedListView<String, Comment>(
-            padding: defaultActionListPadding,
-            pagingController: controller,
-            builderDelegate: defaultPagedChildBuilderDelegate(
-              pagingController: controller,
-              itemBuilder: (context, item, index) => CommentProvider(
-                id: item.id,
-                child: Consumer<CommentController>(
-                  builder: (context, controller, child) =>
-                      CommentTile(comment: controller),
-                ),
-              ),
-              onEmpty: const Text('No comments'),
-              onError: const Text('Failed to load comments'),
-            ),
-          ),
           endDrawer: ContextDrawer(
             title: const Text('Comments'),
             children: [
@@ -70,6 +54,22 @@ class PostCommentsPage extends StatelessWidget {
                 ),
               ),
             ],
+          ),
+          child: PagedListView<String, Comment>(
+            padding: defaultActionListPadding,
+            pagingController: controller,
+            builderDelegate: defaultPagedChildBuilderDelegate(
+              pagingController: controller,
+              itemBuilder: (context, item, index) => CommentProvider(
+                id: item.id,
+                child: Consumer<CommentController>(
+                  builder: (context, controller, child) =>
+                      CommentTile(comment: controller),
+                ),
+              ),
+              onEmpty: const Text('No comments'),
+              onError: const Text('Failed to load comments'),
+            ),
           ),
         ),
       ),

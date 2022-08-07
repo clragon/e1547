@@ -4,7 +4,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class RefreshableControllerPage<T extends RefreshableController>
     extends StatelessWidget {
-  final WidgetBuilder? builder;
+  final Widget? child;
   final Widget? refreshHeader;
   final Widget? drawer;
   final Widget? endDrawer;
@@ -14,7 +14,7 @@ class RefreshableControllerPage<T extends RefreshableController>
   final ScrollController? scrollController;
 
   const RefreshableControllerPage({
-    required this.builder,
+    required this.child,
     required this.controller,
     this.appBar,
     this.scrollController,
@@ -27,7 +27,6 @@ class RefreshableControllerPage<T extends RefreshableController>
   @override
   Widget build(BuildContext context) {
     return RefreshablePage(
-      builder: builder,
       refreshHeader: refreshHeader,
       drawer: drawer,
       endDrawer: endDrawer,
@@ -35,6 +34,7 @@ class RefreshableControllerPage<T extends RefreshableController>
       floatingActionButton: floatingActionButton,
       refreshController: controller.refreshController,
       refresh: () => controller.refresh(background: true, force: true),
+      child: child,
     );
   }
 }
@@ -119,15 +119,14 @@ class RefreshablePageLoader extends StatelessWidget {
       pageBuilder: (context, child) {
         if (pageBuilder != null) {
           return RefreshablePage.pageBuilder(
-            builder: (context) => child,
             refreshController: refreshController,
             refreshHeader: refreshHeader,
             refresh: refresh,
             pageBuilder: pageBuilder,
+            child: child,
           );
         } else {
           return RefreshablePage(
-            builder: (context) => child,
             refreshController: refreshController,
             refreshHeader: refreshHeader,
             refresh: refresh,
@@ -135,6 +134,7 @@ class RefreshablePageLoader extends StatelessWidget {
             drawer: drawer,
             endDrawer: endDrawer,
             floatingActionButton: floatingActionButton,
+            child: child,
           );
         }
       },
@@ -144,7 +144,7 @@ class RefreshablePageLoader extends StatelessWidget {
 }
 
 class RefreshablePage extends StatefulWidget {
-  final WidgetBuilder? builder;
+  final Widget? child;
   final Widget? refreshHeader;
   final Widget? drawer;
   final Widget? endDrawer;
@@ -157,7 +157,7 @@ class RefreshablePage extends StatefulWidget {
 
   const RefreshablePage({
     required this.refresh,
-    required this.builder,
+    required this.child,
     this.appBar,
     this.refreshController,
     this.refreshHeader,
@@ -170,7 +170,7 @@ class RefreshablePage extends StatefulWidget {
   const RefreshablePage.pageBuilder({
     required this.pageBuilder,
     required this.refresh,
-    this.builder,
+    this.child,
     this.refreshController,
     this.refreshHeader,
   })  : appBar = null,
@@ -202,7 +202,7 @@ class _RefreshablePageState extends State<RefreshablePage> {
         controller: refreshController,
         onRefresh: widget.refresh,
         header: widget.refreshHeader ?? const RefreshablePageDefaultHeader(),
-        child: widget.builder?.call(context),
+        child: widget.child,
       );
     }
 

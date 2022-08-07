@@ -44,7 +44,7 @@ class _PoolsPageState extends State<PoolsPage> with DrawerEntry {
             ),
             drawer: const NavigationDrawer(),
             controller: controller,
-            builder: (context) => PagedListView(
+            child: PagedListView(
               padding: defaultListPadding,
               pagingController: controller,
               builderDelegate: defaultPagedChildBuilderDelegate<Pool>(
