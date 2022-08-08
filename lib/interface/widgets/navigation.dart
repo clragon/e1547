@@ -59,6 +59,20 @@ class NavigationController extends ChangeNotifier {
   }
 }
 
+class NavigationProvider extends ChangeNotifierProvider<NavigationController> {
+  NavigationProvider({
+    required List<NavigationRouteDestination> destinations,
+    WidgetBuilder? drawerHeader,
+    super.child,
+    super.builder,
+  }) : super(
+          create: (context) => NavigationController(
+            destinations: destinations,
+            drawerHeader: drawerHeader,
+          ),
+        );
+}
+
 class NavigationDrawer extends StatelessWidget {
   const NavigationDrawer();
 
