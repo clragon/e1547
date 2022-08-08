@@ -6,19 +6,42 @@ import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 
 class PostImageWidget extends StatelessWidget {
-  final Post post;
-  final BoxFit fit;
-  final ImageSize size;
-  final bool showProgress;
-  final bool withPreview;
-
+  /// Displays the image of a post.
+  ///
+  /// Provides various preview options while loading.
   const PostImageWidget({
     required this.post,
     required this.size,
     this.showProgress = true,
     this.withPreview = true,
     this.fit = BoxFit.contain,
+    this.cacheSize,
+    this.sampleCacheSize,
   });
+
+  /// The post which provides the image.
+  final Post post;
+
+  /// How the image should be fit.
+  final BoxFit fit;
+
+  /// The image size to be selected from that post (preview, sample, file).
+  final ImageSize size;
+
+  /// Whether to display progress while the the image is loading.
+  final bool showProgress;
+
+  /// Whether the preview image should be displayed while sample is loading.
+  /// Has no effect if [ImageSize] is not [ImageSize.sample].
+  final bool withPreview;
+
+  /// The cache size for this image.
+  final int? cacheSize;
+
+  /// The cache size of a previously loaded sample image.
+  /// Used to bridge the gap between loading a downsized sample and the full sized one.
+  /// Has no effect if [ImageSize] is not [ImageSize.sample].
+  final int? sampleCacheSize;
 
   @override
   Widget build(BuildContext context) {
@@ -32,6 +55,7 @@ class PostImageWidget extends StatelessWidget {
             required String url,
             ProgressIndicatorBuilder? progressIndicatorBuilder,
             bool stacked = false,
+            int? cacheSize,
           }) {
             Duration fades =
                 stacked ? const Duration() : const Duration(milliseconds: 500);
@@ -57,6 +81,7 @@ class PostImageWidget extends StatelessWidget {
               progressIndicatorBuilder: showProgress || stacked
                   ? progressIndicatorBuilder ?? progressIndicator
                   : null,
+              memCacheWidth: cacheSize ?? this.cacheSize,
             );
           }
 
@@ -64,6 +89,7 @@ class PostImageWidget extends StatelessWidget {
             return AspectRatio(
               aspectRatio: post.file.width / post.file.height,
               child: Stack(
+                fit: StackFit.passthrough,
                 alignment: Alignment.center,
                 children: [
                   Positioned.fill(child: child),
@@ -83,6 +109,17 @@ class PostImageWidget extends StatelessWidget {
             );
           }
 
+          Widget cachedSample(Widget child) {
+            if (sampleCacheSize != null) {
+              return image(
+                url: post.sample.url!,
+                cacheSize: sampleCacheSize,
+                progressIndicatorBuilder: (context, url, progress) => child,
+              );
+            }
+            return child;
+          }
+
           Widget? body() {
             switch (size) {
               case ImageSize.preview:
@@ -95,7 +132,14 @@ class PostImageWidget extends StatelessWidget {
                     progressIndicatorBuilder: (context, url, progress) =>
                         previewWrapper(
                       progress,
-                      image(url: post.preview.url!),
+                      cachedSample(
+                        image(
+                          url: post.sample.url!,
+                          cacheSize: sampleCacheSize,
+                          progressIndicatorBuilder: (context, url, progress) =>
+                              image(url: post.preview.url!),
+                        ),
+                      ),
                     ),
                   );
                 } else {
@@ -123,5 +167,30 @@ class PostImageWidget extends StatelessWidget {
   }
 }
 
+/// A default error builder for cached network image.
+/// Shows a centered icon.
 Widget defaultErrorBuilder(BuildContext context, String url, dynamic error) =>
     const Center(child: Icon(Icons.warning_amber_outlined));
+
+class SampleCacheSize {
+  /// Configures the post sample image cache size for a subtree.
+  const SampleCacheSize(this.size);
+
+  /// The cache size of the image.
+  final int? size;
+}
+
+class SampleCacheSizeProvider extends SubProvider0<SampleCacheSize> {
+  /// Provides a sample image cache size to a subtree.
+  SampleCacheSizeProvider({required int? size, super.child, super.builder})
+      : super(
+          create: (context) => SampleCacheSize(size),
+          selector: (context) => [size],
+        );
+
+  /// Removes the sample cache size for a subtree.
+  SampleCacheSizeProvider.none({super.child, super.builder})
+      : super(
+          create: (context) => const SampleCacheSize(null),
+        );
+}

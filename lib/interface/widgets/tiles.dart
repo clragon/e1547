@@ -10,12 +10,14 @@ enum GridQuilt {
 
 class TileLayoutData extends InheritedWidget {
   final double tileHeightFactor;
+  final int tileSize;
   final int crossAxisCount;
   final GridQuilt stagger;
 
   const TileLayoutData({
     required super.child,
     required this.tileHeightFactor,
+    required this.tileSize,
     required this.crossAxisCount,
     required this.stagger,
   });
@@ -59,6 +61,7 @@ class TileLayout extends StatelessWidget {
             int crossAxisCount = notZero(constraints.maxWidth / tileSize);
             return TileLayoutData(
               tileHeightFactor: tileHeightFactor,
+              tileSize: tileSize,
               crossAxisCount: crossAxisCount,
               stagger: stagger,
               child: this.child,

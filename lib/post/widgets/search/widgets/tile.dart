@@ -54,6 +54,7 @@ class PostTile extends StatelessWidget {
                     fit: BoxFit.cover,
                     showProgress: false,
                     withPreview: false,
+                    cacheSize: context.read<SampleCacheSize>().size,
                   ),
                 ),
               ),

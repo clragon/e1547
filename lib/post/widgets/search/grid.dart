@@ -30,20 +30,29 @@ Widget postGrid(BuildContext context, PostsController controller) {
         id: item.id,
         parent: controller,
         child: Consumer<PostController>(
-          builder: (context, post, child) => PostTile(
-            post: post,
-            onTap: () => Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => PostDetailConnector(
-                  controller: controller,
-                  child: PostDetailGallery(
-                    controller: controller,
-                    initialPage: index,
+          builder: (context, post, child) {
+            int cacheSize = TileLayout.of(context).tileSize * 2;
+            return SampleCacheSizeProvider(
+              size: cacheSize,
+              child: PostTile(
+                post: post,
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => SampleCacheSizeProvider(
+                      size: cacheSize,
+                      child: PostDetailConnector(
+                        controller: controller,
+                        child: PostDetailGallery(
+                          controller: controller,
+                          initialPage: index,
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               ),
-            ),
-          ),
+            );
+          },
         ),
       );
 

@@ -17,6 +17,7 @@ class PostDetailImage extends StatelessWidget {
       post: post,
       size: ImageSize.sample,
       fit: BoxFit.cover,
+      sampleCacheSize: context.read<SampleCacheSize?>()?.size,
     );
   }
 }
@@ -293,9 +294,12 @@ class PostDetailImageDisplay extends StatelessWidget {
         builder: (context) => Center(
           child: Hero(
             tag: post.value.link,
-            child: post.value.type == PostType.video
-                ? PostDetailVideo(post: post.value)
-                : PostDetailImage(post: post.value),
+            child: SampleCacheSizeProvider(
+              size: context.read<SampleCacheSize?>()?.size,
+              child: post.value.type == PostType.video
+                  ? PostDetailVideo(post: post.value)
+                  : PostDetailImage(post: post.value),
+            ),
           ),
         ),
       ),
