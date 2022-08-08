@@ -12,6 +12,7 @@ export 'data/updater.dart';
 export 'widgets/action.dart';
 export 'widgets/animation.dart';
 export 'widgets/appbar.dart';
+export 'widgets/context_menu.dart';
 export 'widgets/dialog.dart';
 export 'widgets/divider_tile.dart';
 export 'widgets/drawer.dart';
