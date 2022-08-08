@@ -34,7 +34,7 @@ class RefreshableControllerPage<T extends RefreshableController>
       floatingActionButton: floatingActionButton,
       refreshController: controller.refreshController,
       refresh: () => controller.refresh(background: true, force: true),
-      child: child,
+      child: (context) => child,
     );
   }
 }
@@ -101,7 +101,7 @@ class RefreshablePageLoader extends StatelessWidget {
         drawer: drawer,
         endDrawer: endDrawer,
         floatingActionButton: floatingActionButton,
-        child: child,
+        child: (context) => child,
       ),
       builder: builder,
     );
@@ -109,7 +109,7 @@ class RefreshablePageLoader extends StatelessWidget {
 }
 
 class RefreshablePage extends StatefulWidget {
-  final Widget child;
+  final WidgetBuilder child;
   final WidgetChildBuilder? builder;
   final Widget? refreshHeader;
   final Widget? drawer;
@@ -168,11 +168,14 @@ class _RefreshablePageState extends State<RefreshablePage> {
       appBar: widget.appBar,
       body: builder(
         context,
-        SmartRefresher(
-          controller: refreshController,
-          onRefresh: widget.refresh,
-          header: widget.refreshHeader ?? const RefreshablePageDefaultHeader(),
-          child: widget.child,
+        Builder(
+          builder: (context) => SmartRefresher(
+            controller: refreshController,
+            onRefresh: widget.refresh,
+            header:
+                widget.refreshHeader ?? const RefreshablePageDefaultHeader(),
+            child: widget.child(context),
+          ),
         ),
       ),
       drawer: widget.drawer,

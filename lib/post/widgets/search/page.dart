@@ -90,9 +90,7 @@ class _PostsPageState extends State<PostsPage> {
           ),
         ),
       ),
-      child: Builder(
-        builder: (context) => postGrid(context, widget.controller),
-      ),
+      child: (context) => postGrid(context, widget.controller),
     );
   }
 }
