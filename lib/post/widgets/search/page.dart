@@ -67,30 +67,28 @@ class _PostsPageState extends State<PostsPage> {
       );
     }
 
-    return RefreshablePage(
-      refreshController: widget.controller.refreshController,
-      appBar: PostSelectionAppBar(
-        controller: widget.controller,
-        child: widget.appBar,
-      ),
-      drawer: const NavigationDrawer(),
-      endDrawer: endDrawer(),
-      floatingActionButton: floatingActionButton(),
-      refresh: () => widget.controller.refresh(background: true, force: true),
-      builder: (context, child) => TileLayout(
-        child: ChangeNotifierProvider.value(
-          value: widget.controller,
-          child: Consumer<PostsController>(
-            builder: (context, controller, child) => SelectionLayout<Post>(
-              enabled: widget.canSelect,
-              items: controller.itemList,
-              child: child!,
+    return ChangeNotifierProvider.value(
+      value: widget.controller,
+      child: Consumer<PostsController>(
+        builder: (context, controller, child) => SelectionLayout<Post>(
+          enabled: widget.canSelect,
+          items: controller.itemList,
+          child: RefreshablePage(
+            refreshController: widget.controller.refreshController,
+            appBar: PostSelectionAppBar(
+              controller: widget.controller,
+              child: widget.appBar,
             ),
-            child: child,
+            drawer: const NavigationDrawer(),
+            endDrawer: endDrawer(),
+            floatingActionButton: floatingActionButton(),
+            refresh: () =>
+                widget.controller.refresh(background: true, force: true),
+            builder: (context, child) => TileLayout(child: child),
+            child: (context) => postGrid(context, widget.controller),
           ),
         ),
       ),
-      child: (context) => postGrid(context, widget.controller),
     );
   }
 }
