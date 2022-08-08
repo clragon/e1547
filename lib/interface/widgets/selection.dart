@@ -1,13 +1,8 @@
 import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
 
-typedef SelectionChanged<T> = void Function(Set<T> selections);
-
 class SelectionLayoutData<T> extends InheritedWidget {
-  final Set<T> selections;
-  final List<T> items;
-  final SelectionChanged<T> onChanged;
-
+  /// Provides selection actions for a [SelectionLayout] to its subtree.
   const SelectionLayoutData({
     required super.child,
     required this.selections,
@@ -15,26 +10,98 @@ class SelectionLayoutData<T> extends InheritedWidget {
     required this.items,
   });
 
+  /// All selected items.
+  final Set<T> selections;
+
+  /// All items that can be selected.
+  final List<T> items;
+
+  /// Called when the selection is changed.
+  final ValueChanged<Set<T>> onChanged;
+
+  /// Ensures that an item is part of this [SelectionLayout].
+  void _assertItemOwnership(T item) {
+    if (!items.contains(item)) {
+      throw StateError('Cannot select an item which is not part of items!');
+    }
+  }
+
+  /// Clears the selection.
+  void clear() => onChanged(const {});
+
+  /// Selects all items.
+  void selectAll() => onChanged(items.toSet());
+
+  /// Returns whether an item is currently selected.
+  bool isSelected(T item) {
+    _assertItemOwnership(item);
+    return selections.contains(item);
+  }
+
+  /// Selects an item.
+  /// Does nothing if the item is already selected.
+  void select(T item) {
+    _assertItemOwnership(item);
+    if (!isSelected(item)) {
+      onChanged(Set.of(selections)..add(item));
+    }
+  }
+
+  /// Deselects an item.
+  /// Does nothing if the item is not selected.
+  void deselect(T item) {
+    _assertItemOwnership(item);
+    if (isSelected(item)) {
+      onChanged(Set.of(selections)..remove(item));
+    }
+  }
+
+  /// Sets the selection of an item.
+  /// Does nothing if already in correct state.
+  void setSelection(T item, bool selected) {
+    if (selected) {
+      select(item);
+    } else {
+      deselect(item);
+    }
+  }
+
+  /// Toggles the selection state of an item.
+  void toggleSelection(T item) => setSelection(
+        item,
+        !isSelected(item),
+      );
+
   @override
   bool updateShouldNotify(covariant SelectionLayoutData oldWidget) =>
       (oldWidget.selections != selections || oldWidget.onChanged != onChanged);
 }
 
-// TODO: use Provider and an extension of ValueNotifier
 class SelectionLayout<T> extends StatefulWidget {
-  final Widget child;
-  final List<T>? items;
-  final bool enabled;
-
+  /// Provides item selection for a subtree.
   const SelectionLayout({
     required this.child,
     required this.items,
     this.enabled = true,
   });
 
-  static SelectionLayoutData<T>? of<T>(BuildContext context) {
-    return context.dependOnInheritedWidgetOfExactType<SelectionLayoutData<T>>();
-  }
+  /// The widget below this one on the tree.
+  final Widget child;
+
+  /// All items which can be selected.
+  final List<T>? items;
+
+  /// Whether items can currently be selected.
+  final bool enabled;
+
+  /// Returns the [SelectionLayoutData] of the current context.
+  /// Throws an error if there is none.
+  static SelectionLayoutData<T> of<T>(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<SelectionLayoutData<T>>()!;
+
+  /// Returns the [SelectionLayoutData] of the current context or null, if there is none.
+  static SelectionLayoutData<T>? maybeOf<T>(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<SelectionLayoutData<T>>();
 
   @override
   State<SelectionLayout<T>> createState() => _SelectionLayoutState<T>();
@@ -84,22 +151,31 @@ class _SelectionLayoutState<T> extends State<SelectionLayout<T>> {
 }
 
 class SelectionAppBar<T> extends StatelessWidget with AppBarBuilderWidget {
-  final List<Widget> Function(
-      BuildContext context, SelectionLayoutData<T> layoutData) actionBuilder;
-  final Widget Function(
-      BuildContext context, SelectionLayoutData<T> layoutData)? titleBuilder;
-  @override
-  final PreferredSizeWidget child;
-
+  /// Provides an appbar for handling the selection of items.
+  /// Replaces the normal appbar as soon as a selection starts.
   const SelectionAppBar({
     required this.child,
     required this.actionBuilder,
     this.titleBuilder,
   });
 
+  /// The list of actions for the selection appbar.
+  /// Automatically contains an action to select all items.
+  final List<Widget> Function(
+      BuildContext context, SelectionLayoutData<T> layoutData) actionBuilder;
+
+  /// Called to display the title for the selection appbar.
+  /// Defaults to '<count> items'.
+  final Widget Function(
+      BuildContext context, SelectionLayoutData<T> layoutData)? titleBuilder;
+
+  /// The appbar that is shown when no selection is taking place.
+  @override
+  final PreferredSizeWidget child;
+
   @override
   Widget build(BuildContext context) {
-    SelectionLayoutData<T>? layoutData = SelectionLayout.of<T>(context);
+    SelectionLayoutData<T>? layoutData = SelectionLayout.maybeOf<T>(context);
     return CrossFade.builder(
       showChild: layoutData != null && layoutData.selections.isNotEmpty,
       builder: (context) => DefaultAppBar(
@@ -107,14 +183,14 @@ class SelectionAppBar<T> extends StatelessWidget with AppBarBuilderWidget {
             Text('${layoutData!.selections.length} items'),
         leading: IconButton(
           icon: const Icon(Icons.clear),
-          onPressed: () => layoutData!.onChanged({}),
+          onPressed: layoutData!.clear,
         ),
         actions: [
           IconButton(
             icon: const Icon(Icons.select_all),
-            onPressed: () => layoutData!.onChanged(layoutData.items.toSet()),
+            onPressed: layoutData.selectAll,
           ),
-          ...actionBuilder(context, layoutData!),
+          ...actionBuilder(context, layoutData),
         ],
       ),
       secondChild: child,
@@ -123,31 +199,26 @@ class SelectionAppBar<T> extends StatelessWidget with AppBarBuilderWidget {
 }
 
 class SelectionItemOverlay<T> extends StatelessWidget {
-  final Widget child;
-  final T item;
-  final EdgeInsets? padding;
-
+  /// Alows long press actions to start selecting items.
   const SelectionItemOverlay({
     required this.child,
     required this.item,
     this.padding,
   });
 
+  /// The widget below this one in the tree.
+  final Widget child;
+
+  /// The item that can be selected.
+  final T item;
+
+  /// Padding of this widget.
+  final EdgeInsets? padding;
+
   @override
   Widget build(BuildContext context) {
-    SelectionLayoutData<T>? layoutData = SelectionLayout.of<T>(context);
-
+    SelectionLayoutData<T>? layoutData = SelectionLayout.maybeOf<T>(context);
     if (layoutData != null) {
-      void select() {
-        Set<T> updated = Set.from(layoutData.selections);
-        if (updated.contains(item)) {
-          updated.remove(item);
-        } else {
-          updated.add(item);
-        }
-        layoutData.onChanged(updated);
-      }
-
       return Stack(
         fit: StackFit.passthrough,
         children: [
@@ -155,8 +226,10 @@ class SelectionItemOverlay<T> extends StatelessWidget {
           Positioned.fill(
             child: TapRegion(
               behavior: HitTestBehavior.translucent,
-              onTap: layoutData.selections.isNotEmpty ? select : null,
-              onLongPress: select,
+              onTap: layoutData.selections.isNotEmpty
+                  ? () => layoutData.toggleSelection(item)
+                  : null,
+              onLongPress: () => layoutData.toggleSelection(item),
               child: IgnorePointer(
                 child: AnimatedOpacity(
                   duration: defaultAnimationDuration,
