@@ -1,23 +1,14 @@
 import 'package:flutter/material.dart';
 
-/// Displays a context menu at [offset].
+/// Displays a context menu at [position].
 ///
 /// [initialIndex] can be specified to have an initially selected item.
 void showContextMenu({
   required BuildContext context,
-  required Offset offset,
+  required RelativeRect position,
   int? initialIndex,
   required List<ContextMenuItem> items,
 }) {
-  final RenderBox overlay =
-      Navigator.of(context).overlay!.context.findRenderObject()! as RenderBox;
-  final RelativeRect position = RelativeRect.fromRect(
-    Rect.fromPoints(
-      offset,
-      offset,
-    ),
-    Offset.zero & overlay.size,
-  );
   if (items.isNotEmpty) {
     showMenu(
       context: context,
@@ -56,19 +47,31 @@ class ContextMenuArea extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    void onTap(Offset offset) {
+      final RenderBox parent = context.findRenderObject()! as RenderBox;
+      final RenderBox overlay = Navigator.of(context)
+          .overlay!
+          .context
+          .findRenderObject()! as RenderBox;
+      final RelativeRect position = RelativeRect.fromRect(
+        Rect.fromPoints(
+          parent.localToGlobal(offset, ancestor: overlay),
+          parent.localToGlobal(offset, ancestor: overlay),
+        ),
+        Offset.zero & overlay.size,
+      );
+
+      showContextMenu(
+        context: context,
+        position: position,
+        initialIndex: initialIndex,
+        items: items,
+      );
+    }
+
     return GestureDetector(
-      onSecondaryTapDown: (details) => showContextMenu(
-        context: context,
-        offset: details.globalPosition,
-        initialIndex: initialIndex,
-        items: items,
-      ),
-      onLongPressStart: (details) => showContextMenu(
-        context: context,
-        offset: details.globalPosition,
-        initialIndex: initialIndex,
-        items: items,
-      ),
+      onSecondaryTapDown: (details) => onTap(details.localPosition),
+      onLongPressStart: (details) => onTap(details.localPosition),
       child: child,
     );
   }
