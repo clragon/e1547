@@ -5,6 +5,7 @@ import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:video_player/video_player.dart';
 
 class PostDetailImage extends StatelessWidget {
   final Post post;
@@ -29,14 +30,15 @@ class PostDetailVideo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    VideoPlayerController? videoController = post.getVideo(context);
     return PostVideoLoader(
       post: post,
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
-        onTap: post.getVideo(context) != null
-            ? () => post.getVideo(context)!.value.isPlaying
-                ? post.getVideo(context)!.pause()
-                : post.getVideo(context)!.play()
+        onTap: videoController != null
+            ? () => videoController.value.isPlaying
+                ? videoController.pause()
+                : videoController.play()
             : null,
         child: Stack(
           alignment: Alignment.center,
@@ -173,12 +175,12 @@ class _PostDetailImageToggleState extends State<PostDetailImageToggle> {
   }
 }
 
-class PostDetailImageButtons extends StatelessWidget {
+class PostDetailImageActions extends StatelessWidget {
   final PostController post;
   final Widget child;
   final VoidCallback? onOpen;
 
-  const PostDetailImageButtons({
+  const PostDetailImageActions({
     required this.post,
     required this.child,
     this.onOpen,
@@ -239,17 +241,19 @@ class PostDetailImageButtons extends StatelessWidget {
           );
         }
 
+        VideoPlayerController? videoController = post.value.getVideo(context);
+
         return Stack(
           fit: StackFit.passthrough,
           children: [
             InkWell(
               hoverColor: Colors.transparent,
-              onTap: post.value.type == PostType.video
-                  ? () => post.value.getVideo(context)!.value.isPlaying
-                      ? post.value.getVideo(context)!.pause()
-                      : post.value.getVideo(context)!.play()
+              onTap: videoController != null
+                  ? () => videoController.value.isPlaying
+                      ? videoController.pause()
+                      : videoController.play()
                   : onTap,
-              child: IgnorePointer(child: child),
+              child: child,
             ),
             Positioned(
               bottom: 0,
@@ -286,7 +290,7 @@ class PostDetailImageDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return PostDetailImageButtons(
+    return PostDetailImageActions(
       onOpen: onTap,
       post: post,
       child: ImageOverlay(
