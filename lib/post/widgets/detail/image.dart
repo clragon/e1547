@@ -15,7 +15,7 @@ class PostDetailImage extends StatelessWidget {
   Widget build(BuildContext context) {
     return PostImageWidget(
       post: post,
-      size: ImageSize.sample,
+      size: PostImageSize.sample,
       fit: BoxFit.cover,
       sampleCacheSize: context.read<SampleCacheSize?>()?.size,
     );

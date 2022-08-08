@@ -2,7 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 
-enum ImageSize {
+enum PostImageSize {
   preview,
   sample,
   file,
@@ -11,17 +11,17 @@ enum ImageSize {
 Future<void> preloadPostImage({
   required BuildContext context,
   required Post post,
-  required ImageSize size,
+  required PostImageSize size,
 }) async {
   String? url;
   switch (size) {
-    case ImageSize.preview:
+    case PostImageSize.preview:
       url = post.preview.url;
       break;
-    case ImageSize.sample:
+    case PostImageSize.sample:
       url = post.sample.url;
       break;
-    case ImageSize.file:
+    case PostImageSize.file:
       url = post.file.url;
       break;
   }
@@ -37,7 +37,7 @@ mixin PostImagePreloader<T extends StatefulWidget> on State<T> {
   Future<void> preloadPostImages({
     required int index,
     required List<Post> posts,
-    required ImageSize size,
+    required PostImageSize size,
     int reach = 2,
   }) async {
     for (int i = -(reach + 1); i < reach; i++) {

@@ -67,7 +67,7 @@ class _PostFullscreenGalleryState extends State<PostFullscreenGallery>
                 preloadPostImages(
                   index: index,
                   posts: controller.itemList!,
-                  size: ImageSize.file,
+                  size: PostImageSize.file,
                 );
               }
             },

@@ -50,7 +50,7 @@ class PostTile extends StatelessWidget {
                   tag: post.value.link,
                   child: PostImageWidget(
                     post: post.value,
-                    size: ImageSize.sample,
+                    size: PostImageSize.sample,
                     fit: BoxFit.cover,
                     showProgress: false,
                     withPreview: false,

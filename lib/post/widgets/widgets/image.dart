@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
@@ -26,13 +24,13 @@ class PostImageWidget extends StatelessWidget {
   final BoxFit fit;
 
   /// The image size to be selected from that post (preview, sample, file).
-  final ImageSize size;
+  final PostImageSize size;
 
   /// Whether to display progress while the the image is loading.
   final bool showProgress;
 
   /// Whether the preview image should be displayed while sample is loading.
-  /// Has no effect if [ImageSize] is not [ImageSize.sample].
+  /// Has no effect if [PostImageSize] is not [PostImageSize.sample].
   final bool withPreview;
 
   /// The cache size for this image.
@@ -40,79 +38,21 @@ class PostImageWidget extends StatelessWidget {
 
   /// The cache size of a previously loaded sample image.
   /// Used to bridge the gap between loading a downsized sample and the full sized one.
-  /// Has no effect if [ImageSize] is not [ImageSize.sample].
+  /// Has no effect if [PostImageSize] is not [PostImageSize.sample].
   final int? sampleCacheSize;
 
   @override
   Widget build(BuildContext context) {
     return RepaintBoundary(
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          double scale = min(constraints.maxWidth.toDouble(),
-              constraints.maxHeight.toDouble());
-
-          Widget image({
-            required String url,
-            ProgressIndicatorBuilder? progressIndicatorBuilder,
-            bool stacked = false,
-            int? cacheSize,
-          }) {
-            Duration fades =
-                stacked ? const Duration() : const Duration(milliseconds: 500);
-
-            Widget progressIndicator(context, url, progress) {
-              return Center(
-                child: SizedCircularProgressIndicator(
-                  size: scale * 0.1,
-                  value: progress.progress,
-                  strokeWidth: scale * 0.01,
-                ),
-              );
-            }
-
-            return CachedNetworkImage(
-              fit: fit,
-              fadeInDuration: fades,
-              fadeOutDuration: fades,
-              imageUrl: url,
-              errorWidget: stacked
-                  ? defaultErrorBuilder
-                  : (context, url, error) => const SizedBox.shrink(),
-              progressIndicatorBuilder: showProgress || stacked
-                  ? progressIndicatorBuilder ?? progressIndicator
-                  : null,
-              memCacheWidth: cacheSize ?? this.cacheSize,
-            );
-          }
-
-          Widget previewWrapper(DownloadProgress progress, Widget child) {
-            return AspectRatio(
-              aspectRatio: post.file.width / post.file.height,
-              child: Stack(
-                fit: StackFit.passthrough,
-                alignment: Alignment.center,
-                children: [
-                  Positioned.fill(child: child),
-                  if (progress.progress != null)
-                    Positioned(
-                      top: 0,
-                      right: 0,
-                      left: 0,
-                      child: LinearProgressIndicator(
-                        value: progress.progress,
-                        minHeight: scale * 0.01,
-                        backgroundColor: Colors.transparent,
-                      ),
-                    ),
-                ],
-              ),
-            );
-          }
+      child: Builder(
+        builder: (context) {
+          double aspectRatio = post.file.width / post.file.height;
 
           Widget cachedSample(Widget child) {
             if (sampleCacheSize != null) {
-              return image(
-                url: post.sample.url!,
+              return RawPostImageWidget(
+                post: post,
+                size: PostImageSize.sample,
                 cacheSize: sampleCacheSize,
                 progressIndicatorBuilder: (context, url, progress) => child,
               );
@@ -120,48 +60,198 @@ class PostImageWidget extends StatelessWidget {
             return child;
           }
 
-          Widget? body() {
-            switch (size) {
-              case ImageSize.preview:
-                return image(url: post.preview.url!);
-              case ImageSize.sample:
-                if (withPreview) {
-                  return image(
-                    stacked: true,
-                    url: post.sample.url!,
-                    progressIndicatorBuilder: (context, url, progress) =>
-                        previewWrapper(
-                      progress,
-                      cachedSample(
-                        image(
-                          url: post.sample.url!,
-                          cacheSize: sampleCacheSize,
-                          progressIndicatorBuilder: (context, url, progress) =>
-                              image(url: post.preview.url!),
+          switch (size) {
+            case PostImageSize.preview:
+              return RawPostImageWidget(
+                post: post,
+                size: PostImageSize.preview,
+                showProgress: showProgress,
+                fit: fit,
+                cacheSize: cacheSize,
+              );
+            case PostImageSize.sample:
+              if (withPreview) {
+                return RawPostImageWidget(
+                  stacked: true,
+                  post: post,
+                  size: PostImageSize.sample,
+                  showProgress: showProgress,
+                  fit: fit,
+                  cacheSize: cacheSize,
+                  progressIndicatorBuilder: (context, url, progress) =>
+                      ImageProgressWrapper(
+                    aspectRatio: aspectRatio,
+                    progress: progress.progress,
+                    child: cachedSample(
+                      RawPostImageWidget(
+                        post: post,
+                        size: PostImageSize.sample,
+                        cacheSize: sampleCacheSize,
+                        fit: fit,
+                        progressIndicatorBuilder: (context, url, progress) =>
+                            RawPostImageWidget(
+                          post: post,
+                          size: PostImageSize.preview,
+                          fit: fit,
                         ),
                       ),
                     ),
-                  );
-                } else {
-                  return (image(url: post.sample.url!));
-                }
-              case ImageSize.file:
-                return image(
-                  stacked: true,
-                  url: post.file.url!,
-                  progressIndicatorBuilder: (context, url, progress) =>
-                      previewWrapper(progress, image(url: post.sample.url!)),
+                  ),
                 );
-              default:
-                return null;
-            }
+              } else {
+                return RawPostImageWidget(
+                  post: post,
+                  size: PostImageSize.sample,
+                  showProgress: showProgress,
+                  fit: fit,
+                  cacheSize: cacheSize,
+                );
+              }
+            case PostImageSize.file:
+              return RawPostImageWidget(
+                stacked: true,
+                post: post,
+                size: PostImageSize.file,
+                showProgress: showProgress,
+                fit: fit,
+                cacheSize: cacheSize,
+                progressIndicatorBuilder: (context, url, progress) =>
+                    ImageProgressWrapper(
+                  progress: progress.progress,
+                  aspectRatio: aspectRatio,
+                  child: RawPostImageWidget(
+                    post: post,
+                    size: PostImageSize.sample,
+                    fit: fit,
+                  ),
+                ),
+              );
           }
-
-          return DefaultTextStyle(
-            style: TextStyle(fontSize: scale * 0.05),
-            child: body()!,
-          );
         },
+      ),
+    );
+  }
+}
+
+class RawPostImageWidget extends StatelessWidget {
+  const RawPostImageWidget({
+    super.key,
+    required this.post,
+    required this.size,
+    this.fit,
+    this.progressIndicatorBuilder,
+    this.stacked = false,
+    this.showProgress = true,
+    this.cacheSize,
+  });
+
+  final Post post;
+  final PostImageSize size;
+  final BoxFit? fit;
+  final ProgressIndicatorBuilder? progressIndicatorBuilder;
+  final bool stacked;
+  final bool showProgress;
+  final int? cacheSize;
+
+  @override
+  Widget build(BuildContext context) {
+    Duration fades =
+        stacked ? const Duration() : const Duration(milliseconds: 500);
+
+    Widget progressIndicator(context, url, progress) {
+      return Center(
+        child: SizedCircularProgressIndicator(
+          size: 30,
+          value: progress.progress,
+        ),
+      );
+    }
+
+    String url;
+    Size dimensions;
+    switch (size) {
+      case PostImageSize.preview:
+        url = post.preview.url!;
+        dimensions =
+            Size(post.preview.width.toDouble(), post.preview.height.toDouble());
+        break;
+      case PostImageSize.sample:
+        url = post.sample.url!;
+        dimensions =
+            Size(post.sample.width.toDouble(), post.sample.height.toDouble());
+        break;
+      case PostImageSize.file:
+        url = post.file.url!;
+        dimensions =
+            Size(post.file.width.toDouble(), post.file.height.toDouble());
+        break;
+    }
+
+    double aspectRatio = dimensions.width / dimensions.height;
+
+    int? memCacheWidth;
+    int? memCacheHeight;
+
+    if (aspectRatio > 1) {
+      memCacheHeight = cacheSize;
+    } else {
+      memCacheWidth = cacheSize;
+    }
+
+    return CachedNetworkImage(
+      fit: fit,
+      fadeInDuration: fades,
+      fadeOutDuration: fades,
+      imageUrl: url,
+      errorWidget: stacked
+          ? defaultErrorBuilder
+          : (context, url, error) => const SizedBox.shrink(),
+      progressIndicatorBuilder: showProgress || stacked
+          ? progressIndicatorBuilder ?? progressIndicator
+          : null,
+      memCacheWidth: memCacheWidth,
+      memCacheHeight: memCacheHeight,
+    );
+  }
+}
+
+class ImageProgressWrapper extends StatelessWidget {
+  const ImageProgressWrapper({
+    super.key,
+    required this.child,
+    required this.aspectRatio,
+    required this.progress,
+  });
+
+  /// The widget below this one in the tree.
+  final Widget child;
+
+  /// The aspect ratio of the image.
+  final double aspectRatio;
+
+  /// The download progress.
+  final double? progress;
+
+  @override
+  Widget build(BuildContext context) {
+    return AspectRatio(
+      aspectRatio: aspectRatio,
+      child: Stack(
+        fit: StackFit.passthrough,
+        alignment: Alignment.center,
+        children: [
+          Positioned.fill(child: child),
+          if (progress != null)
+            Positioned(
+              top: 0,
+              right: 0,
+              left: 0,
+              child: LinearProgressIndicator(
+                value: progress,
+                backgroundColor: Colors.transparent,
+              ),
+            ),
+        ],
       ),
     );
   }

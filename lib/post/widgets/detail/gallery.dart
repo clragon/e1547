@@ -88,7 +88,7 @@ class _PostDetailGalleryState extends State<PostDetailGallery>
               preloadPostImages(
                 index: index,
                 posts: controller.itemList!,
-                size: ImageSize.sample,
+                size: PostImageSize.sample,
               );
             },
           ),

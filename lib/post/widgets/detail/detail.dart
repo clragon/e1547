@@ -30,7 +30,7 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
         preloadPostImage(
           context: context,
           post: widget.post.value,
-          size: ImageSize.file,
+          size: PostImageSize.file,
         );
       }
     });

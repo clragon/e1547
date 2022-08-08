@@ -455,7 +455,7 @@ class PostVideoWidget extends StatelessWidget {
     Widget placeholder() {
       return PostImageWidget(
         post: post,
-        size: ImageSize.sample,
+        size: PostImageSize.sample,
         fit: BoxFit.cover,
         showProgress: false,
       );
