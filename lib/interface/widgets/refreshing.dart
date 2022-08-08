@@ -4,7 +4,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class RefreshableControllerPage<T extends RefreshableController>
     extends StatelessWidget {
-  final Widget? child;
+  final Widget child;
   final Widget? refreshHeader;
   final Widget? drawer;
   final Widget? endDrawer;
@@ -59,7 +59,6 @@ class RefreshablePageLoader extends StatelessWidget {
   final RefreshController? refreshController;
   final ScrollController? scrollController;
   final VoidCallback refresh;
-  final Scaffold Function(BuildContext context, Widget child)? pageBuilder;
 
   const RefreshablePageLoader({
     required this.refresh,
@@ -81,29 +80,7 @@ class RefreshablePageLoader extends StatelessWidget {
     this.drawer,
     this.endDrawer,
     this.floatingActionButton,
-  }) : pageBuilder = null;
-
-  const RefreshablePageLoader.pageBuilder({
-    required this.pageBuilder,
-    required this.refresh,
-    required this.isLoading,
-    required this.isEmpty,
-    required this.isError,
-    this.isBuilt,
-    this.builder,
-    this.refreshController,
-    this.scrollController,
-    this.refreshHeader,
-    this.initial,
-    this.onLoading,
-    this.onEmpty,
-    this.onEmptyIcon,
-    this.onError,
-    this.onErrorIcon,
-  })  : appBar = null,
-        drawer = null,
-        endDrawer = null,
-        floatingActionButton = null;
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -116,35 +93,24 @@ class RefreshablePageLoader extends StatelessWidget {
       isEmpty: isEmpty,
       isError: isError,
       isBuilt: isBuilt,
-      pageBuilder: (context, child) {
-        if (pageBuilder != null) {
-          return RefreshablePage.pageBuilder(
-            refreshController: refreshController,
-            refreshHeader: refreshHeader,
-            refresh: refresh,
-            pageBuilder: pageBuilder,
-            child: child,
-          );
-        } else {
-          return RefreshablePage(
-            refreshController: refreshController,
-            refreshHeader: refreshHeader,
-            refresh: refresh,
-            appBar: appBar,
-            drawer: drawer,
-            endDrawer: endDrawer,
-            floatingActionButton: floatingActionButton,
-            child: child,
-          );
-        }
-      },
+      pageBuilder: (context, child) => RefreshablePage(
+        refreshController: refreshController,
+        refreshHeader: refreshHeader,
+        refresh: refresh,
+        appBar: appBar,
+        drawer: drawer,
+        endDrawer: endDrawer,
+        floatingActionButton: floatingActionButton,
+        child: child,
+      ),
       builder: builder,
     );
   }
 }
 
 class RefreshablePage extends StatefulWidget {
-  final Widget? child;
+  final Widget child;
+  final WidgetChildBuilder? builder;
   final Widget? refreshHeader;
   final Widget? drawer;
   final Widget? endDrawer;
@@ -153,11 +119,11 @@ class RefreshablePage extends StatefulWidget {
   final PreferredSizeWidget? appBar;
   final RefreshController? refreshController;
   final VoidCallback refresh;
-  final Scaffold Function(BuildContext context, Widget child)? pageBuilder;
 
   const RefreshablePage({
     required this.refresh,
     required this.child,
+    this.builder,
     this.appBar,
     this.refreshController,
     this.refreshHeader,
@@ -165,19 +131,7 @@ class RefreshablePage extends StatefulWidget {
     this.endDrawer,
     this.floatingActionButton,
     this.extendBodyBehindAppBar = false,
-  }) : pageBuilder = null;
-
-  const RefreshablePage.pageBuilder({
-    required this.pageBuilder,
-    required this.refresh,
-    this.child,
-    this.refreshController,
-    this.refreshHeader,
-  })  : appBar = null,
-        extendBodyBehindAppBar = false,
-        drawer = null,
-        endDrawer = null,
-        floatingActionButton = null;
+  });
 
   @override
   State<RefreshablePage> createState() => _RefreshablePageState();
@@ -191,33 +145,40 @@ class _RefreshablePageState extends State<RefreshablePage> {
   void didUpdateWidget(covariant RefreshablePage oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.refreshController != widget.refreshController) {
+      if (oldWidget.refreshController == null) {
+        refreshController.dispose();
+      }
       refreshController = widget.refreshController ?? RefreshController();
     }
   }
 
   @override
-  Widget build(BuildContext context) {
-    Widget body() {
-      return SmartRefresher(
-        controller: refreshController,
-        onRefresh: widget.refresh,
-        header: widget.refreshHeader ?? const RefreshablePageDefaultHeader(),
-        child: widget.child,
-      );
+  void dispose() {
+    if (widget.refreshController == null) {
+      refreshController.dispose();
     }
+    super.dispose();
+  }
 
-    if (widget.pageBuilder != null) {
-      return widget.pageBuilder!(context, body());
-    } else {
-      return AdaptiveScaffold(
-        extendBodyBehindAppBar: widget.extendBodyBehindAppBar,
-        appBar: widget.appBar,
-        body: body(),
-        drawer: widget.drawer,
-        endDrawer: widget.endDrawer,
-        floatingActionButton: widget.floatingActionButton,
-      );
-    }
+  @override
+  Widget build(BuildContext context) {
+    WidgetChildBuilder builder = widget.builder ?? (context, child) => child;
+    return AdaptiveScaffold(
+      extendBodyBehindAppBar: widget.extendBodyBehindAppBar,
+      appBar: widget.appBar,
+      body: builder(
+        context,
+        SmartRefresher(
+          controller: refreshController,
+          onRefresh: widget.refresh,
+          header: widget.refreshHeader ?? const RefreshablePageDefaultHeader(),
+          child: widget.child,
+        ),
+      ),
+      drawer: widget.drawer,
+      endDrawer: widget.endDrawer,
+      floatingActionButton: widget.floatingActionButton,
+    );
   }
 }
 

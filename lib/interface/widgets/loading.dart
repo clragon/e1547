@@ -67,6 +67,10 @@ class IconMessage extends StatelessWidget {
   }
 }
 
+/// Similar to [TransitionBuilder] except that child is guaranteed to be non-null.
+typedef WidgetChildBuilder = Widget Function(
+    BuildContext context, Widget child);
+
 enum PageLoaderState {
   loading,
   empty,
@@ -76,8 +80,8 @@ enum PageLoaderState {
 
 class PageLoader extends StatelessWidget {
   final WidgetBuilder? builder;
-  final Widget Function(BuildContext context, Widget child)? pageBuilder;
-  final Widget Function(BuildContext context, Widget child)? loadingBuilder;
+  final WidgetChildBuilder? pageBuilder;
+  final WidgetChildBuilder? loadingBuilder;
   final Widget? onEmpty;
   final Widget? onEmptyIcon;
   final Widget? onError;
