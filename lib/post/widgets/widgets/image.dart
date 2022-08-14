@@ -48,18 +48,6 @@ class PostImageWidget extends StatelessWidget {
         builder: (context) {
           double aspectRatio = post.file.width / post.file.height;
 
-          Widget cachedSample(Widget child) {
-            if (sampleCacheSize != null) {
-              return RawPostImageWidget(
-                post: post,
-                size: PostImageSize.sample,
-                cacheSize: sampleCacheSize,
-                progressIndicatorBuilder: (context, url, progress) => child,
-              );
-            }
-            return child;
-          }
-
           switch (size) {
             case PostImageSize.preview:
               return RawPostImageWidget(
@@ -82,20 +70,18 @@ class PostImageWidget extends StatelessWidget {
                       ImageProgressWrapper(
                     aspectRatio: aspectRatio,
                     progress: progress.progress,
-                    child: cachedSample(
-                      RawPostImageWidget(
-                        post: post,
-                        size: PostImageSize.sample,
-                        cacheSize: sampleCacheSize,
-                        fit: fit,
-                        progressIndicatorBuilder: (context, url, progress) =>
-                            RawPostImageWidget(
-                          post: post,
-                          size: PostImageSize.preview,
-                          fit: fit,
-                        ),
-                      ),
-                    ),
+                    child: sampleCacheSize != null
+                        ? RawPostImageWidget(
+                            post: post,
+                            size: PostImageSize.sample,
+                            fit: fit,
+                            cacheSize: sampleCacheSize,
+                          )
+                        : RawPostImageWidget(
+                            post: post,
+                            size: PostImageSize.preview,
+                            fit: fit,
+                          ),
                   ),
                 );
               } else {
