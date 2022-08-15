@@ -78,30 +78,52 @@ Widget? withDefaultLeading({
 }
 
 class DefaultAppBar extends StatelessWidget with PreferredSizeWidget {
-  final Widget? leading;
-  final List<Widget>? actions;
-  final Widget? title;
-  final double? elevation;
-  final bool automaticallyImplyLeading;
-  final ScrollController? scrollController;
-
-  @override
-  Size get preferredSize => const Size.fromHeight(defaultAppBarHeight);
-
+  /// A preconfigured appbar.
+  ///
+  /// Contains extra behaviour such as:
+  /// - double tap to scroll to the top of the primary scroll controller
+  /// -  showing drawer and back button at the same time on wide screens
   const DefaultAppBar({
     this.leading,
     this.actions,
     this.title,
     this.elevation,
     this.automaticallyImplyLeading = true,
-    this.scrollController,
+    this.alwaysShowDrawerBreakpoint = 800,
   });
+
+  /// Copied from [AppBar.title].
+  final Widget? title;
+
+  /// Copied from [AppBar.leading].
+  final Widget? leading;
+
+  /// Copied from [AppBar.actions].
+  final List<Widget>? actions;
+
+  /// Copied from [AppBar.elevation].
+  final double? elevation;
+
+  /// Copied from [AppBar.automaticallyImplyLeading].
+  final bool automaticallyImplyLeading;
+
+  /// Breakpoint for when to always show the drawer button.
+  ///
+  /// When the appbar width is greater or equal to this,
+  /// a drawer button for an available drawer will be displayed even when a back button is shown.
+  ///
+  /// If this is null, the behaviour is disabled and an available back button will take the place of a drawer button.
+  final double? alwaysShowDrawerBreakpoint;
+
+  @override
+  Size get preferredSize => const Size.fromHeight(defaultAppBarHeight);
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        bool alwaysShowDrawer = constraints.maxWidth >= 800;
+        bool alwaysShowDrawer = alwaysShowDrawerBreakpoint != null &&
+            constraints.maxWidth >= alwaysShowDrawerBreakpoint!;
 
         Widget? effectiveLeading = leading;
         double? leadingWidth;
@@ -142,7 +164,7 @@ class DefaultAppBar extends StatelessWidget with PreferredSizeWidget {
             title: IgnorePointer(child: title),
             elevation: elevation,
             automaticallyImplyLeading: false,
-            flexibleSpace: ScrollToTop(controller: scrollController),
+            flexibleSpace: const ScrollToTop(),
             shape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(4)),
             ),
