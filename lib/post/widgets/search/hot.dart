@@ -26,9 +26,8 @@ class _HotPageState extends State<HotPage> with DrawerEntry {
           },
           listenable: controller.search,
           child: PostsPage(
-            appBar: const DefaultAppBar(
+            appBar: const ContextSizedAppBar(
               title: Text('Hot'),
-              actions: [SizedBox.shrink()],
             ),
             controller: controller,
           ),

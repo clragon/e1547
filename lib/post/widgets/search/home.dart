@@ -28,9 +28,8 @@ class _HomePageState extends State<HomePage> with DrawerEntry {
           },
           listenable: controller.search,
           child: PostsPage(
-            appBar: const DefaultAppBar(
+            appBar: const ContextSizedAppBar(
               title: Text('Home'),
-              actions: [SizedBox.shrink()],
             ),
             controller: controller,
           ),

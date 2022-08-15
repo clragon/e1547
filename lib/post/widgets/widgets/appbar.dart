@@ -88,3 +88,29 @@ List<PopupMenuItem<VoidCallback>> postMenuUserActions(
     ),
   ];
 }
+
+class ContextSizedAppBar extends StatelessWidget with PreferredSizeWidget {
+  ///  A [DefaultAppBar] that displays a [ContextDrawerButton] inside of its actions depending on available width.
+  const ContextSizedAppBar({this.title});
+
+  /// Copied from [AppBar.title].
+  final Widget? title;
+
+  @override
+  Size get preferredSize => const Size.fromHeight(defaultAppBarHeight);
+
+  @override
+  Widget build(BuildContext context) {
+    return PreferredSize(
+      preferredSize: const Size.fromHeight(defaultAppBarHeight),
+      child: LayoutBuilder(
+        builder: (context, constraints) => DefaultAppBar(
+          title: title,
+          actions: constraints.maxWidth >= 800
+              ? const [ContextDrawerButton()]
+              : const [SizedBox.shrink()],
+        ),
+      ),
+    );
+  }
+}
