@@ -134,7 +134,7 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
     endDrawerBreakpoint: 1600,
   );
 
-  late bool _drawerOpen = widget.isDrawerOpen ??
+  late bool _isInlineDrawerOpen = widget.isDrawerOpen ??
       context.read<AdaptiveScaffoldController?>()?.isDrawerOpen ??
       true;
 
@@ -143,17 +143,17 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
   /// and is different from the drawer being shown as overlay.
   ///
   /// If an [AdaptiveScaffoldController] is available from context, it will be used to define the default value.
-  bool get drawerOpen => _drawerOpen;
-  set drawerOpen(bool value) {
+  bool get isInlineDrawerOpen => _isInlineDrawerOpen;
+  set isInlineDrawerOpen(bool value) {
     AdaptiveScaffoldController? controller =
         context.read<AdaptiveScaffoldController?>();
     if (controller != null) {
       controller.isDrawerOpen = value;
     }
-    _drawerOpen = value;
+    _isInlineDrawerOpen = value;
   }
 
-  late bool _endDrawerOpen = widget.isEndDrawerOpen ??
+  late bool _isInlineEndDrawerOpen = widget.isEndDrawerOpen ??
       context.read<AdaptiveScaffoldController?>()?.isEndDrawerOpen ??
       true;
 
@@ -162,14 +162,14 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
   /// and is different from the end drawer being shown as overlay.
   ///
   /// If an [AdaptiveScaffoldController] is available from context, it will be used to define the default value.
-  bool get endDrawerOpen => _endDrawerOpen;
-  set endDrawerOpen(bool value) {
+  bool get isInlineEndDrawerOpen => _isInlineEndDrawerOpen;
+  set isInlineEndDrawerOpen(bool value) {
     AdaptiveScaffoldController? controller =
         context.read<AdaptiveScaffoldController?>();
     if (controller != null) {
       controller.isEndDrawerOpen = value;
     }
-    _endDrawerOpen = value;
+    _isInlineEndDrawerOpen = value;
   }
 
   @override
@@ -209,16 +209,18 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
         _CustomDrawerAction? drawerAction;
         if (inlineDrawer != null && effectiveConfig.collapseDrawer) {
           drawerAction = _CustomDrawerAction(
-            isDrawerOpen: drawerOpen,
-            onDrawerChanged: (value) => setState(() => drawerOpen = value),
+            isDrawerOpen: isInlineDrawerOpen,
+            onDrawerChanged: (value) =>
+                setState(() => isInlineDrawerOpen = value),
           );
         }
 
         _CustomDrawerAction? endDrawerAction;
         if (inlineEndDrawer != null && effectiveConfig.collapseEndDrawer) {
           endDrawerAction = _CustomDrawerAction(
-            isDrawerOpen: endDrawerOpen,
-            onDrawerChanged: (value) => setState(() => endDrawerOpen = value),
+            isDrawerOpen: isInlineEndDrawerOpen,
+            onDrawerChanged: (value) =>
+                setState(() => isInlineEndDrawerOpen = value),
           );
         }
 
@@ -365,7 +367,7 @@ class _AdaptiveScaffoldBodyState extends ScaffoldState {
   void openDrawer({bool toggle = true}) {
     if (drawerAction != null) {
       if (toggle && isDrawerOpen) {
-        closeDrawer();
+        closeDrawer(inline: true);
       } else {
         drawerAction!.onDrawerChanged(true);
       }
@@ -375,8 +377,9 @@ class _AdaptiveScaffoldBodyState extends ScaffoldState {
   }
 
   @override
-  void closeDrawer() {
+  void closeDrawer({bool inline = false}) {
     if (drawerAction != null) {
+      if (!inline) return;
       drawerAction!.onDrawerChanged(false);
     } else {
       super.closeDrawer();

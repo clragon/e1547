@@ -29,7 +29,6 @@ class RepliesPage extends StatelessWidget {
           listenable: controller.orderByOldest,
           child: RefreshableControllerPage(
             appBar: DefaultAppBar(
-              leading: const BackButton(),
               title: Text(topic.title),
               actions: [
                 IconButton(

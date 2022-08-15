@@ -122,7 +122,6 @@ class _SearchPageState extends State<SearchPage> with ListenerCallbackMixin {
                   controller: controller,
                   appBar: DefaultAppBar(
                     title: Text(getTitle()),
-                    leading: const BackButton(),
                     actions: [
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 8),

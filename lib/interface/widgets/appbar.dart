@@ -99,22 +99,56 @@ class DefaultAppBar extends StatelessWidget with PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AppBarPadding(
-      child: AppBar(
-        leading: withDefaultLeading(
-          context: context,
-          leading: leading,
-          automaticallyImplyLeading: automaticallyImplyLeading,
-        ),
-        actions: actions,
-        title: IgnorePointer(child: title),
-        elevation: elevation,
-        automaticallyImplyLeading: false,
-        flexibleSpace: ScrollToTop(controller: scrollController),
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(4)),
-        ),
-      ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        bool alwaysShowDrawer = constraints.maxWidth >= 800;
+
+        Widget? effectiveLeading = leading;
+        double? leadingWidth;
+        if (leading == null && automaticallyImplyLeading) {
+          bool hasDrawer = Scaffold.maybeOf(context)?.hasDrawer ?? false;
+          bool isFirst = ModalRoute.of(context)?.isFirst ?? false;
+          bool canPop = ModalRoute.of(context)?.canPop ?? false;
+
+          Widget drawerButton() => IconButton(
+                icon: const Icon(Icons.menu),
+                onPressed: Scaffold.of(context).openDrawer,
+                tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
+              );
+
+          if (hasDrawer && isFirst) {
+            effectiveLeading = drawerButton();
+          } else if (canPop) {
+            if (alwaysShowDrawer && hasDrawer) {
+              leadingWidth = 88;
+              effectiveLeading = Row(
+                children: [
+                  const SizedBox(width: 8),
+                  drawerButton(),
+                  const BackButton(),
+                ],
+              );
+            } else {
+              effectiveLeading = const BackButton();
+            }
+          }
+        }
+
+        return AppBarPadding(
+          child: AppBar(
+            leading: effectiveLeading,
+            leadingWidth: leadingWidth,
+            actions: actions,
+            title: IgnorePointer(child: title),
+            elevation: elevation,
+            automaticallyImplyLeading: false,
+            flexibleSpace: ScrollToTop(controller: scrollController),
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(4)),
+            ),
+          ),
+        );
+      },
     );
   }
 }
