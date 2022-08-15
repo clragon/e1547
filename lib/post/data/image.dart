@@ -25,6 +25,7 @@ Future<void> preloadPostImage({
       url = post.file.url;
       break;
   }
+  if (post.type != PostType.image) return;
   if (url != null) {
     await precacheImage(
       CachedNetworkImageProvider(url),
