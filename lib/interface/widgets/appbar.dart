@@ -142,11 +142,16 @@ class DefaultAppBar extends StatelessWidget with PreferredSizeWidget {
           automaticallyImplyLeading: automaticallyImplyLeading,
           leading: leading,
         );
+        List<Widget>? effectiveActions = actions;
+        if (actions != null) {
+          effectiveActions = [...actions!, const SizedBox(width: 8)];
+        }
+
         return AppBarPadding(
           child: AppBar(
             leading: leadingConfig.leading,
             leadingWidth: leadingConfig.leadingWidth,
-            actions: actions,
+            actions: effectiveActions,
             title: IgnorePointer(child: title),
             elevation: elevation,
             automaticallyImplyLeading: false,

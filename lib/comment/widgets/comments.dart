@@ -17,7 +17,6 @@ class PostCommentsPage extends StatelessWidget {
       child: Consumer<CommentsController>(
         builder: (context, controller, child) => RefreshableControllerPage(
           appBar: DefaultAppBar(
-            leading: const BackButton(),
             title: Text('#$postId comments'),
             actions: const [
               ContextDrawerButton(),

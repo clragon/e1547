@@ -11,9 +11,8 @@ class WikiPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AdaptiveScaffold(
       appBar: DefaultAppBar(
-        leading: const BackButton(),
         title: Text(tagToTitle(wiki.title)),
         actions: [
           IconButton(
@@ -23,11 +22,14 @@ class WikiPage extends StatelessWidget {
           ),
         ],
       ),
-      body: SingleChildScrollView(
+      body: ListView(
         padding: defaultActionListPadding
             .add(const EdgeInsets.symmetric(horizontal: 12)),
-        child: DText(wiki.body),
+        children: [
+          DText(wiki.body),
+        ],
       ),
+      drawer: const NavigationDrawer(),
     );
   }
 }

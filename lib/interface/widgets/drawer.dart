@@ -23,6 +23,7 @@ class ContextDrawer extends StatelessWidget {
                   )
                 : null,
             body: ListView(
+              padding: EdgeInsets.only(bottom: defaultActionListPadding.bottom),
               children: children,
             ),
           ),
