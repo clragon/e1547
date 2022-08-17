@@ -54,7 +54,7 @@ class UserPage extends StatelessWidget {
                     );
               },
               listenable: Listenable.merge([controllers.profilePost]),
-              child: AdaptiveScaffold(
+              child: Scaffold(
                 drawer: const NavigationDrawer(),
                 endDrawer: ContextDrawer(
                   title: const Text('Posts'),

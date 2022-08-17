@@ -63,6 +63,7 @@ class PostsController extends DataController<Post>
   bool _denying;
   bool get denying => _denying;
   set denying(bool value) {
+    if (_denying == value) return;
     _denying = value;
     refilter();
   }
@@ -72,6 +73,7 @@ class PostsController extends DataController<Post>
   List<String> _allowedTags = [];
   List<String> get allowedTags => List.unmodifiable(_allowedTags);
   set allowedTags(List<String> value) {
+    if (const DeepCollectionEquality().equals(_allowedTags, value)) return;
     _allowedTags = List.from(value);
     refilter();
   }
