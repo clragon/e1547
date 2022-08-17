@@ -54,27 +54,50 @@ class AppBarPadding extends StatelessWidget with AppBarBuilderWidget {
   }
 }
 
-Widget? withDefaultLeading({
+AppBarLeadingConfiguration getLeadingConfiguration({
   required BuildContext context,
+  required double width,
+  double? alwaysShowDrawerBreakpoint = 800,
   Widget? leading,
   bool automaticallyImplyLeading = true,
 }) {
+  bool alwaysShowDrawer =
+      alwaysShowDrawerBreakpoint != null && width >= alwaysShowDrawerBreakpoint;
+
+  Widget? effectiveLeading = leading;
+  double? leadingWidth;
   if (leading == null && automaticallyImplyLeading) {
     bool hasDrawer = Scaffold.maybeOf(context)?.hasDrawer ?? false;
     bool isFirst = ModalRoute.of(context)?.isFirst ?? false;
     bool canPop = ModalRoute.of(context)?.canPop ?? false;
 
+    Widget drawerButton() => IconButton(
+          icon: const Icon(Icons.menu),
+          onPressed: Scaffold.of(context).openDrawer,
+          tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
+        );
+
     if (hasDrawer && isFirst) {
-      leading = IconButton(
-        icon: const Icon(Icons.menu),
-        onPressed: Scaffold.of(context).openDrawer,
-        tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
-      );
+      effectiveLeading = drawerButton();
     } else if (canPop) {
-      leading = const BackButton();
+      if (alwaysShowDrawer && hasDrawer) {
+        leadingWidth = 88;
+        effectiveLeading = Row(
+          children: [
+            const SizedBox(width: 8),
+            drawerButton(),
+            const BackButton(),
+          ],
+        );
+      } else {
+        effectiveLeading = const BackButton();
+      }
     }
   }
-  return leading;
+  return AppBarLeadingConfiguration(
+    leading: effectiveLeading,
+    leadingWidth: leadingWidth,
+  );
 }
 
 class DefaultAppBar extends StatelessWidget with PreferredSizeWidget {
@@ -89,7 +112,6 @@ class DefaultAppBar extends StatelessWidget with PreferredSizeWidget {
     this.title,
     this.elevation,
     this.automaticallyImplyLeading = true,
-    this.alwaysShowDrawerBreakpoint = 800,
   });
 
   /// Copied from [AppBar.title].
@@ -107,14 +129,6 @@ class DefaultAppBar extends StatelessWidget with PreferredSizeWidget {
   /// Copied from [AppBar.automaticallyImplyLeading].
   final bool automaticallyImplyLeading;
 
-  /// Breakpoint for when to always show the drawer button.
-  ///
-  /// When the appbar width is greater or equal to this,
-  /// a drawer button for an available drawer will be displayed even when a back button is shown.
-  ///
-  /// If this is null, the behaviour is disabled and an available back button will take the place of a drawer button.
-  final double? alwaysShowDrawerBreakpoint;
-
   @override
   Size get preferredSize => const Size.fromHeight(defaultAppBarHeight);
 
@@ -122,44 +136,16 @@ class DefaultAppBar extends StatelessWidget with PreferredSizeWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        bool alwaysShowDrawer = alwaysShowDrawerBreakpoint != null &&
-            constraints.maxWidth >= alwaysShowDrawerBreakpoint!;
-
-        Widget? effectiveLeading = leading;
-        double? leadingWidth;
-        if (leading == null && automaticallyImplyLeading) {
-          bool hasDrawer = Scaffold.maybeOf(context)?.hasDrawer ?? false;
-          bool isFirst = ModalRoute.of(context)?.isFirst ?? false;
-          bool canPop = ModalRoute.of(context)?.canPop ?? false;
-
-          Widget drawerButton() => IconButton(
-                icon: const Icon(Icons.menu),
-                onPressed: Scaffold.of(context).openDrawer,
-                tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
-              );
-
-          if (hasDrawer && isFirst) {
-            effectiveLeading = drawerButton();
-          } else if (canPop) {
-            if (alwaysShowDrawer && hasDrawer) {
-              leadingWidth = 88;
-              effectiveLeading = Row(
-                children: [
-                  const SizedBox(width: 8),
-                  drawerButton(),
-                  const BackButton(),
-                ],
-              );
-            } else {
-              effectiveLeading = const BackButton();
-            }
-          }
-        }
-
+        AppBarLeadingConfiguration leadingConfig = getLeadingConfiguration(
+          context: context,
+          width: constraints.maxWidth,
+          automaticallyImplyLeading: automaticallyImplyLeading,
+          leading: leading,
+        );
         return AppBarPadding(
           child: AppBar(
-            leading: effectiveLeading,
-            leadingWidth: leadingWidth,
+            leading: leadingConfig.leading,
+            leadingWidth: leadingConfig.leadingWidth,
             actions: actions,
             title: IgnorePointer(child: title),
             elevation: elevation,
@@ -173,6 +159,20 @@ class DefaultAppBar extends StatelessWidget with PreferredSizeWidget {
       },
     );
   }
+}
+
+class AppBarLeadingConfiguration {
+  /// Holds the configuration for a leading widget in an AppBar.
+  const AppBarLeadingConfiguration({
+    this.leading,
+    this.leadingWidth,
+  });
+
+  /// The leading widget.
+  final Widget? leading;
+
+  /// The width of the leading widget.
+  final double? leadingWidth;
 }
 
 class ScrollToTop extends StatelessWidget {
@@ -318,55 +318,62 @@ class DefaultSliverAppBar extends StatelessWidget {
     this.floating = false,
     this.pinned = false,
     this.snap = false,
-    this.automaticallyImplyLeading = false,
+    this.automaticallyImplyLeading = true,
     this.forceElevated = false,
     this.scrollController,
   });
 
   @override
   Widget build(BuildContext context) {
-    return SliverAppBarPadding(
-      child: SliverAppBar(
-        title: IgnorePointer(child: title),
-        automaticallyImplyLeading: false,
-        elevation: elevation,
-        forceElevated: forceElevated,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(4)),
-        ),
-        expandedHeight: expandedHeight,
-        leading: withDefaultLeading(
+    return SliverLayoutBuilder(
+      builder: (context, constraints) {
+        AppBarLeadingConfiguration leadingConfig = getLeadingConfiguration(
           context: context,
-          leading: leading,
+          width: constraints.crossAxisExtent,
           automaticallyImplyLeading: automaticallyImplyLeading,
-        ),
-        floating: floating,
-        pinned: pinned,
-        snap: snap,
-        actions: actions,
-        bottom: bottom,
-        flexibleSpace: flexibleSpaceBuilder != null
-            ? LayoutBuilder(
-                builder: (context, constraints) {
-                  double bottomHeight = bottom?.preferredSize.height ?? 0;
-                  double minHeight = (kToolbarHeight + bottomHeight);
-                  double maxHeight =
-                      (expandedHeight ?? kToolbarHeight) - minHeight;
-                  double currentHeight = constraints.maxHeight - minHeight;
-                  return ScrollToTop(
-                    controller: scrollController,
-                    child: Padding(
-                      padding: EdgeInsets.only(bottom: bottomHeight),
-                      child: flexibleSpaceBuilder!(
-                        context,
-                        currentHeight / maxHeight,
-                      ),
-                    ),
-                  );
-                },
-              )
-            : flexibleSpace,
-      ),
+          leading: leading,
+        );
+        return SliverAppBarPadding(
+          child: SliverAppBar(
+            title: IgnorePointer(child: title),
+            automaticallyImplyLeading: false,
+            elevation: elevation,
+            forceElevated: forceElevated,
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(4)),
+            ),
+            expandedHeight: expandedHeight,
+            leading: leadingConfig.leading,
+            leadingWidth: leadingConfig.leadingWidth,
+            floating: floating,
+            pinned: pinned,
+            snap: snap,
+            actions: actions,
+            bottom: bottom,
+            flexibleSpace: flexibleSpaceBuilder != null
+                ? LayoutBuilder(
+                    builder: (context, constraints) {
+                      double bottomHeight = bottom?.preferredSize.height ?? 0;
+                      double minHeight = (kToolbarHeight + bottomHeight);
+                      double maxHeight =
+                          (expandedHeight ?? kToolbarHeight) - minHeight;
+                      double currentHeight = constraints.maxHeight - minHeight;
+                      return ScrollToTop(
+                        controller: scrollController,
+                        child: Padding(
+                          padding: EdgeInsets.only(bottom: bottomHeight),
+                          child: flexibleSpaceBuilder!(
+                            context,
+                            currentHeight / maxHeight,
+                          ),
+                        ),
+                      );
+                    },
+                  )
+                : flexibleSpace,
+          ),
+        );
+      },
     );
   }
 }

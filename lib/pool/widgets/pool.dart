@@ -43,7 +43,6 @@ class _PoolPageState extends State<PoolPage> {
             controller: controller,
             appBar: DefaultAppBar(
               title: Text(tagToTitle(widget.pool.name)),
-              leading: const BackButton(),
               actions: [
                 IconButton(
                   icon: const Icon(Icons.info_outline),

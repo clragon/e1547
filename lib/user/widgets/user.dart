@@ -54,7 +54,7 @@ class UserPage extends StatelessWidget {
                     );
               },
               listenable: Listenable.merge([controllers.profilePost]),
-              child: Scaffold(
+              child: AdaptiveScaffold(
                 drawer: const NavigationDrawer(),
                 endDrawer: ContextDrawer(
                   title: const Text('Posts'),
@@ -70,10 +70,13 @@ class UserPage extends StatelessWidget {
                           context),
                       sliver: DefaultSliverAppBar(
                         pinned: true,
-                        leading: const BackButton(),
                         expandedHeight: 250,
                         flexibleSpaceBuilder: (context, extension) =>
                             FlexibleSpaceBar(
+                          titlePadding: const EdgeInsets.only(
+                            left: 96,
+                            bottom: 16,
+                          ),
                           collapseMode: CollapseMode.pin,
                           title: Opacity(
                             opacity: 1 - (extension * 6).clamp(0, 1),
