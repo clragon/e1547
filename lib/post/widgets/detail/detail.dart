@@ -295,9 +295,6 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
                   ),
                 ),
               ),
-              SliverPadding(
-                padding: defaultActionListPadding,
-              ),
             ],
           ),
         ),
@@ -329,17 +326,27 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
                       ),
                       children: [
                         image(context, constraints),
+                        singleBody(context),
                       ],
                     );
                   } else {
                     double sideBarWidth;
-                    if (constraints.maxWidth > 1300) {
-                      sideBarWidth = 360;
+                    if (constraints.maxWidth > 1400) {
+                      sideBarWidth = 404;
                     } else {
-                      sideBarWidth = 240;
+                      sideBarWidth = 304;
                     }
                     return Row(
                       children: [
+                        Expanded(
+                          child: commentWrapper(
+                            context,
+                            [
+                              image(context, constraints),
+                              secondaryBody(context),
+                            ],
+                          ),
+                        ),
                         SizedBox(
                           width: sideBarWidth,
                           child: ListView(
@@ -349,17 +356,12 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
                                 height: 56,
                               ),
                               sideBarBody(context),
+                              SizedBox(
+                                height: defaultActionListPadding.bottom,
+                              ),
                             ],
                           ),
                         ),
-                        Expanded(
-                            child: commentWrapper(
-                          context,
-                          [
-                            image(context, constraints),
-                            secondaryBody(context),
-                          ],
-                        )),
                       ],
                     );
                   }
