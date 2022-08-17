@@ -26,13 +26,12 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     return Consumer<Settings>(
-      builder: (context, settings, child) => LimitedWidthLayout.builder(
-        builder: (context) => Scaffold(
-          appBar: const DefaultAppBar(
-            title: Text('Settings'),
-            leading: BackButton(),
-          ),
-          body: ListView(
+      builder: (context, settings, child) => Scaffold(
+        appBar: const DefaultAppBar(
+          title: Text('Settings'),
+        ),
+        body: LimitedWidthLayout.builder(
+          builder: (context) => ListView(
             padding: defaultActionListPadding
                 .add(LimitedWidthLayout.of(context).padding),
             children: [

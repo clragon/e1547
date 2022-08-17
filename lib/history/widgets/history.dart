@@ -138,6 +138,7 @@ class _HistoryPageState extends State<HistoryPage> {
                   });
                 },
               ),
+              drawer: const NavigationDrawer(),
               endDrawer: ContextDrawer(
                 title: const Text('History'),
                 children: [

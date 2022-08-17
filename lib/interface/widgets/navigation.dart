@@ -14,10 +14,13 @@ class NavigationRouteDestination {
   });
 }
 
+typedef NavigationSettingCallback = bool Function(BuildContext context);
+
 class NavigationDrawerDestination<T extends Widget>
     extends NavigationRouteDestination {
   final String name;
-  final bool Function(BuildContext context)? visible;
+  final NavigationSettingCallback? visible;
+  final NavigationSettingCallback? enabled;
   final Widget? icon;
   final String? group;
 
@@ -26,6 +29,7 @@ class NavigationDrawerDestination<T extends Widget>
     this.icon,
     this.group,
     this.visible,
+    this.enabled,
     required super.path,
     required T Function(BuildContext context) builder,
     super.unique,
@@ -109,6 +113,7 @@ class NavigationDrawer extends StatelessWidget {
       }
       children.add(
         ListTile(
+          enabled: destination.enabled?.call(context) ?? true,
           selected: destination.unique &&
               destination.path == controller.drawerSelection,
           title: Text(destination.name),

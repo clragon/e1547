@@ -76,6 +76,7 @@ final List<NavigationRouteDestination> rootDestintations = [
     icon: const Icon(Icons.history),
     builder: (context) => const HistoryPage(),
     visible: (context) => context.watch<Settings>().writeHistory.value,
+    enabled: _nonRecursive<HistoryPage>,
     group: _drawerSettingsGroup,
   ),
   NavigationDrawerDestination(
@@ -83,6 +84,7 @@ final List<NavigationRouteDestination> rootDestintations = [
     name: 'Settings',
     icon: const Icon(Icons.settings),
     builder: (context) => const SettingsPage(),
+    enabled: _nonRecursive<SettingsPage>,
     group: _drawerSettingsGroup,
   ),
   NavigationDrawerDestination(
@@ -106,3 +108,5 @@ final List<NavigationRouteDestination> rootDestintations = [
   ),
 ];
 
+bool _nonRecursive<T extends Widget>(BuildContext context) =>
+    context.findAncestorWidgetOfExactType<T>() == null;
