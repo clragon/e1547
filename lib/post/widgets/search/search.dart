@@ -123,29 +123,21 @@ class _SearchPageState extends State<SearchPage> with ListenerCallbackMixin {
                   appBar: DefaultAppBar(
                     title: Text(getTitle()),
                     actions: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8),
-                        child: Row(
-                          children: [
-                            CrossFade(
-                              showChild: !loadingInfo &&
-                                  Tagset.parse(controller.search.value)
-                                      .isNotEmpty,
-                              child: IconButton(
-                                icon: const Icon(Icons.info_outline),
-                                onPressed: pool != null
-                                    ? () => poolSheet(context, pool!)
-                                    : () => tagSearchSheet(
-                                          context: context,
-                                          tag: controller.search.value,
-                                          controller: controller,
-                                        ),
-                              ),
-                            ),
-                            const ContextDrawerButton(),
-                          ],
+                      CrossFade(
+                        showChild: !loadingInfo &&
+                            Tagset.parse(controller.search.value).isNotEmpty,
+                        child: IconButton(
+                          icon: const Icon(Icons.info_outline),
+                          onPressed: pool != null
+                              ? () => poolSheet(context, pool!)
+                              : () => tagSearchSheet(
+                                    context: context,
+                                    tag: controller.search.value,
+                                    controller: controller,
+                                  ),
                         ),
                       ),
+                      const ContextDrawerButton(),
                     ],
                   ),
                   drawerActions: [
