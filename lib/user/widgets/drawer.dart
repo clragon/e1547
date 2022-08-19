@@ -48,8 +48,10 @@ class UserDrawerHeader extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: OutlinedButton(
                         child: const Text('LOGIN'),
-                        onPressed: () =>
-                            Navigator.popAndPushNamed(context, '/login'),
+                        onPressed: () {
+                          Scaffold.of(context).closeDrawer();
+                          Navigator.pushNamed(context, '/login');
+                        },
                       ),
                     ),
                   ),
