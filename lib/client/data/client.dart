@@ -319,10 +319,6 @@ class Client extends ChangeNotifier {
   }
 
   Future<void> updatePost(int postId, Map<String, String?> body) async {
-    if (!await isLoggedIn) {
-      return;
-    }
-
     await cacheManager.deleteByExtras(
       'posts/$postId.json',
       options: dio.options,
@@ -457,10 +453,6 @@ class Client extends ChangeNotifier {
   }
 
   Future<void> updateBlacklist(List<String> denylist) async {
-    if (!await isLoggedIn) {
-      return;
-    }
-
     Map<String, String?> body = {
       'user[blacklisted_tags]': denylist.join('\n'),
     };
@@ -596,10 +588,6 @@ class Client extends ChangeNotifier {
   }
 
   Future<void> postComment(int postId, String text, {Comment? comment}) async {
-    if (!await isLoggedIn) {
-      return;
-    }
-
     await cacheManager.deleteByExtras(
       'comments.json',
       keyExtras: {'search[post_id]': postId},
