@@ -173,90 +173,63 @@ class _LoginPageState extends State<LoginPage> {
       return inputField();
     }
 
-    Widget loginButton() {
-      return Builder(
-        builder: (context) => Padding(
-          padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 24),
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              primary: Theme.of(context).colorScheme.secondary,
-            ),
-            child: Text(
-              'LOGIN',
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.onSecondary,
-              ),
-            ),
-            onPressed: () => saveAndTest(context),
-          ),
+    return Form(
+      child: Scaffold(
+        appBar: const DefaultAppBar(
+          leading: CloseButton(),
+          elevation: 0,
         ),
-      );
-    }
-
-    return Scaffold(
-      appBar: const DefaultAppBar(
-        leading: CloseButton(),
-        elevation: 0,
-      ),
-      body: Form(
-        child: LimitedWidthLayout(
-          child: LayoutBuilder(
-            builder: (context, constraints) => ListView(
-              padding: LimitedWidthLayout.of(context)
-                  .padding
-                  .add(const EdgeInsets.all(16)),
-              children: [
-                ConstrainedBox(
-                  constraints: BoxConstraints(
-                    maxHeight: constraints.maxHeight * 0.4,
-                  ),
-                  child: const Center(
-                    child: AppIcon(
-                      radius: 64,
-                    ),
+        body: LimitedWidthLayout.builder(
+          builder: (context) => ListView(
+            padding: LimitedWidthLayout.of(context)
+                .padding
+                .add(const EdgeInsets.all(16)),
+            children: [
+              const SizedBox(
+                height: 300,
+                child: Center(
+                  child: AppIcon(
+                    radius: 64,
                   ),
                 ),
-                Padding(
-                  padding:
-                      const EdgeInsets.only(left: 32, right: 32, bottom: 12),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        'Login',
-                        style: TextStyle(
-                          fontSize: 20,
-                        ),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.launch),
-                        color: Colors.grey,
-                        onPressed: () {
-                          if (usernameController.text.isNotEmpty) {
-                            launch(context.read<Client>().withHost(
-                                '/users/${usernameController.text}/api_key'));
-                          } else {
-                            launch(context
-                                .read<Client>()
-                                .withHost('/session/new'));
-                          }
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 32, right: 32, bottom: 12),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    usernameField(),
-                    apiKeyField(),
-                    loginButton(),
+                    const Text(
+                      'Login',
+                      style: TextStyle(
+                        fontSize: 20,
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.launch),
+                      color: Colors.grey,
+                      onPressed: () {
+                        if (usernameController.text.isNotEmpty) {
+                          launch(context.read<Client>().withHost(
+                              '/users/${usernameController.text}/api_key'));
+                        } else {
+                          launch(
+                              context.read<Client>().withHost('/session/new'));
+                        }
+                      },
+                    ),
                   ],
                 ),
-              ],
-            ),
+              ),
+              usernameField(),
+              apiKeyField(),
+            ],
           ),
         ),
+        floatingActionButton: Builder(
+            builder: (context) => FloatingActionButton(
+                  child: const Icon(Icons.check),
+                  onPressed: () => saveAndTest(context),
+                )),
       ),
     );
   }
