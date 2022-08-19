@@ -54,7 +54,6 @@ class _CurrentUserAvatarProvider
     extends SubProvider2<Client, DenylistService, Future<PostsController?>> {
   // ignore: unused_element
   _CurrentUserAvatarProvider({super.child, super.builder})
-      // TODO: figure out why this recreates when logging out (good, but why?)
       : super(
           create: (context, client, denylist) async {
             int? id = (await context.read<Client>().currentUserAvatar())?.id;
@@ -71,6 +70,7 @@ class _CurrentUserAvatarProvider
             return null;
           },
           dispose: (context, value) async => (await value)?.dispose(),
+          selector: (context) => [context.read<Client>().credentials],
         );
 }
 
