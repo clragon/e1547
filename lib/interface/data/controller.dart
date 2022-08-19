@@ -428,14 +428,6 @@ mixin FilterableController<PageKeyType, ItemType>
       error: error,
     );
   }
-
-  @override
-  @protected
-  @mustCallSuper
-  void reset() {
-    _rawItemList = null;
-    super.reset();
-  }
 }
 
 mixin SearchableController<PageKeyType, ItemType>

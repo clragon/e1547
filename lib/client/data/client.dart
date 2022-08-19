@@ -123,8 +123,12 @@ class Client extends ChangeNotifier {
     return posts;
   }
 
-  Future<List<Post>> postsRaw(int page,
-      {int? limit, String? search, bool force = false}) async {
+  Future<List<Post>> postsRaw(
+    int page, {
+    int? limit,
+    String? search,
+    bool? force,
+  }) async {
     await initialized;
     String? tags = search != null ? sortTags(search) : '';
     Map body = await dio
@@ -154,32 +158,26 @@ class Client extends ChangeNotifier {
     bool? force,
   }) async {
     await initialized;
-    String? username;
-
-    if (orderFavorites ?? false) {
-      username = credentials?.username;
-    }
-
-    Map<RegExp, Future<List<Post>> Function(RegExpMatch match)> regexes = {
+    Map<RegExp, Future<List<Post>> Function(RegExpMatch match)> redirects = {
       poolRegex(): (match) => poolPosts(
             int.parse(match.namedGroup('id')!),
             page,
             reverse: reversePools ?? false,
             force: force,
           ),
-      if (username != null)
-        favRegex(username): (match) =>
+      if ((orderFavorites ?? false) && credentials?.username != null)
+        favRegex(credentials!.username): (match) =>
             favorites(page, limit: limit, force: force),
     };
 
-    for (final entry in regexes.entries) {
+    for (final entry in redirects.entries) {
       RegExpMatch? match = entry.key.firstMatch(search!.trim());
       if (match != null) {
         return entry.value(match);
       }
     }
 
-    return postsRaw(page, search: search, limit: limit, force: force ?? false);
+    return postsRaw(page, search: search, limit: limit, force: force);
   }
 
   Future<List<Post>> favorites(int page, {int? limit, bool? force}) async {
