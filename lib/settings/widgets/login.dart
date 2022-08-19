@@ -20,8 +20,6 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController apiKeyController = TextEditingController();
 
   bool authFailed = false;
-
-  bool justPasted = false;
   String? previousPaste;
   Timer? pasteUndoTimer;
 
@@ -93,13 +91,13 @@ class _LoginPageState extends State<LoginPage> {
 
     Widget apiKeyField() {
       Widget pasteButton() {
-        if (justPasted) {
+        if (previousPaste != null) {
           return IconButton(
             icon: const Icon(Icons.undo),
             tooltip: 'Undo previous paste',
             onPressed: () => setState(() {
-              justPasted = false;
               apiKeyController.text = previousPaste!;
+              previousPaste = null;
             }),
           );
         } else {
@@ -115,14 +113,13 @@ class _LoginPageState extends State<LoginPage> {
               }
 
               setState(() {
-                justPasted = true;
                 previousPaste = apiKeyController.text;
                 apiKeyController.text = data.text!;
               });
 
               pasteUndoTimer = Timer(const Duration(seconds: 10), () {
                 setState(() {
-                  justPasted = false;
+                  previousPaste = null;
                 });
               });
             },
