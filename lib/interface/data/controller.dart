@@ -216,20 +216,9 @@ abstract class CursorDataController<T> extends RawDataController<String, T> {
   @protected
   String provideNextPageKey(String current, List<T> items) {
     if (orderByOldest.value) {
-      if (items.isEmpty) {
-        return firstPageKey;
-      } else {
-        return 'a${items.map((e) => getId(e)).reduce(max).toString()}';
-      }
+      return 'a${items.map((e) => getId(e)).reduce(max).toString()}';
     } else {
-      int next;
-      try {
-        next = int.parse(current);
-        next++;
-      } on FormatException {
-        next = 1;
-      }
-      return next.toString();
+      return (int.parse(current) + 1).toString();
     }
   }
 
@@ -239,11 +228,16 @@ abstract class CursorDataController<T> extends RawDataController<String, T> {
       super.getRefreshListeners()..add(orderByOldest);
 
   @override
-  void appendPage(List<T> newItems, String? nextPageKey) {
-    if (orderByOldest.value) {
+  set value(PagingState<String, T> state) {
+    List<T>? newItems = state.itemList;
+    if (newItems != null && orderByOldest.value) {
       newItems.sort((a, b) => getId(a).compareTo(getId(b)));
     }
-    super.appendPage(newItems, nextPageKey);
+    super.value = PagingState(
+      nextPageKey: state.nextPageKey,
+      itemList: newItems,
+      error: state.error,
+    );
   }
 }
 
