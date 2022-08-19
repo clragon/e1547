@@ -53,15 +53,17 @@ class _PoolPageState extends State<PoolPage> {
               ],
             ),
             drawerActions: [
-              PoolOrderSwitch(
-                reversePool: reversePool,
-                onChange: (value) {
-                  setState(() {
-                    reversePool = value;
-                  });
-                  controller.refresh();
-                  Navigator.of(context).maybePop();
-                },
+              Builder(
+                builder: (context) => PoolOrderSwitch(
+                  reversePool: reversePool,
+                  onChange: (value) {
+                    setState(() {
+                      reversePool = value;
+                    });
+                    controller.refresh();
+                    Scaffold.of(context).closeEndDrawer();
+                  },
+                ),
               ),
             ],
           ),

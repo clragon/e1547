@@ -48,7 +48,7 @@ class PostCommentsPage extends StatelessWidget {
                   value: value,
                   onChanged: (value) {
                     controller.orderByOldest.value = value;
-                    Navigator.of(context).maybePop();
+                    Scaffold.of(context).closeEndDrawer();
                   },
                 ),
               ),
