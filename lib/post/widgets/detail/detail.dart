@@ -238,6 +238,21 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
                             .refresh(force: true),
                       ),
                       PopupMenuTile(
+                        icon: Icons.sort,
+                        title: context
+                                .read<CommentsController>()
+                                .orderByOldest
+                                .value
+                            ? 'Newest first'
+                            : 'Oldest first',
+                        value: () {
+                          CommentsController controller =
+                              context.read<CommentsController>();
+                          controller.orderByOldest.value =
+                              !controller.orderByOldest.value;
+                        },
+                      ),
+                      PopupMenuTile(
                         title: 'Comment',
                         icon: Icons.comment,
                         value: () => guardWithLogin(
