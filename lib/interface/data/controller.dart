@@ -112,7 +112,6 @@ abstract class RawDataController<KeyType, ItemType>
       itemList: updated,
       error: error,
     );
-    // TODO: find a better way of renewing cache
     // this renews the cache
     if (force) {
       provide(firstPageKey, force);
@@ -121,9 +120,7 @@ abstract class RawDataController<KeyType, ItemType>
 
   /// Checks if the controller can queue a refresh.
   /// If there is currently a refresh queued, this returns false.
-  @protected
-  @nonVirtual
-  Future<bool> canRefresh() async {
+  Future<bool> _canRefresh() async {
     if (_pageLock.isLocked) {
       if (_isRefreshing) return false;
       _isRefreshing = true;
@@ -137,7 +134,7 @@ abstract class RawDataController<KeyType, ItemType>
 
   @override
   Future<void> refresh({bool background = false, bool force = false}) async {
-    if (!await canRefresh()) return;
+    if (!await _canRefresh()) return;
     return loadPage(
       firstPageKey,
       reset: true,

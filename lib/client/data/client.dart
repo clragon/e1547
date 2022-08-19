@@ -279,7 +279,7 @@ class Client extends ChangeNotifier {
     bool reverse = false,
     bool? force,
   }) async {
-    Pool pool = await this.pool(poolId);
+    Pool pool = await this.pool(poolId, force: true);
     List<int> ids = reverse ? pool.postIds.reversed.toList() : pool.postIds;
     int limit = 80;
     int lower = ((page - 1) * limit);
