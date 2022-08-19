@@ -51,6 +51,7 @@ abstract class RawDataController<KeyType, ItemType>
   @mustCallSuper
   void success() {}
 
+  // TODO: find a replacement for this.
   /// Called when the [itemList] is changed entirely.
   ///
   /// Can be used to reset additional resources which depend on itemList.
