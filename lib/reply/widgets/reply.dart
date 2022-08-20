@@ -47,7 +47,7 @@ class ReplyTile extends StatelessWidget {
           ),
           Flexible(
             child: Text(
-              ' • ${reply.createdAt.relativeTime(context: context)}'
+              ' • ${reply.createdAt.relativeTime(context)}'
               '${reply.createdAt != reply.updatedAt ? ' (edited)' : ''}',
               style: TextStyle(
                 color: dimTextColor(context),

@@ -46,7 +46,7 @@ class TopicTile extends StatelessWidget {
                         style: Theme.of(context).textTheme.subtitle1,
                       ),
                       Text(
-                        topic.updatedAt.relativeTime(context: context),
+                        topic.updatedAt.relativeTime(context),
                         style: const TextStyle(
                           fontSize: 12,
                         ),

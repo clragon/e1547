@@ -42,7 +42,7 @@ class CommentTile extends StatelessWidget {
               ),
             ),
             Text(
-              ' • ${comment.value.createdAt.relativeTime(context: context)}'
+              ' • ${comment.value.createdAt.relativeTime(context)}'
               '${comment.value.createdAt != comment.value.updatedAt ? ' (edited)' : ''}',
               style: const TextStyle(
                 fontSize: 12,

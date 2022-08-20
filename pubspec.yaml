@@ -51,7 +51,7 @@ dependencies:
   path_to_regexp: ^0.4.0
   permission_handler: ^9.2.0
   pub_semver: ^2.1.1
-  relative_time: ^1.1.0
+  relative_time: ^2.0.1
   share_plus: ^4.0.10
   shared_preferences: ^2.0.11
   sqflite: ^2.0.2+1
