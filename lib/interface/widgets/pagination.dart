@@ -61,5 +61,7 @@ PagedChildBuilderDelegate<T> defaultPagedChildBuilderDelegate<T>({
       title: onError ?? const Text('Failed to load'),
       action: PagedChildBuilderRetryButton(pagingController),
     ),
+    animateTransitions: true,
+    transitionDuration: defaultAnimationDuration,
   );
 }
