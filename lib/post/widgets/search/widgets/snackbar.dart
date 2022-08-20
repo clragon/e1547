@@ -11,6 +11,7 @@ Future<void> postDownloadingNotification(
   BuildContext context,
   Set<Post> items,
 ) async {
+  Talker? talker = context.read<Talker?>();
   return loadingNotification<Post>(
     context: context,
     icon: const Icon(Icons.download),
@@ -23,7 +24,7 @@ Future<void> postDownloadingNotification(
         if (kDebugMode) {
           rethrow;
         }
-        context.read<Talker?>()?.handle(exception, stacktrace);
+        talker?.handle(exception, stacktrace);
         return false;
       }
     },
@@ -35,7 +36,7 @@ Future<void> postDownloadingNotification(
         ? 'Downloading post #${items.first.id}'
         : 'Downloading post #${items.elementAt(index).id} (${index + 1}/${items.length})',
     onFailure: (items, index) =>
-        'Failed to download post #${items.elementAt(index).id}',
+    'Failed to download post #${items.elementAt(index).id}',
     onCancel: (items, index) => 'Cancelled download',
   );
 }
@@ -46,6 +47,8 @@ Future<void> postFavoritingNotification(
   PostsController controller,
   bool isLiked,
 ) {
+  Client client = context.read<Client>();
+  DenylistService denylist = context.read<DenylistService>();
   return loadingNotification<Post>(
     context: context,
     icon: const Icon(Icons.favorite),
@@ -53,8 +56,8 @@ Future<void> postFavoritingNotification(
     timeout: const Duration(milliseconds: 300),
     process: (post) async {
       PostController postController = PostController(
-        client: context.read<Client>(),
-        denylist: context.read<DenylistService>(),
+        client: client,
+        denylist: denylist,
         id: post.id,
         parent: controller,
       );
@@ -74,23 +77,23 @@ Future<void> postFavoritingNotification(
     },
     onDone: isLiked
         ? (items) => items.length == 1
-            ? 'Unfavorited post #${items.first.id}'
-            : 'Unfavorited ${items.length} posts'
+        ? 'Unfavorited post #${items.first.id}'
+        : 'Unfavorited ${items.length} posts'
         : (items) => items.length == 1
-            ? 'Favorited post #${items.first.id}'
-            : 'Favorited ${items.length} posts',
+        ? 'Favorited post #${items.first.id}'
+        : 'Favorited ${items.length} posts',
     onProgress: isLiked
         ? (items, index) => items.length == 1
-            ? 'Unfavoriting post #${items.first.id}'
-            : 'Unfavoriting post #${items.elementAt(index).id} (${index + 1}/${items.length})'
+        ? 'Unfavoriting post #${items.first.id}'
+        : 'Unfavoriting post #${items.elementAt(index).id} (${index + 1}/${items.length})'
         : (items, index) => items.length == 1
-            ? 'Favoriting post #${items.first.id}'
-            : 'Favoriting post #${items.elementAt(index).id} (${index + 1}/${items.length})',
+        ? 'Favoriting post #${items.first.id}'
+        : 'Favoriting post #${items.elementAt(index).id} (${index + 1}/${items.length})',
     onFailure: isLiked
         ? (items, index) =>
-            'Failed to unfavorite post #${items.elementAt(index).id}'
+    'Failed to unfavorite post #${items.elementAt(index).id}'
         : (items, index) =>
-            'Failed to favorite post #${items.elementAt(index).id}',
+    'Failed to favorite post #${items.elementAt(index).id}',
     onCancel: isLiked
         ? (items, index) => 'Cancelled unfavoriting'
         : (items, index) => 'Cancelled favoriting',
