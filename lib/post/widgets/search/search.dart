@@ -142,13 +142,15 @@ class _SearchPageState extends State<SearchPage> with ListenerCallbackMixin {
                   ),
                   drawerActions: [
                     if (pool != null)
-                      PoolOrderSwitch(
-                        reversePool: reversePools,
-                        onChange: (value) {
-                          setState(() => reversePools = value);
-                          controller.refresh();
-                          Navigator.of(context).maybePop();
-                        },
+                      Builder(
+                        builder: (context) => PoolOrderSwitch(
+                          reversePool: reversePools,
+                          onChange: (value) {
+                            setState(() => reversePools = value);
+                            controller.refresh();
+                            Scaffold.of(context).closeEndDrawer();
+                          },
+                        ),
                       ),
                   ],
                 ),
