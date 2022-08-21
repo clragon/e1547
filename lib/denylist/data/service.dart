@@ -11,6 +11,10 @@ class DenylistService extends DataUpdater<List<String>> {
   List<String> get items => _source.value;
 
   @override
+  List<Listenable> getRefreshListeners() =>
+      super.getRefreshListeners()..addAll([_client]);
+
+  @override
   @protected
   Future<List<String>> read() async => List.from(items);
 
