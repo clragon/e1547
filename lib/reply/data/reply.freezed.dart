@@ -306,7 +306,9 @@ class _$_Reply with DiagnosticableTreeMixin implements _Reply {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_ReplyToJson(this);
+    return _$$_ReplyToJson(
+      this,
+    );
   }
 }
 

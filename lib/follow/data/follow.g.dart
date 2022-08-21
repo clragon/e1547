@@ -21,7 +21,7 @@ _$_Follow _$$_FollowFromJson(Map<String, dynamic> json) => _$_Follow(
 Map<String, dynamic> _$$_FollowToJson(_$_Follow instance) => <String, dynamic>{
       'tags': instance.tags,
       'alias': instance.alias,
-      'type': _$FollowTypeEnumMap[instance.type],
+      'type': _$FollowTypeEnumMap[instance.type]!,
       'statuses': instance.statuses,
     };
 

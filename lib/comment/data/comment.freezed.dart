@@ -427,7 +427,9 @@ class _$_Comment with DiagnosticableTreeMixin implements _Comment {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_CommentToJson(this);
+    return _$$_CommentToJson(
+      this,
+    );
   }
 }
 

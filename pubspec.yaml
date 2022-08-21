@@ -37,7 +37,7 @@ dependencies:
   crypto: ^3.0.1
   dio: ^4.0.6
   dio_http_cache: ^0.3.0
-  drift: ^1.7.1
+  drift: ^2.0.2
   external_path: ^1.0.1
   filesize: ^2.0.1
   freezed_annotation: ^2.0.3
@@ -80,7 +80,7 @@ dev_dependencies:
 
   # dart run build_runner build
   build_runner: ^2.1.11
-  drift_dev: ^1.7.0
+  drift_dev: ^2.0.1
   freezed: ^2.0.3+1
 
 dependency_overrides:

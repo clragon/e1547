@@ -21,20 +21,10 @@ class StringListConverter extends TypeConverter<List<String>, String> {
   const StringListConverter();
 
   @override
-  List<String>? mapToDart(String? fromDb) {
-    if (fromDb == null) {
-      return null;
-    }
-    return json.decode(fromDb).cast<String>();
-  }
+  List<String> fromSql(String fromDb) => json.decode(fromDb).cast<String>();
 
   @override
-  String? mapToSql(List<String>? value) {
-    if (value == null) {
-      return null;
-    }
-    return json.encode(value);
-  }
+  String toSql(List<String> value) => json.encode(value);
 }
 
 @DriftDatabase(tables: [HistoriesTable])
@@ -49,17 +39,17 @@ class HistoriesDatabase extends _$HistoriesDatabase {
   @override
   int get schemaVersion => 1;
 
-  Expression<bool?> _hostQuery($HistoriesTableTable tbl, String? host) =>
-      Variable(host).isNull() | tbl.host.equals(host);
+  Expression<bool> _hostQuery($HistoriesTableTable tbl, String? host) =>
+      Variable(host).isNull() | tbl.host.equalsNullable(host);
 
   Selectable<int> _lengthExpression({String? host}) {
     final Expression<int> count = historiesTable.id.count();
-    final Expression<bool?> hosted = _hostQuery(historiesTable, host);
+    final Expression<bool> hosted = _hostQuery(historiesTable, host);
 
     return (selectOnly(historiesTable)
           ..where(hosted)
           ..addColumns([count]))
-        .map((row) => row.read(count));
+        .map((row) => row.read(count)!);
   }
 
   Future<int> length({String? host}) async =>
@@ -68,8 +58,8 @@ class HistoriesDatabase extends _$HistoriesDatabase {
       _lengthExpression(host: host).watchSingle();
 
   Future<List<DateTime>> dates({String? host}) async {
-    final Expression<DateTime?> time = historiesTable.visitedAt;
-    final Expression<bool?> hosted = _hostQuery(historiesTable, host);
+    final Expression<DateTime> time = historiesTable.visitedAt;
+    final Expression<bool> hosted = _hostQuery(historiesTable, host);
 
     List<DateTime?> results = await (selectOnly(historiesTable)
           ..where(hosted)
@@ -116,8 +106,8 @@ class HistoriesDatabase extends _$HistoriesDatabase {
       day = DateTime(day.year, day.month, day.day);
       selectable.where(
         (tbl) => tbl.visitedAt.isBetweenValues(
-          day,
-          day!.add(const Duration(days: 1, milliseconds: -1)),
+          day!,
+          day.add(const Duration(days: 1, milliseconds: -1)),
         ),
       );
     }
@@ -214,12 +204,12 @@ class HistoriesDatabase extends _$HistoriesDatabase {
     required int maxAmount,
     required Duration maxAge,
   }) async {
-    List<int?> kept =
+    List<int> kept =
         (await getRecent(host: host, limit: maxAmount, maxAge: maxAge))
             .map((e) => e.id)
             .toList();
     await (delete(historiesTable)
-          ..where((tbl) => tbl.host.equals(host))
+      ..where((tbl) => tbl.host.equalsNullable(host))
           ..where((tbl) => tbl.id.isNotIn(kept)))
         .go();
   }

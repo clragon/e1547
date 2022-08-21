@@ -350,7 +350,9 @@ class _$_Wiki with DiagnosticableTreeMixin implements _Wiki {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_WikiToJson(this);
+    return _$$_WikiToJson(
+      this,
+    );
   }
 }
 

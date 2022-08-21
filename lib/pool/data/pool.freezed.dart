@@ -349,7 +349,9 @@ class _$_Pool with DiagnosticableTreeMixin implements _Pool {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_PoolToJson(this);
+    return _$$_PoolToJson(
+      this,
+    );
   }
 }
 

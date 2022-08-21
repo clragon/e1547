@@ -54,7 +54,7 @@ Map<String, dynamic> _$$_PostToJson(_$_Post instance) => <String, dynamic>{
       'locked_tags': instance.lockedTags,
       'change_seq': instance.changeSeq,
       'flags': instance.flags,
-      'rating': _$RatingEnumMap[instance.rating],
+      'rating': _$RatingEnumMap[instance.rating]!,
       'fav_count': instance.favCount,
       'sources': instance.sources,
       'pools': instance.pools,

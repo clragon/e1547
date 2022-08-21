@@ -671,7 +671,9 @@ class _$_Post extends _Post with DiagnosticableTreeMixin {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_PostToJson(this);
+    return _$$_PostToJson(
+      this,
+    );
   }
 }
 
@@ -918,7 +920,9 @@ class _$_PostPreviewFile
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_PostPreviewFileToJson(this);
+    return _$$_PostPreviewFileToJson(
+      this,
+    );
   }
 }
 
@@ -1120,7 +1124,9 @@ class _$_PostSampleFile
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_PostSampleFileToJson(this);
+    return _$$_PostSampleFileToJson(
+      this,
+    );
   }
 }
 
@@ -1361,7 +1367,9 @@ class _$_PostSourceFile
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_PostSourceFileToJson(this);
+    return _$$_PostSourceFileToJson(
+      this,
+    );
   }
 }
 
@@ -1612,7 +1620,9 @@ class _$_Flags with DiagnosticableTreeMixin implements _Flags {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_FlagsToJson(this);
+    return _$$_FlagsToJson(
+      this,
+    );
   }
 }
 
@@ -1835,7 +1845,9 @@ class _$_Relationships with DiagnosticableTreeMixin implements _Relationships {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_RelationshipsToJson(this);
+    return _$$_RelationshipsToJson(
+      this,
+    );
   }
 }
 
@@ -2011,7 +2023,9 @@ class _$_Score with DiagnosticableTreeMixin implements _Score {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_ScoreToJson(this);
+    return _$$_ScoreToJson(
+      this,
+    );
   }
 }
 

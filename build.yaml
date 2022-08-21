@@ -6,6 +6,5 @@ targets:
           field_rename: snake
       drift_dev:
         options:
-          new_sql_code_generation: true
           generate_connect_constructor: true
           use_data_class_name_for_companions: true

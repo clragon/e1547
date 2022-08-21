@@ -217,7 +217,9 @@ class _$_TagSuggestion with DiagnosticableTreeMixin implements _TagSuggestion {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_TagSuggestionToJson(this);
+    return _$$_TagSuggestionToJson(
+      this,
+    );
   }
 }
 

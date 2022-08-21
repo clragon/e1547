@@ -30,7 +30,7 @@ Map<String, dynamic> _$$_PoolToJson(_$_Pool instance) => <String, dynamic>{
       'creator_id': instance.creatorId,
       'description': instance.description,
       'is_active': instance.isActive,
-      'category': _$CategoryEnumMap[instance.category],
+      'category': _$CategoryEnumMap[instance.category]!,
       'is_deleted': instance.isDeleted,
       'post_ids': instance.postIds,
       'creator_name': instance.creatorName,

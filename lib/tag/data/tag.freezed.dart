@@ -286,7 +286,9 @@ class _$_Tag with DiagnosticableTreeMixin implements _Tag {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_TagToJson(this);
+    return _$$_TagToJson(
+      this,
+    );
   }
 }
 

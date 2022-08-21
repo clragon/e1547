@@ -325,7 +325,9 @@ class _$_Topic with DiagnosticableTreeMixin implements _Topic {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_TopicToJson(this);
+    return _$$_TopicToJson(
+      this,
+    );
   }
 }
 

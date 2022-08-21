@@ -1402,7 +1402,9 @@ class _$_CurrentUser with DiagnosticableTreeMixin implements _CurrentUser {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_CurrentUserToJson(this);
+    return _$$_CurrentUserToJson(
+      this,
+    );
   }
 }
 

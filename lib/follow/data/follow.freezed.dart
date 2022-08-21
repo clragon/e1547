@@ -197,7 +197,9 @@ class _$_Follow with DiagnosticableTreeMixin implements _Follow {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_FollowToJson(this);
+    return _$$_FollowToJson(
+      this,
+    );
   }
 }
 
@@ -395,7 +397,9 @@ class _$_FollowStatus with DiagnosticableTreeMixin implements _FollowStatus {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_FollowStatusToJson(this);
+    return _$$_FollowStatusToJson(
+      this,
+    );
   }
 }
 

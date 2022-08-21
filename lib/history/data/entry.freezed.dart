@@ -223,7 +223,9 @@ class _$_History implements _History {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_HistoryToJson(this);
+    return _$$_HistoryToJson(
+      this,
+    );
   }
 }
 
@@ -454,7 +456,9 @@ class _$_HistoryRequest implements _HistoryRequest {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_HistoryRequestToJson(this);
+    return _$$_HistoryRequestToJson(
+      this,
+    );
   }
 }
 
