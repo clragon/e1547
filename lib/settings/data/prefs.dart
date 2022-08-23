@@ -30,7 +30,7 @@ class SharedSettingsWriteError<T> extends Error {
 
 /// Adds convenience methods for saving values that might be null.
 /// If the value is null, the corresponding key is removed.
-extension Nullable on SharedPreferences {
+extension NullablePreferences on SharedPreferences {
   /// Saves a value to persistent storage in the background.
   /// If the value is null, the key is removed instead.
   Future<bool> _setValueOrNull<T>(
