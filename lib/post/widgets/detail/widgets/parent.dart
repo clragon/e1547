@@ -60,11 +60,14 @@ class ParentDisplay extends StatelessWidget {
                                 : null,
                           )
                         : const Icon(Icons.arrow_right),
-                    onTap: () => Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => PostLoadingPage(parentId!),
-                      ),
-                    ),
+                    onTap: parentId != null
+                        ? () => Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    PostLoadingPage(parentId!),
+                              ),
+                            )
+                        : null,
                   ),
                   const Divider(),
                 ],
