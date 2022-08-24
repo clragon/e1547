@@ -3,7 +3,8 @@ import 'dart:io';
 
 import 'package:async/async.dart';
 import 'package:dio/dio.dart';
-import 'package:dio_http_cache/dio_http_cache.dart';
+import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
+import 'package:dio_cache_interceptor_db_store/dio_cache_interceptor_db_store.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/comment/comment.dart';
 import 'package:e1547/interface/interface.dart';
@@ -16,35 +17,58 @@ import 'package:e1547/topic/topic.dart';
 import 'package:e1547/user/user.dart';
 import 'package:e1547/wiki/wiki.dart';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
 
 export 'package:dio/dio.dart' show DioError;
 
 class Client extends ChangeNotifier {
+  Client({required AppInfo appInfo, required Settings settings})
+      : _appInfo = appInfo,
+        _settings = settings {
+    _settings.host.addListener(_initialize);
+    _settings.credentials.addListener(_initialize);
+    _initialize();
+  }
+
   final AppInfo _appInfo;
   final Settings _settings;
 
   String get host => _settings.host.value;
+
   Credentials? get credentials => _settings.credentials.value;
 
-  late Dio dio;
-  late DioCacheManager cacheManager;
+  late Dio _dio;
+  late final Future<CacheStore> _cache = _getDefaultCache();
 
-  late Future<void> initialized;
+  Future<CacheStore> _getDefaultCache() async => DbCacheStore(
+        databasePath: (await getApplicationSupportDirectory()).path,
+      );
 
-  Client({required AppInfo appInfo, required Settings settings})
-      : _appInfo = appInfo,
-        _settings = settings {
-    _settings.host.addListener(initialize);
-    _settings.credentials.addListener(initialize);
-    initialize();
-  }
+  final CacheConfig _defaultCacheOptions = CacheConfig(
+    maxAge: const Duration(minutes: 5),
+  );
 
-  Future<void> initialize() async {
+  Options _options({
+    bool? force,
+    Duration? maxAge,
+    Map<String, String?>? params,
+  }) =>
+      _defaultCacheOptions
+          .copyWith(
+            maxAge: Nullable(maxAge ?? _defaultCacheOptions.maxAge),
+            params: Nullable(params),
+            policy: (force ?? false) ? CachePolicy.refresh : null,
+          )
+          .toOptions();
+
+  late Future<void> _initialized;
+
+  Future<void> _initialize() async {
     Completer completer = Completer();
-    initialized = completer.future;
+    _initialized = completer.future;
     String host = 'https://${_settings.host.value}/';
     Credentials? credentials = _settings.credentials.value;
-    dio = Dio(
+    _dio = Dio(
       defaultDioOptions.copyWith(
         baseUrl: host,
         headers: {
@@ -56,9 +80,14 @@ class Client extends ChangeNotifier {
       ),
     );
     currentUser(force: true);
-    cacheManager = DioCacheManager(CacheConfig(baseUrl: host));
-    dio.interceptors.add(CacheKeyInterceptor(cacheManager));
-    dio.interceptors.add(cacheManager.interceptor);
+
+    _dio.interceptors.add(
+      CacheInterceptor(
+        options: _defaultCacheOptions.copyWith(
+          store: await _cache,
+        ),
+      ),
+    );
     notifyListeners();
     if (credentials != null && !await tryLogin(credentials)) {
       logout();
@@ -69,13 +98,13 @@ class Client extends ChangeNotifier {
   bool get hasLogin => credentials != null;
 
   Future<bool> get isLoggedIn async {
-    await initialized;
+    await _initialized;
     return hasLogin;
   }
 
   Future<bool> tryLogin(Credentials credentials) async {
     return validateCall(
-      () async => dio.get(
+          () async => _dio.get(
         'favorites.json',
         options: Options(
           headers: {
@@ -123,15 +152,14 @@ class Client extends ChangeNotifier {
     return posts;
   }
 
-  Future<List<Post>> postsRaw(
-    int page, {
+  Future<List<Post>> postsRaw(int page, {
     int? limit,
     String? search,
     bool? force,
   }) async {
-    await initialized;
+    await _initialized;
     String? tags = search != null ? sortTags(search) : '';
-    Map body = await dio
+    Map body = await _dio
         .get(
           'posts.json',
           queryParameters: {
@@ -139,9 +167,9 @@ class Client extends ChangeNotifier {
             'page': page,
             'limit': limit,
           },
-          options: buildKeyCacheOptions(
-            keys: {'tags': tags},
-            forceRefresh: force,
+          options: _options(
+            params: {'tags': tags},
+            force: force,
           ),
         )
         .then((response) => response.data);
@@ -149,15 +177,14 @@ class Client extends ChangeNotifier {
     return postsFromJson(body['posts']);
   }
 
-  Future<List<Post>> posts(
-    int page, {
+  Future<List<Post>> posts(int page, {
     int? limit,
     String? search,
     bool? reversePools,
     bool? orderFavorites,
     bool? force,
   }) async {
-    await initialized;
+    await _initialized;
     Map<RegExp, Future<List<Post>> Function(RegExpMatch match)> redirects = {
       poolRegex(): (match) => poolPosts(
             int.parse(match.namedGroup('id')!),
@@ -181,17 +208,15 @@ class Client extends ChangeNotifier {
   }
 
   Future<List<Post>> favorites(int page, {int? limit, bool? force}) async {
-    await initialized;
-    Map body = await dio
+    await _initialized;
+    Map body = await _dio
         .get(
           'favorites.json',
           queryParameters: {
             'page': page,
             'limit': limit,
           },
-          options: buildKeyCacheOptions(
-            forceRefresh: force,
-          ),
+          options: _options(force: force),
         )
         .then((response) => response.data);
 
@@ -199,52 +224,44 @@ class Client extends ChangeNotifier {
   }
 
   Future<void> addFavorite(int postId) async {
-    await cacheManager.deleteByExtras(
-      'posts/$postId.json',
-      options: dio.options,
-    );
+    await (await _cache)
+        .deleteFromPath(RegExp(RegExp.escape('posts/$postId.json')));
 
-    await dio.post('favorites.json', queryParameters: {'post_id': postId});
+    await _dio.post('favorites.json', queryParameters: {'post_id': postId});
   }
 
   Future<void> removeFavorite(int postId) async {
     await ensureLogin();
 
-    await cacheManager.deleteByExtras(
-      'posts/$postId.json',
-      options: dio.options,
-    );
+    await (await _cache)
+        .deleteFromPath(RegExp(RegExp.escape('posts/$postId.json')));
 
-    dio.delete('favorites/$postId.json');
+    _dio.delete('favorites/$postId.json');
   }
 
   Future<void> votePost(int postId, bool upvote, bool replace) async {
     await ensureLogin();
 
-    await cacheManager.deleteByExtras(
-      'posts/$postId.json',
-      options: dio.options,
-    );
+    await (await _cache)
+        .deleteFromPath(RegExp(RegExp.escape('posts/$postId.json')));
 
-    await dio.post('posts/$postId/votes.json', queryParameters: {
+    await _dio.post('posts/$postId/votes.json', queryParameters: {
       'score': upvote ? 1 : -1,
       'no_unvote': replace,
     });
   }
 
   Future<List<Pool>> pools(int page, {String? search, bool? force}) async {
-    List<dynamic> body = await dio
+    List<dynamic> body = await _dio
         .get(
           'pools.json',
           queryParameters: {
             'search[name_matches]': search,
             'page': page,
           },
-          options: buildKeyCacheOptions(
-            keys: {
-              'search[name_matches]': search,
-            },
-            forceRefresh: force,
+          options: _options(
+            force: force,
+            params: {'search[name_matches]': search},
           ),
         )
         .then((response) => response.data);
@@ -259,24 +276,21 @@ class Client extends ChangeNotifier {
   }
 
   Future<Pool> pool(int poolId, {bool? force}) async {
-    Map<String, dynamic> body = await dio
+    Map<String, dynamic> body = await _dio
         .get(
           'pools/$poolId.json',
-          options: buildKeyCacheOptions(
-            forceRefresh: force,
-          ),
+          options: _options(force: force),
         )
         .then((response) => response.data);
 
     return Pool.fromJson(body);
   }
 
-  Future<List<Post>> poolPosts(
-    int poolId,
-    int page, {
-    bool reverse = false,
-    bool? force,
-  }) async {
+  Future<List<Post>> poolPosts(int poolId,
+      int page, {
+        bool reverse = false,
+        bool? force,
+      }) async {
     Pool pool = await this.pool(poolId, force: true);
     List<int> ids = reverse ? pool.postIds.reversed.toList() : pool.postIds;
     int limit = 80;
@@ -296,19 +310,17 @@ class Client extends ChangeNotifier {
     List<Post> posts = await this.posts(1, search: filter, force: force);
     Map<int, Post> table = {for (Post e in posts) e.id: e};
     posts = (pageIds.map((e) => table[e]).toList()
-          ..removeWhere((e) => e == null))
+      ..removeWhere((e) => e == null))
         .cast<Post>();
     return posts;
   }
 
   Future<Post> post(int postId, {bool unsafe = false, bool? force}) async {
-    await initialized;
-    Map body = await dio
+    await _initialized;
+    Map body = await _dio
         .get(
           '${unsafe ? 'https://${_settings.customHost.value}/' : ''}posts/$postId.json',
-          options: buildKeyCacheOptions(
-            forceRefresh: force,
-          ),
+          options: _options(force: force),
         )
         .then((response) => response.data);
 
@@ -317,17 +329,16 @@ class Client extends ChangeNotifier {
   }
 
   Future<void> updatePost(int postId, Map<String, String?> body) async {
-    await cacheManager.deleteByExtras(
-      'posts/$postId.json',
-      options: dio.options,
+    (await _cache).deleteFromPath(
+      RegExp(RegExp.escape('posts/$postId.json')),
     );
 
-    await dio.put('posts/$postId.json', data: FormData.fromMap(body));
+    await _dio.put('posts/$postId.json', data: FormData.fromMap(body));
   }
 
   Future<void> reportPost(int postId, int reportId, String reason) async {
-    await initialized;
-    await dio.post('tickets', queryParameters: {
+    await _initialized;
+    await _dio.post('tickets', queryParameters: {
       'ticket[reason]': reason,
       'ticket[report_reason]': reportId,
       'ticket[disp_id]': postId,
@@ -336,28 +347,30 @@ class Client extends ChangeNotifier {
   }
 
   Future<void> flagPost(int postId, String flag, {int? parent}) async {
-    await initialized;
-    await dio.post('post_flags', queryParameters: {
-      'post_flag[post_id]': postId,
-      'post_flag[reason_name]': flag,
-      if (flag == 'inferior' && parent != null) 'post_flag[parent_id]': parent,
-    });
+    await _initialized;
+    await _dio.post(
+      'post_flags',
+      queryParameters: {
+        'post_flag[post_id]': postId,
+        'post_flag[reason_name]': flag,
+        if (flag == 'inferior' && parent != null)
+          'post_flag[parent_id]': parent,
+      },
+    );
   }
 
   Future<List<Wiki>> wikis(int page, {String? search, bool? force}) async {
-    await initialized;
-    List body = await dio
+    await _initialized;
+    List body = await _dio
         .get(
           'wiki_pages.json',
           queryParameters: {
             'search[title]': search,
             'page': page,
           },
-          options: buildKeyCacheOptions(
-            forceRefresh: force,
-            keys: {
-              'search[title]': search,
-            },
+          options: _options(
+            force: force,
+            params: {'search[title]': search},
           ),
         )
         .then((response) => response.data);
@@ -366,13 +379,11 @@ class Client extends ChangeNotifier {
   }
 
   Future<Wiki> wiki(String name, {bool? force}) async {
-    await initialized;
-    Map<String, dynamic> body = await dio
+    await _initialized;
+    Map<String, dynamic> body = await _dio
         .get(
           'wiki_pages/$name.json',
-          options: buildKeyCacheOptions(
-            forceRefresh: force,
-          ),
+          options: _options(force: force),
         )
         .then((response) => response.data);
 
@@ -380,13 +391,11 @@ class Client extends ChangeNotifier {
   }
 
   Future<User> user(String name, {bool? force}) async {
-    await initialized;
-    Map<String, dynamic> body = await dio
+    await _initialized;
+    Map<String, dynamic> body = await _dio
         .get(
           'users/$name.json',
-          options: buildKeyCacheOptions(
-            forceRefresh: force,
-          ),
+          options: _options(force: force),
         )
         .then((response) => response.data);
 
@@ -394,8 +403,8 @@ class Client extends ChangeNotifier {
   }
 
   Future<void> reportUser(int userId, String reason) async {
-    await initialized;
-    await dio.post('tickets', queryParameters: {
+    await _initialized;
+    await _dio.post('tickets', queryParameters: {
       'ticket[reason]': reason,
       'ticket[disp_id]': userId,
       'ticket[qtype]': 'user',
@@ -411,13 +420,13 @@ class Client extends ChangeNotifier {
     }
 
     _currentUser.runOnce(
-      () async {
+          () async {
         if (!await isLoggedIn) {
           return null;
         }
 
         return CurrentUser.fromJson(
-          await dio
+          await _dio
               .get('users/${credentials!.username}.json')
               .then((response) => response.data),
         );
@@ -455,13 +464,13 @@ class Client extends ChangeNotifier {
       'user[blacklisted_tags]': denylist.join('\n'),
     };
 
-    await dio.put('users/${credentials!.username}.json',
+    await _dio.put('users/${credentials!.username}.json',
         data: FormData.fromMap(body));
   }
 
   Future<List<Tag>> tags(String search, {int? category, bool? force}) async {
-    await initialized;
-    final body = await dio
+    await _initialized;
+    final body = await _dio
         .get(
           'tags.json',
           queryParameters: {
@@ -470,9 +479,7 @@ class Client extends ChangeNotifier {
             'search[order]': 'count',
             'limit': 3,
           },
-          options: buildKeyCacheOptions(
-            forceRefresh: force,
-          ),
+          options: _options(force: force),
         )
         .then((response) => response.data);
     List<Tag> tags = [];
@@ -484,22 +491,25 @@ class Client extends ChangeNotifier {
     return tags;
   }
 
-  Future<List<TagSuggestion>> autocomplete(String search,
-      {int? category, bool? force}) async {
-    await initialized;
+  Future<List<TagSuggestion>> autocomplete(
+    String search, {
+    int? category,
+    bool? force,
+  }) async {
+    await _initialized;
     if (category == null) {
       if (search.length < 3) {
         return [];
       }
-      final body = await dio
+      final body = await _dio
           .get(
             'tags/autocomplete.json',
             queryParameters: {
               'search[name_matches]': search,
             },
-            options: buildKeyCacheOptions(
+            options: _options(
+              force: force,
               maxAge: const Duration(days: 1),
-              forceRefresh: force,
             ),
           )
           .then((response) => response.data);
@@ -533,8 +543,8 @@ class Client extends ChangeNotifier {
   }
 
   Future<List<Comment>> comments(int postId, String page, {bool? force}) async {
-    await initialized;
-    final body = await dio
+    await _initialized;
+    final body = await _dio
         .get(
           'comments.json',
           queryParameters: {
@@ -542,9 +552,9 @@ class Client extends ChangeNotifier {
             'search[post_id]': postId,
             'page': page,
           },
-          options: buildKeyCacheOptions(
-            forceRefresh: force,
-            keys: {'search[post_id]': postId},
+          options: _options(
+            force: force,
+            params: {'search[post_id]': postId.toString()},
           ),
         )
         .then((response) => response.data);
@@ -560,13 +570,11 @@ class Client extends ChangeNotifier {
   }
 
   Future<Comment> comment(int commentId, {bool? force}) async {
-    await initialized;
-    Map<String, dynamic> body = await dio
+    await _initialized;
+    Map<String, dynamic> body = await _dio
         .get(
           'comments.json/$commentId.json',
-          options: buildKeyCacheOptions(
-            forceRefresh: force,
-          ),
+          options: _options(force: force),
         )
         .then((response) => response.data);
 
@@ -576,7 +584,7 @@ class Client extends ChangeNotifier {
   Future<void> voteComment(int commentId, bool upvote, bool replace) async {
     await ensureLogin();
 
-    await dio.post(
+    await _dio.post(
       'comments/$commentId/votes.json',
       queryParameters: {
         'score': upvote ? 1 : -1,
@@ -586,10 +594,9 @@ class Client extends ChangeNotifier {
   }
 
   Future<void> postComment(int postId, String text, {Comment? comment}) async {
-    await cacheManager.deleteByExtras(
-      'comments.json',
-      keyExtras: {'search[post_id]': postId},
-      options: dio.options,
+    await (await _cache).deleteFromPath(
+      RegExp(RegExp.escape('comments.json')),
+      queryParams: {'search[post_id]': postId.toString()},
     );
 
     Map<String, dynamic> body = {
@@ -599,44 +606,42 @@ class Client extends ChangeNotifier {
     };
     Future<Response> request;
     if (comment != null) {
-      await cacheManager.deleteByExtras(
-        'comments.json/${comment.id}.json',
-        options: dio.options,
+      await (await _cache).deleteFromPath(
+        RegExp(RegExp.escape('comments/${comment.id}.json')),
       );
 
-      request = dio.patch('comments/${comment.id}.json',
+      request = _dio.patch('comments/${comment.id}.json',
           data: FormData.fromMap(body));
     } else {
-      request = dio.post('comments.json', data: FormData.fromMap(body));
+      request = _dio.post('comments.json', data: FormData.fromMap(body));
     }
     await request;
   }
 
   Future<void> reportComment(int commentId, String reason) async {
-    await initialized;
-    await dio.post('tickets', queryParameters: {
+    await _initialized;
+    await _dio.post('tickets', queryParameters: {
       'ticket[reason]': reason,
       'ticket[disp_id]': commentId,
       'ticket[qtype]': 'comment',
     });
   }
 
-  Future<List<Topic>> topics(
-    int page, {
+  Future<List<Topic>> topics(int page, {
     String? search,
     bool? force,
   }) async {
     String? title = search?.isNotEmpty ?? false ? search : null;
-    final body = await dio
+    final body = await _dio
         .get(
           'forum_topics.json',
           queryParameters: {
             'page': page,
             'search[title_matches]': title,
           },
-          options: buildKeyCacheOptions(
-            forceRefresh: force,
-            keys: {'search[title_matches]': title},
+          options: _options(
+            force: force,
+            params: {'search[title_matches]': title},
           ),
         )
         .then((response) => response.data);
@@ -652,13 +657,11 @@ class Client extends ChangeNotifier {
   }
 
   Future<Topic> topic(int topicId, {bool? force}) async {
-    await initialized;
-    Map<String, dynamic> body = await dio
+    await _initialized;
+    Map<String, dynamic> body = await _dio
         .get(
           'forum_topics/$topicId.json',
-          options: buildKeyCacheOptions(
-            forceRefresh: force,
-          ),
+          options: _options(force: force),
         )
         .then((response) => response.data);
 
@@ -666,8 +669,8 @@ class Client extends ChangeNotifier {
   }
 
   Future<List<Reply>> replies(int topicId, String page, {bool? force}) async {
-    await initialized;
-    final body = await dio
+    await _initialized;
+    final body = await _dio
         .get(
           'forum_posts.json',
           queryParameters: {
@@ -675,9 +678,9 @@ class Client extends ChangeNotifier {
             'search[topic_id]': topicId,
             'page': page,
           },
-          options: buildKeyCacheOptions(
-            forceRefresh: force,
-            keys: {'search[topic_id]': topicId},
+          options: _options(
+            force: force,
+            params: {'search[topic_id]': topicId.toString()},
           ),
         )
         .then((response) => response.data);
@@ -693,13 +696,11 @@ class Client extends ChangeNotifier {
   }
 
   Future<Reply> reply(int replyId, {bool? force}) async {
-    await initialized;
-    Map<String, dynamic> body = await dio
+    await _initialized;
+    Map<String, dynamic> body = await _dio
         .get(
           'forum_posts/$replyId.json',
-          options: buildKeyCacheOptions(
-            forceRefresh: force,
-          ),
+          options: _options(force: force),
         )
         .then((response) => response.data);
 

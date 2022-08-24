@@ -1,106 +1,133 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
-import 'package:dio_http_cache/dio_http_cache.dart';
+import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
 
-const Duration defaultMaxAge = Duration(minutes: 5);
-const Duration defaultMaxStale = Duration(minutes: 10);
-const String primaryCacheKeyExtras = 'primaryCacheKeyExtras';
+class CacheConfig extends CacheOptions {
+  CacheConfig({
+    super.policy,
+    super.hitCacheOnErrorExcept,
+    super.keyBuilder,
+    this.pattern,
+    this.params,
+    this.maxAge,
+    super.maxStale,
+    super.priority,
+    super.store,
+    super.cipher,
+    super.allowPostMethod,
+  });
 
-String? getCacheKey(
-  String path, {
-  OptionsMixin? options,
-  Map<String, dynamic>? keyExtras,
-}) {
-  Uri? primaryKey;
-  if (keyExtras != null) {
-    String host = RequestOptions(path: path).uri.host;
-    if (host.isEmpty) {
-      host = options?.baseUrl ?? '';
+  /// Overrides the maxAge http directive.
+  final Duration? maxAge;
+
+  /// Deletes matching cache entries when [policy] is [CachePolicy.refresh] or [CachePolicy.refreshForceCache].
+  final RegExp? pattern;
+
+  /// Deletes matching cache entries when [policy] is [CachePolicy.refresh] or [CachePolicy.refreshForceCache].
+  ///
+  /// If [pattern] is null but [params] is not, the path of the request will be used as pattern.
+  final Map<String, String?>? params;
+
+  static CacheConfig? fromExtra(RequestOptions request) {
+    final CacheOptions? config = CacheOptions.fromExtra(request);
+    if (config != null && config is CacheConfig) {
+      return config;
     }
-    primaryKey = Uri.parse(host);
-    primaryKey = primaryKey.replace(
-      queryParameters: keyExtras.map(
-        (key, value) => MapEntry(key, value.toString()),
-      ),
-    );
+
+    return null;
   }
 
-  return primaryKey?.toString();
-}
-
-extension Extras on DioCacheManager {
-  Future<void> deleteByExtras(
-    String path, {
-    OptionsMixin? options,
-    String? requestMethod,
-    Map<String, dynamic>? keyExtras,
-  }) async {
-    if (options is RequestOptions) {
-      requestMethod ??= options.method;
-    }
-
-    String? cacheKey = getCacheKey(
-      path,
-      options: options,
-      keyExtras: keyExtras,
-    );
-
-    if (cacheKey != null) {
-      await delete(
-        cacheKey,
-        requestMethod: requestMethod,
+  @override
+  CacheConfig copyWith({
+    CachePolicy? policy,
+    Nullable<List<int>>? hitCacheOnErrorExcept,
+    CacheKeyBuilder? keyBuilder,
+    Nullable<RegExp>? pattern,
+    Nullable<Map<String, String?>>? params,
+    Nullable<Duration>? maxAge,
+    Nullable<Duration>? maxStale,
+    CachePriority? priority,
+    CacheStore? store,
+    Nullable<CacheCipher>? cipher,
+    bool? allowPostMethod,
+  }) =>
+      CacheConfig(
+        policy: policy ?? this.policy,
+        hitCacheOnErrorExcept: hitCacheOnErrorExcept != null
+            ? hitCacheOnErrorExcept.value
+            : this.hitCacheOnErrorExcept,
+        keyBuilder: keyBuilder ?? this.keyBuilder,
+        pattern: pattern != null ? pattern.value : this.pattern,
+        params: params != null ? params.value : this.params,
+        maxAge: maxAge != null ? maxAge.value : this.maxAge,
+        maxStale: maxStale != null ? maxStale.value : this.maxStale,
+        priority: priority ?? this.priority,
+        store: store ?? this.store,
+        cipher: cipher != null ? cipher.value : this.cipher,
+        allowPostMethod: allowPostMethod ?? this.allowPostMethod,
       );
-    } else {
-      await deleteByPrimaryKeyAndSubKey(
-        path,
-        requestMethod: requestMethod,
-      );
-    }
-  }
 }
 
-Options? buildKeyCacheOptions({
-  Options? options,
-  Duration? maxAge,
-  Duration? maxStale,
-  Map<String, dynamic>? keys,
-  bool? forceRefresh,
-}) {
-  return buildConfigurableCacheOptions(
-    options: (options ?? Options()).copyWith(
-      extra: Map.of(options?.extra ?? {})
-        ..addAll({primaryCacheKeyExtras: keys}),
-    ),
-    maxAge: maxAge ?? defaultMaxAge,
-    maxStale: maxStale ?? defaultMaxStale,
-    forceRefresh: forceRefresh,
-  );
-}
+class CacheInterceptor extends DioCacheInterceptor {
+  CacheInterceptor({required CacheConfig options})
+      : _options = options,
+        super(options: options);
 
-class CacheKeyInterceptor extends Interceptor {
-  final DioCacheManager cacheManager;
+  final CacheConfig _options;
 
-  CacheKeyInterceptor(this.cacheManager);
+  CacheStore _getCacheStore(CacheOptions options) =>
+      options.store ?? _options.store!;
+
+  CacheConfig _getCacheConfig(RequestOptions options) =>
+      CacheConfig.fromExtra(options) ?? _options;
 
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-    RequestOptions nextOptions = options.copyWith();
-    Map<String, dynamic>? keys = nextOptions.extra[primaryCacheKeyExtras];
-    if (keys == null) {
-      return handler.next(nextOptions);
-    }
-    String? cacheKey =
-        getCacheKey(nextOptions.path, options: nextOptions, keyExtras: keys);
-    if (cacheKey == null) {
-      return handler.next(nextOptions);
-    }
-    if (nextOptions.extra[DIO_CACHE_KEY_FORCE_REFRESH] == true) {
-      cacheManager.deleteByExtras(
-        options.path,
-        keyExtras: keys,
-        options: options,
+    final CacheConfig config = _getCacheConfig(options);
+
+    bool isForceRefreshing = [
+      CachePolicy.refresh,
+      CachePolicy.refreshForceCache
+    ].contains(config.policy);
+
+    bool hasPatterns = config.pattern != null || config.params != null;
+
+    if (isForceRefreshing && hasPatterns) {
+      _getCacheStore(config).deleteFromPath(
+        config.pattern ?? RegExp(RegExp.escape(options.uri.path.toString())),
+        queryParams: config.params,
       );
     }
-    nextOptions.extra[DIO_CACHE_KEY_PRIMARY_KEY] = cacheKey;
-    return handler.next(nextOptions);
+
+    super.onRequest(options, handler);
+  }
+
+  @override
+  void onResponse(Response response, ResponseInterceptorHandler handler) {
+    final CacheConfig config = _getCacheConfig(response.requestOptions);
+
+    final CacheControl cacheControl = CacheControl.fromHeader(
+      response.headers[HttpHeaders.cacheControlHeader],
+    );
+
+    final int updatedMaxAge =
+        config.maxAge?.inMilliseconds ?? cacheControl.maxAge;
+
+    final CacheControl updatedCacheControl = CacheControl(
+      maxAge: updatedMaxAge,
+      privacy: cacheControl.privacy,
+      maxStale: cacheControl.maxStale,
+      minFresh: cacheControl.minFresh,
+      mustRevalidate: cacheControl.mustRevalidate,
+      noCache: cacheControl.noCache,
+      noStore: cacheControl.noStore,
+      other: cacheControl.other,
+    );
+
+    response.headers
+        .set(HttpHeaders.cacheControlHeader, updatedCacheControl.toHeader());
+
+    super.onResponse(response, handler);
   }
 }
