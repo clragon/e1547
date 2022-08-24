@@ -36,7 +36,7 @@ Future<DriftIsolate> _createDriftIsolate(String name) async {
 void _startBackground(_DriftIsolateData data) {
   final executor = NativeDatabase(File(data.path));
   final driftIsolate = DriftIsolate.inCurrent(
-    () => DatabaseConnection.fromExecutor(executor),
+    () => DatabaseConnection(executor),
   );
   data.port.send(driftIsolate);
 }
