@@ -83,7 +83,10 @@ class CacheInterceptor extends DioCacheInterceptor {
       CacheConfig.fromExtra(options) ?? _options;
 
   @override
-  void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
+  void onRequest(
+    RequestOptions options,
+    RequestInterceptorHandler handler,
+  ) async {
     final CacheConfig config = _getCacheConfig(options);
 
     bool isForceRefreshing = [
@@ -94,7 +97,7 @@ class CacheInterceptor extends DioCacheInterceptor {
     bool hasPatterns = config.pattern != null || config.params != null;
 
     if (isForceRefreshing && hasPatterns) {
-      _getCacheStore(config).deleteFromPath(
+      await _getCacheStore(config).deleteFromPath(
         config.pattern ?? RegExp(RegExp.escape(options.uri.path.toString())),
         queryParams: config.params,
       );
@@ -104,7 +107,7 @@ class CacheInterceptor extends DioCacheInterceptor {
   }
 
   @override
-  void onResponse(Response response, ResponseInterceptorHandler handler) {
+  void onResponse(Response response, ResponseInterceptorHandler handler) async {
     final CacheConfig config = _getCacheConfig(response.requestOptions);
 
     final CacheControl cacheControl = CacheControl.fromHeader(

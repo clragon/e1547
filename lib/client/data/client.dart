@@ -55,7 +55,7 @@ class Client extends ChangeNotifier {
   }) =>
       _defaultCacheOptions
           .copyWith(
-            maxAge: Nullable(maxAge ?? _defaultCacheOptions.maxAge),
+            maxAge: maxAge != null ? Nullable(maxAge) : null,
             params: Nullable(params),
             policy: (force ?? false) ? CachePolicy.refresh : null,
           )
@@ -152,7 +152,8 @@ class Client extends ChangeNotifier {
     return posts;
   }
 
-  Future<List<Post>> postsRaw(int page, {
+  Future<List<Post>> postsRaw(
+    int page, {
     int? limit,
     String? search,
     bool? force,
@@ -177,7 +178,8 @@ class Client extends ChangeNotifier {
     return postsFromJson(body['posts']);
   }
 
-  Future<List<Post>> posts(int page, {
+  Future<List<Post>> posts(
+    int page, {
     int? limit,
     String? search,
     bool? reversePools,
@@ -286,11 +288,12 @@ class Client extends ChangeNotifier {
     return Pool.fromJson(body);
   }
 
-  Future<List<Post>> poolPosts(int poolId,
-      int page, {
-        bool reverse = false,
-        bool? force,
-      }) async {
+  Future<List<Post>> poolPosts(
+    int poolId,
+    int page, {
+    bool reverse = false,
+    bool? force,
+  }) async {
     Pool pool = await this.pool(poolId, force: true);
     List<int> ids = reverse ? pool.postIds.reversed.toList() : pool.postIds;
     int limit = 80;
@@ -310,7 +313,7 @@ class Client extends ChangeNotifier {
     List<Post> posts = await this.posts(1, search: filter, force: force);
     Map<int, Post> table = {for (Post e in posts) e.id: e};
     posts = (pageIds.map((e) => table[e]).toList()
-      ..removeWhere((e) => e == null))
+          ..removeWhere((e) => e == null))
         .cast<Post>();
     return posts;
   }
@@ -627,7 +630,8 @@ class Client extends ChangeNotifier {
     });
   }
 
-  Future<List<Topic>> topics(int page, {
+  Future<List<Topic>> topics(
+    int page, {
     String? search,
     bool? force,
   }) async {
