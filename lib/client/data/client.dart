@@ -238,7 +238,7 @@ class Client extends ChangeNotifier {
     await (await _cache)
         .deleteFromPath(RegExp(RegExp.escape('posts/$postId.json')));
 
-    _dio.delete('favorites/$postId.json');
+    await _dio.delete('favorites/$postId.json');
   }
 
   Future<void> votePost(int postId, bool upvote, bool replace) async {
@@ -332,7 +332,7 @@ class Client extends ChangeNotifier {
   }
 
   Future<void> updatePost(int postId, Map<String, String?> body) async {
-    (await _cache).deleteFromPath(
+    await (await _cache).deleteFromPath(
       RegExp(RegExp.escape('posts/$postId.json')),
     );
 
@@ -422,8 +422,8 @@ class Client extends ChangeNotifier {
       _currentUserAvatar = AsyncMemoizer();
     }
 
-    _currentUser.runOnce(
-          () async {
+    await _currentUser.runOnce(
+      () async {
         if (!await isLoggedIn) {
           return null;
         }
@@ -446,7 +446,7 @@ class Client extends ChangeNotifier {
       _currentUserAvatar = AsyncMemoizer();
     }
 
-    _currentUserAvatar.runOnce(() async {
+    await _currentUserAvatar.runOnce(() async {
       if (!await isLoggedIn) {
         return null;
       }

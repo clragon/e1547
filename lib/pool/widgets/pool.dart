@@ -34,7 +34,7 @@ class _PoolPageState extends State<PoolPage> {
         builder: (context, controller, child) => ListenableListener(
           listener: () async {
             await controller.waitForFirstPage();
-            context
+            await context
                 .read<HistoriesService>()
                 .addPool(widget.pool, posts: controller.itemList);
           },

@@ -49,7 +49,7 @@ class _WindowFrameState extends State<WindowFrame> with WindowListener {
         if (manager != null) {
           _manager = manager;
           manager.addListener(this);
-          manager.setTitleBarStyle(TitleBarStyle.hidden);
+          await manager.setTitleBarStyle(TitleBarStyle.hidden);
           bool fullscreen = await manager.isFullScreen();
           bool focused = await manager.isFocused();
           bool maximized = await manager.isMaximized();

@@ -3,13 +3,15 @@ include: package:flutter_lints/flutter.yaml
 # https://dart-lang.github.io/linter/lints/index.html.
 linter:
   rules:
+    avoid_redundant_argument_values: true
+    use_super_parameters: true
+    directives_ordering: true
+    # useful sometimes:
+    # unawaited_futures: true
     overridden_fields: false
     use_build_context_synchronously: false
     use_key_in_widget_constructors: false
     avoid_function_literals_in_foreach_calls: false
-    avoid_redundant_argument_values: true
-    use_super_parameters: true
-    directives_ordering: true
 
 analyzer:
   exclude: [build/**, lib/**.freezed.dart, lib/**.g.dart]

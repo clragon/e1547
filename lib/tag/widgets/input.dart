@@ -310,7 +310,7 @@ class _AdvancedTagInputState extends State<AdvancedTagInput> {
               break;
           }
 
-          withTags((tags) async {
+          await withTags((tags) async {
             if (key == null) {
               return tags;
             }

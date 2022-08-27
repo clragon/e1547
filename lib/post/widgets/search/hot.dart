@@ -20,7 +20,7 @@ class _HotPageState extends State<HotPage> with DrawerEntry {
         builder: (context, controller, child) => ListenableListener(
           listener: () async {
             await controller.waitForFirstPage();
-            context.read<HistoriesService>().addPostSearch(
+            await context.read<HistoriesService>().addPostSearch(
                 controller.search.value,
                 posts: controller.itemList);
           },

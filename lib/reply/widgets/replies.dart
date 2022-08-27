@@ -21,7 +21,7 @@ class RepliesPage extends StatelessWidget {
         builder: (context, controller, child) => ListenableListener(
           listener: () async {
             await controller.waitForFirstPage();
-            context.read<HistoriesService>().addTopic(
+            await context.read<HistoriesService>().addTopic(
                   topic,
                   replies: controller.itemList!,
                 );

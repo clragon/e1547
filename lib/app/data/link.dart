@@ -15,9 +15,10 @@ import 'package:url_launcher/url_launcher.dart' as urls;
 Future<void> launch(String uri) async {
   if ((Platform.isAndroid || Platform.isIOS) &&
       RegExp(r'http(s)?://(e621|e926)\.net/*').hasMatch(uri)) {
-    tabs.launch(uri);
+    await tabs.launch(uri);
   } else {
-    urls.launchUrl(Uri.parse(uri), mode: urls.LaunchMode.externalApplication);
+    await urls.launchUrl(Uri.parse(uri),
+        mode: urls.LaunchMode.externalApplication);
   }
 }
 

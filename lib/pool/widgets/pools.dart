@@ -26,7 +26,7 @@ class _PoolsPageState extends State<PoolsPage> with DrawerEntry {
         builder: (context, controller, child) => ListenableListener(
           listener: () async {
             await controller.waitForFirstPage();
-            context.read<HistoriesService>().addPoolSearch(
+            await context.read<HistoriesService>().addPoolSearch(
                 controller.search.value,
                 pools: controller.itemList);
           },

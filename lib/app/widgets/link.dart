@@ -36,7 +36,7 @@ class _AppLinkHandlerState extends State<AppLinkHandler> {
             .popUntil((route) => false);
         action();
       } else {
-        launch(url.toString());
+        await launch(url.toString());
       }
     }
   }
@@ -47,7 +47,7 @@ class _AppLinkHandlerState extends State<AppLinkHandler> {
         context.watch<NavigationController>().navigatorKey.currentContext!,
         url.toString(),
       )) {
-        launch(url.toString());
+        await launch(url.toString());
       }
     }
   }

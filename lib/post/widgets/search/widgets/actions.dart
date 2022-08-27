@@ -26,13 +26,13 @@ class TagListActions extends StatelessWidget {
             CrossFade(
               showChild: !denied,
               child: IconButton(
-                onPressed: () async {
+                onPressed: () {
                   if (following) {
                     follows.removeTag(tag);
                   } else {
                     follows.addTag(tag);
                     if (denied) {
-                      await denylist.remove(tag);
+                      denylist.remove(tag);
                     }
                   }
                 },
@@ -47,14 +47,14 @@ class TagListActions extends StatelessWidget {
             CrossFade(
               showChild: !following,
               child: IconButton(
-                onPressed: () async {
+                onPressed: () {
                   if (denied) {
-                    await denylist.remove(tag);
+                    denylist.remove(tag);
                   } else {
                     if (following) {
                       follows.removeTag(tag);
                     }
-                    await denylist.add(tag);
+                    denylist.add(tag);
                   }
                 },
                 icon: CrossFade(

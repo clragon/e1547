@@ -59,8 +59,10 @@ class DenylistService extends DataUpdater<List<String>> {
     CurrentUser? user = await _client.currentUser(force: force);
     if (user != null) {
       try {
-        withData((data) => user.blacklistedTags.split('\n').trim(),
-            upload: false);
+        await withData(
+          (data) => user.blacklistedTags.split('\n').trim(),
+          upload: false,
+        );
       } on DioError {
         throw UpdaterException(message: 'Could not update blacklist');
       }

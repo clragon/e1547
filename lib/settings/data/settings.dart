@@ -25,7 +25,7 @@ class Settings with SharedPrefsSettings {
         return null;
       }
     },
-    setSetting: (prefs, key, value) async {
+    setSetting: (prefs, key, value) {
       if (value == null) {
         prefs.remove(key);
       } else {

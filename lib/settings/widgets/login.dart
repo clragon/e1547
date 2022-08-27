@@ -31,7 +31,7 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
-  Future<void> saveAndTest(BuildContext context) async {
+  void saveAndTest(BuildContext context) {
     FormState form = Form.of(context)!;
     if (form.validate()) {
       showDialog(

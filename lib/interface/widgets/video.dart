@@ -87,7 +87,7 @@ class VideoHandlerData extends InheritedWidget {
 }
 
 extension Wake on VideoPlayerController {
-  Future<void> wakelock() async {
+  void wakelock() {
     value.isPlaying ? Wakelock.enable() : Wakelock.disable();
   }
 }

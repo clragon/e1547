@@ -34,7 +34,7 @@ class _FollowMarkReadTileState extends State<FollowMarkReadTile>
                   },
                 )
               : const Text('no unseen posts'),
-          onTap: () async {
+          onTap: () {
             follows.markAllAsRead();
             Navigator.of(context).maybePop();
           },

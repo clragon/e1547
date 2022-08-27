@@ -147,7 +147,7 @@ extension Downloading on Post {
           md5.convert(await download.readAsBytes()) !=
               md5.convert(await target.readAsBytes())) {
         await download.copy(target.path);
-        MediaScanner.loadMedia(path: directory);
+        await MediaScanner.loadMedia(path: directory);
       }
     } else if (Platform.isIOS) {
       await ImageGallerySaver.saveFile(download.path);

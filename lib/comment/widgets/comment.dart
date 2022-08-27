@@ -175,7 +175,8 @@ class CommentTile extends StatelessWidget {
                   icon: Icons.tag,
                   value: () async {
                     Clipboard.setData(
-                        ClipboardData(text: comment.id.toString()));
+                      ClipboardData(text: comment.id.toString()),
+                    );
                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                       duration: const Duration(seconds: 1),
                       content: Text('Copied comment id #${comment.id}'),

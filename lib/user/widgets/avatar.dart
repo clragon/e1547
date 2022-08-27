@@ -11,7 +11,7 @@ import 'package:provider/provider.dart';
 Future<void> initializeUserAvatar(BuildContext context) async {
   Post? avatar = await context.read<Client>().currentUserAvatar();
   if (avatar?.sample.url != null) {
-    precacheImage(
+    await precacheImage(
       CachedNetworkImageProvider(avatar!.sample.url!),
       context,
     );

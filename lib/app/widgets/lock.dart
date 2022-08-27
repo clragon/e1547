@@ -132,7 +132,7 @@ class _BiometricsLockScreenState extends State<BiometricsLockScreen> {
 
   Future<void> tryAuth() async {
     setState(() => failed = false);
-    tryLocalAuth(
+    await tryLocalAuth(
       context: context,
       onSuccess: widget.onSuccess,
       onFailure: () => setState(() => failed = true),
@@ -199,7 +199,7 @@ Future<void> tryLocalAuth({
 
 Future<String?> registerPin(BuildContext context) async {
   Completer<String?> completer = Completer();
-  screenLock(
+  await screenLock(
     title: const Text('Enter new PIN'),
     confirmTitle: const Text('Confirm new PIN'),
     context: context,

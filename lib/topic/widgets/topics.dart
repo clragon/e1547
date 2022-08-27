@@ -24,7 +24,7 @@ class _TopicsPageState extends State<TopicsPage> with DrawerEntry {
         builder: (context, controller, child) => ListenableListener(
           listener: () async {
             await controller.waitForFirstPage();
-            context.read<HistoriesService>().addTopicSearch(
+            await context.read<HistoriesService>().addTopicSearch(
                   controller.search.value,
                   topics: controller.itemList!,
                 );

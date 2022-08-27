@@ -53,7 +53,7 @@ class _FollowingPageState extends State<FollowingPage> {
                         SheetActions.of(context)!.show(
                           context,
                           ControlledTextWrapper(
-                            submit: (value) async {
+                            submit: (value) {
                               value = value.trim();
                               Follow result = Follow(tags: value);
                               if (value.isNotEmpty) {
