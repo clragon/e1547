@@ -209,7 +209,7 @@ class HistoriesDatabase extends _$HistoriesDatabase {
             .map((e) => e.id)
             .toList();
     await (delete(historiesTable)
-      ..where((tbl) => tbl.host.equalsNullable(host))
+          ..where((tbl) => tbl.host.equalsNullable(host))
           ..where((tbl) => tbl.id.isNotIn(kept)))
         .go();
   }

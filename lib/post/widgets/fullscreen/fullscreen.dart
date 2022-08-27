@@ -44,8 +44,8 @@ class PostFullscreenBody extends StatelessWidget {
                   initialScale: PhotoViewComputedScale.contained,
                   minScale: PhotoViewComputedScale.contained,
                   maxScale: PhotoViewComputedScale.covered * 6,
-                  child:
-                      PostImageWidget(post: post.value, size: PostImageSize.file),
+                  child: PostImageWidget(
+                      post: post.value, size: PostImageSize.file),
                 ),
               );
             case PostType.video:

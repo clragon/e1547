@@ -104,7 +104,7 @@ class Client extends ChangeNotifier {
 
   Future<bool> tryLogin(Credentials credentials) async {
     return validateCall(
-          () async => _dio.get(
+      () async => _dio.get(
         'favorites.json',
         options: Options(
           headers: {

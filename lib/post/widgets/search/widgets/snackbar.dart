@@ -18,7 +18,7 @@ Future<void> postDownloadingNotification(
     timeout: const Duration(milliseconds: 100),
     process: (item) async {
       try {
-        item.download(context);
+        await item.download(context);
         return true;
       } catch (exception, stacktrace) {
         if (kDebugMode) {
@@ -36,7 +36,7 @@ Future<void> postDownloadingNotification(
         ? 'Downloading post #${items.first.id}'
         : 'Downloading post #${items.elementAt(index).id} (${index + 1}/${items.length})',
     onFailure: (items, index) =>
-    'Failed to download post #${items.elementAt(index).id}',
+        'Failed to download post #${items.elementAt(index).id}',
     onCancel: (items, index) => 'Cancelled download',
   );
 }
@@ -77,23 +77,23 @@ Future<void> postFavoritingNotification(
     },
     onDone: isLiked
         ? (items) => items.length == 1
-        ? 'Unfavorited post #${items.first.id}'
-        : 'Unfavorited ${items.length} posts'
+            ? 'Unfavorited post #${items.first.id}'
+            : 'Unfavorited ${items.length} posts'
         : (items) => items.length == 1
-        ? 'Favorited post #${items.first.id}'
-        : 'Favorited ${items.length} posts',
+            ? 'Favorited post #${items.first.id}'
+            : 'Favorited ${items.length} posts',
     onProgress: isLiked
         ? (items, index) => items.length == 1
-        ? 'Unfavoriting post #${items.first.id}'
-        : 'Unfavoriting post #${items.elementAt(index).id} (${index + 1}/${items.length})'
+            ? 'Unfavoriting post #${items.first.id}'
+            : 'Unfavoriting post #${items.elementAt(index).id} (${index + 1}/${items.length})'
         : (items, index) => items.length == 1
-        ? 'Favoriting post #${items.first.id}'
-        : 'Favoriting post #${items.elementAt(index).id} (${index + 1}/${items.length})',
+            ? 'Favoriting post #${items.first.id}'
+            : 'Favoriting post #${items.elementAt(index).id} (${index + 1}/${items.length})',
     onFailure: isLiked
         ? (items, index) =>
-    'Failed to unfavorite post #${items.elementAt(index).id}'
+            'Failed to unfavorite post #${items.elementAt(index).id}'
         : (items, index) =>
-    'Failed to favorite post #${items.elementAt(index).id}',
+            'Failed to favorite post #${items.elementAt(index).id}',
     onCancel: isLiked
         ? (items, index) => 'Cancelled unfavoriting'
         : (items, index) => 'Cancelled favoriting',
