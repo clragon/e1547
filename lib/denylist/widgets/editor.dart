@@ -40,10 +40,12 @@ class _DenyListEditorState extends State<DenyListEditor> {
         tags = tags.trim();
         tags.removeWhere((tag) => tag.isEmpty);
         await context.read<DenylistService>().edit(tags);
-        if (!await validateCall(
-            () => context.read<DenylistService>().edit(tags))) {
+        try {
+          await context.read<DenylistService>().edit(tags);
+        } on DioError {
           throw const ActionControllerException(
-              message: 'Failed to update blacklist!');
+            message: 'Failed to update blacklist!',
+          );
         }
       },
     );

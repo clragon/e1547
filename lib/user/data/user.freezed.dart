@@ -375,7 +375,7 @@ class __$$_UserCopyWithImpl<$Res> extends _$UserCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_User with DiagnosticableTreeMixin implements _User {
+class _$_User implements _User {
   const _$_User(
       {required this.wikiPageVersionCount,
       required this.artistVersionCount,
@@ -451,38 +451,8 @@ class _$_User with DiagnosticableTreeMixin implements _User {
   final int? avatarId;
 
   @override
-  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
+  String toString() {
     return 'User(wikiPageVersionCount: $wikiPageVersionCount, artistVersionCount: $artistVersionCount, poolVersionCount: $poolVersionCount, forumPostCount: $forumPostCount, commentCount: $commentCount, flagCount: $flagCount, positiveFeedbackCount: $positiveFeedbackCount, neutralFeedbackCount: $neutralFeedbackCount, negativeFeedbackCount: $negativeFeedbackCount, uploadLimit: $uploadLimit, id: $id, createdAt: $createdAt, name: $name, level: $level, baseUploadLimit: $baseUploadLimit, postUploadCount: $postUploadCount, postUpdateCount: $postUpdateCount, noteUpdateCount: $noteUpdateCount, isBanned: $isBanned, canApprovePosts: $canApprovePosts, canUploadFree: $canUploadFree, levelString: $levelString, avatarId: $avatarId)';
-  }
-
-  @override
-  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-    super.debugFillProperties(properties);
-    properties
-      ..add(DiagnosticsProperty('type', 'User'))
-      ..add(DiagnosticsProperty('wikiPageVersionCount', wikiPageVersionCount))
-      ..add(DiagnosticsProperty('artistVersionCount', artistVersionCount))
-      ..add(DiagnosticsProperty('poolVersionCount', poolVersionCount))
-      ..add(DiagnosticsProperty('forumPostCount', forumPostCount))
-      ..add(DiagnosticsProperty('commentCount', commentCount))
-      ..add(DiagnosticsProperty('flagCount', flagCount))
-      ..add(DiagnosticsProperty('positiveFeedbackCount', positiveFeedbackCount))
-      ..add(DiagnosticsProperty('neutralFeedbackCount', neutralFeedbackCount))
-      ..add(DiagnosticsProperty('negativeFeedbackCount', negativeFeedbackCount))
-      ..add(DiagnosticsProperty('uploadLimit', uploadLimit))
-      ..add(DiagnosticsProperty('id', id))
-      ..add(DiagnosticsProperty('createdAt', createdAt))
-      ..add(DiagnosticsProperty('name', name))
-      ..add(DiagnosticsProperty('level', level))
-      ..add(DiagnosticsProperty('baseUploadLimit', baseUploadLimit))
-      ..add(DiagnosticsProperty('postUploadCount', postUploadCount))
-      ..add(DiagnosticsProperty('postUpdateCount', postUpdateCount))
-      ..add(DiagnosticsProperty('noteUpdateCount', noteUpdateCount))
-      ..add(DiagnosticsProperty('isBanned', isBanned))
-      ..add(DiagnosticsProperty('canApprovePosts', canApprovePosts))
-      ..add(DiagnosticsProperty('canUploadFree', canUploadFree))
-      ..add(DiagnosticsProperty('levelString', levelString))
-      ..add(DiagnosticsProperty('avatarId', avatarId));
   }
 
   @override

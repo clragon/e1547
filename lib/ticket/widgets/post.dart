@@ -99,21 +99,19 @@ class _PostReportScreenState extends State<PostReportScreen> {
                         duration: defaultAnimationDuration,
                         curve: Curves.easeInOut,
                       );
-                      if (await validateCall(
-                        () => context.read<Client>().reportPost(
+                      try {
+                        await context.read<Client>().reportPost(
                               widget.post.value.id,
                               type!.id,
                               reasonController.text.trim(),
-                            ),
-                        allowRedirect: true,
-                      )) {
+                            );
+                        Navigator.maybePop(context);
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                           duration: const Duration(seconds: 1),
                           content: Text('Reported post #${widget.post.id}'),
                           behavior: SnackBarBehavior.floating,
                         ));
-                        Navigator.maybePop(context);
-                      } else {
+                      } on DioError {
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                           duration: const Duration(seconds: 1),
                           content:
@@ -218,21 +216,19 @@ class _PostFlagScreenState extends State<PostFlagScreen> {
                         duration: defaultAnimationDuration,
                         curve: Curves.easeInOut,
                       );
-                      if (await validateCall(
-                        () => context.read<Client>().flagPost(
+                      try {
+                        await context.read<Client>().flagPost(
                               widget.post.value.id,
                               type!.title,
                               parent: int.tryParse(parentController.text),
-                            ),
-                        allowRedirect: true,
-                      )) {
+                            );
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                           duration: const Duration(seconds: 1),
                           content: Text('Flagged post #${widget.post.id}'),
                           behavior: SnackBarBehavior.floating,
                         ));
                         Navigator.maybePop(context);
-                      } else {
+                      } on DioError {
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                           duration: const Duration(seconds: 1),
                           content:

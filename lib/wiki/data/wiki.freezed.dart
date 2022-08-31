@@ -232,7 +232,7 @@ class __$$_WikiCopyWithImpl<$Res> extends _$WikiCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_Wiki with DiagnosticableTreeMixin implements _Wiki {
+class _$_Wiki implements _Wiki {
   const _$_Wiki(
       {required this.id,
       required this.createdAt,
@@ -281,27 +281,8 @@ class _$_Wiki with DiagnosticableTreeMixin implements _Wiki {
   final int categoryName;
 
   @override
-  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
+  String toString() {
     return 'Wiki(id: $id, createdAt: $createdAt, updatedAt: $updatedAt, title: $title, body: $body, creatorId: $creatorId, isLocked: $isLocked, updaterId: $updaterId, isDeleted: $isDeleted, otherNames: $otherNames, creatorName: $creatorName, categoryName: $categoryName)';
-  }
-
-  @override
-  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-    super.debugFillProperties(properties);
-    properties
-      ..add(DiagnosticsProperty('type', 'Wiki'))
-      ..add(DiagnosticsProperty('id', id))
-      ..add(DiagnosticsProperty('createdAt', createdAt))
-      ..add(DiagnosticsProperty('updatedAt', updatedAt))
-      ..add(DiagnosticsProperty('title', title))
-      ..add(DiagnosticsProperty('body', body))
-      ..add(DiagnosticsProperty('creatorId', creatorId))
-      ..add(DiagnosticsProperty('isLocked', isLocked))
-      ..add(DiagnosticsProperty('updaterId', updaterId))
-      ..add(DiagnosticsProperty('isDeleted', isDeleted))
-      ..add(DiagnosticsProperty('otherNames', otherNames))
-      ..add(DiagnosticsProperty('creatorName', creatorName))
-      ..add(DiagnosticsProperty('categoryName', categoryName));
   }
 
   @override

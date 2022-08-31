@@ -452,7 +452,7 @@ class __$$_PostCopyWithImpl<$Res> extends _$PostCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_Post extends _Post with DiagnosticableTreeMixin {
+class _$_Post extends _Post {
   const _$_Post(
       {required this.id,
       required this.createdAt,
@@ -560,39 +560,8 @@ class _$_Post extends _Post with DiagnosticableTreeMixin {
   final VoteStatus voteStatus;
 
   @override
-  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
+  String toString() {
     return 'Post(id: $id, createdAt: $createdAt, updatedAt: $updatedAt, fileRaw: $fileRaw, preview: $preview, sample: $sample, score: $score, tags: $tags, lockedTags: $lockedTags, changeSeq: $changeSeq, flags: $flags, rating: $rating, favCount: $favCount, sources: $sources, pools: $pools, relationships: $relationships, approverId: $approverId, uploaderId: $uploaderId, description: $description, commentCount: $commentCount, isFavorited: $isFavorited, hasNotes: $hasNotes, duration: $duration, voteStatus: $voteStatus)';
-  }
-
-  @override
-  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-    super.debugFillProperties(properties);
-    properties
-      ..add(DiagnosticsProperty('type', 'Post'))
-      ..add(DiagnosticsProperty('id', id))
-      ..add(DiagnosticsProperty('createdAt', createdAt))
-      ..add(DiagnosticsProperty('updatedAt', updatedAt))
-      ..add(DiagnosticsProperty('fileRaw', fileRaw))
-      ..add(DiagnosticsProperty('preview', preview))
-      ..add(DiagnosticsProperty('sample', sample))
-      ..add(DiagnosticsProperty('score', score))
-      ..add(DiagnosticsProperty('tags', tags))
-      ..add(DiagnosticsProperty('lockedTags', lockedTags))
-      ..add(DiagnosticsProperty('changeSeq', changeSeq))
-      ..add(DiagnosticsProperty('flags', flags))
-      ..add(DiagnosticsProperty('rating', rating))
-      ..add(DiagnosticsProperty('favCount', favCount))
-      ..add(DiagnosticsProperty('sources', sources))
-      ..add(DiagnosticsProperty('pools', pools))
-      ..add(DiagnosticsProperty('relationships', relationships))
-      ..add(DiagnosticsProperty('approverId', approverId))
-      ..add(DiagnosticsProperty('uploaderId', uploaderId))
-      ..add(DiagnosticsProperty('description', description))
-      ..add(DiagnosticsProperty('commentCount', commentCount))
-      ..add(DiagnosticsProperty('isFavorited', isFavorited))
-      ..add(DiagnosticsProperty('hasNotes', hasNotes))
-      ..add(DiagnosticsProperty('duration', duration))
-      ..add(DiagnosticsProperty('voteStatus', voteStatus));
   }
 
   @override
@@ -864,9 +833,7 @@ class __$$_PostPreviewFileCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_PostPreviewFile
-    with DiagnosticableTreeMixin
-    implements _PostPreviewFile {
+class _$_PostPreviewFile implements _PostPreviewFile {
   const _$_PostPreviewFile(
       {required this.width, required this.height, required this.url});
 
@@ -881,18 +848,8 @@ class _$_PostPreviewFile
   final String? url;
 
   @override
-  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
+  String toString() {
     return 'PostPreviewFile(width: $width, height: $height, url: $url)';
-  }
-
-  @override
-  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-    super.debugFillProperties(properties);
-    properties
-      ..add(DiagnosticsProperty('type', 'PostPreviewFile'))
-      ..add(DiagnosticsProperty('width', width))
-      ..add(DiagnosticsProperty('height', height))
-      ..add(DiagnosticsProperty('url', url));
   }
 
   @override
@@ -1060,9 +1017,7 @@ class __$$_PostSampleFileCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_PostSampleFile
-    with DiagnosticableTreeMixin
-    implements _PostSampleFile {
+class _$_PostSampleFile implements _PostSampleFile {
   const _$_PostSampleFile(
       {required this.has,
       required this.height,
@@ -1082,19 +1037,8 @@ class _$_PostSampleFile
   final String? url;
 
   @override
-  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
+  String toString() {
     return 'PostSampleFile(has: $has, height: $height, width: $width, url: $url)';
-  }
-
-  @override
-  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-    super.debugFillProperties(properties);
-    properties
-      ..add(DiagnosticsProperty('type', 'PostSampleFile'))
-      ..add(DiagnosticsProperty('has', has))
-      ..add(DiagnosticsProperty('height', height))
-      ..add(DiagnosticsProperty('width', width))
-      ..add(DiagnosticsProperty('url', url));
   }
 
   @override
@@ -1291,9 +1235,7 @@ class __$$_PostSourceFileCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_PostSourceFile
-    with DiagnosticableTreeMixin
-    implements _PostSourceFile {
+class _$_PostSourceFile implements _PostSourceFile {
   const _$_PostSourceFile(
       {required this.width,
       required this.height,
@@ -1319,21 +1261,8 @@ class _$_PostSourceFile
   final String? url;
 
   @override
-  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
+  String toString() {
     return 'PostSourceFile(width: $width, height: $height, ext: $ext, size: $size, md5: $md5, url: $url)';
-  }
-
-  @override
-  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-    super.debugFillProperties(properties);
-    properties
-      ..add(DiagnosticsProperty('type', 'PostSourceFile'))
-      ..add(DiagnosticsProperty('width', width))
-      ..add(DiagnosticsProperty('height', height))
-      ..add(DiagnosticsProperty('ext', ext))
-      ..add(DiagnosticsProperty('size', size))
-      ..add(DiagnosticsProperty('md5', md5))
-      ..add(DiagnosticsProperty('url', url));
   }
 
   @override
@@ -1543,7 +1472,7 @@ class __$$_FlagsCopyWithImpl<$Res> extends _$FlagsCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_Flags with DiagnosticableTreeMixin implements _Flags {
+class _$_Flags implements _Flags {
   const _$_Flags(
       {required this.pending,
       required this.flagged,
@@ -1569,21 +1498,8 @@ class _$_Flags with DiagnosticableTreeMixin implements _Flags {
   final bool deleted;
 
   @override
-  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
+  String toString() {
     return 'Flags(pending: $pending, flagged: $flagged, noteLocked: $noteLocked, statusLocked: $statusLocked, ratingLocked: $ratingLocked, deleted: $deleted)';
-  }
-
-  @override
-  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-    super.debugFillProperties(properties);
-    properties
-      ..add(DiagnosticsProperty('type', 'Flags'))
-      ..add(DiagnosticsProperty('pending', pending))
-      ..add(DiagnosticsProperty('flagged', flagged))
-      ..add(DiagnosticsProperty('noteLocked', noteLocked))
-      ..add(DiagnosticsProperty('statusLocked', statusLocked))
-      ..add(DiagnosticsProperty('ratingLocked', ratingLocked))
-      ..add(DiagnosticsProperty('deleted', deleted));
   }
 
   @override
@@ -1776,7 +1692,7 @@ class __$$_RelationshipsCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_Relationships with DiagnosticableTreeMixin implements _Relationships {
+class _$_Relationships implements _Relationships {
   const _$_Relationships(
       {required this.parentId,
       required this.hasChildren,
@@ -1801,19 +1717,8 @@ class _$_Relationships with DiagnosticableTreeMixin implements _Relationships {
   }
 
   @override
-  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
+  String toString() {
     return 'Relationships(parentId: $parentId, hasChildren: $hasChildren, hasActiveChildren: $hasActiveChildren, children: $children)';
-  }
-
-  @override
-  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-    super.debugFillProperties(properties);
-    properties
-      ..add(DiagnosticsProperty('type', 'Relationships'))
-      ..add(DiagnosticsProperty('parentId', parentId))
-      ..add(DiagnosticsProperty('hasChildren', hasChildren))
-      ..add(DiagnosticsProperty('hasActiveChildren', hasActiveChildren))
-      ..add(DiagnosticsProperty('children', children));
   }
 
   @override
@@ -1970,7 +1875,7 @@ class __$$_ScoreCopyWithImpl<$Res> extends _$ScoreCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_Score with DiagnosticableTreeMixin implements _Score {
+class _$_Score implements _Score {
   const _$_Score({required this.up, required this.down, required this.total});
 
   factory _$_Score.fromJson(Map<String, dynamic> json) =>
@@ -1984,18 +1889,8 @@ class _$_Score with DiagnosticableTreeMixin implements _Score {
   final int total;
 
   @override
-  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
+  String toString() {
     return 'Score(up: $up, down: $down, total: $total)';
-  }
-
-  @override
-  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-    super.debugFillProperties(properties);
-    properties
-      ..add(DiagnosticsProperty('type', 'Score'))
-      ..add(DiagnosticsProperty('up', up))
-      ..add(DiagnosticsProperty('down', down))
-      ..add(DiagnosticsProperty('total', total));
   }
 
   @override

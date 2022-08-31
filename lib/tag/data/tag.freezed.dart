@@ -193,7 +193,7 @@ class __$$_TagCopyWithImpl<$Res> extends _$TagCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_Tag with DiagnosticableTreeMixin implements _Tag {
+class _$_Tag implements _Tag {
   const _$_Tag(
       {required this.id,
       required this.name,
@@ -227,24 +227,8 @@ class _$_Tag with DiagnosticableTreeMixin implements _Tag {
   final DateTime updatedAt;
 
   @override
-  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
+  String toString() {
     return 'Tag(id: $id, name: $name, postCount: $postCount, relatedTags: $relatedTags, relatedTagsUpdatedAt: $relatedTagsUpdatedAt, category: $category, isLocked: $isLocked, createdAt: $createdAt, updatedAt: $updatedAt)';
-  }
-
-  @override
-  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-    super.debugFillProperties(properties);
-    properties
-      ..add(DiagnosticsProperty('type', 'Tag'))
-      ..add(DiagnosticsProperty('id', id))
-      ..add(DiagnosticsProperty('name', name))
-      ..add(DiagnosticsProperty('postCount', postCount))
-      ..add(DiagnosticsProperty('relatedTags', relatedTags))
-      ..add(DiagnosticsProperty('relatedTagsUpdatedAt', relatedTagsUpdatedAt))
-      ..add(DiagnosticsProperty('category', category))
-      ..add(DiagnosticsProperty('isLocked', isLocked))
-      ..add(DiagnosticsProperty('createdAt', createdAt))
-      ..add(DiagnosticsProperty('updatedAt', updatedAt));
   }
 
   @override

@@ -91,9 +91,10 @@ class _FollowsSplitPageState extends State<FollowsSplitPage> with DrawerEntry {
                 actions: [ContextDrawerButton()],
               ),
               refresh: () async {
-                if (await validateCall(() => follows.update(force: true))) {
+                try {
+                  await follows.update(force: true);
                   refreshController.refreshCompleted();
-                } else {
+                } on DioError {
                   refreshController.refreshFailed();
                 }
               },

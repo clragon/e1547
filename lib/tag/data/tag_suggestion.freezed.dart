@@ -148,7 +148,7 @@ class __$$_TagSuggestionCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_TagSuggestion with DiagnosticableTreeMixin implements _TagSuggestion {
+class _$_TagSuggestion implements _TagSuggestion {
   const _$_TagSuggestion(
       {required this.id,
       required this.name,
@@ -171,20 +171,8 @@ class _$_TagSuggestion with DiagnosticableTreeMixin implements _TagSuggestion {
   final String? antecedentName;
 
   @override
-  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
+  String toString() {
     return 'TagSuggestion(id: $id, name: $name, postCount: $postCount, category: $category, antecedentName: $antecedentName)';
-  }
-
-  @override
-  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-    super.debugFillProperties(properties);
-    properties
-      ..add(DiagnosticsProperty('type', 'TagSuggestion'))
-      ..add(DiagnosticsProperty('id', id))
-      ..add(DiagnosticsProperty('name', name))
-      ..add(DiagnosticsProperty('postCount', postCount))
-      ..add(DiagnosticsProperty('category', category))
-      ..add(DiagnosticsProperty('antecedentName', antecedentName));
   }
 
   @override

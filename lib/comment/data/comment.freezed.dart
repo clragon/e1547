@@ -286,7 +286,7 @@ class __$$_CommentCopyWithImpl<$Res> extends _$CommentCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_Comment with DiagnosticableTreeMixin implements _Comment {
+class _$_Comment implements _Comment {
   const _$_Comment(
       {required this.id,
       required this.createdAt,
@@ -343,31 +343,8 @@ class _$_Comment with DiagnosticableTreeMixin implements _Comment {
   final VoteStatus voteStatus;
 
   @override
-  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
+  String toString() {
     return 'Comment(id: $id, createdAt: $createdAt, postId: $postId, creatorId: $creatorId, body: $body, score: $score, updatedAt: $updatedAt, updaterId: $updaterId, doNotBumpPost: $doNotBumpPost, isHidden: $isHidden, isSticky: $isSticky, warningType: $warningType, warningUserId: $warningUserId, creatorName: $creatorName, updaterName: $updaterName, voteStatus: $voteStatus)';
-  }
-
-  @override
-  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-    super.debugFillProperties(properties);
-    properties
-      ..add(DiagnosticsProperty('type', 'Comment'))
-      ..add(DiagnosticsProperty('id', id))
-      ..add(DiagnosticsProperty('createdAt', createdAt))
-      ..add(DiagnosticsProperty('postId', postId))
-      ..add(DiagnosticsProperty('creatorId', creatorId))
-      ..add(DiagnosticsProperty('body', body))
-      ..add(DiagnosticsProperty('score', score))
-      ..add(DiagnosticsProperty('updatedAt', updatedAt))
-      ..add(DiagnosticsProperty('updaterId', updaterId))
-      ..add(DiagnosticsProperty('doNotBumpPost', doNotBumpPost))
-      ..add(DiagnosticsProperty('isHidden', isHidden))
-      ..add(DiagnosticsProperty('isSticky', isSticky))
-      ..add(DiagnosticsProperty('warningType', warningType))
-      ..add(DiagnosticsProperty('warningUserId', warningUserId))
-      ..add(DiagnosticsProperty('creatorName', creatorName))
-      ..add(DiagnosticsProperty('updaterName', updaterName))
-      ..add(DiagnosticsProperty('voteStatus', voteStatus));
   }
 
   @override

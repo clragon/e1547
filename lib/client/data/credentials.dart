@@ -1,31 +1,38 @@
 import 'dart:convert';
 
-class Credentials {
-  Credentials({
-    required this.username,
-    required this.password,
-  });
+import 'package:flutter/foundation.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-  final String username;
-  final String password;
+part 'credentials.freezed.dart';
 
-  factory Credentials.fromJson(String str) =>
-      Credentials.fromMap(json.decode(str));
+part 'credentials.g.dart';
 
-  String toJson() => json.encode(toMap());
+@freezed
+class Credentials with _$Credentials {
+  const Credentials._();
 
-  factory Credentials.fromMap(Map<String, dynamic> json) => Credentials(
-        username: json["username"],
-        password: json["apikey"],
-      );
+  const factory Credentials({
+    required String username,
+    @JsonKey(name: 'apikey') required String password,
+  }) = _Credentials;
 
-  Map<String, dynamic> toMap() => {
-        "username": username,
-        "apikey": password,
-      };
+  factory Credentials.fromJson(Map<String, dynamic> json) =>
+      _$CredentialsFromJson(json);
 
-  String toAuth() {
-    String auth = base64Encode(utf8.encode('$username:$password'));
-    return 'Basic $auth';
+  String get basicAuth =>
+      'Basic ${base64Encode(utf8.encode('$username:$password'))}';
+
+  static Credentials? parse(String auth) {
+    RegExpMatch? fullBasicMatch =
+        RegExp(r'Basic (?<encoded>[A-Za-z\d/=]+)').firstMatch(auth);
+    if (fullBasicMatch == null) return null;
+    RegExpMatch? credentialMatch = RegExp(r'(?<username>.+):(?<password>.+)')
+        .firstMatch(
+            utf8.decode(base64Decode(fullBasicMatch.namedGroup('encoded')!)));
+    if (credentialMatch == null) return null;
+    return Credentials(
+      username: credentialMatch.namedGroup('username')!,
+      password: credentialMatch.namedGroup('password')!,
+    );
   }
 }

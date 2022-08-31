@@ -89,15 +89,15 @@ class _ReasonReportScreenState extends State<ReasonReportScreen> {
                       if (await widget.onReport(reasonController.text.trim())) {
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                           duration: const Duration(seconds: 1),
-                          content: Text(widget.onSuccess ?? 'Reported item'),
+                          content: Text(widget.onSuccess ?? 'Submitted report'),
                           behavior: SnackBarBehavior.floating,
                         ));
                         Navigator.maybePop(context);
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                           duration: const Duration(seconds: 1),
-                          content:
-                              Text(widget.onFailure ?? 'Failed to report item'),
+                          content: Text(
+                              widget.onFailure ?? 'Failed to submit report'),
                         ));
                       }
                       setState(() {

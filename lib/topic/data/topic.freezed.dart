@@ -219,7 +219,7 @@ class __$$_TopicCopyWithImpl<$Res> extends _$TopicCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_Topic with DiagnosticableTreeMixin implements _Topic {
+class _$_Topic implements _Topic {
   const _$_Topic(
       {required this.id,
       required this.creatorId,
@@ -260,26 +260,8 @@ class _$_Topic with DiagnosticableTreeMixin implements _Topic {
   final int categoryId;
 
   @override
-  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
+  String toString() {
     return 'Topic(id: $id, creatorId: $creatorId, updaterId: $updaterId, title: $title, responseCount: $responseCount, isSticky: $isSticky, isLocked: $isLocked, isHidden: $isHidden, createdAt: $createdAt, updatedAt: $updatedAt, categoryId: $categoryId)';
-  }
-
-  @override
-  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-    super.debugFillProperties(properties);
-    properties
-      ..add(DiagnosticsProperty('type', 'Topic'))
-      ..add(DiagnosticsProperty('id', id))
-      ..add(DiagnosticsProperty('creatorId', creatorId))
-      ..add(DiagnosticsProperty('updaterId', updaterId))
-      ..add(DiagnosticsProperty('title', title))
-      ..add(DiagnosticsProperty('responseCount', responseCount))
-      ..add(DiagnosticsProperty('isSticky', isSticky))
-      ..add(DiagnosticsProperty('isLocked', isLocked))
-      ..add(DiagnosticsProperty('isHidden', isHidden))
-      ..add(DiagnosticsProperty('createdAt', createdAt))
-      ..add(DiagnosticsProperty('updatedAt', updatedAt))
-      ..add(DiagnosticsProperty('categoryId', categoryId));
   }
 
   @override

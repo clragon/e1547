@@ -186,17 +186,13 @@ class $HistoriesTableTable extends HistoriesTable
   late final GeneratedColumn<String> subtitle = GeneratedColumn<String>(
       'subtitle', aliasedName, true,
       type: DriftSqlType.string, requiredDuringInsert: false);
-
   @override
   List<GeneratedColumn> get $columns =>
       [id, host, visitedAt, link, thumbnails, title, subtitle];
-
   @override
   String get aliasedName => _alias ?? 'histories_table';
-
   @override
   String get actualTableName => 'histories_table';
-
   @override
   VerificationContext validateIntegrity(Insertable<History> instance,
       {bool isInserting = false}) {
@@ -270,11 +266,9 @@ abstract class _$HistoriesDatabase extends GeneratedDatabase {
   _$HistoriesDatabase(QueryExecutor e) : super(e);
   _$HistoriesDatabase.connect(DatabaseConnection c) : super.connect(c);
   late final $HistoriesTableTable historiesTable = $HistoriesTableTable(this);
-
   @override
   Iterable<TableInfo<Table, dynamic>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
-
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities => [historiesTable];
 }

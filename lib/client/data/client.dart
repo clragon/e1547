@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:async/async.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
 import 'package:dio_cache_interceptor_db_store/dio_cache_interceptor_db_store.dart';
@@ -40,6 +39,7 @@ class Client extends ChangeNotifier {
 
   late Dio _dio;
   late final Future<CacheStore> _cache = _getDefaultCache();
+  final CacheStore _memoryCache = MemCacheStore();
 
   Future<CacheStore> _getDefaultCache() async => DbCacheStore(
         databasePath: join(
@@ -56,12 +56,14 @@ class Client extends ChangeNotifier {
     bool? force,
     Duration? maxAge,
     Map<String, String?>? params,
+    CacheStore? store,
   }) =>
       _defaultCacheOptions
           .copyWith(
-            maxAge: maxAge != null ? Nullable(maxAge) : null,
+        maxAge: maxAge != null ? Nullable(maxAge) : null,
             params: Nullable(params),
             policy: (force ?? false) ? CachePolicy.refresh : null,
+            store: store,
           )
           .toOptions();
 
@@ -79,7 +81,7 @@ class Client extends ChangeNotifier {
           HttpHeaders.userAgentHeader:
               '${_appInfo.appName}/${_appInfo.version} (${_appInfo.developer})',
           if (credentials != null)
-            HttpHeaders.authorizationHeader: credentials.toAuth(),
+            HttpHeaders.authorizationHeader: credentials.basicAuth,
         },
       ),
     );
@@ -92,10 +94,16 @@ class Client extends ChangeNotifier {
         ),
       ),
     );
+    _dio.interceptors.add(
+      AuthFailureInterceptor(
+        onAuthFailure: (credentials) {
+          if (credentials == this.credentials) {
+            logout();
+          }
+        },
+      ),
+    );
     notifyListeners();
-    if (credentials != null && !await tryLogin(credentials)) {
-      logout();
-    }
     completer.complete();
   }
 
@@ -112,7 +120,7 @@ class Client extends ChangeNotifier {
         'favorites.json',
         options: Options(
           headers: {
-            HttpHeaders.authorizationHeader: credentials.toAuth(),
+            HttpHeaders.authorizationHeader: credentials.basicAuth,
           },
         ),
       ),
@@ -144,7 +152,7 @@ class Client extends ChangeNotifier {
         post.file.ext == 'swf';
   }
 
-  Future<List<Post>> postsFromJson(List<dynamic> json) async {
+  Future<List<Post>> _postsFromJson(List<dynamic> json) async {
     List<Post> posts = [];
     for (Map<String, dynamic> raw in json) {
       Post post = Post.fromJson(raw);
@@ -179,7 +187,7 @@ class Client extends ChangeNotifier {
         )
         .then((response) => response.data);
 
-    return postsFromJson(body['posts']);
+    return _postsFromJson(body['posts']);
   }
 
   Future<List<Post>> posts(
@@ -226,7 +234,7 @@ class Client extends ChangeNotifier {
         )
         .then((response) => response.data);
 
-    return (postsFromJson(body['posts']));
+    return (_postsFromJson(body['posts']));
   }
 
   Future<void> addFavorite(int postId) async {
@@ -324,15 +332,14 @@ class Client extends ChangeNotifier {
 
   Future<Post> post(int postId, {bool unsafe = false, bool? force}) async {
     await _initialized;
-    Map body = await _dio
+    Map<String, dynamic> body = await _dio
         .get(
           '${unsafe ? 'https://${_settings.customHost.value}/' : ''}posts/$postId.json',
           options: _options(force: force),
         )
         .then((response) => response.data);
 
-    Post post = Post.fromJson(body['post']);
-    return post;
+    return Post.fromJson(body['post']);
   }
 
   Future<void> updatePost(int postId, Map<String, String?> body) async {
@@ -345,18 +352,24 @@ class Client extends ChangeNotifier {
 
   Future<void> reportPost(int postId, int reportId, String reason) async {
     await _initialized;
-    await _dio.post('tickets', queryParameters: {
-      'ticket[reason]': reason,
-      'ticket[report_reason]': reportId,
-      'ticket[disp_id]': postId,
-      'ticket[qtype]': 'post',
-    });
+    await _dio.post(
+      'tickets',
+      queryParameters: {
+        'ticket[reason]': reason,
+        'ticket[report_reason]': reportId,
+        'ticket[disp_id]': postId,
+        'ticket[qtype]': 'post',
+      },
+      options: Options(
+        validateStatus: (status) => status == 302,
+      ),
+    );
   }
 
   Future<void> flagPost(int postId, String flag, {int? parent}) async {
     await _initialized;
     await _dio.post(
-      'post_flags',
+      'post_flags.json',
       queryParameters: {
         'post_flag[post_id]': postId,
         'post_flag[reason_name]': flag,
@@ -368,7 +381,7 @@ class Client extends ChangeNotifier {
 
   Future<List<Wiki>> wikis(int page, {String? search, bool? force}) async {
     await _initialized;
-    List body = await _dio
+    List<dynamic> body = await _dio
         .get(
           'wiki_pages.json',
           queryParameters: {
@@ -411,59 +424,48 @@ class Client extends ChangeNotifier {
 
   Future<void> reportUser(int userId, String reason) async {
     await _initialized;
-    await _dio.post('tickets', queryParameters: {
-      'ticket[reason]': reason,
-      'ticket[disp_id]': userId,
-      'ticket[qtype]': 'user',
-    });
-  }
-
-  AsyncMemoizer<CurrentUser?> _currentUser = AsyncMemoizer();
-
-  Future<CurrentUser?> currentUser({bool? force}) async {
-    if (force ?? false) {
-      _currentUser = AsyncMemoizer();
-      _currentUserAvatar = AsyncMemoizer();
-    }
-
-    await _currentUser.runOnce(
-      () async {
-        if (!await isLoggedIn) {
-          return null;
-        }
-
-        return CurrentUser.fromJson(
-          await _dio
-              .get('users/${credentials!.username}.json')
-              .then((response) => response.data),
-        );
+    await _dio.post(
+      'tickets',
+      queryParameters: {
+        'ticket[reason]': reason,
+        'ticket[disp_id]': userId,
+        'ticket[qtype]': 'user',
       },
     );
-
-    return _currentUser.future;
   }
 
-  AsyncMemoizer<Post?> _currentUserAvatar = AsyncMemoizer();
-
-  Future<Post?> currentUserAvatar({bool? force}) async {
-    if (force ?? false) {
-      _currentUserAvatar = AsyncMemoizer();
+  Future<CurrentUser?> currentUser({bool? force}) async {
+    if (!await isLoggedIn) {
+      return null;
     }
 
-    await _currentUserAvatar.runOnce(() async {
-      if (!await isLoggedIn) {
-        return null;
-      }
+    Map<String, dynamic> body = await _dio
+        .get(
+          'users/${credentials!.username}.json',
+          options: _options(
+            force: force,
+            store: _memoryCache,
+          ),
+        )
+        .then((response) => response.data);
 
-      CurrentUser? user = await currentUser();
-      if (user != null && user.avatarId != null) {
-        return post(user.avatarId!);
-      }
+    return CurrentUser.fromJson(body);
+  }
 
-      return null;
-    });
+  Future<Post?> currentUserAvatar({bool? force}) async {
+    int? avatarId = (await currentUser(force: force))?.avatarId;
+    if (avatarId == null) return null;
+    Map body = await _dio
+        .get(
+          'posts/$avatarId.json',
+          options: _options(
+            force: force,
+            store: _memoryCache,
+          ),
+        )
+        .then((response) => response.data);
 
-    return _currentUserAvatar.future;
+    return Post.fromJson(body['post']);
   }
 
   Future<void> updateBlacklist(List<String> denylist) async {
@@ -601,6 +603,7 @@ class Client extends ChangeNotifier {
   }
 
   Future<void> postComment(int postId, String text, {Comment? comment}) async {
+    await ensureLogin();
     await (await _cache).deleteFromPath(
       RegExp(RegExp.escape('comments.json')),
       queryParams: {'search[post_id]': postId.toString()},
@@ -626,12 +629,18 @@ class Client extends ChangeNotifier {
   }
 
   Future<void> reportComment(int commentId, String reason) async {
-    await _initialized;
-    await _dio.post('tickets', queryParameters: {
-      'ticket[reason]': reason,
-      'ticket[disp_id]': commentId,
-      'ticket[qtype]': 'comment',
-    });
+    await ensureLogin();
+    await _dio.post(
+      'tickets',
+      queryParameters: {
+        'ticket[reason]': reason,
+        'ticket[disp_id]': commentId,
+        'ticket[qtype]': 'comment',
+      },
+      options: Options(
+        validateStatus: (status) => status == 302,
+      ),
+    );
   }
 
   Future<List<Topic>> topics(

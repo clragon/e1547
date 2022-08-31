@@ -128,7 +128,7 @@ class __$$_FollowCopyWithImpl<$Res> extends _$FollowCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_Follow with DiagnosticableTreeMixin implements _Follow {
+class _$_Follow implements _Follow {
   const _$_Follow(
       {required this.tags,
       this.alias,
@@ -155,19 +155,8 @@ class _$_Follow with DiagnosticableTreeMixin implements _Follow {
   }
 
   @override
-  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
+  String toString() {
     return 'Follow(tags: $tags, alias: $alias, type: $type, statuses: $statuses)';
-  }
-
-  @override
-  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-    super.debugFillProperties(properties);
-    properties
-      ..add(DiagnosticsProperty('type', 'Follow'))
-      ..add(DiagnosticsProperty('tags', tags))
-      ..add(DiagnosticsProperty('alias', alias))
-      ..add(DiagnosticsProperty('type', type))
-      ..add(DiagnosticsProperty('statuses', statuses));
   }
 
   @override
@@ -338,7 +327,7 @@ class __$$_FollowStatusCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_FollowStatus with DiagnosticableTreeMixin implements _FollowStatus {
+class _$_FollowStatus implements _FollowStatus {
   const _$_FollowStatus(
       {this.latest, this.unseen, this.thumbnail, this.updated});
 
@@ -355,19 +344,8 @@ class _$_FollowStatus with DiagnosticableTreeMixin implements _FollowStatus {
   final DateTime? updated;
 
   @override
-  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
+  String toString() {
     return 'FollowStatus(latest: $latest, unseen: $unseen, thumbnail: $thumbnail, updated: $updated)';
-  }
-
-  @override
-  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-    super.debugFillProperties(properties);
-    properties
-      ..add(DiagnosticsProperty('type', 'FollowStatus'))
-      ..add(DiagnosticsProperty('latest', latest))
-      ..add(DiagnosticsProperty('unseen', unseen))
-      ..add(DiagnosticsProperty('thumbnail', thumbnail))
-      ..add(DiagnosticsProperty('updated', updated));
   }
 
   @override

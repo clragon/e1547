@@ -18,7 +18,6 @@ class CommentReportScreen extends StatelessWidget {
               comment.value.id,
               reason,
             ),
-        allowRedirect: true,
       ),
       onSuccess: 'Reported comment #${comment.id}',
       onFailure: 'Failed to report user #${comment.id}',

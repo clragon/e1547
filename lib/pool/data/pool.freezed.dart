@@ -232,7 +232,7 @@ class __$$_PoolCopyWithImpl<$Res> extends _$PoolCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_Pool with DiagnosticableTreeMixin implements _Pool {
+class _$_Pool implements _Pool {
   const _$_Pool(
       {required this.id,
       required this.name,
@@ -281,27 +281,8 @@ class _$_Pool with DiagnosticableTreeMixin implements _Pool {
   final int postCount;
 
   @override
-  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
+  String toString() {
     return 'Pool(id: $id, name: $name, createdAt: $createdAt, updatedAt: $updatedAt, creatorId: $creatorId, description: $description, isActive: $isActive, category: $category, isDeleted: $isDeleted, postIds: $postIds, creatorName: $creatorName, postCount: $postCount)';
-  }
-
-  @override
-  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-    super.debugFillProperties(properties);
-    properties
-      ..add(DiagnosticsProperty('type', 'Pool'))
-      ..add(DiagnosticsProperty('id', id))
-      ..add(DiagnosticsProperty('name', name))
-      ..add(DiagnosticsProperty('createdAt', createdAt))
-      ..add(DiagnosticsProperty('updatedAt', updatedAt))
-      ..add(DiagnosticsProperty('creatorId', creatorId))
-      ..add(DiagnosticsProperty('description', description))
-      ..add(DiagnosticsProperty('isActive', isActive))
-      ..add(DiagnosticsProperty('category', category))
-      ..add(DiagnosticsProperty('isDeleted', isDeleted))
-      ..add(DiagnosticsProperty('postIds', postIds))
-      ..add(DiagnosticsProperty('creatorName', creatorName))
-      ..add(DiagnosticsProperty('postCount', postCount));
   }
 
   @override

@@ -206,7 +206,7 @@ class __$$_ReplyCopyWithImpl<$Res> extends _$ReplyCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_Reply with DiagnosticableTreeMixin implements _Reply {
+class _$_Reply implements _Reply {
   const _$_Reply(
       {required this.id,
       required this.createdAt,
@@ -244,25 +244,8 @@ class _$_Reply with DiagnosticableTreeMixin implements _Reply {
   final int? warningUserId;
 
   @override
-  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
+  String toString() {
     return 'Reply(id: $id, createdAt: $createdAt, updatedAt: $updatedAt, body: $body, creatorId: $creatorId, updaterId: $updaterId, topicId: $topicId, isHidden: $isHidden, warningType: $warningType, warningUserId: $warningUserId)';
-  }
-
-  @override
-  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-    super.debugFillProperties(properties);
-    properties
-      ..add(DiagnosticsProperty('type', 'Reply'))
-      ..add(DiagnosticsProperty('id', id))
-      ..add(DiagnosticsProperty('createdAt', createdAt))
-      ..add(DiagnosticsProperty('updatedAt', updatedAt))
-      ..add(DiagnosticsProperty('body', body))
-      ..add(DiagnosticsProperty('creatorId', creatorId))
-      ..add(DiagnosticsProperty('updaterId', updaterId))
-      ..add(DiagnosticsProperty('topicId', topicId))
-      ..add(DiagnosticsProperty('isHidden', isHidden))
-      ..add(DiagnosticsProperty('warningType', warningType))
-      ..add(DiagnosticsProperty('warningUserId', warningUserId));
   }
 
   @override

@@ -926,7 +926,7 @@ class __$$_CurrentUserCopyWithImpl<$Res> extends _$CurrentUserCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_CurrentUser with DiagnosticableTreeMixin implements _CurrentUser {
+class _$_CurrentUser implements _CurrentUser {
   const _$_CurrentUser(
       {required this.wikiPageVersionCount,
       required this.artistVersionCount,
@@ -1129,84 +1129,8 @@ class _$_CurrentUser with DiagnosticableTreeMixin implements _CurrentUser {
   final int tagQueryLimit;
 
   @override
-  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
+  String toString() {
     return 'CurrentUser(wikiPageVersionCount: $wikiPageVersionCount, artistVersionCount: $artistVersionCount, poolVersionCount: $poolVersionCount, forumPostCount: $forumPostCount, commentCount: $commentCount, flagCount: $flagCount, positiveFeedbackCount: $positiveFeedbackCount, neutralFeedbackCount: $neutralFeedbackCount, negativeFeedbackCount: $negativeFeedbackCount, uploadLimit: $uploadLimit, id: $id, createdAt: $createdAt, name: $name, level: $level, baseUploadLimit: $baseUploadLimit, postUploadCount: $postUploadCount, postUpdateCount: $postUpdateCount, noteUpdateCount: $noteUpdateCount, isBanned: $isBanned, canApprovePosts: $canApprovePosts, canUploadFree: $canUploadFree, levelString: $levelString, avatarId: $avatarId, showAvatars: $showAvatars, blacklistAvatars: $blacklistAvatars, blacklistUsers: $blacklistUsers, descriptionCollapsedInitially: $descriptionCollapsedInitially, hideComments: $hideComments, showHiddenComments: $showHiddenComments, showPostStatistics: $showPostStatistics, hasMail: $hasMail, receiveEmailNotifications: $receiveEmailNotifications, enableKeyboardNavigation: $enableKeyboardNavigation, enablePrivacyMode: $enablePrivacyMode, styleUsernames: $styleUsernames, enableAutoComplete: $enableAutoComplete, hasSavedSearches: $hasSavedSearches, disableCroppedThumbnails: $disableCroppedThumbnails, disableMobileGestures: $disableMobileGestures, enableSafeMode: $enableSafeMode, disableResponsiveMode: $disableResponsiveMode, disablePostTooltips: $disablePostTooltips, noFlagging: $noFlagging, noFeedback: $noFeedback, disableUserDmails: $disableUserDmails, enableCompactUploader: $enableCompactUploader, updatedAt: $updatedAt, email: $email, lastLoggedInAt: $lastLoggedInAt, lastForumReadAt: $lastForumReadAt, recentTags: $recentTags, commentThreshold: $commentThreshold, defaultImageSize: $defaultImageSize, favoriteTags: $favoriteTags, blacklistedTags: $blacklistedTags, timeZone: $timeZone, perPage: $perPage, customStyle: $customStyle, favoriteCount: $favoriteCount, apiRegenMultiplier: $apiRegenMultiplier, apiBurstLimit: $apiBurstLimit, remainingApiLimit: $remainingApiLimit, statementTimeout: $statementTimeout, favoriteLimit: $favoriteLimit, tagQueryLimit: $tagQueryLimit)';
-  }
-
-  @override
-  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-    super.debugFillProperties(properties);
-    properties
-      ..add(DiagnosticsProperty('type', 'CurrentUser'))
-      ..add(DiagnosticsProperty('wikiPageVersionCount', wikiPageVersionCount))
-      ..add(DiagnosticsProperty('artistVersionCount', artistVersionCount))
-      ..add(DiagnosticsProperty('poolVersionCount', poolVersionCount))
-      ..add(DiagnosticsProperty('forumPostCount', forumPostCount))
-      ..add(DiagnosticsProperty('commentCount', commentCount))
-      ..add(DiagnosticsProperty('flagCount', flagCount))
-      ..add(DiagnosticsProperty('positiveFeedbackCount', positiveFeedbackCount))
-      ..add(DiagnosticsProperty('neutralFeedbackCount', neutralFeedbackCount))
-      ..add(DiagnosticsProperty('negativeFeedbackCount', negativeFeedbackCount))
-      ..add(DiagnosticsProperty('uploadLimit', uploadLimit))
-      ..add(DiagnosticsProperty('id', id))
-      ..add(DiagnosticsProperty('createdAt', createdAt))
-      ..add(DiagnosticsProperty('name', name))
-      ..add(DiagnosticsProperty('level', level))
-      ..add(DiagnosticsProperty('baseUploadLimit', baseUploadLimit))
-      ..add(DiagnosticsProperty('postUploadCount', postUploadCount))
-      ..add(DiagnosticsProperty('postUpdateCount', postUpdateCount))
-      ..add(DiagnosticsProperty('noteUpdateCount', noteUpdateCount))
-      ..add(DiagnosticsProperty('isBanned', isBanned))
-      ..add(DiagnosticsProperty('canApprovePosts', canApprovePosts))
-      ..add(DiagnosticsProperty('canUploadFree', canUploadFree))
-      ..add(DiagnosticsProperty('levelString', levelString))
-      ..add(DiagnosticsProperty('avatarId', avatarId))
-      ..add(DiagnosticsProperty('showAvatars', showAvatars))
-      ..add(DiagnosticsProperty('blacklistAvatars', blacklistAvatars))
-      ..add(DiagnosticsProperty('blacklistUsers', blacklistUsers))
-      ..add(DiagnosticsProperty(
-          'descriptionCollapsedInitially', descriptionCollapsedInitially))
-      ..add(DiagnosticsProperty('hideComments', hideComments))
-      ..add(DiagnosticsProperty('showHiddenComments', showHiddenComments))
-      ..add(DiagnosticsProperty('showPostStatistics', showPostStatistics))
-      ..add(DiagnosticsProperty('hasMail', hasMail))
-      ..add(DiagnosticsProperty(
-          'receiveEmailNotifications', receiveEmailNotifications))
-      ..add(DiagnosticsProperty(
-          'enableKeyboardNavigation', enableKeyboardNavigation))
-      ..add(DiagnosticsProperty('enablePrivacyMode', enablePrivacyMode))
-      ..add(DiagnosticsProperty('styleUsernames', styleUsernames))
-      ..add(DiagnosticsProperty('enableAutoComplete', enableAutoComplete))
-      ..add(DiagnosticsProperty('hasSavedSearches', hasSavedSearches))
-      ..add(DiagnosticsProperty(
-          'disableCroppedThumbnails', disableCroppedThumbnails))
-      ..add(DiagnosticsProperty('disableMobileGestures', disableMobileGestures))
-      ..add(DiagnosticsProperty('enableSafeMode', enableSafeMode))
-      ..add(DiagnosticsProperty('disableResponsiveMode', disableResponsiveMode))
-      ..add(DiagnosticsProperty('disablePostTooltips', disablePostTooltips))
-      ..add(DiagnosticsProperty('noFlagging', noFlagging))
-      ..add(DiagnosticsProperty('noFeedback', noFeedback))
-      ..add(DiagnosticsProperty('disableUserDmails', disableUserDmails))
-      ..add(DiagnosticsProperty('enableCompactUploader', enableCompactUploader))
-      ..add(DiagnosticsProperty('updatedAt', updatedAt))
-      ..add(DiagnosticsProperty('email', email))
-      ..add(DiagnosticsProperty('lastLoggedInAt', lastLoggedInAt))
-      ..add(DiagnosticsProperty('lastForumReadAt', lastForumReadAt))
-      ..add(DiagnosticsProperty('recentTags', recentTags))
-      ..add(DiagnosticsProperty('commentThreshold', commentThreshold))
-      ..add(DiagnosticsProperty('defaultImageSize', defaultImageSize))
-      ..add(DiagnosticsProperty('favoriteTags', favoriteTags))
-      ..add(DiagnosticsProperty('blacklistedTags', blacklistedTags))
-      ..add(DiagnosticsProperty('timeZone', timeZone))
-      ..add(DiagnosticsProperty('perPage', perPage))
-      ..add(DiagnosticsProperty('customStyle', customStyle))
-      ..add(DiagnosticsProperty('favoriteCount', favoriteCount))
-      ..add(DiagnosticsProperty('apiRegenMultiplier', apiRegenMultiplier))
-      ..add(DiagnosticsProperty('apiBurstLimit', apiBurstLimit))
-      ..add(DiagnosticsProperty('remainingApiLimit', remainingApiLimit))
-      ..add(DiagnosticsProperty('statementTimeout', statementTimeout))
-      ..add(DiagnosticsProperty('favoriteLimit', favoriteLimit))
-      ..add(DiagnosticsProperty('tagQueryLimit', tagQueryLimit));
   }
 
   @override

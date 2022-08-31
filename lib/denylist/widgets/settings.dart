@@ -129,9 +129,10 @@ class _DenyListPageState extends State<DenyListPage> {
             ),
           ),
           refresh: () async {
-            if (await validateCall(() => denylist.update(force: true))) {
+            try {
+              await denylist.update(force: true);
               refreshController.refreshCompleted();
-            } else {
+            } on DioError {
               refreshController.refreshFailed();
             }
           },

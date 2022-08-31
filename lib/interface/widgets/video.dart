@@ -139,5 +139,5 @@ class VideoConfig {
       other is VideoConfig && other.url == url && other.size == size;
 
   @override
-  int get hashCode => hashValues(url.hashCode, size.hashCode);
+  int get hashCode => Object.hash(url.hashCode, size.hashCode);
 }

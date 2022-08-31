@@ -19,7 +19,6 @@ class UserReportScreen extends StatelessWidget {
               user.id,
               reason,
             ),
-        allowRedirect: true,
       ),
       onSuccess: 'Reported user #${user.id}',
       onFailure: 'Failed to report user #${user.id}',
