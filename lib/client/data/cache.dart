@@ -114,8 +114,7 @@ class CacheInterceptor extends DioCacheInterceptor {
       response.headers[HttpHeaders.cacheControlHeader],
     );
 
-    final int updatedMaxAge =
-        config.maxAge?.inMilliseconds ?? cacheControl.maxAge;
+    final int updatedMaxAge = config.maxAge?.inSeconds ?? cacheControl.maxAge;
 
     final CacheControl updatedCacheControl = CacheControl(
       maxAge: updatedMaxAge,
