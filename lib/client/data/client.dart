@@ -17,6 +17,7 @@ import 'package:e1547/topic/topic.dart';
 import 'package:e1547/user/user.dart';
 import 'package:e1547/wiki/wiki.dart';
 import 'package:flutter/material.dart';
+import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
 export 'package:dio/dio.dart' show DioError;
@@ -41,7 +42,10 @@ class Client extends ChangeNotifier {
   late final Future<CacheStore> _cache = _getDefaultCache();
 
   Future<CacheStore> _getDefaultCache() async => DbCacheStore(
-        databasePath: (await getApplicationSupportDirectory()).path,
+        databasePath: join(
+          (await getTemporaryDirectory()).path,
+          _appInfo.appName,
+        ),
       );
 
   final CacheConfig _defaultCacheOptions = CacheConfig(
