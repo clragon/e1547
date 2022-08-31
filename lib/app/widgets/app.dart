@@ -20,6 +20,7 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        AdaptiveScaffoldScope(),
         ClientProvider(),
         NavigationProvider(
           destinations: rootDestintations,
@@ -28,7 +29,7 @@ class App extends StatelessWidget {
         DenylistProvider(),
         FollowsProvider(),
         HistoriesProvider(),
-        AdaptiveScaffoldScope(),
+        CurrentUserAvatarProvider(),
       ],
       child: Consumer3<AppInfo, Settings, NavigationController>(
         builder: (context, appInfo, settings, navigation, child) =>

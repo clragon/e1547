@@ -512,8 +512,10 @@ extension Loading<T extends RawDataController> on T {
   /// If the page load fails, a [ControllerLoadingException] will be thrown.
   Future<T> loadFirstPage() async {
     Future<void> loaded = waitForFirstPage();
-    notifyPageRequestListeners(nextPageKey);
-    await loaded;
+    if (nextPageKey == firstPageKey) {
+      notifyPageRequestListeners(nextPageKey);
+      await loaded;
+    }
     return this;
   }
 }

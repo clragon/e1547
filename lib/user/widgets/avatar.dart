@@ -18,42 +18,28 @@ Future<void> initializeUserAvatar(BuildContext context) async {
   }
 }
 
-class CurrentUserAvatar extends StatefulWidget {
+class CurrentUserAvatar extends StatelessWidget {
   final bool enabled;
 
   const CurrentUserAvatar({this.enabled = false});
 
   @override
-  State<CurrentUserAvatar> createState() => _CurrentUserAvatarState();
-}
-
-class _CurrentUserAvatarState extends State<CurrentUserAvatar> {
-  @override
-  void initState() {
-    super.initState();
-    initializeUserAvatar(context);
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return _CurrentUserAvatarProvider(
-      child: Consumer<Future<PostsController?>>(
-        builder: (context, controller, child) => AsyncBuilder<PostsController?>(
-          future: controller,
-          builder: (context, value) => UserAvatar(
-            controller: value,
-            enabled: widget.enabled,
-          ),
+    return Consumer<Future<PostsController?>>(
+      builder: (context, controller, child) => AsyncBuilder<PostsController?>(
+        future: controller,
+        builder: (context, value) => UserAvatar(
+          controller: value,
+          enabled: enabled,
         ),
       ),
     );
   }
 }
 
-class _CurrentUserAvatarProvider
+class CurrentUserAvatarProvider
     extends SubProvider2<Client, DenylistService, Future<PostsController?>> {
-  // ignore: unused_element
-  _CurrentUserAvatarProvider({super.child, super.builder})
+  CurrentUserAvatarProvider({super.child, super.builder})
       : super(
           create: (context, client, denylist) async {
             int? id = (await context.read<Client>().currentUserAvatar())?.id;
@@ -65,6 +51,7 @@ class _CurrentUserAvatarProvider
                 denyMode: DenyListMode.unavailable,
               );
               await controller.loadFirstPage();
+              initializeUserAvatar(context);
               return controller;
             }
             return null;
