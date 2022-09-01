@@ -219,8 +219,8 @@ class _SettingsPageState extends State<SettingsPage> {
                     stream: stream,
                     builder: (context, value) => DividerListTile(
                       title: const Text('History'),
-                      subtitle: service.enabled && (value ?? 0) > 0
-                          ? Text('$value pages visited')
+                      subtitle: service.enabled
+                          ? Text('${value ?? 0} pages visited')
                           : null,
                       leading: const Icon(Icons.history),
                       onTap: () => Navigator.pushNamed(context, '/history'),
