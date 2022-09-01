@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -27,7 +26,7 @@ class RangeDialog extends StatefulWidget {
   State<RangeDialog> createState() => _RangeDialogState();
 }
 
-class _RangeDialogState extends State<RangeDialog> with ListenerCallbackMixin {
+class _RangeDialogState extends State<RangeDialog> {
   late final TextEditingController controller =
       TextEditingController(text: widget.value.toString());
 

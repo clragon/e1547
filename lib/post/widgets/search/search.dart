@@ -18,7 +18,7 @@ class SearchPage extends StatefulWidget {
   State<SearchPage> createState() => _SearchPageState();
 }
 
-class _SearchPageState extends State<SearchPage> with ListenerCallbackMixin {
+class _SearchPageState extends State<SearchPage> {
   late bool reversePools = widget.reversePools;
   bool loadingInfo = true;
   Pool? pool;

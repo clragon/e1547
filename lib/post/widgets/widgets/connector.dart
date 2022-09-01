@@ -16,14 +16,8 @@ class PostDetailConnector extends StatefulWidget {
   State<PostDetailConnector> createState() => _PostDetailConnectorState();
 }
 
-class _PostDetailConnectorState extends State<PostDetailConnector>
-    with ListenerCallbackMixin {
+class _PostDetailConnectorState extends State<PostDetailConnector> {
   late List<Post>? pageItems = widget.controller.itemList;
-
-  @override
-  Map<Listenable, VoidCallback> get listeners => {
-        widget.controller: updatePages,
-      };
 
   void popOrRemove() {
     if (ModalRoute.of(context)!.isCurrent) {
@@ -46,5 +40,9 @@ class _PostDetailConnectorState extends State<PostDetailConnector>
   }
 
   @override
-  Widget build(BuildContext context) => widget.child;
+  Widget build(BuildContext context) => ListenableListener(
+        listener: updatePages,
+        listenable: widget.controller,
+        child: widget.child,
+      );
 }

@@ -1,34 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/widgets.dart';
 
-mixin ListenerCallbackMixin<T extends StatefulWidget> on State<T> {
-  final Map<Listenable, VoidCallback> listeners = {};
-  final Map<Listenable, VoidCallback> initListeners = {};
-
-  @override
-  void initState() {
-    super.initState();
-    for (MapEntry<Listenable, VoidCallback> entry in initListeners.entries) {
-      entry.value();
-      entry.key.addListener(entry.value);
-    }
-    for (MapEntry<Listenable, VoidCallback> entry in listeners.entries) {
-      entry.key.addListener(entry.value);
-    }
-  }
-
-  @override
-  void dispose() {
-    for (MapEntry<Listenable, VoidCallback> entry in initListeners.entries) {
-      entry.key.removeListener(entry.value);
-    }
-    for (MapEntry<Listenable, VoidCallback> entry in listeners.entries) {
-      entry.key.removeListener(entry.value);
-    }
-    super.dispose();
-  }
-}
-
 abstract class ProxyValueNotifier<T, P extends Listenable>
     extends ChangeNotifier implements ValueNotifier<T> {
   final P? parent;
@@ -79,16 +51,18 @@ abstract class ProxyValueNotifier<T, P extends Listenable>
 }
 
 class ListenableListener extends StatefulWidget {
-  final Widget child;
-  final Listenable listenable;
-  final VoidCallback? listener;
-
   const ListenableListener({
     super.key,
     required this.child,
     required this.listenable,
     this.listener,
+    this.initialize = true,
   });
+
+  final Widget child;
+  final Listenable listenable;
+  final VoidCallback? listener;
+  final bool initialize;
 
   @override
   State<ListenableListener> createState() => _ListenableListenerState();
@@ -101,7 +75,9 @@ class _ListenableListenerState extends State<ListenableListener> {
   void initState() {
     super.initState();
     _listenable.addListener(_handleChange);
-    _handleChange();
+    if (widget.initialize) {
+      _handleChange();
+    }
   }
 
   @override

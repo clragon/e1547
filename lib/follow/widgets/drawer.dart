@@ -10,8 +10,7 @@ class FollowMarkReadTile extends StatefulWidget {
   State<FollowMarkReadTile> createState() => _FollowMarkReadTileState();
 }
 
-class _FollowMarkReadTileState extends State<FollowMarkReadTile>
-    with ListenerCallbackMixin {
+class _FollowMarkReadTileState extends State<FollowMarkReadTile> {
   @override
   Widget build(BuildContext context) {
     return Consumer<FollowsService>(

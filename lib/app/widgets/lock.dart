@@ -18,18 +18,14 @@ class LockScreen extends StatefulWidget {
   State<LockScreen> createState() => _LockScreenState();
 }
 
-class _LockScreenState extends State<LockScreen> with ListenerCallbackMixin {
-  @override
-  Map<Listenable, VoidCallback> get listeners => {
-        context.read<Settings>().appPin: lock,
-        context.read<Settings>().biometricAuth: lock,
-      };
-
+class _LockScreenState extends State<LockScreen> {
   Object _instance = Object();
 
   bool get biometrics => (context.read<Settings>().biometricAuth.value &&
       (Platform.isAndroid || Platform.isIOS));
+
   String? get pin => context.read<Settings>().appPin.value;
+
   bool get enabled => pin != null || biometrics;
 
   late bool locked = enabled;
@@ -102,18 +98,28 @@ class _LockScreenState extends State<LockScreen> with ListenerCallbackMixin {
 
     bool showLock = lock != null && enabled && locked;
 
-    return Stack(
-      fit: StackFit.passthrough,
-      children: [
-        ExcludeFocus(
-          excluding: showLock,
-          child: Offstage(
-            offstage: showLock,
-            child: widget.child,
-          ),
+    return ListenableListener(
+      listener: this.lock,
+      listenable: context.read<Settings>().appPin,
+      initialize: false,
+      child: ListenableListener(
+        listener: this.lock,
+        listenable: context.read<Settings>().biometricAuth,
+        initialize: false,
+        child: Stack(
+          fit: StackFit.passthrough,
+          children: [
+            ExcludeFocus(
+              excluding: showLock,
+              child: Offstage(
+                offstage: showLock,
+                child: widget.child,
+              ),
+            ),
+            if (showLock) KeyedSubtree(key: ObjectKey(_instance), child: lock)
+          ],
         ),
-        if (showLock) KeyedSubtree(key: ObjectKey(_instance), child: lock)
-      ],
+      ),
     );
   }
 }

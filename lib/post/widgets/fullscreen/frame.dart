@@ -73,14 +73,9 @@ class PostFullscreenFrame extends StatefulWidget {
 }
 
 class _PostFullscreenFrameState extends State<PostFullscreenFrame>
-    with RouteAware, ListenerCallbackMixin {
+    with RouteAware {
   late FrameController controller = widget.controller ?? FrameController();
   late NavigationController navigation;
-
-  @override
-  Map<Listenable, VoidCallback> get initListeners => {
-        controller: () => toggleFrame(controller.visible),
-      };
 
   Future<void> toggleFrame(bool shown) async {
     if (shown) {
@@ -137,44 +132,49 @@ class _PostFullscreenFrameState extends State<PostFullscreenFrame>
 
   @override
   Widget build(BuildContext context) {
-    return FrameData(
-      controller: controller,
-      child: Scaffold(
-        body: AnimatedBuilder(
-          animation: controller,
-          child: widget.child,
-          builder: (contex, child) => Scaffold(
-            extendBodyBehindAppBar: true,
-            appBar: FrameAppBar(
-              child: PostFullscreenAppBar(post: widget.post),
-            ),
-            body: GestureDetector(
-              behavior: HitTestBehavior.translucent,
-              onTap: () {
-                controller.toggleFrame();
-                if ((widget.post.getVideo(context)?.value.isPlaying ?? false) &&
-                    controller.visible) {
-                  controller.hideFrame(duration: const Duration(seconds: 2));
-                }
-              },
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  child!,
-                  if (widget.post.getVideo(context) != null) ...[
-                    Positioned(
-                      bottom: 0,
-                      right: 0,
-                      left: 0,
-                      child: VideoBar(
+    return ListenableListener(
+      listener: () => toggleFrame(controller.visible),
+      listenable: controller,
+      child: FrameData(
+        controller: controller,
+        child: Scaffold(
+          body: AnimatedBuilder(
+            animation: controller,
+            child: widget.child,
+            builder: (contex, child) => Scaffold(
+              extendBodyBehindAppBar: true,
+              appBar: FrameAppBar(
+                child: PostFullscreenAppBar(post: widget.post),
+              ),
+              body: GestureDetector(
+                behavior: HitTestBehavior.translucent,
+                onTap: () {
+                  controller.toggleFrame();
+                  if ((widget.post.getVideo(context)?.value.isPlaying ??
+                          false) &&
+                      controller.visible) {
+                    controller.hideFrame(duration: const Duration(seconds: 2));
+                  }
+                },
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    child!,
+                    if (widget.post.getVideo(context) != null) ...[
+                      Positioned(
+                        bottom: 0,
+                        right: 0,
+                        left: 0,
+                        child: VideoBar(
+                          videoController: widget.post.getVideo(context)!,
+                        ),
+                      ),
+                      VideoButton(
                         videoController: widget.post.getVideo(context)!,
                       ),
-                    ),
-                    VideoButton(
-                      videoController: widget.post.getVideo(context)!,
-                    ),
-                  ]
-                ],
+                    ]
+                  ],
+                ),
               ),
             ),
           ),
