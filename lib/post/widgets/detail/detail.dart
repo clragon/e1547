@@ -293,7 +293,8 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
                 ),
               ),
               SliverPadding(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
+                padding: const EdgeInsets.symmetric(horizontal: 12)
+                    .add(const EdgeInsets.only(bottom: 30)),
                 sliver: PagedSliverList<String, Comment>(
                   pagingController: controller,
                   builderDelegate: defaultPagedChildBuilderDelegate(
