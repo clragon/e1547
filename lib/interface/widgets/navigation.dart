@@ -3,27 +3,21 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class NavigationRouteDestination {
-  final String path;
-  final WidgetBuilder builder;
-  final bool unique;
-
   const NavigationRouteDestination({
     required this.path,
     required this.builder,
     this.unique = false,
   });
+
+  final String path;
+  final WidgetBuilder builder;
+  final bool unique;
 }
 
 typedef NavigationSettingCallback = bool Function(BuildContext context);
 
 class NavigationDrawerDestination<T extends Widget>
     extends NavigationRouteDestination {
-  final String name;
-  final NavigationSettingCallback? visible;
-  final NavigationSettingCallback? enabled;
-  final Widget? icon;
-  final String? group;
-
   const NavigationDrawerDestination({
     required this.name,
     this.icon,
@@ -34,9 +28,19 @@ class NavigationDrawerDestination<T extends Widget>
     required T Function(BuildContext context) builder,
     super.unique,
   }) : super(builder: builder);
+
+  final String name;
+  final NavigationSettingCallback? visible;
+  final NavigationSettingCallback? enabled;
+  final Widget? icon;
+  final String? group;
 }
 
 class NavigationController extends ChangeNotifier {
+  NavigationController({required this.destinations, this.drawerHeader}) {
+    routes = {for (final e in destinations) e.path: e.builder};
+  }
+
   final List<NavigationRouteDestination> destinations;
   late final Map<String, WidgetBuilder> routes;
 
@@ -46,6 +50,7 @@ class NavigationController extends ChangeNotifier {
   final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
 
   String? _drawerSelection;
+
   String? get drawerSelection => _drawerSelection;
 
   void setDrawerSelection<T extends Widget>() {
@@ -56,10 +61,6 @@ class NavigationController extends ChangeNotifier {
       _drawerSelection = target.path;
       WidgetsBinding.instance.addPostFrameCallback((_) => notifyListeners());
     }
-  }
-
-  NavigationController({required this.destinations, this.drawerHeader}) {
-    routes = {for (final e in destinations) e.path: e.builder};
   }
 }
 
