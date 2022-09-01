@@ -11,7 +11,7 @@ class RangeDialog extends StatefulWidget {
   final int min;
   final int? division;
   final bool strict;
-  final Function(int? value) onSubmit;
+  final ValueChanged<int?> onSubmit;
 
   const RangeDialog({
     required this.title,
@@ -28,66 +28,55 @@ class RangeDialog extends StatefulWidget {
 }
 
 class _RangeDialogState extends State<RangeDialog> with ListenerCallbackMixin {
-  final TextEditingController controller = TextEditingController();
-  late int value = widget.value;
-
-  @override
-  Map<ChangeNotifier, VoidCallback> get listeners => {
-        controller: () => value = int.tryParse(controller.text) ?? value,
-      };
+  late final TextEditingController controller =
+      TextEditingController(text: widget.value.toString());
 
   @override
   void dispose() {
-    super.dispose();
     controller.dispose();
+    super.dispose();
   }
 
   void submit(String output) {
-    widget.onSubmit(int.tryParse(output)!);
+    widget.onSubmit(int.tryParse(output));
     Navigator.of(context).maybePop();
   }
 
   @override
   Widget build(BuildContext context) {
-    Widget numberWidget() {
-      controller.text = value.toString();
-      FocusScope.of(context).requestFocus(FocusNode());
-
-      return Padding(
-        padding: const EdgeInsets.only(bottom: 20),
-        child: TextField(
-          keyboardType: TextInputType.number,
-          style: Theme.of(context).textTheme.headline3,
-          textAlign: TextAlign.center,
-          decoration: const InputDecoration(border: InputBorder.none),
-          controller: controller,
-          onSubmitted: submit,
-          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-        ),
-      );
-    }
-
-    Widget sliderWidget() {
-      return Slider(
-        min: min(widget.min, value).toDouble(),
-        max: max(widget.max, value).toDouble(),
-        divisions: widget.division,
-        value: value.toDouble(),
-        activeColor: Theme.of(context).colorScheme.secondary,
-        onChanged: (output) {
-          setState(() => value = output.toInt());
-        },
-      );
-    }
-
     return AlertDialog(
       title: widget.title,
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          numberWidget(),
-          sliderWidget(),
-        ],
+      content: AnimatedBuilder(
+        animation: controller,
+        builder: (context, child) {
+          int value = int.tryParse(controller.text) ?? widget.value;
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(bottom: 20),
+                child: TextField(
+                  keyboardType: TextInputType.number,
+                  style: Theme.of(context).textTheme.headline3,
+                  textAlign: TextAlign.center,
+                  decoration: const InputDecoration(border: InputBorder.none),
+                  controller: controller,
+                  onSubmitted: submit,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                ),
+              ),
+              Slider(
+                min: min(widget.min, value).toDouble(),
+                max: max(widget.max, value).toDouble(),
+                divisions: widget.division,
+                value: value.toDouble(),
+                activeColor: Theme.of(context).colorScheme.secondary,
+                onChanged: (value) =>
+                    controller.text = value.toInt().toString(),
+              ),
+            ],
+          );
+        },
       ),
       actions: [
         TextButton(
