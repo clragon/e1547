@@ -46,8 +46,7 @@ class _VideoButtonState extends State<VideoButton>
           child: Material(
             clipBehavior: Clip.antiAlias,
             shape: const CircleBorder(),
-            color: Colors.transparent,
-            elevation: 8,
+            color: Colors.black26,
             child: IconButton(
               iconSize: widget.size,
               icon: Center(
