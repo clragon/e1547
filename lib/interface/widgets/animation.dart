@@ -8,15 +8,6 @@ enum FadeAnimationStyle {
 }
 
 class CrossFade extends StatelessWidget {
-  final WidgetBuilder builder;
-
-  final Widget? secondChild;
-  final Duration? duration;
-
-  final bool showChild;
-
-  final FadeAnimationStyle style;
-
   const CrossFade.builder({
     required this.showChild,
     required this.builder,
@@ -41,6 +32,24 @@ class CrossFade extends StatelessWidget {
     );
   }
 
+  /// Builds the primary child of this widget.
+  final WidgetBuilder builder;
+
+  /// The secondary child of this Widget. Defaults to an empty SizedBox.
+  final Widget? secondChild;
+
+  /// The duration for switching between.
+  final Duration? duration;
+
+  /// Wether to show the child or its replacement.
+  final bool showChild;
+
+  /// The style of this animation.
+  ///
+  /// If adjacent, an AnimatedSwitcher with AnimatedSize will be used.
+  /// If stacked, an AnimatedCrossFade will be used.
+  final FadeAnimationStyle style;
+
   @override
   Widget build(BuildContext context) {
     Duration duration = this.duration ?? defaultAnimationDuration;
@@ -64,53 +73,5 @@ class CrossFade extends StatelessWidget {
           ),
         );
     }
-  }
-}
-
-class Replacer extends StatelessWidget {
-  final Widget child;
-
-  final Widget secondChild;
-  final Duration? duration;
-
-  final bool showChild;
-
-  const Replacer({
-    required this.showChild,
-    required this.child,
-    required this.secondChild,
-    this.duration,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedCrossFade(
-      firstChild: child,
-      secondChild: secondChild,
-      crossFadeState:
-          showChild ? CrossFadeState.showFirst : CrossFadeState.showSecond,
-      duration: duration ?? defaultAnimationDuration,
-      layoutBuilder: (topChild, topChildKey, bottomChild, bottomChildKey) =>
-          Stack(
-        clipBehavior: Clip.none,
-        children: [
-          Positioned(
-            key: bottomChildKey,
-            child: ExcludeFocus(
-              child: IgnorePointer(
-                child: Opacity(
-                  opacity: 0,
-                  child: bottomChild,
-                ),
-              ),
-            ),
-          ),
-          Positioned(
-            key: topChildKey,
-            child: topChild,
-          ),
-        ],
-      ),
-    );
   }
 }

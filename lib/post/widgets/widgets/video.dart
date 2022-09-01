@@ -49,18 +49,19 @@ class _VideoButtonState extends State<VideoButton>
             color: Colors.black26,
             child: IconButton(
               iconSize: widget.size,
+              onPressed: () {
+                if (widget.videoController.value.isPlaying) {
+                  frameController?.cancel();
+                  widget.videoController.pause();
+                } else {
+                  widget.videoController.play();
+                  frameController?.hideFrame(
+                      duration: const Duration(milliseconds: 500));
+                }
+              },
               icon: Center(
-                child: Replacer(
-                  duration: const Duration(milliseconds: 100),
-                  showChild:
-                      !widget.videoController.value.isPlaying || !loading,
-                  secondChild: const Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(8),
-                      child: CircularProgressIndicator(),
-                    ),
-                  ),
-                  child: ListenableListener(
+                child: AnimatedCrossFade(
+                  firstChild: ListenableListener(
                     listener: () {
                       if (widget.videoController.value.isPlaying) {
                         animationController.forward();
@@ -79,18 +80,41 @@ class _VideoButtonState extends State<VideoButton>
                       ),
                     ),
                   ),
+                  secondChild: const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(8),
+                      child: CircularProgressIndicator(),
+                    ),
+                  ),
+                  crossFadeState:
+                      (!widget.videoController.value.isPlaying || !loading)
+                          ? CrossFadeState.showFirst
+                          : CrossFadeState.showSecond,
+                  duration: const Duration(milliseconds: 100),
+                  layoutBuilder:
+                      (topChild, topChildKey, bottomChild, bottomChildKey) =>
+                          Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      Positioned(
+                        key: bottomChildKey,
+                        child: ExcludeFocus(
+                          child: IgnorePointer(
+                            child: Opacity(
+                              opacity: 0,
+                              child: bottomChild,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        key: topChildKey,
+                        child: topChild,
+                      ),
+                    ],
+                  ),
                 ),
               ),
-              onPressed: () {
-                if (widget.videoController.value.isPlaying) {
-                  frameController?.cancel();
-                  widget.videoController.pause();
-                } else {
-                  widget.videoController.play();
-                  frameController?.hideFrame(
-                      duration: const Duration(milliseconds: 500));
-                }
-              },
             ),
           ),
         );
