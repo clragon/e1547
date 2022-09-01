@@ -60,8 +60,17 @@ class _VideoButtonState extends State<VideoButton>
                 }
               },
               icon: Center(
-                child: AnimatedCrossFade(
-                  firstChild: ListenableListener(
+                child: CrossFade(
+                  secondChild: const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(8),
+                      child: CircularProgressIndicator(),
+                    ),
+                  ),
+                  showChild:
+                      !widget.videoController.value.isPlaying || !loading,
+                  duration: const Duration(milliseconds: 100),
+                  child: ListenableListener(
                     listener: () {
                       if (widget.videoController.value.isPlaying) {
                         animationController.forward();
@@ -79,39 +88,6 @@ class _VideoButtonState extends State<VideoButton>
                         color: Colors.white,
                       ),
                     ),
-                  ),
-                  secondChild: const Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(8),
-                      child: CircularProgressIndicator(),
-                    ),
-                  ),
-                  crossFadeState:
-                      (!widget.videoController.value.isPlaying || !loading)
-                          ? CrossFadeState.showFirst
-                          : CrossFadeState.showSecond,
-                  duration: const Duration(milliseconds: 100),
-                  layoutBuilder:
-                      (topChild, topChildKey, bottomChild, bottomChildKey) =>
-                          Stack(
-                    clipBehavior: Clip.none,
-                    children: [
-                      Positioned(
-                        key: bottomChildKey,
-                        child: ExcludeFocus(
-                          child: IgnorePointer(
-                            child: Opacity(
-                              opacity: 0,
-                              child: bottomChild,
-                            ),
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        key: topChildKey,
-                        child: topChild,
-                      ),
-                    ],
                   ),
                 ),
               ),
