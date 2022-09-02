@@ -181,12 +181,6 @@ class AppBarLeadingConfiguration {
 }
 
 class ScrollToTop extends StatelessWidget {
-  final ScrollController? controller;
-  final bool primary;
-  final Widget Function(BuildContext context, Widget child)? builder;
-  final Widget? child;
-  final double? height;
-
   const ScrollToTop({
     this.builder,
     this.child,
@@ -194,6 +188,12 @@ class ScrollToTop extends StatelessWidget {
     this.height,
     this.primary = true,
   });
+
+  final Widget Function(BuildContext context, Widget child)? builder;
+  final Widget? child;
+  final ScrollController? controller;
+  final double? height;
+  final bool primary;
 
   @override
   Widget build(BuildContext context) {
@@ -240,15 +240,15 @@ class ScrollToTop extends StatelessWidget {
 }
 
 class TransparentAppBar extends StatelessWidget with AppBarBuilderWidget {
-  final bool transparent;
-
-  @override
-  final PreferredSizeWidget child;
-
   const TransparentAppBar({
     this.transparent = true,
     required this.child,
   });
+
+  final bool transparent;
+
+  @override
+  final PreferredSizeWidget child;
 
   @override
   Widget build(BuildContext context) {
@@ -266,9 +266,9 @@ class TransparentAppBar extends StatelessWidget with AppBarBuilderWidget {
 }
 
 class SliverAppBarPadding extends StatelessWidget {
-  final Widget child;
-
   const SliverAppBarPadding({required this.child});
+
+  final Widget child;
 
   @override
   Widget build(BuildContext context) {
@@ -295,28 +295,11 @@ class SliverAppBarPadding extends StatelessWidget {
 }
 
 class DefaultSliverAppBar extends StatelessWidget {
-  final Widget? leading;
-  final List<Widget>? actions;
-  final Widget? title;
-  final double? elevation;
-  final bool forceElevated;
-  final bool automaticallyImplyLeading;
-  final double? expandedHeight;
-  final PreferredSizeWidget? bottom;
-  final Widget Function(BuildContext context, double extension)?
-      flexibleSpaceBuilder;
-  final Widget? flexibleSpace;
-  final bool floating;
-  final bool pinned;
-  final bool snap;
-  final ScrollController? scrollController;
-
   const DefaultSliverAppBar({
     this.leading,
     this.actions,
     this.title,
     this.elevation,
-    this.flexibleSpaceBuilder,
     this.flexibleSpace,
     this.expandedHeight,
     this.bottom,
@@ -328,18 +311,32 @@ class DefaultSliverAppBar extends StatelessWidget {
     this.scrollController,
   });
 
+  final Widget? leading;
+  final List<Widget>? actions;
+  final Widget? title;
+  final double? elevation;
+  final bool forceElevated;
+  final bool automaticallyImplyLeading;
+  final double? expandedHeight;
+  final PreferredSizeWidget? bottom;
+  final Widget? flexibleSpace;
+  final bool floating;
+  final bool pinned;
+  final bool snap;
+  final ScrollController? scrollController;
+
   @override
   Widget build(BuildContext context) {
-    return SliverLayoutBuilder(
-      builder: (context, constraints) {
-        AppBarLeadingConfiguration leadingConfig = getLeadingConfiguration(
-          context: context,
-          width: constraints.crossAxisExtent,
-          automaticallyImplyLeading: automaticallyImplyLeading,
-          leading: leading,
-        );
-        return SliverAppBarPadding(
-          child: SliverAppBar(
+    return SliverAppBarPadding(
+      child: SliverLayoutBuilder(
+        builder: (context, constraints) {
+          AppBarLeadingConfiguration leadingConfig = getLeadingConfiguration(
+            context: context,
+            width: constraints.crossAxisExtent,
+            automaticallyImplyLeading: automaticallyImplyLeading,
+            leading: leading,
+          );
+          return SliverAppBar(
             title: IgnorePointer(child: title),
             automaticallyImplyLeading: false,
             elevation: elevation,
@@ -355,30 +352,19 @@ class DefaultSliverAppBar extends StatelessWidget {
             snap: snap,
             actions: actions,
             bottom: bottom,
-            flexibleSpace: flexibleSpaceBuilder != null
-                ? LayoutBuilder(
-                    builder: (context, constraints) {
-                      double bottomHeight = bottom?.preferredSize.height ?? 0;
-                      double minHeight = (kToolbarHeight + bottomHeight);
-                      double maxHeight =
-                          (expandedHeight ?? kToolbarHeight) - minHeight;
-                      double currentHeight = constraints.maxHeight - minHeight;
-                      return ScrollToTop(
-                        controller: scrollController,
-                        child: Padding(
-                          padding: EdgeInsets.only(bottom: bottomHeight),
-                          child: flexibleSpaceBuilder!(
-                            context,
-                            currentHeight / maxHeight,
-                          ),
-                        ),
-                      );
-                    },
+            flexibleSpace: flexibleSpace != null
+                ? ScrollToTop(
+                    controller: scrollController,
+                    child: Padding(
+                      padding: EdgeInsets.only(
+                          bottom: bottom?.preferredSize.height ?? 0),
+                      child: flexibleSpace,
+                    ),
                   )
-                : flexibleSpace,
-          ),
-        );
-      },
+                : null,
+          );
+        },
+      ),
     );
   }
 }

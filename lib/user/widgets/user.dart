@@ -67,81 +67,12 @@ class UserPage extends StatelessWidget {
                   headerSliverBuilder: (context, innerBoxIsScrolled) => [
                     SliverOverlapAbsorber(
                       handle: NestedScrollView.sliverOverlapAbsorberHandleFor(
-                          context),
-                      sliver: DefaultSliverAppBar(
-                        pinned: true,
-                        expandedHeight: 250,
-                        flexibleSpaceBuilder: (context, extension) =>
-                            FlexibleSpaceBar(
-                          titlePadding: const EdgeInsets.only(
-                            left: 96,
-                            bottom: 16,
-                          ),
-                          collapseMode: CollapseMode.pin,
-                          title: Opacity(
-                            opacity: 1 - (extension * 6).clamp(0, 1),
-                            child: Text(user.name),
-                          ),
-                          background: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              SizedBox(
-                                height: 100,
-                                width: 100,
-                                child: UserAvatar(
-                                  controller: controllers.profilePost,
-                                  enabled: true,
-                                ),
-                              ),
-                              Padding(
-                                padding:
-                                    const EdgeInsets.only(top: 16, bottom: 32),
-                                child: Text(
-                                  user.name,
-                                  style: Theme.of(context).textTheme.headline6,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        bottom: TabBar(
-                          labelColor: Theme.of(context).iconTheme.color,
-                          indicatorColor: Theme.of(context).iconTheme.color,
-                          tabs: tabs.keys.toList(),
-                        ),
-                        actions: [
-                          PopupMenuButton<VoidCallback>(
-                            icon: const Icon(Icons.more_vert),
-                            onSelected: (value) => value(),
-                            itemBuilder: (context) => [
-                              PopupMenuTile(
-                                title: 'Browse',
-                                icon: Icons.open_in_browser,
-                                value: () async => launch(
-                                  context.read<Client>().withHost(user.link),
-                                ),
-                              ),
-                              PopupMenuTile(
-                                title: 'Report',
-                                icon: Icons.report,
-                                value: () => guardWithLogin(
-                                  context: context,
-                                  callback: () {
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (context) => UserReportScreen(
-                                          user: user,
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                  error:
-                                      'You must be logged in to report users!',
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
+                        context,
+                      ),
+                      sliver: UserSliverAppBar(
+                        user: user,
+                        avatar: controllers.profilePost,
+                        tabs: tabs.keys.toList(),
                       ),
                     ),
                   ],
@@ -158,6 +89,110 @@ class UserPage extends StatelessWidget {
           );
         },
       ),
+    );
+  }
+}
+
+class UserSliverAppBar extends StatelessWidget {
+  const UserSliverAppBar({
+    super.key,
+    required this.user,
+    this.tabs,
+    this.avatar,
+  });
+
+  final User user;
+  final List<Widget>? tabs;
+  final PostsController? avatar;
+
+  @override
+  Widget build(BuildContext context) {
+    return DefaultSliverAppBar(
+      pinned: true,
+      expandedHeight: 250,
+      flexibleSpace: Builder(
+        builder: (context) {
+          FlexibleSpaceBarSettings settings = context
+              .dependOnInheritedWidgetOfExactType<FlexibleSpaceBarSettings>()!;
+          double extension = (settings.currentExtent - settings.minExtent) /
+              settings.maxExtent;
+          double? leadingWidth = context
+              .findAncestorWidgetOfExactType<SliverAppBar>()
+              ?.leadingWidth;
+          return FlexibleSpaceBar(
+            titlePadding: leadingWidth != null
+                ? EdgeInsets.only(
+                    left: leadingWidth + 8,
+                    bottom: 16,
+                  )
+                : null,
+            collapseMode: CollapseMode.pin,
+            title: Opacity(
+              opacity: 1 - (extension * 6).clamp(0, 1),
+              child: Text(user.name),
+            ),
+            background: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(
+                  height: 100,
+                  width: 100,
+                  child: UserAvatar(
+                    controller: avatar,
+                    enabled: true,
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 16, bottom: 32),
+                  child: Text(
+                    user.name,
+                    style: Theme.of(context).textTheme.headline6,
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+      bottom: tabs != null
+          ? TabBar(
+              labelColor: Theme.of(context).iconTheme.color,
+              indicatorColor: Theme.of(context).iconTheme.color,
+              tabs: tabs!,
+            )
+          : null,
+      actions: [
+        PopupMenuButton<VoidCallback>(
+          icon: const Icon(Icons.more_vert),
+          onSelected: (value) => value(),
+          itemBuilder: (context) => [
+            PopupMenuTile(
+              title: 'Browse',
+              icon: Icons.open_in_browser,
+              value: () async => launch(
+                context.read<Client>().withHost(user.link),
+              ),
+            ),
+            PopupMenuTile(
+              title: 'Report',
+              icon: Icons.report,
+              value: () => guardWithLogin(
+                context: context,
+                callback: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => UserReportScreen(
+                        user: user,
+                      ),
+                    ),
+                  );
+                },
+                error: 'You must be logged in to report users!',
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }
