@@ -52,12 +52,32 @@ class HistoriesService extends ChangeNotifier {
   }
 
   Future<int> length() async => _database.length(host: host);
+
   Stream<int> watchLength() => _database.watchLength(host: host);
 
   Future<List<DateTime>> dates() async => _database.dates(host: host);
 
   Future<History> get(int id) async => _database.get(id);
+
   Stream<History> watch(int id) => _database.watch(id);
+
+  Future<List<History>> page({
+    required int page,
+    int? limit,
+    DateTime? day,
+    String? linkRegex,
+    String? titleRegex,
+    String? subtitleRegex,
+  }) async =>
+      _database.page(
+        page: page,
+        limit: limit,
+        host: host,
+        day: day,
+        linkRegex: linkRegex,
+        titleRegex: titleRegex,
+        subtitleRegex: subtitleRegex,
+      );
 
   Future<List<History>> getAll({
     DateTime? day,
@@ -254,9 +274,9 @@ class HistoriesService extends ChangeNotifier {
       _database.trim(host: client.host, maxAmount: trimAmount, maxAge: trimAge);
 }
 
-class HistoriesProvider extends SubChangeNotifierProvider3<Settings, Client,
-    DenylistService, HistoriesService> {
-  HistoriesProvider({String? path, super.child, super.builder})
+class HistoriesServiceProvider extends SubChangeNotifierProvider3<Settings,
+    Client, DenylistService, HistoriesService> {
+  HistoriesServiceProvider({String? path, super.child, super.builder})
       : super(
           create: (context, settings, client, denylist) => HistoriesService(
             path: path,

@@ -21,12 +21,10 @@ Credentials _$CredentialsFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$Credentials {
   String get username => throw _privateConstructorUsedError;
-
   @JsonKey(name: 'apikey')
   String get password => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-
   @JsonKey(ignore: true)
   $CredentialsCopyWith<Credentials> get copyWith =>
       throw _privateConstructorUsedError;
@@ -37,7 +35,6 @@ abstract class $CredentialsCopyWith<$Res> {
   factory $CredentialsCopyWith(
           Credentials value, $Res Function(Credentials) then) =
       _$CredentialsCopyWithImpl<$Res>;
-
   $Res call({String username, @JsonKey(name: 'apikey') String password});
 }
 
@@ -46,7 +43,6 @@ class _$CredentialsCopyWithImpl<$Res> implements $CredentialsCopyWith<$Res> {
   _$CredentialsCopyWithImpl(this._value, this._then);
 
   final Credentials _value;
-
   // ignore: unused_field
   final $Res Function(Credentials) _then;
 
@@ -74,7 +70,6 @@ abstract class _$$_CredentialsCopyWith<$Res>
   factory _$$_CredentialsCopyWith(
           _$_Credentials value, $Res Function(_$_Credentials) then) =
       __$$_CredentialsCopyWithImpl<$Res>;
-
   @override
   $Res call({String username, @JsonKey(name: 'apikey') String password});
 }
@@ -162,7 +157,6 @@ abstract class _Credentials extends Credentials {
           {required final String username,
           @JsonKey(name: 'apikey') required final String password}) =
       _$_Credentials;
-
   const _Credentials._() : super._();
 
   factory _Credentials.fromJson(Map<String, dynamic> json) =
@@ -170,11 +164,9 @@ abstract class _Credentials extends Credentials {
 
   @override
   String get username;
-
   @override
   @JsonKey(name: 'apikey')
   String get password;
-
   @override
   @JsonKey(ignore: true)
   _$$_CredentialsCopyWith<_$_Credentials> get copyWith =>

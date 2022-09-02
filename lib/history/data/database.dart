@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:drift/drift.dart';
 import 'package:e1547/history/history.dart';
@@ -84,6 +85,7 @@ class HistoriesDatabase extends _$HistoriesDatabase {
     String? titleRegex,
     String? subtitleRegex,
     int? limit,
+    int? offset,
   }) {
     final selectable = select(historiesTable)
       ..orderBy([
@@ -111,10 +113,36 @@ class HistoriesDatabase extends _$HistoriesDatabase {
         ),
       );
     }
+    assert(
+      offset == null || limit != null,
+      'Cannot specify offset without limit!',
+    );
     if (limit != null) {
-      selectable.limit(limit);
+      selectable.limit(limit, offset: offset);
     }
     return selectable;
+  }
+
+  Future<List<History>> page({
+    required int page,
+    int? limit,
+    String? host,
+    DateTime? day,
+    String? linkRegex,
+    String? titleRegex,
+    String? subtitleRegex,
+  }) {
+    limit ??= 80;
+    int offset = (max(1, page) - 1) * limit;
+    return _queryExpression(
+      host: host,
+      day: day,
+      linkRegex: linkRegex,
+      titleRegex: titleRegex,
+      subtitleRegex: subtitleRegex,
+      limit: limit,
+      offset: offset,
+    ).get();
   }
 
   Future<List<History>> getAll({

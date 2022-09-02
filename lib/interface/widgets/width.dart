@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 
 class LimitedWidthLayoutData extends InheritedWidget {
-  final double space;
-  final double maxWidth;
-
-  EdgeInsets get padding => EdgeInsets.symmetric(horizontal: space);
-
   const LimitedWidthLayoutData({
     required super.child,
     required this.maxWidth,
     required this.space,
   });
+
+  final double space;
+  final double maxWidth;
+
+  EdgeInsets get padding => EdgeInsets.symmetric(horizontal: space);
 
   @override
   bool updateShouldNotify(covariant LimitedWidthLayoutData oldWidget) {
@@ -19,16 +19,11 @@ class LimitedWidthLayoutData extends InheritedWidget {
 }
 
 class LimitedWidthLayout extends StatefulWidget {
-  final double maxWidth;
-  final double tolerance;
-  final WidgetBuilder builder;
-
   const LimitedWidthLayout.builder({
     required this.builder,
     this.maxWidth = 600,
     this.tolerance = 100,
   });
-
   factory LimitedWidthLayout({
     required Widget child,
     double maxWidth = 600,
@@ -40,6 +35,10 @@ class LimitedWidthLayout extends StatefulWidget {
       tolerance: tolerance,
     );
   }
+
+  final double maxWidth;
+  final double tolerance;
+  final WidgetBuilder builder;
 
   @override
   State<LimitedWidthLayout> createState() => _LimitedWidthLayoutState();
@@ -71,9 +70,9 @@ class _LimitedWidthLayoutState extends State<LimitedWidthLayout> {
 }
 
 class LimitedWidthChild extends StatelessWidget {
-  final Widget child;
-
   const LimitedWidthChild({required this.child});
+
+  final Widget child;
 
   @override
   Widget build(BuildContext context) {

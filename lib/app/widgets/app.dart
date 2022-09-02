@@ -28,7 +28,7 @@ class App extends StatelessWidget {
         ),
         DenylistProvider(),
         FollowsProvider(),
-        HistoriesProvider(),
+        HistoriesServiceProvider(),
         CurrentUserAvatarProvider(),
       ],
       child: Consumer3<AppInfo, Settings, NavigationController>(
