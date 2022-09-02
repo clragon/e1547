@@ -457,6 +457,7 @@ class PostVideoWidget extends StatelessWidget {
         size: PostImageSize.sample,
         fit: BoxFit.cover,
         showProgress: false,
+        sampleCacheSize: context.read<SampleCacheSize?>()?.size,
       );
     }
 
