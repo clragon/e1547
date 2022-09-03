@@ -36,8 +36,8 @@ class _HistoryPageState extends State<HistoryPage> {
                       builder: (context) => Text(
                         dateOrName(controller.search.value.date!),
                         style: Theme.of(context).textTheme.bodyText2!.copyWith(
-                          color: Theme.of(context).textTheme.caption!.color,
-                        ),
+                              color: Theme.of(context).textTheme.caption!.color,
+                            ),
                       ),
                     ),
                   ],
@@ -65,7 +65,7 @@ class _HistoryPageState extends State<HistoryPage> {
                 );
 
                 ScrollController? scrollController =
-                PrimaryScrollController.of(context);
+                    PrimaryScrollController.of(context);
                 if (result != controller.search.value.date &&
                     (scrollController?.hasClients ?? false)) {
                   scrollController!.animateTo(0,
@@ -110,7 +110,7 @@ class _HistoryPageState extends State<HistoryPage> {
                           ? Icons.hourglass_bottom
                           : Icons.hourglass_empty,
                     ),
-                        title: const Text('Limit history'),
+                    title: const Text('Limit history'),
                     subtitle: controller.service.trimming
                         ? Text(
                             'history entries are deleted when they are '
@@ -135,13 +135,13 @@ class _HistoryPageState extends State<HistoryPage> {
                         title: Text(filter.title),
                         value: search.searchFilters.contains(filter),
                         onChanged: (value) {
-                              if (value == null) {
-                                return;
-                              }
-                              Set<HistorySearchFilter> filters =
+                          if (value == null) {
+                            return;
+                          }
+                          Set<HistorySearchFilter> filters =
                               Set.of(search.searchFilters);
-                              if (value) {
-                                filters.add(filter);
+                          if (value) {
+                            filters.add(filter);
                           } else {
                             filters.remove(filter);
                           }
@@ -167,21 +167,21 @@ class _HistoryPageState extends State<HistoryPage> {
                         value: search.typeFilters.contains(filter),
                         onChanged: (value) {
                           if (value == null) {
-                                return;
-                              }
-                              Set<HistoryTypeFilter> filters =
+                            return;
+                          }
+                          Set<HistoryTypeFilter> filters =
                               Set.of(search.typeFilters);
-                              if (value) {
-                                filters.add(filter);
-                              } else {
-                                filters.remove(filter);
-                              }
-                              controller.search.value = search.copyWith(
-                                typeFilters: filters,
-                              );
-                            },
-                          ),
-                        ),
+                          if (value) {
+                            filters.add(filter);
+                          } else {
+                            filters.remove(filter);
+                          }
+                          controller.search.value = search.copyWith(
+                            typeFilters: filters,
+                          );
+                        },
+                      ),
+                    ),
                   ),
               ],
             ),

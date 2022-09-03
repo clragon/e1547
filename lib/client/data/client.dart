@@ -60,7 +60,7 @@ class Client extends ChangeNotifier {
   }) =>
       _defaultCacheOptions
           .copyWith(
-        maxAge: maxAge != null ? Nullable(maxAge) : null,
+            maxAge: maxAge != null ? Nullable(maxAge) : null,
             params: Nullable(params),
             policy: (force ?? false) ? CachePolicy.refresh : null,
             store: store,
