@@ -189,21 +189,20 @@ class _HistoryPageState extends State<HistoryPage> {
             refresh: () => controller.refresh(background: true, force: true),
             builder: (context, child) => LimitedWidthLayout(child: child),
             child: (context) => PagedGroupedListView<int, History, DateTime>(
+              padding: defaultActionListPadding
+                  .add(LimitedWidthLayout.of(context).padding),
               pagingController: controller,
               order: GroupedListOrder.DESC,
               controller: PrimaryScrollController.of(context),
               groupBy: (element) => DateUtils.dateOnly(element.visitedAt),
-              groupHeaderBuilder: (element) => LimitedWidthChild(
-                child: SettingsHeader(title: dateOrName(element.visitedAt)),
-              ),
+              groupHeaderBuilder: (element) =>
+                  SettingsHeader(title: dateOrName(element.visitedAt)),
               itemComparator: (a, b) => a.visitedAt.compareTo(b.visitedAt),
               builderDelegate: defaultPagedChildBuilderDelegate<History>(
                 pagingController: controller,
                 onEmpty: const Text('Your history is empty'),
                 onError: const Text('Failed to load history'),
-                itemBuilder: (context, item, index) => LimitedWidthChild(
-                  child: HistoryTile(entry: item),
-                ),
+                itemBuilder: (context, item, index) => HistoryTile(entry: item),
               ),
             ),
           ),
