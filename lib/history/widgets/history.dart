@@ -89,7 +89,7 @@ class _HistoryPageState extends State<HistoryPage> {
                       builder: (context, stream) => AsyncBuilder<int>(
                         stream: stream,
                         builder: (context, value) => SwitchListTile(
-                          title: const Text('History'),
+                          title: const Text('Enabled'),
                           subtitle: Text('${value ?? 0} pages visited'),
                           secondary: const Icon(Icons.history),
                           value: service.enabled,
@@ -104,7 +104,35 @@ class _HistoryPageState extends State<HistoryPage> {
                   animation: controller.service,
                   builder: (context, child) => SwitchListTile(
                     value: controller.service.trimming,
-                    onChanged: (value) => controller.service.trimming = value,
+                    onChanged: (value) {
+                      if (value) {
+                        showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: const Text('History limit'),
+                            content: Text(
+                                'Enabling history limit means all history entries beyond ${NumberFormat.compact().format(controller.service.trimAmount)} '
+                                'and all entries older than ${controller.service.trimAge.inDays ~/ 30} months are automatically deleted.'),
+                            actions: [
+                              TextButton(
+                                onPressed: () =>
+                                    Navigator.of(context).maybePop(),
+                                child: const Text('CANCEL'),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  controller.service.trimming = value;
+                                  Navigator.of(context).maybePop();
+                                },
+                                child: const Text('OK'),
+                              ),
+                            ],
+                          ),
+                        );
+                      } else {
+                        controller.service.trimming = value;
+                      }
+                    },
                     secondary: Icon(
                       controller.service.trimming
                           ? Icons.hourglass_bottom
@@ -113,9 +141,8 @@ class _HistoryPageState extends State<HistoryPage> {
                     title: const Text('Limit history'),
                     subtitle: controller.service.trimming
                         ? Text(
-                            'history entries are deleted when they are '
-                            'older than ${controller.service.trimAge.inDays ~/ 30} months or '
-                            'there are more then ${NumberFormat.compact().format(controller.service.trimAmount)} entries.',
+                            'Limited to newer than ${controller.service.trimAge.inDays ~/ 30} months or '
+                            'less than ${NumberFormat.compact().format(controller.service.trimAmount)} entries.',
                           )
                         : const Text('history is infinite'),
                   ),
