@@ -1,3 +1,4 @@
+import 'package:async_builder/async_builder.dart';
 import 'package:e1547/history/history.dart';
 import 'package:e1547/history/widgets/appbar.dart';
 import 'package:e1547/interface/interface.dart';
@@ -35,8 +36,8 @@ class _HistoryPageState extends State<HistoryPage> {
                       builder: (context) => Text(
                         dateOrName(controller.search.value.date!),
                         style: Theme.of(context).textTheme.bodyText2!.copyWith(
-                              color: Theme.of(context).textTheme.caption!.color,
-                            ),
+                          color: Theme.of(context).textTheme.caption!.color,
+                        ),
                       ),
                     ),
                   ],
@@ -64,7 +65,7 @@ class _HistoryPageState extends State<HistoryPage> {
                 );
 
                 ScrollController? scrollController =
-                    PrimaryScrollController.of(context);
+                PrimaryScrollController.of(context);
                 if (result != controller.search.value.date &&
                     (scrollController?.hasClients ?? false)) {
                   scrollController!.animateTo(0,
@@ -80,6 +81,24 @@ class _HistoryPageState extends State<HistoryPage> {
             endDrawer: ContextDrawer(
               title: const Text('History'),
               children: [
+                Consumer<HistoriesService>(
+                  builder: (context, service, child) {
+                    return SubValueBuilder<Stream<int>>(
+                      create: (context) => service.watchLength(),
+                      selector: (context) => [service, service.host],
+                      builder: (context, stream) => AsyncBuilder<int>(
+                        stream: stream,
+                        builder: (context, value) => SwitchListTile(
+                          title: const Text('History'),
+                          subtitle: Text('${value ?? 0} pages visited'),
+                          secondary: const Icon(Icons.history),
+                          value: service.enabled,
+                          onChanged: (value) => service.enabled = value,
+                        ),
+                      ),
+                    );
+                  },
+                ),
                 AnimatedSelector(
                   selector: () => [controller.service.trimming],
                   animation: controller.service,
@@ -91,7 +110,7 @@ class _HistoryPageState extends State<HistoryPage> {
                           ? Icons.hourglass_bottom
                           : Icons.hourglass_empty,
                     ),
-                    title: const Text('Limit history'),
+                        title: const Text('Limit history'),
                     subtitle: controller.service.trimming
                         ? Text(
                             'history entries are deleted when they are '
@@ -102,11 +121,10 @@ class _HistoryPageState extends State<HistoryPage> {
                   ),
                 ),
                 const Divider(),
-                const ListTile(
-                  leading: Icon(Icons.filter_alt),
-                  title: Text('Filter'),
+                const Padding(
+                  padding: EdgeInsets.only(left: 12),
+                  child: SettingsHeader(title: 'Entries'),
                 ),
-                const Divider(),
                 for (final filter in HistorySearchFilter.values)
                   ValueListenableBuilder<HistoriesSearch>(
                     valueListenable: controller.search,
@@ -117,13 +135,13 @@ class _HistoryPageState extends State<HistoryPage> {
                         title: Text(filter.title),
                         value: search.searchFilters.contains(filter),
                         onChanged: (value) {
-                          if (value == null) {
-                            return;
-                          }
-                          Set<HistorySearchFilter> filters =
+                              if (value == null) {
+                                return;
+                              }
+                              Set<HistorySearchFilter> filters =
                               Set.of(search.searchFilters);
-                          if (value) {
-                            filters.add(filter);
+                              if (value) {
+                                filters.add(filter);
                           } else {
                             filters.remove(filter);
                           }
@@ -134,7 +152,10 @@ class _HistoryPageState extends State<HistoryPage> {
                       ),
                     ),
                   ),
-                const Divider(),
+                const Padding(
+                  padding: EdgeInsets.only(left: 12),
+                  child: SettingsHeader(title: 'Type'),
+                ),
                 for (final filter in HistoryTypeFilter.values)
                   ValueListenableBuilder<HistoriesSearch>(
                     valueListenable: controller.search,
@@ -146,21 +167,21 @@ class _HistoryPageState extends State<HistoryPage> {
                         value: search.typeFilters.contains(filter),
                         onChanged: (value) {
                           if (value == null) {
-                            return;
-                          }
-                          Set<HistoryTypeFilter> filters =
+                                return;
+                              }
+                              Set<HistoryTypeFilter> filters =
                               Set.of(search.typeFilters);
-                          if (value) {
-                            filters.add(filter);
-                          } else {
-                            filters.remove(filter);
-                          }
-                          controller.search.value = search.copyWith(
-                            typeFilters: filters,
-                          );
-                        },
-                      ),
-                    ),
+                              if (value) {
+                                filters.add(filter);
+                              } else {
+                                filters.remove(filter);
+                              }
+                              controller.search.value = search.copyWith(
+                                typeFilters: filters,
+                              );
+                            },
+                          ),
+                        ),
                   ),
               ],
             ),
