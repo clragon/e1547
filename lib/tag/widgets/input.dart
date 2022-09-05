@@ -69,6 +69,7 @@ class _TagInputState extends State<TagInput> {
   @override
   Widget build(BuildContext context) {
     return SearchInput<TagSuggestion>(
+      labelText: widget.labelText,
       controller: widget.controller,
       submit: (result) => widget.submit(sortTags(result)),
       readOnly: widget.readOnly,
