@@ -222,6 +222,19 @@ class _LoginPageState extends State<LoginPage> {
               ),
               usernameField(),
               apiKeyField(),
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                child: Row(
+                  children: [
+                    TextButton(
+                      onPressed: () =>
+                          launch(context.read<Client>().withHost('/users/new')),
+                      child: const Text('Don\'t have an account? Sign up here'),
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
         ),
