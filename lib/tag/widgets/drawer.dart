@@ -45,12 +45,15 @@ class DrawerMultiTagCounter extends StatelessWidget {
 }
 
 class DrawerTagCounterBody extends StatelessWidget {
+  const DrawerTagCounterBody({
+    required this.posts,
+    this.limit = 15,
+    this.controller,
+  });
+
   final int limit;
   final List<Post>? posts;
   final PostsController? controller;
-
-  const DrawerTagCounterBody(
-      {required this.posts, this.limit = 15, this.controller});
 
   @override
   Widget build(BuildContext context) {
@@ -115,14 +118,27 @@ class DrawerTagCounterBody extends StatelessWidget {
                         ),
                       ),
                     ),
-                    secondChild: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
-                        Padding(
-                          padding: EdgeInsets.all(8),
-                          child: SizedCircularProgressIndicator(size: 24),
+                    secondChild: CrossFade(
+                      showChild: controller?.error != null,
+                      secondChild: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: const [
+                          Padding(
+                            padding: EdgeInsets.all(8),
+                            child: SizedCircularProgressIndicator(size: 24),
+                          ),
+                        ],
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: Text(
+                          'failed to load tags',
+                          style: TextStyle(
+                            fontStyle: FontStyle.italic,
+                            color: dimTextColor(context),
+                          ),
                         ),
-                      ],
+                      ),
                     ),
                   ),
                 ],
