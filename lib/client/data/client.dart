@@ -518,7 +518,7 @@ class Client extends ChangeNotifier {
             },
             options: _options(
               force: force,
-              maxAge: const Duration(days: 1),
+              maxAge: const Duration(days: 7),
             ),
           )
           .then((response) => response.data);
