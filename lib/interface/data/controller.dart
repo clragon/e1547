@@ -216,6 +216,7 @@ abstract class CursorDataController<T> extends RawDataController<String, T> {
   @protected
   String provideNextPageKey(String current, List<T> items) {
     if (orderByOldest.value) {
+      if (items.isEmpty) return _cursorFirstPage;
       return 'a${items.map((e) => getId(e)).reduce(max).toString()}';
     } else {
       return (int.parse(current) + 1).toString();
