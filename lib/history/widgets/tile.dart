@@ -10,9 +10,9 @@ import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 
 class HistoryTile extends StatelessWidget {
-  final History entry;
-
   const HistoryTile({required this.entry});
+
+  final History entry;
 
   @override
   Widget build(BuildContext context) {
@@ -70,11 +70,13 @@ class HistoryTile extends StatelessWidget {
                   context.read<Client>().withHost(entry.link),
                 ),
               ),
-              PopupMenuTile(
-                title: 'Delete',
-                icon: Icons.delete,
-                value: () => context.read<HistoriesService>().remove(entry),
-              ),
+              if (context.read<HistoriesController?>() != null)
+                PopupMenuTile(
+                  title: 'Delete',
+                  icon: Icons.delete,
+                  value: () =>
+                      context.read<HistoriesController>().remove(entry),
+                ),
             ],
           ),
         ),

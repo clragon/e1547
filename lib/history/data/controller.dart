@@ -36,6 +36,16 @@ class HistoriesController extends DataController<History>
         day: search.value.date,
         linkRegex: search.value.buildLinkFilter(),
       );
+
+  Future<void> remove(History item) async {
+    assertOwnsItem(item);
+    await service.remove(item);
+    value = PagingState(
+      itemList: List.of(itemList!)..remove(item),
+      nextPageKey: value.nextPageKey,
+      error: value.error,
+    );
+  }
 }
 
 class HistoriesProvider
