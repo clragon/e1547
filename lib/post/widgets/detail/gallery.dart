@@ -63,8 +63,8 @@ class _PostDetailGalleryState extends State<PostDetailGallery>
                 child: PostProvider(
                   id: controller.itemList![index].id,
                   child: Consumer<PostController>(
-                    builder: (context, post, child) => PostDetail(
-                      post: post,
+                    builder: (context, postController, child) => PostDetail(
+                      controller: postController,
                       onTapImage: () => Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (context) => PostDetailConnector(

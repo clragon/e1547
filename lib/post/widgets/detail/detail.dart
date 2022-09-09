@@ -10,28 +10,31 @@ import 'package:provider/provider.dart';
 import 'appbar.dart';
 
 class PostDetail extends StatefulWidget {
-  final PostController post;
+  final PostController controller;
   final VoidCallback? onTapImage;
 
-  const PostDetail({required this.post, this.onTapImage});
+  const PostDetail({required this.controller, this.onTapImage});
 
   @override
   State<StatefulWidget> createState() => _PostDetailState();
 }
 
 class _PostDetailState extends State<PostDetail> with RouteAware {
-  late PostEditingController editingController =
-      PostEditingController(widget.post.value);
+  Post get post => widget.controller.value;
+
+  set post(Post value) => widget.controller.value = value;
+
+  late PostEditingController editingController = PostEditingController(post);
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
-        context.read<HistoriesService>().addPost(widget.post.value);
+        context.read<HistoriesService>().addPost(post);
         preloadPostImage(
           context: context,
-          post: widget.post.value,
+          post: post,
           size: PostImageSize.file,
         );
       }
@@ -45,21 +48,20 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
     if (body != null) {
       try {
         await context.read<Client>().updatePost(controller.post.id, body);
-        widget.post.value =
-            widget.post.value.copyWith(tags: controller.value!.tags);
-        await widget.post.reset();
+        post = post.copyWith(tags: controller.value!.tags);
+        await widget.controller.reset();
         controller.stopEditing();
       } on DioError {
         controller.setLoading(false);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             duration: const Duration(seconds: 1),
-            content: Text('failed to edit Post #${widget.post.id}'),
+            content: Text('failed to edit Post #${post.id}'),
             behavior: SnackBarBehavior.floating,
           ),
         );
         throw ActionControllerException(
-            message: 'failed to edit Post #${widget.post.id}');
+            message: 'failed to edit Post #${post.id}');
       }
     }
   }
@@ -93,7 +95,7 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
             ? Icon(editingController.isShown ? Icons.add : Icons.check)
             : Padding(
                 padding: const EdgeInsets.only(left: 2),
-                child: FavoriteButton(post: widget.post),
+                child: FavoriteButton(post: widget.controller),
               ),
       ),
     );
@@ -111,7 +113,7 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
           child: AnimatedSize(
             duration: defaultAnimationDuration,
             child: PostDetailImageDisplay(
-              post: widget.post,
+              post: widget.controller,
               onTap: () {
                 PostVideoRoute.of(context).keepPlaying();
                 if (!(editingController.editing) && widget.onTapImage != null) {
@@ -119,7 +121,8 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
                 } else {
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (context) => PostFullscreen(post: widget.post),
+                      builder: (context) =>
+                          PostFullscreen(post: widget.controller),
                     ),
                   );
                 }
@@ -133,39 +136,39 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
           children: [
-            ArtistDisplay(post: widget.post),
-            DescriptionDisplay(post: widget.post.value),
+            ArtistDisplay(post: post),
+            DescriptionDisplay(post: post),
             PostEditorChild(
               shown: false,
-              child: LikeDisplay(post: widget.post),
+              child: LikeDisplay(controller: widget.controller),
             ),
             PostEditorChild(
               shown: false,
-              child: CommentDisplay(post: widget.post),
+              child: CommentDisplay(post: post),
             ),
-            ParentDisplay(post: widget.post.value),
+            ParentDisplay(post: post),
             PostEditorChild(
               shown: false,
-              child: PoolDisplay(post: widget.post.value),
+              child: PoolDisplay(post: post),
             ),
             PostEditorChild(
               shown: false,
-              child: DenylistTagDisplay(post: widget.post),
+              child: DenylistTagDisplay(controller: widget.controller),
             ),
-            TagDisplay(post: widget.post),
+            TagDisplay(post: widget.controller.value),
             PostEditorChild(
               shown: false,
               child: FileDisplay(
-                post: widget.post,
+                post: post,
               ),
             ),
             PostEditorChild(
               shown: true,
               child: RatingDisplay(
-                post: widget.post.value,
+                post: post,
               ),
             ),
-            SourceDisplay(post: widget.post.value),
+            SourceDisplay(post: post),
           ],
         ),
       );
@@ -174,29 +177,29 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
           children: [
-            ParentDisplay(post: widget.post.value),
+            ParentDisplay(post: post),
             PostEditorChild(
               shown: false,
-              child: PoolDisplay(post: widget.post.value),
+              child: PoolDisplay(post: post),
             ),
             PostEditorChild(
               shown: false,
-              child: DenylistTagDisplay(post: widget.post),
+              child: DenylistTagDisplay(controller: widget.controller),
             ),
-            TagDisplay(post: widget.post),
+            TagDisplay(post: widget.controller.value),
             PostEditorChild(
               shown: false,
               child: FileDisplay(
-                post: widget.post,
+                post: post,
               ),
             ),
             PostEditorChild(
               shown: true,
               child: RatingDisplay(
-                post: widget.post.value,
+                post: post,
               ),
             ),
-            SourceDisplay(post: widget.post.value),
+            SourceDisplay(post: post),
           ],
         ),
       );
@@ -208,9 +211,9 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ArtistDisplay(post: widget.post),
-            DescriptionDisplay(post: widget.post.value),
-            LikeDisplay(post: widget.post),
+            ArtistDisplay(post: post),
+            DescriptionDisplay(post: post),
+            LikeDisplay(controller: widget.controller),
             Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: 4,
@@ -259,11 +262,9 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
                           context: context,
                           callback: () async {
                             if (await writeComment(
-                                context: context,
-                                postId: widget.post.value.id)) {
-                              widget.post.value = widget.post.value.copyWith(
-                                  commentCount:
-                                      widget.post.value.commentCount + 1);
+                                context: context, postId: post.id)) {
+                              post = post.copyWith(
+                                  commentCount: post.commentCount + 1);
                             }
                           },
                           error: 'You must be logged in to comment!',
@@ -283,7 +284,7 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
 
   Widget commentWrapper(BuildContext context, List<Widget> children) =>
       CommentsProvider(
-        postId: widget.post.value.id,
+        postId: post.id,
         child: Consumer<CommentsController>(
           builder: (context, controller, child) => CustomScrollView(
             slivers: [
@@ -319,14 +320,14 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
   @override
   Widget build(BuildContext context) {
     return PostVideoRoute(
-      post: widget.post.value,
+      post: post,
       child: AnimatedBuilder(
-        animation: widget.post,
+        animation: widget.controller,
         builder: (context, child) => PostEditor(
           editingController: editingController,
           child: Scaffold(
             extendBodyBehindAppBar: true,
-            appBar: PostDetailAppBar(post: widget.post),
+            appBar: PostDetailAppBar(controller: widget.controller),
             floatingActionButton:
                 context.read<Client>().hasLogin ? fab() : null,
             body: MediaQuery.removeViewInsets(

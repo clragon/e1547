@@ -6,17 +6,17 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class PostsPage extends StatefulWidget {
-  final PostsController controller;
-  final PreferredSizeWidget appBar;
-  final List<Widget>? drawerActions;
-  final bool canSelect;
-
   PostsPage({
     required this.controller,
     required this.appBar,
     this.drawerActions,
     this.canSelect = true,
   }) : super(key: ObjectKey(controller));
+
+  final PostsController controller;
+  final PreferredSizeWidget appBar;
+  final List<Widget>? drawerActions;
+  final bool canSelect;
 
   @override
   State<StatefulWidget> createState() => _PostsPageState();

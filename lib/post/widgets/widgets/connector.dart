@@ -3,14 +3,14 @@ import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 
 class PostDetailConnector extends StatefulWidget {
-  final PostsController controller;
-  final Widget child;
-
   const PostDetailConnector({
     super.key,
     required this.controller,
     required this.child,
   });
+
+  final PostsController controller;
+  final Widget child;
 
   @override
   State<PostDetailConnector> createState() => _PostDetailConnectorState();

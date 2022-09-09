@@ -4,46 +4,39 @@ import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 
 class CommentDisplay extends StatelessWidget {
-  final PostController post;
+  final Post post;
 
   const CommentDisplay({required this.post});
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: Listenable.merge([post]),
-      builder: (context, child) {
-        int count = post.value.commentCount;
-        return CrossFade(
-          showChild: count > 0,
-          child: Column(
+    return CrossFade(
+      showChild: post.commentCount > 0,
+      child: Column(
+        children: [
+          Row(
             children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: () => Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              PostCommentsPage(postId: post.value.id),
-                        ),
-                      ),
-                      style: ButtonStyle(
-                        foregroundColor: MaterialStateProperty.all(
-                            Theme.of(context).textTheme.bodyText2!.color),
-                        overlayColor: MaterialStateProperty.all(
-                            Theme.of(context).splashColor),
-                      ),
-                      child: Text('COMMENTS ($count)'),
+              Expanded(
+                child: OutlinedButton(
+                  onPressed: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => PostCommentsPage(postId: post.id),
                     ),
-                  )
-                ],
-              ),
-              const Divider(),
+                  ),
+                  style: ButtonStyle(
+                    foregroundColor: MaterialStateProperty.all(
+                        Theme.of(context).textTheme.bodyText2!.color),
+                    overlayColor: MaterialStateProperty.all(
+                        Theme.of(context).splashColor),
+                  ),
+                  child: Text('COMMENTS (${post.commentCount})'),
+                ),
+              )
             ],
           ),
-        );
-      },
+          const Divider(),
+        ],
+      ),
     );
   }
 }

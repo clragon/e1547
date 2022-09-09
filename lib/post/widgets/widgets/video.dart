@@ -7,11 +7,11 @@ import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoButton extends StatefulWidget {
-  final VideoPlayerController videoController;
-  final double size;
-
   VideoButton({required this.videoController, this.size = 54})
       : super(key: ObjectKey(videoController));
+
+  final VideoPlayerController videoController;
+  final double size;
 
   @override
   State<VideoButton> createState() => _VideoButtonState();

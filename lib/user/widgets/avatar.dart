@@ -163,12 +163,12 @@ class Avatar extends StatelessWidget {
         onTap: enabled
             ? () => Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => PostDetail(post: post!),
+                    builder: (context) => PostDetail(controller: post!),
                   ),
                 )
             : null,
         child: PostTileOverlay(
-          post: post!,
+          controller: post!,
           child: Hero(
             tag: post!.value.link,
             child: CircleAvatar(

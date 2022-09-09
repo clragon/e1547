@@ -6,9 +6,11 @@ import 'package:like_button/like_button.dart';
 import 'package:provider/provider.dart';
 
 class LikeDisplay extends StatelessWidget {
-  final PostController post;
+  const LikeDisplay({required this.controller});
 
-  const LikeDisplay({required this.post});
+  final PostController controller;
+
+  Post get post => controller.value;
 
   @override
   Widget build(BuildContext context) {
@@ -18,19 +20,20 @@ class LikeDisplay extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             AnimatedSelector(
-              animation: post,
-              selector: () => [post.value.voteStatus],
+              animation: controller,
+              selector: () => [post.voteStatus],
               builder: (context, child) => VoteDisplay(
-                status: post.value.voteStatus,
-                score: post.value.score.total,
+                status: post.voteStatus,
+                score: post.score.total,
                 onUpvote: (isLiked) async {
                   if (context.read<Client>().hasLogin) {
-                    post.vote(upvote: true, replace: !isLiked).then((value) {
+                    controller
+                        .vote(upvote: true, replace: !isLiked)
+                        .then((value) {
                       if (!value) {
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                           duration: const Duration(seconds: 1),
-                          content:
-                              Text('Failed to upvote Post #${post.value.id}'),
+                          content: Text('Failed to upvote Post #${post.id}'),
                         ));
                       }
                     });
@@ -41,12 +44,13 @@ class LikeDisplay extends StatelessWidget {
                 },
                 onDownvote: (isLiked) async {
                   if (context.read<Client>().hasLogin) {
-                    post.vote(upvote: false, replace: !isLiked).then((value) {
+                    controller
+                        .vote(upvote: false, replace: !isLiked)
+                        .then((value) {
                       if (!value) {
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                           duration: const Duration(seconds: 1),
-                          content:
-                              Text('Failed to downvote Post #${post.value.id}'),
+                          content: Text('Failed to downvote Post #${post.id}'),
                         ));
                       }
                     });
@@ -58,11 +62,11 @@ class LikeDisplay extends StatelessWidget {
               ),
             ),
             AnimatedSelector(
-              animation: post,
-              selector: () => [post.value.isFavorited],
+              animation: controller,
+              selector: () => [post.isFavorited],
               builder: (context, child) => Row(
                 children: [
-                  Text(post.value.favCount.toString()),
+                  Text(post.favCount.toString()),
                   const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 8),
                     child: Icon(Icons.favorite),

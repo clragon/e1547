@@ -1,5 +1,6 @@
 import 'package:e1547/denylist/denylist.dart';
 import 'package:e1547/post/post.dart';
+import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -8,20 +9,17 @@ class TagGesture extends StatelessWidget {
   final bool wiki;
   final String tag;
   final Widget child;
-  final PostsController? controller;
 
   const TagGesture({
     required this.child,
     required this.tag,
-    this.controller,
     this.safe = true,
     this.wiki = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    void sheet() =>
-        tagSearchSheet(context: context, tag: tag, controller: controller);
+    void sheet() => tagSearchSheet(context: context, tag: tag);
 
     return InkWell(
       onTap: () async {

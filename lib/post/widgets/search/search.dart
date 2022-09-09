@@ -133,7 +133,6 @@ class _SearchPageState extends State<SearchPage> {
                               : () => tagSearchSheet(
                                     context: context,
                                     tag: controller.search.value,
-                                    controller: controller,
                                   ),
                         ),
                       ),

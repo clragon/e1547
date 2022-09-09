@@ -1,5 +1,4 @@
 import 'package:e1547/interface/interface.dart';
-import 'package:e1547/post/post.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 
@@ -9,13 +8,11 @@ class TagCard extends StatelessWidget {
   final Color? stripeColor;
   final VoidCallback? onRemove;
   final bool editing;
-  final PostsController? controller;
   final bool wiki;
   final List<Widget>? extra;
 
   const TagCard({
     required this.tag,
-    this.controller,
     this.category,
     this.stripeColor,
     this.onRemove,
@@ -30,7 +27,6 @@ class TagCard extends StatelessWidget {
       child: TagGesture(
         tag: tag,
         wiki: wiki,
-        controller: controller,
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -83,13 +79,11 @@ class TagCounterCard extends StatelessWidget {
   final String tag;
   final int count;
   final String? category;
-  final PostsController? controller;
 
   const TagCounterCard({
     required this.tag,
     required this.count,
     this.category,
-    this.controller,
   });
 
   @override
@@ -97,7 +91,6 @@ class TagCounterCard extends StatelessWidget {
     return TagCard(
       tag: tag,
       category: category,
-      controller: controller,
       wiki: true,
       extra: [
         Container(

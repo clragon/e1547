@@ -3,9 +3,9 @@ import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 
 class PoolDisplay extends StatelessWidget {
-  final Post post;
-
   const PoolDisplay({required this.post});
+
+  final Post post;
 
   @override
   Widget build(BuildContext context) {

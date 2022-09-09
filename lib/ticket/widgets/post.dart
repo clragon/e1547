@@ -4,21 +4,22 @@ import 'package:e1547/client/client.dart';
 import 'package:e1547/dtext/dtext.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
+import 'package:e1547/tag/tag.dart';
 import 'package:e1547/ticket/ticket.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 class PostReportImage extends StatelessWidget {
-  final PostController post;
-  final bool isLoading;
-  final double height;
-
   const PostReportImage({
     required this.post,
     required this.height,
     this.isLoading = false,
   });
+
+  final PostController post;
+  final bool isLoading;
+  final double height;
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +36,7 @@ class PostReportImage extends StatelessWidget {
             child: ReportLoadingOverlay(
               isLoading: isLoading,
               child: ImageOverlay(
-                post: post,
+                controller: post,
                 builder: (context) => Hero(
                   tag: post.value.link,
                   child: PostImageWidget(
@@ -54,9 +55,9 @@ class PostReportImage extends StatelessWidget {
 }
 
 class PostReportScreen extends StatefulWidget {
-  final PostController post;
-
   const PostReportScreen({required this.post});
+
+  final PostController post;
 
   @override
   State<PostReportScreen> createState() => _PostReportScreenState();
@@ -171,9 +172,9 @@ class _PostReportScreenState extends State<PostReportScreen> {
 }
 
 class PostFlagScreen extends StatefulWidget {
-  final PostController post;
-
   const PostFlagScreen({required this.post});
+
+  final PostController post;
 
   @override
   State<PostFlagScreen> createState() => _PostFlagScreenState();

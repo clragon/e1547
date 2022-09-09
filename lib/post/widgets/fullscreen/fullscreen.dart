@@ -29,7 +29,7 @@ class PostFullscreenBody extends StatelessWidget {
       post: post.value,
       stopOnDispose: false,
       child: ImageOverlay(
-        post: post,
+        controller: post,
         builder: (context) {
           switch (post.value.type) {
             case PostType.image:

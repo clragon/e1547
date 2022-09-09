@@ -8,9 +8,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class PostLoadingPage extends StatelessWidget {
-  final int id;
-
   const PostLoadingPage(this.id);
+
+  final int id;
 
   @override
   Widget build(BuildContext context) {

@@ -7,14 +7,12 @@ import 'package:provider/provider.dart';
 import 'widgets/mason.dart';
 
 class PostGrid extends StatelessWidget {
-  final PostsController controller;
-
   const PostGrid({required this.controller});
 
+  final PostsController controller;
+
   @override
-  Widget build(BuildContext context) {
-    return postGrid(context, controller);
-  }
+  Widget build(BuildContext context) => postGrid(context, controller);
 }
 
 // This is needed because SmartRefresher needs the ScrollView as direct child
@@ -37,7 +35,7 @@ Widget postGrid(BuildContext context, PostsController controller) {
             return SampleCacheSizeProvider(
               size: cacheSize,
               child: PostTile(
-                post: post,
+                controller: post,
                 onTap: () => Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (context) => SampleCacheSizeProvider(

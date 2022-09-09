@@ -3,13 +3,6 @@ import 'package:e1547/interface/interface.dart';
 import 'post.dart';
 
 class PostEdit {
-  final String? editReason;
-  final Rating rating;
-  final String description;
-  final int? parentId;
-  final List<String> sources;
-  final Map<String, List<String>> tags;
-
   PostEdit({
     required this.editReason,
     required this.rating,
@@ -18,6 +11,13 @@ class PostEdit {
     required this.sources,
     required this.tags,
   });
+
+  final String? editReason;
+  final Rating rating;
+  final String description;
+  final int? parentId;
+  final List<String> sources;
+  final Map<String, List<String>> tags;
 
   factory PostEdit.fromPost(Post post) {
     return PostEdit(
@@ -138,6 +138,8 @@ class PostEdit {
 }
 
 class PostEditingController extends SheetActionController {
+  PostEditingController(this.post);
+
   final Post post;
 
   PostEdit? _value;
@@ -149,13 +151,12 @@ class PostEditingController extends SheetActionController {
     notifyListeners();
   }
 
-  PostEditingController(this.post);
-
   bool get editing => value != null;
 
   bool get canEdit => editing && !loading;
 
   bool _loading = false;
+
   bool get loading => _loading;
 
   void startEditing() {

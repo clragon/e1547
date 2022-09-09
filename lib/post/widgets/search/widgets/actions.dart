@@ -7,9 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class TagListActions extends StatelessWidget {
-  final String tag;
-
   const TagListActions({required this.tag});
+
+  final String tag;
 
   @override
   Widget build(BuildContext context) {

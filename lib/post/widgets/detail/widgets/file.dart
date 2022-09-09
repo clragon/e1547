@@ -5,7 +5,7 @@ import 'package:filesize/filesize.dart';
 import 'package:flutter/material.dart';
 
 class FileDisplay extends StatelessWidget {
-  final PostController post;
+  final Post post;
 
   const FileDisplay({required this.post});
 
@@ -29,11 +29,10 @@ class FileDisplay extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               TagGesture(
-                tag: 'rating:${post.value.rating.name}',
-                controller: post.parent,
-                child: Text(ratingTexts[post.value.rating]!),
+                tag: 'rating:${post.rating.name}',
+                child: Text(post.rating.title),
               ),
-              Text('${post.value.file.width} x ${post.value.file.height}'),
+              Text('${post.file.width} x ${post.file.height}'),
             ],
           ),
         ),
@@ -42,8 +41,8 @@ class FileDisplay extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(formatDateTime(post.value.createdAt.toLocal())),
-              Text(filesize(post.value.file.size, 1)),
+              Text(formatDateTime(post.createdAt.toLocal())),
+              Text(filesize(post.file.size, 1)),
             ],
           ),
         ),
@@ -52,12 +51,11 @@ class FileDisplay extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              if (post.value.updatedAt != null)
-                Text(formatDateTime(post.value.updatedAt!.toLocal())),
+              if (post.updatedAt != null)
+                Text(formatDateTime(post.updatedAt!.toLocal())),
               TagGesture(
-                tag: 'type:${post.value.file.ext}',
-                controller: post.parent,
-                child: Text(post.value.file.ext),
+                tag: 'type:${post.file.ext}',
+                child: Text(post.file.ext),
               ),
             ],
           ),

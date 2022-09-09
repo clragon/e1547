@@ -4,14 +4,14 @@ import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 
 class DenylistTagDisplay extends StatelessWidget {
-  final PostController post;
+  const DenylistTagDisplay({super.key, required this.controller});
 
-  const DenylistTagDisplay({super.key, required this.post});
+  final PostController controller;
 
   @override
   Widget build(BuildContext context) {
     return CrossFade.builder(
-      showChild: post.isDenied,
+      showChild: controller.isDenied,
       builder: (context) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -24,7 +24,7 @@ class DenylistTagDisplay extends StatelessWidget {
               ),
             ),
           ),
-          ...post.deniers!.map(
+              ...controller.deniers!.map(
             (e) => Column(
               children: [
                 Row(

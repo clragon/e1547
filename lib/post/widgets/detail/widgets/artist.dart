@@ -6,9 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class ArtistDisplay extends StatelessWidget {
-  final PostController post;
-
   const ArtistDisplay({required this.post});
+
+  final Post post;
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +22,7 @@ class ArtistDisplay extends StatelessWidget {
         ],
         builder: (context, child) {
           List<String> artists = filterArtists(
-              (editingController?.value?.tags ?? post.value.tags)['artist']!);
+              (editingController?.value?.tags ?? post.tags)['artist']!);
           if (artists.isNotEmpty) {
             List<InlineSpan> spans = [];
             for (String artist in artists) {
@@ -33,7 +33,6 @@ class ArtistDisplay extends StatelessWidget {
                 WidgetSpan(
                   child: TagGesture(
                     tag: artist,
-                    controller: post.parent,
                     child: Text(artist),
                   ),
                 ),
@@ -96,14 +95,14 @@ class ArtistDisplay extends StatelessWidget {
                       const Icon(Icons.person, size: 14),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 4),
-                        child: Text(post.value.uploaderId.toString()),
+                        child: Text(post.uploaderId.toString()),
                       ),
                     ],
                   ),
                   onTap: () => Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (context) => UserLoadingPage(
-                        post.value.uploaderId.toString(),
+                        post.uploaderId.toString(),
                         initalPage: UserPageSection.uploads,
                       ),
                     ),

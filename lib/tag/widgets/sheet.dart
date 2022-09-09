@@ -10,13 +10,13 @@ import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'actions.dart';
+import '../../post/widgets/search/widgets/actions.dart';
 
 Future<void> tagSearchSheet({
   required BuildContext context,
   required String tag,
-  PostsController? controller,
 }) async {
+  PostsController? controller = context.read<PostsController?>();
   return showDefaultSlidingBottomSheet(
     context,
     (context, sheetState) => TagSearchSheet(

@@ -6,14 +6,14 @@ import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 
 class FavoritePostsController extends PostsController {
-  final ValueNotifier<bool> orderFavorites = ValueNotifier(false);
-
   FavoritePostsController({required super.client, required super.denylist})
       : super(
           search: client.credentials != null
               ? 'fav:${client.credentials!.username}'
               : null,
         );
+
+  final ValueNotifier<bool> orderFavorites = ValueNotifier(false);
 
   bool get isFavoriteSearch {
     Credentials? credentials = client.credentials;

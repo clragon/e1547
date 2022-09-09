@@ -4,18 +4,20 @@ import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 
 class ImageOverlay extends StatelessWidget {
-  final PostController post;
-  final WidgetBuilder builder;
-
   const ImageOverlay({
-    required this.post,
+    required this.controller,
     required this.builder,
   });
+
+  final PostController controller;
+  final WidgetBuilder builder;
+
+  Post get post => controller.value;
 
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
-      animation: Listenable.merge([post]),
+      animation: Listenable.merge([controller]),
       builder: (context, child) {
         Widget centerText(String text) {
           return Center(
@@ -26,24 +28,24 @@ class ImageOverlay extends StatelessWidget {
           );
         }
 
-        if (post.value.flags.deleted) {
+        if (post.flags.deleted) {
           return centerText('Post was deleted');
         }
-        if (post.value.file.url == null) {
+        if (post.file.url == null) {
           return centerText('Image unavailable in safe mode');
         }
-        if (post.isDenied && !post.value.isFavorited) {
+        if (controller.isDenied && !post.isFavorited) {
           return centerText('Post is blacklisted');
         }
 
-        if (post.value.type == PostType.unsupported) {
+        if (post.type == PostType.unsupported) {
           return IconMessage(
-            title: Text('${post.value.file.ext} files are not supported'),
+            title: Text('${post.file.ext} files are not supported'),
             icon: const Icon(Icons.image_not_supported_outlined),
             action: Padding(
               padding: const EdgeInsets.all(4),
               child: TextButton(
-                onPressed: () async => launch(post.value.file.url!),
+                onPressed: () async => launch(post.file.url!),
                 child: const Text('Open'),
               ),
             ),

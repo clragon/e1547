@@ -6,9 +6,9 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 class ParentDisplay extends StatelessWidget {
-  final Post post;
-
   const ParentDisplay({required this.post});
+
+  final Post post;
 
   @override
   Widget build(BuildContext context) {

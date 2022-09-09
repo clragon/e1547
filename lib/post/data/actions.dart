@@ -24,7 +24,7 @@ extension Tagging on Post {
       switch (identifier) {
         case 'rating':
           if (rating == Rating.values.asNameMap()[value] ||
-              value == ratingTexts[rating]!.toLowerCase()) {
+              value == rating.title.toLowerCase()) {
             return true;
           }
           break;

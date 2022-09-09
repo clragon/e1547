@@ -4,9 +4,9 @@ import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 
 class DescriptionDisplay extends StatelessWidget {
-  final Post post;
-
   const DescriptionDisplay({required this.post});
+
+  final Post post;
 
   @override
   Widget build(BuildContext context) {

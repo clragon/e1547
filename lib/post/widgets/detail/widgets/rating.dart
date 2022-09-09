@@ -2,22 +2,34 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 
-Map<Rating, IconData> ratingIcons = {
-  Rating.s: Icons.check,
-  Rating.q: Icons.help,
-  Rating.e: Icons.warning,
-};
+extension ExtraRatingData on Rating {
+  Widget get icon {
+    switch (this) {
+      case Rating.s:
+        return const Icon(Icons.check);
+      case Rating.q:
+        return const Icon(Icons.help);
+      case Rating.e:
+        return const Icon(Icons.warning);
+    }
+  }
 
-Map<Rating, String> ratingTexts = {
-  Rating.s: 'Safe',
-  Rating.q: 'Questionable',
-  Rating.e: 'Explicit',
-};
+  String get title {
+    switch (this) {
+      case Rating.s:
+        return 'Safe';
+      case Rating.q:
+        return 'Questionable';
+      case Rating.e:
+        return 'Excplicit';
+    }
+  }
+}
 
 class RatingDisplay extends StatelessWidget {
-  final Post post;
-
   const RatingDisplay({required this.post});
+
+  final Post post;
 
   @override
   Widget build(BuildContext context) {
@@ -49,9 +61,10 @@ class RatingDisplay extends StatelessWidget {
               ),
             ),
             ListTile(
-              title: Text(ratingTexts[rating]!),
-              leading: Icon(
-                  !post.flags.ratingLocked ? ratingIcons[rating] : Icons.lock),
+              title: Text(rating.title),
+              leading: !post.flags.ratingLocked
+                  ? rating.icon
+                  : const Icon(Icons.lock),
               onTap: canEdit
                   ? () => showDialog(
                         context: context,
@@ -79,13 +92,13 @@ class RatingDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return SimpleDialog(
       title: const Text('Rating'),
-      children: ratingTexts.entries
+      children: Rating.values
           .map(
-            (entry) => ListTile(
-              title: Text(entry.value),
-              leading: Icon(ratingIcons[entry.key]),
+            (rating) => ListTile(
+              title: Text(rating.title),
+              leading: rating.icon,
               onTap: () {
-                onTap(entry.key);
+                onTap(rating);
                 Navigator.of(context).maybePop();
               },
             ),

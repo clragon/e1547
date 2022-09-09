@@ -15,7 +15,6 @@ class DrawerTagCounter extends StatelessWidget {
       animation: controller,
       builder: (context, child) => DrawerTagCounterBody(
         posts: controller.itemList,
-        controller: controller,
       ),
     );
   }
@@ -69,7 +68,6 @@ class DrawerTagCounterBody extends StatelessWidget {
             tag: tag.tag,
             count: tag.count,
             category: tag.category,
-            controller: controller,
           ),
         );
       }

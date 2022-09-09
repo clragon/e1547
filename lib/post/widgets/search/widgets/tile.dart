@@ -5,18 +5,20 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class PostTile extends StatelessWidget {
-  final PostController post;
-  final VoidCallback? onTap;
-
   const PostTile({
-    required this.post,
+    required this.controller,
     this.onTap,
   });
+
+  final PostController controller;
+  final VoidCallback? onTap;
+
+  Post get post => controller.value;
 
   @override
   Widget build(BuildContext context) {
     Widget tag() {
-      if (post.value.file.ext == 'gif') {
+      if (post.file.ext == 'gif') {
         return Container(
           color: Colors.black12,
           child: const Icon(
@@ -25,7 +27,7 @@ class PostTile extends StatelessWidget {
           ),
         );
       }
-      if (post.value.type == PostType.video) {
+      if (post.type == PostType.video) {
         return Container(
           color: Colors.black12,
           child: const Icon(
@@ -43,13 +45,13 @@ class PostTile extends StatelessWidget {
         children: [
           Expanded(
             child: AnimatedBuilder(
-              animation: Listenable.merge([post]),
+              animation: Listenable.merge([controller]),
               builder: (context, value) => PostTileOverlay(
-                post: post,
+                controller: controller,
                 child: Hero(
-                  tag: post.value.link,
+                  tag: post.link,
                   child: PostImageWidget(
-                    post: post.value,
+                    post: post,
                     size: PostImageSize.sample,
                     fit: BoxFit.cover,
                     showProgress: false,
@@ -67,7 +69,7 @@ class PostTile extends StatelessWidget {
     return Card(
       clipBehavior: Clip.antiAlias,
       child: SelectionItemOverlay(
-        item: post.value,
+        item: post,
         child: Stack(
           fit: StackFit.passthrough,
           clipBehavior: Clip.none,
@@ -79,7 +81,7 @@ class PostTile extends StatelessWidget {
                   Expanded(
                     child: image(),
                   ),
-                  if (value) PostInfoBar(post: post),
+                  if (value) PostInfoBar(controller: controller),
                 ],
               ),
             ),
@@ -90,7 +92,8 @@ class PostTile extends StatelessWidget {
                 onTap: onTap ??
                     () => Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (context) => PostDetail(post: post),
+                            builder: (context) =>
+                                PostDetail(controller: controller),
                           ),
                         ),
               ),
@@ -103,26 +106,27 @@ class PostTile extends StatelessWidget {
 }
 
 class PostTileOverlay extends StatelessWidget {
-  final PostController post;
-  final Widget child;
+  const PostTileOverlay({required this.controller, required this.child});
 
-  const PostTileOverlay({required this.post, required this.child});
+  final PostController controller;
+  final Widget child;
 
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
-      animation: post,
+      animation: controller,
       builder: (context, child) {
-        if (post.value.flags.deleted) {
+        Post post = controller.value;
+        if (post.flags.deleted) {
           return const Center(child: Text('deleted'));
         }
-        if (post.value.type == PostType.unsupported) {
+        if (post.type == PostType.unsupported) {
           return const Center(child: Text('unsupported'));
         }
-        if (post.value.file.url == null) {
+        if (post.file.url == null) {
           return const Center(child: Text('unsafe'));
         }
-        if (post.isDenied) {
+        if (controller.isDenied) {
           return const Center(child: Text('blacklisted'));
         }
         return child!;
@@ -133,9 +137,11 @@ class PostTileOverlay extends StatelessWidget {
 }
 
 class PostInfoBar extends StatelessWidget {
-  final PostController post;
+  const PostInfoBar({required this.controller});
 
-  const PostInfoBar({required this.post});
+  final PostController controller;
+
+  Post get post => controller.value;
 
   @override
   Widget build(BuildContext context) {
@@ -152,47 +158,41 @@ class PostInfoBar extends StatelessWidget {
                   alignment: WrapAlignment.spaceEvenly,
                   children: [
                     AnimatedSelector(
-                      animation: Listenable.merge([post]),
-                      selector: () => [post.value.voteStatus],
+                      animation: Listenable.merge([controller]),
+                      selector: () => [post.voteStatus],
                       builder: (context, child) => Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text(post.value.score.total.toString()),
+                          Text(post.score.total.toString()),
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 4),
                             child: Icon(
-                              post.value.score.total >= 0
+                              post.score.total >= 0
                                   ? Icons.arrow_upward
                                   : Icons.arrow_downward,
-                              color: () {
-                                switch (post.value.voteStatus) {
-                                  case VoteStatus.upvoted:
-                                    return Colors.deepOrange;
-                                  case VoteStatus.downvoted:
-                                    return Colors.blue;
-                                  case VoteStatus.unknown:
-                                    return null;
-                                }
-                              }(),
+                              color: {
+                                VoteStatus.upvoted: Colors.deepOrange,
+                                VoteStatus.downvoted: Colors.blue,
+                                VoteStatus.unknown: null,
+                              }[post.voteStatus],
                             ),
                           ),
                         ],
                       ),
                     ),
                     AnimatedSelector(
-                      animation: Listenable.merge([post]),
-                      selector: () => [post.value.isFavorited],
+                      animation: Listenable.merge([controller]),
+                      selector: () => [post.isFavorited],
                       builder: (context, child) => Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text(post.value.favCount.toString()),
+                          Text(post.favCount.toString()),
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 4),
                             child: Icon(
                               Icons.favorite,
-                              color: post.value.isFavorited
-                                  ? Colors.pinkAccent
-                                  : null,
+                              color:
+                                  post.isFavorited ? Colors.pinkAccent : null,
                             ),
                           ),
                         ],
@@ -201,7 +201,7 @@ class PostInfoBar extends StatelessWidget {
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text(post.value.commentCount.toString()),
+                        Text(post.commentCount.toString()),
                         const Padding(
                           padding: EdgeInsets.symmetric(horizontal: 4),
                           child: Icon(Icons.comment),
@@ -211,10 +211,10 @@ class PostInfoBar extends StatelessWidget {
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text(post.value.rating.name.toUpperCase()),
+                        Text(post.rating.name.toUpperCase()),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 4),
-                          child: Icon(ratingIcons[post.value.rating]!),
+                          child: post.rating.icon,
                         ),
                       ],
                     ),

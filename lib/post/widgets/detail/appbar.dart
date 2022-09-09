@@ -3,12 +3,12 @@ import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 
 class PostDetailAppBar extends StatelessWidget with PreferredSizeWidget {
-  final PostController post;
+  PostDetailAppBar({required this.controller});
+
+  final PostController controller;
 
   @override
   Size get preferredSize => const Size.fromHeight(defaultAppBarHeight);
-
-  PostDetailAppBar({required this.post});
 
   @override
   Widget build(BuildContext context) {
@@ -35,10 +35,10 @@ class PostDetailAppBar extends StatelessWidget with PreferredSizeWidget {
                   ),
                   onSelected: (value) => value(),
                   itemBuilder: (context) => [
-                    ...postMenuPostActions(context, post.value),
+                    ...postMenuPostActions(context, controller.value),
                     ...postMenuUserActions(
                       context,
-                      post,
+                      controller,
                     ),
                   ],
                 ),

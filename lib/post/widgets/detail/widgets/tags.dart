@@ -6,9 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class TagDisplay extends StatelessWidget {
-  final PostController post;
-
   const TagDisplay({required this.post});
+
+  final Post post;
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +23,7 @@ class TagDisplay extends StatelessWidget {
       builder: (context, child) {
         bool isEditing = (editingController?.editing ?? false);
         Map<String, List<String>>? tags =
-            editingController?.value?.tags ?? post.value.tags;
+            editingController?.value?.tags ?? post.tags;
 
         Widget title(String category) {
           return Padding(
@@ -44,7 +44,6 @@ class TagDisplay extends StatelessWidget {
                 (tag) => TagCard(
                   tag: tag,
                   category: category,
-                  controller: post.parent,
                   editing: isEditing,
                   onRemove: editingController!.canEdit
                       ? () {

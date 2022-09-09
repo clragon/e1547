@@ -294,7 +294,7 @@ class PostDetailImageDisplay extends StatelessWidget {
       onOpen: onTap,
       post: post,
       child: ImageOverlay(
-        post: post,
+        controller: post,
         builder: (context) => Center(
           child: Hero(
             tag: post.value.link,
