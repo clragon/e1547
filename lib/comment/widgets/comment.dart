@@ -7,7 +7,6 @@ import 'package:e1547/ticket/ticket.dart';
 import 'package:e1547/user/user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:provider/provider.dart';
 import 'package:relative_time/relative_time.dart';
 
 class CommentTile extends StatelessWidget {

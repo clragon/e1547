@@ -2,7 +2,6 @@ import 'package:e1547/history/history.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class HotPage extends StatefulWidget {
   const HotPage();

@@ -3,7 +3,6 @@ import 'package:e1547/app/app.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:talker/talker.dart';
 import 'package:window_manager/window_manager.dart';
 

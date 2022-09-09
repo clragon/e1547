@@ -1,7 +1,6 @@
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class FollowMarkReadTile extends StatefulWidget {
   const FollowMarkReadTile();

@@ -1,9 +1,11 @@
 import 'package:e1547/interface/interface.dart';
+import 'package:flutter/material.dart';
 
 import 'post.dart';
 
 class PostEdit {
   PostEdit({
+    required this.post,
     required this.editReason,
     required this.rating,
     required this.description,
@@ -12,6 +14,7 @@ class PostEdit {
     required this.tags,
   });
 
+  final Post post;
   final String? editReason;
   final Rating rating;
   final String description;
@@ -21,6 +24,7 @@ class PostEdit {
 
   factory PostEdit.fromPost(Post post) {
     return PostEdit(
+      post: post,
       rating: post.rating,
       description: post.description,
       parentId: post.relationships.parentId,
@@ -31,6 +35,7 @@ class PostEdit {
   }
 
   PostEdit copyWith({
+    Post? post,
     String? editReason,
     Rating? rating,
     String? description,
@@ -39,6 +44,7 @@ class PostEdit {
     Map<String, List<String>>? tags,
   }) =>
       PostEdit(
+        post: post ?? this.post,
         editReason: editReason ?? this.editReason,
         rating: rating ?? this.rating,
         description: description ?? this.description,
@@ -47,7 +53,7 @@ class PostEdit {
         tags: tags ?? this.tags,
       );
 
-  Map<String, String?>? compile(Post post) {
+  Map<String, String?>? toForm() {
     Map<String, String?> body = {};
 
     List<String> extractTags(Map<String, List<String>> tags) {
@@ -137,15 +143,28 @@ class PostEdit {
   }
 }
 
-class PostEditingController extends SheetActionController {
-  PostEditingController(this.post);
+class PostEditingController extends SheetActionController
+    implements ValueNotifier<PostEdit?> {
+  PostEditingController({required Post post}) : _post = post;
 
-  final Post post;
+  Post _post;
+
+  Post get post => _post;
+
+  set post(Post value) {
+    if (value == _post) return;
+    _post = value;
+    if (editing) {
+      startEditing();
+    }
+  }
 
   PostEdit? _value;
 
+  @override
   PostEdit? get value => _value;
 
+  @override
   set value(PostEdit? value) {
     _value = value;
     notifyListeners();
@@ -159,27 +178,16 @@ class PostEditingController extends SheetActionController {
 
   bool get loading => _loading;
 
-  void startEditing() {
-    value = PostEdit.fromPost(post);
-    notifyListeners();
-  }
+  void startEditing() => value = PostEdit.fromPost(post);
 
   void stopEditing() {
     _loading = false;
     value = null;
     close();
-    notifyListeners();
   }
 
   void setLoading(bool value) {
     _loading = value;
     notifyListeners();
-  }
-
-  Map<String, String?>? compile() {
-    if (value == null) {
-      throw StateError('Controller cannot compile with no edit data');
-    }
-    return value!.compile(post);
   }
 }

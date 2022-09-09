@@ -2,7 +2,6 @@ import 'package:e1547/client/client.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/wiki/wiki.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class WikiLoadingPage extends StatefulWidget {
   final String id;

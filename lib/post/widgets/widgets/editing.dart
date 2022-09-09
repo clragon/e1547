@@ -2,69 +2,57 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 
-class PostEditorData extends InheritedNotifier<PostEditingController> {
-  const PostEditorData(
-      {required super.child, required PostEditingController controller})
-      : super(notifier: controller);
-}
-
 class PostEditor extends StatelessWidget {
-  final Widget child;
-  final PostEditingController? editingController;
-
   const PostEditor({
     required this.child,
-    this.editingController,
+    required this.post,
   });
 
-  static PostEditingController of(BuildContext context) {
-    return context
-        .dependOnInheritedWidgetOfExactType<PostEditorData>()!
-        .notifier!;
-  }
-
-  static PostEditingController? maybeOf(BuildContext context) {
-    return context
-        .dependOnInheritedWidgetOfExactType<PostEditorData>()
-        ?.notifier;
-  }
+  final Widget child;
+  final Post post;
 
   @override
   Widget build(BuildContext context) {
-    if (editingController == null) return child;
-
-    return WillPopScope(
-      child: PostEditorData(
-        controller: editingController!,
-        child: SheetActions(controller: editingController!, child: child),
-      ),
-      onWillPop: () async {
-        if (editingController?.isShown ?? false) {
+    return SubChangeNotifierProvider0<PostEditingController>(
+      create: (context) => PostEditingController(post: post),
+      update: (context, value) => value..post = post,
+      builder: (context, child) => WillPopScope(
+        child: SheetActions(
+          controller: context.watch<PostEditingController>(),
+          child: child!,
+        ),
+        onWillPop: () async {
+          PostEditingController controller =
+              context.read<PostEditingController>();
+          if (controller.isShown) {
+            return true;
+          }
+          if (controller.editing) {
+            controller.stopEditing();
+            return false;
+          }
           return true;
-        }
-        if (editingController?.editing ?? false) {
-          editingController!.stopEditing();
-          return false;
-        }
-        return true;
-      },
+        },
+      ),
+      child: child,
     );
   }
 }
 
 class PostEditorChild extends StatelessWidget {
-  final Widget child;
-  final bool shown;
-
   const PostEditorChild({
     required this.child,
     required this.shown,
   });
 
+  final Widget child;
+  final bool shown;
+
   @override
   Widget build(BuildContext context) {
     return CrossFade(
-      showChild: shown == (PostEditor.maybeOf(context)?.editing ?? false),
+      showChild:
+          shown == (context.watch<PostEditingController?>()?.editing ?? false),
       child: child,
     );
   }

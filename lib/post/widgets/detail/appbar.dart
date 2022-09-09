@@ -12,7 +12,7 @@ class PostDetailAppBar extends StatelessWidget with PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool isEditing = PostEditor.maybeOf(context)?.editing ?? false;
+    bool isEditing = context.watch<PostEditingController?>()?.editing ?? false;
     return TransparentAppBar(
       child: DefaultAppBar(
         leading: isEditing

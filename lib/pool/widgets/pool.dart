@@ -5,7 +5,6 @@ import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class PoolPage extends StatefulWidget {
   final Pool pool;

@@ -5,7 +5,7 @@ class DialogActionController extends ActionController {
   NavigatorState? navigator;
 
   @override
-  void onSucess() async {
+  void onSuccess() async {
     await navigator!.maybePop();
     navigator = null;
   }

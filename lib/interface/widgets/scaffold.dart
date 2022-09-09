@@ -1,7 +1,6 @@
 import 'package:e1547/interface/interface.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class AdaptiveScaffold extends StatefulWidget {
   /// Displays Scaffold drawer and end drawer next to the body if breakpoints are met.

@@ -24,7 +24,7 @@ class DenylistTagDisplay extends StatelessWidget {
               ),
             ),
           ),
-              ...controller.deniers!.map(
+          ...controller.deniers!.map(
             (e) => Column(
               children: [
                 Row(

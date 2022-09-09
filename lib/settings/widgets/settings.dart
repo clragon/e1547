@@ -10,7 +10,6 @@ import 'package:e1547/settings/settings.dart';
 import 'package:e1547/user/user.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:talker/talker.dart';
 
 import 'grid.dart';

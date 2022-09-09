@@ -12,7 +12,8 @@ class ArtistDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    PostEditingController? editingController = PostEditor.maybeOf(context);
+    PostEditingController? editingController =
+        context.watch<PostEditingController?>();
 
     Widget artists() {
       return AnimatedSelector(

@@ -18,11 +18,12 @@ class SheetActions extends InheritedNotifier {
 class SheetActionController extends ActionController {
   PersistentBottomSheetController? sheetController;
   bool get isShown => sheetController != null;
+
   void close() => sheetController?.close.call();
 
   @override
-  void onSucess() {
-    sheetController!.close();
+  void onSuccess() {
+    sheetController?.close();
   }
 
   @override
@@ -47,10 +48,10 @@ class SheetActionController extends ActionController {
 }
 
 class ActionBottomSheet extends StatelessWidget {
+  const ActionBottomSheet({required this.controller, required this.child});
+
   final Widget child;
   final SheetActionController controller;
-
-  const ActionBottomSheet({required this.controller, required this.child});
 
   @override
   Widget build(BuildContext context) {
@@ -59,54 +60,55 @@ class ActionBottomSheet extends StatelessWidget {
       child: child,
       builder: (context, child) => Padding(
         padding: const EdgeInsets.all(10).copyWith(top: 0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                CrossFade(
-                  showChild: controller.isLoading,
-                  child: const Center(
-                    child: Padding(
-                      padding: EdgeInsets.only(right: 10),
-                      child: SizedCircularProgressIndicator(size: 16),
-                    ),
-                  ),
-                ),
-                CrossFade(
-                  showChild: controller.isError && !controller.isForgiven,
-                  child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.only(right: 10),
-                      child: Icon(
-                        Icons.clear,
-                        color: Theme.of(context).errorColor,
+                Row(
+                  children: [
+                    CrossFade(
+                      showChild: controller.isLoading,
+                      child: const Center(
+                        child: Padding(
+                          padding: EdgeInsets.only(right: 10),
+                          child: SizedCircularProgressIndicator(size: 16),
+                        ),
                       ),
                     ),
-                  ),
-                ),
-                Expanded(child: child!),
+                    CrossFade(
+                      showChild: controller.isError && !controller.isForgiven,
+                      child: Center(
+                        child: Padding(
+                          padding: const EdgeInsets.only(right: 10),
+                          child: Icon(
+                            Icons.clear,
+                            color: Theme.of(context).errorColor,
+                          ),
+                        ),
+                      ),
+                    ),
+                    Expanded(child: child!),
+                  ],
+                )
               ],
-            )
-          ],
-        ),
-      ),
+            ),
+          ),
     );
   }
 }
 
 class SheetFloatingActionButton extends StatefulWidget {
+  const SheetFloatingActionButton({
+    required this.builder,
+    required this.actionIcon,
+    this.controller,
+    this.confirmIcon,
+  });
+
   final IconData actionIcon;
   final IconData? confirmIcon;
   final SheetActionController? controller;
   final Widget Function(BuildContext context, ActionController actionController)
       builder;
-
-  const SheetFloatingActionButton(
-      {required this.builder,
-      required this.actionIcon,
-      this.controller,
-      this.confirmIcon});
 
   @override
   State<SheetFloatingActionButton> createState() =>
@@ -185,15 +187,15 @@ SlidingSheetDialog defaultSlidingSheetDialog(
 }
 
 class DefaultSheetBody extends StatelessWidget {
-  final Widget? title;
-  final List<Widget>? actions;
-  final Widget body;
-
   const DefaultSheetBody({
     this.title,
     this.actions,
     required this.body,
   });
+
+  final Widget? title;
+  final List<Widget>? actions;
+  final Widget body;
 
   @override
   Widget build(BuildContext context) {

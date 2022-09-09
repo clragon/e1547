@@ -8,7 +8,6 @@ import 'package:e1547/tag/tag.dart';
 import 'package:e1547/ticket/ticket.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:provider/provider.dart';
 
 class PostReportImage extends StatelessWidget {
   const PostReportImage({

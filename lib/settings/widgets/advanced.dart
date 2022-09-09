@@ -4,7 +4,6 @@ import 'package:e1547/app/widgets/lock.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class AdvancedSettingsPage extends StatefulWidget {
   @override

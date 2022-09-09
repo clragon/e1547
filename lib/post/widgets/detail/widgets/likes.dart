@@ -3,7 +3,6 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 import 'package:like_button/like_button.dart';
-import 'package:provider/provider.dart';
 
 class LikeDisplay extends StatelessWidget {
   const LikeDisplay({required this.controller});
@@ -83,17 +82,19 @@ class LikeDisplay extends StatelessWidget {
 }
 
 class FavoriteButton extends StatelessWidget {
-  final PostController post;
+  const FavoriteButton({required this.controller});
 
-  const FavoriteButton({required this.post});
+  final PostController controller;
+
+  Post get post => controller.value;
 
   @override
   Widget build(BuildContext context) {
     return AnimatedSelector(
-      animation: post,
-      selector: () => [post.value.isFavorited],
+      animation: controller,
+      selector: () => [post.isFavorited],
       builder: (context, child) => LikeButton(
-        isLiked: post.value.isFavorited,
+        isLiked: post.isFavorited,
         circleColor: const CircleColor(start: Colors.pink, end: Colors.red),
         bubblesColor: const BubblesColor(
             dotPrimaryColor: Colors.pink, dotSecondaryColor: Colors.red),
@@ -104,26 +105,26 @@ class FavoriteButton extends StatelessWidget {
         ),
         onTap: (isLiked) async {
           if (isLiked) {
-            post.unfav().then((value) {
+            controller.unfav().then((value) {
               if (!value) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     duration: const Duration(seconds: 1),
                     content: Text(
-                        'Failed to remove Post #${post.value.id} from favorites'),
+                        'Failed to remove Post #${post.id} from favorites'),
                   ),
                 );
               }
             });
             return false;
           } else {
-            post.fav().then((value) {
+                controller.fav().then((value) {
               if (!value) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     duration: const Duration(seconds: 1),
-                    content: Text(
-                        'Failed to add Post #${post.value.id} to favorites'),
+                    content:
+                        Text('Failed to add Post #${post.id} to favorites'),
                   ),
                 );
               }

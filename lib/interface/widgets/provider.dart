@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 
+export 'package:provider/provider.dart';
+
 class SubValueBuilder<T> extends StatefulWidget {
   /// Creates a value that is dependent on other values.
   const SubValueBuilder({

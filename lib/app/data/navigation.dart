@@ -7,7 +7,6 @@ import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:e1547/topic/topic.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 const String _drawerSearchGroup = 'search';
 const String _drawerCollectionsGroup = 'collections';

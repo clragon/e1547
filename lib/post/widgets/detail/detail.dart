@@ -5,15 +5,14 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
-import 'package:provider/provider.dart';
 
 import 'appbar.dart';
 
 class PostDetail extends StatefulWidget {
+  const PostDetail({required this.controller, this.onTapImage});
+
   final PostController controller;
   final VoidCallback? onTapImage;
-
-  const PostDetail({required this.controller, this.onTapImage});
 
   @override
   State<StatefulWidget> createState() => _PostDetailState();
@@ -21,10 +20,7 @@ class PostDetail extends StatefulWidget {
 
 class _PostDetailState extends State<PostDetail> with RouteAware {
   Post get post => widget.controller.value;
-
   set post(Post value) => widget.controller.value = value;
-
-  late PostEditingController editingController = PostEditingController(post);
 
   @override
   void initState() {
@@ -39,66 +35,6 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
         );
       }
     });
-  }
-
-  Future<void> editPost(
-      BuildContext context, PostEditingController controller) async {
-    controller.setLoading(true);
-    Map<String, String?>? body = controller.compile();
-    if (body != null) {
-      try {
-        await context.read<Client>().updatePost(controller.post.id, body);
-        post = post.copyWith(tags: controller.value!.tags);
-        await widget.controller.reset();
-        controller.stopEditing();
-      } on DioError {
-        controller.setLoading(false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            duration: const Duration(seconds: 1),
-            content: Text('failed to edit Post #${post.id}'),
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-        throw ActionControllerException(
-            message: 'failed to edit Post #${post.id}');
-      }
-    }
-  }
-
-  Future<void> submitEdit(BuildContext context) async {
-    editingController.show(
-      context,
-      ControlledTextField(
-        actionController: editingController,
-        labelText: 'Reason',
-        submit: (value) async {
-          editingController.value =
-              editingController.value!.copyWith(editReason: value);
-          return editPost(context, editingController);
-        },
-      ),
-    );
-  }
-
-  Widget fab() {
-    return AnimatedBuilder(
-      animation: Listenable.merge([editingController]),
-      builder: (context, child) => FloatingActionButton(
-        heroTag: null,
-        backgroundColor: Theme.of(context).cardColor,
-        foregroundColor: Theme.of(context).iconTheme.color,
-        onPressed: editingController.editing
-            ? editingController.action ?? () => submitEdit(context)
-            : () {},
-        child: editingController.editing
-            ? Icon(editingController.isShown ? Icons.add : Icons.check)
-            : Padding(
-                padding: const EdgeInsets.only(left: 2),
-                child: FavoriteButton(post: widget.controller),
-              ),
-      ),
-    );
   }
 
   Widget image(BuildContext context, BoxConstraints constraints) => Padding(
@@ -116,7 +52,8 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
               post: widget.controller,
               onTap: () {
                 PostVideoRoute.of(context).keepPlaying();
-                if (!(editingController.editing) && widget.onTapImage != null) {
+                if (!(context.watch<PostEditingController>().editing) &&
+                    widget.onTapImage != null) {
                   widget.onTapImage!();
                 } else {
                   Navigator.of(context).push(
@@ -289,6 +226,9 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
           builder: (context, controller, child) => CustomScrollView(
             slivers: [
               SliverToBoxAdapter(
+                child: SizedBox(height: MediaQuery.of(context).padding.top),
+              ),
+              SliverToBoxAdapter(
                 child: Column(
                   children: children,
                 ),
@@ -324,12 +264,13 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
       child: AnimatedBuilder(
         animation: widget.controller,
         builder: (context, child) => PostEditor(
-          editingController: editingController,
+          post: post,
           child: Scaffold(
             extendBodyBehindAppBar: true,
             appBar: PostDetailAppBar(controller: widget.controller),
-            floatingActionButton:
-                context.read<Client>().hasLogin ? fab() : null,
+            floatingActionButton: context.read<Client>().hasLogin
+                ? PostDetailFloatingActionButton(controller: widget.controller)
+                : null,
             body: MediaQuery.removeViewInsets(
               context: context,
               removeTop: true,
@@ -367,15 +308,16 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
                         SizedBox(
                           width: sideBarWidth,
                           child: ListView(
+                            padding: EdgeInsets.only(
+                              top: MediaQuery.of(context).padding.top,
+                              bottom: defaultActionListPadding.bottom,
+                            ),
                             primary: false,
                             children: [
                               const SizedBox(
                                 height: 56,
                               ),
                               sideBarBody(context),
-                              SizedBox(
-                                height: defaultActionListPadding.bottom,
-                              ),
                             ],
                           ),
                         ),

@@ -3,7 +3,6 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class TagDisplay extends StatelessWidget {
   const TagDisplay({required this.post});
@@ -12,7 +11,8 @@ class TagDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    PostEditingController? editingController = PostEditor.maybeOf(context);
+    PostEditingController? editingController =
+        context.watch<PostEditingController?>();
 
     return AnimatedSelector(
       animation: Listenable.merge([editingController]),

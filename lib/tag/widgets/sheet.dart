@@ -8,7 +8,6 @@ import 'package:e1547/tag/tag.dart';
 import 'package:e1547/wiki/wiki.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 import '../../post/widgets/search/widgets/actions.dart';
 

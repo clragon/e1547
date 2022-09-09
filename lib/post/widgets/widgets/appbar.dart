@@ -5,7 +5,6 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/ticket/ticket.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 
 List<PopupMenuItem<VoidCallback>> postMenuPostActions(
@@ -36,13 +35,13 @@ List<PopupMenuItem<VoidCallback>> postMenuUserActions(
   PostController controller,
 ) {
   return [
-    if (PostEditor.maybeOf(context) != null)
+    if (context.read<PostEditingController?>() != null)
       PopupMenuTile(
         title: 'Edit',
         icon: Icons.edit,
         value: () => guardWithLogin(
           context: context,
-          callback: PostEditor.of(context).startEditing,
+          callback: context.read<PostEditingController>().startEditing,
           error: 'You must be logged in to edit posts!',
         ),
       ),

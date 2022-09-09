@@ -51,7 +51,7 @@ class ActionController extends ChangeNotifier {
     notifyListeners();
     try {
       await submit();
-      onSucess();
+      onSuccess();
     } on ActionControllerException catch (e) {
       error = e;
       forgive();
@@ -61,7 +61,7 @@ class ActionController extends ChangeNotifier {
   }
 
   @protected
-  void onSucess() {}
+  void onSuccess() {}
 
   @mustCallSuper
   void setAction(ActionControllerCallback submit) {

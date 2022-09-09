@@ -6,7 +6,6 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class _PoolSearchResult {
   final DateTime time;
