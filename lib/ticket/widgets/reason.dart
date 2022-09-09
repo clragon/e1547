@@ -1,6 +1,7 @@
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/ticket/ticket.dart';
 import 'package:flutter/material.dart';
+import 'package:keyboard_dismisser/keyboard_dismisser.dart';
 
 class ReportFormReason extends StatelessWidget {
   final bool isLoading;
@@ -65,79 +66,83 @@ class _ReasonReportScreenState extends State<ReasonReportScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Form(
-      child: Scaffold(
-        appBar: DefaultAppBar(
-          elevation: 0,
-          title: widget.title,
-          leading: const CloseButton(),
-        ),
-        floatingActionButton: Builder(
-          builder: (context) => FloatingActionButton(
-            onPressed: isLoading
-                ? null
-                : () async {
-                    if (Form.of(context)!.validate()) {
-                      setState(() {
-                        isLoading = true;
-                      });
-                      scrollController.animateTo(
-                        0,
-                        duration: defaultAnimationDuration,
-                        curve: Curves.easeInOut,
-                      );
-                      if (await widget.onReport(reasonController.text.trim())) {
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          duration: const Duration(seconds: 1),
-                          content: Text(widget.onSuccess ?? 'Submitted report'),
-                          behavior: SnackBarBehavior.floating,
-                        ));
-                        Navigator.maybePop(context);
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          duration: const Duration(seconds: 1),
-                          content: Text(
-                              widget.onFailure ?? 'Failed to submit report'),
-                        ));
-                      }
-                      setState(() {
-                        isLoading = false;
-                      });
-                    }
-                  },
-            child: const Icon(Icons.check),
+    return KeyboardDismisser(
+      child: Form(
+        child: Scaffold(
+          appBar: DefaultAppBar(
+            elevation: 0,
+            title: widget.title,
+            leading: const CloseButton(),
           ),
-        ),
-        body: LimitedWidthLayout(
-          child: LayoutBuilder(
-            builder: (context, constraints) => ListView(
-              controller: scrollController,
-              padding: LimitedWidthLayout.of(context)
-                  .padding
-                  .add(defaultFormScreenPadding),
-              children: [
-                ConstrainedBox(
-                  constraints: const BoxConstraints(
-                    minHeight: defaultFormTargetHeight,
+          floatingActionButton: Builder(
+            builder: (context) => FloatingActionButton(
+              onPressed: isLoading
+                  ? null
+                  : () async {
+                      if (Form.of(context)!.validate()) {
+                        setState(() {
+                          isLoading = true;
+                        });
+                        scrollController.animateTo(
+                          0,
+                          duration: defaultAnimationDuration,
+                          curve: Curves.easeInOut,
+                        );
+                        if (await widget
+                            .onReport(reasonController.text.trim())) {
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            duration: const Duration(seconds: 1),
+                            content:
+                                Text(widget.onSuccess ?? 'Submitted report'),
+                            behavior: SnackBarBehavior.floating,
+                          ));
+                          Navigator.maybePop(context);
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            duration: const Duration(seconds: 1),
+                            content: Text(
+                                widget.onFailure ?? 'Failed to submit report'),
+                          ));
+                        }
+                        setState(() {
+                          isLoading = false;
+                        });
+                      }
+                    },
+              child: const Icon(Icons.check),
+            ),
+          ),
+          body: LimitedWidthLayout(
+            child: LayoutBuilder(
+              builder: (context, constraints) => ListView(
+                controller: scrollController,
+                padding: LimitedWidthLayout.of(context)
+                    .padding
+                    .add(defaultFormScreenPadding),
+                children: [
+                  ConstrainedBox(
+                    constraints: const BoxConstraints(
+                      minHeight: defaultFormTargetHeight,
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Padding(
+                          padding: defaultFormPadding,
+                          child: widget.previewBuilder(context, isLoading),
+                        ),
+                      ],
+                    ),
                   ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Padding(
-                        padding: defaultFormPadding,
-                        child: widget.previewBuilder(context, isLoading),
-                      ),
-                    ],
+                  const ReportFormHeader(
+                    title: Text('Report'),
                   ),
-                ),
-                const ReportFormHeader(
-                  title: Text('Report'),
-                ),
-                ReportFormReason(
-                  controller: reasonController,
-                  isLoading: isLoading,
-                ),
-              ],
+                  ReportFormReason(
+                    controller: reasonController,
+                    isLoading: isLoading,
+                  ),
+                ],
+              ),
             ),
           ),
         ),

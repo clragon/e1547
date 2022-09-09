@@ -6,6 +6,7 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:keyboard_dismisser/keyboard_dismisser.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage();
@@ -172,76 +173,81 @@ class _LoginPageState extends State<LoginPage> {
       return inputField();
     }
 
-    return Form(
-      child: Scaffold(
-        appBar: const DefaultAppBar(
-          leading: CloseButton(),
-          elevation: 0,
-        ),
-        body: LimitedWidthLayout.builder(
-          builder: (context) => ListView(
-            padding: LimitedWidthLayout.of(context)
-                .padding
-                .add(const EdgeInsets.all(16)),
-            children: [
-              const SizedBox(
-                height: 300,
-                child: Center(
-                  child: AppIcon(
-                    radius: 64,
+    return KeyboardDismisser(
+      child: Form(
+        child: Scaffold(
+          appBar: const DefaultAppBar(
+            leading: CloseButton(),
+            elevation: 0,
+          ),
+          body: LimitedWidthLayout.builder(
+            builder: (context) => ListView(
+              padding: LimitedWidthLayout.of(context)
+                  .padding
+                  .add(const EdgeInsets.all(16)),
+              children: [
+                const SizedBox(
+                  height: 300,
+                  child: Center(
+                    child: AppIcon(
+                      radius: 64,
+                    ),
                   ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 32, right: 32, bottom: 12),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'Login',
-                      style: TextStyle(
-                        fontSize: 20,
+                Padding(
+                  padding:
+                      const EdgeInsets.only(left: 32, right: 32, bottom: 12),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Login',
+                        style: TextStyle(
+                          fontSize: 20,
+                        ),
                       ),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.launch),
-                      color: Colors.grey,
-                      onPressed: () {
-                        if (usernameController.text.isNotEmpty) {
-                          launch(context.read<Client>().withHost(
-                              '/users/${usernameController.text}/api_key'));
-                        } else {
-                          launch(
-                              context.read<Client>().withHost('/session/new'));
-                        }
-                      },
-                    ),
-                  ],
+                      IconButton(
+                        icon: const Icon(Icons.launch),
+                        color: Colors.grey,
+                        onPressed: () {
+                          if (usernameController.text.isNotEmpty) {
+                            launch(context.read<Client>().withHost(
+                                '/users/${usernameController.text}/api_key'));
+                          } else {
+                            launch(context
+                                .read<Client>()
+                                .withHost('/session/new'));
+                          }
+                        },
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              usernameField(),
-              apiKeyField(),
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                child: Row(
-                  children: [
-                    TextButton(
-                      onPressed: () =>
-                          launch(context.read<Client>().withHost('/users/new')),
-                      child: const Text('Don\'t have an account? Sign up here'),
-                    ),
-                  ],
+                usernameField(),
+                apiKeyField(),
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  child: Row(
+                    children: [
+                      TextButton(
+                        onPressed: () => launch(
+                            context.read<Client>().withHost('/users/new')),
+                        child:
+                            const Text('Don\'t have an account? Sign up here'),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
+          floatingActionButton: Builder(
+              builder: (context) => FloatingActionButton(
+                    child: const Icon(Icons.check),
+                    onPressed: () => saveAndTest(context),
+                  )),
         ),
-        floatingActionButton: Builder(
-            builder: (context) => FloatingActionButton(
-                  child: const Icon(Icons.check),
-                  onPressed: () => saveAndTest(context),
-                )),
       ),
     );
   }
