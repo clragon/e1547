@@ -40,7 +40,8 @@ extension Updating on Follow {
     Follow updated = this;
     FollowStatus status = updated.resolve(host) ?? const FollowStatus();
     if (status.updated == null ||
-        DateTime.now().difference(status.updated!) > const Duration(hours: 1)) {
+        DateTime.now().difference(status.updated!) >
+            const Duration(minutes: 10)) {
       updated = updated.withStatus(
         host,
         status.copyWith(updated: DateTime.now()),
