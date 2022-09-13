@@ -8,11 +8,11 @@ import 'package:flutter/services.dart';
 import 'appbar.dart';
 
 class FrameController extends ChangeNotifier {
+  FrameController({this.onToggle, this.visible = false});
+
   final void Function(bool shown)? onToggle;
   Timer? frameToggler;
   bool visible;
-
-  FrameController({this.onToggle, this.visible = false});
 
   static FrameController? of(BuildContext context) =>
       context.dependOnInheritedWidgetOfExactType<FrameData>()?.notifier;
@@ -57,15 +57,17 @@ class FrameData extends InheritedNotifier<FrameController> {
 }
 
 class PostFullscreenFrame extends StatefulWidget {
-  final Post post;
-  final Widget child;
-  final FrameController? controller;
-
   const PostFullscreenFrame({
     required this.child,
     required this.post,
     this.controller,
-  });
+    this.visible,
+  }) : assert(visible == null || controller == null);
+
+  final Post post;
+  final Widget child;
+  final FrameController? controller;
+  final bool? visible;
 
   @override
   State<PostFullscreenFrame> createState() => _PostFullscreenFrameState();
@@ -73,7 +75,8 @@ class PostFullscreenFrame extends StatefulWidget {
 
 class _PostFullscreenFrameState extends State<PostFullscreenFrame>
     with RouteAware {
-  late FrameController controller = widget.controller ?? FrameController();
+  late FrameController controller =
+      widget.controller ?? FrameController(visible: widget.visible ?? false);
   late NavigationController navigation;
 
   Future<void> toggleFrame(bool shown) async {

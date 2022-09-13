@@ -15,7 +15,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:video_player/video_player.dart';
 
-extension Tagging on Post {
+extension PostTagging on Post {
   bool hasTag(String tag) {
     if (tag.contains(':')) {
       String identifier = tag.split(':')[0];
@@ -89,7 +89,7 @@ extension Tagging on Post {
   }
 }
 
-extension Denying on Post {
+extension PostDenying on Post {
   bool isDeniedBy(List<String> denylist) => getDeniers(denylist) != null;
 
   List<String>? getDeniers(List<String> denylist) {
@@ -128,7 +128,7 @@ extension Denying on Post {
   }
 }
 
-extension Downloading on Post {
+extension PostDownloading on Post {
   Future<void> download(BuildContext context) async {
     if (!await Permission.storage.request().isGranted) {
       return;
@@ -178,7 +178,7 @@ enum PostType {
   unsupported,
 }
 
-extension Typing on Post {
+extension PostTyping on Post {
   PostType get type {
     switch (file.ext) {
       case 'mp4':
@@ -195,7 +195,7 @@ extension Typing on Post {
   }
 }
 
-extension Video on Post {
+extension PostVideoPlaying on Post {
   VideoConfig? get videoConfig => type == PostType.video
       ? VideoConfig(
           url: file.url!,
@@ -223,7 +223,7 @@ extension Video on Post {
   }
 }
 
-extension Linking on Post {
+extension PostLinking on Post {
   String get link => getPostLink(id);
 }
 

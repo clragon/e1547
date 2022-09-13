@@ -52,7 +52,7 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
               post: widget.controller,
               onTap: () {
                 PostVideoRoute.of(context).keepPlaying();
-                if (!(context.watch<PostEditingController>().editing) &&
+                if (!(context.read<PostEditingController>().editing) &&
                     widget.onTapImage != null) {
                   widget.onTapImage!();
                 } else {
@@ -224,6 +224,7 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
         postId: post.id,
         child: Consumer<CommentsController>(
           builder: (context, controller, child) => CustomScrollView(
+            primary: true,
             slivers: [
               SliverToBoxAdapter(
                 child: SizedBox(height: MediaQuery.of(context).padding.top),
@@ -278,6 +279,7 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
                 builder: (context, constraints) {
                   if (constraints.maxWidth < 1000) {
                     return ListView(
+                      primary: true,
                       padding: EdgeInsets.only(
                         top: MediaQuery.of(context).padding.top,
                         bottom: kBottomNavigationBarHeight + 24,
@@ -308,11 +310,11 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
                         SizedBox(
                           width: sideBarWidth,
                           child: ListView(
+                            primary: false,
                             padding: EdgeInsets.only(
                               top: MediaQuery.of(context).padding.top,
                               bottom: defaultActionListPadding.bottom,
                             ),
-                            primary: false,
                             children: [
                               const SizedBox(
                                 height: 56,

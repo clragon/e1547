@@ -8,6 +8,8 @@ import 'package:e1547/settings/settings.dart';
 import 'package:e1547/topic/topic.dart';
 import 'package:flutter/material.dart';
 
+import '../../follow/widgets/feed.dart';
+
 const String _drawerSearchGroup = 'search';
 const String _drawerCollectionsGroup = 'collections';
 const String _drawerSettingsGroup = 'settings';
@@ -45,12 +47,17 @@ final List<NavigationRouteDestination> rootDestintations = [
     group: _drawerCollectionsGroup,
   ),
   NavigationDrawerDestination(
-    path: '/follows',
+    path: '/feed',
     name: 'Follows',
     icon: const Icon(Icons.turned_in),
-    builder: (context) => const FollowsSplitPage(),
+    builder: (context) => const FollowsFeed(),
     unique: true,
     group: _drawerCollectionsGroup,
+  ),
+  NavigationRouteDestination(
+    path: '/follows',
+    builder: (context) => const FollowsSplitPage(),
+    unique: true,
   ),
   NavigationDrawerDestination(
     path: '/pools',

@@ -44,7 +44,7 @@ Future<bool> writeComment({
   await Navigator.of(context).push(
     MaterialPageRoute(
       builder: (context) => DTextEditor(
-        title: '#$postId comment',
+        title: Text('#$postId comment'),
         content: text ?? (comment?.body),
         onSubmit: (context, text) async {
           if (text.isNotEmpty) {

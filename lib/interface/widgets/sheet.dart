@@ -60,38 +60,38 @@ class ActionBottomSheet extends StatelessWidget {
       child: child,
       builder: (context, child) => Padding(
         padding: const EdgeInsets.all(10).copyWith(top: 0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
               children: [
-                Row(
-                  children: [
-                    CrossFade(
-                      showChild: controller.isLoading,
-                      child: const Center(
-                        child: Padding(
-                          padding: EdgeInsets.only(right: 10),
-                          child: SizedCircularProgressIndicator(size: 16),
-                        ),
+                CrossFade(
+                  showChild: controller.isLoading,
+                  child: const Center(
+                    child: Padding(
+                      padding: EdgeInsets.only(right: 10),
+                      child: SizedCircularProgressIndicator(size: 16),
+                    ),
+                  ),
+                ),
+                CrossFade(
+                  showChild: controller.isError && !controller.isForgiven,
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 10),
+                      child: Icon(
+                        Icons.clear,
+                        color: Theme.of(context).errorColor,
                       ),
                     ),
-                    CrossFade(
-                      showChild: controller.isError && !controller.isForgiven,
-                      child: Center(
-                        child: Padding(
-                          padding: const EdgeInsets.only(right: 10),
-                          child: Icon(
-                            Icons.clear,
-                            color: Theme.of(context).errorColor,
-                          ),
-                        ),
-                      ),
-                    ),
-                    Expanded(child: child!),
-                  ],
-                )
+                  ),
+                ),
+                Expanded(child: child!),
               ],
-            ),
-          ),
+            )
+          ],
+        ),
+      ),
     );
   }
 }

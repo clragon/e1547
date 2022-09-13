@@ -4,9 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
-Color dimTextColor(BuildContext context, [double opacity = 0.35]) =>
-    Theme.of(context).textTheme.bodyText2!.color!.withOpacity(opacity);
-
 int notZero(double value) => value < 1 ? 1 : value.round();
 
 Key joinKeys(List<dynamic> keys) => Key(keys.join('_'));

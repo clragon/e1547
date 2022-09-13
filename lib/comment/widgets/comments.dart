@@ -54,6 +54,7 @@ class PostCommentsPage extends StatelessWidget {
             ],
           ),
           child: PagedListView<String, Comment>(
+            primary: true,
             padding: defaultActionListPadding,
             pagingController: controller,
             builderDelegate: defaultPagedChildBuilderDelegate(

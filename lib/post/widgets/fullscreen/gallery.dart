@@ -3,17 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class PostFullscreenGallery extends StatefulWidget {
-  final PostsController controller;
-  final int? initialPage;
-  final PageController? pageController;
-  final ValueChanged<int>? onPageChanged;
-
   const PostFullscreenGallery({
     required this.controller,
     this.initialPage,
     this.pageController,
     this.onPageChanged,
   }) : assert(initialPage == null || pageController == null);
+
+  final PostsController controller;
+  final int? initialPage;
+  final PageController? pageController;
+  final ValueChanged<int>? onPageChanged;
 
   @override
   State<PostFullscreenGallery> createState() => _PostFullscreenGalleryState();

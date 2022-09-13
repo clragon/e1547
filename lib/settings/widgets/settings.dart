@@ -31,6 +31,7 @@ class _SettingsPageState extends State<SettingsPage> {
         ),
         body: LimitedWidthLayout.builder(
           builder: (context) => ListView(
+            primary: true,
             padding: defaultActionListPadding
                 .add(LimitedWidthLayout.of(context).padding),
             children: [

@@ -29,9 +29,6 @@ const MaterialColor primarySwatch = MaterialColor(
 const Color accentColor = Color(0xFFffc107);
 
 ThemeData prepareTheme(ThemeData theme) => theme.copyWith(
-      platform: theme.platform == TargetPlatform.windows
-          ? TargetPlatform.android
-          : theme.platform,
       applyElevationOverlayColor: false,
       dialogBackgroundColor: theme.canvasColor,
       switchTheme: SwitchThemeData(

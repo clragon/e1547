@@ -157,6 +157,7 @@ class _SearchTagDisplayState extends State<SearchTagDisplay> {
         builder: (context) {
           if (snapshot.hasData) {
             return SingleChildScrollView(
+              primary: true,
               child: DText(snapshot.data!.body),
             );
           } else if (snapshot.hasError) {

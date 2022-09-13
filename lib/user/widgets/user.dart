@@ -32,10 +32,12 @@ class UserPage extends StatelessWidget {
       child: Consumer<_UserPageControllers>(
         builder: (context, controllers, child) {
           Map<Widget, Widget> tabs = {
-            const Tab(text: 'Favorites'): PostGrid(
+            const Tab(text: 'Favorites'): postDisplay(
+              context: context,
               controller: controllers.favoritePosts,
             ),
-            const Tab(text: 'Uploads'): PostGrid(
+            const Tab(text: 'Uploads'): postDisplay(
+              context: context,
               controller: controllers.uploadedPosts,
             ),
             const Tab(text: 'About'): UserInfo(user: user),

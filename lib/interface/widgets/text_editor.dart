@@ -9,7 +9,7 @@ typedef TextEditorBuilder = Widget Function(
     BuildContext context, TextEditingController controller);
 
 class TextEditor extends StatefulWidget {
-  final String title;
+  final Widget? title;
   final String? content;
 
   final TextEditorSubmit onSubmit;
@@ -17,20 +17,9 @@ class TextEditor extends StatefulWidget {
   final TextEditorBuilder? previewBuilder;
   final TextEditorBuilder? bottomSheetBuilder;
 
-  factory TextEditor({
-    required TextEditorSubmit onSubmit,
-    required String title,
-    String? content,
-  }) =>
-      TextEditor.builder(
-        onSubmit: onSubmit,
-        title: title,
-        content: content,
-      );
-
-  const TextEditor.builder({
+  const TextEditor({
     required this.onSubmit,
-    required this.title,
+    this.title,
     this.content,
     this.previewBuilder,
     this.bottomSheetBuilder,
@@ -50,6 +39,7 @@ class _TextEditorState extends State<TextEditor> {
 
   @override
   Widget build(BuildContext context) {
+    // TODO: why is this needed?
     Widget scrollView(Widget child) {
       return SingleChildScrollView(
         child: Padding(
@@ -170,7 +160,7 @@ class _TextEditorState extends State<TextEditor> {
                     leading: ModalRoute.of(context)!.canPop
                         ? const CloseButton()
                         : null,
-                    title: Text(widget.title),
+                    title: widget.title,
                     bottom: tabs.length > 1
                         ? TabBar(
                             tabs: tabs.keys.toList(),

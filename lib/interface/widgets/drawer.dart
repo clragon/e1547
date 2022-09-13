@@ -10,22 +10,24 @@ class ContextDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      child: PrimaryScrollController(
-        controller: ScrollController(),
-        child: ListTileTheme(
-          style: ListTileStyle.list,
-          child: Scaffold(
-            appBar: title != null
-                ? DefaultAppBar(
-                    elevation: 0,
-                    title: title,
-                    automaticallyImplyLeading: false,
-                  )
-                : null,
-            body: ListView(
-              padding: EdgeInsets.only(bottom: defaultActionListPadding.bottom),
-              children: children,
-            ),
+      child: ListTileTheme(
+        style: ListTileStyle.list,
+        child: SafeArea(
+          child: ListView(
+            primary: false,
+            padding: EdgeInsets.only(bottom: defaultActionListPadding.bottom),
+            children: [
+              if (title != null)
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 22, vertical: 18),
+                  child: DefaultTextStyle(
+                    style: Theme.of(context).textTheme.headline6!,
+                    child: title!,
+                  ),
+                ),
+              ...children,
+            ],
           ),
         ),
       ),
@@ -42,15 +44,10 @@ class ContextDrawerButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (!Scaffold.of(context).hasEndDrawer) return const SizedBox();
-    return Padding(
-      padding: const EdgeInsets.only(right: 4),
-      child: Builder(
-        builder: (context) => IconButton(
-          tooltip: tooltip,
-          icon: Icon(icon ?? Icons.filter_list),
-          onPressed: () => Scaffold.of(context).openEndDrawer(),
-        ),
-      ),
+    return IconButton(
+      tooltip: tooltip,
+      icon: Icon(icon ?? Icons.filter_list),
+      onPressed: () => Scaffold.of(context).openEndDrawer(),
     );
   }
 }

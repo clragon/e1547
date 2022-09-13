@@ -4,19 +4,19 @@ import 'package:flutter/material.dart';
 import 'package:overflow_view/overflow_view.dart';
 
 class DTextEditor extends StatelessWidget {
-  final String title;
+  final Widget? title;
   final String? content;
   final TextEditorSubmit onSubmit;
 
   const DTextEditor({
-    required this.title,
+    this.title,
     required this.onSubmit,
     this.content,
   });
 
   @override
   Widget build(BuildContext context) {
-    return TextEditor.builder(
+    return TextEditor(
       onSubmit: onSubmit,
       title: title,
       content: content,

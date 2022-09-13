@@ -34,6 +34,7 @@ export 'widgets/snackbar.dart';
 export 'widgets/startup.dart';
 export 'widgets/text_editor.dart';
 export 'widgets/tiles.dart';
+export 'widgets/text.dart';
 export 'widgets/video.dart';
 export 'widgets/votes.dart';
 export 'widgets/width.dart';

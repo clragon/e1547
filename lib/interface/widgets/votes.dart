@@ -26,8 +26,8 @@ class VoteDisplay extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        MouseRegion(
-          cursor: SystemMouseCursors.click,
+        InkResponse(
+          onTap: () {},
           child: LikeButton(
             isLiked: status == VoteStatus.upvoted,
             circleColor:
@@ -49,8 +49,8 @@ class VoteDisplay extends StatelessWidget {
           padding: padding ?? const EdgeInsets.symmetric(horizontal: 8),
           child: Text(score.toString()),
         ),
-        MouseRegion(
-          cursor: SystemMouseCursors.click,
+        InkResponse(
+          onTap: () {},
           child: LikeButton(
             isLiked: status == VoteStatus.downvoted,
             circleColor:

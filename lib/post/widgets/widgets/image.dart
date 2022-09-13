@@ -11,10 +11,10 @@ class PostImageWidget extends StatelessWidget {
     required this.post,
     required this.size,
     this.showProgress = true,
-    this.withPreview = true,
+    this.withLowRes = true,
     this.fit = BoxFit.contain,
     this.cacheSize,
-    this.sampleCacheSize,
+    this.lowResCacheSize,
   });
 
   /// The post which provides the image.
@@ -29,17 +29,15 @@ class PostImageWidget extends StatelessWidget {
   /// Whether to display progress while the the image is loading.
   final bool showProgress;
 
-  /// Whether the preview image should be displayed while sample is loading.
-  /// Has no effect if [PostImageSize] is not [PostImageSize.sample].
-  final bool withPreview;
+  /// Whether an already loaded lower resolution image should be displayed while the image is loading.
+  final bool withLowRes;
 
   /// The cache size for this image.
   final int? cacheSize;
 
-  /// The cache size of a previously loaded sample image.
-  /// Used to bridge the gap between loading a downsized sample and the full sized one.
-  /// Has no effect if [PostImageSize] is not [PostImageSize.sample].
-  final int? sampleCacheSize;
+  /// The cache size of a previously loaded lower resolution image.
+  /// Used to bridge the gap between loading a downsized image and the full sized one.
+  final int? lowResCacheSize;
 
   @override
   Widget build(BuildContext context) {
@@ -58,41 +56,32 @@ class PostImageWidget extends StatelessWidget {
                 cacheSize: cacheSize,
               );
             case PostImageSize.sample:
-              if (withPreview) {
-                return RawPostImageWidget(
-                  stacked: true,
-                  post: post,
-                  size: PostImageSize.sample,
-                  showProgress: showProgress,
-                  fit: fit,
-                  cacheSize: cacheSize,
-                  progressIndicatorBuilder: (context, url, progress) =>
-                      ImageProgressWrapper(
-                    aspectRatio: aspectRatio,
-                    progress: progress.progress,
-                    child: sampleCacheSize != null
-                        ? RawPostImageWidget(
-                            post: post,
-                            size: PostImageSize.sample,
-                            fit: fit,
-                            cacheSize: sampleCacheSize,
-                          )
-                        : RawPostImageWidget(
-                            post: post,
-                            size: PostImageSize.preview,
-                            fit: fit,
-                          ),
-                  ),
-                );
-              } else {
-                return RawPostImageWidget(
-                  post: post,
-                  size: PostImageSize.sample,
-                  showProgress: showProgress,
-                  fit: fit,
-                  cacheSize: cacheSize,
-                );
-              }
+              return RawPostImageWidget(
+                stacked: withLowRes,
+                post: post,
+                size: PostImageSize.sample,
+                showProgress: showProgress,
+                fit: fit,
+                cacheSize: cacheSize,
+                progressIndicatorBuilder: withLowRes
+                    ? (context, url, progress) => ImageProgressWrapper(
+                          aspectRatio: aspectRatio,
+                          progress: progress.progress,
+                          child: lowResCacheSize != null
+                              ? RawPostImageWidget(
+                                  post: post,
+                                  size: PostImageSize.sample,
+                                  fit: fit,
+                                  cacheSize: lowResCacheSize,
+                                )
+                              : RawPostImageWidget(
+                                  post: post,
+                                  size: PostImageSize.preview,
+                                  fit: fit,
+                                ),
+                        )
+                    : null,
+              );
             case PostImageSize.file:
               return RawPostImageWidget(
                 stacked: true,
@@ -108,7 +97,9 @@ class PostImageWidget extends StatelessWidget {
                   child: RawPostImageWidget(
                     post: post,
                     size: PostImageSize.sample,
+                    showProgress: showProgress,
                     fit: fit,
+                    cacheSize: lowResCacheSize,
                   ),
                 ),
               );
@@ -248,25 +239,25 @@ class ImageProgressWrapper extends StatelessWidget {
 Widget defaultErrorBuilder(BuildContext context, String url, dynamic error) =>
     const Center(child: Icon(Icons.warning_amber_outlined));
 
-class SampleCacheSize {
-  /// Configures the post sample image cache size for a subtree.
-  const SampleCacheSize(this.size);
+class LowResCacheSize {
+  /// Configures the post lower resolution image cache size for a subtree.
+  const LowResCacheSize(this.size);
 
   /// The cache size of the image.
   final int? size;
 }
 
-class SampleCacheSizeProvider extends SubProvider0<SampleCacheSize> {
-  /// Provides a sample image cache size to a subtree.
-  SampleCacheSizeProvider({required int? size, super.child, super.builder})
+class LowResCacheSizeProvider extends SubProvider0<LowResCacheSize> {
+  /// Provides a lower resolution image cache size to a subtree.
+  LowResCacheSizeProvider({required int? size, super.child, super.builder})
       : super(
-          create: (context) => SampleCacheSize(size),
+          create: (context) => LowResCacheSize(size),
           selector: (context) => [size],
         );
 
-  /// Removes the sample cache size for a subtree.
-  SampleCacheSizeProvider.none({super.child, super.builder})
+  /// Removes the lower resolution cache size for a subtree.
+  LowResCacheSizeProvider.none({super.child, super.builder})
       : super(
-          create: (context) => const SampleCacheSize(null),
+          create: (context) => const LowResCacheSize(null),
         );
 }

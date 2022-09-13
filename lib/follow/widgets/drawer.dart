@@ -49,9 +49,9 @@ class FollowSettingsTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       leading: const Icon(Icons.turned_in),
-      title: const Text('Following settings'),
+      title: const Text('Settings'),
       onTap: () async {
-        await Navigator.of(context).maybePop();
+        Scaffold.of(context).closeEndDrawer();
         Navigator.of(context).pushNamed('/following');
       },
     );

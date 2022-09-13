@@ -379,6 +379,65 @@ class Client extends ChangeNotifier {
     );
   }
 
+  Future<List<Post>> follows(
+    List<String> tags,
+    int page, {
+    int attempt = 0,
+    bool? force,
+  }) async {
+    List<Post> posts = [];
+    // ignore meta tags
+    tags.removeWhere((tag) => tag.contains(':'));
+    // ignore multitag searches
+    tags.removeWhere((tag) => tag.contains(' '));
+    // how many requests per requested page.
+    int batches = 2;
+    // distribute tags over requests evenly.
+    int max = 40;
+    int length = tags.length;
+    int approx = (length / max).ceil();
+    if (batches > approx) {
+      batches = approx;
+    }
+    if (approx > batches) {
+      int counter = 1;
+      while (true) {
+        counter++;
+        if (approx < batches * counter) {
+          approx = batches * counter;
+          break;
+        }
+      }
+    }
+    if (approx != 0) {
+      max = (length / approx).ceil();
+    }
+
+    int getTagPage(int page) {
+      if (page % approx == 0) {
+        return approx;
+      } else {
+        return page % approx;
+      }
+    }
+
+    int getSitePage(int page) => (page / approx).ceil();
+
+    int position = (page * batches) + 1;
+    for (int i = position - batches; i < position; i++) {
+      int tagPage = getTagPage(i);
+      int end = (length > tagPage * max) ? tagPage * max : length;
+      List<String?> tagSet = tags.sublist((tagPage - 1) * max, end);
+      posts.addAll(await this.posts(getSitePage(i),
+          search: '~${tagSet.join(' ~')}', force: force));
+    }
+    posts.sort((one, two) => two.id.compareTo(one.id));
+    if (posts.isEmpty && attempt < (approx / batches) - 1) {
+      posts.addAll(await follows(tags, page + 1, attempt: attempt + 1));
+    }
+    return posts;
+  }
+
   Future<List<Wiki>> wikis(int page, {String? search, bool? force}) async {
     await _initialized;
     List<dynamic> body = await _dio

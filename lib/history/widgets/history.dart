@@ -23,7 +23,7 @@ class _HistoryPageState extends State<HistoryPage> {
       child: Consumer<HistoriesController>(
         builder: (context, controller, child) => SelectionLayout<History>(
           items: controller.itemList,
-          child: RefreshablePage(
+          child: RefreshableControllerPage.builder(
             appBar: HistorySelectionAppBar(
               child: DefaultAppBar(
                 title: Column(
@@ -211,8 +211,7 @@ class _HistoryPageState extends State<HistoryPage> {
                   ),
               ],
             ),
-            refreshController: controller.refreshController,
-            refresh: () => controller.refresh(background: true, force: true),
+            controller: controller,
             builder: (context, child) => LimitedWidthLayout(child: child),
             child: (context) => PagedGroupedListView<int, History, DateTime>(
               padding: defaultActionListPadding

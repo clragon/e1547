@@ -60,6 +60,7 @@ class _DenyListPageState extends State<DenyListPage> {
             refreshingText: 'refreshing blacklist',
           ),
           builder: (context) => ListView.builder(
+            primary: true,
             padding: defaultActionListPadding
                 .add(LimitedWidthLayout.of(context).padding),
             itemCount: denylist.items.length,

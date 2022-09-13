@@ -60,6 +60,7 @@ class PostDetailFloatingActionButton extends StatelessWidget {
 
     return FloatingActionButton(
       heroTag: null,
+      clipBehavior: Clip.antiAlias,
       backgroundColor: Theme.of(context).cardColor,
       foregroundColor: Theme.of(context).iconTheme.color,
       onPressed: editingController.editing

@@ -8,6 +8,7 @@ class PostsPage extends StatefulWidget {
   PostsPage({
     required this.controller,
     required this.appBar,
+    this.displayType,
     this.drawerActions,
     this.canSelect = true,
   }) : super(key: ObjectKey(controller));
@@ -15,6 +16,7 @@ class PostsPage extends StatefulWidget {
   final PostsController controller;
   final PreferredSizeWidget appBar;
   final List<Widget>? drawerActions;
+  final PostDisplayType? displayType;
   final bool canSelect;
 
   @override
@@ -22,6 +24,8 @@ class PostsPage extends StatefulWidget {
 }
 
 class _PostsPageState extends State<PostsPage> {
+  late PostDisplayType displayType = widget.displayType ?? PostDisplayType.grid;
+
   @override
   Widget build(BuildContext context) {
     Widget? floatingActionButton() {
@@ -50,6 +54,31 @@ class _PostsPageState extends State<PostsPage> {
       return ContextDrawer(
         title: const Text('Posts'),
         children: [
+          ListTile(
+            leading: const Icon(Icons.grid_view_sharp),
+            title: const Text('Toggle display type (experimental)'),
+            subtitle: Text(displayType.name),
+            onTap: () {
+              switch (displayType) {
+                case PostDisplayType.grid:
+                  setState(() {
+                    displayType = PostDisplayType.comic;
+                  });
+                  break;
+                case PostDisplayType.comic:
+                  setState(() {
+                    displayType = PostDisplayType.timeline;
+                  });
+                  break;
+                case PostDisplayType.timeline:
+                  setState(() {
+                    displayType = PostDisplayType.grid;
+                  });
+                  break;
+              }
+            },
+          ),
+          const Divider(),
           CrossFade.builder(
             showChild: widget.drawerActions?.isNotEmpty ?? false,
             builder: (context) => Column(
@@ -72,8 +101,7 @@ class _PostsPageState extends State<PostsPage> {
         builder: (context, controller, child) => SelectionLayout<Post>(
           enabled: widget.canSelect,
           items: controller.itemList,
-          child: RefreshablePage(
-            refreshController: widget.controller.refreshController,
+          child: RefreshableControllerPage.builder(
             appBar: PostSelectionAppBar(
               controller: widget.controller,
               child: widget.appBar,
@@ -81,10 +109,14 @@ class _PostsPageState extends State<PostsPage> {
             drawer: const NavigationDrawer(),
             endDrawer: endDrawer(),
             floatingActionButton: floatingActionButton(),
-            refresh: () =>
-                widget.controller.refresh(background: true, force: true),
-            builder: (context, child) => TileLayout(child: child),
-            child: (context) => postGrid(context, widget.controller),
+            builder: (context, child) =>
+                LimitedWidthLayout(child: TileLayout(child: child)),
+            controller: widget.controller,
+            child: (context) => postDisplay(
+              context: context,
+              controller: widget.controller,
+              displayType: displayType,
+            ),
           ),
         ),
       ),

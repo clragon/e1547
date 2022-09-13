@@ -75,6 +75,7 @@ class _FollowsSplitPageState extends State<FollowsSplitPage> with DrawerEntry {
                     'Refreshing ${follows.progress} / ${follows.items.length}...',
               ),
               builder: (context) => GridView.builder(
+                primary: true,
                 padding: defaultListPadding,
                 addAutomaticKeepAlives: false,
                 itemCount: follows.items.length,

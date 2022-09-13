@@ -12,50 +12,6 @@ class ArtistDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    PostEditingController? editingController =
-        context.watch<PostEditingController?>();
-
-    Widget artists() {
-      return AnimatedSelector(
-        animation: Listenable.merge([editingController]),
-        selector: () => [
-          editingController?.value?.tags.hashCode,
-        ],
-        builder: (context, child) {
-          List<String> artists = filterArtists(
-              (editingController?.value?.tags ?? post.tags)['artist']!);
-          if (artists.isNotEmpty) {
-            List<InlineSpan> spans = [];
-            for (String artist in artists) {
-              if (artist != artists.first && artists.length > 1) {
-                spans.add(const TextSpan(text: ', '));
-              }
-              spans.add(
-                WidgetSpan(
-                  child: TagGesture(
-                    tag: artist,
-                    child: Text(artist),
-                  ),
-                ),
-              );
-            }
-            return Text.rich(
-              TextSpan(children: spans),
-              overflow: TextOverflow.fade,
-              style: const TextStyle(fontSize: 14.0),
-            );
-          } else {
-            return Text(
-              'no artist',
-              style: TextStyle(
-                  color: Theme.of(context).textTheme.subtitle2!.color,
-                  fontStyle: FontStyle.italic),
-            );
-          }
-        },
-      );
-    }
-
     return Column(
       children: [
         Row(
@@ -69,7 +25,7 @@ class ArtistDisplay extends StatelessWidget {
                     child: Icon(Icons.account_circle),
                   ),
                   Flexible(
-                    child: artists(),
+                    child: ArtistName(post: post),
                   ),
                 ],
               ),
@@ -115,6 +71,57 @@ class ArtistDisplay extends StatelessWidget {
         ),
         const Divider(),
       ],
+    );
+  }
+}
+
+class ArtistName extends StatelessWidget {
+  const ArtistName({super.key, required this.post});
+
+  final Post post;
+
+  @override
+  Widget build(BuildContext context) {
+    PostEditingController? editingController =
+        context.watch<PostEditingController?>();
+
+    return AnimatedSelector(
+      animation: Listenable.merge([editingController]),
+      selector: () => [
+        editingController?.value?.tags.hashCode,
+      ],
+      builder: (context, child) {
+        List<String> artists = filterArtists(
+            (editingController?.value?.tags ?? post.tags)['artist']!);
+        if (artists.isNotEmpty) {
+          List<InlineSpan> spans = [];
+          for (String artist in artists) {
+            if (artist != artists.first && artists.length > 1) {
+              spans.add(const TextSpan(text: ', '));
+            }
+            spans.add(
+              WidgetSpan(
+                child: TagGesture(
+                  tag: artist,
+                  child: Text(artist),
+                ),
+              ),
+            );
+          }
+          return Text.rich(
+            TextSpan(children: spans),
+            overflow: TextOverflow.fade,
+            style: const TextStyle(fontSize: 14.0),
+          );
+        } else {
+          return Text(
+            'no artist',
+            style: TextStyle(
+                color: Theme.of(context).textTheme.subtitle2!.color,
+                fontStyle: FontStyle.italic),
+          );
+        }
+      },
     );
   }
 }

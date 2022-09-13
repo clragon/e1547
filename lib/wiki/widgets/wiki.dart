@@ -23,6 +23,7 @@ class WikiPage extends StatelessWidget {
         ],
       ),
       body: ListView(
+        primary: true,
         padding: defaultActionListPadding
             .add(const EdgeInsets.symmetric(horizontal: 12)),
         children: [

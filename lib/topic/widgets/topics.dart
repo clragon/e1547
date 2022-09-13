@@ -44,6 +44,7 @@ class _TopicsPageState extends State<TopicsPage> with DrawerEntry {
             drawer: const NavigationDrawer(),
             controller: controller,
             child: PagedListView(
+              primary: true,
               padding: defaultListPadding,
               pagingController: controller,
               builderDelegate: defaultPagedChildBuilderDelegate<Topic>(

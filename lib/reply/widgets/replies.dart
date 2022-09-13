@@ -59,6 +59,7 @@ class RepliesPage extends StatelessWidget {
               ],
             ),
             child: PagedListView(
+              primary: true,
               padding: defaultActionListPadding,
               pagingController: controller,
               builderDelegate: defaultPagedChildBuilderDelegate<Reply>(

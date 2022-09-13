@@ -1,16 +1,19 @@
+import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view.dart';
 
 class PostFullscreen extends StatelessWidget {
-  final PostController post;
+  const PostFullscreen({super.key, required this.post, this.showFrame});
 
-  const PostFullscreen({super.key, required this.post});
+  final PostController post;
+  final bool? showFrame;
 
   @override
   Widget build(BuildContext context) {
     return PostFullscreenFrame(
       post: post.value,
+      visible: showFrame,
       child: PostFullscreenBody(
         post: post,
       ),
@@ -45,7 +48,10 @@ class PostFullscreenBody extends StatelessWidget {
                   minScale: PhotoViewComputedScale.contained,
                   maxScale: PhotoViewComputedScale.covered * 6,
                   child: PostImageWidget(
-                      post: post.value, size: PostImageSize.file),
+                    post: post.value,
+                    size: PostImageSize.file,
+                    lowResCacheSize: context.read<LowResCacheSize?>()?.size,
+                  ),
                 ),
               );
             case PostType.video:
@@ -62,7 +68,7 @@ class PostFullscreenBody extends StatelessWidget {
                 ),
               );
             case PostType.unsupported:
-              // this never occurs, ImageOverlay will display instead.
+            // this never occurs, ImageOverlay will display instead.
               throw StateError('PostFullscreen received an unsupported image!');
           }
         },

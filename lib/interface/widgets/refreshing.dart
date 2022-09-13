@@ -4,25 +4,36 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class RefreshableControllerPage<T extends RefreshableController>
     extends StatelessWidget {
-  final Widget child;
+  RefreshableControllerPage({
+    required Widget child,
+    required this.controller,
+    this.appBar,
+    this.refreshHeader,
+    this.drawer,
+    this.endDrawer,
+    this.floatingActionButton,
+  })  : builder = null,
+        child = ((context) => child);
+
+  const RefreshableControllerPage.builder({
+    required this.child,
+    required this.controller,
+    this.builder,
+    this.appBar,
+    this.refreshHeader,
+    this.drawer,
+    this.endDrawer,
+    this.floatingActionButton,
+  });
+
+  final WidgetBuilder child;
+  final WidgetChildBuilder? builder;
   final Widget? refreshHeader;
   final Widget? drawer;
   final Widget? endDrawer;
   final Widget? floatingActionButton;
   final PreferredSizeWidget? appBar;
   final T controller;
-  final ScrollController? scrollController;
-
-  const RefreshableControllerPage({
-    required this.child,
-    required this.controller,
-    this.appBar,
-    this.scrollController,
-    this.refreshHeader,
-    this.drawer,
-    this.endDrawer,
-    this.floatingActionButton,
-  });
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +45,8 @@ class RefreshableControllerPage<T extends RefreshableController>
       floatingActionButton: floatingActionButton,
       refreshController: controller.refreshController,
       refresh: () => controller.refresh(background: true, force: true),
-      child: (context) => child,
+      builder: builder,
+      child: child,
     );
   }
 }

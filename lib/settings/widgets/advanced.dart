@@ -21,6 +21,7 @@ class _AdvancedSettingsPageState extends State<AdvancedSettingsPage> {
             leading: BackButton(),
           ),
           body: ListView(
+            primary: true,
             padding: defaultActionListPadding
                 .add(LimitedWidthLayout.of(context).padding),
             children: [

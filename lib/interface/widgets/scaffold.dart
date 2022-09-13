@@ -396,7 +396,7 @@ class _AdaptiveScaffoldBodyState extends ScaffoldState {
   void openEndDrawer({bool toggle = true}) {
     if (endDrawerAction != null) {
       if (toggle && isEndDrawerOpen) {
-        closeEndDrawer();
+        closeEndDrawer(inline: true);
       } else {
         endDrawerAction!.onDrawerChanged(true);
       }
@@ -406,8 +406,9 @@ class _AdaptiveScaffoldBodyState extends ScaffoldState {
   }
 
   @override
-  void closeEndDrawer() {
+  void closeEndDrawer({bool inline = false}) {
     if (endDrawerAction != null) {
+      if (!inline) return;
       endDrawerAction!.onDrawerChanged(false);
     } else {
       super.closeEndDrawer();

@@ -7,47 +7,39 @@ import 'package:e1547/ticket/ticket.dart';
 import 'package:e1547/user/user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:relative_time/relative_time.dart';
 
 class CommentTile extends StatelessWidget {
-  final CommentController comment;
-  final bool hasActions;
-
   const CommentTile({
     required this.comment,
     this.hasActions = true,
   });
 
+  final CommentController comment;
+  final bool hasActions;
+
   @override
   Widget build(BuildContext context) {
-    const double iconSize = 18;
-
     Widget title() {
-      return DefaultTextStyle(
-        style: TextStyle(color: dimTextColor(context)),
-        child: Row(
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4),
-              child: InkWell(
-                child: Text(comment.value.creatorName),
-                onTap: () => Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => UserLoadingPage(
-                      comment.value.creatorId.toString(),
-                    ),
+      return TimedText(
+        created: comment.value.createdAt,
+        updated: comment.value.updatedAt,
+        child: DefaultTextStyle(
+          style: Theme.of(context).textTheme.bodyText2!.copyWith(
+                color: dimTextColor(context),
+              ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            child: InkWell(
+              child: Text(comment.value.creatorName),
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => UserLoadingPage(
+                    comment.value.creatorId.toString(),
                   ),
                 ),
               ),
             ),
-            Text(
-              ' • ${comment.value.createdAt.relativeTime(context)}'
-              '${comment.value.createdAt != comment.value.updatedAt ? ' (edited)' : ''}',
-              style: const TextStyle(
-                fontSize: 12,
-              ),
-            ),
-          ],
+          ),
         ),
       );
     }
@@ -82,63 +74,48 @@ class CommentTile extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            DefaultTextStyle(
-              style: Theme.of(context).textTheme.bodyText2!.copyWith(
-                    color: dimTextColor(context),
-                  ),
-              child: IconTheme(
-                data: Theme.of(context).iconTheme.copyWith(
-                      color: dimTextColor(context),
-                      size: iconSize,
-                    ),
-                child: AnimatedSelector(
-                  animation: comment,
-                  selector: () => [comment.value.voteStatus],
-                  builder: (context, child) => VoteDisplay(
-                    padding: EdgeInsets.zero,
-                    score: comment.value.score,
-                    status: comment.value.voteStatus,
-                    onUpvote: context.read<Client>().hasLogin
-                        ? (isLiked) async {
-                            comment
-                                .vote(upvote: true, replace: !isLiked)
-                                .then((value) {
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(SnackBar(
-                                duration: const Duration(seconds: 1),
-                                content: Text(
-                                    'Failed to upvote comment #${comment.id}'),
-                              ));
-                            });
-                            return !isLiked;
-                          }
-                        : null,
-                    onDownvote: context.read<Client>().hasLogin
-                        ? (isLiked) async {
-                            comment
-                                .vote(upvote: false, replace: !isLiked)
-                                .then((value) {
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(SnackBar(
-                                duration: const Duration(seconds: 1),
-                                content: Text(
-                                    'Failed to downvote comment #${comment.id}'),
-                              ));
-                            });
-                            return !isLiked;
-                          }
-                        : null,
-                  ),
+            DimSubtree(
+              child: AnimatedSelector(
+                animation: comment,
+                selector: () => [comment.value.voteStatus],
+                builder: (context, child) => VoteDisplay(
+                  padding: EdgeInsets.zero,
+                  score: comment.value.score,
+                  status: comment.value.voteStatus,
+                  onUpvote: context.read<Client>().hasLogin
+                      ? (isLiked) async {
+                          comment
+                              .vote(upvote: true, replace: !isLiked)
+                              .then((value) {
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              duration: const Duration(seconds: 1),
+                              content: Text(
+                                  'Failed to upvote comment #${comment.id}'),
+                            ));
+                          });
+                          return !isLiked;
+                        }
+                      : null,
+                  onDownvote: context.read<Client>().hasLogin
+                      ? (isLiked) async {
+                          comment
+                              .vote(upvote: false, replace: !isLiked)
+                              .then((value) {
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              duration: const Duration(seconds: 1),
+                              content: Text(
+                                  'Failed to downvote comment #${comment.id}'),
+                            ));
+                          });
+                          return !isLiked;
+                        }
+                      : null,
                 ),
               ),
             ),
             const Spacer(),
             PopupMenuButton<VoidCallback>(
-              icon: Icon(
-                Icons.more_vert,
-                size: iconSize,
-                color: dimTextColor(context),
-              ),
+              icon: const DimSubtree(child: Icon(Icons.more_vert)),
               onSelected: (value) => value(),
               itemBuilder: (context) => [
                 if (context.read<Client>().credentials?.username ==
@@ -236,7 +213,7 @@ class CommentTile extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 8),
                     child: Icon(
                       Icons.warning_amber,
-                      size: iconSize,
+                      size: smallIconSize(context),
                       color: Theme.of(context).errorColor,
                     ),
                   ),
