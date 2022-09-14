@@ -21,14 +21,11 @@ HistoriesSearch _$HistoriesSearchFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$HistoriesSearch {
   DateTime? get date => throw _privateConstructorUsedError;
-
   Set<HistorySearchFilter> get searchFilters =>
       throw _privateConstructorUsedError;
-
   Set<HistoryTypeFilter> get typeFilters => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-
   @JsonKey(ignore: true)
   $HistoriesSearchCopyWith<HistoriesSearch> get copyWith =>
       throw _privateConstructorUsedError;
@@ -39,7 +36,6 @@ abstract class $HistoriesSearchCopyWith<$Res> {
   factory $HistoriesSearchCopyWith(
           HistoriesSearch value, $Res Function(HistoriesSearch) then) =
       _$HistoriesSearchCopyWithImpl<$Res>;
-
   $Res call(
       {DateTime? date,
       Set<HistorySearchFilter> searchFilters,
@@ -52,7 +48,6 @@ class _$HistoriesSearchCopyWithImpl<$Res>
   _$HistoriesSearchCopyWithImpl(this._value, this._then);
 
   final HistoriesSearch _value;
-
   // ignore: unused_field
   final $Res Function(HistoriesSearch) _then;
 
@@ -85,7 +80,6 @@ abstract class _$$_HistoriesSearchCopyWith<$Res>
   factory _$$_HistoriesSearchCopyWith(
           _$_HistoriesSearch value, $Res Function(_$_HistoriesSearch) then) =
       __$$_HistoriesSearchCopyWithImpl<$Res>;
-
   @override
   $Res call(
       {DateTime? date,
@@ -144,7 +138,6 @@ class _$_HistoriesSearch extends _HistoriesSearch {
   @override
   final DateTime? date;
   final Set<HistorySearchFilter> _searchFilters;
-
   @override
   Set<HistorySearchFilter> get searchFilters {
     // ignore: implicit_dynamic_type
@@ -152,7 +145,6 @@ class _$_HistoriesSearch extends _HistoriesSearch {
   }
 
   final Set<HistoryTypeFilter> _typeFilters;
-
   @override
   Set<HistoryTypeFilter> get typeFilters {
     // ignore: implicit_dynamic_type
@@ -202,7 +194,6 @@ abstract class _HistoriesSearch extends HistoriesSearch {
       {final DateTime? date,
       required final Set<HistorySearchFilter> searchFilters,
       required final Set<HistoryTypeFilter> typeFilters}) = _$_HistoriesSearch;
-
   const _HistoriesSearch._() : super._();
 
   factory _HistoriesSearch.fromJson(Map<String, dynamic> json) =
@@ -210,13 +201,10 @@ abstract class _HistoriesSearch extends HistoriesSearch {
 
   @override
   DateTime? get date;
-
   @override
   Set<HistorySearchFilter> get searchFilters;
-
   @override
   Set<HistoryTypeFilter> get typeFilters;
-
   @override
   @JsonKey(ignore: true)
   _$$_HistoriesSearchCopyWith<_$_HistoriesSearch> get copyWith =>
