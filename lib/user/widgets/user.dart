@@ -31,16 +31,16 @@ class UserPage extends StatelessWidget {
       user: user,
       child: Consumer<_UserPageControllers>(
         builder: (context, controllers, child) {
-          Map<Widget, Widget> tabs = {
-            const Tab(text: 'Favorites'): postDisplay(
-              context: context,
-              controller: controllers.favoritePosts,
-            ),
-            const Tab(text: 'Uploads'): postDisplay(
-              context: context,
-              controller: controllers.uploadedPosts,
-            ),
-            const Tab(text: 'About'): UserInfo(user: user),
+          Map<Widget, WidgetBuilder> tabs = {
+            const Tab(text: 'Favorites'): (context) => postDisplay(
+                  context: context,
+                  controller: controllers.favoritePosts,
+                ),
+            const Tab(text: 'Uploads'): (context) => postDisplay(
+                  context: context,
+                  controller: controllers.uploadedPosts,
+                ),
+            const Tab(text: 'About'): (context) => UserInfo(user: user),
           };
 
           return DefaultTabController(
@@ -79,8 +79,10 @@ class UserPage extends StatelessWidget {
                   ],
                   body: LimitedWidthLayout(
                     child: TileLayout(
-                      child: TabBarView(
-                        children: tabs.values.toList(),
+                      child: Builder(
+                        builder: (context) => TabBarView(
+                          children: tabs.values.map((e) => e(context)).toList(),
+                        ),
                       ),
                     ),
                   ),
