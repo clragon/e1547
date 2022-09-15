@@ -18,6 +18,7 @@ class PoolPage extends StatefulWidget {
 
 class _PoolPageState extends State<PoolPage> {
   late bool reversePool = widget.reversed;
+  bool readerMode = false;
 
   @override
   Widget build(BuildContext context) {
@@ -40,6 +41,7 @@ class _PoolPageState extends State<PoolPage> {
           listenable: controller.search,
           child: PostsPage(
             controller: controller,
+            displayType: readerMode ? PostDisplayType.comic : null,
             appBar: DefaultAppBar(
               title: Text(tagToTitle(widget.pool.name)),
               actions: [
@@ -52,6 +54,15 @@ class _PoolPageState extends State<PoolPage> {
               ],
             ),
             drawerActions: [
+              Builder(
+                builder: (context) => PoolReaderSwitch(
+                  readerMode: readerMode,
+                  onChange: (value) {
+                    setState(() => readerMode = value);
+                    Scaffold.of(context).closeEndDrawer();
+                  },
+                ),
+              ),
               Builder(
                 builder: (context) => PoolOrderSwitch(
                   reversePool: reversePool,
@@ -73,9 +84,13 @@ class _PoolPageState extends State<PoolPage> {
 }
 
 class PoolOrderSwitch extends StatelessWidget {
+  const PoolOrderSwitch({
+    required this.reversePool,
+    required this.onChange,
+  });
+
   final bool reversePool;
-  final void Function(bool value) onChange;
-  const PoolOrderSwitch({required this.reversePool, required this.onChange});
+  final ValueChanged<bool> onChange;
 
   @override
   Widget build(BuildContext context) {
@@ -84,6 +99,28 @@ class PoolOrderSwitch extends StatelessWidget {
       title: const Text('Pool order'),
       subtitle: Text(reversePool ? 'newest first' : 'oldest first'),
       value: reversePool,
+      onChanged: onChange,
+    );
+  }
+}
+
+class PoolReaderSwitch extends StatelessWidget {
+  const PoolReaderSwitch({
+    super.key,
+    required this.readerMode,
+    required this.onChange,
+  });
+
+  final bool readerMode;
+  final ValueChanged<bool> onChange;
+
+  @override
+  Widget build(BuildContext context) {
+    return SwitchListTile(
+      secondary: const Icon(Icons.auto_stories),
+      title: const Text('Pool reader mode'),
+      subtitle: Text(readerMode ? 'large images' : 'normal grid'),
+      value: readerMode,
       onChanged: onChange,
     );
   }

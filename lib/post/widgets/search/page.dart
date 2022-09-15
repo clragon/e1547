@@ -24,8 +24,6 @@ class PostsPage extends StatefulWidget {
 }
 
 class _PostsPageState extends State<PostsPage> {
-  late PostDisplayType displayType = widget.displayType ?? PostDisplayType.grid;
-
   @override
   Widget build(BuildContext context) {
     Widget? floatingActionButton() {
@@ -54,30 +52,6 @@ class _PostsPageState extends State<PostsPage> {
       return ContextDrawer(
         title: const Text('Posts'),
         children: [
-          ListTile(
-            leading: const Icon(Icons.grid_view_sharp),
-            title: const Text('Toggle display type (experimental)'),
-            subtitle: Text(displayType.name),
-            onTap: () {
-              switch (displayType) {
-                case PostDisplayType.grid:
-                  setState(() {
-                    displayType = PostDisplayType.comic;
-                  });
-                  break;
-                case PostDisplayType.comic:
-                  setState(() {
-                    displayType = PostDisplayType.timeline;
-                  });
-                  break;
-                case PostDisplayType.timeline:
-                  setState(() {
-                    displayType = PostDisplayType.grid;
-                  });
-                  break;
-              }
-            },
-          ),
           const Divider(),
           CrossFade.builder(
             showChild: widget.drawerActions?.isNotEmpty ?? false,
@@ -115,7 +89,7 @@ class _PostsPageState extends State<PostsPage> {
             child: (context) => postDisplay(
               context: context,
               controller: widget.controller,
-              displayType: displayType,
+              displayType: widget.displayType ?? PostDisplayType.grid,
             ),
           ),
         ),

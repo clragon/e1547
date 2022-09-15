@@ -19,6 +19,7 @@ class SearchPage extends StatefulWidget {
 
 class _SearchPageState extends State<SearchPage> {
   late bool reversePools = widget.reversePools;
+  bool readerMode = false;
   bool loadingInfo = true;
   Pool? pool;
 
@@ -119,6 +120,7 @@ class _SearchPageState extends State<SearchPage> {
                 listenable: follows,
                 child: PostsPage(
                   controller: controller,
+                  displayType: readerMode ? PostDisplayType.comic : null,
                   appBar: DefaultAppBar(
                     title: Text(getTitle()),
                     actions: [
@@ -139,6 +141,16 @@ class _SearchPageState extends State<SearchPage> {
                     ],
                   ),
                   drawerActions: [
+                    if (pool != null)
+                      Builder(
+                        builder: (context) => PoolReaderSwitch(
+                          readerMode: readerMode,
+                          onChange: (value) {
+                            setState(() => readerMode = value);
+                            Scaffold.of(context).closeEndDrawer();
+                          },
+                        ),
+                      ),
                     if (pool != null)
                       Builder(
                         builder: (context) => PoolOrderSwitch(
