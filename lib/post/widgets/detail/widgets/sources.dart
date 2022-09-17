@@ -42,9 +42,9 @@ class SourceDisplay extends StatelessWidget {
                       ),
                     ),
                   ),
-                  CrossFade(
+                  CrossFade.builder(
                     showChild: isEditing,
-                    child: IconButton(
+                    builder: (context) => IconButton(
                       icon: const Icon(Icons.edit),
                       onPressed: editingController!.canEdit
                           ? () => Navigator.of(context).push(

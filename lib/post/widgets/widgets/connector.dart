@@ -2,8 +2,8 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 
-class PostDetailConnector extends StatefulWidget {
-  const PostDetailConnector({
+class PostControllerConnector extends StatefulWidget {
+  const PostControllerConnector({
     super.key,
     required this.controller,
     required this.child,
@@ -13,10 +13,11 @@ class PostDetailConnector extends StatefulWidget {
   final Widget child;
 
   @override
-  State<PostDetailConnector> createState() => _PostDetailConnectorState();
+  State<PostControllerConnector> createState() =>
+      _PostControllerConnectorState();
 }
 
-class _PostDetailConnectorState extends State<PostDetailConnector> {
+class _PostControllerConnectorState extends State<PostControllerConnector> {
   late List<Post>? pageItems = widget.controller.itemList;
 
   void popOrRemove() {

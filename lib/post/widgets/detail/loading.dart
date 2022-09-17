@@ -19,7 +19,7 @@ class PostLoadingPage extends StatelessWidget {
         builder: (context, controller, child) =>
             FuturePageLoader<PostsController>(
           future: controller,
-          builder: (context, value) => PostDetailConnector(
+          builder: (context, value) => PostControllerConnector(
             controller: value,
             child: PostDetailGallery(controller: value),
           ),

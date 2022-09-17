@@ -66,7 +66,7 @@ class _PostDetailGalleryState extends State<PostDetailGallery>
                       controller: postController,
                       onTapImage: () => Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (context) => PostDetailConnector(
+                          builder: (context) => PostControllerConnector(
                             controller: controller,
                             child: PostFullscreenGallery(
                               controller: controller,

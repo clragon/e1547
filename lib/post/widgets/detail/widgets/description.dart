@@ -39,13 +39,13 @@ class DescriptionDisplay extends StatelessWidget {
                     ),
                     IconButton(
                       icon: const Icon(Icons.edit),
-                      onPressed: editingController!.canEdit
+                      onPressed: editingController?.canEdit ?? false
                           ? () => Navigator.of(context).push(
                                 MaterialPageRoute(
                                   builder: (context) => DTextEditor(
                                     title: Text('#${post.id} description'),
                                     content:
-                                        editingController.value!.description,
+                                        editingController!.value!.description,
                                     onSubmit: (context, text) {
                                       editingController.value =
                                           editingController.value!.copyWith(

@@ -45,10 +45,10 @@ class TagDisplay extends StatelessWidget {
                   tag: tag,
                   category: category,
                   editing: isEditing,
-                  onRemove: editingController!.canEdit
+                  onRemove: editingController?.canEdit ?? false
                       ? () {
                           Map<String, List<String>> edited =
-                              Map.from(editingController.value!.tags);
+                              Map.from(editingController!.value!.tags);
                           edited[category]!.remove(tag);
                           editingController.value =
                               editingController.value!.copyWith(
@@ -59,9 +59,9 @@ class TagDisplay extends StatelessWidget {
                 ),
               ),
               if (category != 'invalid')
-                CrossFade(
+                CrossFade.builder(
                   showChild: isEditing,
-                  child: TagAddCard(
+                  builder: (context) => TagAddCard(
                     category: category,
                     submit: editingController!.canEdit
                         ? (value) => onPostTagsEdit(

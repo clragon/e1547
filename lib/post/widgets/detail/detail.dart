@@ -59,7 +59,7 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
                   Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (context) =>
-                          PostFullscreen(post: widget.controller),
+                          PostFullscreen(controller: widget.controller),
                     ),
                   );
                 }

@@ -4,51 +4,56 @@ import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view.dart';
 
 class PostFullscreen extends StatelessWidget {
-  const PostFullscreen({super.key, required this.post, this.showFrame});
+  const PostFullscreen({
+    super.key,
+    required this.controller,
+    this.showFrame,
+  });
 
-  final PostController post;
+  final PostController controller;
   final bool? showFrame;
 
   @override
   Widget build(BuildContext context) {
     return PostFullscreenFrame(
-      post: post.value,
+      post: controller.value,
       visible: showFrame,
       child: PostFullscreenBody(
-        post: post,
+        controller: controller,
       ),
     );
   }
 }
 
 class PostFullscreenBody extends StatelessWidget {
-  final PostController post;
+  const PostFullscreenBody({required this.controller});
 
-  const PostFullscreenBody({required this.post});
+  final PostController controller;
 
   @override
   Widget build(BuildContext context) {
     return PostVideoRoute(
-      post: post.value,
+      post: controller.value,
       stopOnDispose: false,
       child: ImageOverlay(
-        controller: post,
+        controller: controller,
         builder: (context) {
-          switch (post.value.type) {
+          switch (controller.value.type) {
             case PostType.image:
               return PhotoViewGestureDetectorScope(
                 axis: Axis.horizontal,
                 child: PhotoView.customChild(
-                  heroAttributes: PhotoViewHeroAttributes(tag: post.value.link),
+                  heroAttributes:
+                      PhotoViewHeroAttributes(tag: controller.value.link),
                   backgroundDecoration:
                       const BoxDecoration(color: Colors.transparent),
-                  childSize: Size(post.value.file.width.toDouble(),
-                      post.value.file.height.toDouble()),
+                  childSize: Size(controller.value.file.width.toDouble(),
+                      controller.value.file.height.toDouble()),
                   initialScale: PhotoViewComputedScale.contained,
                   minScale: PhotoViewComputedScale.contained,
                   maxScale: PhotoViewComputedScale.covered * 6,
                   child: PostImageWidget(
-                    post: post.value,
+                    post: controller.value,
                     size: PostImageSize.file,
                     lowResCacheSize: context.read<LowResCacheSize?>()?.size,
                   ),
@@ -57,18 +62,18 @@ class PostFullscreenBody extends StatelessWidget {
             case PostType.video:
               return Center(
                 child: Hero(
-                  tag: post.value.link,
+                  tag: controller.value.link,
                   child: PostVideoLoader(
-                    post: post.value,
+                    post: controller.value,
                     child: VideoGestures(
-                      videoController: post.value.getVideo(context)!,
-                      child: PostVideoWidget(post: post.value),
+                      videoController: controller.value.getVideo(context)!,
+                      child: PostVideoWidget(post: controller.value),
                     ),
                   ),
                 ),
               );
             case PostType.unsupported:
-            // this never occurs, ImageOverlay will display instead.
+              // this never occurs, ImageOverlay will display instead.
               throw StateError('PostFullscreen received an unsupported image!');
           }
         },

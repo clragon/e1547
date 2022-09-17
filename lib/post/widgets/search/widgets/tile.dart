@@ -242,7 +242,7 @@ void defaultPushPostDetail(BuildContext context, PostController controller) {
       builder: (context) => LowResCacheSizeProvider(
         size: cacheSize,
         child: controller.parent != null
-            ? PostDetailConnector(
+            ? PostControllerConnector(
                 controller: controller.parent!,
                 child: PostDetailGallery(
                   controller: controller.parent!,
@@ -274,6 +274,31 @@ class PostTile extends StatelessWidget {
         valueListenable: context.watch<Settings>().showPostInfo,
         builder: (context, value, child) =>
             value ? PostInfoBar(controller: controller) : const SizedBox(),
+      ),
+    );
+  }
+}
+
+class PostComicTile extends StatelessWidget {
+  const PostComicTile({
+    super.key,
+    required this.controller,
+  });
+
+  final PostController controller;
+
+  Post get post => controller.value;
+
+  @override
+  Widget build(BuildContext context) {
+    return AspectRatio(
+      aspectRatio: post.file.width / post.file.height,
+      child: PostImageTile(
+        controller: controller,
+        size: PostImageSize.file,
+        withLowRes: true,
+        showProgress: false,
+        onTap: () => defaultPushPostDetail(context, controller),
       ),
     );
   }
@@ -419,15 +444,15 @@ class PostFeedTile extends StatelessWidget {
                   child: LowResCacheSizeProvider(
                     size: cacheSize,
                     child: controller.parent != null
-                        ? PostDetailConnector(
+                        ? PostControllerConnector(
                             controller: controller.parent!,
                             child: PostFullscreen(
-                              post: controller,
+                              controller: controller,
                               showFrame: true,
                             ),
                           )
                         : PostFullscreen(
-                            post: controller,
+                            controller: controller,
                             showFrame: true,
                           ),
                   ),
@@ -482,33 +507,6 @@ class PostFeedTile extends StatelessWidget {
             ],
           ),
         ),
-      ),
-    );
-  }
-}
-
-class PostComicTile extends StatelessWidget {
-  const PostComicTile({
-    super.key,
-    required this.controller,
-    this.onTap,
-  });
-
-  final PostController controller;
-
-  Post get post => controller.value;
-  final VoidCallback? onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return AspectRatio(
-      aspectRatio: post.file.width / post.file.height,
-      child: PostImageTile(
-        controller: controller,
-        size: PostImageSize.file,
-        withLowRes: true,
-        showProgress: false,
-        onTap: onTap ?? () => defaultPushPostDetail(context, controller),
       ),
     );
   }

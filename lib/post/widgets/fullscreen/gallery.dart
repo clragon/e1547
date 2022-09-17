@@ -8,12 +8,14 @@ class PostFullscreenGallery extends StatefulWidget {
     this.initialPage,
     this.pageController,
     this.onPageChanged,
+    this.showFrame,
   }) : assert(initialPage == null || pageController == null);
 
   final PostsController controller;
   final int? initialPage;
   final PageController? pageController;
   final ValueChanged<int>? onPageChanged;
+  final bool? showFrame;
 
   @override
   State<PostFullscreenGallery> createState() => _PostFullscreenGalleryState();
@@ -42,6 +44,7 @@ class _PostFullscreenGalleryState extends State<PostFullscreenGallery>
         child: widget.controller.itemList != null
             ? PostFullscreenFrame(
                 post: widget.controller.itemList![value],
+                visible: widget.showFrame,
                 child: child!,
               )
             : const SizedBox.shrink(),
@@ -56,7 +59,7 @@ class _PostFullscreenGalleryState extends State<PostFullscreenGallery>
               id: controller.itemList![index].id,
               child: Consumer<PostController>(
                 builder: (context, post, child) => PostFullscreenBody(
-                  post: post,
+                  controller: post,
                 ),
               ),
             ),
