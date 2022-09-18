@@ -22,7 +22,7 @@ class HistorySelectionAppBar extends StatelessWidget with AppBarBuilderWidget {
           icon: const Icon(Icons.delete_outline),
           onPressed: () {
             context
-                .read<HistoriesService>()
+                .read<HistoriesController>()
                 .removeAll(data.selections.toList());
             data.onChanged({});
           },

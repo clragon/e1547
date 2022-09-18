@@ -46,6 +46,18 @@ class HistoriesController extends DataController<History>
       error: value.error,
     );
   }
+
+  Future<void> removeAll(List<History> items) async {
+    for (final item in items) {
+      assertOwnsItem(item);
+    }
+    await service.removeAll(items);
+    value = PagingState(
+      itemList: List.of(itemList!)..removeWhere((e) => items.contains(e)),
+      nextPageKey: value.nextPageKey,
+      error: value.error,
+    );
+  }
 }
 
 class HistoriesProvider
