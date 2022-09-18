@@ -21,7 +21,7 @@ extension ExtraRatingData on Rating {
       case Rating.q:
         return 'Questionable';
       case Rating.e:
-        return 'Excplicit';
+        return 'Explicit';
     }
   }
 }

@@ -108,7 +108,7 @@ class Flags with _$Flags {
 }
 
 @JsonEnum()
-enum Rating { s, e, q }
+enum Rating { s, q, e }
 
 @freezed
 class Relationships with _$Relationships {
