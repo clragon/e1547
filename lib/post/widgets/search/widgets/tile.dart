@@ -36,46 +36,49 @@ class PostImageTile extends StatelessWidget {
       valueListenable: controller,
       builder: (context, post, child) => Card(
         clipBehavior: Clip.antiAlias,
-        child: Stack(
-          fit: StackFit.passthrough,
-          clipBehavior: Clip.none,
-          children: [
-            Column(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Expanded(
-                        child: PostTileOverlay(
-                          controller: controller,
-                          child: Hero(
-                            tag: post.link,
-                            child: PostImageWidget(
-                              post: post,
-                              size: size ?? PostImageSize.sample,
-                              fit: fit ?? BoxFit.cover,
-                              showProgress: showProgress ?? false,
-                              withLowRes: withLowRes ?? false,
-                              cacheSize: context.read<LowResCacheSize>().size,
+        child: SelectionItemOverlay(
+          item: post,
+          child: Stack(
+            fit: StackFit.passthrough,
+            clipBehavior: Clip.none,
+            children: [
+              Column(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Expanded(
+                          child: PostTileOverlay(
+                            controller: controller,
+                            child: Hero(
+                              tag: post.link,
+                              child: PostImageWidget(
+                                post: post,
+                                size: size ?? PostImageSize.sample,
+                                fit: fit ?? BoxFit.cover,
+                                showProgress: showProgress ?? false,
+                                withLowRes: withLowRes ?? false,
+                                cacheSize: context.read<LowResCacheSize>().size,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-                if (bottomBar != null) bottomBar!,
-              ],
-            ),
-            Positioned(top: 0, right: 0, child: PostImageTag(post: post)),
-            Material(
-              type: MaterialType.transparency,
-              child: InkWell(
-                onTap: onTap,
+                  if (bottomBar != null) bottomBar!,
+                ],
               ),
-            ),
-          ],
+              Positioned(top: 0, right: 0, child: PostImageTag(post: post)),
+              Material(
+                type: MaterialType.transparency,
+                child: InkWell(
+                  onTap: onTap,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
