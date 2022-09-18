@@ -6,17 +6,17 @@ import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
 class PostDetailGallery extends StatefulWidget {
-  final PostsController controller;
-  final int? initialPage;
-  final PageController? pageController;
-  final ValueChanged<int>? onPageChanged;
-
   const PostDetailGallery({
     required this.controller,
     this.initialPage,
     this.pageController,
     this.onPageChanged,
   }) : assert(initialPage == null || pageController == null);
+
+  final PostsController controller;
+  final int? initialPage;
+  final PageController? pageController;
+  final ValueChanged<int>? onPageChanged;
 
   @override
   State<PostDetailGallery> createState() => _PostDetailGalleryState();

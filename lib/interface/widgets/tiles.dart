@@ -8,11 +8,6 @@ enum GridQuilt {
 }
 
 class TileLayoutData extends InheritedWidget {
-  final double tileHeightFactor;
-  final int tileSize;
-  final int crossAxisCount;
-  final GridQuilt stagger;
-
   const TileLayoutData({
     required super.child,
     required this.tileHeightFactor,
@@ -20,6 +15,11 @@ class TileLayoutData extends InheritedWidget {
     required this.crossAxisCount,
     required this.stagger,
   });
+
+  final double tileHeightFactor;
+  final int tileSize;
+  final int crossAxisCount;
+  final GridQuilt stagger;
 
   @override
   bool updateShouldNotify(covariant TileLayoutData oldWidget) =>
@@ -29,17 +29,17 @@ class TileLayoutData extends InheritedWidget {
 }
 
 class TileLayout extends StatelessWidget {
-  final Widget child;
-  final double tileHeightFactor;
-  final int? tileSize;
-  final GridQuilt? stagger;
-
   const TileLayout({
     required this.child,
     this.tileHeightFactor = 1.2,
     this.tileSize,
     this.stagger,
   });
+
+  final Widget child;
+  final double tileHeightFactor;
+  final int? tileSize;
+  final GridQuilt? stagger;
 
   static TileLayoutData of(BuildContext context) =>
       context.dependOnInheritedWidgetOfExactType<TileLayoutData>()!;

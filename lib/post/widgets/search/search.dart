@@ -8,10 +8,10 @@ import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 
 class SearchPage extends StatefulWidget {
+  const SearchPage({this.tags, this.reversePools = false});
+
   final String? tags;
   final bool reversePools;
-
-  const SearchPage({this.tags, this.reversePools = false});
 
   @override
   State<SearchPage> createState() => _SearchPageState();

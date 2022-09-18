@@ -3,11 +3,15 @@ import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 
 class SectionWrap extends StatelessWidget {
+  const SectionWrap({
+    required this.child,
+    this.title,
+    this.expanded = false,
+  });
+
   final Widget child;
   final String? title;
   final bool expanded;
-
-  const SectionWrap({required this.child, this.title, this.expanded = false});
 
   @override
   Widget build(BuildContext context) {

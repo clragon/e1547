@@ -146,8 +146,7 @@ class _TextEditorState extends State<TextEditor> {
                       ? widget.bottomSheetBuilder?.call(context, textController)
                       : null,
               body: NestedScrollView(
-                headerSliverBuilder: (context, innerBoxIsScrolled) =>
-                [
+                headerSliverBuilder: (context, innerBoxIsScrolled) => [
                   SliverOverlapAbsorber(
                     handle: NestedScrollView.sliverOverlapAbsorberHandleFor(
                       context,

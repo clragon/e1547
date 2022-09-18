@@ -2,11 +2,11 @@ import 'package:decorated_icon/decorated_icon.dart';
 import 'package:flutter/material.dart';
 
 class ShadowIcon extends StatelessWidget {
-  final IconData icon;
-  final double size;
-  final Color? color;
+  const ShadowIcon(this.icon, {this.size, this.color});
 
-  const ShadowIcon(this.icon, {this.size = 24, this.color});
+  final IconData icon;
+  final double? size;
+  final Color? color;
 
   @override
   Widget build(BuildContext context) {
@@ -14,11 +14,7 @@ class ShadowIcon extends StatelessWidget {
       icon,
       size: size,
       color: color,
-      shadows: const [
-        Shadow(
-          blurRadius: 9,
-        ),
-      ],
+      shadows: const [Shadow(blurRadius: 9)],
     );
   }
 }

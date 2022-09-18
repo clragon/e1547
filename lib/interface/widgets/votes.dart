@@ -8,12 +8,6 @@ enum VoteStatus {
 }
 
 class VoteDisplay extends StatelessWidget {
-  final VoteStatus status;
-  final int score;
-  final Future<bool> Function(bool isVoted)? onUpvote;
-  final Future<bool> Function(bool isVoted)? onDownvote;
-  final EdgeInsetsGeometry? padding;
-
   const VoteDisplay({
     required this.status,
     required this.score,
@@ -21,6 +15,12 @@ class VoteDisplay extends StatelessWidget {
     this.onDownvote,
     this.padding,
   });
+
+  final VoteStatus status;
+  final int score;
+  final Future<bool> Function(bool isVoted)? onUpvote;
+  final Future<bool> Function(bool isVoted)? onDownvote;
+  final EdgeInsetsGeometry? padding;
 
   @override
   Widget build(BuildContext context) {

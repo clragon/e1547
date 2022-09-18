@@ -1,16 +1,6 @@
 import 'package:flutter/material.dart';
 
 class TextState {
-  bool bold;
-  bool italic;
-  bool strikeout;
-  bool underline;
-  bool overline;
-  bool header;
-  bool link;
-  bool highlight;
-  VoidCallback? onTap;
-
   TextState({
     required this.bold,
     required this.italic,
@@ -22,6 +12,16 @@ class TextState {
     required this.highlight,
     required this.onTap,
   });
+
+  bool bold;
+  bool italic;
+  bool strikeout;
+  bool underline;
+  bool overline;
+  bool header;
+  bool link;
+  bool highlight;
+  VoidCallback? onTap;
 
   TextState copyWith({
     bool? bold,
@@ -66,14 +66,6 @@ enum TextBlock {
 }
 
 class TextTag {
-  final String before;
-  final String tag;
-  final String after;
-  final String key;
-  final bool active;
-  final bool expanded;
-  final String? value;
-
   TextTag({
     required this.before,
     required this.tag,
@@ -83,6 +75,26 @@ class TextTag {
     required this.expanded,
     required this.value,
   });
+
+  factory TextTag.fromMatch(RegExpMatch match) {
+    return TextTag(
+      before: match.input.substring(0, match.start),
+      tag: match.input.substring(match.start, match.end),
+      after: match.input.substring(match.end),
+      key: match.namedGroup('tag')!.toLowerCase(),
+      active: match.namedGroup('closing') == null,
+      expanded: match.namedGroup('expanded') != null,
+      value: match.namedGroup('value'),
+    );
+  }
+
+  final String before;
+  final String tag;
+  final String after;
+  final String key;
+  final bool active;
+  final bool expanded;
+  final String? value;
 
   static String _singleBrackets(String value) => [
         r'(?<!\[)', // prevent double brackets
@@ -114,18 +126,6 @@ class TextTag {
         nameMatch, // read tag
       ),
       caseSensitive: false,
-    );
-  }
-
-  factory TextTag.fromMatch(RegExpMatch match) {
-    return TextTag(
-      before: match.input.substring(0, match.start),
-      tag: match.input.substring(match.start, match.end),
-      after: match.input.substring(match.end),
-      key: match.namedGroup('tag')!.toLowerCase(),
-      active: match.namedGroup('closing') == null,
-      expanded: match.namedGroup('expanded') != null,
-      value: match.namedGroup('value'),
     );
   }
 

@@ -254,17 +254,17 @@ class _LoginPageState extends State<LoginPage> {
 }
 
 class LoginLoadingDialog extends StatefulWidget {
-  final String username;
-  final String password;
-  final VoidCallback? onError;
-  final VoidCallback? onDone;
-
   const LoginLoadingDialog({
     required this.username,
     required this.password,
     this.onError,
     this.onDone,
   });
+
+  final String username;
+  final String password;
+  final VoidCallback? onError;
+  final VoidCallback? onDone;
 
   @override
   State<LoginLoadingDialog> createState() => _LoginLoadingDialogState();

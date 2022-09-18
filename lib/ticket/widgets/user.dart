@@ -5,9 +5,9 @@ import 'package:e1547/user/user.dart';
 import 'package:flutter/material.dart';
 
 class UserReportScreen extends StatelessWidget {
-  final User user;
-
   const UserReportScreen({required this.user});
+
+  final User user;
 
   @override
   Widget build(BuildContext context) {

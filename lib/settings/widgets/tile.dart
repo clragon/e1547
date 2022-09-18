@@ -3,9 +3,9 @@ import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 
 class ImageGrid extends StatelessWidget {
-  final List<String>? images;
-
   const ImageGrid({super.key, this.images});
+
+  final List<String>? images;
 
   BorderRadius getGridBorderRadius({
     required int index,
@@ -87,16 +87,6 @@ class ImageGrid extends StatelessWidget {
 }
 
 class ImageTile extends StatelessWidget {
-  final Widget title;
-  final Widget? subtitle;
-  final Widget? description;
-  final Widget? leading;
-  final Widget? trailing;
-  final List<String>? images;
-  final VoidCallback? onTap;
-  final VoidCallback? onLongPress;
-  final String? hero;
-
   const ImageTile({
     required this.images,
     required this.title,
@@ -108,6 +98,16 @@ class ImageTile extends StatelessWidget {
     this.onLongPress,
     this.hero,
   });
+
+  final Widget title;
+  final Widget? subtitle;
+  final Widget? description;
+  final Widget? leading;
+  final Widget? trailing;
+  final List<String>? images;
+  final VoidCallback? onTap;
+  final VoidCallback? onLongPress;
+  final String? hero;
 
   @override
   Widget build(BuildContext context) {

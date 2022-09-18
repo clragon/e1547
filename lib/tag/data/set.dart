@@ -1,8 +1,6 @@
 import 'package:e1547/interface/interface.dart';
 
 class Tagset extends Iterable<StringTag> {
-  final Map<String, StringTag> _tags;
-
   Tagset(Set<StringTag> tags) : _tags = {for (final t in tags) t.name: t};
 
   Tagset.parse(String tagString) : _tags = {} {
@@ -14,6 +12,8 @@ class Tagset extends Iterable<StringTag> {
       _tags[t.name] = t;
     }
   }
+
+  final Map<String, StringTag> _tags;
 
   String get link => '/posts?tags=${toString()}';
 
@@ -90,9 +90,6 @@ class Tagset extends Iterable<StringTag> {
 }
 
 class StringTag {
-  final String name;
-  final String? value;
-
   StringTag(this.name, [this.value]);
 
   factory StringTag.parse(String tag) {
@@ -104,6 +101,9 @@ class StringTag {
     String? value = components.length == 2 ? components[1] : null;
     return StringTag(name, value);
   }
+
+  final String name;
+  final String? value;
 
   @override
   String toString() => '$name${value != null ? ':$value' : ''}';

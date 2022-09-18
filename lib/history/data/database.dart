@@ -30,12 +30,12 @@ class StringListConverter extends TypeConverter<List<String>, String> {
 
 @DriftDatabase(tables: [HistoriesTable])
 class HistoriesDatabase extends _$HistoriesDatabase {
-  static const String _defaultName = 'history.sqlite';
-
   HistoriesDatabase({String? path}) : super(openDatabase(path ?? _defaultName));
 
   HistoriesDatabase.connect({String? path})
       : super.connect(connectDatabase(path ?? _defaultName));
+
+  static const String _defaultName = 'history.sqlite';
 
   @override
   int get schemaVersion => 1;

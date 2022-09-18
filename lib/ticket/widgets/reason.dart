@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:keyboard_dismisser/keyboard_dismisser.dart';
 
 class ReportFormReason extends StatelessWidget {
+  const ReportFormReason({required this.isLoading, required this.controller});
+
   final bool isLoading;
   final TextEditingController controller;
-
-  const ReportFormReason({required this.isLoading, required this.controller});
 
   @override
   Widget build(BuildContext context) {
@@ -33,12 +33,6 @@ class ReportFormReason extends StatelessWidget {
 }
 
 class ReasonReportScreen extends StatefulWidget {
-  final Widget? title;
-  final Widget Function(BuildContext context, bool isLoading) previewBuilder;
-  final Future<bool> Function(String reason) onReport;
-  final String? onSuccess;
-  final String? onFailure;
-
   const ReasonReportScreen({
     this.title,
     required this.previewBuilder,
@@ -46,6 +40,12 @@ class ReasonReportScreen extends StatefulWidget {
     this.onSuccess,
     this.onFailure,
   });
+
+  final Widget? title;
+  final Widget Function(BuildContext context, bool isLoading) previewBuilder;
+  final Future<bool> Function(String reason) onReport;
+  final String? onSuccess;
+  final String? onFailure;
 
   @override
   State<ReasonReportScreen> createState() => _ReasonReportScreenState();

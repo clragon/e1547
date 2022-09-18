@@ -10,14 +10,6 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 class TagInput extends StatefulWidget {
-  final String? labelText;
-  final SubmitString submit;
-  final TextEditingController? controller;
-  final bool multiInput;
-  final int? category;
-  final bool readOnly;
-  final TextInputAction? textInputAction;
-
   const TagInput({
     required this.labelText,
     required this.submit,
@@ -27,6 +19,14 @@ class TagInput extends StatefulWidget {
     this.readOnly = false,
     this.textInputAction,
   });
+
+  final String? labelText;
+  final SubmitString submit;
+  final TextEditingController? controller;
+  final bool multiInput;
+  final int? category;
+  final bool readOnly;
+  final TextInputAction? textInputAction;
 
   @override
   State<TagInput> createState() => _TagInputState();
@@ -144,17 +144,17 @@ class _TagInputState extends State<TagInput> {
 }
 
 class AdvancedTagInput extends StatefulWidget {
-  final TextEditingController? controller;
-  final SubmitString submit;
-  final String? labelText;
-  final TextInputAction? textInputAction;
-
   const AdvancedTagInput({
     required this.submit,
     required this.controller,
     this.labelText,
     this.textInputAction,
   });
+
+  final TextEditingController? controller;
+  final SubmitString submit;
+  final String? labelText;
+  final TextInputAction? textInputAction;
 
   @override
   State<AdvancedTagInput> createState() => _AdvancedTagInputState();

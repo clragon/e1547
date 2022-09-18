@@ -26,18 +26,18 @@ class DialogActionController extends ActionController {
 }
 
 class LoadingDialog extends StatefulWidget {
+  const LoadingDialog({
+    this.title,
+    required this.submit,
+    required this.builder,
+  });
+
   final Widget? title;
   final ActionControllerCallback submit;
   final Widget Function(
     BuildContext context,
     ActionController controller,
   ) builder;
-
-  const LoadingDialog({
-    this.title,
-    required this.submit,
-    required this.builder,
-  });
 
   @override
   State<LoadingDialog> createState() => _LoadingDialogState();

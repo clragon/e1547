@@ -36,13 +36,13 @@ List<CountedTag> countTagsByPosts(List<Post> posts) {
 }
 
 class CountedTag {
-  final String category;
-  final String tag;
-  final int count;
-
   CountedTag({
     required this.category,
     required this.tag,
     required this.count,
   });
+
+  final String category;
+  final String tag;
+  final int count;
 }

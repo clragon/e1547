@@ -9,9 +9,9 @@ import 'package:flutter_screen_lock/flutter_screen_lock.dart';
 import 'package:local_auth/local_auth.dart';
 
 class LockScreen extends StatefulWidget {
-  final Widget child;
-
   const LockScreen({required this.child});
+
+  final Widget child;
 
   @override
   State<LockScreen> createState() => _LockScreenState();
@@ -124,9 +124,9 @@ class _LockScreenState extends State<LockScreen> {
 }
 
 class BiometricsLockScreen extends StatefulWidget {
-  final VoidCallback onSuccess;
-
   const BiometricsLockScreen({super.key, required this.onSuccess});
+
+  final VoidCallback onSuccess;
 
   @override
   State<BiometricsLockScreen> createState() => _BiometricsLockScreenState();

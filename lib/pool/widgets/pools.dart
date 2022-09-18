@@ -8,9 +8,9 @@ import 'input.dart';
 import 'tile.dart';
 
 class PoolsPage extends StatefulWidget {
-  final String? search;
-
   const PoolsPage({this.search});
+
+  final String? search;
 
   @override
   State<StatefulWidget> createState() => _PoolsPageState();

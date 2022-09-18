@@ -2,9 +2,9 @@ import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
 
 class QuoteWrap extends StatelessWidget {
-  final Widget child;
-
   const QuoteWrap({required this.child});
+
+  final Widget child;
 
   @override
   Widget build(BuildContext context) {

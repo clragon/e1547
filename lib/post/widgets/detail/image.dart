@@ -7,9 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
 class PostDetailImage extends StatelessWidget {
-  final Post post;
-
   const PostDetailImage({required this.post});
+
+  final Post post;
 
   @override
   Widget build(BuildContext context) {
@@ -23,9 +23,9 @@ class PostDetailImage extends StatelessWidget {
 }
 
 class PostDetailVideo extends StatelessWidget {
-  final Post post;
-
   const PostDetailVideo({required this.post});
+
+  final Post post;
 
   @override
   Widget build(BuildContext context) {
@@ -66,9 +66,9 @@ class PostDetailVideo extends StatelessWidget {
 }
 
 class PostDetailImageToggle extends StatefulWidget {
-  final PostController post;
-
   const PostDetailImageToggle({required this.post});
+
+  final PostController post;
 
   @override
   State<PostDetailImageToggle> createState() => _PostDetailImageToggleState();
@@ -175,15 +175,15 @@ class _PostDetailImageToggleState extends State<PostDetailImageToggle> {
 }
 
 class PostDetailImageActions extends StatelessWidget {
-  final PostController post;
-  final Widget child;
-  final VoidCallback? onOpen;
-
   const PostDetailImageActions({
     required this.post,
     required this.child,
     this.onOpen,
   });
+
+  final PostController post;
+  final Widget child;
+  final VoidCallback? onOpen;
 
   @override
   Widget build(BuildContext context) {
@@ -279,13 +279,13 @@ class PostDetailImageActions extends StatelessWidget {
 }
 
 class PostDetailImageDisplay extends StatelessWidget {
-  final PostController post;
-  final VoidCallback? onTap;
-
   const PostDetailImageDisplay({
     required this.post,
     this.onTap,
   });
+
+  final PostController post;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {

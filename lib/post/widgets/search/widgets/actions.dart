@@ -72,10 +72,10 @@ class TagListActions extends StatelessWidget {
 }
 
 class RemoveTagAction extends StatelessWidget {
+  const RemoveTagAction({required this.controller, required this.tag});
+
   final PostsController controller;
   final String tag;
-
-  const RemoveTagAction({required this.controller, required this.tag});
 
   @override
   Widget build(BuildContext context) {
@@ -93,10 +93,10 @@ class RemoveTagAction extends StatelessWidget {
 }
 
 class AddTagAction extends StatelessWidget {
+  const AddTagAction({required this.controller, required this.tag});
+
   final PostsController controller;
   final String tag;
-
-  const AddTagAction({required this.controller, required this.tag});
 
   @override
   Widget build(BuildContext context) {
@@ -113,10 +113,10 @@ class AddTagAction extends StatelessWidget {
 }
 
 class SubtractTagAction extends StatelessWidget {
+  const SubtractTagAction({required this.controller, required this.tag});
+
   final PostsController controller;
   final String tag;
-
-  const SubtractTagAction({required this.controller, required this.tag});
 
   @override
   Widget build(BuildContext context) {
@@ -133,10 +133,10 @@ class SubtractTagAction extends StatelessWidget {
 }
 
 class TagSearchActions extends StatelessWidget {
+  const TagSearchActions({required this.tag, required this.controller});
+
   final String tag;
   final PostsController controller;
-
-  const TagSearchActions({required this.tag, required this.controller});
 
   @override
   Widget build(BuildContext context) {

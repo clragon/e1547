@@ -219,11 +219,6 @@ class PostsProvider extends SubChangeNotifierProvider2<Client, DenylistService,
 }
 
 class PostController extends ProxyValueNotifier<Post, PostsController> {
-  final Client client;
-  final DenylistService denylist;
-
-  final int id;
-
   PostController({
     required this.client,
     required this.denylist,
@@ -232,6 +227,11 @@ class PostController extends ProxyValueNotifier<Post, PostsController> {
   }) {
     _registerDenying();
   }
+
+  final Client client;
+  final DenylistService denylist;
+
+  final int id;
 
   @override
   Post? fromParent() =>

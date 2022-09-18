@@ -5,15 +5,15 @@ import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 
 class TagEditor extends StatefulWidget {
-  final String? category;
-  final FutureOr<bool> Function(String text) submit;
-  final ActionController controller;
-
   const TagEditor({
     required this.category,
     required this.submit,
     required this.controller,
   });
+
+  final String? category;
+  final FutureOr<bool> Function(String text) submit;
+  final ActionController controller;
 
   @override
   State<TagEditor> createState() => _TagEditorState();

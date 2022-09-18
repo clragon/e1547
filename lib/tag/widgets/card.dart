@@ -3,14 +3,6 @@ import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 
 class TagCard extends StatelessWidget {
-  final String tag;
-  final String? category;
-  final Color? stripeColor;
-  final VoidCallback? onRemove;
-  final bool editing;
-  final bool wiki;
-  final List<Widget>? extra;
-
   const TagCard({
     required this.tag,
     this.category,
@@ -20,6 +12,14 @@ class TagCard extends StatelessWidget {
     this.wiki = false,
     this.extra,
   });
+
+  final String tag;
+  final String? category;
+  final Color? stripeColor;
+  final VoidCallback? onRemove;
+  final bool editing;
+  final bool wiki;
+  final List<Widget>? extra;
 
   @override
   Widget build(BuildContext context) {
@@ -76,15 +76,15 @@ class TagCard extends StatelessWidget {
 }
 
 class TagCounterCard extends StatelessWidget {
-  final String tag;
-  final int count;
-  final String? category;
-
   const TagCounterCard({
     required this.tag,
     required this.count,
     this.category,
   });
+
+  final String tag;
+  final int count;
+  final String? category;
 
   @override
   Widget build(BuildContext context) {
@@ -112,9 +112,9 @@ class TagCounterCard extends StatelessWidget {
 }
 
 class DenyListTagCard extends StatelessWidget {
-  final String tag;
-
   const DenyListTagCard(this.tag);
+
+  final String tag;
 
   Color? getTagColor(String tag) {
     String prefix = tag[0];

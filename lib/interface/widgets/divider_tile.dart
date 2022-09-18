@@ -1,17 +1,6 @@
 import 'package:flutter/material.dart';
 
 class DividerListTile extends StatelessWidget {
-  final Widget? title;
-  final Widget? subtitle;
-  final Widget? leading;
-  final Widget? trailing;
-  final Widget? separated;
-  final VoidCallback? onTap;
-  final VoidCallback? onTapSeparated;
-  final VoidCallback? onLongPressSeparated;
-  final VoidCallback? onLongPress;
-  final EdgeInsets? contentPadding;
-
   const DividerListTile({
     this.title,
     this.subtitle,
@@ -24,6 +13,17 @@ class DividerListTile extends StatelessWidget {
     this.onTapSeparated,
     this.onLongPressSeparated,
   });
+
+  final Widget? title;
+  final Widget? subtitle;
+  final Widget? leading;
+  final Widget? trailing;
+  final Widget? separated;
+  final VoidCallback? onTap;
+  final VoidCallback? onTapSeparated;
+  final VoidCallback? onLongPressSeparated;
+  final VoidCallback? onLongPress;
+  final EdgeInsets? contentPadding;
 
   @override
   Widget build(BuildContext context) {

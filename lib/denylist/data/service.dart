@@ -5,6 +5,14 @@ import 'package:e1547/user/user.dart';
 import 'package:flutter/material.dart';
 
 class DenylistService extends DataUpdater<List<String>> {
+  DenylistService({
+    required Client client,
+    required ValueNotifier<List<String>> source,
+  })  : _client = client,
+        _source = source {
+    _source.addListener(notifyListeners);
+  }
+
   final Client _client;
   final ValueNotifier<List<String>> _source;
 
@@ -27,14 +35,6 @@ class DenylistService extends DataUpdater<List<String>> {
     }
   }
 
-  DenylistService({
-    required Client client,
-    required ValueNotifier<List<String>> source,
-  })  : _client = client,
-        _source = source {
-    _source.addListener(notifyListeners);
-  }
-
   @override
   void dispose() {
     _source.removeListener(notifyListeners);
@@ -43,8 +43,7 @@ class DenylistService extends DataUpdater<List<String>> {
 
   @override
   @protected
-  Future<void> withData(
-    DataUpdate<List<String>> updater, {
+  Future<void> withData(DataUpdate<List<String>> updater, {
     bool upload = true,
   }) async {
     await resourceLock.acquire();
@@ -60,7 +59,7 @@ class DenylistService extends DataUpdater<List<String>> {
     if (user != null) {
       try {
         await withData(
-          (data) => user.blacklistedTags.split('\n').trim(),
+              (data) => user.blacklistedTags.split('\n').trim(),
           upload: false,
         );
       } on DioError {

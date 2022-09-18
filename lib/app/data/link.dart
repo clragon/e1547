@@ -27,12 +27,6 @@ const String _queryRegex = r'(' + queryDivider + r'+)';
 const String _showEnding = r':_(s|/show)';
 
 class Link {
-  final String type;
-  final int? id;
-  final String? name;
-  final String? search;
-  final int? page;
-
   const Link({
     required this.type,
     this.id,
@@ -40,18 +34,24 @@ class Link {
     this.search,
     this.page,
   });
+
+  final String type;
+  final int? id;
+  final String? name;
+  final String? search;
+  final int? page;
 }
 
 class LinkParser {
-  final String path;
-  final List<String>? parameters;
-  final Link? Function(Map<String, String> arguments) transformer;
-
   LinkParser({
     required this.path,
     this.parameters,
     required this.transformer,
   });
+
+  final String path;
+  final List<String>? parameters;
+  final Link? Function(Map<String, String> arguments) transformer;
 
   final RegExp _parameterPattern = RegExp(
     r'^(?<name>[^ ()?]+)(?<pattern>\(\S+\))?(?<optional>\?)?',

@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 typedef StartupCallback = void Function(BuildContext context);
 
 class StartupActions extends StatefulWidget {
+  const StartupActions({required this.child, required this.actions});
+
   final List<StartupCallback> actions;
   final Widget child;
-
-  const StartupActions({required this.child, required this.actions});
 
   @override
   State<StartupActions> createState() => _StartupActionsState();

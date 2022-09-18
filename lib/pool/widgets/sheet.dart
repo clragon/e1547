@@ -17,9 +17,9 @@ Future<void> poolSheet(BuildContext context, Pool pool) async {
 }
 
 class PoolSheet extends StatelessWidget {
-  final Pool pool;
-
   const PoolSheet({required this.pool});
+
+  final Pool pool;
 
   @override
   Widget build(BuildContext context) {

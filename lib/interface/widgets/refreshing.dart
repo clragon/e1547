@@ -52,26 +52,6 @@ class RefreshableControllerPage<T extends RefreshableController>
 }
 
 class RefreshablePageLoader extends StatelessWidget {
-  final WidgetBuilder? builder;
-  final bool isLoading;
-  final bool isEmpty;
-  final bool isError;
-  final bool? isBuilt;
-  final bool? initial;
-  final Widget? refreshHeader;
-  final Widget? onEmpty;
-  final Widget? onEmptyIcon;
-  final Widget? onError;
-  final Widget? onErrorIcon;
-  final Widget? onLoading;
-  final Widget? drawer;
-  final Widget? endDrawer;
-  final Widget? floatingActionButton;
-  final PreferredSizeWidget? appBar;
-  final RefreshController? refreshController;
-  final ScrollController? scrollController;
-  final VoidCallback refresh;
-
   const RefreshablePageLoader({
     required this.refresh,
     required this.builder,
@@ -93,6 +73,26 @@ class RefreshablePageLoader extends StatelessWidget {
     this.endDrawer,
     this.floatingActionButton,
   });
+
+  final WidgetBuilder? builder;
+  final bool isLoading;
+  final bool isEmpty;
+  final bool isError;
+  final bool? isBuilt;
+  final bool? initial;
+  final Widget? refreshHeader;
+  final Widget? onEmpty;
+  final Widget? onEmptyIcon;
+  final Widget? onError;
+  final Widget? onErrorIcon;
+  final Widget? onLoading;
+  final Widget? drawer;
+  final Widget? endDrawer;
+  final Widget? floatingActionButton;
+  final PreferredSizeWidget? appBar;
+  final RefreshController? refreshController;
+  final ScrollController? scrollController;
+  final VoidCallback refresh;
 
   @override
   Widget build(BuildContext context) {
@@ -121,17 +121,6 @@ class RefreshablePageLoader extends StatelessWidget {
 }
 
 class RefreshablePage extends StatefulWidget {
-  final WidgetBuilder child;
-  final WidgetChildBuilder? builder;
-  final Widget? refreshHeader;
-  final Widget? drawer;
-  final Widget? endDrawer;
-  final Widget? floatingActionButton;
-  final bool extendBodyBehindAppBar;
-  final PreferredSizeWidget? appBar;
-  final RefreshController? refreshController;
-  final VoidCallback refresh;
-
   const RefreshablePage({
     required this.refresh,
     required this.child,
@@ -144,6 +133,17 @@ class RefreshablePage extends StatefulWidget {
     this.floatingActionButton,
     this.extendBodyBehindAppBar = false,
   });
+
+  final WidgetBuilder child;
+  final WidgetChildBuilder? builder;
+  final Widget? refreshHeader;
+  final Widget? drawer;
+  final Widget? endDrawer;
+  final Widget? floatingActionButton;
+  final bool extendBodyBehindAppBar;
+  final PreferredSizeWidget? appBar;
+  final RefreshController? refreshController;
+  final VoidCallback refresh;
 
   @override
   State<RefreshablePage> createState() => _RefreshablePageState();
@@ -198,10 +198,10 @@ class _RefreshablePageState extends State<RefreshablePage> {
 }
 
 class RefreshablePageDefaultHeader extends StatelessWidget {
+  const RefreshablePageDefaultHeader({this.completeText, this.refreshingText});
+
   final String? refreshingText;
   final String? completeText;
-
-  const RefreshablePageDefaultHeader({this.completeText, this.refreshingText});
 
   @override
   Widget build(BuildContext context) {

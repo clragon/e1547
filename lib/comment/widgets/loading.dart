@@ -4,9 +4,9 @@ import 'package:e1547/interface/interface.dart';
 import 'package:flutter/widgets.dart';
 
 class CommentLoadingPage extends StatefulWidget {
-  final int id;
-
   const CommentLoadingPage(this.id);
+
+  final int id;
 
   @override
   State<CommentLoadingPage> createState() => _CommentLoadingPageState();

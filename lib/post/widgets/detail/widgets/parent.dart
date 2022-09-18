@@ -116,9 +116,9 @@ class ParentDisplay extends StatelessWidget {
 }
 
 class ParentEditor extends StatefulWidget {
-  final PostEditingController editingController;
-
   const ParentEditor({required this.editingController});
+
+  final PostEditingController editingController;
 
   @override
   State<ParentEditor> createState() => _ParentEditorState();

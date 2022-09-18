@@ -4,15 +4,15 @@ import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
 
 class SizedCircularProgressIndicator extends StatelessWidget {
-  final double size;
-  final double? value;
-  final double strokeWidth;
-
   const SizedCircularProgressIndicator({
     required this.size,
     this.value,
     this.strokeWidth = 4,
   });
+
+  final double size;
+  final double? value;
+  final double strokeWidth;
 
   @override
   Widget build(BuildContext context) {
@@ -31,17 +31,17 @@ class SizedCircularProgressIndicator extends StatelessWidget {
 }
 
 class IconMessage extends StatelessWidget {
-  final Axis direction;
-  final Widget title;
-  final Widget icon;
-  final Widget? action;
-
   const IconMessage({
     this.direction = Axis.vertical,
     required this.title,
     required this.icon,
     this.action,
   });
+
+  final Axis direction;
+  final Widget title;
+  final Widget icon;
+  final Widget? action;
 
   @override
   Widget build(BuildContext context) {
@@ -82,18 +82,6 @@ enum PageLoaderState {
 }
 
 class PageLoader extends StatelessWidget {
-  final WidgetBuilder? builder;
-  final WidgetChildBuilder? pageBuilder;
-  final WidgetChildBuilder? loadingBuilder;
-  final Widget? onEmpty;
-  final Widget? onEmptyIcon;
-  final Widget? onError;
-  final Widget? onErrorIcon;
-  final bool isLoading;
-  final bool isEmpty;
-  final bool isError;
-  final bool? isBuilt;
-
   const PageLoader({
     required this.builder,
     this.isError = false,
@@ -107,6 +95,18 @@ class PageLoader extends StatelessWidget {
     this.onError,
     this.onErrorIcon,
   });
+
+  final WidgetBuilder? builder;
+  final WidgetChildBuilder? pageBuilder;
+  final WidgetChildBuilder? loadingBuilder;
+  final Widget? onEmpty;
+  final Widget? onEmptyIcon;
+  final Widget? onError;
+  final Widget? onErrorIcon;
+  final bool isLoading;
+  final bool isEmpty;
+  final bool isError;
+  final bool? isBuilt;
 
   @override
   Widget build(BuildContext context) {
@@ -159,13 +159,6 @@ class PageLoader extends StatelessWidget {
 }
 
 class FuturePageLoader<T> extends StatelessWidget {
-  final Widget Function(BuildContext context, T value) builder;
-  final Widget? title;
-  final Widget? onEmpty;
-  final Widget? onError;
-  final bool? isBuilt;
-  final Future<T> future;
-
   const FuturePageLoader({
     required this.future,
     required this.builder,
@@ -174,6 +167,13 @@ class FuturePageLoader<T> extends StatelessWidget {
     this.onEmpty,
     this.onError,
   });
+
+  final Widget Function(BuildContext context, T value) builder;
+  final Widget? title;
+  final Widget? onEmpty;
+  final Widget? onError;
+  final bool? isBuilt;
+  final Future<T> future;
 
   @override
   Widget build(BuildContext context) {

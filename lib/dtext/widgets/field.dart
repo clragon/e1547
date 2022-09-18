@@ -3,12 +3,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class DText extends StatelessWidget {
-  final int? maxLines;
-  final TextOverflow overflow;
-  final String data;
-  final TextAlign textAlign;
-  final bool softWrap;
-
   const DText(
     this.data, {
     this.maxLines,
@@ -16,6 +10,12 @@ class DText extends StatelessWidget {
     this.textAlign = TextAlign.start,
     this.softWrap = true,
   });
+
+  final int? maxLines;
+  final TextOverflow overflow;
+  final String data;
+  final TextAlign textAlign;
+  final bool softWrap;
 
   @override
   Widget build(BuildContext context) {

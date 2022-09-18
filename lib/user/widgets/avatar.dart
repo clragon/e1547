@@ -18,9 +18,9 @@ Future<void> initializeUserAvatar(BuildContext context) async {
 }
 
 class CurrentUserAvatar extends StatelessWidget {
-  final bool enabled;
-
   const CurrentUserAvatar({this.enabled = false});
+
+  final bool enabled;
 
   @override
   Widget build(BuildContext context) {
@@ -61,10 +61,10 @@ class CurrentUserAvatarProvider
 }
 
 class UserAvatar extends StatelessWidget {
+  const UserAvatar({super.key, required this.controller, this.enabled = false});
+
   final PostsController? controller;
   final bool enabled;
-
-  const UserAvatar({super.key, required this.controller, this.enabled = false});
 
   @override
   Widget build(BuildContext context) {
@@ -73,11 +73,11 @@ class UserAvatar extends StatelessWidget {
       child: Consumer<Future<PostController?>>(
         builder: (context, controller, child) => AsyncBuilder<PostController?>(
           future: controller,
-          builder: (context, value) => Avatar(
-            value,
-            enabled: enabled,
-          ),
-        ),
+              builder: (context, value) => Avatar(
+                value,
+                enabled: enabled,
+              ),
+            ),
       ),
     );
   }
@@ -109,9 +109,9 @@ class _UserAvatarProvider
 }
 
 class PostAvatar extends StatelessWidget {
-  final int? id;
-
   const PostAvatar({super.key, required this.id});
+
+  final int? id;
 
   @override
   Widget build(BuildContext context) {
@@ -130,10 +130,10 @@ class PostAvatar extends StatelessWidget {
 }
 
 class PostIdAvatar extends StatelessWidget {
+  const PostIdAvatar({required this.id, required this.controller});
+
   final int id;
   final PostsController controller;
-
-  const PostIdAvatar({required this.id, required this.controller});
 
   @override
   Widget build(BuildContext context) {
@@ -150,10 +150,10 @@ class PostIdAvatar extends StatelessWidget {
 }
 
 class Avatar extends StatelessWidget {
+  const Avatar(this.post, {this.enabled = false});
+
   final PostController? post;
   final bool enabled;
-
-  const Avatar(this.post, {this.enabled = false});
 
   @override
   Widget build(BuildContext context) {
@@ -162,9 +162,9 @@ class Avatar extends StatelessWidget {
         onTap: enabled
             ? () => Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => PostDetail(controller: post!),
-                  ),
-                )
+                builder: (context) => PostDetail(controller: post!),
+              ),
+            )
             : null,
         child: PostTileOverlay(
           controller: post!,
@@ -172,7 +172,7 @@ class Avatar extends StatelessWidget {
             tag: post!.value.link,
             child: CircleAvatar(
               foregroundImage:
-                  CachedNetworkImageProvider(post!.value.sample.url!),
+              CachedNetworkImageProvider(post!.value.sample.url!),
             ),
           ),
         ),

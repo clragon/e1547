@@ -11,6 +11,17 @@ import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 
 class FollowsService extends DataUpdater<List<Follow>> {
+  FollowsService({
+    required Client client,
+    required DenylistService denylist,
+    required ValueNotifier<List<Follow>> source,
+  })  : _client = client,
+        _denylist = denylist,
+        _source = source {
+    _source.addListener(notifyListeners);
+    _client.addListener(notifyListeners);
+  }
+
   final Client _client;
   final DenylistService _denylist;
   final ValueNotifier<List<Follow>> _source;
@@ -31,17 +42,6 @@ class FollowsService extends DataUpdater<List<Follow>> {
   Future<void> write(List<Follow> value) async => _source.value = value;
 
   final int refreshAmount = 5;
-
-  FollowsService({
-    required Client client,
-    required DenylistService denylist,
-    required ValueNotifier<List<Follow>> source,
-  })  : _client = client,
-        _denylist = denylist,
-        _source = source {
-    _source.addListener(notifyListeners);
-    _client.addListener(notifyListeners);
-  }
 
   @override
   void dispose() {
@@ -81,7 +81,7 @@ class FollowsService extends DataUpdater<List<Follow>> {
           } on DioError catch (e) {
             throw UpdaterException(
                 message:
-                    'FollowUpdater failed to update ${follow.tags} with: $e');
+                'FollowUpdater failed to update ${follow.tags} with: $e');
           }
         }
       }
@@ -128,23 +128,23 @@ class FollowsService extends DataUpdater<List<Follow>> {
 
   Future<void> replace(Follow old, Follow updated) async => withData(
         (data) {
-          int index = data.indexOf(old);
-          if (index == -1) {
-            index = data.indexWhere((element) => element.tags == old.tags);
-          }
-          if (index == -1) {
-            throw UpdaterException(
-                message:
-                    'FollowUpdater failed to update ${updated.tags} with: Could not find follow to be replaced');
-          }
-          data[index] = _syncUnseen(updated);
-          return data;
-        },
-      );
+      int index = data.indexOf(old);
+      if (index == -1) {
+        index = data.indexWhere((element) => element.tags == old.tags);
+      }
+      if (index == -1) {
+        throw UpdaterException(
+            message:
+            'FollowUpdater failed to update ${updated.tags} with: Could not find follow to be replaced');
+      }
+      data[index] = _syncUnseen(updated);
+      return data;
+    },
+  );
 
   Future<void> replaceAt(int index, Follow follow) async => withData(
         (data) => data..[index] = _syncUnseen(follow),
-      );
+  );
 
   Future<Follow> refresh(Follow follow, {bool force = false}) async {
     Follow updated = follow;
@@ -170,43 +170,43 @@ class FollowsService extends DataUpdater<List<Follow>> {
 
   Future<void> edit(List<String> update) async => withData(
         (data) {
-          List<Follow> edited = [];
-          for (String tags in update) {
-            Follow? match =
-                data.firstWhereOrNull((follow) => follow.tags == tags);
-            if (match != null) {
-              edited.add(match);
-            } else {
-              edited.add(Follow(tags: tags));
-            }
-          }
-          return edited;
-        },
-      );
+      List<Follow> edited = [];
+      for (String tags in update) {
+        Follow? match =
+        data.firstWhereOrNull((follow) => follow.tags == tags);
+        if (match != null) {
+          edited.add(match);
+        } else {
+          edited.add(Follow(tags: tags));
+        }
+      }
+      return edited;
+    },
+  );
 
   Future<void> markAllAsRead() async => withData(
         (data) {
-          for (int i = 0; i < data.length; i++) {
-            Follow follow = data[i];
-            FollowStatus? status = this.status(follow);
-            if (status != null) {
-              data[i] =
-                  follow.withStatus(_client.host, status.copyWith(unseen: 0));
-            }
-          }
-          return data;
-        },
-      );
+      for (int i = 0; i < data.length; i++) {
+        Follow follow = data[i];
+        FollowStatus? status = this.status(follow);
+        if (status != null) {
+          data[i] =
+              follow.withStatus(_client.host, status.copyWith(unseen: 0));
+        }
+      }
+      return data;
+    },
+  );
 }
 
 class SelectedValueNotifier<T> extends ValueNotifier<T> {
-  final ValueNotifier<T> source;
-  final bool Function(T old, T value) comparator;
-
   SelectedValueNotifier({required this.source, required this.comparator})
       : super(source.value) {
     source.addListener(_compare);
   }
+
+  final ValueNotifier<T> source;
+  final bool Function(T old, T value) comparator;
 
   void _compare() {
     if (!comparator(value, source.value)) {

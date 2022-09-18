@@ -8,11 +8,11 @@ import 'comment.dart';
 
 class CommentsController extends CursorDataController<Comment>
     with RefreshableController {
+  CommentsController({required this.client, required this.postId});
+
   final Client client;
 
   final int postId;
-
-  CommentsController({required this.client, required this.postId});
 
   @override
   @protected
@@ -36,15 +36,14 @@ class CommentsProvider
 
 class CommentController
     extends ProxyValueNotifier<Comment, CommentsController> {
-  final Client client;
-
-  final int id;
-
   CommentController({
     required this.client,
     required this.id,
     required super.parent,
   });
+
+  final Client client;
+  final int id;
 
   @override
   Comment? fromParent() =>

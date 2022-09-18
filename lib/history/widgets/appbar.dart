@@ -3,12 +3,12 @@ import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
 
 class HistorySelectionAppBar extends StatelessWidget with AppBarBuilderWidget {
-  @override
-  final PreferredSizeWidget child;
-
   const HistorySelectionAppBar({
     required this.child,
   });
+
+  @override
+  final PreferredSizeWidget child;
 
   @override
   Widget build(BuildContext context) {

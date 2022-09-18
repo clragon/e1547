@@ -62,9 +62,9 @@ class FavoritePostsController extends PostsController {
 }
 
 class NoUserLoginException implements Exception {
-  final String? message;
-
   NoUserLoginException([this.message]);
+
+  final String? message;
 
   @override
   String toString() {

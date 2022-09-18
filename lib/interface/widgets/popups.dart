@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 
 class PopupMenuTile<T> extends PopupMenuItem<T> {
-  final IconData icon;
-  final String title;
-
   PopupMenuTile({
     required T value,
     required this.icon,
@@ -12,13 +9,16 @@ class PopupMenuTile<T> extends PopupMenuItem<T> {
           child: ListMenuTile(leading: Icon(icon), title: Text(title)),
           value: value,
         );
+
+  final IconData icon;
+  final String title;
 }
 
 class ListMenuTile extends StatelessWidget {
+  const ListMenuTile({this.leading, this.title});
+
   final Widget? leading;
   final Widget? title;
-
-  const ListMenuTile({this.leading, this.title});
 
   @override
   Widget build(BuildContext context) {

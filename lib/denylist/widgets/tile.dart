@@ -3,15 +3,15 @@ import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 
 class DenylistTile extends StatelessWidget {
-  final String tag;
-  final VoidCallback? onEdit;
-  final VoidCallback? onDelete;
-
   const DenylistTile({
     required this.tag,
     this.onEdit,
     this.onDelete,
   });
+
+  final String tag;
+  final VoidCallback? onEdit;
+  final VoidCallback? onDelete;
 
   @override
   Widget build(BuildContext context) {

@@ -2,10 +2,10 @@ import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
 
 class GridSettingsTile extends StatelessWidget {
+  const GridSettingsTile({required this.state, this.onChange});
+
   final GridQuilt state;
   final void Function(GridQuilt state)? onChange;
-
-  const GridSettingsTile({required this.state, this.onChange});
 
   String getDescription(GridQuilt state) {
     switch (state) {
@@ -45,14 +45,14 @@ class GridSettingsTile extends StatelessWidget {
               children: GridQuilt.values
                   .map(
                     (state) => ListTile(
-                      trailing: Icon(getIcon(state)),
-                      title: Text(getDescription(state)),
-                      onTap: () {
-                        onChange!(state);
-                        Navigator.of(context).maybePop();
-                      },
-                    ),
-                  )
+                  trailing: Icon(getIcon(state)),
+                  title: Text(getDescription(state)),
+                  onTap: () {
+                    onChange!(state);
+                    Navigator.of(context).maybePop();
+                  },
+                ),
+              )
                   .toList(),
             )
           ],

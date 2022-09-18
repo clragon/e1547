@@ -17,13 +17,13 @@ enum UserPageSection {
 }
 
 class UserPage extends StatelessWidget {
-  final User user;
-  final UserPageSection initialPage;
-
   const UserPage({
     required this.user,
     this.initialPage = UserPageSection.favorites,
   });
+
+  final User user;
+  final UserPageSection initialPage;
 
   @override
   Widget build(BuildContext context) {
@@ -251,9 +251,9 @@ class _UserPageProvider
 }
 
 class UserInfo extends StatelessWidget {
-  final User user;
-
   const UserInfo({required this.user});
+
+  final User user;
 
   @override
   Widget build(BuildContext context) {
@@ -294,12 +294,6 @@ class UserInfo extends StatelessWidget {
 }
 
 class UserInfoTile extends StatelessWidget {
-  final String value;
-  final String title;
-  final IconData icon;
-  final VoidCallback? onLongPress;
-  final double maxWidth;
-
   const UserInfoTile({
     super.key,
     required this.value,
@@ -308,6 +302,12 @@ class UserInfoTile extends StatelessWidget {
     this.onLongPress,
     this.maxWidth = 500,
   });
+
+  final String value;
+  final String title;
+  final IconData icon;
+  final VoidCallback? onLongPress;
+  final double maxWidth;
 
   @override
   Widget build(BuildContext context) {

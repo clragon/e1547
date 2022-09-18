@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
 class PagedChildBuilderRetryButton extends StatelessWidget {
-  final PagingController? pagingController;
-
   const PagedChildBuilderRetryButton(this.pagingController);
+
+  final PagingController? pagingController;
 
   @override
   Widget build(BuildContext context) {

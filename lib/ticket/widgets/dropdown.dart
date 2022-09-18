@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 
 class ReportFormDropdown<T> extends StatelessWidget {
-  final Map<T, String> types;
-  final T type;
-  final void Function(T? type) onChanged;
-  final bool isLoading;
-
   const ReportFormDropdown({
     required this.type,
     required this.types,
     required this.onChanged,
     this.isLoading = false,
   });
+
+  final Map<T, String> types;
+  final T type;
+  final void Function(T? type) onChanged;
+  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {

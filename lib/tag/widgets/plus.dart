@@ -5,13 +5,13 @@ import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 
 class TagAddCard extends StatefulWidget {
-  final String? category;
-  final FutureOr<bool> Function(String value)? submit;
-
   const TagAddCard({
     required this.submit,
     this.category,
   });
+
+  final String? category;
+  final FutureOr<bool> Function(String value)? submit;
 
   @override
   State<TagAddCard> createState() => _TagAddCardState();

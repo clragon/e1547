@@ -4,17 +4,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 
 class SearchInput<T> extends StatelessWidget {
-  final String? labelText;
-  final SubmitString submit;
-  final TextEditingController? controller;
-  final int? category;
-  final bool readOnly;
-  final TextInputAction? textInputAction;
-  final List<TextInputFormatter>? inputFormatters;
-  final SuggestionSelectionCallback<T> onSuggestionSelected;
-  final ItemBuilder<T> itemBuilder;
-  final SuggestionsCallback<T> suggestionsCallback;
-
   const SearchInput({
     super.key,
     required this.onSuggestionSelected,
@@ -28,6 +17,17 @@ class SearchInput<T> extends StatelessWidget {
     this.textInputAction,
     this.inputFormatters,
   });
+
+  final String? labelText;
+  final SubmitString submit;
+  final TextEditingController? controller;
+  final int? category;
+  final bool readOnly;
+  final TextInputAction? textInputAction;
+  final List<TextInputFormatter>? inputFormatters;
+  final SuggestionSelectionCallback<T> onSuggestionSelected;
+  final ItemBuilder<T> itemBuilder;
+  final SuggestionsCallback<T> suggestionsCallback;
 
   @override
   Widget build(BuildContext context) {
@@ -69,9 +69,9 @@ class SearchInput<T> extends StatelessWidget {
 }
 
 class SearchInputCutout extends ShapeBorder {
-  final bool usePadding;
-
   const SearchInputCutout({this.usePadding = true});
+
+  final bool usePadding;
 
   @override
   EdgeInsetsGeometry get dimensions => const EdgeInsets.only();

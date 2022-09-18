@@ -7,10 +7,10 @@ import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 
 class PoolPage extends StatefulWidget {
+  const PoolPage({required this.pool, this.reversed = false});
+
   final Pool pool;
   final bool reversed;
-
-  const PoolPage({required this.pool, this.reversed = false});
 
   @override
   State<PoolPage> createState() => _PoolPageState();

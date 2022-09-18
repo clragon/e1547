@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class PoolInfo extends StatelessWidget {
-  final Pool pool;
-
   const PoolInfo({required this.pool});
+
+  final Pool pool;
 
   @override
   Widget build(BuildContext context) {

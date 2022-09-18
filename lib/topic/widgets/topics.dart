@@ -6,9 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
 class TopicsPage extends StatefulWidget {
-  final String? search;
-
   const TopicsPage({this.search});
+
+  final String? search;
 
   @override
   State<TopicsPage> createState() => _TopicsPageState();

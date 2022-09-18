@@ -4,15 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:overflow_view/overflow_view.dart';
 
 class DTextEditor extends StatelessWidget {
-  final Widget? title;
-  final String? content;
-  final TextEditorSubmit onSubmit;
-
   const DTextEditor({
     this.title,
     required this.onSubmit,
     this.content,
   });
+
+  final Widget? title;
+  final String? content;
+  final TextEditorSubmit onSubmit;
 
   @override
   Widget build(BuildContext context) {
@@ -48,9 +48,9 @@ class DTextEditor extends StatelessWidget {
 }
 
 class DTextEditorBar extends StatefulWidget {
-  final TextEditingController controller;
-
   const DTextEditorBar({required this.controller});
+
+  final TextEditingController controller;
 
   @override
   State<DTextEditorBar> createState() => _DTextEditorBarState();

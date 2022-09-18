@@ -97,9 +97,9 @@ class SourceDisplay extends StatelessWidget {
 }
 
 class SourceCard extends StatelessWidget {
-  final String url;
-
   const SourceCard({required this.url});
+
+  final String url;
 
   @override
   Widget build(BuildContext context) {

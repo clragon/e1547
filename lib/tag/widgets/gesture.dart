@@ -5,17 +5,17 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class TagGesture extends StatelessWidget {
-  final bool safe;
-  final bool wiki;
-  final String tag;
-  final Widget child;
-
   const TagGesture({
     required this.child,
     required this.tag,
     this.safe = true,
     this.wiki = false,
   });
+
+  final bool safe;
+  final bool wiki;
+  final String tag;
+  final Widget child;
 
   @override
   Widget build(BuildContext context) {

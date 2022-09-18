@@ -14,14 +14,6 @@ class PostEdit {
     required this.tags,
   });
 
-  final Post post;
-  final String? editReason;
-  final Rating rating;
-  final String description;
-  final int? parentId;
-  final List<String> sources;
-  final Map<String, List<String>> tags;
-
   factory PostEdit.fromPost(Post post) {
     return PostEdit(
       post: post,
@@ -33,6 +25,14 @@ class PostEdit {
       editReason: null,
     );
   }
+
+  final Post post;
+  final String? editReason;
+  final Rating rating;
+  final String description;
+  final int? parentId;
+  final List<String> sources;
+  final Map<String, List<String>> tags;
 
   PostEdit copyWith({
     Post? post,

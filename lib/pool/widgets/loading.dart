@@ -4,9 +4,9 @@ import 'package:e1547/pool/pool.dart';
 import 'package:flutter/material.dart';
 
 class PoolLoadingPage extends StatefulWidget {
-  final int id;
-
   const PoolLoadingPage(this.id);
+
+  final int id;
 
   @override
   State<PoolLoadingPage> createState() => _PoolLoadingPageState();

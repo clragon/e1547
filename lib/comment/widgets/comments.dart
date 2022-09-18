@@ -5,9 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
 class PostCommentsPage extends StatelessWidget {
-  final int postId;
-
   const PostCommentsPage({required this.postId});
+
+  final int postId;
 
   @override
   Widget build(BuildContext context) {

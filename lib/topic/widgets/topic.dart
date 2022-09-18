@@ -3,15 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:relative_time/relative_time.dart';
 
 class TopicTile extends StatelessWidget {
-  final Topic topic;
-  final VoidCallback? onPressed;
-  final VoidCallback? onCountPressed;
-
   const TopicTile({
     required this.topic,
     this.onPressed,
     this.onCountPressed,
   });
+
+  final Topic topic;
+  final VoidCallback? onPressed;
+  final VoidCallback? onCountPressed;
 
   @override
   Widget build(BuildContext context) {

@@ -5,9 +5,9 @@ import 'package:flutter/material.dart';
 typedef ActionControllerCallback = FutureOr<void> Function();
 
 class ActionControllerException implements Exception {
-  final String message;
-
   const ActionControllerException({required this.message});
+
+  final String message;
 }
 
 class ActionController extends ChangeNotifier {

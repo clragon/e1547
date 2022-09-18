@@ -4,9 +4,9 @@ import 'package:e1547/pool/pool.dart';
 import 'package:flutter/material.dart';
 
 class PoolFollowButton extends StatefulWidget {
-  final Pool pool;
-
   const PoolFollowButton(this.pool);
+
+  final Pool pool;
 
   @override
   State<StatefulWidget> createState() {

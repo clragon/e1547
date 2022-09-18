@@ -52,8 +52,8 @@ void _startBackground(_DriftIsolateData data) {
 }
 
 class _DriftIsolateData {
+  _DriftIsolateData(this.port, this.path);
+
   final SendPort port;
   final String path;
-
-  _DriftIsolateData(this.port, this.path);
 }

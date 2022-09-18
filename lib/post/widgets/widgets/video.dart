@@ -99,9 +99,9 @@ class _VideoButtonState extends State<VideoButton>
 }
 
 class VideoBar extends StatelessWidget {
-  final VideoPlayerController videoController;
-
   const VideoBar({required this.videoController});
+
+  final VideoPlayerController videoController;
 
   @override
   Widget build(BuildContext context) {
@@ -185,9 +185,10 @@ class VideoBar extends StatelessWidget {
 }
 
 class VideoGesture extends StatefulWidget {
+  const VideoGesture({required this.forward, required this.videoController});
+
   final bool forward;
   final VideoPlayerController videoController;
-  const VideoGesture({required this.forward, required this.videoController});
 
   @override
   State<VideoGesture> createState() => _VideoGestureState();
@@ -294,10 +295,10 @@ class _VideoGestureState extends State<VideoGesture>
 }
 
 class VideoGestures extends StatefulWidget {
+  const VideoGestures({required this.videoController, required this.child});
+
   final Widget child;
   final VideoPlayerController videoController;
-
-  const VideoGestures({required this.videoController, required this.child});
 
   @override
   State<VideoGestures> createState() => _VideoGesturesState();
@@ -339,10 +340,6 @@ class _VideoGesturesState extends State<VideoGestures> {
 }
 
 class PostVideoRoute extends StatefulWidget {
-  final Widget child;
-  final Post post;
-  final bool stopOnDispose;
-
   const PostVideoRoute({
     super.key,
     required this.child,
@@ -350,8 +347,13 @@ class PostVideoRoute extends StatefulWidget {
     this.stopOnDispose = true,
   });
 
+  final Widget child;
+  final Post post;
+  final bool stopOnDispose;
+
   static PostVideoRouteState of(BuildContext context) =>
       context.findAncestorStateOfType<PostVideoRouteState>()!;
+
   static PostVideoRouteState? maybeOf(BuildContext context) =>
       context.findAncestorStateOfType<PostVideoRouteState>();
 
@@ -419,10 +421,10 @@ class PostVideoRouteState extends State<PostVideoRoute> with RouteAware {
 }
 
 class PostVideoLoader extends StatefulWidget {
+  const PostVideoLoader({required this.post, required this.child});
+
   final Post post;
   final Widget child;
-
-  const PostVideoLoader({required this.post, required this.child});
 
   @override
   State<PostVideoLoader> createState() => _PostVideoLoaderState();
@@ -444,9 +446,9 @@ class _PostVideoLoaderState extends State<PostVideoLoader> {
 }
 
 class PostVideoWidget extends StatelessWidget {
-  final Post post;
-
   const PostVideoWidget({required this.post});
+
+  final Post post;
 
   @override
   Widget build(BuildContext context) {

@@ -5,10 +5,10 @@ import 'package:e1547/topic/topic.dart';
 import 'package:flutter/material.dart';
 
 class TopicLoadingPage extends StatefulWidget {
+  const TopicLoadingPage(this.id, {this.orderByOldest = true});
+
   final int id;
   final bool orderByOldest;
-
-  const TopicLoadingPage(this.id, {this.orderByOldest = true});
 
   @override
   State<TopicLoadingPage> createState() => _TopicLoadingPageState();
@@ -33,9 +33,9 @@ class _TopicLoadingPageState extends State<TopicLoadingPage> {
 }
 
 class ReplyLoadingPage extends StatefulWidget {
-  final int id;
-
   const ReplyLoadingPage(this.id);
+
+  final int id;
 
   @override
   State<ReplyLoadingPage> createState() => _ReplyLoadingPageState();

@@ -4,9 +4,9 @@ import 'package:e1547/wiki/wiki.dart';
 import 'package:flutter/material.dart';
 
 class WikiLoadingPage extends StatefulWidget {
-  final String id;
-
   const WikiLoadingPage(this.id);
+
+  final String id;
 
   @override
   State<WikiLoadingPage> createState() => _WikiLoadingPageState();

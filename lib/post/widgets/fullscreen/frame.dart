@@ -187,12 +187,12 @@ class _PostFullscreenFrameState extends State<PostFullscreenFrame>
 }
 
 class FrameChild extends StatelessWidget {
+  const FrameChild({required this.child, this.shown});
+
   final bool? shown;
   final Widget child;
 
   final Duration fadeOutDuration = const Duration(milliseconds: 50);
-
-  const FrameChild({required this.child, this.shown});
 
   @override
   Widget build(BuildContext context) {
@@ -223,10 +223,10 @@ class FrameChild extends StatelessWidget {
 }
 
 class FrameAppBar extends StatelessWidget with AppBarBuilderWidget {
+  const FrameAppBar({required this.child});
+
   @override
   final PreferredSizeWidget child;
-
-  const FrameAppBar({required this.child});
 
   @override
   Widget build(BuildContext context) {

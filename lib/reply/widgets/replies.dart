@@ -6,10 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
 class RepliesPage extends StatelessWidget {
+  const RepliesPage({required this.topic, this.orderByOldest = true});
+
   final Topic topic;
   final bool orderByOldest;
-
-  const RepliesPage({required this.topic, this.orderByOldest = true});
 
   @override
   Widget build(BuildContext context) {
@@ -21,9 +21,9 @@ class RepliesPage extends StatelessWidget {
           listener: () async {
             await controller.waitForFirstPage();
             await context.read<HistoriesService>().addTopic(
-                  topic,
-                  replies: controller.itemList!,
-                );
+              topic,
+              replies: controller.itemList!,
+            );
           },
           listenable: controller.orderByOldest,
           child: RefreshableControllerPage(

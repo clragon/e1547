@@ -123,17 +123,17 @@ Future<void> loadingNotification<T>({
 }
 
 class LoadingNotification extends StatelessWidget {
-  final int max;
-  final ValueNotifier<int> progress;
-  final Duration? animationDuration;
-  final Widget Function(BuildContext context, int progress) messageBuilder;
-
   const LoadingNotification({
     required this.messageBuilder,
     required this.progress,
     required this.max,
     this.animationDuration,
   });
+
+  final int max;
+  final ValueNotifier<int> progress;
+  final Duration? animationDuration;
+  final Widget Function(BuildContext context, int progress) messageBuilder;
 
   @override
   Widget build(BuildContext context) {

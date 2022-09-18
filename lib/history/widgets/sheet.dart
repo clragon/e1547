@@ -17,9 +17,9 @@ Future<void> historySheet({
 }
 
 class HistorySheet extends StatelessWidget {
-  final History entry;
-
   const HistorySheet({super.key, required this.entry});
+
+  final History entry;
 
   @override
   Widget build(BuildContext context) {

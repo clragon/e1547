@@ -5,17 +5,17 @@ import 'package:flutter/material.dart';
 
 class RepliesController extends CursorDataController<Reply>
     with RefreshableController {
-  final Client client;
-
-  final int topicId;
-  @override
-  final ValueNotifier<bool> orderByOldest;
-
   RepliesController({
     required this.client,
     required this.topicId,
     bool orderByOldest = true,
   }) : orderByOldest = ValueNotifier(orderByOldest);
+
+  final Client client;
+
+  final int topicId;
+  @override
+  final ValueNotifier<bool> orderByOldest;
 
   @override
   @protected

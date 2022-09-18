@@ -8,9 +8,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class FollowTile extends StatelessWidget {
-  final Follow follow;
-
   const FollowTile({required this.follow});
+
+  final Follow follow;
 
   @override
   Widget build(BuildContext context) {
@@ -140,9 +140,9 @@ class FollowTile extends StatelessWidget {
 }
 
 class FollowListTile extends StatelessWidget {
-  final Follow follow;
-
   const FollowListTile({required this.follow});
+
+  final Follow follow;
 
   @override
   Widget build(BuildContext context) {

@@ -8,28 +8,28 @@ import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 
 class _PoolSearchResult {
-  final DateTime time;
-  final String name;
-  final String? thumbnail;
-  final String? link;
-
   const _PoolSearchResult({
     required this.time,
     required this.name,
     this.thumbnail,
     this.link,
   });
+
+  final DateTime time;
+  final String name;
+  final String? thumbnail;
+  final String? link;
 }
 
 class PoolSearchInput extends StatefulWidget {
-  final PoolsController controller;
-  final ActionController actionController;
-
   const PoolSearchInput({
     super.key,
     required this.controller,
     required this.actionController,
   });
+
+  final PoolsController controller;
+  final ActionController actionController;
 
   @override
   State<PoolSearchInput> createState() => _PoolSearchInputState();

@@ -5,9 +5,9 @@ import 'package:e1547/wiki/wiki.dart';
 import 'package:flutter/material.dart';
 
 class WikiPage extends StatelessWidget {
-  final Wiki wiki;
-
   const WikiPage({required this.wiki});
+
+  final Wiki wiki;
 
   @override
   Widget build(BuildContext context) {

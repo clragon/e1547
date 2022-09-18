@@ -8,9 +8,9 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:store_checker/store_checker.dart';
 
 class AppIcon extends StatelessWidget {
-  final double radius;
-
   const AppIcon({this.radius = 20});
+
+  final double radius;
 
   @override
   Widget build(BuildContext context) {
@@ -164,9 +164,9 @@ class _NewVersionsButtonState extends State<NewVersionsButton> {
 }
 
 class NewVersionsDialog extends StatelessWidget {
-  final List<AppVersion>? newVersions;
-
   const NewVersionsDialog({required this.newVersions});
+
+  final List<AppVersion>? newVersions;
 
   @override
   Widget build(BuildContext context) {

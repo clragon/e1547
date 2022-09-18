@@ -198,12 +198,12 @@ abstract class DataController<T> extends RawDataController<int, T> {
 }
 
 abstract class CursorDataController<T> extends RawDataController<String, T> {
+  CursorDataController() : super(firstPageKey: _cursorFirstPage);
+
   ValueNotifier<bool> orderByOldest = ValueNotifier(true);
 
   static const String _cursorFirstPage = 'a0';
   static const String _indexFirstPage = '1';
-
-  CursorDataController() : super(firstPageKey: _cursorFirstPage);
 
   @override
   String get firstPageKey =>

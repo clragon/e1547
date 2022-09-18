@@ -5,13 +5,13 @@ import 'package:flutter/material.dart';
 
 class TopicsController extends DataController<Topic>
     with RefreshableController, SearchableController {
+  TopicsController({required this.client, String? search})
+      : search = ValueNotifier<String>(search ?? '');
+
   final Client client;
 
   @override
   late ValueNotifier<String> search;
-
-  TopicsController({required this.client, String? search})
-      : search = ValueNotifier<String>(search ?? '');
 
   @override
   @protected

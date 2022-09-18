@@ -8,12 +8,12 @@ import 'package:relative_time/relative_time.dart';
 import 'package:username_generator/username_generator.dart';
 
 class ReplyTile extends StatelessWidget {
+  ReplyTile({required this.reply, required this.topic});
+
   final Topic topic;
   final Reply reply;
 
   final UsernameGenerator generator = UsernameGenerator();
-
-  ReplyTile({required this.reply, required this.topic});
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +48,7 @@ class ReplyTile extends StatelessWidget {
           Flexible(
             child: Text(
               ' • ${reply.createdAt.relativeTime(context)}'
-              '${reply.createdAt != reply.updatedAt ? ' (edited)' : ''}',
+                  '${reply.createdAt != reply.updatedAt ? ' (edited)' : ''}',
               style: TextStyle(
                 color: dimTextColor(context),
                 fontSize: 12,

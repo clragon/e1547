@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:sliding_sheet/sliding_sheet.dart';
 
 class SheetActions extends InheritedNotifier {
-  final SheetActionController controller;
-
   const SheetActions({required super.child, required this.controller})
       : super(notifier: controller);
+
+  final SheetActionController controller;
 
   static SheetActionController? of(BuildContext context) {
     return context

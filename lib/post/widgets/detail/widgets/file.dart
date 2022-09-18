@@ -5,9 +5,9 @@ import 'package:filesize/filesize.dart';
 import 'package:flutter/material.dart';
 
 class FileDisplay extends StatelessWidget {
-  final Post post;
-
   const FileDisplay({required this.post});
+
+  final Post post;
 
   @override
   Widget build(BuildContext context) {

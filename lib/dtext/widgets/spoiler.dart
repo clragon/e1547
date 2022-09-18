@@ -2,9 +2,9 @@ import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
 
 class SpoilerWrap extends StatefulWidget {
-  final Widget child;
-
   const SpoilerWrap({required this.child});
+
+  final Widget child;
 
   @override
   State<SpoilerWrap> createState() => _SpoilerWrapState();

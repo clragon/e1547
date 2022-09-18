@@ -10,12 +10,12 @@ abstract class AppBarBuilderWidget implements PreferredSizeWidget {
 }
 
 class AppBarBuilder extends StatelessWidget with AppBarBuilderWidget {
+  const AppBarBuilder({required this.child, required this.builder});
+
   @override
   final PreferredSizeWidget child;
   final Widget Function(BuildContext context, PreferredSizeWidget child)
       builder;
-
-  const AppBarBuilder({required this.child, required this.builder});
 
   @override
   Widget build(BuildContext context) {
@@ -24,6 +24,8 @@ class AppBarBuilder extends StatelessWidget with AppBarBuilderWidget {
 }
 
 class AppBarPadding extends StatelessWidget with AppBarBuilderWidget {
+  const AppBarPadding({required this.child});
+
   @override
   final PreferredSizeWidget child;
 
@@ -33,14 +35,12 @@ class AppBarPadding extends StatelessWidget with AppBarBuilderWidget {
         child.preferredSize.height + defaultAppBarTopPadding,
       );
 
-  const AppBarPadding({required this.child});
-
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding:
-          const EdgeInsets.symmetric(horizontal: defaultAppBarHorizontalPadding)
-              .add(
+      const EdgeInsets.symmetric(horizontal: defaultAppBarHorizontalPadding)
+          .add(
         EdgeInsets.only(
           top: defaultAppBarTopPadding + MediaQuery.of(context).padding.top,
         ),

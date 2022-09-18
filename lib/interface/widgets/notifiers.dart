@@ -3,6 +3,15 @@ import 'package:flutter/widgets.dart';
 
 abstract class ProxyValueNotifier<T, P extends Listenable>
     extends ChangeNotifier implements ValueNotifier<T> {
+  ProxyValueNotifier({required P this.parent}) {
+    parent!.addListener(_updateValue);
+    _value = fromParent() as T;
+  }
+
+  ProxyValueNotifier.single(T value) : parent = null {
+    _value = value;
+  }
+
   final P? parent;
 
   late T _value;
@@ -17,6 +26,7 @@ abstract class ProxyValueNotifier<T, P extends Listenable>
 
   @protected
   T? fromParent();
+
   @protected
   void toParent(T value);
 
@@ -32,15 +42,6 @@ abstract class ProxyValueNotifier<T, P extends Listenable>
       notifyListeners();
     }
     toParent(value);
-  }
-
-  ProxyValueNotifier({required P this.parent}) {
-    parent!.addListener(_updateValue);
-    _value = fromParent() as T;
-  }
-
-  ProxyValueNotifier.single(T value) : parent = null {
-    _value = value;
   }
 
   @override
@@ -104,16 +105,16 @@ class _ListenableListenerState extends State<ListenableListener> {
 }
 
 class AnimatedSelector extends StatefulWidget {
-  final Listenable animation;
-  final List<dynamic> Function() selector;
-  final TransitionBuilder builder;
-  final Widget? child;
-
   const AnimatedSelector(
       {required this.animation,
       required this.selector,
       required this.builder,
       this.child});
+
+  final Listenable animation;
+  final List<dynamic> Function() selector;
+  final TransitionBuilder builder;
+  final Widget? child;
 
   @override
   State<AnimatedSelector> createState() => _AnimatedSelectorState();

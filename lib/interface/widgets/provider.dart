@@ -172,12 +172,6 @@ typedef SubProviderUpdate6<T, T2, T3, T4, T5, T6, R> = R Function(
 typedef SelectiveBuilder = List<dynamic>? Function(BuildContext context);
 
 class SubProvider0<R> extends SingleChildStatelessWidget {
-  final Widget Function(BuildContext context, Widget? child)? builder;
-  final SubProviderCreate0<R> create;
-  final R Function(BuildContext context, R previous)? update;
-  final List<Object?> Function(BuildContext context)? selector;
-  final Dispose<R>? dispose;
-
   const SubProvider0({
     super.key,
     super.child,
@@ -187,6 +181,12 @@ class SubProvider0<R> extends SingleChildStatelessWidget {
     this.selector,
     this.dispose,
   });
+
+  final Widget Function(BuildContext context, Widget? child)? builder;
+  final SubProviderCreate0<R> create;
+  final R Function(BuildContext context, R previous)? update;
+  final List<Object?> Function(BuildContext context)? selector;
+  final Dispose<R>? dispose;
 
   @override
   Widget buildWithChild(BuildContext context, Widget? child) =>

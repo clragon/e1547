@@ -7,37 +7,40 @@ import 'package:video_player/video_player.dart';
 import 'package:wakelock/wakelock.dart';
 
 class VideoHandler {
-  // To prevent the app from crashing due tue OutOfMemoryErrors,
-  // the list of all loaded videos is global.
-  static final Map<VideoConfig, VideoPlayerController> _videos = {};
-
-  final int maxLoaded = 3;
-  // 50mb
-  final int maxSize = 5 * pow(10, 7).toInt();
-
-  final Mutex _loadingLock = Mutex();
-
   VideoHandler({bool muteVideos = false}) : _muteVideos = muteVideos;
 
   static VideoHandler of(BuildContext context) =>
       context.dependOnInheritedWidgetOfExactType<VideoHandlerData>()!.handler;
 
+  // To prevent the app from crashing due tue OutOfMemoryErrors,
+  // the list of all loaded videos is global.
+  static final Map<VideoConfig, VideoPlayerController> _videos = {};
+
+  final int maxLoaded = 3;
+
+  // 50mb
+  final int maxSize = 5 * pow(10, 7).toInt();
+
+  final Mutex _loadingLock = Mutex();
+
   bool _muteVideos;
+
   bool get muteVideos => _muteVideos;
+
   set muteVideos(bool value) {
     _muteVideos = value;
     _videos.values.forEach((e) => e.setVolume(muteVideos ? 0 : 1));
   }
 
   VideoPlayerController getVideo(VideoConfig key) => _videos.putIfAbsent(
-        key,
+    key,
         () => VideoPlayerController.network(
-          key.url,
-          videoPlayerOptions: VideoPlayerOptions(
-            mixWithOthers: true,
-          ),
-        ),
-      );
+      key.url,
+      videoPlayerOptions: VideoPlayerOptions(
+        mixWithOthers: true,
+      ),
+    ),
+  );
 
   Future<void> loadVideo(VideoConfig key) async {
     await _loadingLock.acquire();
@@ -51,7 +54,7 @@ class VideoHandler {
       Map<VideoConfig, VideoPlayerController> loaded = Map.of(_videos)
         ..removeWhere((key, value) => !value.value.isInitialized);
       int loadedSize =
-          loaded.keys.fold<int>(0, (current, config) => current + config.size);
+      loaded.keys.fold<int>(0, (current, config) => current + config.size);
       if (loaded.length < maxLoaded && loadedSize < maxSize) {
         break;
       }
@@ -77,9 +80,9 @@ class VideoHandler {
 }
 
 class VideoHandlerData extends InheritedWidget {
-  final VideoHandler handler;
-
   const VideoHandlerData({required this.handler, required super.child});
+
+  final VideoHandler handler;
 
   @override
   bool updateShouldNotify(covariant VideoHandlerData oldWidget) =>
@@ -93,9 +96,9 @@ extension Wake on VideoPlayerController {
 }
 
 class VideoHandlerVolumeControl extends StatefulWidget {
-  final VideoPlayerController videoController;
-
   const VideoHandlerVolumeControl({required this.videoController});
+
+  final VideoPlayerController videoController;
 
   @override
   State<VideoHandlerVolumeControl> createState() =>
@@ -129,10 +132,10 @@ class _VideoHandlerVolumeControlState extends State<VideoHandlerVolumeControl> {
 }
 
 class VideoConfig {
+  const VideoConfig({required this.url, required this.size});
+
   final String url;
   final int size;
-
-  const VideoConfig({required this.url, required this.size});
 
   @override
   operator ==(Object other) =>

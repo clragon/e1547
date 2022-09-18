@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'padding.dart';
 
 class ReportFormHeader extends StatelessWidget {
+  const ReportFormHeader({required this.title, this.icon});
+
   final Widget title;
   final Widget? icon;
-
-  const ReportFormHeader({required this.title, this.icon});
 
   @override
   Widget build(BuildContext context) {
@@ -18,8 +18,8 @@ class ReportFormHeader extends StatelessWidget {
         children: [
           DefaultTextStyle(
             style: Theme.of(context).textTheme.bodyText2!.copyWith(
-                  fontSize: 20,
-                ),
+              fontSize: 20,
+            ),
             child: title,
           ),
           if (icon != null)

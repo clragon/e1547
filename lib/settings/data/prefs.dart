@@ -75,17 +75,17 @@ extension NullablePreferences on SharedPreferences {
 /// Stores a Setting for [SharedPrefsSettings].
 /// Is used to reset and reload settings.
 class _SharedSetting<T> {
-  final String key;
-  final T initialValue;
-  final GetSetting<T>? getSetting;
-  final ValueNotifier<T> notifier;
-
   _SharedSetting({
     required this.notifier,
     required this.key,
     required this.initialValue,
     this.getSetting,
   });
+
+  final String key;
+  final T initialValue;
+  final GetSetting<T>? getSetting;
+  final ValueNotifier<T> notifier;
 }
 
 /// Provides easily creating listenable Settings with [SharedPreferences].

@@ -5,9 +5,9 @@ import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 
 class DrawerTagCounter extends StatelessWidget {
-  final PostsController controller;
-
   const DrawerTagCounter({required this.controller});
+
+  final PostsController controller;
 
   @override
   Widget build(BuildContext context) {
@@ -21,9 +21,9 @@ class DrawerTagCounter extends StatelessWidget {
 }
 
 class DrawerMultiTagCounter extends StatelessWidget {
-  final List<PostsController> controllers;
-
   const DrawerMultiTagCounter({required this.controllers});
+
+  final List<PostsController> controllers;
 
   @override
   Widget build(BuildContext context) {

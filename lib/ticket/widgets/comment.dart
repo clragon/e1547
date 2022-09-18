@@ -5,9 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class CommentReportScreen extends StatelessWidget {
-  final CommentController comment;
-
   const CommentReportScreen({required this.comment});
+
+  final CommentController comment;
 
   @override
   Widget build(BuildContext context) {

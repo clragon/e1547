@@ -2,10 +2,10 @@ import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
 
 class ContextDrawer extends StatelessWidget {
+  const ContextDrawer({this.title, required this.children});
+
   final Widget? title;
   final List<Widget> children;
-
-  const ContextDrawer({this.title, required this.children});
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +20,7 @@ class ContextDrawer extends StatelessWidget {
               if (title != null)
                 Padding(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 22, vertical: 18),
+                  const EdgeInsets.symmetric(horizontal: 22, vertical: 18),
                   child: DefaultTextStyle(
                     style: Theme.of(context).textTheme.headline6!,
                     child: title!,
@@ -36,10 +36,10 @@ class ContextDrawer extends StatelessWidget {
 }
 
 class ContextDrawerButton extends StatelessWidget {
+  const ContextDrawerButton({this.icon, this.tooltip = 'Filter'});
+
   final IconData? icon;
   final String? tooltip;
-
-  const ContextDrawerButton({this.icon, this.tooltip = 'Filter'});
 
   @override
   Widget build(BuildContext context) {

@@ -26,10 +26,10 @@ Future<void> tagSearchSheet({
 }
 
 class TagSearchSheet extends StatelessWidget {
+  const TagSearchSheet({required this.tag, this.controller});
+
   final String tag;
   final PostsController? controller;
-
-  const TagSearchSheet({required this.tag, this.controller});
 
   @override
   Widget build(BuildContext context) {
@@ -118,9 +118,9 @@ class TagSearchSheet extends StatelessWidget {
 }
 
 class SearchTagDisplay extends StatefulWidget {
-  final String tag;
-
   const SearchTagDisplay({required this.tag});
+
+  final String tag;
 
   @override
   State<SearchTagDisplay> createState() => _SearchTagDisplayState();
@@ -201,9 +201,9 @@ void tagSearchDialog({required BuildContext context, required String tag}) {
 }
 
 class TagSearchDialog extends StatelessWidget {
-  final String tag;
-
   const TagSearchDialog({required this.tag});
+
+  final String tag;
 
   @override
   Widget build(BuildContext context) {
@@ -213,21 +213,21 @@ class TagSearchDialog extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Flexible(
-              child: Text(
-                tagToTitle(tag),
-                softWrap: true,
-              ),
+                  child: Text(
+                    tagToTitle(tag),
+                    softWrap: true,
+                  ),
+                ),
+                TagListActions(tag: tag),
+              ],
             ),
-            TagListActions(tag: tag),
-          ],
-        ),
-        content: ConstrainedBox(
-          constraints: BoxConstraints(
-            maxHeight: constraints.maxHeight * 0.5,
+            content: ConstrainedBox(
+              constraints: BoxConstraints(
+                maxHeight: constraints.maxHeight * 0.5,
+              ),
+              child: SearchTagDisplay(tag: tag),
+            ),
           ),
-          child: SearchTagDisplay(tag: tag),
-        ),
-      ),
     );
   }
 }

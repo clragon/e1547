@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:username_generator/username_generator.dart';
 
 class UsernameGeneratorData extends InheritedWidget {
-  final UsernameGenerator generator;
-
   const UsernameGeneratorData({required this.generator, required super.child});
+
+  final UsernameGenerator generator;
 
   static UsernameGenerator? of(BuildContext context) {
     return context

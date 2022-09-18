@@ -4,6 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:mutex/mutex.dart';
 
 abstract class DataUpdater<T> extends ChangeNotifier with DataLock<T> {
+  DataUpdater() {
+    _refreshListeners.forEach((e) => e.addListener(restart));
+  }
+
   final Mutex _runLock = Mutex();
 
   Future<void> get finish => _runCompleter.future;
@@ -11,6 +15,7 @@ abstract class DataUpdater<T> extends ChangeNotifier with DataLock<T> {
   Completer<void> _runCompleter = Completer()..complete();
 
   int _progress = 0;
+
   int get progress => _progress;
 
   bool get updating => !_runCompleter.isCompleted;
@@ -20,10 +25,6 @@ abstract class DataUpdater<T> extends ChangeNotifier with DataLock<T> {
   Exception? error;
 
   late final List<Listenable> _refreshListeners = getRefreshListeners();
-
-  DataUpdater() {
-    _refreshListeners.forEach((e) => e.addListener(restart));
-  }
 
   @override
   void dispose() {
@@ -117,9 +118,9 @@ abstract class DataUpdater<T> extends ChangeNotifier with DataLock<T> {
 }
 
 class UpdaterException implements Exception {
-  final String? message;
-
   UpdaterException({this.message});
+
+  final String? message;
 }
 
 typedef DataUpdate<T> = FutureOr<T> Function(T data);

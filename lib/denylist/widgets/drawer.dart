@@ -5,9 +5,9 @@ import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 
 class DrawerDenySwitch extends StatelessWidget {
-  final PostsController controller;
-
   const DrawerDenySwitch({required this.controller});
+
+  final PostsController controller;
 
   @override
   Widget build(BuildContext context) {
@@ -25,9 +25,9 @@ class DrawerDenySwitch extends StatelessWidget {
 }
 
 class DrawerMultiDenySwitch extends StatefulWidget {
-  final List<PostsController> controllers;
-
   const DrawerMultiDenySwitch({required this.controllers});
+
+  final List<PostsController> controllers;
 
   @override
   State<DrawerMultiDenySwitch> createState() => _DrawerMultiDenySwitchState();
@@ -81,15 +81,15 @@ class _DrawerMultiDenySwitchState extends State<DrawerMultiDenySwitch> {
 }
 
 class DrawerDenyTile extends StatelessWidget {
-  final bool isAllowed;
-  final void Function(bool? value) onChanged;
-  final MapEntry<String, List<Post>> entry;
-
   const DrawerDenyTile({
     required this.entry,
     required this.isAllowed,
     required this.onChanged,
   });
+
+  final bool isAllowed;
+  final void Function(bool? value) onChanged;
+  final MapEntry<String, List<Post>> entry;
 
   @override
   Widget build(BuildContext context) {
@@ -126,13 +126,6 @@ class DrawerDenyTile extends StatelessWidget {
 }
 
 class DrawerDenySwitchBody extends StatelessWidget {
-  final bool denying;
-  final Map<Post, List<String>> denied;
-  final List<String> allowedList;
-
-  final ValueChanged<bool> updateDenying;
-  final ValueChanged<List<String>> updateAllowedList;
-
   const DrawerDenySwitchBody({
     required this.denying,
     required this.denied,
@@ -140,6 +133,13 @@ class DrawerDenySwitchBody extends StatelessWidget {
     required this.updateDenying,
     required this.updateAllowedList,
   });
+
+  final bool denying;
+  final Map<Post, List<String>> denied;
+  final List<String> allowedList;
+
+  final ValueChanged<bool> updateDenying;
+  final ValueChanged<List<String>> updateAllowedList;
 
   @override
   Widget build(BuildContext context) {

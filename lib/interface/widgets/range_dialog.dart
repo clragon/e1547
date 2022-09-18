@@ -4,14 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class RangeDialog extends StatefulWidget {
-  final Widget title;
-  final int value;
-  final int max;
-  final int min;
-  final int? division;
-  final bool strict;
-  final ValueChanged<int?> onSubmit;
-
   const RangeDialog({
     required this.title,
     required this.onSubmit,
@@ -21,6 +13,14 @@ class RangeDialog extends StatefulWidget {
     this.division,
     this.strict = false,
   });
+
+  final Widget title;
+  final int value;
+  final int max;
+  final int min;
+  final int? division;
+  final bool strict;
+  final ValueChanged<int?> onSubmit;
 
   @override
   State<RangeDialog> createState() => _RangeDialogState();

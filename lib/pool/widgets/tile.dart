@@ -5,13 +5,13 @@ import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 
 class PoolTile extends StatelessWidget {
-  final Pool pool;
-  final VoidCallback? onPressed;
-
   const PoolTile({
     required this.pool,
     this.onPressed,
   });
+
+  final Pool pool;
+  final VoidCallback? onPressed;
 
   @override
   Widget build(BuildContext context) {

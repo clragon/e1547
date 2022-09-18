@@ -4,13 +4,13 @@ import 'package:e1547/user/user.dart';
 import 'package:flutter/material.dart';
 
 class UserLoadingPage extends StatefulWidget {
-  final String id;
-  final UserPageSection initalPage;
-
   const UserLoadingPage(
     this.id, {
     this.initalPage = UserPageSection.favorites,
   });
+
+  final String id;
+  final UserPageSection initalPage;
 
   @override
   State<UserLoadingPage> createState() => _UserLoadingPageState();

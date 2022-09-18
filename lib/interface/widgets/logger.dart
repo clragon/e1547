@@ -13,9 +13,9 @@ import 'package:talker/talker.dart';
 export 'package:talker/talker.dart' show TalkerDataInterface;
 
 class LoggerPage extends StatelessWidget {
-  final Talker talker;
-
   const LoggerPage({super.key, required this.talker});
+
+  final Talker talker;
 
   @override
   Widget build(BuildContext context) {
@@ -77,14 +77,14 @@ class LoggerPage extends StatelessWidget {
 }
 
 class LoggerCard extends StatefulWidget {
-  final TalkerDataInterface item;
-  final bool expanded;
-
   const LoggerCard({
     super.key,
     required this.item,
     this.expanded = false,
   });
+
+  final TalkerDataInterface item;
+  final bool expanded;
 
   @override
   State<LoggerCard> createState() => _LoggerCardState();

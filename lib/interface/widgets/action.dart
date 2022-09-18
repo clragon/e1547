@@ -6,6 +6,13 @@ import 'package:flutter/material.dart';
 typedef SubmitString = FutureOr<void> Function(String result);
 
 class ControlledTextWrapper extends StatefulWidget {
+  const ControlledTextWrapper({
+    required this.submit,
+    required this.actionController,
+    required this.builder,
+    this.textController,
+  });
+
   final SubmitString submit;
   final TextEditingController? textController;
   final ActionController actionController;
@@ -14,13 +21,6 @@ class ControlledTextWrapper extends StatefulWidget {
     TextEditingController controller,
     SubmitString submit,
   ) builder;
-
-  const ControlledTextWrapper({
-    required this.submit,
-    required this.actionController,
-    required this.builder,
-    this.textController,
-  });
 
   @override
   State<ControlledTextWrapper> createState() => _ControlledTextWrapperState();
@@ -58,17 +58,17 @@ class _ControlledTextWrapperState extends State<ControlledTextWrapper> {
 }
 
 class ControlledTextField extends StatelessWidget {
-  final String? labelText;
-  final SubmitString submit;
-  final TextEditingController? textController;
-  final ActionController actionController;
-
   const ControlledTextField({
     required this.actionController,
     required this.submit,
     this.labelText,
     this.textController,
   });
+
+  final String? labelText;
+  final SubmitString submit;
+  final TextEditingController? textController;
+  final ActionController actionController;
 
   @override
   Widget build(BuildContext context) {

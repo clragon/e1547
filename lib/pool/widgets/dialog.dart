@@ -20,9 +20,9 @@ void poolDialog({required BuildContext context, required Pool pool}) {
 }
 
 class PoolDialog extends StatelessWidget {
-  final Pool pool;
-
   const PoolDialog({required this.pool});
+
+  final Pool pool;
 
   @override
   Widget build(BuildContext context) {

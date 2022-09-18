@@ -12,9 +12,9 @@ Future<void> wikiSheet(BuildContext context, Wiki wiki) async {
 }
 
 class WikiSheet extends StatelessWidget {
-  final Wiki wiki;
-
   const WikiSheet({required this.wiki});
+
+  final Wiki wiki;
 
   @override
   Widget build(BuildContext context) {
