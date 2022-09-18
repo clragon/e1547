@@ -408,7 +408,7 @@ class PostFeedTile extends StatelessWidget {
 
     Widget menu() {
       return PopupMenuButton<VoidCallback>(
-        icon: ShadowIcon(
+        icon: Icon(
           Icons.more_vert,
           color: dimTextColor(context),
           size: 18,
@@ -478,10 +478,10 @@ class PostFeedTile extends StatelessWidget {
                   TimedText(
                     created: post.createdAt,
                     child: DefaultTextStyle(
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
+                      style: Theme.of(context).textTheme.bodyText2!.copyWith(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
                       child: ArtistName(post: post),
                     ),
                   ),
