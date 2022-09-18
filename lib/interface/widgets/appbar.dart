@@ -68,14 +68,20 @@ AppBarLeadingConfiguration getLeadingConfiguration({
   double? leadingWidth;
   if (leading == null && automaticallyImplyLeading) {
     bool hasDrawer = Scaffold.maybeOf(context)?.hasDrawer ?? false;
-    bool isFirst = ModalRoute.of(context)?.isFirst ?? false;
-    bool canPop = ModalRoute.of(context)?.canPop ?? false;
+    ModalRoute? parentRoute = ModalRoute.of(context);
+    bool isFirst = parentRoute?.isFirst ?? false;
+    bool canPop = parentRoute?.canPop ?? false;
 
     Widget drawerButton() => IconButton(
           icon: const Icon(Icons.menu),
           onPressed: Scaffold.of(context).openDrawer,
           tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
         );
+
+    Widget backButton =
+        parentRoute is PageRoute<dynamic> && parentRoute.fullscreenDialog
+            ? const CloseButton()
+            : const BackButton();
 
     if (hasDrawer && isFirst) {
       effectiveLeading = drawerButton();
@@ -86,11 +92,11 @@ AppBarLeadingConfiguration getLeadingConfiguration({
           children: [
             const SizedBox(width: 8),
             drawerButton(),
-            const BackButton(),
+            backButton,
           ],
         );
       } else {
-        effectiveLeading = const BackButton();
+        effectiveLeading = backButton;
       }
     }
   }
@@ -352,16 +358,15 @@ class DefaultSliverAppBar extends StatelessWidget {
             snap: snap,
             actions: actions,
             bottom: bottom,
-            flexibleSpace: flexibleSpace != null
-                ? ScrollToTop(
-                    controller: scrollController,
-                    child: Padding(
-                      padding: EdgeInsets.only(
-                          bottom: bottom?.preferredSize.height ?? 0),
-                      child: flexibleSpace,
-                    ),
-                  )
-                : null,
+            flexibleSpace: ScrollToTop(
+              controller: scrollController,
+              child: Padding(
+                padding: EdgeInsets.only(
+                  bottom: bottom?.preferredSize.height ?? 0,
+                ),
+                child: flexibleSpace,
+              ),
+            ),
           );
         },
       ),

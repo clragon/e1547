@@ -9,14 +9,6 @@ typedef TextEditorBuilder = Widget Function(
     BuildContext context, TextEditingController controller);
 
 class TextEditor extends StatefulWidget {
-  final Widget? title;
-  final String? content;
-
-  final TextEditorSubmit onSubmit;
-
-  final TextEditorBuilder? previewBuilder;
-  final TextEditorBuilder? bottomSheetBuilder;
-
   const TextEditor({
     required this.onSubmit,
     this.title,
@@ -24,6 +16,14 @@ class TextEditor extends StatefulWidget {
     this.previewBuilder,
     this.bottomSheetBuilder,
   });
+
+  final Widget? title;
+  final String? content;
+
+  final TextEditorSubmit onSubmit;
+
+  final TextEditorBuilder? previewBuilder;
+  final TextEditorBuilder? bottomSheetBuilder;
 
   @override
   State<StatefulWidget> createState() {
@@ -39,18 +39,11 @@ class _TextEditorState extends State<TextEditor> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: why is this needed?
     Widget scrollView(Widget child) {
       return SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(8),
-          child: Row(
-            children: [
-              Expanded(
-                child: child,
-              )
-            ],
-          ),
+        padding: defaultActionListPadding.add(const EdgeInsets.all(8)),
+        child: Row(
+          children: [Expanded(child: child)],
         ),
       );
     }
@@ -112,16 +105,15 @@ class _TextEditorState extends State<TextEditor> {
       );
     }
 
+    bool hasPreview = widget.previewBuilder != null;
+
     Map<Widget, Widget>? tabs = {
       const Tab(text: 'Write'): editor(),
+      if (hasPreview)
+        const Tab(text: 'Preview'): scrollView(
+          widget.previewBuilder!(context, textController),
+        ),
     };
-
-    if (widget.previewBuilder != null) {
-      tabs.addAll({
-        const Tab(text: 'Preview'):
-            scrollView(widget.previewBuilder!(context, textController)),
-      });
-    }
 
     return DefaultTabController(
       length: tabs.length,
@@ -130,7 +122,7 @@ class _TextEditorState extends State<TextEditor> {
           TabController controller = DefaultTabController.of(context)!;
           return ListenableListener(
             listener: () {
-              if (controller.length > 1 && controller.index == 0) {
+              if (hasPreview && controller.index == 0) {
                 if (!showBar) {
                   setState(() {
                     showBar = true;
@@ -154,27 +146,30 @@ class _TextEditorState extends State<TextEditor> {
                       ? widget.bottomSheetBuilder?.call(context, textController)
                       : null,
               body: NestedScrollView(
-                headerSliverBuilder: (context, innerBoxIsScrolled) => [
-                  DefaultSliverAppBar(
-                    floating: true,
-                    leading: ModalRoute.of(context)!.canPop
-                        ? const CloseButton()
-                        : null,
-                    title: widget.title,
-                    bottom: tabs.length > 1
-                        ? TabBar(
-                            tabs: tabs.keys.toList(),
-                            labelColor: Theme.of(context).iconTheme.color,
-                            indicatorColor: Theme.of(context).iconTheme.color,
-                          )
-                        : null,
+                headerSliverBuilder: (context, innerBoxIsScrolled) =>
+                [
+                  SliverOverlapAbsorber(
+                    handle: NestedScrollView.sliverOverlapAbsorberHandleFor(
+                      context,
+                    ),
+                    sliver: DefaultSliverAppBar(
+                      pinned: true,
+                      leading: ModalRoute.of(context)!.canPop
+                          ? const CloseButton()
+                          : null,
+                      title: widget.title,
+                      bottom: tabs.length > 1
+                          ? TabBar(
+                              tabs: tabs.keys.toList(),
+                              labelColor: Theme.of(context).iconTheme.color,
+                              indicatorColor: Theme.of(context).iconTheme.color,
+                            )
+                          : null,
+                    ),
                   ),
                 ],
-                body: Padding(
-                  padding: defaultActionListPadding,
-                  child: TabBarView(
-                    children: tabs.values.toList(),
-                  ),
+                body: TabBarView(
+                  children: tabs.values.toList(),
                 ),
               ),
             ),

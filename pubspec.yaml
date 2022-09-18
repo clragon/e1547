@@ -28,7 +28,7 @@ dependencies:
   provider: ^6.0.3
   pull_to_refresh: ^2.0.0
   sliding_sheet: ^0.5.0
-  sliver_tools: ^0.2.7
+  sliver_tools: ^0.2.8
   video_player: ^2.4.5
 
   # data
