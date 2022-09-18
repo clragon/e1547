@@ -298,7 +298,9 @@ class PostComicTile extends StatelessWidget {
       aspectRatio: post.file.width / post.file.height,
       child: PostImageTile(
         controller: controller,
-        size: PostImageSize.file,
+        size: post.type == PostType.video
+            ? PostImageSize.sample
+            : PostImageSize.file,
         withLowRes: true,
         showProgress: false,
         onTap: () => defaultPushPostDetail(context, controller),
