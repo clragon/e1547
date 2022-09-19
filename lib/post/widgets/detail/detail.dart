@@ -83,7 +83,7 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
               shown: false,
               child: CommentDisplay(post: post),
             ),
-            ParentDisplay(post: post),
+            RelationshipDisplay(post: post),
             PostEditorChild(
               shown: false,
               child: PoolDisplay(post: post),
@@ -114,7 +114,7 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
           children: [
-            ParentDisplay(post: post),
+            RelationshipDisplay(post: post),
             PostEditorChild(
               shown: false,
               child: PoolDisplay(post: post),

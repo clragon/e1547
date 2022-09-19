@@ -4,8 +4,8 @@ import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-class ParentDisplay extends StatelessWidget {
-  const ParentDisplay({required this.post});
+class RelationshipDisplay extends StatelessWidget {
+  const RelationshipDisplay({required this.post});
 
   final Post post;
 
