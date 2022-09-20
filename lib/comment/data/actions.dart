@@ -49,9 +49,13 @@ Future<bool> writeComment({
         onSubmit: (context, text) async {
           if (text.isNotEmpty) {
             try {
-              await context
-                  .read<Client>()
-                  .postComment(postId, text, comment: comment);
+              if (comment == null) {
+                await context.read<Client>().postComment(postId, text);
+              } else {
+                await context
+                    .read<Client>()
+                    .updateComment(comment.id, postId, text);
+              }
               sent = true;
               Navigator.of(context).maybePop();
             } on DioError {

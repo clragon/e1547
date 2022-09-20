@@ -221,6 +221,67 @@ class Client extends ChangeNotifier {
     return postsRaw(page, search: search, limit: limit, force: force);
   }
 
+  Future<Post> post(int postId, {bool unsafe = false, bool? force}) async {
+    await _initialized;
+    Map<String, dynamic> body = await _dio
+        .get(
+          '${unsafe ? 'https://${_settings.customHost.value}/' : ''}posts/$postId.json',
+          options: _options(force: force),
+        )
+        .then((response) => response.data);
+
+    return Post.fromJson(body['post']);
+  }
+
+  Future<void> updatePost(int postId, Map<String, String?> body) async {
+    await (await _cache).deleteFromPath(
+      RegExp(RegExp.escape('posts/$postId.json')),
+    );
+
+    await _dio.put('posts/$postId.json', data: FormData.fromMap(body));
+  }
+
+  Future<void> votePost(int postId, bool upvote, bool replace) async {
+    await ensureLogin();
+
+    await (await _cache)
+        .deleteFromPath(RegExp(RegExp.escape('posts/$postId.json')));
+
+    await _dio.post('posts/$postId/votes.json', queryParameters: {
+      'score': upvote ? 1 : -1,
+      'no_unvote': replace,
+    });
+  }
+
+  Future<void> reportPost(int postId, int reportId, String reason) async {
+    await _initialized;
+    await _dio.post(
+      'tickets',
+      queryParameters: {
+        'ticket[reason]': reason,
+        'ticket[report_reason]': reportId,
+        'ticket[disp_id]': postId,
+        'ticket[qtype]': 'post',
+      },
+      options: Options(
+        validateStatus: (status) => status == 302,
+      ),
+    );
+  }
+
+  Future<void> flagPost(int postId, String flag, {int? parent}) async {
+    await _initialized;
+    await _dio.post(
+      'post_flags.json',
+      queryParameters: {
+        'post_flag[post_id]': postId,
+        'post_flag[reason_name]': flag,
+        if (flag == 'inferior' && parent != null)
+          'post_flag[parent_id]': parent,
+      },
+    );
+  }
+
   Future<List<Post>> favorites(int page, {int? limit, bool? force}) async {
     await _initialized;
     Map body = await _dio
@@ -238,6 +299,8 @@ class Client extends ChangeNotifier {
   }
 
   Future<void> addFavorite(int postId) async {
+    await ensureLogin();
+
     await (await _cache)
         .deleteFromPath(RegExp(RegExp.escape('posts/$postId.json')));
 
@@ -251,18 +314,6 @@ class Client extends ChangeNotifier {
         .deleteFromPath(RegExp(RegExp.escape('posts/$postId.json')));
 
     await _dio.delete('favorites/$postId.json');
-  }
-
-  Future<void> votePost(int postId, bool upvote, bool replace) async {
-    await ensureLogin();
-
-    await (await _cache)
-        .deleteFromPath(RegExp(RegExp.escape('posts/$postId.json')));
-
-    await _dio.post('posts/$postId/votes.json', queryParameters: {
-      'score': upvote ? 1 : -1,
-      'no_unvote': replace,
-    });
   }
 
   Future<List<Pool>> pools(int page, {String? search, bool? force}) async {
@@ -328,55 +379,6 @@ class Client extends ChangeNotifier {
           ..removeWhere((e) => e == null))
         .cast<Post>();
     return posts;
-  }
-
-  Future<Post> post(int postId, {bool unsafe = false, bool? force}) async {
-    await _initialized;
-    Map<String, dynamic> body = await _dio
-        .get(
-          '${unsafe ? 'https://${_settings.customHost.value}/' : ''}posts/$postId.json',
-          options: _options(force: force),
-        )
-        .then((response) => response.data);
-
-    return Post.fromJson(body['post']);
-  }
-
-  Future<void> updatePost(int postId, Map<String, String?> body) async {
-    await (await _cache).deleteFromPath(
-      RegExp(RegExp.escape('posts/$postId.json')),
-    );
-
-    await _dio.put('posts/$postId.json', data: FormData.fromMap(body));
-  }
-
-  Future<void> reportPost(int postId, int reportId, String reason) async {
-    await _initialized;
-    await _dio.post(
-      'tickets',
-      queryParameters: {
-        'ticket[reason]': reason,
-        'ticket[report_reason]': reportId,
-        'ticket[disp_id]': postId,
-        'ticket[qtype]': 'post',
-      },
-      options: Options(
-        validateStatus: (status) => status == 302,
-      ),
-    );
-  }
-
-  Future<void> flagPost(int postId, String flag, {int? parent}) async {
-    await _initialized;
-    await _dio.post(
-      'post_flags.json',
-      queryParameters: {
-        'post_flag[post_id]': postId,
-        'post_flag[reason_name]': flag,
-        if (flag == 'inferior' && parent != null)
-          'post_flag[parent_id]': parent,
-      },
-    );
   }
 
   Future<List<Post>> follows(
@@ -638,7 +640,8 @@ class Client extends ChangeNotifier {
   }
 
   Future<Comment> comment(int commentId, {bool? force}) async {
-    await _initialized;
+    await ensureLogin();
+
     Map<String, dynamic> body = await _dio
         .get(
           'comments.json/$commentId.json',
@@ -647,6 +650,42 @@ class Client extends ChangeNotifier {
         .then((response) => response.data);
 
     return Comment.fromJson(body);
+  }
+
+  Future<void> postComment(int postId, String text) async {
+    await ensureLogin();
+    await (await _cache).deleteFromPath(
+      RegExp(RegExp.escape('comments.json')),
+      queryParams: {'search[post_id]': postId.toString()},
+    );
+
+    Map<String, dynamic> body = {
+      'comment[body]': text,
+      'comment[post_id]': postId,
+      'commit': 'Submit',
+    };
+
+    await _dio.post('comments.json', data: FormData.fromMap(body));
+  }
+
+  Future<void> updateComment(int commentId, int postId, String text) async {
+    await ensureLogin();
+    await (await _cache).deleteFromPath(
+      RegExp(RegExp.escape('comments.json')),
+      queryParams: {'search[post_id]': postId.toString()},
+    );
+
+    await (await _cache).deleteFromPath(
+      RegExp(RegExp.escape('comments/$commentId.json')),
+    );
+
+    Map<String, dynamic> body = {
+      'comment[body]': text,
+      'comment[post_id]': postId,
+      'commit': 'Submit',
+    };
+
+    await _dio.patch('comments/$commentId.json', data: FormData.fromMap(body));
   }
 
   Future<void> voteComment(int commentId, bool upvote, bool replace) async {
@@ -659,32 +698,6 @@ class Client extends ChangeNotifier {
         'no_unvote': replace,
       },
     );
-  }
-
-  Future<void> postComment(int postId, String text, {Comment? comment}) async {
-    await ensureLogin();
-    await (await _cache).deleteFromPath(
-      RegExp(RegExp.escape('comments.json')),
-      queryParams: {'search[post_id]': postId.toString()},
-    );
-
-    Map<String, dynamic> body = {
-      'comment[body]': text,
-      'comment[post_id]': postId,
-      'commit': 'Submit',
-    };
-    Future<Response> request;
-    if (comment != null) {
-      await (await _cache).deleteFromPath(
-        RegExp(RegExp.escape('comments/${comment.id}.json')),
-      );
-
-      request = _dio.patch('comments/${comment.id}.json',
-          data: FormData.fromMap(body));
-    } else {
-      request = _dio.post('comments.json', data: FormData.fromMap(body));
-    }
-    await request;
   }
 
   Future<void> reportComment(int commentId, String reason) async {
