@@ -14,7 +14,7 @@ class FollowTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: idiotic design, replace with database giving out pre-hosted objects
+    // TODO: replace with database giving out pre-hosted objects
     FollowStatus? status = context.watch<FollowsService>().status(follow);
     bool active = status?.thumbnail != null;
 
@@ -41,6 +41,7 @@ class FollowTile extends StatelessWidget {
         alignment: Alignment.center,
         children: [
           Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
               AspectRatio(
                 aspectRatio: 1 / 1.2,
@@ -52,19 +53,19 @@ class FollowTile extends StatelessWidget {
                     builder: (context) => Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Expanded(
-                          child: Hero(
-                            tag: getPostLink(status!.latest!),
-                            child: CachedNetworkImage(
-                              imageUrl: status.thumbnail!,
-                              errorWidget: defaultErrorBuilder,
-                              fit: BoxFit.cover,
+                          children: [
+                            Expanded(
+                              child: Hero(
+                                tag: getPostLink(status!.latest!),
+                                child: CachedNetworkImage(
+                                  imageUrl: status.thumbnail!,
+                                  errorWidget: defaultErrorBuilder,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
                             ),
-                          ),
+                          ],
                         ),
-                      ],
-                    ),
                   ),
                 ),
               ),
@@ -103,8 +104,8 @@ class FollowTile extends StatelessWidget {
                                     .textTheme
                                     .bodyText2!
                                     .copyWith(
-                                      color: dimTextColor(context, 0.7),
-                                    ),
+                                  color: dimTextColor(context, 0.7),
+                                ),
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
@@ -116,20 +117,22 @@ class FollowTile extends StatelessWidget {
               ),
             ],
           ),
-          Material(
-            type: MaterialType.transparency,
-            child: InkWell(
-              onTap: () => Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => SearchPage(
-                    tags: follow.tags,
-                    reversePools: (status?.unseen ?? 0) > 0,
+          Positioned.fill(
+            child: Material(
+              type: MaterialType.transparency,
+              child: InkWell(
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => SearchPage(
+                      tags: follow.tags,
+                      reversePools: (status?.unseen ?? 0) > 0,
+                    ),
                   ),
                 ),
-              ),
-              onLongPress: () => tagSearchSheet(
-                context: context,
-                tag: follow.tags,
+                onLongPress: () => tagSearchSheet(
+                  context: context,
+                  tag: follow.tags,
+                ),
               ),
             ),
           ),

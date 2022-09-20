@@ -54,7 +54,8 @@ class RefreshableControllerPage<T extends RefreshableController>
 class RefreshablePageLoader extends StatelessWidget {
   const RefreshablePageLoader({
     required this.refresh,
-    required this.builder,
+    required this.child,
+    this.builder,
     required this.isLoading,
     required this.isEmpty,
     required this.isError,
@@ -74,7 +75,8 @@ class RefreshablePageLoader extends StatelessWidget {
     this.floatingActionButton,
   });
 
-  final WidgetBuilder? builder;
+  final WidgetBuilder child;
+  final WidgetChildBuilder? builder;
   final bool isLoading;
   final bool isEmpty;
   final bool isError;
@@ -113,9 +115,10 @@ class RefreshablePageLoader extends StatelessWidget {
         drawer: drawer,
         endDrawer: endDrawer,
         floatingActionButton: floatingActionButton,
-        child: (context) => child,
+        builder: builder,
+        child: child,
       ),
-      builder: builder,
+      child: child,
     );
   }
 }

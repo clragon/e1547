@@ -2,6 +2,7 @@ import 'package:e1547/client/client.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class FollowsSplitPage extends StatefulWidget {
@@ -58,55 +59,51 @@ class _FollowsSplitPageState extends State<FollowsSplitPage> with DrawerEntry {
       builder: (context, follows, child) => ListenableListener(
         listener: updateRefresh,
         listenable: follows,
-        child: TileLayout(
-          tileHeightFactor: 1.55,
-          child: AnimatedBuilder(
-            animation: follows,
-            builder: (context, child) => RefreshablePageLoader(
-              onEmpty: const Text('No follows'),
-              onLoading: const Text('Loading follows'),
-              onError: const Text('Failed to load follows'),
-              isError: false,
-              isLoading: false,
-              isEmpty: follows.items.isEmpty,
-              refreshController: refreshController,
-              refreshHeader: RefreshablePageDefaultHeader(
-                refreshingText:
-                    'Refreshing ${follows.progress} / ${follows.items.length}...',
+        child: AnimatedBuilder(
+          animation: follows,
+          builder: (context, child) => RefreshablePageLoader(
+            onEmpty: const Text('No follows'),
+            onLoading: const Text('Loading follows'),
+            onError: const Text('Failed to load follows'),
+            isError: false,
+            isLoading: false,
+            isEmpty: follows.items.isEmpty,
+            refreshController: refreshController,
+            refreshHeader: RefreshablePageDefaultHeader(
+              refreshingText:
+                  'Refreshing ${follows.progress} / ${follows.items.length}...',
+            ),
+            builder: (context, child) => TileLayout(child: child),
+            child: (context) => AlignedGridView.count(
+              primary: true,
+              padding: defaultListPadding,
+              addAutomaticKeepAlives: false,
+              itemCount: follows.items.length,
+              itemBuilder: (context, index) => FollowTile(
+                follow: follows.items[index],
               ),
-              builder: (context) => GridView.builder(
-                primary: true,
-                padding: defaultListPadding,
-                addAutomaticKeepAlives: false,
-                itemCount: follows.items.length,
-                itemBuilder: (context, index) =>
-                    FollowTile(follow: follows.items[index]),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: TileLayout.of(context).crossAxisCount,
-                  childAspectRatio: 1 / TileLayout.of(context).tileHeightFactor,
-                ),
-              ),
-              appBar: const DefaultAppBar(
-                title: Text('Following'),
-                actions: [ContextDrawerButton()],
-              ),
-              refresh: () async {
-                try {
-                  await follows.update(force: true);
-                  refreshController.refreshCompleted();
-                } on DioError {
-                  refreshController.refreshFailed();
-                }
-              },
-              drawer: const NavigationDrawer(),
-              endDrawer: const ContextDrawer(
-                title: Text('Follows'),
-                children: [
-                  FollowMarkReadTile(),
-                  Divider(),
-                  FollowSettingsTile(),
-                ],
-              ),
+              crossAxisCount: TileLayout.of(context).crossAxisCount,
+            ),
+            appBar: const DefaultAppBar(
+              title: Text('Following'),
+              actions: [ContextDrawerButton()],
+            ),
+            refresh: () async {
+              try {
+                await follows.update(force: true);
+                refreshController.refreshCompleted();
+              } on DioError {
+                refreshController.refreshFailed();
+              }
+            },
+            drawer: const NavigationDrawer(),
+            endDrawer: const ContextDrawer(
+              title: Text('Follows'),
+              children: [
+                FollowMarkReadTile(),
+                Divider(),
+                FollowSettingsTile(),
+              ],
             ),
           ),
         ),

@@ -83,7 +83,7 @@ enum PageLoaderState {
 
 class PageLoader extends StatelessWidget {
   const PageLoader({
-    required this.builder,
+    required this.child,
     this.isError = false,
     this.isLoading = false,
     this.isEmpty = false,
@@ -96,9 +96,10 @@ class PageLoader extends StatelessWidget {
     this.onErrorIcon,
   });
 
-  final WidgetBuilder? builder;
-  final WidgetChildBuilder? pageBuilder;
-  final WidgetChildBuilder? loadingBuilder;
+  final WidgetBuilder child;
+  final Widget Function(BuildContext context, WidgetBuilder child)? pageBuilder;
+  final Widget Function(BuildContext context, WidgetBuilder child)?
+      loadingBuilder;
   final Widget? onEmpty;
   final Widget? onEmptyIcon;
   final Widget? onError;
@@ -122,7 +123,7 @@ class PageLoader extends StatelessWidget {
       }
     }
 
-    Widget child() {
+    Widget content(BuildContext context) {
       switch (state) {
         case PageLoaderState.loading:
           return const Center(child: CircularProgressIndicator());
@@ -137,19 +138,19 @@ class PageLoader extends StatelessWidget {
             title: onEmpty ?? const Text('Nothing to see here'),
           );
         case PageLoaderState.child:
-          return builder!(context);
+          return child(context);
       }
     }
 
     Widget body() {
-      Widget body = child();
+      Widget? body;
       if (pageBuilder != null) {
-        body = pageBuilder!(context, body);
+        body = pageBuilder!(context, content);
       }
       if (loadingBuilder != null && state != PageLoaderState.child) {
-        body = loadingBuilder!(context, body);
+        body = loadingBuilder!(context, content);
       }
-      return body;
+      return body ?? content(context);
     }
 
     return Material(
@@ -180,7 +181,7 @@ class FuturePageLoader<T> extends StatelessWidget {
     return FutureBuilder<T>(
       future: future,
       builder: (context, snapshot) => PageLoader(
-        builder: (context) => builder(context, snapshot.data as T),
+        child: (context) => builder(context, snapshot.data as T),
         loadingBuilder: (context, child) => Scaffold(
           appBar: title != null
               ? DefaultAppBar(
@@ -188,7 +189,7 @@ class FuturePageLoader<T> extends StatelessWidget {
                   title: title,
                 )
               : null,
-          body: child,
+          body: child(context),
         ),
         isLoading: snapshot.connectionState != ConnectionState.done,
         isError: snapshot.hasError,
