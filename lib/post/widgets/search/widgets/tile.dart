@@ -331,8 +331,6 @@ class PostFeedTile extends StatelessWidget {
             Row(
               children: [
                 IconButton(
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(),
                   icon: const Icon(Icons.comment),
                   onPressed: () => Navigator.of(context).push(
                     MaterialPageRoute(
@@ -400,8 +398,6 @@ class PostFeedTile extends StatelessWidget {
               ],
             ),
             IconButton(
-              padding: EdgeInsets.zero,
-              constraints: const BoxConstraints(),
               icon: const Icon(Icons.share),
               onPressed: () =>
                   Share.share(context.read<Client>().withHost(post.link)),
@@ -474,7 +470,7 @@ class PostFeedTile extends StatelessWidget {
       child: InkWell(
         onTap: () => defaultPushPostDetail(context, controller),
         child: Padding(
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.all(8).copyWith(bottom: 0),
           child: Column(
             children: [
               Row(
