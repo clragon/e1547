@@ -20,18 +20,12 @@ class _FollowsSwitcherPageState extends State<FollowsSwitcherPage>
       builder: (context, value, child) => PageTransitionSwitcher(
         duration: defaultAnimationDuration,
         reverse: !value,
-        transitionBuilder: (
-          Widget child,
-          Animation<double> animation,
-          Animation<double> secondaryAnimation,
-        ) {
-          return SharedAxisTransition(
-            animation: animation,
-            secondaryAnimation: secondaryAnimation,
-            transitionType: SharedAxisTransitionType.vertical,
-            child: child,
-          );
-        },
+        transitionBuilder: (child, animation, secondaryAnimation) =>
+            FadeThroughTransition(
+          animation: animation,
+          secondaryAnimation: secondaryAnimation,
+          child: child,
+        ),
         child: value ? const FollowsFolderPage() : const FollowsTimelinePage(),
       ),
     );

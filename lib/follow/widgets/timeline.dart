@@ -20,6 +20,7 @@ class _FollowsTimelinePageState extends State<FollowsTimelinePage> {
             page,
             force: force,
           ),
+      canSearch: false,
       child: Consumer<PostsController>(
         builder: (context, controller, child) => PostsPage(
           appBar: const DefaultAppBar(
@@ -27,9 +28,11 @@ class _FollowsTimelinePageState extends State<FollowsTimelinePage> {
             actions: [ContextDrawerButton()],
           ),
           controller: controller,
-          drawerActions: const [
-            FollowSwitcherTile(),
-            FollowEditingTile(),
+          drawerActions: [
+            if (context.findAncestorWidgetOfExactType<FollowsSwitcherPage>() !=
+                null)
+              const FollowSwitcherTile(),
+            const FollowEditingTile(),
           ],
           displayType: PostDisplayType.timeline,
           canSelect: false,

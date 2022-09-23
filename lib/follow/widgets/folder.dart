@@ -100,13 +100,16 @@ class _FollowsFolderPageState extends State<FollowsFolderPage> {
                 }
               },
               drawer: const NavigationDrawer(),
-              endDrawer: const ContextDrawer(
-                title: Text('Follows'),
+              endDrawer: ContextDrawer(
+                title: const Text('Follows'),
                 children: [
-                  FollowSwitcherTile(),
-                  FollowEditingTile(),
-                  Divider(),
-                  FollowMarkReadTile(),
+                  if (context.findAncestorWidgetOfExactType<
+                          FollowsSwitcherPage>() !=
+                      null)
+                    const FollowSwitcherTile(),
+                  const FollowEditingTile(),
+                  const Divider(),
+                  const FollowMarkReadTile(),
                 ],
               ),
               floatingActionButton: Builder(

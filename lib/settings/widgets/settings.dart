@@ -251,7 +251,12 @@ class _SettingsPageState extends State<SettingsPage> {
                       ? Text('${follows.items.length} searches followed')
                       : null,
                   leading: const Icon(Icons.turned_in),
-                  onTap: () => Navigator.pushNamed(context, '/follows'),
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const FollowsFolderPage(),
+                    ),
+                  ),
                 ),
               ),
               const Divider(),
