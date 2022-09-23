@@ -43,7 +43,8 @@ class DenylistService extends DataUpdater<List<String>> {
 
   @override
   @protected
-  Future<void> withData(DataUpdate<List<String>> updater, {
+  Future<void> withData(
+    DataUpdate<List<String>> updater, {
     bool upload = true,
   }) async {
     await resourceLock.acquire();

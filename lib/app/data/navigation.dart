@@ -48,7 +48,7 @@ final List<NavigationRouteDestination> rootDestintations = [
     path: '/follows',
     name: 'Follows',
     icon: const Icon(Icons.turned_in),
-    builder: (context) => const FollowsSplitPage(),
+    builder: (context) => const FollowsSwitcherPage(),
     unique: true,
     group: _drawerCollectionsGroup,
   ),
@@ -100,10 +100,6 @@ final List<NavigationRouteDestination> rootDestintations = [
   NavigationRouteDestination(
     path: '/blacklist',
     builder: (context) => const DenyListPage(),
-  ),
-  NavigationRouteDestination(
-    path: '/following',
-    builder: (context) => const FollowingPage(),
   ),
 ];
 

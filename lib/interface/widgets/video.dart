@@ -33,14 +33,14 @@ class VideoHandler {
   }
 
   VideoPlayerController getVideo(VideoConfig key) => _videos.putIfAbsent(
-    key,
+        key,
         () => VideoPlayerController.network(
-      key.url,
-      videoPlayerOptions: VideoPlayerOptions(
-        mixWithOthers: true,
-      ),
-    ),
-  );
+          key.url,
+          videoPlayerOptions: VideoPlayerOptions(
+            mixWithOthers: true,
+          ),
+        ),
+      );
 
   Future<void> loadVideo(VideoConfig key) async {
     await _loadingLock.acquire();
@@ -54,7 +54,7 @@ class VideoHandler {
       Map<VideoConfig, VideoPlayerController> loaded = Map.of(_videos)
         ..removeWhere((key, value) => !value.value.isInitialized);
       int loadedSize =
-      loaded.keys.fold<int>(0, (current, config) => current + config.size);
+          loaded.keys.fold<int>(0, (current, config) => current + config.size);
       if (loaded.length < maxLoaded && loadedSize < maxSize) {
         break;
       }

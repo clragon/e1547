@@ -117,23 +117,23 @@ class HistoriesService extends ChangeNotifier {
 
   Future<void> add(HistoryRequest item) async => _lock.protect(
         () async {
-      if (!enabled) {
-        return;
-      }
-      if ((await _database.getRecent(host: host)).any((e) =>
-      e.link == item.link &&
-          e.title == item.title &&
-          e.subtitle == item.subtitle &&
-          const DeepCollectionEquality()
-              .equals(e.thumbnails, item.thumbnails))) {
-        return;
-      }
-      if (trimming) {
-        await trim();
-      }
-      return _database.add(host, item);
-    },
-  );
+          if (!enabled) {
+            return;
+          }
+          if ((await _database.getRecent(host: host)).any((e) =>
+              e.link == item.link &&
+              e.title == item.title &&
+              e.subtitle == item.subtitle &&
+              const DeepCollectionEquality()
+                  .equals(e.thumbnails, item.thumbnails))) {
+            return;
+          }
+          if (trimming) {
+            await trim();
+          }
+          return _database.add(host, item);
+        },
+      );
 
   Future<void> addAll(List<HistoryRequest> items) async =>
       _lock.protect(() async => _database.addAll(host, items));
@@ -152,7 +152,7 @@ class HistoriesService extends ChangeNotifier {
           .cast<String>()
           .take(4)
           .toList() ??
-          [];
+      [];
 
   String _composeSearchSubtitle(Map<String, String> items) => items.entries
       .take(5)
@@ -160,15 +160,16 @@ class HistoriesService extends ChangeNotifier {
       .join('\n');
 
   Future<void> addPost(Post post) async => add(
-    HistoryRequest(
-      visitedAt: DateTime.now(),
-      link: post.link,
-      thumbnails: _getThumbnails([post]),
-      subtitle: post.description.nullWhenEmpty,
-    ),
-  );
+        HistoryRequest(
+          visitedAt: DateTime.now(),
+          link: post.link,
+          thumbnails: _getThumbnails([post]),
+          subtitle: post.description.nullWhenEmpty,
+        ),
+      );
 
-  Future<void> addPostSearch(String search, {
+  Future<void> addPostSearch(
+    String search, {
     List<Post>? posts,
   }) async =>
       add(
@@ -180,16 +181,17 @@ class HistoriesService extends ChangeNotifier {
       );
 
   Future<void> addPool(Pool pool, {List<Post>? posts}) async => add(
-    HistoryRequest(
-      visitedAt: DateTime.now(),
-      link: pool.link,
-      thumbnails: _getThumbnails(posts),
-      title: pool.name,
-      subtitle: pool.description.nullWhenEmpty,
-    ),
-  );
+        HistoryRequest(
+          visitedAt: DateTime.now(),
+          link: pool.link,
+          thumbnails: _getThumbnails(posts),
+          title: pool.name,
+          subtitle: pool.description.nullWhenEmpty,
+        ),
+      );
 
-  Future<void> addPoolSearch(String search, {
+  Future<void> addPoolSearch(
+    String search, {
     List<Pool>? pools,
   }) async =>
       add(
@@ -198,17 +200,18 @@ class HistoriesService extends ChangeNotifier {
           link: Uri(
             path: '/pools',
             queryParameters:
-            search.isNotEmpty ? {'search[name_matches]': search} : null,
+                search.isNotEmpty ? {'search[name_matches]': search} : null,
           ).toString(),
           subtitle: pools?.isNotEmpty ?? false
               ? _composeSearchSubtitle({
-            for (final value in pools!) value.link: tagToTitle(value.name)
-          })
+                  for (final value in pools!) value.link: tagToTitle(value.name)
+                })
               : null,
         ),
       );
 
-  Future<void> addTopic(Topic topic, {
+  Future<void> addTopic(
+    Topic topic, {
     List<Reply>? replies,
   }) async =>
       add(
@@ -220,7 +223,8 @@ class HistoriesService extends ChangeNotifier {
         ),
       );
 
-  Future<void> addTopicSearch(String search, {
+  Future<void> addTopicSearch(
+    String search, {
     List<Topic>? topics,
   }) async =>
       add(
@@ -229,46 +233,46 @@ class HistoriesService extends ChangeNotifier {
           link: Uri(
             path: '/forum_topics',
             queryParameters:
-            search.isNotEmpty ? {'search[title_matches]': search} : null,
+                search.isNotEmpty ? {'search[title_matches]': search} : null,
           ).toString(),
           subtitle: topics?.isNotEmpty ?? false
               ? _composeSearchSubtitle(
-            {for (final value in topics!) value.link: value.title},
-          )
+                  {for (final value in topics!) value.link: value.title},
+                )
               : null,
         ),
       );
 
   Future<void> addUser(User user, {Post? avatar}) async => add(
-    HistoryRequest(
-      visitedAt: DateTime.now(),
-      link: '/users/${user.name}',
-      thumbnails: [if (avatar?.sample.url != null) avatar!.sample.url!],
-    ),
-  );
+        HistoryRequest(
+          visitedAt: DateTime.now(),
+          link: '/users/${user.name}',
+          thumbnails: [if (avatar?.sample.url != null) avatar!.sample.url!],
+        ),
+      );
 
   Future<void> addWiki(Wiki wiki) async => add(
-    HistoryRequest(
-      visitedAt: DateTime.now(),
-      link: '/wiki_pages/${wiki.title}',
-      subtitle: wiki.body.nullWhenEmpty,
-    ),
-  );
+        HistoryRequest(
+          visitedAt: DateTime.now(),
+          link: '/wiki_pages/${wiki.title}',
+          subtitle: wiki.body.nullWhenEmpty,
+        ),
+      );
 
   Future<void> addWikiSearch(String search, {List<Wiki>? wikis}) async => add(
-    HistoryRequest(
-      visitedAt: DateTime.now(),
-      link: Uri(
-        path: '/wiki_pages',
-        queryParameters:
-        search.isNotEmpty ? {'search[title]': search} : null,
-      ).toString(),
-      subtitle: wikis?.isNotEmpty ?? false
-          ? _composeSearchSubtitle(
-          {for (final value in wikis!) value.link: value.title})
-          : null,
-    ),
-  );
+        HistoryRequest(
+          visitedAt: DateTime.now(),
+          link: Uri(
+            path: '/wiki_pages',
+            queryParameters:
+                search.isNotEmpty ? {'search[title]': search} : null,
+          ).toString(),
+          subtitle: wikis?.isNotEmpty ?? false
+              ? _composeSearchSubtitle(
+                  {for (final value in wikis!) value.link: value.title})
+              : null,
+        ),
+      );
 
   Future<void> trim() async =>
       _database.trim(host: client.host, maxAmount: trimAmount, maxAge: trimAge);

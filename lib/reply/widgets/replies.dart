@@ -21,9 +21,9 @@ class RepliesPage extends StatelessWidget {
           listener: () async {
             await controller.waitForFirstPage();
             await context.read<HistoriesService>().addTopic(
-              topic,
-              replies: controller.itemList!,
-            );
+                  topic,
+                  replies: controller.itemList!,
+                );
           },
           listenable: controller.orderByOldest,
           child: RefreshableControllerPage(

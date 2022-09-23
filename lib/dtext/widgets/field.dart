@@ -19,25 +19,12 @@ class DText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // keep track of textStyle
-    TextState state = TextState(
-      bold: false,
-      italic: false,
-      strikeout: false,
-      underline: false,
-      overline: false,
-      header: false,
-      link: false,
-      highlight: false,
-      onTap: null,
-    );
-
     String result = data.replaceAllMapped(RegExp(r'\r\n'), (_) => '\n');
     result = result.trim();
 
     try {
       return Text.rich(
-        parseDText(context, result, state),
+        parseDText(context, result, const TextState()),
         maxLines: maxLines,
         overflow: overflow,
         textAlign: textAlign,

@@ -1,5 +1,6 @@
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/interface/interface.dart';
+import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
 
 class FollowMarkReadTile extends StatefulWidget {
@@ -33,8 +34,8 @@ class _FollowMarkReadTileState extends State<FollowMarkReadTile> {
                 )
               : const Text('no unseen posts'),
           onTap: () {
+            Scaffold.of(context).closeEndDrawer();
             follows.markAllAsRead();
-            Navigator.of(context).maybePop();
           },
         );
       },
@@ -42,17 +43,56 @@ class _FollowMarkReadTileState extends State<FollowMarkReadTile> {
   }
 }
 
-class FollowSettingsTile extends StatelessWidget {
-  const FollowSettingsTile();
+class FollowSwitcherTile extends StatefulWidget {
+  const FollowSwitcherTile();
+
+  @override
+  State<FollowSwitcherTile> createState() => _FollowSwitcherTileState();
+}
+
+class _FollowSwitcherTileState extends State<FollowSwitcherTile> {
+  @override
+  Widget build(BuildContext context) {
+    return ValueListenableBuilder<bool>(
+      valueListenable: context.watch<Settings>().splitFollows,
+      builder: (context, value, child) => SwitchListTile(
+        secondary: Icon(value ? Icons.view_comfy : Icons.view_list),
+        title: const Text('Split searches'),
+        subtitle: value ? const Text('folders') : const Text('timeline'),
+        value: value,
+        onChanged: (value) async {
+          Scaffold.of(context).closeEndDrawer();
+          context.read<Settings>().splitFollows.value = value;
+        },
+      ),
+    );
+  }
+}
+
+class FollowEditingTile extends StatelessWidget {
+  const FollowEditingTile();
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      leading: const Icon(Icons.turned_in),
-      title: const Text('Settings'),
-      onTap: () async {
+      title: const Text('Edit'),
+      leading: const Icon(Icons.edit),
+      onTap: () {
         Scaffold.of(context).closeEndDrawer();
-        Navigator.of(context).pushNamed('/following');
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => TextEditor(
+              title: const Text('Following'),
+              content: context.read<FollowsService>().items.tags.join('\n'),
+              onSubmit: (context, value) async {
+                List<String> tags = value.split('\n').trim();
+                tags.removeWhere((tag) => tag.isEmpty);
+                context.read<FollowsService>().edit(tags);
+                return null;
+              },
+            ),
+          ),
+        );
       },
     );
   }

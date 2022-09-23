@@ -9,8 +9,6 @@ import 'package:e1547/wiki/wiki.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 
-import '../../post/widgets/search/widgets/actions.dart';
-
 Future<void> tagSearchSheet({
   required BuildContext context,
   required String tag,
@@ -33,8 +31,44 @@ class TagSearchSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<String> tags = sortTags(tag).split(' ');
+    return DefaultSheetBody(
+      title: InkWell(
+        onTap: () {
+          Navigator.of(context).maybePop();
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => SearchPage(tags: tag),
+            ),
+          );
+        },
+        child: Text(tagToTitle(tag)),
+      ),
+      actions: [
+        if (controller != null)
+          TagSearchActions(
+            tag: tag,
+            controller: controller!,
+          ),
+        TagListActions(
+          tag: tag,
+        ),
+      ],
+      body: TagSearchInfo(
+        tag: tag,
+        controller: controller,
+      ),
+    );
+  }
+}
 
+class TagSearchInfo extends StatelessWidget {
+  const TagSearchInfo({super.key, required this.tag, this.controller});
+
+  final String tag;
+  final PostsController? controller;
+
+  @override
+  Widget build(BuildContext context) {
     Widget tagInfo(String tag) {
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 8),
@@ -82,38 +116,13 @@ class TagSearchSheet extends StatelessWidget {
       );
     }
 
-    Widget body() {
-      if (tags.length > 1) {
-        return Column(children: tags.map(tagInfo).toList());
-      } else {
-        return SearchTagDisplay(tag: tag);
-      }
-    }
+    List<String> tags = sortTags(tag).split(' ');
 
-    return DefaultSheetBody(
-      title: InkWell(
-        onTap: () {
-          Navigator.of(context).maybePop();
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => SearchPage(tags: tag),
-            ),
-          );
-        },
-        child: Text(tagToTitle(tag)),
-      ),
-      actions: [
-        if (controller != null)
-          TagSearchActions(
-            tag: tag,
-            controller: controller!,
-          ),
-        TagListActions(
-          tag: tag,
-        ),
-      ],
-      body: body(),
-    );
+    if (tags.length > 1) {
+      return Column(children: tags.map(tagInfo).toList());
+    } else {
+      return SearchTagDisplay(tag: tag);
+    }
   }
 }
 
@@ -213,21 +222,21 @@ class TagSearchDialog extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Flexible(
-                  child: Text(
-                    tagToTitle(tag),
-                    softWrap: true,
-                  ),
-                ),
-                TagListActions(tag: tag),
-              ],
-            ),
-            content: ConstrainedBox(
-              constraints: BoxConstraints(
-                maxHeight: constraints.maxHeight * 0.5,
+              child: Text(
+                tagToTitle(tag),
+                softWrap: true,
               ),
-              child: SearchTagDisplay(tag: tag),
             ),
+            TagListActions(tag: tag),
+          ],
+        ),
+        content: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxHeight: constraints.maxHeight * 0.5,
           ),
+          child: SearchTagDisplay(tag: tag),
+        ),
+      ),
     );
   }
 }

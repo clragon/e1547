@@ -39,8 +39,8 @@ class AppBarPadding extends StatelessWidget with AppBarBuilderWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding:
-      const EdgeInsets.symmetric(horizontal: defaultAppBarHorizontalPadding)
-          .add(
+          const EdgeInsets.symmetric(horizontal: defaultAppBarHorizontalPadding)
+              .add(
         EdgeInsets.only(
           top: defaultAppBarTopPadding + MediaQuery.of(context).padding.top,
         ),
@@ -104,6 +104,19 @@ AppBarLeadingConfiguration getLeadingConfiguration({
     leading: effectiveLeading,
     leadingWidth: leadingWidth,
   );
+}
+
+IconData getPlatformBackIcon(BuildContext context) {
+  switch (Theme.of(context).platform) {
+    case TargetPlatform.android:
+    case TargetPlatform.fuchsia:
+    case TargetPlatform.linux:
+    case TargetPlatform.windows:
+      return Icons.arrow_back;
+    case TargetPlatform.iOS:
+    case TargetPlatform.macOS:
+      return Icons.arrow_back_ios;
+  }
 }
 
 class DefaultAppBar extends StatelessWidget with PreferredSizeWidget {
@@ -260,7 +273,10 @@ class TransparentAppBar extends StatelessWidget with AppBarBuilderWidget {
   Widget build(BuildContext context) {
     return AnimatedTheme(
       data: Theme.of(context).copyWith(
-        iconTheme: Theme.of(context).iconTheme.copyWith(color: Colors.white),
+        iconTheme: Theme.of(context).iconTheme.copyWith(
+          color: Colors.white,
+          shadows: const [Shadow(blurRadius: 9)],
+        ),
         appBarTheme: Theme.of(context).appBarTheme.copyWith(
               elevation: transparent ? 0 : null,
               backgroundColor: transparent ? Colors.transparent : null,

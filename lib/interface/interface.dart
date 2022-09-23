@@ -28,7 +28,6 @@ export 'widgets/range_dialog.dart';
 export 'widgets/refreshing.dart';
 export 'widgets/scaffold.dart';
 export 'widgets/selection.dart';
-export 'widgets/shadows.dart';
 export 'widgets/sheet.dart';
 export 'widgets/snackbar.dart';
 export 'widgets/startup.dart';

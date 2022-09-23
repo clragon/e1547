@@ -39,20 +39,21 @@ class TimedText extends StatelessWidget {
 }
 
 class DimSubtree extends StatelessWidget {
-  const DimSubtree({super.key, required this.child});
+  const DimSubtree({super.key, required this.child, this.opacity = 0.35});
 
   final Widget child;
+  final double opacity;
 
   @override
   Widget build(BuildContext context) {
     return IconTheme(
       data: Theme.of(context).iconTheme.copyWith(
-            color: dimTextColor(context),
+            color: dimTextColor(context, opacity),
             size: smallIconSize(context),
           ),
       child: DefaultTextStyle(
         style: Theme.of(context).textTheme.bodyText2!.copyWith(
-              color: dimTextColor(context),
+              color: dimTextColor(context, opacity),
             ),
         child: child,
       ),

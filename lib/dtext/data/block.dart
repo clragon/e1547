@@ -101,27 +101,27 @@ final DTextParser tagParser = DTextParser.builder(
     TextStateTag? stateTag = TextStateTag.values.asNameMap()[tag.key];
 
     if (stateTag != null) {
-      TextState updated = state.copyWith();
+      TextState updated = state;
       // add textStyle
       switch (stateTag) {
         case TextStateTag.b:
-          updated.bold = tag.active;
+          updated = updated.copyWith(bold: tag.active);
           break;
         case TextStateTag.i:
-          updated.italic = tag.active;
+          updated = updated.copyWith(italic: tag.active);
           break;
         case TextStateTag.u:
-          updated.underline = tag.active;
+          updated = updated.copyWith(underline: tag.active);
           break;
         case TextStateTag.o:
           // not supported on the site.
           // updated.overline = active;
           break;
         case TextStateTag.s:
-          updated.strikeout = tag.active;
+          updated = updated.copyWith(strikeout: tag.active);
           break;
         case TextStateTag.color:
-          // I cannot be bothered.
+        // This is based on user permissions. Too much effort.
           break;
         case TextStateTag.sup:
           // I have no idea how to implement this.

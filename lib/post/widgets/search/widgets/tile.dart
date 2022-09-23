@@ -447,15 +447,9 @@ class PostFeedTile extends StatelessWidget {
                     child: controller.parent != null
                         ? PostControllerConnector(
                             controller: controller.parent!,
-                            child: PostFullscreen(
-                              controller: controller,
-                              showFrame: true,
-                            ),
+                            child: PostFullscreen(controller: controller),
                           )
-                        : PostFullscreen(
-                            controller: controller,
-                            showFrame: true,
-                          ),
+                        : PostFullscreen(controller: controller),
                   ),
                 ),
               ),

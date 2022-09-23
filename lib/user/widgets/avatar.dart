@@ -73,11 +73,11 @@ class UserAvatar extends StatelessWidget {
       child: Consumer<Future<PostController?>>(
         builder: (context, controller, child) => AsyncBuilder<PostController?>(
           future: controller,
-              builder: (context, value) => Avatar(
-                value,
-                enabled: enabled,
-              ),
-            ),
+          builder: (context, value) => Avatar(
+            value,
+            enabled: enabled,
+          ),
+        ),
       ),
     );
   }
@@ -162,9 +162,9 @@ class Avatar extends StatelessWidget {
         onTap: enabled
             ? () => Navigator.of(context).push(
                   MaterialPageRoute(
-                builder: (context) => PostDetail(controller: post!),
-              ),
-            )
+                    builder: (context) => PostDetail(controller: post!),
+                  ),
+                )
             : null,
         child: PostTileOverlay(
           controller: post!,
@@ -172,7 +172,7 @@ class Avatar extends StatelessWidget {
             tag: post!.value.link,
             child: CircleAvatar(
               foregroundImage:
-              CachedNetworkImageProvider(post!.value.sample.url!),
+                  CachedNetworkImageProvider(post!.value.sample.url!),
             ),
           ),
         ),

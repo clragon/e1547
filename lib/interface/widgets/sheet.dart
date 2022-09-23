@@ -208,6 +208,7 @@ class DefaultSheetBody extends StatelessWidget {
             if (title != null || actions != null)
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Flexible(
                     child: Padding(

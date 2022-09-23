@@ -15,24 +15,12 @@ class PostDetailAppBar extends StatelessWidget with PreferredSizeWidget {
     bool isEditing = context.watch<PostEditingController?>()?.editing ?? false;
     return TransparentAppBar(
       child: DefaultAppBar(
-        leading: isEditing
-            ? IconButton(
-                onPressed: Navigator.of(context).maybePop,
-                tooltip: 'Stop editing',
-                icon: const ShadowIcon(
-                  Icons.clear,
-                  color: Colors.white,
-                ),
-              )
-            : ShadowBackButton(),
+        leading: isEditing ? const CloseButton() : null,
         actions: isEditing
             ? null
             : [
                 PopupMenuButton<VoidCallback>(
-                  icon: const ShadowIcon(
-                    Icons.more_vert,
-                    color: Colors.white,
-                  ),
+                  icon: const Icon(Icons.more_vert),
                   onSelected: (value) => value(),
                   itemBuilder: (context) => [
                     ...postMenuPostActions(context, controller.value),

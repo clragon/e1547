@@ -1,27 +1,27 @@
 import 'package:flutter/material.dart';
 
 class TextState {
-  TextState({
-    required this.bold,
-    required this.italic,
-    required this.strikeout,
-    required this.underline,
-    required this.overline,
-    required this.header,
-    required this.link,
-    required this.highlight,
-    required this.onTap,
+  const TextState({
+    this.bold = false,
+    this.italic = false,
+    this.strikeout = false,
+    this.underline = false,
+    this.overline = false,
+    this.header = false,
+    this.link = false,
+    this.highlight = false,
+    this.onTap,
   });
 
-  bool bold;
-  bool italic;
-  bool strikeout;
-  bool underline;
-  bool overline;
-  bool header;
-  bool link;
-  bool highlight;
-  VoidCallback? onTap;
+  final bool bold;
+  final bool italic;
+  final bool strikeout;
+  final bool underline;
+  final bool overline;
+  final bool header;
+  final bool link;
+  final bool highlight;
+  final VoidCallback? onTap;
 
   TextState copyWith({
     bool? bold,

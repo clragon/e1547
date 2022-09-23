@@ -45,14 +45,14 @@ class GridSettingsTile extends StatelessWidget {
               children: GridQuilt.values
                   .map(
                     (state) => ListTile(
-                  trailing: Icon(getIcon(state)),
-                  title: Text(getDescription(state)),
-                  onTap: () {
-                    onChange!(state);
-                    Navigator.of(context).maybePop();
-                  },
-                ),
-              )
+                      trailing: Icon(getIcon(state)),
+                      title: Text(getDescription(state)),
+                      onTap: () {
+                        onChange!(state);
+                        Navigator.of(context).maybePop();
+                      },
+                    ),
+                  )
                   .toList(),
             )
           ],

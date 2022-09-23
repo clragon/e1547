@@ -52,7 +52,6 @@ class _PostsPageState extends State<PostsPage> {
       return ContextDrawer(
         title: const Text('Posts'),
         children: [
-          const Divider(),
           CrossFade.builder(
             showChild: widget.drawerActions?.isNotEmpty ?? false,
             builder: (context) => Column(
