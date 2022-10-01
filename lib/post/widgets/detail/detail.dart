@@ -278,85 +278,15 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
               child: LayoutBuilder(
                 builder: (context, constraints) {
                   if (constraints.maxWidth < 1000) {
-                    return CustomScrollView(
-                      slivers: [
-                        SliverToBoxAdapter(
-                          child: SizedBox(
-                            height: MediaQuery.of(context).padding.top,
-                          ),
-                        ),
-                        SliverToBoxAdapter(
-                          child: image(context, constraints),
-                        ),
-                        ...[
-                          SliverToBoxAdapter(
-                            child: ArtistDisplay(post: post),
-                          ),
-                          SliverToBoxAdapter(
-                            child: DescriptionDisplay(post: post),
-                          ),
-                          SliverToBoxAdapter(
-                            child: PostEditorChild(
-                              shown: false,
-                              child: LikeDisplay(controller: widget.controller),
-                            ),
-                          ),
-                          SliverToBoxAdapter(
-                            child: PostEditorChild(
-                              shown: false,
-                              child: CommentDisplay(post: post),
-                            ),
-                          ),
-                          SliverToBoxAdapter(
-                            child: RelationshipDisplay(post: post),
-                          ),
-                          SliverToBoxAdapter(
-                            child: PostEditorChild(
-                              shown: false,
-                              child: PoolDisplay(post: post),
-                            ),
-                          ),
-                          SliverToBoxAdapter(
-                            child: PostEditorChild(
-                              shown: false,
-                              child: DenylistTagDisplay(
-                                  controller: widget.controller),
-                            ),
-                          ),
-                          SliverTagDisplay(post: post),
-                          SliverToBoxAdapter(
-                            child: PostEditorChild(
-                              shown: false,
-                              child: FileDisplay(
-                                post: post,
-                              ),
-                            ),
-                          ),
-                          SliverToBoxAdapter(
-                            child: PostEditorChild(
-                              shown: true,
-                              child: RatingDisplay(
-                                post: post,
-                              ),
-                            ),
-                          ),
-                          SliverToBoxAdapter(
-                            child: SourceDisplay(post: post),
-                          ),
-                        ]
-                            .map(
-                              (e) => SliverPadding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 20),
-                                sliver: e,
-                              ),
-                            )
-                            .toList(),
-                        const SliverToBoxAdapter(
-                          child: SizedBox(
-                            height: kBottomNavigationBarHeight + 24,
-                          ),
-                        )
+                    return ListView(
+                      primary: true,
+                      padding: EdgeInsets.only(
+                        top: MediaQuery.of(context).padding.top,
+                        bottom: kBottomNavigationBarHeight + 24,
+                      ),
+                      children: [
+                        image(context, constraints),
+                        singleBody(context),
                       ],
                     );
                   } else {

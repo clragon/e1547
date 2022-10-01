@@ -288,15 +288,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.0"
-  dynamic_layouts:
-    dependency: "direct main"
-    description:
-      path: "packages/dynamic_layouts"
-      ref: HEAD
-      resolved-ref: "816e40ebc98f588fb2b354b0d1a2fa9187e6525d"
-      url: "https://github.com/flutter/packages.git"
-    source: git
-    version: "0.0.1"
   expandable:
     dependency: "direct main"
     description:
