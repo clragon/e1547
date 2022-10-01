@@ -1,8 +1,14 @@
+import 'package:collection/collection.dart';
+import 'package:dynamic_layouts/dynamic_layouts.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
+
+// ignore: implementation_imports
+import 'package:infinite_scroll_pagination/src/utils/appended_sliver_child_builder_delegate.dart';
+import 'package:sliver_tools/sliver_tools.dart';
 
 class TagDisplay extends StatelessWidget {
   const TagDisplay({required this.post});
@@ -41,20 +47,20 @@ class TagDisplay extends StatelessWidget {
           return Wrap(
             children: [
               ...tags[category]!.map(
-                (tag) => TagCard(
+                    (tag) => TagCard(
                   tag: tag,
                   category: category,
                   editing: isEditing,
                   onRemove: editingController?.canEdit ?? false
                       ? () {
-                          Map<String, List<String>> edited =
-                              Map.from(editingController!.value!.tags);
-                          edited[category]!.remove(tag);
-                          editingController.value =
-                              editingController.value!.copyWith(
-                            tags: edited,
-                          );
-                        }
+                    Map<String, List<String>> edited =
+                    Map.from(editingController!.value!.tags);
+                    edited[category]!.remove(tag);
+                    editingController.value =
+                        editingController.value!.copyWith(
+                          tags: edited,
+                        );
+                  }
                       : null,
                 ),
               ),
@@ -65,11 +71,11 @@ class TagDisplay extends StatelessWidget {
                     category: category,
                     submit: editingController!.canEdit
                         ? (value) => onPostTagsEdit(
-                              context,
-                              editingController,
-                              value,
-                              category,
-                            )
+                      context,
+                      editingController,
+                      value,
+                      category,
+                    )
                         : null,
                   ),
                 ),
@@ -95,6 +101,102 @@ class TagDisplay extends StatelessWidget {
                   tags[category]!.isNotEmpty ||
                   (isEditing && category != 'invalid'))
               .map((category) => categoryTile(category))
+              .toList(),
+        );
+      },
+    );
+  }
+}
+
+class SliverTagDisplay extends StatelessWidget {
+  const SliverTagDisplay({super.key, required this.post});
+
+  final Post post;
+
+  @override
+  Widget build(BuildContext context) {
+    PostEditingController? editingController =
+        context.watch<PostEditingController?>();
+
+    return AnimatedSelector(
+      animation: Listenable.merge([editingController]),
+      selector: () => [
+        editingController?.canEdit,
+        editingController?.value?.tags.hashCode,
+      ],
+      builder: (context, child) {
+        bool isEditing = (editingController?.editing ?? false);
+        Map<String, List<String>>? tags =
+            editingController?.value?.tags ?? post.tags;
+
+        Widget title(String category) {
+          return SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+              child: Text(
+                '${category[0].toUpperCase()}${category.substring(1)}',
+                style: const TextStyle(
+                  fontSize: 16,
+                ),
+              ),
+            ),
+          );
+        }
+
+        Widget tagCategory(String category) {
+          return DynamicSliverGrid(
+            gridDelegate: const SliverGridDelegateWithWrapping(),
+            delegate: AppendedSliverChildBuilderDelegate(
+              childCount: tags[category]!.length,
+              builder: (context, index) => TagCard(
+                tag: tags[category]![index],
+                category: category,
+                editing: isEditing,
+                onRemove: editingController?.canEdit ?? false
+                    ? () {
+                        Map<String, List<String>> edited =
+                            Map.from(editingController!.value!.tags);
+                        edited[category]!.remove(tags[category]![index]);
+                        editingController.value =
+                            editingController.value!.copyWith(
+                          tags: edited,
+                        );
+                      }
+                    : null,
+              ),
+              appendixBuilder: category != 'invalid'
+                  ? (context) => CrossFade.builder(
+                        showChild: isEditing,
+                        builder: (context) => TagAddCard(
+                          category: category,
+                          submit: editingController!.canEdit
+                              ? (value) => onPostTagsEdit(
+                                    context,
+                                    editingController,
+                                    value,
+                                    category,
+                                  )
+                              : null,
+                        ),
+                      )
+                  : null,
+            ),
+          );
+        }
+
+        return MultiSliver(
+          children: TagCategory.names
+              .where((category) =>
+                  tags[category]!.isNotEmpty ||
+                  (isEditing && category != 'invalid'))
+              .map(
+                (category) => [
+                  title(category),
+                  tagCategory(category),
+                  const SliverToBoxAdapter(child: Divider()),
+                ],
+              )
+              .flattened
               .toList(),
         );
       },
