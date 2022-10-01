@@ -196,7 +196,7 @@ extension PostTyping on Post {
 }
 
 extension PostVideoPlaying on Post {
-  VideoConfig? get videoConfig => type == PostType.video
+  VideoConfig? get videoConfig => type == PostType.video && file.url != null
       ? VideoConfig(
           url: file.url!,
           size: file.size,
