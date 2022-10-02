@@ -43,28 +43,22 @@ class PostImageTile extends StatelessWidget {
             clipBehavior: Clip.none,
             children: [
               Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Expanded(
-                          child: PostTileOverlay(
-                            controller: controller,
-                            child: Hero(
-                              tag: post.link,
-                              child: PostImageWidget(
-                                post: post,
-                                size: size ?? PostImageSize.sample,
-                                fit: fit ?? BoxFit.cover,
-                                showProgress: showProgress ?? false,
-                                withLowRes: withLowRes ?? false,
-                                cacheSize: context.read<LowResCacheSize>().size,
-                              ),
-                            ),
-                          ),
+                    child: PostTileOverlay(
+                      controller: controller,
+                      child: Hero(
+                        tag: post.link,
+                        child: PostImageWidget(
+                          post: post,
+                          size: size ?? PostImageSize.sample,
+                          fit: fit ?? BoxFit.cover,
+                          showProgress: showProgress ?? false,
+                          withLowRes: withLowRes ?? false,
+                          cacheSize: context.read<LowResCacheSize>().size,
                         ),
-                      ],
+                      ),
                     ),
                   ),
                   if (bottomBar != null) bottomBar!,

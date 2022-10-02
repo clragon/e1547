@@ -53,6 +53,7 @@ class PostFullscreenBody extends StatelessWidget {
                   minScale: PhotoViewComputedScale.contained,
                   maxScale: PhotoViewComputedScale.covered * 6,
                   child: PostImageWidget(
+                    fit: BoxFit.cover,
                     post: controller.value,
                     size: PostImageSize.file,
                     lowResCacheSize: context.read<LowResCacheSize?>()?.size,
