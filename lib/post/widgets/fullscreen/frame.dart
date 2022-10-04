@@ -60,12 +60,18 @@ class PostFullscreenFrame extends StatefulWidget {
   const PostFullscreenFrame({
     required this.child,
     required this.post,
+    this.drawer,
+    this.endDrawer,
+    this.floatingActionButton,
     this.controller,
     this.visible,
   }) : assert(visible == null || controller == null);
 
   final Post post;
   final Widget child;
+  final Widget? drawer;
+  final Widget? endDrawer;
+  final Widget? floatingActionButton;
   final FrameController? controller;
   final bool? visible;
 
@@ -139,44 +145,41 @@ class _PostFullscreenFrameState extends State<PostFullscreenFrame>
       listenable: controller,
       child: FrameData(
         controller: controller,
-        child: Scaffold(
-          body: AnimatedBuilder(
-            animation: controller,
-            child: widget.child,
-            builder: (contex, child) => Scaffold(
-              extendBodyBehindAppBar: true,
-              appBar: FrameAppBar(
-                child: PostFullscreenAppBar(post: widget.post),
-              ),
-              body: GestureDetector(
-                behavior: HitTestBehavior.translucent,
-                onTap: () {
-                  controller.toggleFrame();
-                  if ((widget.post.getVideo(context)?.value.isPlaying ??
-                          false) &&
-                      controller.visible) {
-                    controller.hideFrame(duration: const Duration(seconds: 2));
-                  }
-                },
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    child!,
-                    if (widget.post.getVideo(context) != null) ...[
-                      Positioned(
-                        bottom: 0,
-                        right: 0,
-                        left: 0,
-                        child: VideoBar(
-                          videoController: widget.post.getVideo(context)!,
-                        ),
-                      ),
-                      VideoButton(
-                        videoController: widget.post.getVideo(context)!,
-                      ),
-                    ]
-                  ],
-                ),
+        child: AnimatedBuilder(
+          animation: controller,
+          child: widget.child,
+          builder: (contex, child) => AdaptiveScaffold(
+            extendBodyBehindAppBar: true,
+            extendBody: true,
+            appBar: FrameAppBar(
+              child: PostFullscreenAppBar(post: widget.post),
+            ),
+            drawer: widget.drawer,
+            endDrawer: widget.endDrawer,
+            bottomNavigationBar: widget.post.getVideo(context) != null
+                ? VideoBar(
+                    videoController: widget.post.getVideo(context)!,
+                  )
+                : null,
+            body: GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onTap: () {
+                controller.toggleFrame();
+                if ((widget.post.getVideo(context)?.value.isPlaying ?? false) &&
+                    controller.visible) {
+                  controller.hideFrame(duration: const Duration(seconds: 2));
+                }
+              },
+              child: Stack(
+                fit: StackFit.passthrough,
+                alignment: Alignment.center,
+                children: [
+                  child!,
+                  if (widget.post.getVideo(context) != null)
+                    VideoButton(
+                      videoController: widget.post.getVideo(context)!,
+                    ),
+                ],
               ),
             ),
           ),
