@@ -104,14 +104,8 @@ class _SharedSetting<T> {
 /// ```
 ///
 /// There can only ever be one [SharedPreferences] and therefore [SharedPrefsSettings].
-/// You should therefore treat it as a quasi global variable in your state management.
-///
-/// ```dart
-/// final Settings settings = Settings();
-///
-/// class Settings extends SharedSettings {
-/// // ...
-/// ```
+/// It therefore makes sense to treat it as a quasi global variable in your state management,
+/// for example by using an [InheritedWidget] above [MaterialApp].
 ///
 /// The [SharedPreferences] have to be read from disk, so you have to initialize Settings in your main method:
 /// ```dart
