@@ -96,7 +96,7 @@ class FollowTile extends StatelessWidget {
                 ),
               ),
               title:
-              notified ? 'Disable notifications' : 'Enable notifications',
+                  notified ? 'Disable notifications' : 'Enable notifications',
               icon: notified
                   ? Icons.notifications_off
                   : Icons.notifications_active,

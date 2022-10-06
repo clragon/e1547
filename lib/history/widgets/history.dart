@@ -9,14 +9,14 @@ import 'package:intl/intl.dart';
 
 import 'list.dart';
 
-class HistoryPage extends StatefulWidget {
-  const HistoryPage();
+class HistoriesPage extends StatefulWidget {
+  const HistoriesPage();
 
   @override
-  State<HistoryPage> createState() => _HistoryPageState();
+  State<HistoriesPage> createState() => _HistoriesPageState();
 }
 
-class _HistoryPageState extends State<HistoryPage> {
+class _HistoriesPageState extends State<HistoriesPage> {
   @override
   Widget build(BuildContext context) {
     return HistoriesProvider(

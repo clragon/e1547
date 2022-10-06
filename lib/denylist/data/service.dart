@@ -60,7 +60,7 @@ class DenylistService extends DataUpdater<List<String>> {
     if (user != null) {
       try {
         await withData(
-              (data) => user.blacklistedTags.split('\n').trim(),
+          (data) => user.blacklistedTags.split('\n').trim(),
           upload: false,
         );
       } on DioError {

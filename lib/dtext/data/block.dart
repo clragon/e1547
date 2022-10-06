@@ -121,7 +121,7 @@ final DTextParser tagParser = DTextParser.builder(
           updated = updated.copyWith(strikeout: tag.active);
           break;
         case TextStateTag.color:
-        // This is based on user permissions. Too much effort.
+          // This is based on user permissions. Too much effort.
           break;
         case TextStateTag.sup:
           // I have no idea how to implement this.
