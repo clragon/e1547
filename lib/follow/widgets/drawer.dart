@@ -88,6 +88,7 @@ class FollowEditingTile extends StatelessWidget {
                 List<String> tags = value.split('\n').trim();
                 tags.removeWhere((tag) => tag.isEmpty);
                 context.read<FollowsService>().edit(tags);
+                Navigator.pop(context);
                 return null;
               },
             ),
