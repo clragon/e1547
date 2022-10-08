@@ -8,19 +8,14 @@ abstract class DataUpdater extends ChangeNotifier {
     _refreshListeners.forEach((e) => e.addListener(restart));
   }
 
-  final Mutex _runLock = Mutex();
   Completer<void> _runCompleter = Completer()..complete();
-
   bool get updating => !_runCompleter.isCompleted;
-
   Future<void> get finish => _runCompleter.future;
 
   bool _canceling = false;
   int _progress = 0;
-
   int get progress => _progress;
   Exception? _error;
-
   Exception? get error => _error;
 
   late final List<Listenable> _refreshListeners = getRefreshListeners();
@@ -38,13 +33,11 @@ abstract class DataUpdater extends ChangeNotifier {
   void _fail(Exception exception) {
     _error = exception;
     _runCompleter.completeError(exception);
-    _runLock.release();
     notifyListeners();
   }
 
   void _complete() {
     _runCompleter.complete();
-    _runLock.release();
     notifyListeners();
   }
 
@@ -54,6 +47,20 @@ abstract class DataUpdater extends ChangeNotifier {
     _error = null;
     _runCompleter = Completer();
     notifyListeners();
+  }
+
+  Future<void> _run({bool? force}) async {
+    assert(
+      _runCompleter.isCompleted,
+      '$runtimeType: multiple updater runs called simultaneously!',
+    );
+    _reset();
+    try {
+      await run(force ?? false);
+      _complete();
+    } on UpdaterException catch (e) {
+      _fail(e);
+    }
   }
 
   @protected
@@ -69,39 +76,18 @@ abstract class DataUpdater extends ChangeNotifier {
     return true;
   }
 
-  Future<void> _wrapper({bool? force}) async {
-    await _runLock.acquire();
-    if (_runCompleter.isCompleted) {
-      _reset();
-    }
-    try {
-      await run(force ?? false);
-      if (_canceling) {
-        _runLock.release();
-      } else {
-        _complete();
-      }
-    } on UpdaterException catch (e) {
-      _fail(e);
-    }
-  }
-
   @mustCallSuper
   Future<void> update({bool? force}) async {
     if (_runCompleter.isCompleted) {
-      _wrapper(force: force);
+      await _run(force: force);
     }
     return finish;
   }
 
   @mustCallSuper
   Future<void> restart({bool? force}) async {
-    if (!_runCompleter.isCompleted) {
-      _canceling = true;
-      await _runLock.protect(() async => {});
-      _reset();
-    }
-    _wrapper(force: force);
+    await cancel();
+    await _run(force: force);
     return finish;
   }
 
@@ -109,8 +95,6 @@ abstract class DataUpdater extends ChangeNotifier {
   Future<void> cancel() async {
     if (!_runCompleter.isCompleted) {
       _canceling = true;
-      await _runLock.protect(() async => {});
-      _complete();
     }
     return finish;
   }
