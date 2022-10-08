@@ -4,7 +4,7 @@ import 'package:e1547/settings/settings.dart';
 import 'package:e1547/user/user.dart';
 import 'package:flutter/material.dart';
 
-class DenylistService extends DataUpdater<List<String>> {
+class DenylistService extends DataUpdater with DataLock<List<String>> {
   DenylistService({
     required Client client,
     required ValueNotifier<List<String>> source,
@@ -43,7 +43,7 @@ class DenylistService extends DataUpdater<List<String>> {
 
   @override
   @protected
-  Future<void> withData(
+  Future<void> protect(
     DataUpdate<List<String>> updater, {
     bool upload = true,
   }) async {
@@ -59,7 +59,7 @@ class DenylistService extends DataUpdater<List<String>> {
     CurrentUser? user = await _client.currentUser(force: force);
     if (user != null) {
       try {
-        await withData(
+        await protect(
           (data) => user.blacklistedTags.split('\n').trim(),
           upload: false,
         );
@@ -71,21 +71,21 @@ class DenylistService extends DataUpdater<List<String>> {
 
   bool denies(String value) => items.contains(value);
 
-  Future<void> add(String value) async => withData((data) => data..add(value));
+  Future<void> add(String value) async => protect((data) => data..add(value));
 
   Future<void> remove(String value) async =>
-      withData((data) => data..remove(value));
+      protect((data) => data..remove(value));
 
   Future<void> removeAt(int index) async =>
-      withData((data) => data..removeAt(index));
+      protect((data) => data..removeAt(index));
 
   Future<void> replace(String oldValue, String value) async =>
-      withData((data) => data..[items.indexOf(oldValue)] = value);
+      protect((data) => data..[items.indexOf(oldValue)] = value);
 
   Future<void> replaceAt(int index, String value) async =>
-      withData((data) => data..[index] = value);
+      protect((data) => data..[index] = value);
 
-  Future<void> edit(List<String> value) async => withData((data) => value);
+  Future<void> edit(List<String> value) async => protect((data) => value);
 }
 
 class DenylistProvider

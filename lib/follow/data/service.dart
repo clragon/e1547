@@ -10,7 +10,7 @@ import 'package:e1547/settings/settings.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 
-class FollowsService extends DataUpdater<List<Follow>> {
+class FollowsService extends DataUpdater with DataLock<List<Follow>> {
   FollowsService({
     required Client client,
     required DenylistService denylist,
@@ -59,7 +59,7 @@ class FollowsService extends DataUpdater<List<Follow>> {
         old.every((a) => value.any((b) => a.tags == b.tags));
   }
 
-  Future<void> _sort() => withData((items) => items..sortByNew(_client.host));
+  Future<void> _sort() => protect((items) => items..sortByNew(_client.host));
 
   @override
   @protected
@@ -80,8 +80,8 @@ class FollowsService extends DataUpdater<List<Follow>> {
             await Future.delayed(const Duration(milliseconds: 500));
           } on DioError catch (e) {
             throw UpdaterException(
-                message:
-                    'FollowUpdater failed to update ${follow.tags} with: $e');
+              message: '$runtimeType failed to update ${follow.tags} with: $e',
+            );
           }
         }
       }
@@ -115,19 +115,18 @@ class FollowsService extends DataUpdater<List<Follow>> {
     return updated;
   }
 
-  Future<void> add(Follow follow) async =>
-      withData((data) => data..add(follow));
+  Future<void> add(Follow follow) async => protect((data) => data..add(follow));
 
   Future<void> addTag(String tag) async =>
-      withData((data) => data..add(Follow(tags: tag)));
+      protect((data) => data..add(Follow(tags: tag)));
 
   Future<void> remove(Follow follow) async =>
-      withData((data) => data..remove(follow));
+      protect((data) => data..remove(follow));
 
   Future<void> removeTag(String tag) async =>
-      withData((data) => data..removeWhere((element) => element.tags == tag));
+      protect((data) => data..removeWhere((e) => e.tags == tag));
 
-  Future<void> replace(Follow old, Follow updated) async => withData(
+  Future<void> replace(Follow old, Follow updated) async => protect(
         (data) {
           int index = data.indexOf(old);
           if (index == -1) {
@@ -135,15 +134,16 @@ class FollowsService extends DataUpdater<List<Follow>> {
           }
           if (index == -1) {
             throw UpdaterException(
-                message:
-                    'FollowUpdater failed to update ${updated.tags} with: Could not find follow to be replaced');
+              message: '$runtimeType failed to update ${updated.tags} with: '
+                  'Could not find follow to be replaced',
+            );
           }
           data[index] = _syncUnseen(updated);
           return data;
         },
       );
 
-  Future<void> replaceAt(int index, Follow follow) async => withData(
+  Future<void> replaceAt(int index, Follow follow) async => protect(
         (data) => data..[index] = _syncUnseen(follow),
       );
 
@@ -169,7 +169,7 @@ class FollowsService extends DataUpdater<List<Follow>> {
     return updated;
   }
 
-  Future<void> edit(List<String> update) async => withData(
+  Future<void> edit(List<String> update) async => protect(
         (data) {
           List<Follow> edited = [];
           for (String tags in update) {
@@ -185,7 +185,7 @@ class FollowsService extends DataUpdater<List<Follow>> {
         },
       );
 
-  Future<void> markAllAsRead() async => withData(
+  Future<void> markAllAsRead() async => protect(
         (data) {
           for (int i = 0; i < data.length; i++) {
             Follow follow = data[i];
