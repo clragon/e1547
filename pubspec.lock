@@ -285,7 +285,7 @@ packages:
     dependency: "direct main"
     description:
       path: dio_cache_interceptor_db_store
-      ref: HEAD
+      ref: df6eca
       resolved-ref: df6eca85cfd2aadad4df96b2665aa3ee6425f253
       url: "https://github.com/clragon/dio_cache_interceptor.git"
     source: git
@@ -573,11 +573,11 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: HEAD
-      resolved-ref: b724d92800177c030e9ffc15162b3c19a06bc1c3
+      ref: "44f3eb"
+      resolved-ref: "44f3ebc3e56371a7524ca92aee0be00d334fc5eb"
       url: "https://github.com/clragon/infinite_scroll_pagination.git"
     source: git
-    version: "4.0.0"
+    version: "4.0.0-dev.1"
   intl:
     dependency: "direct main"
     description:

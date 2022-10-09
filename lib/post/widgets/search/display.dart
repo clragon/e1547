@@ -3,8 +3,6 @@ import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
-import 'widgets/mason.dart';
-
 enum PostDisplayType {
   grid,
   comic,
