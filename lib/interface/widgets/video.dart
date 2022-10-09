@@ -1,12 +1,11 @@
 import 'dart:math';
 
 import 'package:cached_video_player/cached_video_player.dart';
-import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
 import 'package:mutex/mutex.dart';
 import 'package:wakelock/wakelock.dart';
 
-class VideoHandler {
+class VideoHandler extends ChangeNotifier {
   VideoHandler({bool muteVideos = false}) : _muteVideos = muteVideos;
 
   static VideoHandler of(BuildContext context) =>
@@ -30,6 +29,7 @@ class VideoHandler {
   set muteVideos(bool value) {
     _muteVideos = value;
     _videos.values.forEach((e) => e.setVolume(muteVideos ? 0 : 1));
+    notifyListeners();
   }
 
   CachedVideoPlayerController getVideo(VideoConfig key) => _videos.putIfAbsent(
@@ -66,6 +66,7 @@ class VideoHandler {
     await controller.setVolume(muteVideos ? 0 : 1);
     await controller.initialize();
     _loadingLock.release();
+    notifyListeners();
   }
 
   Future<void> disposeVideo(VideoConfig key) async {
@@ -75,12 +76,14 @@ class VideoHandler {
       controller.removeListener(controller.wakelock);
       await controller.dispose();
       _videos.remove(key);
+      notifyListeners();
     }
   }
 }
 
-class VideoHandlerData extends InheritedWidget {
-  const VideoHandlerData({required this.handler, required super.child});
+class VideoHandlerData extends InheritedNotifier {
+  const VideoHandlerData({required this.handler, required super.child})
+      : super(notifier: handler);
 
   final VideoHandler handler;
 
@@ -96,9 +99,7 @@ extension Wake on CachedVideoPlayerController {
 }
 
 class VideoHandlerVolumeControl extends StatefulWidget {
-  const VideoHandlerVolumeControl({required this.videoController});
-
-  final CachedVideoPlayerController videoController;
+  const VideoHandlerVolumeControl();
 
   @override
   State<VideoHandlerVolumeControl> createState() =>
@@ -108,25 +109,17 @@ class VideoHandlerVolumeControl extends StatefulWidget {
 class _VideoHandlerVolumeControlState extends State<VideoHandlerVolumeControl> {
   @override
   Widget build(BuildContext context) {
-    return AnimatedSelector(
-      animation: widget.videoController,
-      selector: () => [
-        widget.videoController.value.volume,
-      ],
-      builder: (context, child) {
-        bool muted = VideoHandler.of(context).muteVideos;
-        return InkWell(
-          onTap: () => VideoHandler.of(context).muteVideos = !muted,
-          child: Padding(
-            padding: const EdgeInsets.all(4),
-            child: Icon(
-              muted ? Icons.volume_off : Icons.volume_up,
-              size: 24,
-              color: Colors.white,
-            ),
-          ),
-        );
-      },
+    bool muted = VideoHandler.of(context).muteVideos;
+    return InkWell(
+      onTap: () => VideoHandler.of(context).muteVideos = !muted,
+      child: Padding(
+        padding: const EdgeInsets.all(4),
+        child: Icon(
+          muted ? Icons.volume_off : Icons.volume_up,
+          size: 24,
+          color: Colors.white,
+        ),
+      ),
     );
   }
 }

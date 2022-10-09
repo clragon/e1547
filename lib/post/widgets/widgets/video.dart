@@ -120,9 +120,7 @@ class VideoBar extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      VideoHandlerVolumeControl(
-                        videoController: videoController,
-                      ),
+                      const VideoHandlerVolumeControl(),
                       const SizedBox(
                         width: 4,
                       ),

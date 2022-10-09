@@ -50,9 +50,9 @@ class PostDetailVideo extends StatelessWidget {
                   showChild: post.getVideo(context) != null,
                   builder: (context) => Padding(
                     padding:
-                    const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+                        const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
                     child:
-                    VideoButton(videoController: post.getVideo(context)!),
+                        VideoButton(videoController: post.getVideo(context)!),
                   ),
                   secondChild: const SizedCircularProgressIndicator(size: 24),
                 ),
@@ -90,7 +90,7 @@ class _PostDetailImageToggleState extends State<PostDetailImageToggle> {
       }
       if (context.read<Settings>().customHost.value != null) {
         replacement ??=
-        await context.read<Client>().post(post.id, unsafe: true);
+            await context.read<Client>().post(post.id, unsafe: true);
         widget.post.value = post.copyWith(
           fileRaw: post.fileRaw.copyWith(url: replacement!.fileRaw.url),
           preview: post.preview.copyWith(url: replacement!.preview.url),
@@ -133,7 +133,7 @@ class _PostDetailImageToggleState extends State<PostDetailImageToggle> {
             duration: const Duration(milliseconds: 200),
             builder: (context) => Card(
               color:
-              widget.post.isAllowed ? Colors.black12 : Colors.transparent,
+                  widget.post.isAllowed ? Colors.black12 : Colors.transparent,
               elevation: 0,
               child: InkWell(
                 onTap: onToggle,
@@ -230,12 +230,10 @@ class PostDetailImageActions extends StatelessWidget {
           return CrossFade.builder(
             showChild: post.value.type == PostType.video &&
                 post.value.file.url != null,
-            builder: (context) => Card(
+            builder: (context) => const Card(
               elevation: 0,
               color: Colors.black12,
-              child: VideoHandlerVolumeControl(
-                videoController: post.value.getVideo(context)!,
-              ),
+              child: VideoHandlerVolumeControl(),
             ),
           );
         }
