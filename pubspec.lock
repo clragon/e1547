@@ -270,9 +270,11 @@ packages:
   dio_cache_interceptor_db_store:
     dependency: "direct main"
     description:
-      name: dio_cache_interceptor_db_store
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: dio_cache_interceptor_db_store
+      ref: HEAD
+      resolved-ref: df6eca85cfd2aadad4df96b2665aa3ee6425f253
+      url: "https://github.com/clragon/dio_cache_interceptor.git"
+    source: git
     version: "5.0.0"
   drift:
     dependency: "direct main"
