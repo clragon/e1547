@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cached_video_player/cached_video_player.dart';
 import 'package:crypto/crypto.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
@@ -13,7 +14,6 @@ import 'package:media_scanner/media_scanner.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:video_player/video_player.dart';
 
 extension PostTagging on Post {
   bool hasTag(String tag) {
@@ -203,7 +203,7 @@ extension PostVideoPlaying on Post {
         )
       : null;
 
-  VideoPlayerController? getVideo(BuildContext context) {
+  CachedVideoPlayerController? getVideo(BuildContext context) {
     if (videoConfig != null) {
       return VideoHandler.of(context).getVideo(videoConfig!);
     }

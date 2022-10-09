@@ -1,9 +1,9 @@
 import 'dart:math';
 
+import 'package:cached_video_player/cached_video_player.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
 import 'package:mutex/mutex.dart';
-import 'package:video_player/video_player.dart';
 import 'package:wakelock/wakelock.dart';
 
 class VideoHandler {
@@ -14,7 +14,7 @@ class VideoHandler {
 
   // To prevent the app from crashing due tue OutOfMemoryErrors,
   // the list of all loaded videos is global.
-  static final Map<VideoConfig, VideoPlayerController> _videos = {};
+  static final Map<VideoConfig, CachedVideoPlayerController> _videos = {};
 
   final int maxLoaded = 3;
 
@@ -32,9 +32,9 @@ class VideoHandler {
     _videos.values.forEach((e) => e.setVolume(muteVideos ? 0 : 1));
   }
 
-  VideoPlayerController getVideo(VideoConfig key) => _videos.putIfAbsent(
+  CachedVideoPlayerController getVideo(VideoConfig key) => _videos.putIfAbsent(
         key,
-        () => VideoPlayerController.network(
+        () => CachedVideoPlayerController.network(
           key.url,
           videoPlayerOptions: VideoPlayerOptions(
             mixWithOthers: true,
@@ -44,14 +44,14 @@ class VideoHandler {
 
   Future<void> loadVideo(VideoConfig key) async {
     await _loadingLock.acquire();
-    VideoPlayerController? controller = getVideo(key);
+    CachedVideoPlayerController? controller = getVideo(key);
     if (controller.value.isInitialized) {
       _loadingLock.release();
       return;
     }
 
     while (true) {
-      Map<VideoConfig, VideoPlayerController> loaded = Map.of(_videos)
+      Map<VideoConfig, CachedVideoPlayerController> loaded = Map.of(_videos)
         ..removeWhere((key, value) => !value.value.isInitialized);
       int loadedSize =
           loaded.keys.fold<int>(0, (current, config) => current + config.size);
@@ -69,7 +69,7 @@ class VideoHandler {
   }
 
   Future<void> disposeVideo(VideoConfig key) async {
-    VideoPlayerController? controller = _videos[key];
+    CachedVideoPlayerController? controller = _videos[key];
     if (controller != null) {
       await controller.pause();
       controller.removeListener(controller.wakelock);
@@ -89,7 +89,7 @@ class VideoHandlerData extends InheritedWidget {
       oldWidget.handler != handler;
 }
 
-extension Wake on VideoPlayerController {
+extension Wake on CachedVideoPlayerController {
   void wakelock() {
     value.isPlaying ? Wakelock.enable() : Wakelock.disable();
   }
@@ -98,7 +98,7 @@ extension Wake on VideoPlayerController {
 class VideoHandlerVolumeControl extends StatefulWidget {
   const VideoHandlerVolumeControl({required this.videoController});
 
-  final VideoPlayerController videoController;
+  final CachedVideoPlayerController videoController;
 
   @override
   State<VideoHandlerVolumeControl> createState() =>
