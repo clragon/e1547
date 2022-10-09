@@ -286,8 +286,6 @@ class PageLock<KeyType> {
   /// If the [key] is null, it will count as unused.
   ///
   /// It is an error if the [key] to be released does not match the key that was acquired.
-  ///
-  /// If [reset] is true, all used keys will be cleared before usage.
   void release(KeyType? key) {
     try {
       if (key == null) {
