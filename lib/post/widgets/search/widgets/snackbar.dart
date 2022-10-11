@@ -2,6 +2,7 @@ import 'package:e1547/client/client.dart';
 import 'package:e1547/denylist/denylist.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
+import 'package:e1547/settings/settings.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:talker/talker.dart';
@@ -48,6 +49,7 @@ Future<void> postFavoritingNotification(
 ) {
   Client client = context.read<Client>();
   DenylistService denylist = context.read<DenylistService>();
+  bool upvote = context.read<Settings>().upvoteFavs.value;
   return loadingNotification<Post>(
     context: context,
     icon: const Icon(Icons.favorite),
@@ -68,7 +70,13 @@ Future<void> postFavoritingNotification(
         }
       } else {
         if (!post.isFavorited) {
-          return postController.fav();
+          return Future(() async {
+            bool result = await postController.fav();
+            if (result && upvote) {
+              result = await postController.vote(upvote: true, replace: true);
+            }
+            return result;
+          });
         } else {
           return true;
         }

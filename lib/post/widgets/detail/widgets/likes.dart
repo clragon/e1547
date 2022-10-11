@@ -1,6 +1,7 @@
 import 'package:e1547/client/client.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
+import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:like_button/like_button.dart';
 
@@ -120,7 +121,11 @@ class FavoriteButton extends StatelessWidget {
               return false;
             } else {
               controller.fav().then((value) {
-                if (!value) {
+                if (value) {
+                  if (context.read<Settings>().upvoteFavs.value) {
+                    controller.vote(upvote: true, replace: true);
+                  }
+                } else {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       duration: const Duration(seconds: 1),
