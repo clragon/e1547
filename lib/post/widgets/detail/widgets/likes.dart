@@ -67,9 +67,9 @@ class LikeDisplay extends StatelessWidget {
               builder: (context, child) => Row(
                 children: [
                   Text(post.favCount.toString()),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: FavoriteButton(controller: controller),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 8),
+                    child: Icon(Icons.favorite),
                   ),
                 ],
               ),
