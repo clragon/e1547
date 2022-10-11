@@ -87,11 +87,14 @@ class CommentTile extends StatelessWidget {
                           comment
                               .vote(upvote: true, replace: !isLiked)
                               .then((value) {
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                              duration: const Duration(seconds: 1),
-                              content: Text(
-                                  'Failed to upvote comment #${comment.id}'),
-                            ));
+                            if (!value) {
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(
+                                duration: const Duration(seconds: 1),
+                                content: Text(
+                                    'Failed to upvote comment #${comment.id}'),
+                              ));
+                            }
                           });
                           return !isLiked;
                         }
@@ -101,11 +104,14 @@ class CommentTile extends StatelessWidget {
                           comment
                               .vote(upvote: false, replace: !isLiked)
                               .then((value) {
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                              duration: const Duration(seconds: 1),
-                              content: Text(
-                                  'Failed to downvote comment #${comment.id}'),
-                            ));
+                            if (!value) {
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(
+                                duration: const Duration(seconds: 1),
+                                content: Text(
+                                    'Failed to downvote comment #${comment.id}'),
+                              ));
+                            }
                           });
                           return !isLiked;
                         }
