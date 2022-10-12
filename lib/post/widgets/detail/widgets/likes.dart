@@ -120,9 +120,10 @@ class FavoriteButton extends StatelessWidget {
               });
               return false;
             } else {
+              bool upvote = context.read<Settings>().upvoteFavs.value;
               controller.fav().then((value) {
                 if (value) {
-                  if (context.read<Settings>().upvoteFavs.value) {
+                  if (upvote) {
                     controller.vote(upvote: true, replace: true);
                   }
                 } else {
