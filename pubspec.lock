@@ -285,9 +285,9 @@ packages:
     dependency: "direct main"
     description:
       path: dio_cache_interceptor_db_store
-      ref: df6eca
-      resolved-ref: df6eca85cfd2aadad4df96b2665aa3ee6425f253
-      url: "https://github.com/clragon/dio_cache_interceptor.git"
+      ref: "953c5b0"
+      resolved-ref: "953c5b0c1e3418fe5dbbf9811f4197b66f273f56"
+      url: "https://github.com/llfbandit/dio_cache_interceptor.git"
     source: git
     version: "5.0.0"
   drift:

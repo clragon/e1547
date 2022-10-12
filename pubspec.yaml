@@ -82,9 +82,9 @@ dependency_overrides:
       ref: 44f3eb
   dio_cache_interceptor_db_store:
     git:
-      url: https://github.com/clragon/dio_cache_interceptor.git
+      url: https://github.com/llfbandit/dio_cache_interceptor.git
       path: dio_cache_interceptor_db_store
-      ref: df6eca
+      ref: 953c5b0
 
 dev_dependencies:
   flutter_lints: ^2.0.1
