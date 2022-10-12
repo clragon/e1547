@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:dio/dio.dart';
 import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
@@ -190,6 +191,33 @@ class Client extends ChangeNotifier {
     return _postsFromJson(body['posts']);
   }
 
+  Future<List<Post>> postsChunk(
+    List<int> ids, {
+    int limit = 80,
+    bool? force,
+  }) async {
+    limit = max(0, min(limit, 100));
+
+    List<List<int>> chunks = [];
+    while (true) {
+      chunks.add(ids.sublist(chunks.length * limit).take(limit).toList());
+      if (chunks.last.length < limit) break;
+    }
+
+    List<Post> result = [];
+    for (final chunk in chunks) {
+      if (chunk.isEmpty) continue;
+      String filter = 'id:${chunk.join(',')}';
+      List<Post> posts = await this.posts(1, search: filter, force: force);
+      Map<int, Post> table = {for (Post e in posts) e.id: e};
+      posts = (chunk.map((e) => table[e]).toList()
+            ..removeWhere((e) => e == null))
+          .cast<Post>();
+      result.addAll(posts);
+    }
+    return result;
+  }
+
   Future<List<Post>> posts(
     int page, {
     int? limit,
@@ -357,28 +385,13 @@ class Client extends ChangeNotifier {
     bool reverse = false,
     bool? force,
   }) async {
-    Pool pool = await this.pool(poolId, force: true);
-    List<int> ids = reverse ? pool.postIds.reversed.toList() : pool.postIds;
     int limit = 80;
-    int lower = ((page - 1) * limit);
-    int upper = lower + limit;
-
-    if (ids.length < lower) {
-      return [];
-    }
-    if (ids.length < upper) {
-      upper = ids.length;
-    }
-
-    List<int> pageIds = ids.sublist(lower, upper);
-    String filter = 'id:${pageIds.join(',')}';
-
-    List<Post> posts = await this.posts(1, search: filter, force: force);
-    Map<int, Post> table = {for (Post e in posts) e.id: e};
-    posts = (pageIds.map((e) => table[e]).toList()
-          ..removeWhere((e) => e == null))
-        .cast<Post>();
-    return posts;
+    Pool pool = await this.pool(poolId, force: force);
+    List<int> ids = reverse ? pool.postIds.reversed.toList() : pool.postIds;
+    int lower = (page - 1) * limit;
+    if (lower > ids.length) return [];
+    ids = ids.sublist(lower).take(limit).toList();
+    return postsChunk(ids, limit: limit, force: force);
   }
 
   Future<List<Post>> follows(

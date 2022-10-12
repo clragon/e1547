@@ -56,7 +56,7 @@ class PostImageTile extends StatelessWidget {
                           fit: fit ?? BoxFit.cover,
                           showProgress: showProgress ?? false,
                           withLowRes: withLowRes ?? false,
-                          cacheSize: context.read<LowResCacheSize>().size,
+                          cacheSize: context.read<LowResCacheSize?>()?.size,
                         ),
                       ),
                     ),

@@ -466,7 +466,7 @@ class PostVideoWidget extends StatelessWidget {
         animation: post.getVideo(context)!,
         builder: (context, child) => post.getVideo(context)!.value.isInitialized
             ? AspectRatio(
-          aspectRatio: post.getVideo(context)!.value.aspectRatio,
+                aspectRatio: post.getVideo(context)!.value.aspectRatio,
                 child: CachedVideoPlayer(post.getVideo(context)!),
               )
             : placeholder(),

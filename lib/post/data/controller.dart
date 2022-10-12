@@ -6,15 +6,6 @@ import 'package:e1547/post/post.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 
-enum DenyListMode {
-  unavailable,
-  filtering,
-  plain,
-}
-
-typedef PostProviderCallback = Future<List<Post>> Function(
-    String search, int page, bool force)?;
-
 class PostsController extends DataController<Post>
     with SearchableController, FilterableController, RefreshableController {
   PostsController({
@@ -180,6 +171,15 @@ class PostsController extends DataController<Post>
     refilter();
   }
 }
+
+enum DenyListMode {
+  unavailable,
+  filtering,
+  plain,
+}
+
+typedef PostProviderCallback = Future<List<Post>> Function(
+    String search, int page, bool force)?;
 
 class PostsProvider extends SubChangeNotifierProvider2<Client, DenylistService,
     PostsController> {
@@ -433,4 +433,61 @@ class PostProvider extends SubChangeNotifierProvider2<Client, DenylistService,
           selector: (context) =>
               [id, parent ?? context.watch<PostsController>()],
         );
+}
+
+class ExtraPostsController<KeyType, ItemType> extends PostsController {
+  ExtraPostsController({
+    required super.client,
+    required super.denylist,
+    required this.parent,
+    required this.getIds,
+  }) : super(denyMode: DenyListMode.plain) {
+    parent.addListener(_onItemsChanged);
+  }
+
+  final RawDataController<KeyType, ItemType> parent;
+  final List<int> Function(List<ItemType> items) getIds;
+
+  List<int>? _ids;
+
+  List<int>? get ids => _ids.maybeUnmodifiable();
+
+  @override
+  void dispose() {
+    parent.removeListener(_onItemsChanged);
+    super.dispose();
+  }
+
+  void _onItemsChanged() {
+    if (parent.itemList == null) return;
+    if (const DeepCollectionEquality().equals(_ids, getIds(parent.itemList!))) {
+      return;
+    }
+    notifyPageRequestListeners(
+      provideNextPageKey(
+        nextPageKey ?? firstPageKey,
+        itemList ?? [],
+      ),
+    );
+  }
+
+  @override
+  @protected
+  void reset() {
+    _ids = null;
+    super.reset();
+  }
+
+  @override
+  @protected
+  Future<List<Post>> provide(int page, bool force) async {
+    if (parent.itemList == null) return [];
+    List<int> ids = getIds(parent.itemList!);
+    if (_ids != null) {
+      ids.removeWhere((e) => _ids!.contains(e));
+    }
+    _ids ??= [];
+    _ids!.addAll(ids);
+    return client.postsChunk(ids);
+  }
 }
