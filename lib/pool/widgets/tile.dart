@@ -45,18 +45,15 @@ class PoolTile extends StatelessWidget {
       );
     }
 
-    Widget image() {
-      ExtraPostsController? controller = context.watch<ExtraPostsController?>();
+    Widget? image;
+    ExtraPostsController? controller = context.watch<ExtraPostsController?>();
 
-      if (pool.postIds.isEmpty || controller == null) {
-        return const SizedBox();
-      }
-
+    if (pool.postIds.isNotEmpty && controller != null) {
       int thumbnail = pool.postIds.first;
       if (controller.ids?.contains(thumbnail) ?? false) {
         if (controller.itemList?.firstWhereOrNull((e) => e.id == thumbnail) !=
             null) {
-          return PostProvider(
+          image = PostProvider(
             id: thumbnail,
             parent: controller,
             child: Consumer<PostController>(
@@ -67,42 +64,44 @@ class PoolTile extends StatelessWidget {
           );
         }
       }
-
-      return const SizedBox();
     }
 
     return Card(
       child: InkWell(
         onTap: onPressed,
         onLongPress: () => poolSheet(context, pool),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ConstrainedBox(
-              constraints: const BoxConstraints(
-                maxHeight: 300,
-              ),
-              child: AnimatedSize(
-                duration: defaultAnimationDuration,
-                child: image(),
-              ),
-            ),
-            title(),
-            if (pool.description.isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.only(
-                  left: 16,
-                  right: 16,
-                  bottom: 8,
+        child: AnimatedSize(
+          duration: defaultAnimationDuration,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ConstrainedBox(
+                constraints: const BoxConstraints(
+                  maxHeight: 300,
                 ),
-                child: IgnorePointer(
-                  child: Opacity(
-                    opacity: 0.5,
-                    child: DText(pool.description.ellipse(400)),
+                child: image ?? const SizedBox.shrink(),
+              ),
+              title(),
+              if (pool.description.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(
+                    left: 16,
+                    right: 16,
+                    bottom: 8,
+                  ),
+                  child: IgnorePointer(
+                    child: Opacity(
+                      opacity: 0.5,
+                      child: DText(
+                        pool.description.ellipse(
+                          image == null ? 400 : 200,
+                        ),
+                      ),
+                    ),
                   ),
                 ),
-              ),
-          ],
+            ],
+          ),
         ),
       ),
     );

@@ -49,7 +49,7 @@ String dateOrName(DateTime date) {
 extension Ellipse on String {
   String ellipse(int limit) {
     if (length > limit) {
-      return '${split('').take(400).join()}...';
+      return '${split('').take(limit).join()}...';
     } else {
       return this;
     }
