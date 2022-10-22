@@ -14,7 +14,6 @@ class Pool with _$Pool {
     required String description,
     required bool isActive,
     required Category category,
-    required bool isDeleted,
     required List<int> postIds,
     required String creatorName,
     required int postCount,

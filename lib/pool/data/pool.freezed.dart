@@ -28,7 +28,6 @@ mixin _$Pool {
   String get description => throw _privateConstructorUsedError;
   bool get isActive => throw _privateConstructorUsedError;
   Category get category => throw _privateConstructorUsedError;
-  bool get isDeleted => throw _privateConstructorUsedError;
   List<int> get postIds => throw _privateConstructorUsedError;
   String get creatorName => throw _privateConstructorUsedError;
   int get postCount => throw _privateConstructorUsedError;
@@ -51,7 +50,6 @@ abstract class $PoolCopyWith<$Res> {
       String description,
       bool isActive,
       Category category,
-      bool isDeleted,
       List<int> postIds,
       String creatorName,
       int postCount});
@@ -75,7 +73,6 @@ class _$PoolCopyWithImpl<$Res> implements $PoolCopyWith<$Res> {
     Object? description = freezed,
     Object? isActive = freezed,
     Object? category = freezed,
-    Object? isDeleted = freezed,
     Object? postIds = freezed,
     Object? creatorName = freezed,
     Object? postCount = freezed,
@@ -113,10 +110,6 @@ class _$PoolCopyWithImpl<$Res> implements $PoolCopyWith<$Res> {
           ? _value.category
           : category // ignore: cast_nullable_to_non_nullable
               as Category,
-      isDeleted: isDeleted == freezed
-          ? _value.isDeleted
-          : isDeleted // ignore: cast_nullable_to_non_nullable
-              as bool,
       postIds: postIds == freezed
           ? _value.postIds
           : postIds // ignore: cast_nullable_to_non_nullable
@@ -147,7 +140,6 @@ abstract class _$$_PoolCopyWith<$Res> implements $PoolCopyWith<$Res> {
       String description,
       bool isActive,
       Category category,
-      bool isDeleted,
       List<int> postIds,
       String creatorName,
       int postCount});
@@ -172,7 +164,6 @@ class __$$_PoolCopyWithImpl<$Res> extends _$PoolCopyWithImpl<$Res>
     Object? description = freezed,
     Object? isActive = freezed,
     Object? category = freezed,
-    Object? isDeleted = freezed,
     Object? postIds = freezed,
     Object? creatorName = freezed,
     Object? postCount = freezed,
@@ -210,10 +201,6 @@ class __$$_PoolCopyWithImpl<$Res> extends _$PoolCopyWithImpl<$Res>
           ? _value.category
           : category // ignore: cast_nullable_to_non_nullable
               as Category,
-      isDeleted: isDeleted == freezed
-          ? _value.isDeleted
-          : isDeleted // ignore: cast_nullable_to_non_nullable
-              as bool,
       postIds: postIds == freezed
           ? _value._postIds
           : postIds // ignore: cast_nullable_to_non_nullable
@@ -242,7 +229,6 @@ class _$_Pool implements _Pool {
       required this.description,
       required this.isActive,
       required this.category,
-      required this.isDeleted,
       required final List<int> postIds,
       required this.creatorName,
       required this.postCount})
@@ -266,8 +252,6 @@ class _$_Pool implements _Pool {
   final bool isActive;
   @override
   final Category category;
-  @override
-  final bool isDeleted;
   final List<int> _postIds;
   @override
   List<int> get postIds {
@@ -282,7 +266,7 @@ class _$_Pool implements _Pool {
 
   @override
   String toString() {
-    return 'Pool(id: $id, name: $name, createdAt: $createdAt, updatedAt: $updatedAt, creatorId: $creatorId, description: $description, isActive: $isActive, category: $category, isDeleted: $isDeleted, postIds: $postIds, creatorName: $creatorName, postCount: $postCount)';
+    return 'Pool(id: $id, name: $name, createdAt: $createdAt, updatedAt: $updatedAt, creatorId: $creatorId, description: $description, isActive: $isActive, category: $category, postIds: $postIds, creatorName: $creatorName, postCount: $postCount)';
   }
 
   @override
@@ -299,7 +283,6 @@ class _$_Pool implements _Pool {
                 .equals(other.description, description) &&
             const DeepCollectionEquality().equals(other.isActive, isActive) &&
             const DeepCollectionEquality().equals(other.category, category) &&
-            const DeepCollectionEquality().equals(other.isDeleted, isDeleted) &&
             const DeepCollectionEquality().equals(other._postIds, _postIds) &&
             const DeepCollectionEquality()
                 .equals(other.creatorName, creatorName) &&
@@ -318,7 +301,6 @@ class _$_Pool implements _Pool {
       const DeepCollectionEquality().hash(description),
       const DeepCollectionEquality().hash(isActive),
       const DeepCollectionEquality().hash(category),
-      const DeepCollectionEquality().hash(isDeleted),
       const DeepCollectionEquality().hash(_postIds),
       const DeepCollectionEquality().hash(creatorName),
       const DeepCollectionEquality().hash(postCount));
@@ -346,7 +328,6 @@ abstract class _Pool implements Pool {
       required final String description,
       required final bool isActive,
       required final Category category,
-      required final bool isDeleted,
       required final List<int> postIds,
       required final String creatorName,
       required final int postCount}) = _$_Pool;
@@ -369,8 +350,6 @@ abstract class _Pool implements Pool {
   bool get isActive;
   @override
   Category get category;
-  @override
-  bool get isDeleted;
   @override
   List<int> get postIds;
   @override

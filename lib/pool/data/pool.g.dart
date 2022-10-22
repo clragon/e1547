@@ -15,7 +15,6 @@ _$_Pool _$$_PoolFromJson(Map<String, dynamic> json) => _$_Pool(
       description: json['description'] as String,
       isActive: json['is_active'] as bool,
       category: $enumDecode(_$CategoryEnumMap, json['category']),
-      isDeleted: json['is_deleted'] as bool,
       postIds:
           (json['post_ids'] as List<dynamic>).map((e) => e as int).toList(),
       creatorName: json['creator_name'] as String,
@@ -31,7 +30,6 @@ Map<String, dynamic> _$$_PoolToJson(_$_Pool instance) => <String, dynamic>{
       'description': instance.description,
       'is_active': instance.isActive,
       'category': _$CategoryEnumMap[instance.category]!,
-      'is_deleted': instance.isDeleted,
       'post_ids': instance.postIds,
       'creator_name': instance.creatorName,
       'post_count': instance.postCount,
