@@ -1,4 +1,5 @@
 import 'package:async_builder/async_builder.dart';
+import 'package:e1547/client/client.dart';
 import 'package:e1547/history/history.dart';
 import 'package:e1547/history/widgets/appbar.dart';
 import 'package:e1547/interface/interface.dart';
@@ -80,11 +81,12 @@ class _HistoriesPageState extends State<HistoriesPage> {
             endDrawer: ContextDrawer(
               title: const Text('History'),
               children: [
-                Consumer<HistoriesService>(
-                  builder: (context, service, child) {
+                Consumer2<HistoriesService, Client>(
+                  builder: (context, service, client, child) {
                     return SubValueBuilder<Stream<int>>(
-                      create: (context) => service.watchLength(),
-                      selector: (context) => [service, service.host],
+                      create: (context) =>
+                          service.watchLength(host: client.host),
+                      selector: (context) => [service, client.host],
                       builder: (context, stream) => AsyncBuilder<int>(
                         stream: stream,
                         builder: (context, value) => SwitchListTile(

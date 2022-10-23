@@ -1,3 +1,4 @@
+import 'package:e1547/client/client.dart';
 import 'package:e1547/history/history.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/reply/reply.dart';
@@ -24,6 +25,7 @@ class _TopicsPageState extends State<TopicsPage> with DrawerEntry {
           listener: () async {
             await controller.waitForFirstPage();
             await context.read<HistoriesService>().addTopicSearch(
+              context.read<Client>().host,
                   controller.search.value,
                   topics: controller.itemList!,
                 );
@@ -37,7 +39,7 @@ class _TopicsPageState extends State<TopicsPage> with DrawerEntry {
                 labelText: 'Topic title',
                 actionController: actionController,
                 textController:
-                    TextEditingController(text: controller.search.value),
+                TextEditingController(text: controller.search.value),
                 submit: (value) => controller.search.value = value,
               ),
             ),

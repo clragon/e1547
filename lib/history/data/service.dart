@@ -1,6 +1,4 @@
 import 'package:collection/collection.dart';
-import 'package:e1547/client/client.dart';
-import 'package:e1547/denylist/denylist.dart';
 import 'package:e1547/history/history.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/pool/pool.dart';
@@ -12,141 +10,88 @@ import 'package:e1547/topic/topic.dart';
 import 'package:e1547/user/user.dart';
 import 'package:e1547/wiki/wiki.dart';
 import 'package:flutter/material.dart';
-import 'package:mutex/mutex.dart';
 
-class HistoriesService extends ChangeNotifier {
+class HistoriesService extends HistoriesDatabase with ChangeNotifier {
   HistoriesService({
-    required this.settings,
-    required this.client,
-    required this.denylist,
-    String? path,
-  }) : _database = HistoriesDatabase.connect(path: path) {
-    client.addListener(notifyListeners);
-    settings.writeHistory.addListener(notifyListeners);
-    settings.trimHistory.addListener(notifyListeners);
+    super.path,
+    bool enabled = true,
+    bool trimming = false,
+    int trimAmount = 5000,
+    Duration trimAge = const Duration(days: 90),
+  })  : _enabled = enabled,
+        _trimming = trimming,
+        _trimAmount = trimAmount,
+        _trimAge = trimAge,
+        super.connect();
+
+  bool _enabled;
+
+  bool get enabled => _enabled;
+
+  set enabled(bool value) {
+    if (_enabled != value) {
+      _enabled = value;
+      notifyListeners();
+    }
   }
 
-  final Settings settings;
-  final Client client;
-  final DenylistService denylist;
+  bool _trimming;
 
-  final HistoriesDatabase _database;
+  bool get trimming => _trimming;
 
-  set enabled(bool value) => settings.writeHistory.value = value;
+  set trimming(bool value) {
+    if (_trimming != value) {
+      _trimming = value;
+      notifyListeners();
+    }
+  }
 
-  bool get enabled => settings.writeHistory.value;
+  int _trimAmount;
 
-  set trimming(bool value) => settings.trimHistory.value = value;
+  int get trimAmount => _trimAmount;
 
-  bool get trimming => settings.trimHistory.value;
+  set trimAmount(int value) {
+    if (_trimAmount != value) {
+      _trimAmount = value;
+      notifyListeners();
+    }
+  }
 
-  String get host => client.host;
+  Duration _trimAge;
 
-  final int trimAmount = 5000;
-  final Duration trimAge = const Duration(days: 90);
+  Duration get trimAge => _trimAge;
 
-  final Mutex _lock = Mutex();
+  set trimAge(Duration value) {
+    if (_trimAge != value) {
+      _trimAge = value;
+      notifyListeners();
+    }
+  }
 
   @override
-  void dispose() {
-    client.removeListener(notifyListeners);
-    settings.writeHistory.removeListener(notifyListeners);
-    settings.trimHistory.removeListener(notifyListeners);
-    super.dispose();
+  Future<void> add(String host, HistoryRequest item) async {
+    if (!enabled) {
+      return;
+    }
+    return transaction(() async {
+      if ((await getRecent(host: host)).any((e) =>
+          e.link == item.link &&
+          e.title == item.title &&
+          e.subtitle == item.subtitle &&
+          const DeepCollectionEquality()
+              .equals(e.thumbnails, item.thumbnails))) {
+        return;
+      }
+      if (trimming) {
+        await trim();
+      }
+      return super.add(host, item);
+    });
   }
 
-  Future<int> length() async => _database.length(host: host);
-
-  Stream<int> watchLength() => _database.watchLength(host: host);
-
-  Future<List<DateTime>> dates() async => _database.dates(host: host);
-
-  Future<History> get(int id) async => _database.get(id);
-
-  Stream<History> watch(int id) => _database.watch(id);
-
-  Future<List<History>> page({
-    required int page,
-    int? limit,
-    DateTime? day,
-    String? linkRegex,
-    String? titleRegex,
-    String? subtitleRegex,
-  }) async =>
-      _database.page(
-        page: page,
-        limit: limit,
-        host: host,
-        day: day,
-        linkRegex: linkRegex,
-        titleRegex: titleRegex,
-        subtitleRegex: subtitleRegex,
-      );
-
-  Future<List<History>> getAll({
-    DateTime? day,
-    String? linkRegex,
-    String? titleRegex,
-    String? subtitleRegex,
-    int? limit,
-  }) async =>
-      _database.getAll(
-        host: host,
-        day: day,
-        linkRegex: linkRegex,
-        titleRegex: titleRegex,
-        subtitleRegex: subtitleRegex,
-        limit: limit,
-      );
-
-  Stream<List<History>> watchAll({
-    DateTime? day,
-    String? linkRegex,
-    String? titleRegex,
-    String? subtitleRegex,
-    int? limit,
-  }) =>
-      _database.watchAll(
-        host: host,
-        day: day,
-        linkRegex: linkRegex,
-        titleRegex: titleRegex,
-        subtitleRegex: subtitleRegex,
-        limit: limit,
-      );
-
-  Future<void> add(HistoryRequest item) async => _lock.protect(
-        () async {
-          if (!enabled) {
-            return;
-          }
-          if ((await _database.getRecent(host: host)).any((e) =>
-              e.link == item.link &&
-              e.title == item.title &&
-              e.subtitle == item.subtitle &&
-              const DeepCollectionEquality()
-                  .equals(e.thumbnails, item.thumbnails))) {
-            return;
-          }
-          if (trimming) {
-            await trim();
-          }
-          return _database.add(host, item);
-        },
-      );
-
-  Future<void> addAll(List<HistoryRequest> items) async =>
-      _lock.protect(() async => _database.addAll(host, items));
-
-  Future<void> remove(History item) async =>
-      _lock.protect(() async => _database.remove(item));
-
-  Future<void> removeAll(List<History> items) async =>
-      _lock.protect(() async => _database.removeAll(items));
-
-  List<String> _getThumbnails(List<Post>? posts) =>
+  List<String> _getThumbnails(List<Post>? posts, {List<String>? denylist}) =>
       posts
-          ?.where((e) => !e.isDeniedBy(denylist.items))
+          ?.where((e) => denylist == null || !e.isDeniedBy(denylist))
           .map((e) => e.sample.url)
           .where((e) => e != null)
           .cast<String>()
@@ -159,20 +104,28 @@ class HistoriesService extends ChangeNotifier {
       .map((e) => '* "${e.value.replaceAll(r'"', '\'')}":${e.key}')
       .join('\n');
 
-  Future<void> addPost(Post post) async => add(
+  Future<void> addPost(
+    String host,
+    Post post, {
+    List<String>? denylist,
+  }) async =>
+      add(
+        host,
         HistoryRequest(
           visitedAt: DateTime.now(),
           link: post.link,
-          thumbnails: _getThumbnails([post]),
+          thumbnails: _getThumbnails([post], denylist: denylist),
           subtitle: post.description.nullWhenEmpty,
         ),
       );
 
   Future<void> addPostSearch(
+    String host,
     String search, {
     List<Post>? posts,
   }) async =>
       add(
+        host,
         HistoryRequest(
           visitedAt: DateTime.now(),
           link: Tagset.parse(search).link,
@@ -180,7 +133,13 @@ class HistoriesService extends ChangeNotifier {
         ),
       );
 
-  Future<void> addPool(Pool pool, {List<Post>? posts}) async => add(
+  Future<void> addPool(
+    String host,
+    Pool pool, {
+    List<Post>? posts,
+  }) async =>
+      add(
+        host,
         HistoryRequest(
           visitedAt: DateTime.now(),
           link: pool.link,
@@ -191,10 +150,12 @@ class HistoriesService extends ChangeNotifier {
       );
 
   Future<void> addPoolSearch(
+    String host,
     String search, {
     List<Pool>? pools,
   }) async =>
       add(
+        host,
         HistoryRequest(
           visitedAt: DateTime.now(),
           link: Uri(
@@ -211,10 +172,12 @@ class HistoriesService extends ChangeNotifier {
       );
 
   Future<void> addTopic(
+    String host,
     Topic topic, {
     List<Reply>? replies,
   }) async =>
       add(
+        host,
         HistoryRequest(
           visitedAt: DateTime.now(),
           link: '/forum_topics/${topic.id}',
@@ -224,10 +187,12 @@ class HistoriesService extends ChangeNotifier {
       );
 
   Future<void> addTopicSearch(
+    String host,
     String search, {
     List<Topic>? topics,
   }) async =>
       add(
+        host,
         HistoryRequest(
           visitedAt: DateTime.now(),
           link: Uri(
@@ -243,7 +208,8 @@ class HistoriesService extends ChangeNotifier {
         ),
       );
 
-  Future<void> addUser(User user, {Post? avatar}) async => add(
+  Future<void> addUser(String host, User user, {Post? avatar}) async => add(
+        host,
         HistoryRequest(
           visitedAt: DateTime.now(),
           link: '/users/${user.name}',
@@ -251,7 +217,8 @@ class HistoriesService extends ChangeNotifier {
         ),
       );
 
-  Future<void> addWiki(Wiki wiki) async => add(
+  Future<void> addWiki(String host, Wiki wiki) async => add(
+        host,
         HistoryRequest(
           visitedAt: DateTime.now(),
           link: '/wiki_pages/${wiki.title}',
@@ -259,7 +226,13 @@ class HistoriesService extends ChangeNotifier {
         ),
       );
 
-  Future<void> addWikiSearch(String search, {List<Wiki>? wikis}) async => add(
+  Future<void> addWikiSearch(
+    String host,
+    String search, {
+    List<Wiki>? wikis,
+  }) async =>
+      add(
+        host,
         HistoryRequest(
           visitedAt: DateTime.now(),
           link: Uri(
@@ -274,20 +247,41 @@ class HistoriesService extends ChangeNotifier {
         ),
       );
 
-  Future<void> trim() async =>
-      _database.trim(host: client.host, maxAmount: trimAmount, maxAge: trimAge);
+  @override
+  Future<void> trim({
+    String? host,
+    int? maxAmount,
+    Duration? maxAge,
+  }) async =>
+      trim(
+        host: host,
+        maxAmount: maxAmount ?? trimAmount,
+        maxAge: maxAge ?? trimAge,
+      );
 }
 
-class HistoriesServiceProvider extends SubChangeNotifierProvider3<Settings,
-    Client, DenylistService, HistoriesService> {
-  HistoriesServiceProvider({String? path, super.child, super.builder})
-      : super(
-          create: (context, settings, client, denylist) => HistoriesService(
+class HistoriesServiceProvider
+    extends SubChangeNotifierProvider<Settings, HistoriesService> {
+  HistoriesServiceProvider({
+    String? path,
+    super.child,
+    TransitionBuilder? builder,
+  }) : super(
+          create: (context, settings) => HistoriesService(
             path: path,
-            settings: settings,
-            client: client,
-            denylist: denylist,
+            enabled: settings.writeHistory.value,
+            trimming: settings.trimHistory.value,
           ),
           selector: (context) => [path],
+          builder: (context, child) => ListenableListener(
+            listenable: context.read<HistoriesService>(),
+            listener: () {
+              HistoriesService service = context.read<HistoriesService>();
+              Settings settings = context.read<Settings>();
+              settings.writeHistory.value = service.enabled;
+              settings.trimHistory.value = service.trimming;
+            },
+            child: builder?.call(context, child) ?? child!,
+          ),
         );
 }

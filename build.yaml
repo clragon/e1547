@@ -1,6 +1,14 @@
 targets:
-  $default:
+  freezed_only:
+    auto_apply_builders: false
     builders:
+      freezed:
+        enabled: true
+  $default:
+    dependencies: [ ":freezed_only" ]
+    builders:
+      freezed:
+        enabled: false
       json_serializable:
         options:
           field_rename: snake

@@ -25,16 +25,15 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        context.read<HistoriesService>().addPost(post);
-        preloadPostImage(
-          context: context,
-          post: post,
-          size: PostImageSize.file,
+    context.read<HistoriesService>().addPost(
+          context.read<Client>().host,
+          post,
         );
-      }
-    });
+    preloadPostImage(
+      context: context,
+      post: post,
+      size: PostImageSize.file,
+    );
   }
 
   Widget image(BuildContext context, BoxConstraints constraints) => Padding(

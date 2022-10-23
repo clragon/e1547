@@ -83,16 +83,17 @@ class _SearchPageState extends State<SearchPage> {
             }
 
             Future<void> updateSearch() async {
+              String host = context.read<Client>().host;
+              HistoriesService historiesService =
+                  context.read<HistoriesService>();
               await updatePool();
               await controller.waitForFirstPage();
               await updateFollow();
               if (pool != null) {
-                context
-                    .read<HistoriesService>()
-                    .addPool(pool!, posts: controller.itemList);
+                historiesService.addPool(host, pool!,
+                    posts: controller.itemList);
               } else {
-                context.read<HistoriesService>().addPostSearch(
-                    controller.search.value,
+                historiesService.addPostSearch(host, controller.search.value,
                     posts: controller.itemList);
               }
             }

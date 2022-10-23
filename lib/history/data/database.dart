@@ -231,14 +231,15 @@ class HistoriesDatabase extends _$HistoriesDatabase {
     String? host,
     required int maxAmount,
     required Duration maxAge,
-  }) async {
-    List<int> kept =
-        (await getRecent(host: host, limit: maxAmount, maxAge: maxAge))
-            .map((e) => e.id)
-            .toList();
-    await (delete(historiesTable)
-          ..where((tbl) => tbl.host.equalsNullable(host))
-          ..where((tbl) => tbl.id.isNotIn(kept)))
-        .go();
-  }
+  }) async =>
+      transaction(() async {
+        List<int> kept =
+            (await getRecent(host: host, limit: maxAmount, maxAge: maxAge))
+                .map((e) => e.id)
+                .toList();
+        await (delete(historiesTable)
+              ..where((tbl) => tbl.host.equalsNullable(host))
+              ..where((tbl) => tbl.id.isNotIn(kept)))
+            .go();
+      });
 }

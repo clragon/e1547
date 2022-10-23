@@ -1,3 +1,4 @@
+import 'package:e1547/client/client.dart';
 import 'package:e1547/denylist/denylist.dart';
 import 'package:e1547/history/history.dart';
 import 'package:e1547/interface/interface.dart';
@@ -30,8 +31,10 @@ class _PoolsPageState extends State<PoolsPage> with DrawerEntry {
             listener: () async {
               await controller.waitForFirstPage();
               await context.read<HistoriesService>().addPoolSearch(
-                  controller.search.value,
-                  pools: controller.itemList);
+                    context.read<Client>().host,
+                    controller.search.value,
+                    pools: controller.itemList,
+                  );
             },
             listenable: controller.search,
             child: RefreshableControllerPage.builder(
@@ -59,21 +62,21 @@ class _PoolsPageState extends State<PoolsPage> with DrawerEntry {
                 padding: defaultListPadding,
                 pagingController: controller,
                 crossAxisCount:
-                    (TileLayout.of(context).crossAxisCount * 0.5).round(),
+                (TileLayout.of(context).crossAxisCount * 0.5).round(),
                 builderDelegate: defaultPagedChildBuilderDelegate<Pool>(
                   pagingController: controller,
                   itemBuilder: (context, item, index) =>
                       LowResCacheSizeProvider(
-                    size: TileLayout.of(context).tileSize * 4,
-                    child: PoolTile(
-                      pool: item,
-                      onPressed: () => Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => PoolPage(pool: item),
+                        size: TileLayout.of(context).tileSize * 4,
+                        child: PoolTile(
+                          pool: item,
+                          onPressed: () => Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => PoolPage(pool: item),
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                  ),
                   onEmpty: const Text('No pools'),
                   onError: const Text('Failed to load pools'),
                 ),
@@ -90,16 +93,16 @@ class PoolThumbnailProvider extends SubChangeNotifierProvider2<PoolsController,
     DenylistService, ExtraPostsController> {
   PoolThumbnailProvider({super.child, super.builder})
       : super(
-          create: (context, controller, denylist) =>
-              ExtraPostsController<int, Pool>(
-            client: controller.client,
-            denylist: denylist,
-            parent: controller,
-            getIds: (items) => (items
-                    .map((e) => e.postIds.isNotEmpty ? e.postIds.first : null)
-                    .toList()
-                  ..removeWhere((e) => e == null))
-                .cast<int>(),
-          ),
-        );
+    create: (context, controller, denylist) =>
+        ExtraPostsController<int, Pool>(
+          client: controller.client,
+          denylist: denylist,
+          parent: controller,
+          getIds: (items) => (items
+              .map((e) => e.postIds.isNotEmpty ? e.postIds.first : null)
+              .toList()
+            ..removeWhere((e) => e == null))
+              .cast<int>(),
+        ),
+  );
 }

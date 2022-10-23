@@ -1,3 +1,4 @@
+import 'package:e1547/client/client.dart';
 import 'package:e1547/history/history.dart';
 import 'package:e1547/interface/interface.dart';
 
@@ -20,8 +21,10 @@ class _FavPageState extends State<FavPage> with DrawerEntry {
           listener: () async {
             await controller.waitForFirstPage();
             await context.read<HistoriesService>().addPostSearch(
-                controller.search.value,
-                posts: controller.itemList);
+                  context.read<Client>().host,
+                  controller.search.value,
+                  posts: controller.itemList,
+                );
           },
           listenable: controller.search,
           child: PageLoader(

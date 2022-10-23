@@ -147,11 +147,13 @@ class _SearchTagDisplayState extends State<SearchTagDisplay> {
   @override
   void initState() {
     super.initState();
+    String host = context.read<Client>().host;
+    HistoriesService service = context.read<HistoriesService>();
     wiki.then((value) {
       if (value != null) {
-        context.read<HistoriesService>().addWiki(value);
+        service.addWiki(host, value);
       } else {
-        context.read<HistoriesService>().addWikiSearch(widget.tag);
+        service.addWikiSearch(host, widget.tag);
       }
     });
   }

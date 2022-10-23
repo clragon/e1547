@@ -1,3 +1,4 @@
+import 'package:e1547/client/client.dart';
 import 'package:e1547/history/history.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/reply/reply.dart';
@@ -21,6 +22,7 @@ class RepliesPage extends StatelessWidget {
           listener: () async {
             await controller.waitForFirstPage();
             await context.read<HistoriesService>().addTopic(
+              context.read<Client>().host,
                   topic,
                   replies: controller.itemList!,
                 );

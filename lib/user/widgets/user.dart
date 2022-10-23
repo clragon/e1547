@@ -50,6 +50,7 @@ class UserPage extends StatelessWidget {
               listener: () async {
                 await controllers.profilePost?.waitForFirstPage();
                 await context.read<HistoriesService>().addUser(
+                  context.read<Client>().host,
                       user,
                       avatar: controllers.profilePost?.itemList?.first,
                     );

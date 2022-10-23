@@ -70,8 +70,8 @@ Map<String, dynamic> _$$_PostToJson(_$_Post instance) => <String, dynamic>{
 
 const _$RatingEnumMap = {
   Rating.s: 's',
-  Rating.e: 'e',
   Rating.q: 'q',
+  Rating.e: 'e',
 };
 
 _$_PostPreviewFile _$$_PostPreviewFileFromJson(Map<String, dynamic> json) =>

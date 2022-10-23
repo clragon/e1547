@@ -74,7 +74,7 @@ final List<NavigationRouteDestination> rootDestintations = [
     name: 'History',
     icon: const Icon(Icons.history),
     builder: (context) => const HistoriesPage(),
-    visible: (context) => context.watch<Settings>().writeHistory.value,
+    visible: (context) => context.watch<HistoriesService>().enabled,
     enabled: _nonRecursive<HistoriesPage>,
     group: _drawerSettingsGroup,
   ),
