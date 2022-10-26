@@ -109,17 +109,19 @@ class UpdaterException implements Exception {
 typedef DataUpdate<T> = FutureOr<T> Function(T data);
 
 abstract class DataLock<T> {
-  @protected
-  final Mutex resourceLock = Mutex();
+  final Mutex _resourceLock = Mutex();
 
+  /// Reads data.
   @protected
-  Future<T> read();
+  FutureOr<T> read();
 
+  /// Writes data.
   @protected
   Future<void> write(T value);
 
+  /// Protects an operation on the data.
   @protected
-  Future<void> protect(DataUpdate<T> updater) async => resourceLock.protect(
+  Future<void> protect(DataUpdate<T> updater) async => _resourceLock.protect(
         () async {
           T updated = await updater(await read());
           await write(updated);

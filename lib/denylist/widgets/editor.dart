@@ -1,4 +1,3 @@
-import 'package:e1547/client/client.dart';
 import 'package:e1547/denylist/denylist.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/tag/tag.dart';
@@ -38,10 +37,9 @@ class _DenyListEditorState extends State<DenyListEditor> {
         List<String> tags = controller.text.split('\n');
         tags = tags.trim();
         tags.removeWhere((tag) => tag.isEmpty);
-        await context.read<DenylistService>().edit(tags);
         try {
-          await context.read<DenylistService>().edit(tags);
-        } on DioError {
+          await context.read<DenylistService>().set(tags);
+        } on DenylistUpdateException {
           throw const ActionControllerException(
             message: 'Failed to update blacklist!',
           );

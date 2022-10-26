@@ -1,26 +1,18 @@
-import 'package:e1547/client/client.dart';
 import 'package:e1547/interface/interface.dart';
-import 'package:e1547/settings/settings.dart';
-import 'package:e1547/user/user.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 
-class DenylistService extends DataUpdater with DataLock<List<String>> {
+class DenylistService extends ChangeNotifier with DataLock<List<String>> {
   DenylistService({
-    required Client client,
-    required ValueNotifier<List<String>> source,
-  })  : _client = client,
-        _source = source {
-    _source.addListener(notifyListeners);
-  }
+    List<String>? items,
+    DenylistPull? pull,
+    DenylistPush? push,
+  })  : _items = items ?? [],
+        _pull = pull,
+        _push = push;
 
-  final Client _client;
-  final ValueNotifier<List<String>> _source;
+  List<String> _items;
 
-  List<String> get items => _source.value;
-
-  @override
-  List<Listenable> getRefreshListeners() =>
-      super.getRefreshListeners()..addAll([_client]);
+  List<String> get items => _items;
 
   @override
   @protected
@@ -28,73 +20,62 @@ class DenylistService extends DataUpdater with DataLock<List<String>> {
 
   @override
   @protected
-  Future<void> write(List<String> value, {bool upload = true}) async {
-    _source.value = value;
-    if (upload && _client.hasLogin) {
-      await _client.updateBlacklist(items);
-    }
+  Future<void> write(List<String> value) async {
+    _items = value;
+    notifyListeners();
+    await push();
   }
 
-  @override
-  void dispose() {
-    _source.removeListener(notifyListeners);
-    super.dispose();
+  final DenylistPull? _pull;
+  final DenylistPush? _push;
+
+  /// Updates the denied list from a remote, if available.
+  Future<void> pull() async {
+    if (_pull == null) return;
+    List<String>? updated = await _pull!();
+    if (updated == null) return;
+    set(updated);
   }
 
-  @override
-  @protected
-  Future<void> protect(
-    DataUpdate<List<String>> updater, {
-    bool upload = true,
-  }) async {
-    await resourceLock.acquire();
-    List<String> updated = await updater(await read());
-    await write(updated, upload: upload);
-    resourceLock.release();
+  /// Updates a remote with the denied list, if available.
+  Future<void> push() async {
+    if (_push == null) return;
+    await _push!(items);
   }
 
-  @override
-  @protected
-  Future<void> run(bool force) async {
-    CurrentUser? user = await _client.currentUser(force: force);
-    if (user != null) {
-      try {
-        await protect(
-          (data) => user.blacklistedTags.split('\n').trim(),
-          upload: false,
-        );
-      } on DioError {
-        throw UpdaterException(message: 'Could not update blacklist');
-      }
-    }
-  }
-
+  /// Returns true if [value] is in the list.
   bool denies(String value) => items.contains(value);
 
+  /// Adds an entry to the denied list.
   Future<void> add(String value) async => protect((data) => data..add(value));
 
+  /// Removes an entry of the denied list by value.
   Future<void> remove(String value) async =>
       protect((data) => data..remove(value));
 
+  /// Removes an entry of the denied list at [index].
   Future<void> removeAt(int index) async =>
       protect((data) => data..removeAt(index));
 
+  /// Replaces an entry of the denied list by its old value.
   Future<void> replace(String oldValue, String value) async =>
       protect((data) => data..[items.indexOf(oldValue)] = value);
 
+  /// Replaces an entry of the denied list at [index].
   Future<void> replaceAt(int index, String value) async =>
       protect((data) => data..[index] = value);
 
-  Future<void> edit(List<String> value) async => protect((data) => value);
+  /// Replaces the entire denied entry list.
+  Future<void> set(List<String> value) async => protect((data) => value.trim());
 }
 
-class DenylistProvider
-    extends SubChangeNotifierProvider2<Settings, Client, DenylistService> {
-  DenylistProvider()
-      : super(
-          create: (context, settings, client) => DenylistService(
-            client: client,
-            source: settings.denylist,
-          ),
-        );
+class DenylistUpdateException implements Exception {
+  /// Thrown if a push or pull operation in [DenylistService] fails.
+  DenylistUpdateException({this.message});
+
+  /// The reason for failure.
+  final String? message;
 }
+
+typedef DenylistPull = AsyncValueGetter<List<String>?>;
+typedef DenylistPush = AsyncValueSetter<List<String>>;

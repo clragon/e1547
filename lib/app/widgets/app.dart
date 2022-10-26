@@ -2,7 +2,6 @@ import 'package:e1547/app/app.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/denylist/denylist.dart';
 import 'package:e1547/follow/follow.dart';
-import 'package:e1547/history/history.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:e1547/user/user.dart';
@@ -55,7 +54,7 @@ class App extends StatelessWidget {
                     child: StartupActions(
                       actions: [
                         (_) => initializeDateFormatting(),
-                        (_) => context.read<DenylistService>().update(),
+                        (_) => context.read<DenylistService>().pull(),
                         (_) => context.read<FollowsService>().update(),
                         initializeUserAvatar,
                       ],

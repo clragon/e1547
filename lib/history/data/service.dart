@@ -1,10 +1,10 @@
 import 'package:collection/collection.dart';
+import 'package:drift/drift.dart';
 import 'package:e1547/history/history.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/reply/reply.dart';
-import 'package:e1547/settings/settings.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:e1547/topic/topic.dart';
 import 'package:e1547/user/user.dart';
@@ -13,7 +13,7 @@ import 'package:flutter/material.dart';
 
 class HistoriesService extends HistoriesDatabase with ChangeNotifier {
   HistoriesService({
-    super.path,
+    required DatabaseConnection database,
     bool enabled = true,
     bool trimming = false,
     int trimAmount = 5000,
@@ -22,7 +22,7 @@ class HistoriesService extends HistoriesDatabase with ChangeNotifier {
         _trimming = trimming,
         _trimAmount = trimAmount,
         _trimAge = trimAge,
-        super.connect();
+        super.connect(database);
 
   bool _enabled;
 
@@ -258,30 +258,4 @@ class HistoriesService extends HistoriesDatabase with ChangeNotifier {
         maxAmount: maxAmount ?? trimAmount,
         maxAge: maxAge ?? trimAge,
       );
-}
-
-class HistoriesServiceProvider
-    extends SubChangeNotifierProvider<Settings, HistoriesService> {
-  HistoriesServiceProvider({
-    String? path,
-    super.child,
-    TransitionBuilder? builder,
-  }) : super(
-          create: (context, settings) => HistoriesService(
-            path: path,
-            enabled: settings.writeHistory.value,
-            trimming: settings.trimHistory.value,
-          ),
-          selector: (context) => [path],
-          builder: (context, child) => ListenableListener(
-            listenable: context.read<HistoriesService>(),
-            listener: () {
-              HistoriesService service = context.read<HistoriesService>();
-              Settings settings = context.read<Settings>();
-              settings.writeHistory.value = service.enabled;
-              settings.trimHistory.value = service.trimming;
-            },
-            child: builder?.call(context, child) ?? child!,
-          ),
-        );
 }

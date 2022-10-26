@@ -3,7 +3,6 @@ import 'dart:math';
 
 import 'package:drift/drift.dart';
 import 'package:e1547/history/history.dart';
-import 'package:e1547/interface/interface.dart';
 
 part 'database.g.dart';
 
@@ -30,12 +29,9 @@ class StringListConverter extends TypeConverter<List<String>, String> {
 
 @DriftDatabase(tables: [HistoriesTable])
 class HistoriesDatabase extends _$HistoriesDatabase {
-  HistoriesDatabase({String? path}) : super(openDatabase(path ?? _defaultName));
+  HistoriesDatabase(super.e);
 
-  HistoriesDatabase.connect({String? path})
-      : super.connect(connectDatabase(path ?? _defaultName));
-
-  static const String _defaultName = 'history.sqlite';
+  HistoriesDatabase.connect(super.e) : super.connect();
 
   @override
   int get schemaVersion => 1;

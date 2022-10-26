@@ -130,9 +130,9 @@ class _DenyListPageState extends State<DenyListPage> {
           ),
           refresh: () async {
             try {
-              await denylist.update(force: true);
+              await denylist.pull();
               refreshController.refreshCompleted();
-            } on DioError {
+            } on DenylistUpdateException {
               refreshController.refreshFailed();
             }
           },
