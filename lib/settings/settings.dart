@@ -7,7 +7,5 @@ export 'data/settings.dart';
 export 'widgets/about.dart';
 export 'widgets/advanced.dart';
 export 'widgets/header.dart';
-export 'widgets/host.dart';
-export 'widgets/login.dart';
 export 'widgets/settings.dart';
 export 'widgets/tile.dart';

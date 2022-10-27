@@ -3,7 +3,6 @@ import 'package:e1547/app/app.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
-import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
 
 class PostDetailImage extends StatelessWidget {
@@ -85,12 +84,18 @@ class _PostDetailImageToggleState extends State<PostDetailImageToggle> {
       loading = true;
     });
     if (post.file.url == null) {
-      if (context.read<Settings>().customHost.value == null) {
+      HostService service = context.read<HostService>();
+      if (!service.hasCustomHost) {
         await setCustomHost(context);
       }
-      if (context.read<Settings>().customHost.value != null) {
-        replacement ??=
-            await context.read<Client>().post(post.id, unsafe: true);
+      if (service.hasCustomHost) {
+        Client unsafeClient = Client(
+          host: service.customHost!,
+          credentials: service.credentials,
+          appInfo: service.appInfo,
+          cache: service.cache,
+        );
+        replacement ??= await unsafeClient.post(post.id);
         widget.post.value = post.copyWith(
           fileRaw: post.fileRaw.copyWith(url: replacement!.fileRaw.url),
           preview: post.preview.copyWith(url: replacement!.preview.url),

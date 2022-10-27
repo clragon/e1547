@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:e1547/interface/interface.dart';
 import 'package:flutter/foundation.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pub_semver/pub_semver.dart';
@@ -58,9 +57,13 @@ class AppInfo extends PackageInfo {
   Future<List<AppVersion>?> getVersions() async {
     if (kDebugMode) return null;
     if (_githubData == null) {
-      Dio dio = Dio(defaultDioOptions.copyWith(
-        baseUrl: 'https://api.github.com/',
-      ));
+      Dio dio = Dio(
+        BaseOptions(
+          baseUrl: 'https://api.github.com/',
+          sendTimeout: 30000,
+          connectTimeout: 30000,
+        ),
+      );
       try {
         List<dynamic> releases =
             await dio.get('repos/$github/releases').then((e) => e.data);

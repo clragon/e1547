@@ -87,6 +87,9 @@ class _ListenableListenerState extends State<ListenableListener> {
     if (_listenable != oldWidget.listenable) {
       oldWidget.listenable.removeListener(_handleChange);
       _listenable.addListener(_handleChange);
+      if (widget.initialize) {
+        _handleChange();
+      }
     }
   }
 

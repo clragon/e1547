@@ -6,6 +6,35 @@ import 'package:e1547/settings/settings.dart';
 import 'package:e1547/user/user.dart';
 import 'package:flutter/material.dart';
 
+class HostServiceProvider extends SubChangeNotifierProvider3<AppInfo, Settings,
+    EnvironmentPaths, HostService> {
+  HostServiceProvider({super.child, TransitionBuilder? builder})
+      : super(
+          create: (context, appInfo, settings, paths) => HostService(
+            defaultHost: 'e926.net',
+            allowedHosts: ['e621.net'],
+            host: settings.host.value,
+            customHost: settings.customHost.value,
+            credentials: settings.credentials.value,
+            appInfo: appInfo,
+            cachePath: paths.temporaryDirectory,
+          ),
+          builder: (context, child) => ListenableListener(
+            listenable: context.watch<HostService>(),
+            listener: () {
+              HostService service = context.read<HostService>();
+              Settings settings = context.read<Settings>();
+              settings.host.value = service.host;
+              settings.customHost.value = service.customHost;
+            },
+            child: ClientProvider(
+              builder: builder,
+              child: child,
+            ),
+          ),
+        );
+}
+
 class HistoriesServiceProvider
     extends SubChangeNotifierProvider<Settings, HistoriesService> {
   HistoriesServiceProvider({
@@ -20,7 +49,7 @@ class HistoriesServiceProvider
           ),
           selector: (context) => [path],
           builder: (context, child) => ListenableListener(
-            listenable: context.read<HistoriesService>(),
+            listenable: context.watch<HistoriesService>(),
             listener: () {
               HistoriesService service = context.read<HistoriesService>();
               Settings settings = context.read<Settings>();

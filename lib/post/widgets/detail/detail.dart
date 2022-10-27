@@ -20,6 +20,7 @@ class PostDetail extends StatefulWidget {
 
 class _PostDetailState extends State<PostDetail> with RouteAware {
   Post get post => widget.controller.value;
+
   set post(Post value) => widget.controller.value = value;
 
   @override
@@ -29,6 +30,11 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
           context.read<Client>().host,
           post,
         );
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     preloadPostImage(
       context: context,
       post: post,

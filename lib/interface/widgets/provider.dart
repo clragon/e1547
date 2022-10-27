@@ -23,7 +23,7 @@ class SubValueBuilder<T> extends StatefulWidget {
   final T Function(BuildContext context, T previous)? update;
 
   /// Used to decide when to recreate the value. If null, the value is never recreated.
-  final List<Object?> Function(BuildContext context)? selector;
+  final SubValueSelector? selector;
 
   /// Creates the child of this Widget with the value.
   final Widget Function(BuildContext context, T value) builder;
@@ -70,6 +70,8 @@ class _SubValueBuilderState<T> extends State<SubValueBuilder<T>> {
         _value = update(recreate(_value)),
       );
 }
+
+typedef SubValueSelector = List<Object?> Function(BuildContext context);
 
 typedef SubProviderCreate0<R> = R Function(BuildContext context);
 
@@ -210,7 +212,7 @@ class SubProvider<T, R> extends SubProvider0<R> {
     super.builder,
     required SubProviderCreate<T, R> create,
     SubProviderUpdate<T, R>? update,
-    super.selector,
+    SubValueSelector? selector,
     super.dispose,
   }) : super(
           create: (context) => create(
@@ -224,6 +226,8 @@ class SubProvider<T, R> extends SubProvider0<R> {
                     previous,
                   )
               : null,
+          selector: (context) =>
+              [Provider.of<T>(context), selector?.call(context)],
         );
 }
 
@@ -234,10 +238,10 @@ class SubProvider2<T, T2, R> extends SubProvider<T, R> {
     super.builder,
     required SubProviderCreate2<T, T2, R> create,
     SubProviderUpdate2<T, T2, R>? update,
-    super.selector,
+    SubValueSelector? selector,
     super.dispose,
   }) : super(
-          create: (context, value) => create(
+    create: (context, value) => create(
             context,
             value,
             Provider.of<T2>(context),
@@ -246,6 +250,8 @@ class SubProvider2<T, T2, R> extends SubProvider<T, R> {
               ? (context, value, previous) =>
                   update(context, value, Provider.of<T2>(context), previous)
               : null,
+          selector: (context) =>
+              [Provider.of<T2>(context), selector?.call(context)],
         );
 }
 
@@ -256,10 +262,10 @@ class SubProvider3<T, T2, T3, R> extends SubProvider2<T, T2, R> {
     super.builder,
     required SubProviderCreate3<T, T2, T3, R> create,
     SubProviderUpdate3<T, T2, T3, R>? update,
-    super.selector,
+    SubValueSelector? selector,
     super.dispose,
   }) : super(
-          create: (context, value, value2) => create(
+    create: (context, value, value2) => create(
             context,
             value,
             value2,
@@ -269,6 +275,8 @@ class SubProvider3<T, T2, T3, R> extends SubProvider2<T, T2, R> {
               ? (context, value, value2, previous) => update(
                   context, value, value2, Provider.of<T3>(context), previous)
               : null,
+          selector: (context) =>
+              [Provider.of<T3>(context), selector?.call(context)],
         );
 }
 
@@ -279,7 +287,7 @@ class SubProvider4<T, T2, T3, T4, R> extends SubProvider3<T, T2, T3, R> {
     super.builder,
     required SubProviderCreate4<T, T2, T3, T4, R> create,
     SubProviderUpdate4<T, T2, T3, T4, R>? update,
-    super.selector,
+    SubValueSelector? selector,
     super.dispose,
   }) : super(
           create: (context, value, value2, value3) => create(
@@ -293,6 +301,8 @@ class SubProvider4<T, T2, T3, T4, R> extends SubProvider3<T, T2, T3, R> {
               ? (context, value, value2, value3, previous) => update(context,
                   value, value2, value3, Provider.of<T4>(context), previous)
               : null,
+          selector: (context) =>
+              [Provider.of<T4>(context), selector?.call(context)],
         );
 }
 
@@ -304,7 +314,7 @@ class SubProvider5<T, T2, T3, T4, T5, R>
     super.builder,
     required SubProviderCreate5<T, T2, T3, T4, T5, R> create,
     SubProviderUpdate5<T, T2, T3, T4, T5, R>? update,
-    super.selector,
+    SubValueSelector? selector,
     super.dispose,
   }) : super(
           create: (context, value, value2, value3, value4) => create(
@@ -325,6 +335,8 @@ class SubProvider5<T, T2, T3, T4, T5, R>
                   Provider.of<T5>(context),
                   previous)
               : null,
+          selector: (context) =>
+              [Provider.of<T5>(context), selector?.call(context)],
         );
 }
 
@@ -336,7 +348,7 @@ class SubProvider6<T, T2, T3, T4, T5, T6, R>
     super.builder,
     required SubProviderCreate6<T, T2, T3, T4, T5, T6, R> create,
     SubProviderUpdate6<T, T2, T3, T4, T5, T6, R>? update,
-    super.selector,
+    SubValueSelector? selector,
     super.dispose,
   }) : super(
           create: (context, value, value2, value3, value4, value5) => create(
@@ -353,6 +365,8 @@ class SubProvider6<T, T2, T3, T4, T5, T6, R>
                   update(context, value, value2, value3, value4, value5,
                       Provider.of<T6>(context), previous)
               : null,
+          selector: (context) =>
+              [Provider.of<T6>(context), selector?.call(context)],
         );
 }
 
@@ -392,7 +406,7 @@ class SubChangeNotifierProvider<T, R extends ChangeNotifier>
     super.builder,
     required SubProviderCreate<T, R> create,
     SubProviderUpdate<T, R>? update,
-    super.selector,
+    SubValueSelector? selector,
   }) : super(
           create: (context) => create(
             context,
@@ -405,6 +419,8 @@ class SubChangeNotifierProvider<T, R extends ChangeNotifier>
                     previous,
                   )
               : null,
+          selector: (context) =>
+              [Provider.of<T>(context), selector?.call(context)],
         );
 }
 
@@ -416,9 +432,9 @@ class SubChangeNotifierProvider2<T, T2, R extends ChangeNotifier>
     super.builder,
     required SubProviderCreate2<T, T2, R> create,
     SubProviderUpdate2<T, T2, R>? update,
-    super.selector,
+    SubValueSelector? selector,
   }) : super(
-          create: (context, value) => create(
+    create: (context, value) => create(
             context,
             value,
             Provider.of<T2>(context),
@@ -427,6 +443,8 @@ class SubChangeNotifierProvider2<T, T2, R extends ChangeNotifier>
               ? (context, value, previous) =>
                   update(context, value, Provider.of<T2>(context), previous)
               : null,
+          selector: (context) =>
+              [Provider.of<T2>(context), selector?.call(context)],
         );
 }
 
@@ -438,9 +456,9 @@ class SubChangeNotifierProvider3<T, T2, T3, R extends ChangeNotifier>
     super.builder,
     required SubProviderCreate3<T, T2, T3, R> create,
     SubProviderUpdate3<T, T2, T3, R>? update,
-    super.selector,
+    SubValueSelector? selector,
   }) : super(
-          create: (context, value, value2) => create(
+    create: (context, value, value2) => create(
             context,
             value,
             value2,
@@ -450,6 +468,8 @@ class SubChangeNotifierProvider3<T, T2, T3, R extends ChangeNotifier>
               ? (context, value, value2, previous) => update(
                   context, value, value2, Provider.of<T3>(context), previous)
               : null,
+          selector: (context) =>
+              [Provider.of<T3>(context), selector?.call(context)],
         );
 }
 
@@ -461,7 +481,7 @@ class SubChangeNotifierProvider4<T, T2, T3, T4, R extends ChangeNotifier>
     super.builder,
     required SubProviderCreate4<T, T2, T3, T4, R> create,
     SubProviderUpdate4<T, T2, T3, T4, R>? update,
-    super.selector,
+    SubValueSelector? selector,
   }) : super(
           create: (context, value, value2, value3) => create(
             context,
@@ -474,6 +494,8 @@ class SubChangeNotifierProvider4<T, T2, T3, T4, R extends ChangeNotifier>
               ? (context, value, value2, value3, previous) => update(context,
                   value, value2, value3, Provider.of<T4>(context), previous)
               : null,
+          selector: (context) =>
+              [Provider.of<T4>(context), selector?.call(context)],
         );
 }
 
@@ -485,7 +507,7 @@ class SubChangeNotifierProvider5<T, T2, T3, T4, T5, R extends ChangeNotifier>
     super.builder,
     required SubProviderCreate5<T, T2, T3, T4, T5, R> create,
     SubProviderUpdate5<T, T2, T3, T4, T5, R>? update,
-    super.selector,
+    SubValueSelector? selector,
   }) : super(
           create: (context, value, value2, value3, value4) => create(
             context,
@@ -505,6 +527,8 @@ class SubChangeNotifierProvider5<T, T2, T3, T4, T5, R extends ChangeNotifier>
                   Provider.of<T5>(context),
                   previous)
               : null,
+          selector: (context) =>
+              [Provider.of<T5>(context), selector?.call(context)],
         );
 }
 
@@ -517,7 +541,7 @@ class SubChangeNotifierProvider6<T, T2, T3, T4, T5, T6,
     super.builder,
     required SubProviderCreate6<T, T2, T3, T4, T5, T6, R> create,
     SubProviderUpdate6<T, T2, T3, T4, T5, T6, R>? update,
-    super.selector,
+    SubValueSelector? selector,
   }) : super(
           create: (context, value, value2, value3, value4, value5) => create(
             context,
@@ -533,5 +557,7 @@ class SubChangeNotifierProvider6<T, T2, T3, T4, T5, T6,
                   update(context, value, value2, value3, value4, value5,
                       Provider.of<T6>(context), previous)
               : null,
+          selector: (context) =>
+              [Provider.of<T6>(context), selector?.call(context)],
         );
 }

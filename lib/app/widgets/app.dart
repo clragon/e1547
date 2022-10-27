@@ -1,5 +1,4 @@
 import 'package:e1547/app/app.dart';
-import 'package:e1547/client/client.dart';
 import 'package:e1547/denylist/denylist.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/interface/interface.dart';
@@ -19,7 +18,7 @@ class App extends StatelessWidget {
     return MultiProvider(
       providers: [
         AdaptiveScaffoldScope(),
-        ClientProvider(),
+        HostServiceProvider(),
         NavigationProvider(
           destinations: rootDestintations,
           drawerHeader: (context) => UserDrawerHeader(),

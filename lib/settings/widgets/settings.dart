@@ -36,33 +36,22 @@ class _SettingsPageState extends State<SettingsPage> {
                 .add(LimitedWidthLayout.of(context).padding),
             children: [
               const SettingsHeader(title: 'Server'),
-              TapRegion(
-                behavior: HitTestBehavior.translucent,
-                onLongPress: () => setCustomHost(context),
-                child: AnimatedBuilder(
-                  animation: Listenable.merge([
-                    settings.host,
-                    settings.customHost,
-                  ]),
-                  builder: (context, child) {
-                    bool useCustomHost =
-                        settings.host.value == settings.customHost.value;
-                    return SwitchListTile(
-                      title: const Text('Host'),
-                      subtitle: Text(settings.host.value),
-                      secondary: const Icon(Icons.storage),
-                      value: useCustomHost,
-                      onChanged: (value) async {
-                        if (settings.customHost.value == null) {
-                          await setCustomHost(context);
-                        }
-                        if (settings.customHost.value != null) {
-                          settings.host.value =
-                              value ? settings.customHost.value! : 'e926.net';
-                        }
-                      },
-                    );
-                  },
+              Consumer<HostService>(
+                builder: (context, service, child) => TapRegion(
+                  behavior: HitTestBehavior.translucent,
+                  onLongPress: () => setCustomHost(context),
+                  child: SwitchListTile(
+                    title: const Text('Host'),
+                    subtitle: Text(service.host),
+                    secondary: const Icon(Icons.storage),
+                    value: service.isCustomHost,
+                    onChanged: (value) async {
+                      if (!service.hasCustomHost) {
+                        await setCustomHost(context);
+                      }
+                      service.useCustomHost(value);
+                    },
+                  ),
                 ),
               ),
               Consumer<Client>(

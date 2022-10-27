@@ -1,3 +1,4 @@
+import 'package:e1547/client/client.dart';
 import 'package:e1547/history/history.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
@@ -6,6 +7,7 @@ class HistoriesController extends DataController<History>
     with RefreshableController {
   HistoriesController({
     required this.service,
+    required this.client,
     HistoriesSearch? search,
   }) : search = ValueNotifier(
           search ??
@@ -16,6 +18,7 @@ class HistoriesController extends DataController<History>
         );
 
   final HistoriesService service;
+  final Client client;
 
   final ValueNotifier<HistoriesSearch> search;
 
@@ -32,6 +35,7 @@ class HistoriesController extends DataController<History>
 
   @override
   Future<List<History>> provide(int page, bool force) => service.page(
+    host: client.host,
         page: page,
         day: search.value.date,
         linkRegex: search.value.buildLinkFilter(),
@@ -60,15 +64,16 @@ class HistoriesController extends DataController<History>
   }
 }
 
-class HistoriesProvider
-    extends SubChangeNotifierProvider<HistoriesService, HistoriesController> {
+class HistoriesProvider extends SubChangeNotifierProvider2<HistoriesService,
+    Client, HistoriesController> {
   HistoriesProvider({HistoriesSearch? search, super.child, super.builder})
       : super(
-          create: (context, service) => HistoriesController(
+          create: (context, service, client) => HistoriesController(
             service: service,
+            client: client,
             search: search,
           ),
-          update: (context, service, controller) {
+          update: (context, service, client, controller) {
             if (search != null) {
               controller.search.value = search;
             }

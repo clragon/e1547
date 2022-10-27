@@ -19,12 +19,16 @@ class _FavPageState extends State<FavPage> with DrawerEntry {
       child: Consumer<FavoritePostsController>(
         builder: (context, controller, child) => ListenableListener(
           listener: () async {
-            await controller.waitForFirstPage();
-            await context.read<HistoriesService>().addPostSearch(
-                  context.read<Client>().host,
-                  controller.search.value,
-                  posts: controller.itemList,
-                );
+            try {
+              await controller.waitForFirstPage();
+              await context.read<HistoriesService>().addPostSearch(
+                    context.read<Client>().host,
+                    controller.search.value,
+                    posts: controller.itemList,
+                  );
+            } on NoUserLoginException {
+              // in case of no login, we create no history entry.
+            }
           },
           listenable: controller.search,
           child: PageLoader(

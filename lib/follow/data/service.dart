@@ -19,10 +19,15 @@ class FollowsService extends DataUpdater with DataLock<List<Follow>> {
         _denylist = denylist,
         _source = source {
     _source.addListener(notifyListeners);
-    _client.addListener(notifyListeners);
   }
 
-  final Client _client;
+  Client _client;
+
+  set client(Client value) {
+    _client = value;
+    restart();
+  }
+
   final DenylistService _denylist;
   final ValueNotifier<List<Follow>> _source;
   late final SelectedValueNotifier<List<Follow>> _restarter =
@@ -46,13 +51,12 @@ class FollowsService extends DataUpdater with DataLock<List<Follow>> {
   @override
   void dispose() {
     _source.removeListener(notifyListeners);
-    _client.removeListener(notifyListeners);
     super.dispose();
   }
 
   @override
   List<Listenable> getRefreshListeners() =>
-      super.getRefreshListeners()..addAll([_client, _restarter]);
+      super.getRefreshListeners()..addAll([_restarter]);
 
   bool _compare(List<Follow> old, List<Follow> value) {
     return old.length == value.length &&
@@ -222,14 +226,16 @@ class SelectedValueNotifier<T> extends ValueNotifier<T> {
   }
 }
 
-class FollowsProvider extends SubChangeNotifierProvider3<Client,
-    DenylistService, Settings, FollowsService> {
+class FollowsProvider extends SubChangeNotifierProvider2<DenylistService,
+    Settings, FollowsService> {
   FollowsProvider()
       : super(
-          create: (context, client, denylist, settings) => FollowsService(
-            client: client,
+          create: (context, denylist, settings) => FollowsService(
+            client: context.read<Client>(),
             denylist: denylist,
             source: settings.follows,
           ),
+          update: (context, denylist, settings, service) =>
+              service..client = context.watch<Client>(),
         );
 }

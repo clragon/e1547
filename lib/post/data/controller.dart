@@ -75,11 +75,6 @@ class PostsController extends DataController<Post>
   final ValueNotifier<String> search;
   final bool canSearch;
 
-  @override
-  @protected
-  List<Listenable> getRefreshListeners() =>
-      super.getRefreshListeners()..add(client);
-
   late final List<Listenable> _filterNotifiers = [denylist];
 
   @override

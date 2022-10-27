@@ -4,7 +4,6 @@ import 'dart:math';
 
 import 'package:dio/dio.dart';
 import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
-import 'package:dio_cache_interceptor_db_store/dio_cache_interceptor_db_store.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/comment/comment.dart';
 import 'package:e1547/interface/interface.dart';
@@ -16,38 +15,45 @@ import 'package:e1547/tag/tag.dart';
 import 'package:e1547/topic/topic.dart';
 import 'package:e1547/user/user.dart';
 import 'package:e1547/wiki/wiki.dart';
-import 'package:flutter/material.dart';
-import 'package:path/path.dart';
-import 'package:path_provider/path_provider.dart';
 
 export 'package:dio/dio.dart' show DioError;
 
-class Client extends ChangeNotifier {
-  Client({required AppInfo appInfo, required Settings settings})
-      : _appInfo = appInfo,
-        _settings = settings {
-    _settings.host.addListener(_initialize);
-    _settings.credentials.addListener(_initialize);
-    _initialize();
+class Client {
+  Client({
+    required this.host,
+    required this.appInfo,
+    required this.cache,
+    this.credentials,
+  }) {
+    _dio = Dio(
+      BaseOptions(
+        baseUrl: 'https://$host/',
+        headers: {
+          HttpHeaders.userAgentHeader:
+              '${appInfo.appName}/${appInfo.version} (${appInfo.developer})',
+          if (credentials != null)
+            HttpHeaders.authorizationHeader: credentials!.basicAuth,
+        },
+        sendTimeout: 30000,
+        connectTimeout: 30000,
+      ),
+    );
+    _dio.interceptors.add(
+      CacheInterceptor(
+        options: _defaultCacheOptions.copyWith(
+          store: cache,
+        ),
+      ),
+    );
   }
 
-  final AppInfo _appInfo;
-  final Settings _settings;
-
-  String get host => _settings.host.value;
-
-  Credentials? get credentials => _settings.credentials.value;
+  final String host;
+  final AppInfo appInfo;
+  final CacheStore cache;
+  final CacheStore _memoryCache = MemCacheStore();
+  final Credentials? credentials;
 
   late Dio _dio;
-  late final Future<CacheStore> _cache = _getDefaultCache();
-  final CacheStore _memoryCache = MemCacheStore();
-
-  Future<CacheStore> _getDefaultCache() async => DbCacheStore(
-        databasePath: join(
-          (await getTemporaryDirectory()).path,
-          _appInfo.appName,
-        ),
-      );
 
   final CacheConfig _defaultCacheOptions = CacheConfig(
     maxAge: const Duration(minutes: 5),
@@ -68,79 +74,10 @@ class Client extends ChangeNotifier {
           )
           .toOptions();
 
-  late Future<void> _initialized;
-
-  Future<void> _initialize() async {
-    Completer completer = Completer();
-    _initialized = completer.future;
-    String host = 'https://${_settings.host.value}/';
-    Credentials? credentials = _settings.credentials.value;
-    _dio = Dio(
-      defaultDioOptions.copyWith(
-        baseUrl: host,
-        headers: {
-          HttpHeaders.userAgentHeader:
-              '${_appInfo.appName}/${_appInfo.version} (${_appInfo.developer})',
-          if (credentials != null)
-            HttpHeaders.authorizationHeader: credentials.basicAuth,
-        },
-      ),
-    );
-    currentUser(force: true);
-
-    _dio.interceptors.add(
-      CacheInterceptor(
-        options: _defaultCacheOptions.copyWith(
-          store: await _cache,
-        ),
-      ),
-    );
-    _dio.interceptors.add(
-      AuthFailureInterceptor(
-        onAuthFailure: (credentials) {
-          if (credentials == this.credentials) {
-            logout();
-          }
-        },
-      ),
-    );
-    notifyListeners();
-    completer.complete();
-  }
-
   bool get hasLogin => credentials != null;
 
-  Future<bool> get isLoggedIn async {
-    await _initialized;
-    return hasLogin;
-  }
-
-  Future<bool> tryLogin(Credentials credentials) async {
-    return validateCall(
-      () async => _dio.get(
-        'favorites.json',
-        options: Options(
-          headers: {
-            HttpHeaders.authorizationHeader: credentials.basicAuth,
-          },
-        ),
-      ),
-    );
-  }
-
-  Future<bool> login(Credentials credentials) async {
-    if (await tryLogin(credentials)) {
-      _settings.credentials.value = credentials;
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  Future<void> logout() async => _settings.credentials.value = null;
-
-  Future<void> ensureLogin() async {
-    if (!await isLoggedIn) {
+  void ensureLogin() {
+    if (!hasLogin) {
       throw StateError('User is not logged in!');
     }
   }
@@ -171,7 +108,6 @@ class Client extends ChangeNotifier {
     String? search,
     bool? force,
   }) async {
-    await _initialized;
     String? tags = search != null ? sortTags(search) : '';
     Map body = await _dio
         .get(
@@ -226,7 +162,6 @@ class Client extends ChangeNotifier {
     bool? orderFavorites,
     bool? force,
   }) async {
-    await _initialized;
     Map<RegExp, Future<List<Post>> Function(RegExpMatch match)> redirects = {
       poolRegex(): (match) => poolPosts(
             int.parse(match.namedGroup('id')!),
@@ -249,11 +184,10 @@ class Client extends ChangeNotifier {
     return postsRaw(page, search: search, limit: limit, force: force);
   }
 
-  Future<Post> post(int postId, {bool unsafe = false, bool? force}) async {
-    await _initialized;
+  Future<Post> post(int postId, {bool? force}) async {
     Map<String, dynamic> body = await _dio
         .get(
-          '${unsafe ? 'https://${_settings.customHost.value}/' : ''}posts/$postId.json',
+          'posts/$postId.json',
           options: _options(force: force),
         )
         .then((response) => response.data);
@@ -262,7 +196,7 @@ class Client extends ChangeNotifier {
   }
 
   Future<void> updatePost(int postId, Map<String, String?> body) async {
-    await (await _cache).deleteFromPath(
+    await cache.deleteFromPath(
       RegExp(RegExp.escape('posts/$postId.json')),
     );
 
@@ -270,10 +204,9 @@ class Client extends ChangeNotifier {
   }
 
   Future<void> votePost(int postId, bool upvote, bool replace) async {
-    await ensureLogin();
+    ensureLogin();
 
-    await (await _cache)
-        .deleteFromPath(RegExp(RegExp.escape('posts/$postId.json')));
+    await cache.deleteFromPath(RegExp(RegExp.escape('posts/$postId.json')));
 
     await _dio.post('posts/$postId/votes.json', queryParameters: {
       'score': upvote ? 1 : -1,
@@ -282,7 +215,6 @@ class Client extends ChangeNotifier {
   }
 
   Future<void> reportPost(int postId, int reportId, String reason) async {
-    await _initialized;
     await _dio.post(
       'tickets',
       queryParameters: {
@@ -298,7 +230,6 @@ class Client extends ChangeNotifier {
   }
 
   Future<void> flagPost(int postId, String flag, {int? parent}) async {
-    await _initialized;
     await _dio.post(
       'post_flags.json',
       queryParameters: {
@@ -311,7 +242,6 @@ class Client extends ChangeNotifier {
   }
 
   Future<List<Post>> favorites(int page, {int? limit, bool? force}) async {
-    await _initialized;
     Map body = await _dio
         .get(
           'favorites.json',
@@ -327,19 +257,17 @@ class Client extends ChangeNotifier {
   }
 
   Future<void> addFavorite(int postId) async {
-    await ensureLogin();
+    ensureLogin();
 
-    await (await _cache)
-        .deleteFromPath(RegExp(RegExp.escape('posts/$postId.json')));
+    await cache.deleteFromPath(RegExp(RegExp.escape('posts/$postId.json')));
 
     await _dio.post('favorites.json', queryParameters: {'post_id': postId});
   }
 
   Future<void> removeFavorite(int postId) async {
-    await ensureLogin();
+    ensureLogin();
 
-    await (await _cache)
-        .deleteFromPath(RegExp(RegExp.escape('posts/$postId.json')));
+    await cache.deleteFromPath(RegExp(RegExp.escape('posts/$postId.json')));
 
     await _dio.delete('favorites/$postId.json');
   }
@@ -454,7 +382,6 @@ class Client extends ChangeNotifier {
   }
 
   Future<List<Wiki>> wikis(int page, {String? search, bool? force}) async {
-    await _initialized;
     List<dynamic> body = await _dio
         .get(
           'wiki_pages.json',
@@ -473,7 +400,6 @@ class Client extends ChangeNotifier {
   }
 
   Future<Wiki> wiki(String name, {bool? force}) async {
-    await _initialized;
     Map<String, dynamic> body = await _dio
         .get(
           'wiki_pages/$name.json',
@@ -485,7 +411,6 @@ class Client extends ChangeNotifier {
   }
 
   Future<User> user(String name, {bool? force}) async {
-    await _initialized;
     Map<String, dynamic> body = await _dio
         .get(
           'users/$name.json',
@@ -497,7 +422,6 @@ class Client extends ChangeNotifier {
   }
 
   Future<void> reportUser(int userId, String reason) async {
-    await _initialized;
     await _dio.post(
       'tickets',
       queryParameters: {
@@ -509,7 +433,7 @@ class Client extends ChangeNotifier {
   }
 
   Future<CurrentUser?> currentUser({bool? force}) async {
-    if (!await isLoggedIn) {
+    if (!hasLogin) {
       return null;
     }
 
@@ -552,7 +476,6 @@ class Client extends ChangeNotifier {
   }
 
   Future<List<Tag>> tags(String search, {int? category, bool? force}) async {
-    await _initialized;
     final body = await _dio
         .get(
           'tags.json',
@@ -579,7 +502,6 @@ class Client extends ChangeNotifier {
     int? category,
     bool? force,
   }) async {
-    await _initialized;
     if (category == null) {
       if (search.length < 3) {
         return [];
@@ -626,7 +548,6 @@ class Client extends ChangeNotifier {
   }
 
   Future<List<Comment>> comments(int postId, String page, {bool? force}) async {
-    await _initialized;
     final body = await _dio
         .get(
           'comments.json',
@@ -653,7 +574,7 @@ class Client extends ChangeNotifier {
   }
 
   Future<Comment> comment(int commentId, {bool? force}) async {
-    await ensureLogin();
+    ensureLogin();
 
     Map<String, dynamic> body = await _dio
         .get(
@@ -666,8 +587,8 @@ class Client extends ChangeNotifier {
   }
 
   Future<void> postComment(int postId, String text) async {
-    await ensureLogin();
-    await (await _cache).deleteFromPath(
+    ensureLogin();
+    await cache.deleteFromPath(
       RegExp(RegExp.escape('comments.json')),
       queryParams: {'search[post_id]': postId.toString()},
     );
@@ -682,13 +603,13 @@ class Client extends ChangeNotifier {
   }
 
   Future<void> updateComment(int commentId, int postId, String text) async {
-    await ensureLogin();
-    await (await _cache).deleteFromPath(
+    ensureLogin();
+    await cache.deleteFromPath(
       RegExp(RegExp.escape('comments.json')),
       queryParams: {'search[post_id]': postId.toString()},
     );
 
-    await (await _cache).deleteFromPath(
+    await cache.deleteFromPath(
       RegExp(RegExp.escape('comments/$commentId.json')),
     );
 
@@ -702,8 +623,7 @@ class Client extends ChangeNotifier {
   }
 
   Future<void> voteComment(int commentId, bool upvote, bool replace) async {
-    await ensureLogin();
-
+    ensureLogin();
     await _dio.post(
       'comments/$commentId/votes.json',
       queryParameters: {
@@ -714,7 +634,7 @@ class Client extends ChangeNotifier {
   }
 
   Future<void> reportComment(int commentId, String reason) async {
-    await ensureLogin();
+    ensureLogin();
     await _dio.post(
       'tickets',
       queryParameters: {
@@ -759,7 +679,6 @@ class Client extends ChangeNotifier {
   }
 
   Future<Topic> topic(int topicId, {bool? force}) async {
-    await _initialized;
     Map<String, dynamic> body = await _dio
         .get(
           'forum_topics/$topicId.json',
@@ -771,7 +690,6 @@ class Client extends ChangeNotifier {
   }
 
   Future<List<Reply>> replies(int topicId, String page, {bool? force}) async {
-    await _initialized;
     final body = await _dio
         .get(
           'forum_posts.json',
@@ -798,7 +716,6 @@ class Client extends ChangeNotifier {
   }
 
   Future<Reply> reply(int replyId, {bool? force}) async {
-    await _initialized;
     Map<String, dynamic> body = await _dio
         .get(
           'forum_posts/$replyId.json',
@@ -810,11 +727,27 @@ class Client extends ChangeNotifier {
   }
 }
 
-class ClientProvider
-    extends SubChangeNotifierProvider2<AppInfo, Settings, Client> {
-  ClientProvider()
+Future<bool> validateCall(Future<void> Function() call) async {
+  try {
+    await call();
+    return true;
+  } on DioError {
+    return false;
+  }
+}
+
+class ClientProvider extends SubProvider<HostService, Client> {
+  ClientProvider({super.child, super.builder})
       : super(
-          create: (context, appInfo, settings) =>
-              Client(appInfo: appInfo, settings: settings),
+          create: (context, config) => Client(
+            host: config.host,
+            credentials: config.credentials,
+            appInfo: config.appInfo,
+            cache: config.cache,
+          ),
+          selector: (context) {
+            HostService config = context.watch<HostService>();
+            return [config.host, config.credentials];
+          },
         );
 }

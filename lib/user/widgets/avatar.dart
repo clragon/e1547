@@ -56,7 +56,7 @@ class CurrentUserAvatarProvider
             return null;
           },
           dispose: (context, value) async => (await value)?.dispose(),
-          selector: (context) => [context.read<Client>().credentials],
+          selector: (context) => [context.watch<Client>().credentials],
         );
 }
 

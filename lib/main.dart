@@ -16,16 +16,18 @@ Future<void> main() async {
   FlutterError.onError =
       (details) => talker.handle(details.exception, details.stack);
   await initializeSql();
+  WindowManager? windowManager = await initializeWindowManager();
   AppInfo appInfo = await initializeAppInfo();
   Settings settings = await initializeSettings();
-  WindowManager? windowManager = await initializeWindowManager();
+  EnvironmentPaths paths = await initializeEnvironmentPaths();
   runApp(
     MultiProvider(
       providers: [
         if (windowManager != null) Provider.value(value: windowManager),
+        Provider.value(value: talker),
         Provider.value(value: appInfo),
         Provider.value(value: settings),
-        Provider.value(value: talker),
+        Provider.value(value: paths),
       ],
       child: const App(),
     ),
