@@ -1,3 +1,5 @@
+import 'package:e1547/client/client.dart';
+import 'package:e1547/history/history.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
@@ -46,4 +48,44 @@ class _PostControllerConnectorState extends State<PostControllerConnector> {
         listenable: widget.controller,
         child: widget.child,
       );
+}
+
+class PostHistoryConnector extends StatefulWidget {
+  const PostHistoryConnector({
+    super.key,
+    required this.post,
+    required this.child,
+  });
+
+  final Post post;
+  final Widget child;
+
+  @override
+  State<PostHistoryConnector> createState() => _PostHistoryConnectorState();
+}
+
+class _PostHistoryConnectorState extends State<PostHistoryConnector> {
+  void addToHistory(Post post) {
+    context.read<HistoriesService>().addPost(
+          context.read<Client>().host,
+          widget.post,
+        );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    addToHistory(widget.post);
+  }
+
+  @override
+  void didUpdateWidget(covariant PostHistoryConnector oldWidget) {
+    if (oldWidget.post != widget.post) {
+      addToHistory(widget.post);
+    }
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.child;
 }

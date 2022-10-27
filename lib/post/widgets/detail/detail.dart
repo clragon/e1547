@@ -1,6 +1,5 @@
 import 'package:e1547/client/client.dart';
 import 'package:e1547/comment/comment.dart';
-import 'package:e1547/history/history.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
@@ -18,19 +17,10 @@ class PostDetail extends StatefulWidget {
   State<StatefulWidget> createState() => _PostDetailState();
 }
 
-class _PostDetailState extends State<PostDetail> with RouteAware {
+class _PostDetailState extends State<PostDetail> {
   Post get post => widget.controller.value;
 
   set post(Post value) => widget.controller.value = value;
-
-  @override
-  void initState() {
-    super.initState();
-    context.read<HistoriesService>().addPost(
-          context.read<Client>().host,
-          post,
-        );
-  }
 
   @override
   void didChangeDependencies() {
@@ -265,73 +255,77 @@ class _PostDetailState extends State<PostDetail> with RouteAware {
 
   @override
   Widget build(BuildContext context) {
-    return PostVideoRoute(
-      post: post,
-      child: AnimatedBuilder(
-        animation: widget.controller,
-        builder: (context, child) => PostEditor(
+    return AnimatedBuilder(
+      animation: widget.controller,
+      builder: (context, child) => PostVideoRoute(
+        post: post,
+        child: PostHistoryConnector(
           post: post,
-          child: Scaffold(
-            extendBodyBehindAppBar: true,
-            appBar: PostDetailAppBar(controller: widget.controller),
-            floatingActionButton: context.read<Client>().hasLogin
-                ? PostDetailFloatingActionButton(controller: widget.controller)
-                : null,
-            body: MediaQuery.removeViewInsets(
-              context: context,
-              removeTop: true,
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  if (constraints.maxWidth < 1000) {
-                    return ListView(
-                      primary: true,
-                      padding: EdgeInsets.only(
-                        top: MediaQuery.of(context).padding.top,
-                        bottom: kBottomNavigationBarHeight + 24,
-                      ),
-                      children: [
-                        image(context, constraints),
-                        singleBody(context),
-                      ],
-                    );
-                  } else {
-                    double sideBarWidth;
-                    if (constraints.maxWidth > 1400) {
-                      sideBarWidth = 404;
+          child: PostEditor(
+            post: post,
+            child: Scaffold(
+              extendBodyBehindAppBar: true,
+              appBar: PostDetailAppBar(controller: widget.controller),
+              floatingActionButton: context.read<Client>().hasLogin
+                  ? PostDetailFloatingActionButton(
+                      controller: widget.controller)
+                  : null,
+              body: MediaQuery.removeViewInsets(
+                context: context,
+                removeTop: true,
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    if (constraints.maxWidth < 1000) {
+                      return ListView(
+                        primary: true,
+                        padding: EdgeInsets.only(
+                          top: MediaQuery.of(context).padding.top,
+                          bottom: kBottomNavigationBarHeight + 24,
+                        ),
+                        children: [
+                          image(context, constraints),
+                          singleBody(context),
+                        ],
+                      );
                     } else {
-                      sideBarWidth = 304;
-                    }
-                    return Row(
-                      children: [
-                        Expanded(
-                          child: commentWrapper(
-                            context,
-                            [
-                              image(context, constraints),
-                              secondaryBody(context),
-                            ],
-                          ),
-                        ),
-                        SizedBox(
-                          width: sideBarWidth,
-                          child: ListView(
-                            primary: false,
-                            padding: EdgeInsets.only(
-                              top: MediaQuery.of(context).padding.top,
-                              bottom: defaultActionListPadding.bottom,
+                      double sideBarWidth;
+                      if (constraints.maxWidth > 1400) {
+                        sideBarWidth = 404;
+                      } else {
+                        sideBarWidth = 304;
+                      }
+                      return Row(
+                        children: [
+                          Expanded(
+                            child: commentWrapper(
+                              context,
+                              [
+                                image(context, constraints),
+                                secondaryBody(context),
+                              ],
                             ),
-                            children: [
-                              const SizedBox(
-                                height: 56,
-                              ),
-                              sideBarBody(context),
-                            ],
                           ),
-                        ),
-                      ],
-                    );
-                  }
-                },
+                          SizedBox(
+                            width: sideBarWidth,
+                            child: ListView(
+                              primary: false,
+                              padding: EdgeInsets.only(
+                                top: MediaQuery.of(context).padding.top,
+                                bottom: defaultActionListPadding.bottom,
+                              ),
+                              children: [
+                                const SizedBox(
+                                  height: 56,
+                                ),
+                                sideBarBody(context),
+                              ],
+                            ),
+                          ),
+                        ],
+                      );
+                    }
+                  },
+                ),
               ),
             ),
           ),

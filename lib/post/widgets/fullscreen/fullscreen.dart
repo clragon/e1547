@@ -15,11 +15,17 @@ class PostFullscreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return PostFullscreenFrame(
-      post: controller.value,
-      visible: showFrame,
-      child: PostFullscreenBody(
-        controller: controller,
+    return AnimatedBuilder(
+      animation: controller,
+      builder: (context, child) => PostHistoryConnector(
+        post: controller.value,
+        child: PostFullscreenFrame(
+          post: controller.value,
+          visible: showFrame,
+          child: PostFullscreenBody(
+            controller: controller,
+          ),
+        ),
       ),
     );
   }
