@@ -73,16 +73,30 @@ class _PostDetailState extends State<PostDetail> {
           children: [
             ArtistDisplay(post: post),
             DescriptionDisplay(post: post),
-            LikeDisplay(controller: widget.controller),
           ],
         ),
       );
 
-  Widget commentButton(BuildContext context) => Padding(
+  Widget upperBodyExtension(BuildContext context) => Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 20,
+        ),
+        child: LikeDisplay(controller: widget.controller),
+      );
+
+  Widget middleBody(BuildContext context) => Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: PostEditorChild(
-          shown: false,
-          child: CommentDisplay(post: post),
+        child: Column(
+          children: [
+            PostEditorChild(
+              shown: false,
+              child: LikeDisplay(controller: widget.controller),
+            ),
+            PostEditorChild(
+              shown: false,
+              child: CommentDisplay(post: post),
+            ),
+          ],
         ),
       );
 
@@ -149,7 +163,7 @@ class _PostDetailState extends State<PostDetail> {
                         children: [
                           image(context, constraints),
                           upperBody(context),
-                          commentButton(context),
+                          middleBody(context),
                           lowerBody(context),
                         ],
                       );
@@ -168,6 +182,7 @@ class _PostDetailState extends State<PostDetail> {
                               children: [
                                 image(context, constraints),
                                 upperBody(context),
+                                upperBodyExtension(context),
                               ],
                             ),
                           ),
@@ -232,65 +247,68 @@ class PostDetailCommentsWrapper extends StatelessWidget {
               ),
             ),
             SliverToBoxAdapter(
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 4,
-                      vertical: 2,
-                    ),
-                    child: Row(
-                      children: [
-                        const Expanded(
-                          child: Text(
-                            'Comments',
-                            style: TextStyle(
-                              fontSize: 16,
-                            ),
-                          ),
-                        ),
-                        PopupMenuButton<VoidCallback>(
-                          icon: const Icon(Icons.more_vert),
-                          onSelected: (value) => value(),
-                          itemBuilder: (context) => [
-                            PopupMenuTile(
-                              title: 'Refresh',
-                              icon: Icons.refresh,
-                              value: () => controller.refresh(force: true),
-                            ),
-                            PopupMenuTile(
-                              icon: Icons.sort,
-                              title: controller.orderByOldest.value
-                                  ? 'Newest first'
-                                  : 'Oldest first',
-                              value: () => controller.orderByOldest.value =
-                                  !controller.orderByOldest.value,
-                            ),
-                            PopupMenuTile(
-                              title: 'Comment',
-                              icon: Icons.comment,
-                              value: () => guardWithLogin(
-                                context: context,
-                                callback: () async {
-                                  if (await writeComment(
-                                      context: context, postId: post.id)) {
-                                    post = post.copyWith(
-                                      commentCount: post.commentCount + 1,
-                                    );
-                                  }
-                                },
-                                error: 'You must be logged in to comment!',
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 4,
+                        vertical: 2,
+                      ),
+                      child: Row(
+                        children: [
+                          const Expanded(
+                            child: Text(
+                              'Comments',
+                              style: TextStyle(
+                                fontSize: 16,
                               ),
                             ),
-                          ],
-                        ),
-                      ],
+                          ),
+                          PopupMenuButton<VoidCallback>(
+                            icon: const Icon(Icons.more_vert),
+                            onSelected: (value) => value(),
+                            itemBuilder: (context) => [
+                              PopupMenuTile(
+                                title: 'Refresh',
+                                icon: Icons.refresh,
+                                value: () => controller.refresh(force: true),
+                              ),
+                              PopupMenuTile(
+                                icon: Icons.sort,
+                                title: controller.orderByOldest.value
+                                    ? 'Newest first'
+                                    : 'Oldest first',
+                                value: () => controller.orderByOldest.value =
+                                    !controller.orderByOldest.value,
+                              ),
+                              PopupMenuTile(
+                                title: 'Comment',
+                                icon: Icons.comment,
+                                value: () => guardWithLogin(
+                                  context: context,
+                                  callback: () async {
+                                    if (await writeComment(
+                                        context: context, postId: post.id)) {
+                                      post = post.copyWith(
+                                        commentCount: post.commentCount + 1,
+                                      );
+                                    }
+                                  },
+                                  error: 'You must be logged in to comment!',
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  const SizedBox(
-                    height: 16,
-                  ),
-                ],
+                    const SizedBox(
+                      height: 16,
+                    ),
+                  ],
+                ),
               ),
             ),
             SliverPadding(
