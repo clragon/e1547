@@ -49,8 +49,14 @@ class _PoolsPageState extends State<PoolsPage> with DrawerEntry {
             ),
             drawer: const NavigationDrawer(),
             controller: controller,
-            builder: (context, child) => TileLayout(
-              tileSize: context.watch<Settings>().tileSize.value,
+            builder: (context, child) => AnimatedBuilder(
+              animation: context.watch<Settings>().tileSize,
+              builder: (context, child) {
+                return TileLayout(
+                  tileSize: context.watch<Settings>().tileSize.value,
+                  child: child!,
+                );
+              },
               child: child,
             ),
             child: (context) => PagedMasonryGridView<int, Pool>.count(
@@ -90,16 +96,16 @@ class PoolThumbnailProvider extends SubChangeNotifierProvider2<PoolsController,
     DenylistService, ExtraPostsController> {
   PoolThumbnailProvider({super.child, super.builder})
       : super(
-    create: (context, controller, denylist) =>
-        ExtraPostsController<int, Pool>(
-          client: controller.client,
-          denylist: denylist,
-          parent: controller,
-          getIds: (items) => (items
-              .map((e) => e.postIds.isNotEmpty ? e.postIds.first : null)
-              .toList()
-            ..removeWhere((e) => e == null))
-              .cast<int>(),
-        ),
-  );
+          create: (context, controller, denylist) =>
+              ExtraPostsController<int, Pool>(
+            client: controller.client,
+            denylist: denylist,
+            parent: controller,
+            getIds: (items) => (items
+                    .map((e) => e.postIds.isNotEmpty ? e.postIds.first : null)
+                    .toList()
+                  ..removeWhere((e) => e == null))
+                .cast<int>(),
+          ),
+        );
 }
