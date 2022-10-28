@@ -185,6 +185,8 @@ class _RefreshablePageState extends State<RefreshablePage> {
         context,
         Builder(
           builder: (context) => SmartRefresher(
+            // Fix for SmartRefresher.didUpdateWidget accessing properties on disposed controllers
+            key: ValueKey(refreshController),
             controller: refreshController,
             onRefresh: widget.refresh,
             header:
