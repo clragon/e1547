@@ -64,79 +64,7 @@ class _PostDetailState extends State<PostDetail> {
         ),
       );
 
-  Widget singleBody(BuildContext context) => Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Column(
-          children: [
-            ArtistDisplay(post: post),
-            DescriptionDisplay(post: post),
-            PostEditorChild(
-              shown: false,
-              child: LikeDisplay(controller: widget.controller),
-            ),
-            PostEditorChild(
-              shown: false,
-              child: CommentDisplay(post: post),
-            ),
-            RelationshipDisplay(post: post),
-            PostEditorChild(
-              shown: false,
-              child: PoolDisplay(post: post),
-            ),
-            PostEditorChild(
-              shown: false,
-              child: DenylistTagDisplay(controller: widget.controller),
-            ),
-            TagDisplay(post: widget.controller.value),
-            PostEditorChild(
-              shown: false,
-              child: FileDisplay(
-                post: post,
-              ),
-            ),
-            PostEditorChild(
-              shown: true,
-              child: RatingDisplay(
-                post: post,
-              ),
-            ),
-            SourceDisplay(post: post),
-          ],
-        ),
-      );
-
-  Widget sideBarBody(BuildContext context) => Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Column(
-          children: [
-            RelationshipDisplay(post: post),
-            PostEditorChild(
-              shown: false,
-              child: PoolDisplay(post: post),
-            ),
-            PostEditorChild(
-              shown: false,
-              child: DenylistTagDisplay(controller: widget.controller),
-            ),
-            TagDisplay(post: widget.controller.value),
-            PostEditorChild(
-              shown: false,
-              child: FileDisplay(
-                post: post,
-              ),
-            ),
-            PostEditorChild(
-              shown: true,
-              child: RatingDisplay(
-                post: post,
-              ),
-            ),
-            SourceDisplay(post: post),
-          ],
-        ),
-      );
-
-  Widget secondaryBody(BuildContext context) => Padding(
+  Widget upperBody(BuildContext context) => Padding(
         padding: const EdgeInsets.symmetric(
           horizontal: 20,
         ),
@@ -146,110 +74,46 @@ class _PostDetailState extends State<PostDetail> {
             ArtistDisplay(post: post),
             DescriptionDisplay(post: post),
             LikeDisplay(controller: widget.controller),
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 4,
-                vertical: 2,
-              ),
-              child: Row(
-                children: [
-                  const Expanded(
-                    child: Text(
-                      'Comments',
-                      style: TextStyle(
-                        fontSize: 16,
-                      ),
-                    ),
-                  ),
-                  PopupMenuButton<VoidCallback>(
-                    icon: const Icon(Icons.more_vert),
-                    onSelected: (value) => value(),
-                    itemBuilder: (context) => [
-                      PopupMenuTile(
-                        title: 'Refresh',
-                        icon: Icons.refresh,
-                        value: () => context
-                            .read<CommentsController>()
-                            .refresh(force: true),
-                      ),
-                      PopupMenuTile(
-                        icon: Icons.sort,
-                        title: context
-                                .read<CommentsController>()
-                                .orderByOldest
-                                .value
-                            ? 'Newest first'
-                            : 'Oldest first',
-                        value: () {
-                          CommentsController controller =
-                              context.read<CommentsController>();
-                          controller.orderByOldest.value =
-                              !controller.orderByOldest.value;
-                        },
-                      ),
-                      PopupMenuTile(
-                        title: 'Comment',
-                        icon: Icons.comment,
-                        value: () => guardWithLogin(
-                          context: context,
-                          callback: () async {
-                            if (await writeComment(
-                                context: context, postId: post.id)) {
-                              post = post.copyWith(
-                                  commentCount: post.commentCount + 1);
-                            }
-                          },
-                          error: 'You must be logged in to comment!',
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(
-              height: 16,
-            )
           ],
         ),
       );
 
-  Widget commentWrapper(BuildContext context, List<Widget> children) =>
-      CommentsProvider(
-        postId: post.id,
-        child: Consumer<CommentsController>(
-          builder: (context, controller, child) => CustomScrollView(
-            primary: true,
-            slivers: [
-              SliverToBoxAdapter(
-                child: SizedBox(height: MediaQuery.of(context).padding.top),
+  Widget commentButton(BuildContext context) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: PostEditorChild(
+          shown: false,
+          child: CommentDisplay(post: post),
+        ),
+      );
+
+  Widget lowerBody(BuildContext context) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Column(
+          children: [
+            RelationshipDisplay(post: post),
+            PostEditorChild(
+              shown: false,
+              child: PoolDisplay(post: post),
+            ),
+            PostEditorChild(
+              shown: false,
+              child: DenylistTagDisplay(controller: widget.controller),
+            ),
+            TagDisplay(post: widget.controller.value),
+            PostEditorChild(
+              shown: false,
+              child: FileDisplay(
+                post: post,
               ),
-              SliverToBoxAdapter(
-                child: Column(
-                  children: children,
-                ),
+            ),
+            PostEditorChild(
+              shown: true,
+              child: RatingDisplay(
+                post: post,
               ),
-              SliverPadding(
-                padding: const EdgeInsets.symmetric(horizontal: 12)
-                    .add(const EdgeInsets.only(bottom: 30)),
-                sliver: PagedSliverList<String, Comment>(
-                  pagingController: controller,
-                  builderDelegate: defaultPagedChildBuilderDelegate(
-                    pagingController: controller,
-                    itemBuilder: (context, item, index) => CommentProvider(
-                      id: item.id,
-                      child: Consumer<CommentController>(
-                        builder: (context, controller, child) =>
-                            CommentTile(comment: controller),
-                      ),
-                    ),
-                    onEmpty: const Text('No comments'),
-                    onError: const Text('Failed to load comments'),
-                  ),
-                ),
-              ),
-            ],
-          ),
+            ),
+            SourceDisplay(post: post),
+          ],
         ),
       );
 
@@ -284,7 +148,9 @@ class _PostDetailState extends State<PostDetail> {
                         ),
                         children: [
                           image(context, constraints),
-                          singleBody(context),
+                          upperBody(context),
+                          commentButton(context),
+                          lowerBody(context),
                         ],
                       );
                     } else {
@@ -297,11 +163,11 @@ class _PostDetailState extends State<PostDetail> {
                       return Row(
                         children: [
                           Expanded(
-                            child: commentWrapper(
-                              context,
-                              [
+                            child: PostDetailCommentsWrapper(
+                              controller: widget.controller,
+                              children: [
                                 image(context, constraints),
-                                secondaryBody(context),
+                                upperBody(context),
                               ],
                             ),
                           ),
@@ -317,7 +183,7 @@ class _PostDetailState extends State<PostDetail> {
                                 const SizedBox(
                                   height: 56,
                                 ),
-                                sideBarBody(context),
+                                lowerBody(context),
                               ],
                             ),
                           ),
@@ -329,6 +195,124 @@ class _PostDetailState extends State<PostDetail> {
               ),
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class PostDetailCommentsWrapper extends StatelessWidget {
+  const PostDetailCommentsWrapper({
+    super.key,
+    required this.controller,
+    required this.children,
+  });
+
+  final PostController controller;
+  final List<Widget> children;
+
+  Post get post => controller.value;
+
+  set post(Post value) => controller.value = value;
+
+  @override
+  Widget build(BuildContext context) {
+    return CommentsProvider(
+      postId: post.id,
+      child: Consumer<CommentsController>(
+        builder: (context, controller, child) => CustomScrollView(
+          primary: true,
+          slivers: [
+            SliverToBoxAdapter(
+              child: SizedBox(height: MediaQuery.of(context).padding.top),
+            ),
+            SliverToBoxAdapter(
+              child: Column(
+                children: children,
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 4,
+                      vertical: 2,
+                    ),
+                    child: Row(
+                      children: [
+                        const Expanded(
+                          child: Text(
+                            'Comments',
+                            style: TextStyle(
+                              fontSize: 16,
+                            ),
+                          ),
+                        ),
+                        PopupMenuButton<VoidCallback>(
+                          icon: const Icon(Icons.more_vert),
+                          onSelected: (value) => value(),
+                          itemBuilder: (context) => [
+                            PopupMenuTile(
+                              title: 'Refresh',
+                              icon: Icons.refresh,
+                              value: () => controller.refresh(force: true),
+                            ),
+                            PopupMenuTile(
+                              icon: Icons.sort,
+                              title: controller.orderByOldest.value
+                                  ? 'Newest first'
+                                  : 'Oldest first',
+                              value: () => controller.orderByOldest.value =
+                                  !controller.orderByOldest.value,
+                            ),
+                            PopupMenuTile(
+                              title: 'Comment',
+                              icon: Icons.comment,
+                              value: () => guardWithLogin(
+                                context: context,
+                                callback: () async {
+                                  if (await writeComment(
+                                      context: context, postId: post.id)) {
+                                    post = post.copyWith(
+                                      commentCount: post.commentCount + 1,
+                                    );
+                                  }
+                                },
+                                error: 'You must be logged in to comment!',
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 16,
+                  ),
+                ],
+              ),
+            ),
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: 12)
+                  .add(const EdgeInsets.only(bottom: 30)),
+              sliver: PagedSliverList<String, Comment>(
+                pagingController: controller,
+                builderDelegate: defaultPagedChildBuilderDelegate(
+                  pagingController: controller,
+                  itemBuilder: (context, item, index) => CommentProvider(
+                    id: item.id,
+                    child: Consumer<CommentController>(
+                      builder: (context, controller, child) =>
+                          CommentTile(comment: controller),
+                    ),
+                  ),
+                  onEmpty: const Text('No comments'),
+                  onError: const Text('Failed to load comments'),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
