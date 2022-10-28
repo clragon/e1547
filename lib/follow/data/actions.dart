@@ -92,12 +92,10 @@ extension Updating on Follow {
     FollowStatus status = updated.resolve(host) ?? const FollowStatus();
     if (posts.isNotEmpty) {
       posts.sort((a, b) => b.id.compareTo(a.id));
+      updated = updated.withLatest(host, posts.first);
+      status = updated.resolve(host)!;
       if (status.latest != null) {
         posts = posts.takeWhile((value) => value.id > status.latest!).toList();
-      }
-      if (posts.isNotEmpty) {
-        updated = updated.withLatest(host, posts.first);
-        status = updated.resolve(host)!;
       }
       int length = posts.length;
       if (status.unseen == null ||
