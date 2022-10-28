@@ -57,13 +57,15 @@ class App extends StatelessWidget {
                         (_) => context.read<FollowsService>().update(),
                         initializeUserAvatar,
                       ],
-                      child: LockScreen(
-                        child: AppLinkHandler(
-                          child: VideoHandlerData(
-                            handler: VideoHandler(
-                              muteVideos: settings.muteVideos.value,
+                      child: ErrorNotifier(
+                        child: LockScreen(
+                          child: AppLinkHandler(
+                            child: VideoHandlerData(
+                              handler: VideoHandler(
+                                muteVideos: settings.muteVideos.value,
+                              ),
+                              child: child!,
                             ),
-                            child: child!,
                           ),
                         ),
                       ),
