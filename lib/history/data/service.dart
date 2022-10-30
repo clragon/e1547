@@ -108,7 +108,7 @@ class HistoriesService extends HistoriesDatabase with ChangeNotifier {
     String host,
     Post post, {
     List<String>? denylist,
-  }) async =>
+  }) =>
       add(
         host,
         HistoryRequest(
@@ -123,7 +123,7 @@ class HistoriesService extends HistoriesDatabase with ChangeNotifier {
     String host,
     String search, {
     List<Post>? posts,
-  }) async =>
+  }) =>
       add(
         host,
         HistoryRequest(
@@ -137,7 +137,7 @@ class HistoriesService extends HistoriesDatabase with ChangeNotifier {
     String host,
     Pool pool, {
     List<Post>? posts,
-  }) async =>
+  }) =>
       add(
         host,
         HistoryRequest(
@@ -153,7 +153,7 @@ class HistoriesService extends HistoriesDatabase with ChangeNotifier {
     String host,
     String search, {
     List<Pool>? pools,
-  }) async =>
+  }) =>
       add(
         host,
         HistoryRequest(
@@ -175,7 +175,7 @@ class HistoriesService extends HistoriesDatabase with ChangeNotifier {
     String host,
     Topic topic, {
     List<Reply>? replies,
-  }) async =>
+  }) =>
       add(
         host,
         HistoryRequest(
@@ -190,7 +190,7 @@ class HistoriesService extends HistoriesDatabase with ChangeNotifier {
     String host,
     String search, {
     List<Topic>? topics,
-  }) async =>
+  }) =>
       add(
         host,
         HistoryRequest(
@@ -208,7 +208,7 @@ class HistoriesService extends HistoriesDatabase with ChangeNotifier {
         ),
       );
 
-  Future<void> addUser(String host, User user, {Post? avatar}) async => add(
+  Future<void> addUser(String host, User user, {Post? avatar}) => add(
         host,
         HistoryRequest(
           visitedAt: DateTime.now(),
@@ -217,7 +217,7 @@ class HistoriesService extends HistoriesDatabase with ChangeNotifier {
         ),
       );
 
-  Future<void> addWiki(String host, Wiki wiki) async => add(
+  Future<void> addWiki(String host, Wiki wiki) => add(
         host,
         HistoryRequest(
           visitedAt: DateTime.now(),
@@ -230,7 +230,7 @@ class HistoriesService extends HistoriesDatabase with ChangeNotifier {
     String host,
     String search, {
     List<Wiki>? wikis,
-  }) async =>
+  }) =>
       add(
         host,
         HistoryRequest(
@@ -252,7 +252,7 @@ class HistoriesService extends HistoriesDatabase with ChangeNotifier {
     String? host,
     int? maxAmount,
     Duration? maxAge,
-  }) async =>
+  }) =>
       trim(
         host: host,
         maxAmount: maxAmount ?? trimAmount,

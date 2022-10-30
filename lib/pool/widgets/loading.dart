@@ -17,7 +17,7 @@ class _PoolLoadingPageState extends State<PoolLoadingPage> {
 
   @override
   Widget build(BuildContext context) {
-    return FuturePageLoader<Pool>(
+    return FutureLoadingPage<Pool>(
       future: pool,
       builder: (context, value) => PoolPage(pool: value),
       title: Text('Pool #${widget.id}'),

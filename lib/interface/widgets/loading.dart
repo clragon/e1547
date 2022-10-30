@@ -74,15 +74,15 @@ class IconMessage extends StatelessWidget {
 typedef WidgetChildBuilder = Widget Function(
     BuildContext context, Widget child);
 
-enum PageLoaderState {
+enum LoadingPageState {
   loading,
   empty,
   error,
-  child,
+  done,
 }
 
-class PageLoader extends StatelessWidget {
-  const PageLoader({
+class LoadingPage extends StatelessWidget {
+  const LoadingPage({
     required this.child,
     this.isError = false,
     this.isLoading = false,
@@ -111,33 +111,33 @@ class PageLoader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    PageLoaderState state =
-        isBuilt ?? true ? PageLoaderState.child : PageLoaderState.loading;
+    LoadingPageState state =
+        isBuilt ?? true ? LoadingPageState.done : LoadingPageState.loading;
     if (isEmpty) {
       if (isLoading) {
-        state = PageLoaderState.loading;
+        state = LoadingPageState.loading;
       } else if (isError) {
-        state = PageLoaderState.error;
+        state = LoadingPageState.error;
       } else {
-        state = PageLoaderState.empty;
+        state = LoadingPageState.empty;
       }
     }
 
     Widget content(BuildContext context) {
       switch (state) {
-        case PageLoaderState.loading:
+        case LoadingPageState.loading:
           return const Center(child: CircularProgressIndicator());
-        case PageLoaderState.error:
+        case LoadingPageState.error:
           return IconMessage(
             icon: onErrorIcon ?? const Icon(Icons.warning_amber_outlined),
             title: onError ?? const Text('Failed to load'),
           );
-        case PageLoaderState.empty:
+        case LoadingPageState.empty:
           return IconMessage(
             icon: onEmptyIcon ?? const Icon(Icons.clear),
             title: onEmpty ?? const Text('Nothing to see here'),
           );
-        case PageLoaderState.child:
+        case LoadingPageState.done:
           return child(context);
       }
     }
@@ -147,7 +147,7 @@ class PageLoader extends StatelessWidget {
       if (pageBuilder != null) {
         body = pageBuilder!(context, content);
       }
-      if (loadingBuilder != null && state != PageLoaderState.child) {
+      if (loadingBuilder != null && state != LoadingPageState.done) {
         body = loadingBuilder!(context, content);
       }
       return body ?? content(context);
@@ -159,8 +159,8 @@ class PageLoader extends StatelessWidget {
   }
 }
 
-class FuturePageLoader<T> extends StatelessWidget {
-  const FuturePageLoader({
+class FutureLoadingPage<T> extends StatelessWidget {
+  const FutureLoadingPage({
     required this.future,
     required this.builder,
     this.title,
@@ -180,7 +180,7 @@ class FuturePageLoader<T> extends StatelessWidget {
   Widget build(BuildContext context) {
     return FutureBuilder<T>(
       future: future,
-      builder: (context, snapshot) => PageLoader(
+      builder: (context, snapshot) => LoadingPage(
         child: (context) => builder(context, snapshot.data as T),
         loadingBuilder: (context, child) => Scaffold(
           appBar: title != null

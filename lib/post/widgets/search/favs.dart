@@ -31,7 +31,7 @@ class _FavPageState extends State<FavPage> with DrawerEntry {
             }
           },
           listenable: controller.search,
-          child: PageLoader(
+          child: LoadingPage(
             isEmpty: controller.error is NoUserLoginException,
             isError: controller.error is NoUserLoginException,
             onError: Column(

@@ -51,21 +51,20 @@ class RefreshableControllerPage<T extends RefreshableController>
   }
 }
 
-class RefreshablePageLoader extends StatelessWidget {
-  const RefreshablePageLoader({
+class RefreshableLoadingPage extends StatelessWidget {
+  const RefreshableLoadingPage({
     required this.refresh,
     required this.child,
     this.builder,
+    required this.isError,
     required this.isLoading,
     required this.isEmpty,
-    required this.isError,
     this.appBar,
     this.isBuilt,
     this.refreshController,
     this.scrollController,
     this.refreshHeader,
     this.initial,
-    this.onLoading,
     this.onEmpty,
     this.onEmptyIcon,
     this.onError,
@@ -87,7 +86,6 @@ class RefreshablePageLoader extends StatelessWidget {
   final Widget? onEmptyIcon;
   final Widget? onError;
   final Widget? onErrorIcon;
-  final Widget? onLoading;
   final Widget? drawer;
   final Widget? endDrawer;
   final Widget? floatingActionButton;
@@ -98,7 +96,7 @@ class RefreshablePageLoader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return PageLoader(
+    return LoadingPage(
       onEmpty: onEmpty,
       onEmptyIcon: onEmptyIcon,
       onError: onError,

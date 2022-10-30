@@ -19,7 +19,7 @@ class _TopicLoadingPageState extends State<TopicLoadingPage> {
 
   @override
   Widget build(BuildContext context) {
-    return FuturePageLoader<Topic>(
+    return FutureLoadingPage<Topic>(
       future: topic,
       builder: (context, value) => RepliesPage(
         topic: value,
@@ -46,7 +46,7 @@ class _ReplyLoadingPageState extends State<ReplyLoadingPage> {
 
   @override
   Widget build(BuildContext context) {
-    return FuturePageLoader<Reply>(
+    return FutureLoadingPage<Reply>(
       future: reply,
       builder: (context, value) => TopicLoadingPage(value.topicId),
       title: Text('Reply #${widget.id}'),

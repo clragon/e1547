@@ -8,11 +8,11 @@ class SheetActions extends InheritedNotifier {
 
   final SheetActionController controller;
 
-  static SheetActionController? of(BuildContext context) {
-    return context
-        .dependOnInheritedWidgetOfExactType<SheetActions>()
-        ?.controller;
-  }
+  static SheetActionController of(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<SheetActions>()!.controller;
+
+  static SheetActionController? maybeOf(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<SheetActions>()?.controller;
 }
 
 class SheetActionController extends ActionController {
@@ -44,6 +44,14 @@ class SheetActionController extends ActionController {
       (context) => ActionBottomSheet(controller: this, child: child),
     );
     sheetController!.closed.then((_) => reset());
+  }
+
+  void actionOrShow(BuildContext context, Widget child) {
+    if (action != null) {
+      action!();
+    } else {
+      show(context, child);
+    }
   }
 }
 
@@ -139,13 +147,10 @@ class _SheetFloatingActionButtonState extends State<SheetFloatingActionButton> {
       builder: (context, child) => FloatingActionButton(
         onPressed: controller.isLoading
             ? null
-            : controller.action ??
-                () async {
-                  controller.show(
-                    context,
-                    widget.builder(context, controller),
-                  );
-                },
+            : () => controller.actionOrShow(
+                  context,
+                  widget.builder(context, controller),
+                ),
         child: controller.isShown
             ? Icon(widget.confirmIcon ?? Icons.check)
             : Icon(widget.actionIcon),

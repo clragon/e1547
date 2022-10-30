@@ -17,7 +17,7 @@ class _WikiLoadingPageState extends State<WikiLoadingPage> {
 
   @override
   Widget build(BuildContext context) {
-    return FuturePageLoader<Wiki>(
+    return FutureLoadingPage<Wiki>(
       future: wiki,
       builder: (context, value) => WikiPage(wiki: value),
       title: Text('Wiki #${widget.id}'),

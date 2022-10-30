@@ -17,7 +17,7 @@ class _CommentLoadingPageState extends State<CommentLoadingPage> {
 
   @override
   Widget build(BuildContext context) {
-    return FuturePageLoader<Comment>(
+    return FutureLoadingPage<Comment>(
       future: comment,
       builder: (context, value) => PostCommentsPage(postId: value.postId),
       title: Text('Comment #${widget.id}'),

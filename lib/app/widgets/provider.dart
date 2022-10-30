@@ -38,16 +38,14 @@ class HostServiceProvider extends SubChangeNotifierProvider3<AppInfo, Settings,
 class HistoriesServiceProvider
     extends SubChangeNotifierProvider<Settings, HistoriesService> {
   HistoriesServiceProvider({
-    String? path,
     super.child,
     TransitionBuilder? builder,
   }) : super(
           create: (context, settings) => HistoriesService(
-            database: connectDatabase(path ?? 'history.sqlite'),
+            database: connectDatabase('history.sqlite'),
             enabled: settings.writeHistory.value,
             trimming: settings.trimHistory.value,
           ),
-          selector: (context) => [path],
           builder: (context, child) => ListenableListener(
             listenable: context.watch<HistoriesService>(),
             listener: () {

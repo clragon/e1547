@@ -21,7 +21,7 @@ class _UserLoadingPageState extends State<UserLoadingPage> {
 
   @override
   Widget build(BuildContext context) {
-    return FuturePageLoader<User>(
+    return FutureLoadingPage<User>(
       future: user,
       builder: (context, value) => UserPage(
         user: value,

@@ -62,9 +62,8 @@ class _FollowsFolderPageState extends State<FollowsFolderPage> {
         listenable: follows,
         child: SheetActions(
           controller: SheetActionController(),
-          child: RefreshablePageLoader(
+          child: RefreshableLoadingPage(
             onEmpty: const Text('No follows'),
-            onLoading: const Text('Loading follows'),
             onError: const Text('Failed to load follows'),
             isError: false,
             isLoading: false,
@@ -112,33 +111,26 @@ class _FollowsFolderPageState extends State<FollowsFolderPage> {
             ),
             floatingActionButton: Builder(
               builder: (context) => AnimatedBuilder(
-                animation: SheetActions.of(context)!,
-                builder: (context, child) => FloatingActionButton(
-                  onPressed: SheetActions.of(context)!.action ??
-                      () {
-                        SheetActions.of(context)!.show(
-                          context,
-                          ControlledTextWrapper(
-                            submit: (value) {
-                              value = value.trim();
-                              Follow result = Follow(tags: value);
-                              if (value.isNotEmpty) {
-                                follows.add(result);
-                              }
-                            },
-                            actionController: SheetActions.of(context)!,
-                            builder: (context, controller, submit) => TagInput(
-                              controller: controller,
-                              textInputAction: TextInputAction.done,
-                              labelText: 'Add to follows',
-                              submit: submit,
-                            ),
-                          ),
-                        );
-                      },
-                  child: Icon(SheetActions.of(context)!.isShown
-                      ? Icons.check
-                      : Icons.add),
+                animation: SheetActions.of(context),
+                builder: (context, child) => SheetFloatingActionButton(
+                  builder: (context, actionController) => ControlledTextWrapper(
+                    submit: (value) {
+                      value = value.trim();
+                      Follow result = Follow(tags: value);
+                      if (value.isNotEmpty) {
+                        follows.add(result);
+                      }
+                    },
+                    actionController: actionController,
+                    builder: (context, controller, submit) => TagInput(
+                      controller: controller,
+                      textInputAction: TextInputAction.done,
+                      labelText: 'Add to follows',
+                      submit: submit,
+                    ),
+                  ),
+                  actionIcon: Icons.add,
+                  confirmIcon: Icons.check,
                 ),
               ),
             ),

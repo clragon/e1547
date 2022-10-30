@@ -45,10 +45,9 @@ class _DenyListPageState extends State<DenyListPage> {
   Widget build(BuildContext context) {
     return LimitedWidthLayout(
       child: Consumer<DenylistService>(
-        builder: (context, denylist, child) => RefreshablePageLoader(
+        builder: (context, denylist, child) => RefreshableLoadingPage(
           onEmptyIcon: const Icon(Icons.check),
           onEmpty: const Text('Your blacklist is empty'),
-          onLoading: const Text('Loading blacklist'),
           onError: const Text('Failed to load blacklist'),
           isError: false,
           isLoading: false,
