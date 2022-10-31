@@ -126,6 +126,8 @@ extension PostDenying on Post {
     }
     return deniers;
   }
+
+  bool isIgnored() => (file.url == null && !flags.deleted) || file.ext == 'swf';
 }
 
 extension PostDownloading on Post {

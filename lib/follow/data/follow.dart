@@ -6,26 +6,29 @@ part 'follow.g.dart';
 @freezed
 class Follow with _$Follow {
   const factory Follow({
+    required int id,
     required String tags,
-    String? alias,
-    @Default(FollowType.update) FollowType type,
-    @Default({}) Map<String, FollowStatus> statuses,
+    required String? alias,
+    required FollowType type,
+    required int? latest,
+    required int? unseen,
+    required String? thumbnail,
+    required DateTime? updated,
   }) = _Follow;
 
   factory Follow.fromJson(Map<String, dynamic> json) => _$FollowFromJson(json);
 }
 
 @freezed
-class FollowStatus with _$FollowStatus {
-  const factory FollowStatus({
-    int? latest,
-    int? unseen,
-    String? thumbnail,
-    DateTime? updated,
-  }) = _FollowStatus;
+class FollowRequest with _$FollowRequest {
+  const factory FollowRequest({
+    required String tags,
+    String? alias,
+    @Default(FollowType.update) FollowType type,
+  }) = _FollowRequest;
 
-  factory FollowStatus.fromJson(Map<String, dynamic> json) =>
-      _$FollowStatusFromJson(json);
+  factory FollowRequest.fromJson(Map<String, dynamic> json) =>
+      _$FollowRequestFromJson(json);
 }
 
 @JsonEnum()
@@ -33,4 +36,16 @@ enum FollowType {
   update,
   notify,
   bookmark,
+}
+
+@freezed
+class PrefsFollow with _$PrefsFollow {
+  const factory PrefsFollow({
+    required String tags,
+    String? alias,
+    @Default(FollowType.update) FollowType type,
+  }) = _PrefsFollow;
+
+  factory PrefsFollow.fromJson(Map<String, dynamic> json) =>
+      _$PrefsFollowFromJson(json);
 }

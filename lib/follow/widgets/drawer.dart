@@ -1,3 +1,5 @@
+import 'package:async_builder/async_builder.dart';
+import 'package:e1547/client/client.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/settings/settings.dart';
@@ -13,32 +15,34 @@ class FollowMarkReadTile extends StatefulWidget {
 class _FollowMarkReadTileState extends State<FollowMarkReadTile> {
   @override
   Widget build(BuildContext context) {
-    return Consumer<FollowsService>(
-      builder: (context, follows, child) {
-        int unseen = follows.items.fold<int>(
-          0,
-          (previousValue, element) =>
-              previousValue + (follows.status(element)?.unseen ?? 0),
-        );
-        return ListTile(
-          enabled: unseen != 0,
-          leading: Icon(unseen != 0 ? Icons.mark_email_read : Icons.drafts),
-          title: const Text('unseen posts'),
-          subtitle: unseen != 0
-              ? TweenAnimationBuilder<int>(
-                  tween: IntTween(begin: 0, end: unseen),
-                  duration: defaultAnimationDuration,
-                  builder: (context, value, child) {
-                    return Text('mark $value posts as seen');
-                  },
-                )
-              : const Text('no unseen posts'),
-          onTap: () {
-            Scaffold.of(context).closeEndDrawer();
-            follows.markAllAsRead();
-          },
-        );
-      },
+    return Consumer2<FollowsService, Client>(
+      builder: (context, service, client, child) =>
+          SubValueBuilder<Stream<int>>(
+        create: (context) =>
+            service.watchUnseen(host: client.host).map((e) => e.length),
+        selector: (context) => [service, client.host],
+        builder: (context, stream) => AsyncBuilder<int>(
+          stream: stream,
+          builder: (context, value) => ListTile(
+            enabled: value != 0,
+            leading: Icon(value != 0 ? Icons.mark_email_read : Icons.drafts),
+            title: const Text('unseen posts'),
+            subtitle: value != 0
+                ? TweenAnimationBuilder<int>(
+                    tween: IntTween(begin: 0, end: value ?? 0),
+                    duration: defaultAnimationDuration,
+                    builder: (context, value, child) {
+                      return Text('mark $value posts as seen');
+                    },
+                  )
+                : const Text('no unseen posts'),
+            onTap: () {
+              Scaffold.of(context).closeEndDrawer();
+              service.markAllAsRead();
+            },
+          ),
+        ),
+      ),
     );
   }
 }
@@ -81,20 +85,45 @@ class FollowEditingTile extends StatelessWidget {
         Scaffold.of(context).closeEndDrawer();
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (context) => TextEditor(
-              title: const Text('Following'),
-              content: context.read<FollowsService>().items.tags.join('\n'),
-              onSubmit: (context, value) async {
-                List<String> tags = value.split('\n').trim();
-                tags.removeWhere((tag) => tag.isEmpty);
-                context.read<FollowsService>().edit(tags);
-                Navigator.pop(context);
-                return null;
-              },
-            ),
+            builder: (context) => const FollowEditor(),
           ),
         );
       },
+    );
+  }
+}
+
+class FollowEditor extends StatefulWidget {
+  const FollowEditor({super.key});
+
+  @override
+  State<FollowEditor> createState() => _FollowEditorState();
+}
+
+class _FollowEditorState extends State<FollowEditor> {
+  late Client client = context.read<Client>();
+  late FollowsService service = context.read<FollowsService>();
+  late Future<List<String>> follows = service
+      .getAll(host: client.host)
+      .then((value) => value.map((e) => e.tags).toList());
+
+  @override
+  Widget build(BuildContext context) {
+    Widget title = const Text('Following');
+    return FutureLoadingPage<List<String>>(
+      title: title,
+      future: follows,
+      builder: (context, value) => TextEditor(
+        title: title,
+        content: value.join('\n'),
+        onSubmit: (context, value) async {
+          List<String> tags = value.split('\n').trim();
+          tags.removeWhere((tag) => tag.isEmpty);
+          service.edit(client.host, tags);
+          Navigator.pop(context);
+          return null;
+        },
+      ),
     );
   }
 }

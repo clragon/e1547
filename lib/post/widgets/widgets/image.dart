@@ -135,7 +135,11 @@ class RawPostImageWidget extends StatelessWidget {
     Duration fades =
         stacked ? const Duration() : const Duration(milliseconds: 500);
 
-    Widget progressIndicator(context, url, progress) {
+    Widget progressIndicator(
+      BuildContext context,
+      String url,
+      DownloadProgress progress,
+    ) {
       return Center(
         child: SizedCircularProgressIndicator(
           size: 30,

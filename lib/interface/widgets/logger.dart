@@ -13,64 +13,87 @@ import 'package:talker/talker.dart';
 
 export 'package:talker/talker.dart' show TalkerDataInterface;
 
-class LoggerPage extends StatelessWidget {
+class LoggerPage extends StatefulWidget {
   const LoggerPage({super.key, required this.talker});
 
   final Talker talker;
 
   @override
+  State<LoggerPage> createState() => _LoggerPageState();
+}
+
+class _LoggerPageState extends State<LoggerPage> {
+  Future<void> export() async {
+    if (Platform.isAndroid || Platform.isIOS) {
+      Directory temp = await getTemporaryDirectory();
+      File log =
+          File(join(temp.path, '${DateTime.now().toIso8601String()}.log'));
+      await log.writeAsString(widget.talker.history.text, flush: true);
+      await Share.shareFiles([log.path]);
+      await log.delete();
+    } else {
+      Clipboard.setData(
+        ClipboardData(text: widget.talker.history.text),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          duration: Duration(seconds: 1),
+          content: Text('Copied to clipboard'),
+        ),
+      );
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-      stream: talker.stream,
+      stream: widget.talker.stream,
       builder: (context, child) => Scaffold(
-        appBar: const DefaultAppBar(
-          title: Text('Logs'),
-        ),
-        body: talker.history.isNotEmpty
-            ? LimitedWidthLayout.builder(
-          builder: (context) => ListView.builder(
-            reverse: true,
-            padding: LimitedWidthLayout.of(context)
-                .padding
-                .add(defaultActionListPadding),
-            itemCount: talker.history.length,
-            itemBuilder: (context, index) => LoggerCard(
-              item: talker.history.reversed.toList()[index],
-            ),
-          ),
-        )
-            : const Center(
-          child: IconMessage(
-            title: Text('No log items!'),
-            icon: Icon(
-              Icons.close,
-            ),
-          ),
-        ),
-        floatingActionButton: talker.history.isNotEmpty
-            ? FloatingActionButton(
-          onPressed: () async {
-            if (Platform.isAndroid || Platform.isIOS) {
-              Directory temp = await getTemporaryDirectory();
-              File log = File(join(
-                  temp.path, '${DateTime.now().toIso8601String()}.log'));
-              await log.writeAsString(talker.history.text, flush: true);
-              await Share.shareFiles([log.path]);
-              await log.delete();
-            } else {
-              Clipboard.setData(
-                ClipboardData(text: talker.history.text),
-              );
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  duration: Duration(seconds: 1),
-                  content: Text('Copied to clipboard'),
+        appBar: DefaultAppBar(
+          title: const Text('Logs'),
+          actions: [
+            PopupMenuButton<VoidCallback>(
+              icon: const Icon(Icons.more_vert),
+              onSelected: (value) => value(),
+              itemBuilder: (context) => [
+                PopupMenuTile(
+                  title: 'Export',
+                  icon: Icons.share,
+                  value: export,
                 ),
-              );
-            }
-          },
-          child: const Icon(Icons.file_download),
-        )
+                PopupMenuTile(
+                  title: 'Clear',
+                  icon: Icons.delete_forever,
+                  value: () => setState(widget.talker.cleanHistory),
+                ),
+              ],
+            ),
+          ],
+        ),
+        body: widget.talker.history.isNotEmpty
+            ? LimitedWidthLayout.builder(
+                builder: (context) => ListView.builder(
+                  reverse: true,
+                  padding: LimitedWidthLayout.of(context)
+                      .padding
+                      .add(defaultActionListPadding),
+                  itemCount: widget.talker.history.length,
+                  itemBuilder: (context, index) => LoggerCard(
+                    item: widget.talker.history.reversed.toList()[index],
+                  ),
+                ),
+              )
+            : const Center(
+                child: IconMessage(
+                  title: Text('No log items!'),
+                  icon: Icon(Icons.close),
+                ),
+              ),
+        floatingActionButton: widget.talker.history.isNotEmpty
+            ? FloatingActionButton(
+                onPressed: export,
+                child: const Icon(Icons.file_download),
+              )
             : null,
       ),
     );
@@ -95,7 +118,7 @@ class _LoggerCardState extends State<LoggerCard> {
   TalkerDataInterface get item => widget.item;
 
   late ExpandableController controller =
-  ExpandableController(initialExpanded: widget.expanded);
+      ExpandableController(initialExpanded: widget.expanded);
 
   @override
   void didUpdateWidget(covariant LoggerCard oldWidget) {
@@ -120,8 +143,8 @@ class _LoggerCardState extends State<LoggerCard> {
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
               child: DefaultTextStyle(
                 style: Theme.of(context).textTheme.bodyText2!.copyWith(
-                  color: item.logLevel.color,
-                ),
+                      color: item.logLevel.color,
+                    ),
                 child: Stack(
                   clipBehavior: Clip.none,
                   fit: StackFit.passthrough,
@@ -160,46 +183,46 @@ class _LoggerCardState extends State<LoggerCard> {
                         child: Text(item.logTitle),
                       ),
                     ),
-                    if (item.logShort != item.logLong)
-                      Positioned(
-                        right: 16,
-                        top: -10,
-                        child: Material(
-                          color: Theme.of(context).cardColor,
-                          child: Row(
-                            children: [
-                              InkWell(
-                                onTap: () {
-                                  Clipboard.setData(
-                                    ClipboardData(text: item.logMessage),
-                                  );
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      duration: Duration(seconds: 1),
-                                      content: Text('Copied to clipboard'),
-                                    ),
-                                  );
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.all(10),
-                                  child: Icon(
-                                    Icons.copy,
-                                    size: 20,
-                                    color: item.logLevel.color,
+                    Positioned(
+                      right: 16,
+                      top: -10,
+                      child: Material(
+                        color: Theme.of(context).cardColor,
+                        child: Row(
+                          children: [
+                            InkWell(
+                              onTap: () {
+                                Clipboard.setData(
+                                  ClipboardData(text: item.logMessage),
+                                );
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    duration: Duration(seconds: 1),
+                                    content: Text('Copied to clipboard'),
                                   ),
+                                );
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.all(10),
+                                child: Icon(
+                                  Icons.copy,
+                                  size: 20,
+                                  color: item.logLevel.color,
                                 ),
                               ),
+                            ),
+                            if (item.logShort != item.logLong)
                               Builder(
                                 builder: (context) => InkWell(
                                   onTap:
-                                  ExpandableController.of(context)?.toggle,
+                                      ExpandableController.of(context)?.toggle,
                                   child: ExpandableIcon(),
                                 ),
                               ),
-                            ],
-                          ),
+                          ],
                         ),
                       ),
+                    ),
                   ],
                 ),
               ),
@@ -278,11 +301,25 @@ class _LoggerErrorNotifierState extends State<LoggerErrorNotifier> {
                       .color!;
                 }
               }
-              return Text(
-                'A fatal error has occured! ${event.logShort.trim()}',
-                style: style.copyWith(
-                  color: textColor,
-                ),
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'A fatal error has occured!',
+                    style: style.copyWith(
+                      color: textColor,
+                    ),
+                  ),
+                  Text(
+                    event.logShort.trim(),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                    style: style.copyWith(
+                      color: textColor,
+                    ),
+                  ),
+                ],
               );
             },
           ),
@@ -305,35 +342,41 @@ class _LoggerErrorNotifierState extends State<LoggerErrorNotifier> {
 
 extension Messages on TalkerDataInterface {
   String get logShort {
+    String result;
     switch (runtimeType) {
       case TalkerException:
-        return displayException;
+        result = displayException;
+        break;
       case TalkerError:
-        return displayError;
+        result = displayError;
+        break;
       case TalkerLog:
-        if (message == null) {
-          return '';
-        }
-        if (message!.length >= 30) {
-          return '${message?.substring(0, 30)}...';
-        }
-        return message!;
+        result = (message ?? '');
+        break;
       default:
-        return '';
+        result = '';
+        break;
     }
+    return result.trim().ellipse(60);
   }
 
   String get logLong {
+    String result;
     switch (runtimeType) {
       case TalkerException:
-        return '$displayException\n$displayStackTrace';
+        result = '$displayException\n$displayStackTrace';
+        break;
       case TalkerError:
-        return '$displayError\n$displayStackTrace';
+        result = '$displayError\n$displayStackTrace';
+        break;
       case TalkerLog:
-        return message ?? '';
+        result = message ?? '';
+        break;
       default:
-        return '';
+        result = '';
+        break;
     }
+    return result.trim();
   }
 
   String get logTitle {

@@ -27,6 +27,8 @@ class _PoolsPageState extends State<PoolsPage> with DrawerEntry {
       search: widget.search,
       child: Consumer<PoolsController>(
         builder: (context, controller, child) => ListenableListener(
+          initialize: true,
+          listenable: controller.search,
           listener: () async {
             await controller.waitForFirstPage();
             await context.read<HistoriesService>().addPoolSearch(
@@ -35,7 +37,6 @@ class _PoolsPageState extends State<PoolsPage> with DrawerEntry {
                   pools: controller.itemList,
                 );
           },
-          listenable: controller.search,
           child: RefreshableControllerPage.builder(
             appBar: const DefaultAppBar(
               title: Text('Pools'),
@@ -67,7 +68,7 @@ class _PoolsPageState extends State<PoolsPage> with DrawerEntry {
               padding: defaultListPadding,
               pagingController: controller,
               crossAxisCount:
-                  (TileLayout.of(context).crossAxisCount * 0.5).round(),
+              (TileLayout.of(context).crossAxisCount * 0.5).round(),
               builderDelegate: defaultPagedChildBuilderDelegate<Pool>(
                 pagingController: controller,
                 itemBuilder: (context, item, index) => LowResCacheSizeProvider(

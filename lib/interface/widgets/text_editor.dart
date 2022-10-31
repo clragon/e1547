@@ -121,6 +121,8 @@ class _TextEditorState extends State<TextEditor> {
         builder: (context) {
           TabController controller = DefaultTabController.of(context)!;
           return ListenableListener(
+            initialize: true,
+            listenable: DefaultTabController.of(context)!,
             listener: () {
               if (hasPreview && controller.index == 0) {
                 if (!showBar) {
@@ -137,14 +139,13 @@ class _TextEditorState extends State<TextEditor> {
                 }
               }
             },
-            listenable: DefaultTabController.of(context)!,
             child: Scaffold(
               floatingActionButton: fab(),
               bottomSheet: isLoading
                   ? loadingBar()
                   : showBar
-                      ? widget.bottomSheetBuilder?.call(context, textController)
-                      : null,
+                  ? widget.bottomSheetBuilder?.call(context, textController)
+                  : null,
               body: NestedScrollView(
                 headerSliverBuilder: (context, innerBoxIsScrolled) => [
                   SliverOverlapAbsorber(
@@ -159,10 +160,10 @@ class _TextEditorState extends State<TextEditor> {
                       title: widget.title,
                       bottom: tabs.length > 1
                           ? TabBar(
-                              tabs: tabs.keys.toList(),
-                              labelColor: Theme.of(context).iconTheme.color,
-                              indicatorColor: Theme.of(context).iconTheme.color,
-                            )
+                        tabs: tabs.keys.toList(),
+                        labelColor: Theme.of(context).iconTheme.color,
+                        indicatorColor: Theme.of(context).iconTheme.color,
+                      )
                           : null,
                     ),
                   ),

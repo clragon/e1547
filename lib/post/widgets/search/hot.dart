@@ -18,6 +18,8 @@ class _HotPageState extends State<HotPage> with DrawerEntry {
       search: 'order:rank',
       child: Consumer<PostsController>(
         builder: (context, controller, child) => ListenableListener(
+          initialize: true,
+          listenable: controller.search,
           listener: () async {
             await controller.waitForFirstPage();
             await context.read<HistoriesService>().addPostSearch(
@@ -26,7 +28,6 @@ class _HotPageState extends State<HotPage> with DrawerEntry {
                   posts: controller.itemList,
                 );
           },
-          listenable: controller.search,
           child: PostsPage(
             appBar: const ContextSizedAppBar(
               title: Text('Hot'),

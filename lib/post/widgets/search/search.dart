@@ -37,34 +37,27 @@ class _SearchPageState extends State<SearchPage> {
         child: Consumer2<PostsController, FollowsService>(
           builder: (context, controller, follows, child) {
             Future<void> updateFollow() async {
-              Follow? follow = follows.getFollow(controller.search.value);
+              Follow? follow =
+                  await follows.getFollow(client.host, controller.search.value);
               if (follow != null) {
+                Follow updated = follow;
                 if (controller.itemList?.isNotEmpty ?? false) {
-                  Follow updated = follow.withLatest(
-                    client.host,
+                  updated = follow.withLatest(
                     controller.itemList!.first,
                     foreground: mounted,
                   );
-                  if (updated != follow) {
-                    follows.replace(
-                      follow,
-                      updated,
-                    );
-                  }
                 }
                 if (pool != null) {
-                  Follow updated = follow.withPool(pool!);
-                  if (updated != follow) {
-                    follows.replace(
-                      follow,
-                      updated,
-                    );
-                  }
+                  updated = updated.withPool(pool!);
+                }
+                if (updated != follow) {
+                  await follows.replace(updated);
                 }
               }
             }
 
             Future<void> updatePool() async {
+              if (!mounted) return;
               setState(() {
                 loadingInfo = true;
               });
@@ -77,6 +70,7 @@ class _SearchPageState extends State<SearchPage> {
               } else {
                 pool = null;
               }
+              if (!mounted) return;
               setState(() {
                 loadingInfo = false;
               });
@@ -99,10 +93,12 @@ class _SearchPageState extends State<SearchPage> {
             }
 
             String getTitle() {
+              /*
               Follow? follow = follows.getFollow(controller.search.value);
               if (follow != null) {
                 return follow.name;
               }
+               */
               if (pool != null) {
                 return tagToTitle(pool!.name);
               }
@@ -113,58 +109,55 @@ class _SearchPageState extends State<SearchPage> {
             }
 
             return ListenableListener(
+              initialize: true,
+              listenable: controller,
               listener: () => WidgetsBinding.instance
                   .addPostFrameCallback((_) => updateSearch()),
-              listenable: controller,
-              child: ListenableListener(
-                listener: updateFollow,
-                listenable: follows,
-                child: PostsPage(
-                  controller: controller,
-                  displayType: readerMode ? PostDisplayType.comic : null,
-                  appBar: DefaultAppBar(
-                    title: Text(getTitle()),
-                    actions: [
-                      CrossFade(
-                        showChild: !loadingInfo &&
-                            Tagset.parse(controller.search.value).isNotEmpty,
-                        child: IconButton(
-                          icon: const Icon(Icons.info_outline),
-                          onPressed: pool != null
-                              ? () => poolSheet(context, pool!)
-                              : () => tagSearchSheet(
-                                    context: context,
-                                    tag: controller.search.value,
-                                  ),
-                        ),
+              child: PostsPage(
+                controller: controller,
+                displayType: readerMode ? PostDisplayType.comic : null,
+                appBar: DefaultAppBar(
+                  title: Text(getTitle()),
+                  actions: [
+                    CrossFade(
+                      showChild: !loadingInfo &&
+                          Tagset.parse(controller.search.value).isNotEmpty,
+                      child: IconButton(
+                        icon: const Icon(Icons.info_outline),
+                        onPressed: pool != null
+                            ? () => poolSheet(context, pool!)
+                            : () => tagSearchSheet(
+                                  context: context,
+                                  tag: controller.search.value,
+                                ),
                       ),
-                      const ContextDrawerButton(),
-                    ],
-                  ),
-                  drawerActions: [
-                    if (pool != null)
-                      Builder(
-                        builder: (context) => PoolReaderSwitch(
-                          readerMode: readerMode,
-                          onChange: (value) {
-                            setState(() => readerMode = value);
-                            Scaffold.of(context).closeEndDrawer();
-                          },
-                        ),
-                      ),
-                    if (pool != null)
-                      Builder(
-                        builder: (context) => PoolOrderSwitch(
-                          reversePool: reversePools,
-                          onChange: (value) {
-                            setState(() => reversePools = value);
-                            controller.refresh();
-                            Scaffold.of(context).closeEndDrawer();
-                          },
-                        ),
-                      ),
+                    ),
+                    const ContextDrawerButton(),
                   ],
                 ),
+                drawerActions: [
+                  if (pool != null)
+                    Builder(
+                      builder: (context) => PoolReaderSwitch(
+                        readerMode: readerMode,
+                        onChange: (value) {
+                          setState(() => readerMode = value);
+                          Scaffold.of(context).closeEndDrawer();
+                        },
+                      ),
+                    ),
+                  if (pool != null)
+                    Builder(
+                      builder: (context) => PoolOrderSwitch(
+                        reversePool: reversePools,
+                        onChange: (value) {
+                          setState(() => reversePools = value);
+                          controller.refresh();
+                          Scaffold.of(context).closeEndDrawer();
+                        },
+                      ),
+                    ),
+                ],
               ),
             );
           },

@@ -100,11 +100,9 @@ class _LockScreenState extends State<LockScreen> {
     return ListenableListener(
       listener: this.lock,
       listenable: context.read<Settings>().appPin,
-      initialize: false,
       child: ListenableListener(
         listener: this.lock,
         listenable: context.read<Settings>().biometricAuth,
-        initialize: false,
         child: Stack(
           fit: StackFit.passthrough,
           children: [

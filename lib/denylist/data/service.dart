@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:e1547/interface/interface.dart';
 import 'package:flutter/foundation.dart';
+import 'package:mutex/mutex.dart';
 
-class DenylistService extends ChangeNotifier with DataLock<List<String>> {
+class DenylistService extends ChangeNotifier {
   DenylistService({
     List<String>? items,
     DenylistPull? pull,
@@ -14,17 +17,18 @@ class DenylistService extends ChangeNotifier with DataLock<List<String>> {
 
   List<String> get items => _items;
 
-  @override
-  @protected
-  Future<List<String>> read() async => List.from(items);
+  final Mutex _resourceLock = Mutex();
 
-  @override
   @protected
-  Future<void> write(List<String> value) async {
-    _items = value;
-    notifyListeners();
-    await push();
-  }
+  Future<void> protect(
+          FutureOr<List<String>> Function(List<String> data) updater) async =>
+      _resourceLock.protect(
+        () async {
+          _items = await updater(List.from(items));
+          notifyListeners();
+          await push();
+        },
+      );
 
   final DenylistPull? _pull;
   final DenylistPush? _push;

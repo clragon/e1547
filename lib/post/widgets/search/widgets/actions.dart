@@ -1,3 +1,5 @@
+import 'package:async_builder/async_builder.dart';
+import 'package:e1547/client/client.dart';
 import 'package:e1547/denylist/denylist.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/interface/interface.dart';
@@ -15,58 +17,71 @@ class TagListActions extends StatelessWidget {
     if (wikiMetaTags.any((prefix) => tag.startsWith(prefix))) {
       return const SizedBox.shrink();
     }
-    return Consumer2<FollowsService, DenylistService>(
-      builder: (context, follows, denylist, child) {
-        bool following = follows.follows(tag);
-        bool denied = denylist.denies(tag);
-        return Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            CrossFade(
-              showChild: !denied,
-              child: IconButton(
-                onPressed: () {
-                  if (following) {
-                    follows.removeTag(tag);
-                  } else {
-                    follows.addTag(tag);
-                    if (denied) {
-                      denylist.remove(tag);
-                    }
-                  }
-                },
-                icon: CrossFade(
-                  showChild: following,
-                  secondChild: const Icon(Icons.turned_in_not),
-                  child: const Icon(Icons.turned_in),
-                ),
-                tooltip: following ? 'Unfollow tag' : 'Follow tag',
-              ),
-            ),
-            CrossFade(
-              showChild: !following,
-              child: IconButton(
-                onPressed: () {
-                  if (denied) {
-                    denylist.remove(tag);
-                  } else {
-                    if (following) {
-                      follows.removeTag(tag);
-                    }
-                    denylist.add(tag);
-                  }
-                },
-                icon: CrossFade(
-                  showChild: denied,
-                  secondChild: const Icon(Icons.block),
-                  child: const Icon(Icons.check),
-                ),
-                tooltip: denied ? 'Unblock tag' : 'Block tag',
-              ),
-            ),
-          ],
-        );
-      },
+    return Consumer3<FollowsService, Client, DenylistService>(
+      builder: (context, follows, client, denylist, child) =>
+          SubValueBuilder<Stream<bool>>(
+        create: (context) => follows.watchFollows(client.host, tag),
+        selector: (context) => [follows, client],
+        builder: (context, value) => AsyncBuilder<bool>(
+          retain: true,
+          stream: value,
+          builder: (context, following) {
+            bool denied = denylist.denies(tag);
+            return AnimatedSwitcher(
+              duration: defaultAnimationDuration,
+              child: following == null
+                  ? const SizedBox.shrink()
+                  : Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        CrossFade(
+                          showChild: !denied,
+                          child: IconButton(
+                            onPressed: () {
+                              if (following) {
+                                follows.removeTag(client.host, tag);
+                              } else {
+                                follows.addTag(client.host, tag);
+                                if (denied) {
+                                  denylist.remove(tag);
+                                }
+                              }
+                            },
+                            icon: CrossFade(
+                              showChild: following,
+                              secondChild: const Icon(Icons.turned_in_not),
+                              child: const Icon(Icons.turned_in),
+                            ),
+                            tooltip: following ? 'Unfollow tag' : 'Follow tag',
+                          ),
+                        ),
+                        CrossFade(
+                          showChild: !following,
+                          child: IconButton(
+                            onPressed: () {
+                              if (denied) {
+                                denylist.remove(tag);
+                              } else {
+                                if (following) {
+                                  follows.removeTag(client.host, tag);
+                                }
+                                denylist.add(tag);
+                              }
+                            },
+                            icon: CrossFade(
+                              showChild: denied,
+                              secondChild: const Icon(Icons.block),
+                              child: const Icon(Icons.check),
+                            ),
+                            tooltip: denied ? 'Unblock tag' : 'Block tag',
+                          ),
+                        ),
+                      ],
+                    ),
+            );
+          },
+        ),
+      ),
     );
   }
 }

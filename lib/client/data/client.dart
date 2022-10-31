@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 
+import 'package:collection/collection.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
 import 'package:e1547/client/client.dart';
@@ -85,23 +86,6 @@ class Client {
   String withHost(String path) =>
       Uri(scheme: 'https', host: host, path: path).toString();
 
-  bool postIsIgnored(Post post) {
-    return (post.file.url == null && !post.flags.deleted) ||
-        post.file.ext == 'swf';
-  }
-
-  Future<List<Post>> _postsFromJson(List<dynamic> json) async {
-    List<Post> posts = [];
-    for (Map<String, dynamic> raw in json) {
-      Post post = Post.fromJson(raw);
-      if (postIsIgnored(post)) {
-        continue;
-      }
-      posts.add(post);
-    }
-    return posts;
-  }
-
   Future<List<Post>> postsRaw(
     int page, {
     int? limit,
@@ -124,7 +108,7 @@ class Client {
         )
         .then((response) => response.data);
 
-    return _postsFromJson(body['posts']);
+    return List<Post>.from(body['posts'].map((e) => Post.fromJson(e)));
   }
 
   Future<List<Post>> postsChunk(
@@ -144,12 +128,12 @@ class Client {
     for (final chunk in chunks) {
       if (chunk.isEmpty) continue;
       String filter = 'id:${chunk.join(',')}';
-      List<Post> posts = await this.posts(1, search: filter, force: force);
-      Map<int, Post> table = {for (Post e in posts) e.id: e};
-      posts = (chunk.map((e) => table[e]).toList()
+      List<Post> part = await postsRaw(1, search: filter, force: force);
+      Map<int, Post> table = {for (Post e in part) e.id: e};
+      part = (chunk.map((e) => table[e]).toList()
             ..removeWhere((e) => e == null))
           .cast<Post>();
-      result.addAll(posts);
+      result.addAll(part);
     }
     return result;
   }
@@ -181,7 +165,8 @@ class Client {
       }
     }
 
-    return postsRaw(page, search: search, limit: limit, force: force);
+    return postsRaw(page, search: search, limit: limit, force: force)
+        .then((value) => value.whereNot((e) => e.isIgnored()).toList());
   }
 
   Future<Post> post(int postId, {bool? force}) async {
@@ -253,7 +238,7 @@ class Client {
         )
         .then((response) => response.data);
 
-    return (_postsFromJson(body['posts']));
+    return List<Post>.from(body['posts'].map((e) => Post.fromJson(e)));
   }
 
   Future<void> addFavorite(int postId) async {
@@ -322,63 +307,23 @@ class Client {
     return postsChunk(ids, limit: limit, force: force);
   }
 
-  Future<List<Post>> follows(
+  Future<List<Post>> tagPosts(
     List<String> tags,
     int page, {
-    int attempt = 0,
+    int? limit,
     bool? force,
   }) async {
-    List<Post> posts = [];
-    // ignore meta tags
-    tags.removeWhere((tag) => tag.contains(':'));
-    // ignore multitag searches
-    tags.removeWhere((tag) => tag.contains(' '));
-    // how many requests per requested page.
-    int batches = 2;
-    // distribute tags over requests evenly.
     int max = 40;
-    int length = tags.length;
-    int approx = (length / max).ceil();
-    if (batches > approx) {
-      batches = approx;
-    }
-    if (approx > batches) {
-      int counter = 1;
-      while (true) {
-        counter++;
-        if (approx < batches * counter) {
-          approx = batches * counter;
-          break;
-        }
-      }
-    }
-    if (approx != 0) {
-      max = (length / approx).ceil();
-    }
+    int pages = (tags.length / max).ceil();
+    int chunkSize = (tags.length / pages).ceil();
 
-    int getTagPage(int page) {
-      if (page % approx == 0) {
-        return approx;
-      } else {
-        return page % approx;
-      }
-    }
+    int tagPage = page % pages != 0 ? page % pages : pages;
+    int sitePage = (page / pages).ceil();
 
-    int getSitePage(int page) => (page / approx).ceil();
-
-    int position = (page * batches) + 1;
-    for (int i = position - batches; i < position; i++) {
-      int tagPage = getTagPage(i);
-      int end = (length > tagPage * max) ? tagPage * max : length;
-      List<String?> tagSet = tags.sublist((tagPage - 1) * max, end);
-      posts.addAll(await this.posts(getSitePage(i),
-          search: '~${tagSet.join(' ~')}', force: force));
-    }
-    posts.sort((one, two) => two.id.compareTo(one.id));
-    if (posts.isEmpty && attempt < (approx / batches) - 1) {
-      posts.addAll(await follows(tags, page + 1, attempt: attempt + 1));
-    }
-    return posts;
+    List<String> chunk =
+        tags.sublist((tagPage - 1) * chunkSize).take(chunkSize).toList();
+    String filter = chunk.map((e) => '~$e').join(' ');
+    return postsRaw(sitePage, search: filter, limit: limit, force: force);
   }
 
   Future<List<Wiki>> wikis(int page, {String? search, bool? force}) async {
@@ -448,22 +393,6 @@ class Client {
         .then((response) => response.data);
 
     return CurrentUser.fromJson(body);
-  }
-
-  Future<Post?> currentUserAvatar({bool? force}) async {
-    int? avatarId = (await currentUser(force: force))?.avatarId;
-    if (avatarId == null) return null;
-    Map body = await _dio
-        .get(
-          'posts/$avatarId.json',
-          options: _options(
-            force: force,
-            store: _memoryCache,
-          ),
-        )
-        .then((response) => response.data);
-
-    return Post.fromJson(body['post']);
   }
 
   Future<void> updateBlacklist(List<String> denylist) async {
@@ -545,6 +474,29 @@ class Client {
       }
       return tags;
     }
+  }
+
+  Future<String?> getTagAlias(String tag, {bool? force}) async {
+    final body = await _dio
+        .get(
+          'tag_aliases.json',
+          queryParameters: {
+            'search[antecedent_name]': tag,
+          },
+          options: _options(
+            force: force,
+            params: {
+              'search[antecedent_name]': tag,
+            },
+          ),
+        )
+        .then((value) => value.data);
+
+    if (body is List && body.isNotEmpty) {
+      return body.first['consequent_name'];
+    }
+
+    return null;
   }
 
   Future<List<Comment>> comments(int postId, String page, {bool? force}) async {
@@ -735,6 +687,10 @@ Future<bool> validateCall(Future<void> Function() call) async {
     return false;
   }
 }
+
+Future<T> rateLimit<T>(Future<T> call, [Duration? duration]) => Future.wait(
+        [call, Future.delayed(duration ?? const Duration(milliseconds: 500))])
+    .then((value) => value[0]);
 
 class ClientProvider extends SubProvider<HostService, Client> {
   ClientProvider({super.child, super.builder})

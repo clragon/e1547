@@ -19,6 +19,8 @@ class _HomePageState extends State<HomePage> with DrawerEntry {
       search: context.read<Settings>().homeTags.value,
       child: Consumer<PostsController>(
         builder: (context, controller, child) => ListenableListener(
+          initialize: true,
+          listenable: controller.search,
           listener: () async {
             context.read<Settings>().homeTags.value = controller.search.value;
             await controller.waitForFirstPage();
@@ -28,7 +30,6 @@ class _HomePageState extends State<HomePage> with DrawerEntry {
                   posts: controller.itemList,
                 );
           },
-          listenable: controller.search,
           child: PostsPage(
             appBar: const ContextSizedAppBar(
               title: Text('Home'),

@@ -7,16 +7,6 @@ import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
 
-Future<void> initializeUserAvatar(BuildContext context) async {
-  Post? avatar = await context.read<Client>().currentUserAvatar();
-  if (avatar?.sample.url != null) {
-    await precacheImage(
-      CachedNetworkImageProvider(avatar!.sample.url!),
-      context,
-    );
-  }
-}
-
 class CurrentUserAvatar extends StatelessWidget {
   const CurrentUserAvatar({this.enabled = false});
 
@@ -41,7 +31,7 @@ class CurrentUserAvatarProvider
   CurrentUserAvatarProvider({super.child, super.builder})
       : super(
           create: (context, client, denylist) async {
-            int? id = (await context.read<Client>().currentUserAvatar())?.id;
+            int? id = (await client.currentUser())?.avatarId;
             if (id != null) {
               PostsController controller = PostsController.single(
                 client: client,
@@ -49,9 +39,7 @@ class CurrentUserAvatarProvider
                 id: id,
                 denyMode: DenyListMode.unavailable,
               );
-              await controller.loadFirstPage();
-              initializeUserAvatar(context);
-              return controller;
+              return controller.loadFirstPage();
             }
             return null;
           },

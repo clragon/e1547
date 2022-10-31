@@ -22,15 +22,16 @@ class _TopicsPageState extends State<TopicsPage> with DrawerEntry {
       search: widget.search,
       child: Consumer<TopicsController>(
         builder: (context, controller, child) => ListenableListener(
+          initialize: true,
+          listenable: controller.search,
           listener: () async {
             await controller.waitForFirstPage();
             await context.read<HistoriesService>().addTopicSearch(
-              context.read<Client>().host,
+                  context.read<Client>().host,
                   controller.search.value,
                   topics: controller.itemList!,
                 );
           },
-          listenable: controller.search,
           child: RefreshableControllerPage(
             appBar: const DefaultAppBar(title: Text('Topics')),
             floatingActionButton: SheetFloatingActionButton(

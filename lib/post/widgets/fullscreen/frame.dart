@@ -141,8 +141,9 @@ class _PostFullscreenFrameState extends State<PostFullscreenFrame>
   @override
   Widget build(BuildContext context) {
     return ListenableListener(
-      listener: () => toggleFrame(controller.visible),
+      initialize: true,
       listenable: controller,
+      listener: () => toggleFrame(controller.visible),
       child: FrameData(
         controller: controller,
         child: AnimatedBuilder(

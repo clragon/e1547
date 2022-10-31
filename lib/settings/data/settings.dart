@@ -42,13 +42,13 @@ class Settings with SharedPrefsSettings {
 
   late final ValueNotifier<List<String>> denylist =
       createSetting(key: 'blacklist', initialValue: []);
-  late final ValueNotifier<List<Follow>> follows = createSetting(
+  late final ValueNotifier<List<PrefsFollow>> follows = createSetting(
     key: 'follows',
     initialValue: [],
     getSetting: (prefs, key) {
       List<String>? value = prefs.getStringList(key);
       if (value != null) {
-        return value.map((e) => Follow.fromJson(json.decode(e))).toList();
+        return value.map((e) => PrefsFollow.fromJson(json.decode(e))).toList();
       } else {
         return null;
       }

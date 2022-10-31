@@ -1,5 +1,6 @@
 import 'package:e1547/client/client.dart';
 import 'package:e1547/denylist/denylist.dart';
+import 'package:e1547/follow/follow.dart';
 import 'package:e1547/history/history.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/settings/settings.dart';
@@ -55,6 +56,30 @@ class HistoriesServiceProvider
               settings.trimHistory.value = service.trimming;
             },
             child: builder?.call(context, child) ?? child!,
+          ),
+        );
+}
+
+class FollowsProvider extends SubProvider0<FollowsService> {
+  FollowsProvider({
+    super.child,
+    TransitionBuilder? builder,
+  }) : super(
+          create: (context) => FollowsService(
+            connectDatabase('follows.sqlite'),
+          ),
+          builder: (context, child) => ListenableListener(
+            listenable: context.watch<HostService>(),
+            listener: () {
+              HostService service = context.read<HostService>();
+              Settings settings = context.read<Settings>();
+              settings.host.value = service.host;
+              settings.customHost.value = service.customHost;
+            },
+            child: SubChangeNotifierProvider<FollowsService, FollowsUpdater>(
+              create: (context, service) => FollowsUpdater(service: service),
+              child: child,
+            ),
           ),
         );
 }

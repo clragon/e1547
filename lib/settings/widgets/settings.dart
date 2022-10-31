@@ -59,6 +59,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     InitBuilder<Future<CurrentUser?>>(
                   getter: client.currentUser,
                   builder: (context, future) => AsyncBuilder<CurrentUser?>(
+                    retain: true,
                     future: future,
                     builder: (context, value) => CrossFade.builder(
                       duration: const Duration(milliseconds: 200),
@@ -70,28 +71,28 @@ class _SettingsPageState extends State<SettingsPage> {
                             : null,
                         leading: const CurrentUserAvatar(),
                         separated: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 12),
-                          child: IgnorePointer(
-                            child: IconButton(
-                              icon: const Icon(Icons.exit_to_app),
-                              onPressed: () => logout(context),
-                            ),
+                                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                                  child: IgnorePointer(
+                                    child: IconButton(
+                                      icon: const Icon(Icons.exit_to_app),
+                                      onPressed: () => logout(context),
+                                    ),
+                                  ),
+                                ),
+                                onTap: () => Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        UserLoadingPage(client.credentials!.username),
+                                  ),
+                                ),
+                                onTapSeparated: () => logout(context),
+                              ),
+                          secondChild: ListTile(
+                            title: const Text('Login'),
+                            leading: const Icon(Icons.person_add),
+                            onTap: () => Navigator.pushNamed(context, '/login'),
                           ),
                         ),
-                        onTap: () => Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                UserLoadingPage(client.credentials!.username),
-                          ),
-                        ),
-                        onTapSeparated: () => logout(context),
-                      ),
-                      secondChild: ListTile(
-                        title: const Text('Login'),
-                        leading: const Icon(Icons.person_add),
-                        onTap: () => Navigator.pushNamed(context, '/login'),
-                      ),
-                    ),
                   ),
                 ),
               ),
@@ -173,9 +174,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                 min: 100,
                                 max: 400,
                                 onSubmit: (value) {
-                                  if (value == null || value <= 0) {
-                                    return;
-                                  }
+                                  if (value == null || value <= 0) return;
                                   settings.tileSize.value = value;
                                 },
                               ),
@@ -205,11 +204,12 @@ class _SettingsPageState extends State<SettingsPage> {
                   create: (context) => service.watchLength(host: client.host),
                   selector: (context) => [service, client.host],
                   builder: (context, stream) => AsyncBuilder<int>(
+                    retain: true,
                     stream: stream,
                     builder: (context, value) => DividerListTile(
                       title: const Text('History'),
-                      subtitle: service.enabled
-                          ? Text('${value ?? 0} pages visited')
+                      subtitle: service.enabled && value != null
+                          ? Text('$value pages visited')
                           : null,
                       leading: const Icon(Icons.history),
                       onTap: () => Navigator.pushNamed(context, '/history'),
@@ -233,17 +233,26 @@ class _SettingsPageState extends State<SettingsPage> {
                   onTap: () => Navigator.pushNamed(context, '/blacklist'),
                 ),
               ),
-              Consumer<FollowsService>(
-                builder: (context, follows, child) => ListTile(
-                  title: const Text('Following'),
-                  subtitle: follows.items.isNotEmpty
-                      ? Text('${follows.items.length} searches followed')
-                      : null,
-                  leading: const Icon(Icons.turned_in),
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const FollowsFolderPage(),
+              Consumer2<FollowsService, Client>(
+                builder: (context, service, client, child) =>
+                    SubValueBuilder<Stream<int>>(
+                  create: (context) => service.watchLength(host: client.host),
+                  selector: (context) => [service, client.host],
+                  builder: (context, stream) => AsyncBuilder<int>(
+                    retain: true,
+                    stream: stream,
+                    builder: (context, value) => ListTile(
+                      title: const Text('Following'),
+                      subtitle: value != null && value != 0
+                          ? Text('$value searches followed')
+                          : null,
+                      leading: const Icon(Icons.turned_in),
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const FollowsFolderPage(),
+                        ),
+                      ),
                     ),
                   ),
                 ),

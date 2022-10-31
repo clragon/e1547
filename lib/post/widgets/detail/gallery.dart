@@ -47,12 +47,12 @@ class _PostDetailGalleryState extends State<PostDetailGallery>
       value: widget.controller,
       child: Consumer<PostsController>(
         builder: (context, controller, child) => ListenableListener(
+          listenable: controller,
           listener: () {
             if (widget.controller.value.status == PagingStatus.ongoing) {
               hasRequestedNextPage = false;
             }
           },
-          listenable: controller,
           child: PageView.builder(
             controller: pageController,
             itemBuilder: (context, index) {

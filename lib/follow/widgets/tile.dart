@@ -13,11 +13,9 @@ class FollowTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: replace with database giving out pre-hosted objects
-    SheetActionController? sheetController = SheetActions.of(context);
+    SheetActionController? sheetController = SheetActions.maybeOf(context);
     FollowsService follows = context.watch<FollowsService>();
-    FollowStatus? status = context.watch<FollowsService>().status(follow);
-    bool active = status?.thumbnail != null;
+    bool active = follow.latest != null && follow.thumbnail != null;
 
     void editAlias() {
       sheetController!.show(
@@ -34,15 +32,9 @@ class FollowTile extends StatelessWidget {
               } else {
                 alias = null;
               }
-              follows.replace(
-                follow,
-                Follow(
-                  tags: follow.tags,
-                  alias: alias,
-                  type: follow.type,
-                  statuses: follow.statuses,
-                ),
-              );
+              follows.replace(follow.copyWith(
+                alias: alias,
+              ));
             }
           },
         ),
@@ -55,9 +47,14 @@ class FollowTile extends StatelessWidget {
         ControlledTextWrapper(
           submit: (value) {
             value = value.trim();
-            Follow result = Follow(tags: value);
             if (value.isNotEmpty) {
-              follows.replace(follow, result);
+              follows.replace(follow.copyWith(
+                tags: value,
+                updated: null,
+                unseen: null,
+                thumbnail: null,
+                latest: null,
+              ));
             } else {
               follows.remove(follow);
             }
@@ -90,7 +87,6 @@ class FollowTile extends StatelessWidget {
           if (kDebugMode && !bookmarked)
             PopupMenuTile(
               value: () => follows.replace(
-                follow,
                 follow.copyWith(
                   type: !notified ? FollowType.notify : FollowType.update,
                 ),
@@ -104,7 +100,6 @@ class FollowTile extends StatelessWidget {
           if (!notified)
             PopupMenuTile(
               value: () => follows.replace(
-                follow,
                 follow.copyWith(
                   type: !bookmarked ? FollowType.bookmark : FollowType.update,
                 ),
@@ -133,16 +128,13 @@ class FollowTile extends StatelessWidget {
       );
     }
 
-    String getStatusText(FollowStatus? status) {
-      if (status == null) {
-        return '';
-      }
-      String text = status.unseen.toString();
-      if (status.unseen == context.watch<FollowsService>().refreshAmount) {
+    String getStatusText() {
+      String text = (follow.unseen ?? 0).toString();
+      if (follow.unseen == context.watch<FollowsService>().refreshAmount) {
         text += '+';
       }
       text += ' new post';
-      if (status.unseen! > 1) {
+      if (follow.unseen! > 1) {
         text += 's';
       }
       return text;
@@ -171,9 +163,9 @@ class FollowTile extends StatelessWidget {
                       children: [
                         Expanded(
                           child: Hero(
-                            tag: getPostLink(status!.latest!),
+                            tag: getPostLink(follow.latest!),
                             child: CachedNetworkImage(
-                              imageUrl: status.thumbnail!,
+                              imageUrl: follow.thumbnail!,
                               errorWidget: defaultErrorBuilder,
                               fit: BoxFit.cover,
                             ),
@@ -192,7 +184,7 @@ class FollowTile extends StatelessWidget {
                       MaterialPageRoute(
                         builder: (context) => SearchPage(
                           tags: follow.tags,
-                          reversePools: (status?.unseen ?? 0) > 0,
+                          reversePools: (follow.unseen ?? 0) > 0,
                         ),
                       ),
                     ),
@@ -233,10 +225,10 @@ class FollowTile extends StatelessWidget {
                                   getFollowIcon(follow.type),
                                 ),
                               ),
-                            if ((status?.unseen ?? 0) > 0)
+                            if ((follow.unseen ?? 0) > 0)
                               Expanded(
                                 child: Text(
-                                  getStatusText(status),
+                                  getStatusText(),
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               ),

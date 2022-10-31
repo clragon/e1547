@@ -4,25 +4,12 @@ import 'package:e1547/post/post.dart';
 import 'package:e1547/tag/tag.dart';
 
 extension Updating on Follow {
-  FollowStatus? resolve(String host) => statuses[host];
-
   String get name => alias ?? tagToTitle(tags);
 
   Follow withAlias(String alias) {
     Follow updated = this;
     if (this.alias != alias) {
       updated = updated.copyWith(alias: alias);
-    }
-    return updated;
-  }
-
-  Follow withStatus(String host, FollowStatus status) {
-    Follow updated = this;
-    FollowStatus? old = updated.statuses[host];
-    if (old != status) {
-      updated = updated.copyWith(
-        statuses: Map.from(statuses)..[host] = status,
-      );
     }
     return updated;
   }
@@ -36,110 +23,58 @@ extension Updating on Follow {
     return updated;
   }
 
-  Follow withTimestamp(String host) {
+  Follow withTimestamp() {
     Follow updated = this;
-    FollowStatus status = updated.resolve(host) ?? const FollowStatus();
-    if (status.updated == null ||
-        DateTime.now().difference(status.updated!) >
+    if (updated.updated == null ||
+        DateTime.now().difference(updated.updated!) >
             const Duration(minutes: 10)) {
-      updated = updated.withStatus(
-        host,
-        status.copyWith(updated: DateTime.now()),
-      );
+      updated = updated.copyWith(updated: DateTime.now());
     }
     return updated;
   }
 
-  Follow withLatest(String host, Post? post, {bool foreground = false}) {
+  Follow withLatest(Post? post, {bool foreground = false}) {
     Follow updated = this;
-    FollowStatus status = statuses[host] ?? const FollowStatus();
-
-    if (foreground && status.unseen != 0) {
-      updated = updated.withStatus(
-        host,
-        status.copyWith(
-          unseen: 0,
-        ),
-      );
+    if (foreground && updated.unseen != 0) {
+      updated = updated.copyWith(unseen: 0);
     }
     if (post != null) {
-      if (status.latest == null || status.latest! < post.id) {
-        updated = updated.withStatus(
-          host,
-          status.copyWith(
-            latest: post.id,
-            thumbnail: post.sample.url,
-          ),
+      if (updated.latest == null || updated.latest! < post.id) {
+        updated = updated.copyWith(
+          latest: post.id,
+          thumbnail: post.sample.url,
         );
       } else {
-        if (status.thumbnail != post.sample.url) {
-          updated = updated.withStatus(
-            host,
-            status.copyWith(
-              thumbnail: post.sample.url,
-            ),
+        if (updated.thumbnail != post.sample.url) {
+          updated = updated.copyWith(
+            thumbnail: post.sample.url,
           );
         }
       }
     }
 
-    updated = updated.withTimestamp(host);
+    updated = updated.withTimestamp();
     return updated;
   }
 
-  Follow withUnseen(String host, List<Post> posts) {
+  Follow withUnseen(List<Post> posts) {
     Follow updated = this;
-    FollowStatus status = updated.resolve(host) ?? const FollowStatus();
     if (posts.isNotEmpty) {
       posts.sort((a, b) => b.id.compareTo(a.id));
-      updated = updated.withLatest(host, posts.first);
-      status = updated.resolve(host)!;
-      if (status.latest != null) {
-        posts = posts.takeWhile((value) => value.id > status.latest!).toList();
+      Post? newest = posts.first;
+      if (updated.latest != null) {
+        posts = posts.takeWhile((e) => e.id > updated.latest!).toList();
       }
+      updated = updated.withLatest(newest);
       int length = posts.length;
-      if (status.unseen == null ||
-          (statuses.entries.any((e) =>
-              e.value != status &&
-              status.latest == e.value.latest &&
-              e.value.unseen == 0))) {
-        updated = updated.withStatus(host, status.copyWith(unseen: 0));
-      } else if (length > status.unseen!) {
-        updated = updated.withStatus(host, status.copyWith(unseen: length));
+      if (updated.unseen == null) {
+        updated = updated.copyWith(unseen: 0);
+      } else if (length > updated.unseen!) {
+        updated = updated.copyWith(unseen: length);
       }
-      status = updated.resolve(host)!;
     }
-    updated = updated.withTimestamp(host);
+    updated = updated.withTimestamp();
     return updated;
-  }
-}
-
-extension Utility on List<Follow> {
-  List<String> get tags => map((e) => e.tags).toList();
-
-  void sortByNew(String host) {
-    sort(
-      (a, b) {
-        int result = 0;
-
-        int unseenA = a.statuses[host]?.unseen ?? -1;
-        int unseenB = b.statuses[host]?.unseen ?? -1;
-
-        result = unseenB.compareTo(unseenA);
-
-        if (result == 0) {
-          int latestA = a.statuses[host]?.latest ?? -1;
-          int latestB = b.statuses[host]?.latest ?? -1;
-
-          result = latestB.compareTo(latestA);
-        }
-
-        if (result == 0) {
-          result = a.name.toLowerCase().compareTo(b.name.toLowerCase());
-        }
-        return result;
-      },
-    );
   }
 }
 

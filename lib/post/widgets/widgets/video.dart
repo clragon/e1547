@@ -70,6 +70,8 @@ class _VideoButtonState extends State<VideoButton>
                       !widget.videoController.value.isPlaying || !loading,
                   duration: const Duration(milliseconds: 100),
                   child: ListenableListener(
+                    initialize: true,
+                    listenable: widget.videoController,
                     listener: () {
                       if (widget.videoController.value.isPlaying) {
                         animationController.forward();
@@ -77,15 +79,14 @@ class _VideoButtonState extends State<VideoButton>
                         animationController.reverse();
                       }
                     },
-                    listenable: widget.videoController,
                     child: AnimatedBuilder(
                       animation: animationController,
                       builder: (context, child) => AnimatedIcon(
                         icon: AnimatedIcons.play_pause,
-                        progress: animationController,
-                        size: widget.size,
-                        color: Colors.white,
-                      ),
+                            progress: animationController,
+                            size: widget.size,
+                            color: Colors.white,
+                          ),
                     ),
                   ),
                 ),

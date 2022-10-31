@@ -57,7 +57,7 @@ class ListenableListener extends StatefulWidget {
     required this.child,
     required this.listenable,
     this.listener,
-    this.initialize = true,
+    this.initialize = false,
   });
 
   final Widget child;

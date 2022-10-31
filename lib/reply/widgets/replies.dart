@@ -19,15 +19,16 @@ class RepliesPage extends StatelessWidget {
       orderByOldest: orderByOldest,
       child: Consumer<RepliesController>(
         builder: (context, controller, child) => ListenableListener(
+          initialize: true,
+          listenable: controller.orderByOldest,
           listener: () async {
             await controller.waitForFirstPage();
             await context.read<HistoriesService>().addTopic(
-              context.read<Client>().host,
+                  context.read<Client>().host,
                   topic,
                   replies: controller.itemList!,
                 );
           },
-          listenable: controller.orderByOldest,
           child: RefreshableControllerPage(
             appBar: DefaultAppBar(
               title: Text(topic.title),
