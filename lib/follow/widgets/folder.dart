@@ -80,6 +80,7 @@ class _FollowsFolderPageState extends State<FollowsFolderPage> {
               SubValueBuilder<StreamSubscription<List<Follow>>>(
             create: (context) => value.listen((event) => update()),
             dispose: (context, value) => value.cancel(),
+            selector: (context) => [value],
             builder: (context, _) => AsyncBuilder<List<Follow>>(
               stream: value,
               builder: (context, follows) => SheetActions(
