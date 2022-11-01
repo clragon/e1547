@@ -24,10 +24,11 @@ class _FollowMarkReadTileState extends State<FollowMarkReadTile> {
         builder: (context, stream) => AsyncBuilder<int>(
           stream: stream,
           builder: (context, value) => ListTile(
-            enabled: value != 0,
-            leading: Icon(value != 0 ? Icons.mark_email_read : Icons.drafts),
+            enabled: (value ?? 0) > 0,
+            leading:
+                Icon((value ?? 0) > 0 ? Icons.mark_email_read : Icons.drafts),
             title: const Text('unseen posts'),
-            subtitle: value != 0
+            subtitle: (value ?? 0) > 0
                 ? TweenAnimationBuilder<int>(
                     tween: IntTween(begin: 0, end: value ?? 0),
                     duration: defaultAnimationDuration,
@@ -118,7 +119,6 @@ class _FollowEditorState extends State<FollowEditor> {
         content: value.join('\n'),
         onSubmit: (context, value) async {
           List<String> tags = value.split('\n').trim();
-          tags.removeWhere((tag) => tag.isEmpty);
           service.edit(client.host, tags);
           Navigator.pop(context);
           return null;

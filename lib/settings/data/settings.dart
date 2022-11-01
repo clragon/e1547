@@ -42,9 +42,10 @@ class Settings with SharedPrefsSettings {
 
   late final ValueNotifier<List<String>> denylist =
       createSetting(key: 'blacklist', initialValue: []);
-  late final ValueNotifier<List<PrefsFollow>> follows = createSetting(
+  @Deprecated('Follows are now found in their own SQL database')
+  late final ValueNotifier<List<PrefsFollow>?> follows = createSetting(
     key: 'follows',
-    initialValue: [],
+    initialValue: null,
     getSetting: (prefs, key) {
       List<String>? value = prefs.getStringList(key);
       if (value != null) {
@@ -53,10 +54,16 @@ class Settings with SharedPrefsSettings {
         return null;
       }
     },
-    setSetting: (prefs, key, value) async => prefs.setStringList(
-      key,
-      value.map((e) => json.encode(e.toJson())).toList(),
-    ),
+    setSetting: (prefs, key, value) async {
+      if (value == null) {
+        prefs.remove(key);
+      } else {
+        await prefs.setStringList(
+          key,
+          value.map((e) => json.encode(e.toJson())).toList(),
+        );
+      }
+    },
   );
 
   late final ValueNotifier<bool> writeHistory =

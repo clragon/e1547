@@ -17,7 +17,6 @@ class FollowCompanion extends UpdateCompanion<Follow> {
   final Value<int?> unseen;
   final Value<String?> thumbnail;
   final Value<DateTime?> updated;
-
   const FollowCompanion({
     this.id = const Value.absent(),
     this.host = const Value.absent(),
@@ -29,7 +28,6 @@ class FollowCompanion extends UpdateCompanion<Follow> {
     this.thumbnail = const Value.absent(),
     this.updated = const Value.absent(),
   });
-
   FollowCompanion.insert({
     this.id = const Value.absent(),
     required String host,
@@ -43,7 +41,6 @@ class FollowCompanion extends UpdateCompanion<Follow> {
   })  : host = Value(host),
         tags = Value(tags),
         type = Value(type);
-
   static Insertable<Follow> custom({
     Expression<int>? id,
     Expression<String>? host,
@@ -173,9 +170,7 @@ class $FollowsTableTable extends FollowsTable
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-
   $FollowsTableTable(this.attachedDatabase, [this._alias]);
-
   final VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<int> id = GeneratedColumn<int>(
@@ -224,17 +219,13 @@ class $FollowsTableTable extends FollowsTable
   late final GeneratedColumn<DateTime> updated = GeneratedColumn<DateTime>(
       'updated', aliasedName, true,
       type: DriftSqlType.dateTime, requiredDuringInsert: false);
-
   @override
   List<GeneratedColumn> get $columns =>
       [id, host, tags, alias, type, latest, unseen, thumbnail, updated];
-
   @override
   String get aliasedName => _alias ?? 'follows_table';
-
   @override
   String get actualTableName => 'follows_table';
-
   @override
   VerificationContext validateIntegrity(Insertable<Follow> instance,
       {bool isInserting = false}) {
@@ -283,6 +274,11 @@ class $FollowsTableTable extends FollowsTable
   Set<GeneratedColumn> get $primaryKey => {id};
 
   @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+        {host, tags},
+      ];
+
+  @override
   Follow map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return Follow(
@@ -317,14 +313,11 @@ class $FollowsTableTable extends FollowsTable
 
 abstract class _$FollowsDatabase extends GeneratedDatabase {
   _$FollowsDatabase(QueryExecutor e) : super(e);
-
   _$FollowsDatabase.connect(DatabaseConnection c) : super.connect(c);
   late final $FollowsTableTable followsTable = $FollowsTableTable(this);
-
   @override
   Iterable<TableInfo<Table, dynamic>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
-
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities => [followsTable];
 }

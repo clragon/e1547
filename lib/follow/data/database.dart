@@ -200,6 +200,7 @@ class FollowsDatabase extends _$FollowsDatabase {
           alias: Value(item.alias),
           type: Value(item.type),
         ),
+        mode: InsertMode.insertOrIgnore,
       );
 
   Future<void> addAll(String host, List<FollowRequest> items) => batch(
@@ -213,6 +214,7 @@ class FollowsDatabase extends _$FollowsDatabase {
               type: Value(item.type),
             ),
           ),
+          mode: InsertMode.insertOrIgnore,
         ),
       );
 
