@@ -13,7 +13,7 @@ class FollowsTable extends Table {
 
   TextColumn get tags => text()();
 
-  TextColumn get alias => text().nullable()();
+  TextColumn get title => text().nullable()();
 
   TextColumn get type =>
       text().map(const StringEnumConverter(FollowType.values))();
@@ -82,7 +82,7 @@ class FollowsDatabase extends _$FollowsDatabase {
   SimpleSelectStatement<FollowsTable, Follow> _queryExpression({
     String? host,
     String? tagRegex,
-    String? aliasRegex,
+    String? titleRegex,
     FollowType? type,
     int? limit,
     int? offset,
@@ -92,16 +92,16 @@ class FollowsDatabase extends _$FollowsDatabase {
         (t) => OrderingTerm(expression: t.unseen, mode: OrderingMode.desc),
         (t) => OrderingTerm(expression: t.latest, mode: OrderingMode.desc),
         (t) => OrderingTerm(
-            expression: coalesce([t.alias, t.tags]), mode: OrderingMode.desc)
+            expression: coalesce([t.title, t.tags]), mode: OrderingMode.desc)
       ])
       ..where((tbl) => _hostQuery(tbl, host));
     if (tagRegex != null) {
       selectable
           .where((tbl) => tbl.tags.regexp(tagRegex, caseSensitive: false));
     }
-    if (aliasRegex != null) {
+    if (titleRegex != null) {
       selectable
-          .where((tbl) => tbl.alias.regexp(aliasRegex, caseSensitive: false));
+          .where((tbl) => tbl.title.regexp(titleRegex, caseSensitive: false));
     }
     if (type != null) {
       selectable.where((tbl) => tbl.type.equals(type.name));
@@ -121,7 +121,7 @@ class FollowsDatabase extends _$FollowsDatabase {
     int? limit,
     String? host,
     String? tagRegex,
-    String? aliasRegex,
+    String? titleRegex,
     FollowType? type,
   }) {
     limit ??= 80;
@@ -129,7 +129,7 @@ class FollowsDatabase extends _$FollowsDatabase {
     return _queryExpression(
       host: host,
       tagRegex: tagRegex,
-      aliasRegex: aliasRegex,
+      titleRegex: titleRegex,
       type: type,
       limit: limit,
       offset: offset,
@@ -139,14 +139,14 @@ class FollowsDatabase extends _$FollowsDatabase {
   Future<List<Follow>> getAll({
     String? host,
     String? tagRegex,
-    String? aliasRegex,
+    String? titleRegex,
     FollowType? type,
     int? limit,
   }) =>
       _queryExpression(
         host: host,
         tagRegex: tagRegex,
-        aliasRegex: aliasRegex,
+        titleRegex: titleRegex,
         type: type,
         limit: limit,
       ).get();
@@ -154,14 +154,14 @@ class FollowsDatabase extends _$FollowsDatabase {
   Stream<List<Follow>> watchAll({
     String? host,
     String? tagRegex,
-    String? aliasRegex,
+    String? titleRegex,
     FollowType? type,
     int? limit,
   }) =>
       _queryExpression(
         host: host,
         tagRegex: tagRegex,
-        aliasRegex: aliasRegex,
+        titleRegex: titleRegex,
         type: type,
         limit: limit,
       ).watch();
@@ -197,7 +197,7 @@ class FollowsDatabase extends _$FollowsDatabase {
         FollowCompanion(
           host: Value(host),
           tags: Value(item.tags),
-          alias: Value(item.alias),
+          title: Value(item.title),
           type: Value(item.type),
         ),
         mode: InsertMode.insertOrIgnore,
@@ -210,7 +210,7 @@ class FollowsDatabase extends _$FollowsDatabase {
             (item) => FollowCompanion(
               host: Value(host),
               tags: Value(item.tags),
-              alias: Value(item.alias),
+              title: Value(item.title),
               type: Value(item.type),
             ),
           ),

@@ -7,9 +7,9 @@ part of 'follow.dart';
 // **************************************************************************
 
 _$_Follow _$$_FollowFromJson(Map<String, dynamic> json) => _$_Follow(
-  id: json['id'] as int,
+      id: json['id'] as int,
       tags: json['tags'] as String,
-      alias: json['alias'] as String?,
+      title: json['title'] as String?,
       type: $enumDecode(_$FollowTypeEnumMap, json['type']),
       latest: json['latest'] as int?,
       unseen: json['unseen'] as int?,
@@ -19,10 +19,11 @@ _$_Follow _$$_FollowFromJson(Map<String, dynamic> json) => _$_Follow(
           : DateTime.parse(json['updated'] as String),
     );
 
-Map<String, dynamic> _$$_FollowToJson(_$_Follow instance) => <String, dynamic>{
+Map<String, dynamic> _$$_FollowToJson(_$_Follow instance) =>
+    <String, dynamic>{
       'id': instance.id,
       'tags': instance.tags,
-      'alias': instance.alias,
+      'title': instance.title,
       'type': _$FollowTypeEnumMap[instance.type]!,
       'latest': instance.latest,
       'unseen': instance.unseen,
@@ -39,7 +40,7 @@ const _$FollowTypeEnumMap = {
 _$_FollowRequest _$$_FollowRequestFromJson(Map<String, dynamic> json) =>
     _$_FollowRequest(
       tags: json['tags'] as String,
-      alias: json['alias'] as String?,
+      title: json['title'] as String?,
       type: $enumDecodeNullable(_$FollowTypeEnumMap, json['type']) ??
           FollowType.update,
     );
@@ -47,7 +48,7 @@ _$_FollowRequest _$$_FollowRequestFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$$_FollowRequestToJson(_$_FollowRequest instance) =>
     <String, dynamic>{
       'tags': instance.tags,
-      'alias': instance.alias,
+      'title': instance.title,
       'type': _$FollowTypeEnumMap[instance.type]!,
     };
 

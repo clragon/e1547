@@ -17,23 +17,23 @@ class FollowTile extends StatelessWidget {
     FollowsService follows = context.watch<FollowsService>();
     bool active = follow.latest != null && follow.thumbnail != null;
 
-    void editAlias() {
+    void editTitle() {
       sheetController!.show(
         context,
         ControlledTextField(
-          labelText: 'Follow alias',
+          labelText: 'Follow title',
           actionController: sheetController,
           textController: TextEditingController(text: follow.name),
           submit: (value) {
-            String? alias = value.trim();
-            if (follow.alias != value) {
+            String? title = value.trim();
+            if (follow.title != value) {
               if (value.isNotEmpty) {
-                alias = value;
+                title = value;
               } else {
-                alias = null;
+                title = null;
               }
               follows.replace(follow.copyWith(
-                alias: alias,
+                title: title,
               ));
             }
           },
@@ -109,7 +109,7 @@ class FollowTile extends StatelessWidget {
             ),
           if (sheetController != null && follow.tags.split(' ').length > 1)
             PopupMenuTile(
-              value: editAlias,
+              value: editTitle,
               title: 'Rename',
               icon: Icons.label,
             ),

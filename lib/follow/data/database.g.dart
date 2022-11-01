@@ -11,17 +11,18 @@ class FollowCompanion extends UpdateCompanion<Follow> {
   final Value<int> id;
   final Value<String> host;
   final Value<String> tags;
-  final Value<String?> alias;
+  final Value<String?> title;
   final Value<FollowType> type;
   final Value<int?> latest;
   final Value<int?> unseen;
   final Value<String?> thumbnail;
   final Value<DateTime?> updated;
+
   const FollowCompanion({
     this.id = const Value.absent(),
     this.host = const Value.absent(),
     this.tags = const Value.absent(),
-    this.alias = const Value.absent(),
+    this.title = const Value.absent(),
     this.type = const Value.absent(),
     this.latest = const Value.absent(),
     this.unseen = const Value.absent(),
@@ -32,7 +33,7 @@ class FollowCompanion extends UpdateCompanion<Follow> {
     this.id = const Value.absent(),
     required String host,
     required String tags,
-    this.alias = const Value.absent(),
+    this.title = const Value.absent(),
     required FollowType type,
     this.latest = const Value.absent(),
     this.unseen = const Value.absent(),
@@ -45,7 +46,7 @@ class FollowCompanion extends UpdateCompanion<Follow> {
     Expression<int>? id,
     Expression<String>? host,
     Expression<String>? tags,
-    Expression<String>? alias,
+    Expression<String>? title,
     Expression<String>? type,
     Expression<int>? latest,
     Expression<int>? unseen,
@@ -56,7 +57,7 @@ class FollowCompanion extends UpdateCompanion<Follow> {
       if (id != null) 'id': id,
       if (host != null) 'host': host,
       if (tags != null) 'tags': tags,
-      if (alias != null) 'alias': alias,
+      if (title != null) 'title': title,
       if (type != null) 'type': type,
       if (latest != null) 'latest': latest,
       if (unseen != null) 'unseen': unseen,
@@ -69,7 +70,7 @@ class FollowCompanion extends UpdateCompanion<Follow> {
       {Value<int>? id,
       Value<String>? host,
       Value<String>? tags,
-      Value<String?>? alias,
+      Value<String?>? title,
       Value<FollowType>? type,
       Value<int?>? latest,
       Value<int?>? unseen,
@@ -79,7 +80,7 @@ class FollowCompanion extends UpdateCompanion<Follow> {
       id: id ?? this.id,
       host: host ?? this.host,
       tags: tags ?? this.tags,
-      alias: alias ?? this.alias,
+      title: title ?? this.title,
       type: type ?? this.type,
       latest: latest ?? this.latest,
       unseen: unseen ?? this.unseen,
@@ -100,8 +101,8 @@ class FollowCompanion extends UpdateCompanion<Follow> {
     if (tags.present) {
       map['tags'] = Variable<String>(tags.value);
     }
-    if (alias.present) {
-      map['alias'] = Variable<String>(alias.value);
+    if (title.present) {
+      map['title'] = Variable<String>(title.value);
     }
     if (type.present) {
       final converter = $FollowsTableTable.$converter0;
@@ -128,7 +129,7 @@ class FollowCompanion extends UpdateCompanion<Follow> {
           ..write('id: $id, ')
           ..write('host: $host, ')
           ..write('tags: $tags, ')
-          ..write('alias: $alias, ')
+          ..write('title: $title, ')
           ..write('type: $type, ')
           ..write('latest: $latest, ')
           ..write('unseen: $unseen, ')
@@ -149,7 +150,7 @@ class _$FollowInsertable implements Insertable<Follow> {
     return FollowCompanion(
       id: Value(_object.id),
       tags: Value(_object.tags),
-      alias: Value(_object.alias),
+      title: Value(_object.title),
       type: Value(_object.type),
       latest: Value(_object.latest),
       unseen: Value(_object.unseen),
@@ -188,10 +189,10 @@ class $FollowsTableTable extends FollowsTable
   late final GeneratedColumn<String> tags = GeneratedColumn<String>(
       'tags', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
-  final VerificationMeta _aliasMeta = const VerificationMeta('alias');
+  final VerificationMeta _titleMeta = const VerificationMeta('title');
   @override
-  late final GeneratedColumn<String> alias = GeneratedColumn<String>(
-      'alias', aliasedName, true,
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
+      'title', aliasedName, true,
       type: DriftSqlType.string, requiredDuringInsert: false);
   final VerificationMeta _typeMeta = const VerificationMeta('type');
   @override
@@ -221,7 +222,7 @@ class $FollowsTableTable extends FollowsTable
       type: DriftSqlType.dateTime, requiredDuringInsert: false);
   @override
   List<GeneratedColumn> get $columns =>
-      [id, host, tags, alias, type, latest, unseen, thumbnail, updated];
+      [id, host, tags, title, type, latest, unseen, thumbnail, updated];
   @override
   String get aliasedName => _alias ?? 'follows_table';
   @override
@@ -246,9 +247,9 @@ class $FollowsTableTable extends FollowsTable
     } else if (isInserting) {
       context.missing(_tagsMeta);
     }
-    if (data.containsKey('alias')) {
+    if (data.containsKey('title')) {
       context.handle(
-          _aliasMeta, alias.isAcceptableOrUnknown(data['alias']!, _aliasMeta));
+          _titleMeta, title.isAcceptableOrUnknown(data['title']!, _titleMeta));
     }
     context.handle(_typeMeta, const VerificationResult.success());
     if (data.containsKey('latest')) {
@@ -272,12 +273,10 @@ class $FollowsTableTable extends FollowsTable
 
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
-
   @override
   List<Set<GeneratedColumn>> get uniqueKeys => [
         {host, tags},
       ];
-
   @override
   Follow map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
@@ -286,8 +285,8 @@ class $FollowsTableTable extends FollowsTable
           .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
       tags: attachedDatabase.options.types
           .read(DriftSqlType.string, data['${effectivePrefix}tags'])!,
-      alias: attachedDatabase.options.types
-          .read(DriftSqlType.string, data['${effectivePrefix}alias']),
+      title: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}title']),
       type: $FollowsTableTable.$converter0.fromSql(attachedDatabase
           .options.types
           .read(DriftSqlType.string, data['${effectivePrefix}type'])!),

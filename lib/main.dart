@@ -54,7 +54,7 @@ Future<void> migrateFollows(Settings settings) async {
             .map(
               (e) => FollowRequest(
                 tags: e.tags,
-                alias: e.alias,
+                title: e.alias,
                 type: e.type,
               ),
             )
@@ -68,7 +68,7 @@ Future<void> migrateFollows(Settings settings) async {
               .map(
                 (e) => FollowRequest(
                   tags: e.tags,
-                  alias: e.alias,
+                  title: e.alias,
                   type: e.type,
                 ),
               )

@@ -21,23 +21,17 @@ Follow _$FollowFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$Follow {
   int get id => throw _privateConstructorUsedError;
-
   String get tags => throw _privateConstructorUsedError;
 
-  String? get alias => throw _privateConstructorUsedError;
+  String? get title => throw _privateConstructorUsedError;
 
   FollowType get type => throw _privateConstructorUsedError;
-
   int? get latest => throw _privateConstructorUsedError;
-
   int? get unseen => throw _privateConstructorUsedError;
-
   String? get thumbnail => throw _privateConstructorUsedError;
-
   DateTime? get updated => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-
   @JsonKey(ignore: true)
   $FollowCopyWith<Follow> get copyWith => throw _privateConstructorUsedError;
 }
@@ -46,11 +40,10 @@ mixin _$Follow {
 abstract class $FollowCopyWith<$Res> {
   factory $FollowCopyWith(Follow value, $Res Function(Follow) then) =
       _$FollowCopyWithImpl<$Res>;
-
   $Res call(
       {int id,
       String tags,
-      String? alias,
+      String? title,
       FollowType type,
       int? latest,
       int? unseen,
@@ -70,7 +63,7 @@ class _$FollowCopyWithImpl<$Res> implements $FollowCopyWith<$Res> {
   $Res call({
     Object? id = freezed,
     Object? tags = freezed,
-    Object? alias = freezed,
+    Object? title = freezed,
     Object? type = freezed,
     Object? latest = freezed,
     Object? unseen = freezed,
@@ -86,9 +79,9 @@ class _$FollowCopyWithImpl<$Res> implements $FollowCopyWith<$Res> {
           ? _value.tags
           : tags // ignore: cast_nullable_to_non_nullable
               as String,
-      alias: alias == freezed
-          ? _value.alias
-          : alias // ignore: cast_nullable_to_non_nullable
+      title: title == freezed
+          ? _value.title
+          : title // ignore: cast_nullable_to_non_nullable
               as String?,
       type: type == freezed
           ? _value.type
@@ -118,12 +111,11 @@ class _$FollowCopyWithImpl<$Res> implements $FollowCopyWith<$Res> {
 abstract class _$$_FollowCopyWith<$Res> implements $FollowCopyWith<$Res> {
   factory _$$_FollowCopyWith(_$_Follow value, $Res Function(_$_Follow) then) =
       __$$_FollowCopyWithImpl<$Res>;
-
   @override
   $Res call(
       {int id,
       String tags,
-      String? alias,
+      String? title,
       FollowType type,
       int? latest,
       int? unseen,
@@ -144,7 +136,7 @@ class __$$_FollowCopyWithImpl<$Res> extends _$FollowCopyWithImpl<$Res>
   $Res call({
     Object? id = freezed,
     Object? tags = freezed,
-    Object? alias = freezed,
+    Object? title = freezed,
     Object? type = freezed,
     Object? latest = freezed,
     Object? unseen = freezed,
@@ -160,9 +152,9 @@ class __$$_FollowCopyWithImpl<$Res> extends _$FollowCopyWithImpl<$Res>
           ? _value.tags
           : tags // ignore: cast_nullable_to_non_nullable
               as String,
-      alias: alias == freezed
-          ? _value.alias
-          : alias // ignore: cast_nullable_to_non_nullable
+      title: title == freezed
+          ? _value.title
+          : title // ignore: cast_nullable_to_non_nullable
               as String?,
       type: type == freezed
           ? _value.type
@@ -194,7 +186,7 @@ class _$_Follow implements _Follow {
   const _$_Follow(
       {required this.id,
       required this.tags,
-      required this.alias,
+      required this.title,
       required this.type,
       required this.latest,
       required this.unseen,
@@ -209,7 +201,7 @@ class _$_Follow implements _Follow {
   @override
   final String tags;
   @override
-  final String? alias;
+  final String? title;
   @override
   final FollowType type;
   @override
@@ -223,7 +215,7 @@ class _$_Follow implements _Follow {
 
   @override
   String toString() {
-    return 'Follow(id: $id, tags: $tags, alias: $alias, type: $type, latest: $latest, unseen: $unseen, thumbnail: $thumbnail, updated: $updated)';
+    return 'Follow(id: $id, tags: $tags, title: $title, type: $type, latest: $latest, unseen: $unseen, thumbnail: $thumbnail, updated: $updated)';
   }
 
   @override
@@ -233,7 +225,7 @@ class _$_Follow implements _Follow {
             other is _$_Follow &&
             const DeepCollectionEquality().equals(other.id, id) &&
             const DeepCollectionEquality().equals(other.tags, tags) &&
-            const DeepCollectionEquality().equals(other.alias, alias) &&
+            const DeepCollectionEquality().equals(other.title, title) &&
             const DeepCollectionEquality().equals(other.type, type) &&
             const DeepCollectionEquality().equals(other.latest, latest) &&
             const DeepCollectionEquality().equals(other.unseen, unseen) &&
@@ -247,7 +239,7 @@ class _$_Follow implements _Follow {
       runtimeType,
       const DeepCollectionEquality().hash(id),
       const DeepCollectionEquality().hash(tags),
-      const DeepCollectionEquality().hash(alias),
+      const DeepCollectionEquality().hash(title),
       const DeepCollectionEquality().hash(type),
       const DeepCollectionEquality().hash(latest),
       const DeepCollectionEquality().hash(unseen),
@@ -271,7 +263,7 @@ abstract class _Follow implements Follow {
   const factory _Follow(
       {required final int id,
       required final String tags,
-      required final String? alias,
+      required final String? title,
       required final FollowType type,
       required final int? latest,
       required final int? unseen,
@@ -287,23 +279,18 @@ abstract class _Follow implements Follow {
   String get tags;
 
   @override
-  String? get alias;
+  String? get title;
 
   @override
   FollowType get type;
-
   @override
   int? get latest;
-
   @override
   int? get unseen;
-
   @override
   String? get thumbnail;
-
   @override
   DateTime? get updated;
-
   @override
   @JsonKey(ignore: true)
   _$$_FollowCopyWith<_$_Follow> get copyWith =>
@@ -318,12 +305,11 @@ FollowRequest _$FollowRequestFromJson(Map<String, dynamic> json) {
 mixin _$FollowRequest {
   String get tags => throw _privateConstructorUsedError;
 
-  String? get alias => throw _privateConstructorUsedError;
+  String? get title => throw _privateConstructorUsedError;
 
   FollowType get type => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-
   @JsonKey(ignore: true)
   $FollowRequestCopyWith<FollowRequest> get copyWith =>
       throw _privateConstructorUsedError;
@@ -335,7 +321,7 @@ abstract class $FollowRequestCopyWith<$Res> {
           FollowRequest value, $Res Function(FollowRequest) then) =
       _$FollowRequestCopyWithImpl<$Res>;
 
-  $Res call({String tags, String? alias, FollowType type});
+  $Res call({String tags, String? title, FollowType type});
 }
 
 /// @nodoc
@@ -344,14 +330,13 @@ class _$FollowRequestCopyWithImpl<$Res>
   _$FollowRequestCopyWithImpl(this._value, this._then);
 
   final FollowRequest _value;
-
   // ignore: unused_field
   final $Res Function(FollowRequest) _then;
 
   @override
   $Res call({
     Object? tags = freezed,
-    Object? alias = freezed,
+    Object? title = freezed,
     Object? type = freezed,
   }) {
     return _then(_value.copyWith(
@@ -359,9 +344,9 @@ class _$FollowRequestCopyWithImpl<$Res>
           ? _value.tags
           : tags // ignore: cast_nullable_to_non_nullable
               as String,
-      alias: alias == freezed
-          ? _value.alias
-          : alias // ignore: cast_nullable_to_non_nullable
+      title: title == freezed
+          ? _value.title
+          : title // ignore: cast_nullable_to_non_nullable
               as String?,
       type: type == freezed
           ? _value.type
@@ -379,7 +364,7 @@ abstract class _$$_FollowRequestCopyWith<$Res>
       __$$_FollowRequestCopyWithImpl<$Res>;
 
   @override
-  $Res call({String tags, String? alias, FollowType type});
+  $Res call({String tags, String? title, FollowType type});
 }
 
 /// @nodoc
@@ -396,7 +381,7 @@ class __$$_FollowRequestCopyWithImpl<$Res>
   @override
   $Res call({
     Object? tags = freezed,
-    Object? alias = freezed,
+    Object? title = freezed,
     Object? type = freezed,
   }) {
     return _then(_$_FollowRequest(
@@ -404,9 +389,9 @@ class __$$_FollowRequestCopyWithImpl<$Res>
           ? _value.tags
           : tags // ignore: cast_nullable_to_non_nullable
               as String,
-      alias: alias == freezed
-          ? _value.alias
-          : alias // ignore: cast_nullable_to_non_nullable
+      title: title == freezed
+          ? _value.title
+          : title // ignore: cast_nullable_to_non_nullable
               as String?,
       type: type == freezed
           ? _value.type
@@ -420,7 +405,7 @@ class __$$_FollowRequestCopyWithImpl<$Res>
 @JsonSerializable()
 class _$_FollowRequest implements _FollowRequest {
   const _$_FollowRequest(
-      {required this.tags, this.alias, this.type = FollowType.update});
+      {required this.tags, this.title, this.type = FollowType.update});
 
   factory _$_FollowRequest.fromJson(Map<String, dynamic> json) =>
       _$$_FollowRequestFromJson(json);
@@ -428,14 +413,14 @@ class _$_FollowRequest implements _FollowRequest {
   @override
   final String tags;
   @override
-  final String? alias;
+  final String? title;
   @override
   @JsonKey()
   final FollowType type;
 
   @override
   String toString() {
-    return 'FollowRequest(tags: $tags, alias: $alias, type: $type)';
+    return 'FollowRequest(tags: $tags, title: $title, type: $type)';
   }
 
   @override
@@ -444,7 +429,7 @@ class _$_FollowRequest implements _FollowRequest {
         (other.runtimeType == runtimeType &&
             other is _$_FollowRequest &&
             const DeepCollectionEquality().equals(other.tags, tags) &&
-            const DeepCollectionEquality().equals(other.alias, alias) &&
+            const DeepCollectionEquality().equals(other.title, title) &&
             const DeepCollectionEquality().equals(other.type, type));
   }
 
@@ -453,7 +438,7 @@ class _$_FollowRequest implements _FollowRequest {
   int get hashCode => Object.hash(
       runtimeType,
       const DeepCollectionEquality().hash(tags),
-      const DeepCollectionEquality().hash(alias),
+      const DeepCollectionEquality().hash(title),
       const DeepCollectionEquality().hash(type));
 
   @JsonKey(ignore: true)
@@ -472,7 +457,7 @@ class _$_FollowRequest implements _FollowRequest {
 abstract class _FollowRequest implements FollowRequest {
   const factory _FollowRequest(
       {required final String tags,
-      final String? alias,
+      final String? title,
       final FollowType type}) = _$_FollowRequest;
 
   factory _FollowRequest.fromJson(Map<String, dynamic> json) =
@@ -482,11 +467,10 @@ abstract class _FollowRequest implements FollowRequest {
   String get tags;
 
   @override
-  String? get alias;
+  String? get title;
 
   @override
   FollowType get type;
-
   @override
   @JsonKey(ignore: true)
   _$$_FollowRequestCopyWith<_$_FollowRequest> get copyWith =>
@@ -500,13 +484,10 @@ PrefsFollow _$PrefsFollowFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$PrefsFollow {
   String get tags => throw _privateConstructorUsedError;
-
   String? get alias => throw _privateConstructorUsedError;
-
   FollowType get type => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-
   @JsonKey(ignore: true)
   $PrefsFollowCopyWith<PrefsFollow> get copyWith =>
       throw _privateConstructorUsedError;
@@ -517,7 +498,6 @@ abstract class $PrefsFollowCopyWith<$Res> {
   factory $PrefsFollowCopyWith(
           PrefsFollow value, $Res Function(PrefsFollow) then) =
       _$PrefsFollowCopyWithImpl<$Res>;
-
   $Res call({String tags, String? alias, FollowType type});
 }
 
@@ -526,7 +506,6 @@ class _$PrefsFollowCopyWithImpl<$Res> implements $PrefsFollowCopyWith<$Res> {
   _$PrefsFollowCopyWithImpl(this._value, this._then);
 
   final PrefsFollow _value;
-
   // ignore: unused_field
   final $Res Function(PrefsFollow) _then;
 
@@ -559,7 +538,6 @@ abstract class _$$_PrefsFollowCopyWith<$Res>
   factory _$$_PrefsFollowCopyWith(
           _$_PrefsFollow value, $Res Function(_$_PrefsFollow) then) =
       __$$_PrefsFollowCopyWithImpl<$Res>;
-
   @override
   $Res call({String tags, String? alias, FollowType type});
 }
@@ -661,13 +639,10 @@ abstract class _PrefsFollow implements PrefsFollow {
 
   @override
   String get tags;
-
   @override
   String? get alias;
-
   @override
   FollowType get type;
-
   @override
   @JsonKey(ignore: true)
   _$$_PrefsFollowCopyWith<_$_PrefsFollow> get copyWith =>
