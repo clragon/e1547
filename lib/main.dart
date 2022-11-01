@@ -21,7 +21,7 @@ Future<void> main() async {
   AppInfo appInfo = await initializeAppInfo();
   Settings settings = await initializeSettings();
   EnvironmentPaths paths = await initializeEnvironmentPaths();
-  migrateFollows(settings);
+  await migrateFollows(settings);
   runApp(
     MultiProvider(
       providers: [
