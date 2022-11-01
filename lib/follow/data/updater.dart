@@ -108,8 +108,8 @@ class FollowsUpdater extends ChangeNotifier {
         host: client.host,
         minAge: refreshRate,
       );
-      _progress(follows.length);
       follows = follows.whereNot((e) => e.type == FollowType.bookmark).toList();
+      _progress(follows.length);
       List<Follow> singles = follows
           .whereNot((e) => e.tags.contains(' ') || e.tags.contains(':'))
           .toList();
