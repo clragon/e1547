@@ -1,8 +1,8 @@
-import 'dart:convert';
 import 'dart:math';
 
 import 'package:drift/drift.dart';
 import 'package:e1547/history/history.dart';
+import 'package:e1547/interface/interface.dart';
 
 part 'database.g.dart';
 
@@ -15,16 +15,6 @@ class HistoriesTable extends Table {
   TextColumn get thumbnails => text().map(const StringListConverter())();
   TextColumn get title => text().nullable()();
   TextColumn get subtitle => text().nullable()();
-}
-
-class StringListConverter extends TypeConverter<List<String>, String> {
-  const StringListConverter();
-
-  @override
-  List<String> fromSql(String fromDb) => json.decode(fromDb).cast<String>();
-
-  @override
-  String toSql(List<String> value) => json.encode(value);
 }
 
 @DriftDatabase(tables: [HistoriesTable])

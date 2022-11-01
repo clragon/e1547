@@ -2,6 +2,7 @@
 export 'data/action.dart';
 export 'data/collection.dart';
 export 'data/controller.dart';
+export 'data/converter.dart';
 export 'data/database.dart';
 export 'data/hosts.dart';
 export 'data/path.dart';

@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:drift/drift.dart';
 import 'package:e1547/follow/follow.dart';
+import 'package:e1547/interface/interface.dart';
 
 part 'database.g.dart';
 
@@ -30,18 +31,6 @@ class FollowsTable extends Table {
   List<Set<Column>> get uniqueKeys => [
         {host, tags}
       ];
-}
-
-class StringEnumConverter<T extends Enum> extends TypeConverter<T, String> {
-  const StringEnumConverter(this.values);
-
-  final List<T> values;
-
-  @override
-  T fromSql(String fromDb) => values.asNameMap()[fromDb]!;
-
-  @override
-  String toSql(T value) => value.name;
 }
 
 @DriftDatabase(tables: [FollowsTable])
