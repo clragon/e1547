@@ -131,7 +131,7 @@ extension PostDenying on Post {
 }
 
 extension PostDownloading on Post {
-  Future<void> download(BuildContext context) async {
+  Future<void> download(AppInfo appInfo) async {
     if (!await Permission.storage.request().isGranted) {
       return;
     }
@@ -140,7 +140,7 @@ extension PostDownloading on Post {
       String directory = join(
         (await ExternalPath.getExternalStoragePublicDirectory(
             ExternalPath.DIRECTORY_PICTURES)),
-        context.read<AppInfo>().appName,
+        appInfo.appName,
       );
       await Directory(directory).create();
       File target = File(join(directory, _downloadName()));
