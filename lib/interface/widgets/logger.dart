@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:e1547/interface/interface.dart';
 import 'package:expandable/expandable.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -275,6 +276,7 @@ class _LoggerErrorNotifierState extends State<LoggerErrorNotifier> {
   }
 
   void onMessage(TalkerDataInterface event) {
+    if (kReleaseMode) return;
     if ([LogLevel.critical, LogLevel.error].contains(event.logLevel)) {
       Color background = event.logLevel.color;
       ScaffoldMessenger.of(context).clearSnackBars();
@@ -327,9 +329,9 @@ class _LoggerErrorNotifierState extends State<LoggerErrorNotifier> {
           behavior: SnackBarBehavior.floating,
           action: widget.onOpenLogs != null
               ? SnackBarAction(
-                  label: 'LOGS',
-                  onPressed: widget.onOpenLogs!,
-                )
+            label: 'LOGS',
+            onPressed: widget.onOpenLogs!,
+          )
               : null,
         ),
       );
