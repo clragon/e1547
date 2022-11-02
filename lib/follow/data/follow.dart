@@ -9,6 +9,7 @@ class Follow with _$Follow {
     required int id,
     required String tags,
     required String? title,
+    required String? alias,
     required FollowType type,
     required int? latest,
     required int? unseen,
@@ -24,6 +25,7 @@ class FollowRequest with _$FollowRequest {
   const factory FollowRequest({
     required String tags,
     String? title,
+    String? alias,
     @Default(FollowType.update) FollowType type,
   }) = _FollowRequest;
 

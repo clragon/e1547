@@ -65,7 +65,7 @@ class FollowsProvider extends SubProvider0<FollowsService> {
     super.child,
     TransitionBuilder? builder,
   }) : super(
-          create: (context) => FollowsService(
+          create: (context) => FollowsService.connect(
             connectDatabase('follows.sqlite'),
           ),
           builder: (context, child) => ListenableListener(

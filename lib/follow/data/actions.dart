@@ -14,6 +14,14 @@ extension Updating on Follow {
     return updated;
   }
 
+  Follow withAlias(String alias) {
+    Follow updated = this;
+    if (this.alias != alias) {
+      updated = updated.copyWith(alias: alias);
+    }
+    return updated;
+  }
+
   Follow withPool(Pool pool) {
     Follow updated = this;
     updated = updated.withTitle(tagToTitle(pool.name));

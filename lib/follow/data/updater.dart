@@ -103,6 +103,7 @@ class FollowsUpdater extends ChangeNotifier {
       });
     }
 
+    List<Follow> previous = [];
     while (!_canceling) {
       List<Follow> follows = await service.getOutdated(
         host: client.host,
@@ -115,6 +116,11 @@ class FollowsUpdater extends ChangeNotifier {
           .toList();
       if (singles.isNotEmpty) {
         List<Follow> chunk = singles.take(40).toList();
+        assert(
+          !const DeepCollectionEquality().equals(previous, chunk),
+          'Updater tried refreshing same follow chunk twice!',
+        );
+        previous = chunk;
         int limit = chunk.length * refreshAmount;
         List<Post> posts = await rateLimit(client.tagPosts(
           chunk.map((e) => e.tags).toList(),
@@ -181,7 +187,7 @@ class FollowsUpdater extends ChangeNotifier {
       Map<Follow, List<Post>> result = {};
       for (final follow in follows) {
         for (final post in posts) {
-          if (post.hasTag(follow.tags)) {
+          if (post.hasTag(follow.alias ?? follow.tags)) {
             result.update(
               follow,
               (value) => value..add(post),
@@ -220,8 +226,8 @@ class FollowsUpdater extends ChangeNotifier {
         continue;
       }
       String? alias = await client.getTagAlias(follow.tags);
-      if (alias != null) {
-        Follow updated = follow.copyWith(tags: alias);
+      if (alias != follow.alias) {
+        Follow updated = follow.copyWith(alias: alias);
         result.add(updated);
       }
     }

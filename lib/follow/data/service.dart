@@ -4,7 +4,9 @@ import 'package:collection/collection.dart';
 import 'package:e1547/follow/follow.dart';
 
 class FollowsService extends FollowsDatabase {
-  FollowsService(super.e) : super.connect();
+  FollowsService(super.e);
+
+  FollowsService.connect(super.e) : super.connect();
 
   final int refreshAmount = 5;
 

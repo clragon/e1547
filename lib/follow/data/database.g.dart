@@ -12,6 +12,7 @@ class FollowCompanion extends UpdateCompanion<Follow> {
   final Value<String> host;
   final Value<String> tags;
   final Value<String?> title;
+  final Value<String?> alias;
   final Value<FollowType> type;
   final Value<int?> latest;
   final Value<int?> unseen;
@@ -23,6 +24,7 @@ class FollowCompanion extends UpdateCompanion<Follow> {
     this.host = const Value.absent(),
     this.tags = const Value.absent(),
     this.title = const Value.absent(),
+    this.alias = const Value.absent(),
     this.type = const Value.absent(),
     this.latest = const Value.absent(),
     this.unseen = const Value.absent(),
@@ -34,6 +36,7 @@ class FollowCompanion extends UpdateCompanion<Follow> {
     required String host,
     required String tags,
     this.title = const Value.absent(),
+    this.alias = const Value.absent(),
     required FollowType type,
     this.latest = const Value.absent(),
     this.unseen = const Value.absent(),
@@ -47,6 +50,7 @@ class FollowCompanion extends UpdateCompanion<Follow> {
     Expression<String>? host,
     Expression<String>? tags,
     Expression<String>? title,
+    Expression<String>? alias,
     Expression<String>? type,
     Expression<int>? latest,
     Expression<int>? unseen,
@@ -58,6 +62,7 @@ class FollowCompanion extends UpdateCompanion<Follow> {
       if (host != null) 'host': host,
       if (tags != null) 'tags': tags,
       if (title != null) 'title': title,
+      if (alias != null) 'alias': alias,
       if (type != null) 'type': type,
       if (latest != null) 'latest': latest,
       if (unseen != null) 'unseen': unseen,
@@ -71,6 +76,7 @@ class FollowCompanion extends UpdateCompanion<Follow> {
       Value<String>? host,
       Value<String>? tags,
       Value<String?>? title,
+      Value<String?>? alias,
       Value<FollowType>? type,
       Value<int?>? latest,
       Value<int?>? unseen,
@@ -81,6 +87,7 @@ class FollowCompanion extends UpdateCompanion<Follow> {
       host: host ?? this.host,
       tags: tags ?? this.tags,
       title: title ?? this.title,
+      alias: alias ?? this.alias,
       type: type ?? this.type,
       latest: latest ?? this.latest,
       unseen: unseen ?? this.unseen,
@@ -103,6 +110,9 @@ class FollowCompanion extends UpdateCompanion<Follow> {
     }
     if (title.present) {
       map['title'] = Variable<String>(title.value);
+    }
+    if (alias.present) {
+      map['alias'] = Variable<String>(alias.value);
     }
     if (type.present) {
       final converter = $FollowsTableTable.$converter0;
@@ -130,6 +140,7 @@ class FollowCompanion extends UpdateCompanion<Follow> {
           ..write('host: $host, ')
           ..write('tags: $tags, ')
           ..write('title: $title, ')
+          ..write('alias: $alias, ')
           ..write('type: $type, ')
           ..write('latest: $latest, ')
           ..write('unseen: $unseen, ')
@@ -151,6 +162,7 @@ class _$FollowInsertable implements Insertable<Follow> {
       id: Value(_object.id),
       tags: Value(_object.tags),
       title: Value(_object.title),
+      alias: Value(_object.alias),
       type: Value(_object.type),
       latest: Value(_object.latest),
       unseen: Value(_object.unseen),
@@ -194,6 +206,11 @@ class $FollowsTableTable extends FollowsTable
   late final GeneratedColumn<String> title = GeneratedColumn<String>(
       'title', aliasedName, true,
       type: DriftSqlType.string, requiredDuringInsert: false);
+  final VerificationMeta _aliasMeta = const VerificationMeta('alias');
+  @override
+  late final GeneratedColumn<String> alias = GeneratedColumn<String>(
+      'alias', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
   final VerificationMeta _typeMeta = const VerificationMeta('type');
   @override
   late final GeneratedColumnWithTypeConverter<FollowType, String> type =
@@ -222,7 +239,7 @@ class $FollowsTableTable extends FollowsTable
       type: DriftSqlType.dateTime, requiredDuringInsert: false);
   @override
   List<GeneratedColumn> get $columns =>
-      [id, host, tags, title, type, latest, unseen, thumbnail, updated];
+      [id, host, tags, title, alias, type, latest, unseen, thumbnail, updated];
   @override
   String get aliasedName => _alias ?? 'follows_table';
   @override
@@ -250,6 +267,10 @@ class $FollowsTableTable extends FollowsTable
     if (data.containsKey('title')) {
       context.handle(
           _titleMeta, title.isAcceptableOrUnknown(data['title']!, _titleMeta));
+    }
+    if (data.containsKey('alias')) {
+      context.handle(
+          _aliasMeta, alias.isAcceptableOrUnknown(data['alias']!, _aliasMeta));
     }
     context.handle(_typeMeta, const VerificationResult.success());
     if (data.containsKey('latest')) {
@@ -287,6 +308,8 @@ class $FollowsTableTable extends FollowsTable
           .read(DriftSqlType.string, data['${effectivePrefix}tags'])!,
       title: attachedDatabase.options.types
           .read(DriftSqlType.string, data['${effectivePrefix}title']),
+      alias: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}alias']),
       type: $FollowsTableTable.$converter0.fromSql(attachedDatabase
           .options.types
           .read(DriftSqlType.string, data['${effectivePrefix}type'])!),

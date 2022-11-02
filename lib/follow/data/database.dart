@@ -16,6 +16,8 @@ class FollowsTable extends Table {
 
   TextColumn get title => text().nullable()();
 
+  TextColumn get alias => text().nullable()();
+
   TextColumn get type =>
       text().map(const StringEnumConverter(FollowType.values))();
 
@@ -187,6 +189,7 @@ class FollowsDatabase extends _$FollowsDatabase {
           host: Value(host),
           tags: Value(item.tags),
           title: Value(item.title),
+          alias: Value(item.alias),
           type: Value(item.type),
         ),
         mode: InsertMode.insertOrIgnore,
@@ -200,6 +203,7 @@ class FollowsDatabase extends _$FollowsDatabase {
               host: Value(host),
               tags: Value(item.tags),
               title: Value(item.title),
+              alias: Value(item.alias),
               type: Value(item.type),
             ),
           ),
