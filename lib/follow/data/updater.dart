@@ -103,7 +103,7 @@ class FollowsUpdater extends ChangeNotifier {
       });
     }
 
-    List<Follow> previous = [];
+    List<String> previous = [];
     while (!_canceling) {
       List<Follow> follows = await service.getOutdated(
         host: client.host,
@@ -116,20 +116,20 @@ class FollowsUpdater extends ChangeNotifier {
           .toList();
       if (singles.isNotEmpty) {
         List<Follow> chunk = singles.take(40).toList();
+        List<String> tags = chunk.map((e) => e.tags).toList();
         assert(
-          !const DeepCollectionEquality().equals(previous, chunk),
+          !const DeepCollectionEquality().equals(previous, tags),
           'Updater tried refreshing same follow chunk twice!',
         );
-        previous = chunk;
+        previous = tags;
         int limit = chunk.length * refreshAmount;
         List<Post> posts = await rateLimit(client.tagPosts(
-          chunk.map((e) => e.tags).toList(),
+          tags,
           1,
           limit: limit,
           force: force,
         ));
         bool isDepleted = posts.length < limit;
-        posts.removeWhere((e) => e.isIgnored() || e.isDeniedBy(denylist));
         Map<Follow, List<Post>> updates = await _assignFollowUpdates(
             follows: chunk, posts: posts, client: client);
         await service.transaction(() async {
@@ -145,6 +145,7 @@ class FollowsUpdater extends ChangeNotifier {
                 posts.any((e) => e.id == follow.latest) ||
                 (posts.isNotEmpty && follow.latest == null) ||
                 isDepleted) {
+              posts.removeWhere((e) => e.isIgnored() || e.isDeniedBy(denylist));
               await service.replace(follow.withUnseen(posts));
             }
           }

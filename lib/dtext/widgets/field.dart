@@ -5,12 +5,14 @@ import 'package:flutter/material.dart';
 class DText extends StatelessWidget {
   const DText(
     this.data, {
+    this.style,
     this.maxLines,
     this.overflow = TextOverflow.clip,
     this.textAlign = TextAlign.start,
     this.softWrap = true,
   });
 
+  final TextStyle? style;
   final int? maxLines;
   final TextOverflow overflow;
   final String data;
@@ -23,13 +25,18 @@ class DText extends StatelessWidget {
     result = result.trim();
 
     try {
-      return Text.rich(
+      Widget child = Text.rich(
         parseDText(context, result, const TextState()),
         maxLines: maxLines,
         overflow: overflow,
         textAlign: textAlign,
         softWrap: softWrap,
       );
+      if (style != null) {
+        return DefaultTextStyle(style: style!, child: child);
+      } else {
+        return child;
+      }
     } on Exception {
       if (kDebugMode) {
         rethrow;

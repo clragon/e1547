@@ -1,6 +1,7 @@
 import 'package:async_builder/async_builder.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e1547/client/client.dart';
+import 'package:e1547/dtext/dtext.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
@@ -51,6 +52,11 @@ class FollowSheet extends StatelessWidget {
                 },
                 child: Text(follow?.name ?? tagToName(tag)),
               ),
+              if (follow?.alias != null)
+                DText(
+                  'is aliased to {{${follow!.alias}}}',
+                  style: Theme.of(context).textTheme.bodyText2,
+                ),
               if (tag.split(' ').length > 1)
                 Row(
                   children: [
