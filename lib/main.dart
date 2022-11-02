@@ -1,13 +1,9 @@
 import 'dart:async';
-import 'dart:io';
-import 'package:drift/native.dart';
 import 'package:e1547/app/app.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
-import 'package:path/path.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:talker/talker.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -25,7 +21,6 @@ Future<void> main() async {
   AppInfo appInfo = await initializeAppInfo();
   Settings settings = await initializeSettings();
   EnvironmentPaths paths = await initializeEnvironmentPaths();
-  await migrateTable();
   await migrateFollows(settings);
   runApp(
     MultiProvider(
@@ -39,19 +34,6 @@ Future<void> main() async {
       child: const App(),
     ),
   );
-}
-
-Future<void> migrateTable() async {
-  FollowsService service = FollowsService(openDatabase('follows.sqlite'));
-  try {
-    await service.getAll();
-  } on SqliteException {
-    await service.close();
-    File file = File(
-        join((await getApplicationSupportDirectory()).path, 'follows.sqlite'));
-    await file.delete();
-  }
-  await service.close();
 }
 
 Future<void> migrateFollows(Settings settings) async {
