@@ -32,7 +32,7 @@ extension Identification on History {
       switch (type) {
         case LinkType.pool:
         case LinkType.wiki:
-          return tagToTitle(title!);
+          return tagToName(title!);
         default:
           break;
       }
@@ -79,7 +79,7 @@ extension Identification on History {
           if (search == 'order:rank') {
             return 'Hot posts';
           }
-          return 'Posts - ${tagToTitle(search)}';
+          return 'Posts - ${tagToName(search)}';
         case LinkType.pool:
           return 'Pools - $search';
         case LinkType.user:

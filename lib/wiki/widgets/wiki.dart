@@ -13,7 +13,7 @@ class WikiPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return AdaptiveScaffold(
       appBar: DefaultAppBar(
-        title: Text(tagToTitle(wiki.title)),
+        title: Text(tagToName(wiki.title)),
         actions: [
           IconButton(
             icon: const Icon(Icons.info_outline),

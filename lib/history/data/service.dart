@@ -165,7 +165,7 @@ class HistoriesService extends HistoriesDatabase with ChangeNotifier {
           ).toString(),
           subtitle: pools?.isNotEmpty ?? false
               ? _composeSearchSubtitle({
-                  for (final value in pools!) value.link: tagToTitle(value.name)
+                  for (final value in pools!) value.link: tagToName(value.name)
                 })
               : null,
         ),

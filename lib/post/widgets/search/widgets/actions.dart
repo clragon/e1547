@@ -164,7 +164,7 @@ class TagSearchActions extends StatelessWidget {
 
         bool isSearched = controller.search.value
             .split(' ')
-            .any((element) => tagToName(element) == tag);
+            .any((element) => tagToRaw(element) == tag);
 
         if (isSearched) {
           return RemoveTagAction(controller: controller, tag: tag);

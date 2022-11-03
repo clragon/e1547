@@ -41,7 +41,7 @@ class TagSearchSheet extends StatelessWidget {
             ),
           );
         },
-        child: Text(tagToTitle(tag)),
+        child: Text(tagToName(tag)),
       ),
       actions: [
         if (controller != null)
@@ -87,7 +87,7 @@ class TagSearchInfo extends StatelessWidget {
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 4),
                         child: Text(
-                          tagToTitle(tag),
+                          tagToName(tag),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(fontSize: 16),
@@ -140,8 +140,8 @@ class _SearchTagDisplayState extends State<SearchTagDisplay> {
 
   Future<Wiki?> retrieveWiki() async {
     List<Wiki> results =
-        await context.read<Client>().wikis(1, search: tagToName(widget.tag));
-    return results.firstWhereOrNull((e) => e.title == tagToName(widget.tag));
+        await context.read<Client>().wikis(1, search: tagToRaw(widget.tag));
+    return results.firstWhereOrNull((e) => e.title == tagToRaw(widget.tag));
   }
 
   @override
@@ -225,7 +225,7 @@ class TagSearchDialog extends StatelessWidget {
           children: [
             Flexible(
               child: Text(
-                tagToTitle(tag),
+                tagToName(tag),
                 softWrap: true,
               ),
             ),

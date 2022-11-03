@@ -62,7 +62,7 @@ class TagCard extends StatelessWidget {
                 padding:
                     const EdgeInsets.only(top: 4, bottom: 4, right: 8, left: 6),
                 child: Text(
-                  tagToCard(tag),
+                  tagToTitle(tag),
                   overflow: TextOverflow.ellipsis,
                 ),
               ),

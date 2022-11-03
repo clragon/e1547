@@ -49,6 +49,10 @@ class NavigationController extends ChangeNotifier {
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
   final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
 
+  NavigatorState? get navigator => navigatorKey.currentState;
+
+  BuildContext? get context => navigatorKey.currentContext;
+
   String? _drawerSelection;
 
   String? get drawerSelection => _drawerSelection;

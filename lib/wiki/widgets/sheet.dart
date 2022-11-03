@@ -38,7 +38,7 @@ class WikiSheet extends StatelessWidget {
                       );
                     },
                     child: Text(
-                      tagToTitle(wiki.title),
+                      tagToName(wiki.title),
                       style: Theme.of(context).textTheme.headline6,
                       softWrap: true,
                     ),

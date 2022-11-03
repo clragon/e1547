@@ -35,7 +35,7 @@ class PoolSheet extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8),
                     child: Text(
-                      tagToTitle(pool.name),
+                      tagToName(pool.name),
                       style: Theme.of(context).textTheme.headline6,
                       softWrap: true,
                     ),

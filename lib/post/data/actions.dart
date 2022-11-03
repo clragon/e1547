@@ -99,7 +99,7 @@ extension PostDenying on Post {
       List<String> any = [];
       List<String> allow = [];
 
-      line.split(' ').where((tag) => tagToName(tag).isNotEmpty).forEach((tag) {
+      line.split(' ').where((tag) => tagToRaw(tag).isNotEmpty).forEach((tag) {
         switch (tag[0]) {
           case '-':
             allow.add(tag.substring(1));

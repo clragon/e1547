@@ -26,7 +26,7 @@ class PoolTile extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Text(
-                  tagToTitle(pool.name),
+                  tagToName(pool.name),
                   overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.subtitle1,
                   maxLines: 1,

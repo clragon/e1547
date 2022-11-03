@@ -4,7 +4,7 @@ import 'package:e1547/post/post.dart';
 import 'package:e1547/tag/tag.dart';
 
 extension Updating on Follow {
-  String get name => title ?? tagToTitle(tags);
+  String get name => title ?? tagToName(tags);
 
   Follow withTitle(String title) {
     Follow updated = this;
@@ -24,7 +24,7 @@ extension Updating on Follow {
 
   Follow withPool(Pool pool) {
     Follow updated = this;
-    updated = updated.withTitle(tagToTitle(pool.name));
+    updated = updated.withTitle(tagToName(pool.name));
     if (!pool.isActive && type != FollowType.bookmark) {
       updated = updated.copyWith(type: FollowType.bookmark);
     }

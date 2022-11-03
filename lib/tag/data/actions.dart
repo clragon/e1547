@@ -5,16 +5,19 @@ final List<String> wikiMetaTags = List.unmodifiable(['help:', 'e621:']);
 
 String sortTags(String tags) => Tagset.parse(tags).toString();
 
-String tagToName(String tags) => tags
+/// Removes prefixes from tags.
+String tagToRaw(String tags) => tags
     .trim()
     .split(' ')
     .map((tag) => tag.replaceAllMapped(RegExp(r'^[-~]'), (_) => ''))
     .join(' ');
 
-String tagToTitle(String tags) =>
+/// Removes underscored from tags, adds commas.
+String tagToName(String tags) =>
     tags.trim().split(' ').join(', ').replaceAll('_', ' ');
 
-String tagToCard(String tags) => tagToTitle(tagToName(tags));
+/// Removes underscores and prefixes from tags
+String tagToTitle(String tags) => tagToName(tagToRaw(tags));
 
 enum TagCategory {
   general,

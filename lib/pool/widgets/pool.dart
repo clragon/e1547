@@ -45,7 +45,7 @@ class _PoolPageState extends State<PoolPage> {
             controller: controller,
             displayType: readerMode ? PostDisplayType.comic : null,
             appBar: DefaultAppBar(
-              title: Text(tagToTitle(widget.pool.name)),
+              title: Text(tagToName(widget.pool.name)),
               actions: [
                 IconButton(
                   icon: const Icon(Icons.info_outline),

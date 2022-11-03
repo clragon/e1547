@@ -100,10 +100,10 @@ class _SearchPageState extends State<SearchPage> {
               }
                */
               if (pool != null) {
-                return tagToTitle(pool!.name);
+                return tagToName(pool!.name);
               }
               if (Tagset.parse(controller.search.value).length == 1) {
-                return tagToTitle(controller.search.value);
+                return tagToName(controller.search.value);
               }
               return 'Search';
             }

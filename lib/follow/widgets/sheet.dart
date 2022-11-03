@@ -50,7 +50,7 @@ class FollowSheet extends StatelessWidget {
                     ),
                   );
                 },
-                child: Text(follow?.name ?? tagToName(tag)),
+                child: Text(follow?.name ?? tagToRaw(tag)),
               ),
               if (follow?.alias != null)
                 DText(

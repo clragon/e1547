@@ -22,17 +22,14 @@ class _AppLinkHandlerState extends State<AppLinkHandler> {
   StreamSubscription? linkListener;
 
   Future<void> onInitialLink(Uri? url) async {
+    NavigationController controller = context.read<NavigationController>();
     if (url != null) {
       VoidCallback? action = parseLinkOnTap(
-        context.watch<NavigationController>().navigatorKey.currentContext!,
+        controller.context!,
         url.toString(),
       );
       if (action != null) {
-        context
-            .watch<NavigationController>()
-            .navigatorKey
-            .currentState!
-            .popUntil((route) => false);
+        controller.navigator!.popUntil((route) => false);
         action();
       } else {
         await launch(url.toString());
@@ -43,7 +40,7 @@ class _AppLinkHandlerState extends State<AppLinkHandler> {
   Future<void> onLink(Uri? url) async {
     if (url != null) {
       if (!executeLink(
-        context.watch<NavigationController>().navigatorKey.currentContext!,
+        context.read<NavigationController>().context!,
         url.toString(),
       )) {
         await launch(url.toString());
