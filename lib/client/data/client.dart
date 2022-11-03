@@ -83,8 +83,13 @@ class Client {
     }
   }
 
-  String withHost(String path) =>
-      Uri(scheme: 'https', host: host, path: path).toString();
+  String withHost(String path) => Uri.parse(path)
+      .replace(
+        scheme: 'https',
+        host: host,
+        path: path,
+      )
+      .toString();
 
   Future<List<Post>> postsRaw(
     int page, {

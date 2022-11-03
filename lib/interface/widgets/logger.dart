@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:e1547/interface/interface.dart';
 import 'package:expandable/expandable.dart';
@@ -9,7 +8,6 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' show join;
 import 'package:path_provider/path_provider.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:talker/talker.dart';
 
 export 'package:talker/talker.dart' show TalkerDataInterface;
@@ -25,24 +23,14 @@ class LoggerPage extends StatefulWidget {
 
 class _LoggerPageState extends State<LoggerPage> {
   Future<void> export() async {
-    if (Platform.isAndroid || Platform.isIOS) {
-      Directory temp = await getTemporaryDirectory();
-      File log =
-          File(join(temp.path, '${DateTime.now().toIso8601String()}.log'));
-      await log.writeAsString(widget.talker.history.text, flush: true);
-      await Share.shareFiles([log.path]);
-      await log.delete();
-    } else {
-      Clipboard.setData(
-        ClipboardData(text: widget.talker.history.text),
-      );
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          duration: Duration(seconds: 1),
-          content: Text('Copied to clipboard'),
-        ),
-      );
-    }
+    await Share.shareFile(
+      context,
+      widget.talker.history.text,
+      join(
+        (await getTemporaryDirectory()).path,
+        '${DateTime.now().toIso8601String()}.log',
+      ),
+    );
   }
 
   @override
@@ -329,9 +317,9 @@ class _LoggerErrorNotifierState extends State<LoggerErrorNotifier> {
           behavior: SnackBarBehavior.floating,
           action: widget.onOpenLogs != null
               ? SnackBarAction(
-            label: 'LOGS',
-            onPressed: widget.onOpenLogs!,
-          )
+                  label: 'LOGS',
+                  onPressed: widget.onOpenLogs!,
+                )
               : null,
         ),
       );

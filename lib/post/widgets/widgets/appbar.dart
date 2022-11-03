@@ -5,14 +5,15 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/ticket/ticket.dart';
 import 'package:flutter/material.dart';
-import 'package:share_plus/share_plus.dart';
 
 List<PopupMenuItem<VoidCallback>> postMenuPostActions(
     BuildContext context, Post post) {
   return [
     PopupMenuTile(
-      value: () async =>
-          Share.share(context.read<Client>().withHost(post.link)),
+      value: () async => Share.share(
+        context,
+        context.read<Client>().withHost(post.link),
+      ),
       title: 'Share',
       icon: Icons.share,
     ),

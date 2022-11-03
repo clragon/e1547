@@ -4,7 +4,6 @@ import 'package:e1547/tag/tag.dart';
 import 'package:e1547/topic/topic.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:sliding_sheet/sliding_sheet.dart';
 
 void topicSheet(BuildContext context, Topic topic) {
@@ -45,8 +44,10 @@ class TopicSheet extends StatelessWidget {
                 ),
                 IconButton(
                   icon: const Icon(Icons.share),
-                  onPressed: () async =>
-                      Share.share(context.read<Client>().withHost(topic.link)),
+                  onPressed: () async => Share.share(
+                    context,
+                    context.read<Client>().withHost(topic.link),
+                  ),
                   tooltip: 'Share',
                 ),
               ],

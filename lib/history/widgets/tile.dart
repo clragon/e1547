@@ -6,7 +6,6 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
-import 'package:share_plus/share_plus.dart';
 
 class HistoryTile extends StatelessWidget {
   const HistoryTile({required this.entry});
@@ -65,7 +64,8 @@ class HistoryTile extends StatelessWidget {
               PopupMenuTile(
                 title: 'Share',
                 icon: Icons.share,
-                value: () async => Share.share(
+                value: () => Share.share(
+                  context,
                   context.read<Client>().withHost(entry.link),
                 ),
               ),

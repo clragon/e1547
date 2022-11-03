@@ -8,7 +8,6 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
-import 'package:share_plus/share_plus.dart';
 
 class PostImageTile extends StatelessWidget {
   const PostImageTile({
@@ -393,8 +392,10 @@ class PostFeedTile extends StatelessWidget {
             ),
             IconButton(
               icon: const Icon(Icons.share),
-              onPressed: () =>
-                  Share.share(context.read<Client>().withHost(post.link)),
+              onPressed: () => Share.share(
+                context,
+                context.read<Client>().withHost(post.link),
+              ),
             ),
           ],
         ),
