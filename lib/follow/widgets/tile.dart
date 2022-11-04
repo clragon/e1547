@@ -129,8 +129,9 @@ class FollowTile extends StatelessWidget {
     }
 
     String getStatusText() {
-      String text = (follow.unseen ?? 0).toString();
-      if (follow.unseen == context.watch<FollowsService>().refreshAmount) {
+      int unseen = follow.unseen ?? 0;
+      String text = unseen.toString();
+      if (unseen >= context.watch<FollowsUpdater>().refreshAmount) {
         text += '+';
       }
       text += ' new post';

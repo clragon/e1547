@@ -72,14 +72,14 @@ extension Updating on Follow {
       Post? newest = posts.first;
       if (updated.latest != null) {
         posts = posts.takeWhile((e) => e.id > updated.latest!).toList();
+        int length = posts.length;
+        if (length > 0) {
+          updated = updated.copyWith(unseen: updated.unseen! + length);
+        }
+      } else {
+        updated = updated.copyWith(unseen: 0);
       }
       updated = updated.withLatest(newest);
-      int length = posts.length;
-      if (updated.unseen == null) {
-        updated = updated.copyWith(unseen: 0);
-      } else if (length > updated.unseen!) {
-        updated = updated.copyWith(unseen: length);
-      }
     }
     updated = updated.withTimestamp();
     return updated;

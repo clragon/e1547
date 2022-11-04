@@ -8,8 +8,6 @@ class FollowsService extends FollowsDatabase {
 
   FollowsService.connect(super.e) : super.connect();
 
-  final int refreshAmount = 5;
-
   Future<Follow?> getFollow(String host, String tag) =>
       watchFollow(host, tag).first;
 
