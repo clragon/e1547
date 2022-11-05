@@ -119,6 +119,7 @@ Future<bool> onPostTagsEdit(
   tags[category]!.sort();
   controller.value = controller.value!.copyWith(tags: tags);
   if (category != 'general') {
+    final messenger = ScaffoldMessenger.of(context);
     Future(() async {
       for (String tag in edited) {
         List<Tag> tags = await context.read<Client>().tags(tag);
@@ -136,7 +137,7 @@ Future<bool> onPostTagsEdit(
           tags[target] = tags[target]!.toSet().toList();
           tags[target]!.sort();
           controller.value = controller.value!.copyWith(tags: tags);
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          messenger.showSnackBar(SnackBar(
             duration: const Duration(milliseconds: 500),
             content: Text('Moved $tag to $target tags'),
             behavior: SnackBarBehavior.floating,

@@ -72,6 +72,7 @@ class _TextEditorState extends State<TextEditor> {
           onPressed: isLoading
               ? null
               : () async {
+            final messenger = ScaffoldMessenger.of(context);
                   String text = textController.text.trim();
                   setState(() {
                     isLoading = true;
@@ -81,12 +82,12 @@ class _TextEditorState extends State<TextEditor> {
                     isLoading = false;
                   });
                   if (error != null) {
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    messenger.showSnackBar(SnackBar(
                       duration: const Duration(seconds: 1),
                       content: Text(error),
                       behavior: SnackBarBehavior.floating,
                     ));
-                  }
+            }
                 },
           child: Icon(Icons.check, color: Theme.of(context).iconTheme.color),
         ),
@@ -144,8 +145,8 @@ class _TextEditorState extends State<TextEditor> {
               bottomSheet: isLoading
                   ? loadingBar()
                   : showBar
-                  ? widget.bottomSheetBuilder?.call(context, textController)
-                  : null,
+                      ? widget.bottomSheetBuilder?.call(context, textController)
+                      : null,
               body: NestedScrollView(
                 headerSliverBuilder: (context, innerBoxIsScrolled) => [
                   SliverOverlapAbsorber(
@@ -160,10 +161,10 @@ class _TextEditorState extends State<TextEditor> {
                       title: widget.title,
                       bottom: tabs.length > 1
                           ? TabBar(
-                        tabs: tabs.keys.toList(),
-                        labelColor: Theme.of(context).iconTheme.color,
-                        indicatorColor: Theme.of(context).iconTheme.color,
-                      )
+                              tabs: tabs.keys.toList(),
+                              labelColor: Theme.of(context).iconTheme.color,
+                              indicatorColor: Theme.of(context).iconTheme.color,
+                            )
                           : null,
                     ),
                   ),

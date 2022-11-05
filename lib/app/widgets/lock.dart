@@ -177,6 +177,7 @@ Future<void> tryLocalAuth({
   VoidCallback? onSuccess,
   VoidCallback? onFailure,
 }) async {
+  final messenger = ScaffoldMessenger.of(context);
   final LocalAuthentication localAuth = LocalAuthentication();
   await localAuth.stopAuthentication();
   try {
@@ -190,7 +191,7 @@ Future<void> tryLocalAuth({
       onFailure?.call();
     }
   } on PlatformException {
-    ScaffoldMessenger.of(context).showSnackBar(
+    messenger.showSnackBar(
       const SnackBar(
         content: Text('Severe failure in biometric authentication'),
         duration: Duration(milliseconds: 300),

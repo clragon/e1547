@@ -342,12 +342,13 @@ class PostFeedTile extends StatelessWidget {
                 status: post.voteStatus,
                 score: post.score.total,
                 onUpvote: (isLiked) async {
+                  final messenger = ScaffoldMessenger.of(context);
                   if (context.read<Client>().hasLogin) {
                     controller
                         .vote(upvote: true, replace: !isLiked)
                         .then((value) {
                       if (!value) {
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        messenger.showSnackBar(SnackBar(
                           duration: const Duration(seconds: 1),
                           content: Text('Failed to upvote Post #${post.id}'),
                         ));
@@ -359,12 +360,13 @@ class PostFeedTile extends StatelessWidget {
                   }
                 },
                 onDownvote: (isLiked) async {
+                  final messenger = ScaffoldMessenger.of(context);
                   if (context.read<Client>().hasLogin) {
                     controller
                         .vote(upvote: false, replace: !isLiked)
                         .then((value) {
                       if (!value) {
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        messenger.showSnackBar(SnackBar(
                           duration: const Duration(seconds: 1),
                           content: Text('Failed to downvote Post #${post.id}'),
                         ));

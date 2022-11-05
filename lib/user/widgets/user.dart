@@ -50,12 +50,14 @@ class UserPage extends StatelessWidget {
               initialize: true,
               listenable: Listenable.merge([controllers.profilePost]),
               listener: () async {
+                HistoriesService service = context.read<HistoriesService>();
+                Client client = context.read<Client>();
                 await controllers.profilePost?.waitForFirstPage();
-                await context.read<HistoriesService>().addUser(
-                      context.read<Client>().host,
-                      user,
-                      avatar: controllers.profilePost?.itemList?.first,
-                    );
+                await service.addUser(
+                  client.host,
+                  user,
+                  avatar: controllers.profilePost?.itemList?.first,
+                );
               },
               child: Scaffold(
                 drawer: const NavigationDrawer(),

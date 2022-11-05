@@ -48,6 +48,9 @@ class _HistoriesPageState extends State<HistoriesPage> {
             floatingActionButton: FloatingActionButton(
               child: const Icon(Icons.search),
               onPressed: () async {
+                Locale locale = Localizations.localeOf(context);
+                ScrollController? scrollController =
+                    PrimaryScrollController.of(context);
                 List<DateTime> dates = await controller.service.dates();
                 if (dates.isEmpty) {
                   dates.add(DateTime.now());
@@ -58,14 +61,12 @@ class _HistoriesPageState extends State<HistoriesPage> {
                   initialDate: controller.search.value.date ?? DateTime.now(),
                   firstDate: dates.first,
                   lastDate: dates.last,
-                  locale: Localizations.localeOf(context),
+                  locale: locale,
                   initialEntryMode: DatePickerEntryMode.calendarOnly,
                   selectableDayPredicate: (value) =>
                       dates.any((e) => DateUtils.isSameDay(value, e)),
                 );
 
-                ScrollController? scrollController =
-                    PrimaryScrollController.of(context);
                 if (result != controller.search.value.date &&
                     (scrollController?.hasClients ?? false)) {
                   scrollController!.animateTo(0,

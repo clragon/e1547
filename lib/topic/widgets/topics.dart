@@ -25,12 +25,14 @@ class _TopicsPageState extends State<TopicsPage> with DrawerEntry {
           initialize: true,
           listenable: controller.search,
           listener: () async {
+            HistoriesService service = context.read<HistoriesService>();
+            Client client = context.read<Client>();
             await controller.waitForFirstPage();
-            await context.read<HistoriesService>().addTopicSearch(
-                  context.read<Client>().host,
-                  controller.search.value,
-                  topics: controller.itemList!,
-                );
+            await service.addTopicSearch(
+              client.host,
+              controller.search.value,
+              topics: controller.itemList!,
+            );
           },
           child: RefreshableControllerPage(
             appBar: const DefaultAppBar(title: Text('Topics')),
@@ -40,7 +42,7 @@ class _TopicsPageState extends State<TopicsPage> with DrawerEntry {
                 labelText: 'Topic title',
                 actionController: actionController,
                 textController:
-                TextEditingController(text: controller.search.value),
+                    TextEditingController(text: controller.search.value),
                 submit: (value) => controller.search.value = value,
               ),
             ),

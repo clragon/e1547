@@ -15,7 +15,7 @@ Future<void> followSheet({
   SheetActionController? sheetController = SheetActions.of(context);
   return showDefaultSlidingBottomSheet(
     context,
-        (context, sheetState) => FollowSheet(
+    (context, sheetState) => FollowSheet(
       tag: tag,
       sheetController: sheetController,
     ),

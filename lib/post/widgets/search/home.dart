@@ -22,13 +22,15 @@ class _HomePageState extends State<HomePage> with DrawerEntry {
           initialize: true,
           listenable: controller.search,
           listener: () async {
+            HistoriesService service = context.read<HistoriesService>();
+            Client client = context.read<Client>();
             context.read<Settings>().homeTags.value = controller.search.value;
             await controller.waitForFirstPage();
-            context.read<HistoriesService>().addPostSearch(
-                  context.read<Client>().host,
-                  controller.search.value,
-                  posts: controller.itemList,
-                );
+            service.addPostSearch(
+              client.host,
+              controller.search.value,
+              posts: controller.itemList,
+            );
           },
           child: PostsPage(
             appBar: const ContextSizedAppBar(

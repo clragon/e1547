@@ -100,11 +100,12 @@ class TopicInfo extends StatelessWidget {
                   '#${topic.id}',
                 ),
                 onLongPress: () async {
+                  final messenger = ScaffoldMessenger.of(context);
                   Clipboard.setData(ClipboardData(
                     text: topic.id.toString(),
                   ));
                   await Navigator.of(context).maybePop();
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  messenger.showSnackBar(SnackBar(
                     duration: const Duration(seconds: 1),
                     content: Text('Copied topic id #${topic.id}'),
                   ));

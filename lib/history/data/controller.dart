@@ -35,7 +35,7 @@ class HistoriesController extends DataController<History>
 
   @override
   Future<List<History>> provide(int page, bool force) => service.page(
-    host: client.host,
+        host: client.host,
         page: page,
         day: search.value.date,
         linkRegex: search.value.buildLinkFilter(),

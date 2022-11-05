@@ -16,7 +16,7 @@ class HostServiceProvider extends SubChangeNotifierProvider3<AppInfo, Settings,
     EnvironmentPaths, HostService> {
   HostServiceProvider({super.child, TransitionBuilder? builder})
       : super(
-    create: (context, appInfo, settings, paths) => HostService(
+          create: (context, appInfo, settings, paths) => HostService(
             defaultHost: appInfo.defaultHost,
             allowedHosts: appInfo.allowedHosts,
             host: settings.host.value,
@@ -25,20 +25,20 @@ class HostServiceProvider extends SubChangeNotifierProvider3<AppInfo, Settings,
             appInfo: appInfo,
             cachePath: paths.temporaryDirectory,
           ),
-    builder: (context, child) => ListenableListener(
-      listenable: context.watch<HostService>(),
-      listener: () {
-        HostService service = context.read<HostService>();
-        Settings settings = context.read<Settings>();
-        settings.host.value = service.host;
-        settings.customHost.value = service.customHost;
-      },
-      child: ClientProvider(
-        builder: builder,
-        child: child,
-      ),
-    ),
-  );
+          builder: (context, child) => ListenableListener(
+            listenable: context.watch<HostService>(),
+            listener: () {
+              HostService service = context.read<HostService>();
+              Settings settings = context.read<Settings>();
+              settings.host.value = service.host;
+              settings.customHost.value = service.customHost;
+            },
+            child: ClientProvider(
+              builder: builder,
+              child: child,
+            ),
+          ),
+        );
 }
 
 class HistoriesServiceProvider
@@ -60,9 +60,9 @@ class HistoriesServiceProvider
               settings.writeHistory.value = service.enabled;
               settings.trimHistory.value = service.trimming;
             },
-          child: builder?.call(context, child) ?? child!,
-        ),
-  );
+            child: builder?.call(context, child) ?? child!,
+          ),
+        );
 }
 
 class FollowsProvider extends SubProvider<AppInfo, FollowsService> {
@@ -83,26 +83,27 @@ class FollowsProvider extends SubProvider<AppInfo, FollowsService> {
             },
             child: SubChangeNotifierProvider<FollowsService, FollowsUpdater>(
               create: (context, service) => FollowsUpdater(service: service),
-            child: child,
+              child: child,
+            ),
           ),
-        ),
-  );
+        );
 }
 
-class DenylistProvider extends SubChangeNotifierProvider2<Settings, Client, DenylistService> {
+class DenylistProvider
+    extends SubChangeNotifierProvider2<Settings, Client, DenylistService> {
   DenylistProvider({super.child, super.builder})
       : super(
-    create: (context, settings, client) => DenylistService(
-      items: settings.denylist.value,
-      pull: () async {
-        CurrentUser? user = await client.currentUser(force: true);
-        if (user == null) return null;
-        return user.blacklistedTags.split('\n');
-      },
-      push: (value) async {
-        settings.denylist.value = value;
-        await client.updateBlacklist(value);
-      },
-    ),
-  );
+          create: (context, settings, client) => DenylistService(
+            items: settings.denylist.value,
+            pull: () async {
+              CurrentUser? user = await client.currentUser(force: true);
+              if (user == null) return null;
+              return user.blacklistedTags.split('\n');
+            },
+            push: (value) async {
+              settings.denylist.value = value;
+              await client.updateBlacklist(value);
+            },
+          ),
+        );
 }

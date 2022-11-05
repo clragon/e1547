@@ -21,12 +21,14 @@ class _HotPageState extends State<HotPage> with DrawerEntry {
           initialize: true,
           listenable: controller.search,
           listener: () async {
+            HistoriesService service = context.read<HistoriesService>();
+            Client client = context.read<Client>();
             await controller.waitForFirstPage();
-            await context.read<HistoriesService>().addPostSearch(
-                  context.read<Client>().host,
-                  controller.search.value,
-                  posts: controller.itemList,
-                );
+            await service.addPostSearch(
+              client.host,
+              controller.search.value,
+              posts: controller.itemList,
+            );
           },
           child: PostsPage(
             appBar: const ContextSizedAppBar(

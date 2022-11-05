@@ -71,28 +71,28 @@ class _SettingsPageState extends State<SettingsPage> {
                             : null,
                         leading: const CurrentUserAvatar(),
                         separated: Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                                  child: IgnorePointer(
-                                    child: IconButton(
-                                      icon: const Icon(Icons.exit_to_app),
-                                      onPressed: () => logout(context),
-                                    ),
-                                  ),
-                                ),
-                                onTap: () => Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        UserLoadingPage(client.credentials!.username),
-                                  ),
-                                ),
-                                onTapSeparated: () => logout(context),
-                              ),
-                          secondChild: ListTile(
-                            title: const Text('Login'),
-                            leading: const Icon(Icons.person_add),
-                            onTap: () => Navigator.pushNamed(context, '/login'),
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                          child: IgnorePointer(
+                            child: IconButton(
+                              icon: const Icon(Icons.exit_to_app),
+                              onPressed: () => logout(context),
+                            ),
                           ),
                         ),
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                UserLoadingPage(client.credentials!.username),
+                          ),
+                        ),
+                        onTapSeparated: () => logout(context),
+                      ),
+                      secondChild: ListTile(
+                        title: const Text('Login'),
+                        leading: const Icon(Icons.person_add),
+                        onTap: () => Navigator.pushNamed(context, '/login'),
+                      ),
+                    ),
                   ),
                 ),
               ),

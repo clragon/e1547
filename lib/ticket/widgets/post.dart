@@ -77,6 +77,39 @@ class _PostReportScreenState extends State<PostReportScreen> {
     super.dispose();
   }
 
+  Future<void> _sendReport(BuildContext context) async {
+    if (Form.of(context)!.validate()) {
+      setState(() => isLoading = true);
+      scrollController.animateTo(
+        0,
+        duration: defaultAnimationDuration,
+        curve: Curves.easeInOut,
+      );
+      final messenger = ScaffoldMessenger.of(context);
+      try {
+        await context.read<Client>().reportPost(
+              widget.post.value.id,
+              type!.id,
+              reasonController.text.trim(),
+            );
+        if (mounted) {
+          Navigator.maybePop(context);
+        }
+        messenger.showSnackBar(SnackBar(
+          duration: const Duration(seconds: 1),
+          content: Text('Reported post #${widget.post.id}'),
+          behavior: SnackBarBehavior.floating,
+        ));
+      } on DioError {
+        messenger.showSnackBar(SnackBar(
+          duration: const Duration(seconds: 1),
+          content: Text('Failed to report post #${widget.post.id}'),
+        ));
+      }
+      setState(() => isLoading = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return KeyboardDismisser(
@@ -89,42 +122,7 @@ class _PostReportScreenState extends State<PostReportScreen> {
           ),
           floatingActionButton: Builder(
             builder: (context) => FloatingActionButton(
-              onPressed: isLoading
-                  ? null
-                  : () async {
-                      if (Form.of(context)!.validate()) {
-                        setState(() {
-                          isLoading = true;
-                        });
-                        scrollController.animateTo(
-                          0,
-                          duration: defaultAnimationDuration,
-                          curve: Curves.easeInOut,
-                        );
-                        try {
-                          await context.read<Client>().reportPost(
-                                widget.post.value.id,
-                                type!.id,
-                                reasonController.text.trim(),
-                              );
-                          Navigator.maybePop(context);
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            duration: const Duration(seconds: 1),
-                            content: Text('Reported post #${widget.post.id}'),
-                            behavior: SnackBarBehavior.floating,
-                          ));
-                        } on DioError {
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            duration: const Duration(seconds: 1),
-                            content: Text(
-                                'Failed to report post #${widget.post.id}'),
-                          ));
-                        }
-                        setState(() {
-                          isLoading = false;
-                        });
-                      }
-                    },
+              onPressed: isLoading ? null : () => _sendReport(context),
               child: const Icon(Icons.check),
             ),
           ),
@@ -145,18 +143,16 @@ class _PostReportScreenState extends State<PostReportScreen> {
                     title: const Text('Report'),
                     icon: IconButton(
                       onPressed: () => tagSearchSheet(
-                          context: context, tag: 'e621:report_post'),
+                        context: context,
+                        tag: 'e621:report_post',
+                      ),
                       icon: const Icon(Icons.info_outline),
                     ),
                   ),
                   ReportFormDropdown<ReportType?>(
                     type: type,
                     types: {for (final e in ReportType.values) e: e.title},
-                    onChanged: (value) {
-                      setState(() {
-                        type = value;
-                      });
-                    },
+                    onChanged: (value) => setState(() => type = value),
                     isLoading: isLoading,
                   ),
                   ReportFormReason(
@@ -196,6 +192,43 @@ class _PostFlagScreenState extends State<PostFlagScreen> {
     super.dispose();
   }
 
+  Future<void> _sendFlag(BuildContext context) async {
+    if (Form.of(context)!.validate()) {
+      setState(() {
+        isLoading = true;
+      });
+      scrollController.animateTo(
+        0,
+        duration: defaultAnimationDuration,
+        curve: Curves.easeInOut,
+      );
+      final messenger = ScaffoldMessenger.of(context);
+      try {
+        await context.read<Client>().flagPost(
+              widget.post.value.id,
+              type!.title,
+              parent: int.tryParse(parentController.text),
+            );
+        if (mounted) {
+          Navigator.maybePop(context);
+        }
+        messenger.showSnackBar(SnackBar(
+          duration: const Duration(seconds: 1),
+          content: Text('Flagged post #${widget.post.id}'),
+          behavior: SnackBarBehavior.floating,
+        ));
+      } on DioError {
+        messenger.showSnackBar(SnackBar(
+          duration: const Duration(seconds: 1),
+          content: Text('Failed to flag post #${widget.post.id}'),
+        ));
+      }
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return KeyboardDismisser(
@@ -208,42 +241,7 @@ class _PostFlagScreenState extends State<PostFlagScreen> {
           ),
           floatingActionButton: Builder(
             builder: (context) => FloatingActionButton(
-              onPressed: isLoading
-                  ? null
-                  : () async {
-                      if (Form.of(context)!.validate()) {
-                        setState(() {
-                          isLoading = true;
-                        });
-                        scrollController.animateTo(
-                          0,
-                          duration: defaultAnimationDuration,
-                          curve: Curves.easeInOut,
-                        );
-                        try {
-                          await context.read<Client>().flagPost(
-                                widget.post.value.id,
-                                type!.title,
-                                parent: int.tryParse(parentController.text),
-                              );
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            duration: const Duration(seconds: 1),
-                            content: Text('Flagged post #${widget.post.id}'),
-                            behavior: SnackBarBehavior.floating,
-                          ));
-                          Navigator.maybePop(context);
-                        } on DioError {
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            duration: const Duration(seconds: 1),
-                            content:
-                                Text('Failed to flag post #${widget.post.id}'),
-                          ));
-                        }
-                        setState(() {
-                          isLoading = false;
-                        });
-                      }
-                    },
+              onPressed: isLoading ? null : () => _sendFlag(context),
               child: const Icon(Icons.check),
             ),
           ),
@@ -268,11 +266,7 @@ class _PostFlagScreenState extends State<PostFlagScreen> {
                 ReportFormDropdown<FlagType?>(
                   type: type,
                   types: {for (final e in FlagType.values) e: e.title},
-                  onChanged: (value) {
-                    setState(() {
-                      type = value;
-                    });
-                  },
+                  onChanged: (value) => setState(() => type = value),
                   isLoading: isLoading,
                 ),
                 CrossFade.builder(

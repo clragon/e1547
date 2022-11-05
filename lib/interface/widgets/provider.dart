@@ -241,7 +241,7 @@ class SubProvider2<T, T2, R> extends SubProvider<T, R> {
     SubValueSelector? selector,
     super.dispose,
   }) : super(
-    create: (context, value) => create(
+          create: (context, value) => create(
             context,
             value,
             Provider.of<T2>(context),

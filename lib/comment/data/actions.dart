@@ -13,7 +13,7 @@ Future<bool> replyComment({
   body = body
       .replaceFirstMapped(
         RegExp(
-          r'\[quote\]".*?":/user/show/[0-9]* said:.*\[\/quote\]',
+          r'\[quote\]".*?":/user/show/[0-9]* said:.*\[/quote\]',
           dotAll: true,
         ),
         (match) => '',
@@ -47,6 +47,7 @@ Future<bool> writeComment({
         title: Text('#$postId comment'),
         content: text ?? (comment?.body),
         onSubmit: (context, text) async {
+          final navigator = Navigator.of(context);
           if (text.isNotEmpty) {
             try {
               if (comment == null) {
@@ -57,7 +58,7 @@ Future<bool> writeComment({
                     .updateComment(comment.id, postId, text);
               }
               sent = true;
-              Navigator.of(context).maybePop();
+              navigator.maybePop();
             } on DioError {
               return 'Failed to send comment!';
             }

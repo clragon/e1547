@@ -105,9 +105,10 @@ class _LoginPageState extends State<LoginPage> {
             icon: const Icon(Icons.content_paste),
             tooltip: 'Paste',
             onPressed: () async {
+              final messenger = ScaffoldMessenger.of(context);
               ClipboardData? data = await Clipboard.getData('text/plain');
               if (data == null || data.text!.trim().isEmpty) {
-                ScaffoldMessenger.of(context).showSnackBar(
+                messenger.showSnackBar(
                     const SnackBar(content: Text('Clipboard is empty')));
                 return;
               }
@@ -278,13 +279,14 @@ class _LoginLoadingDialogState extends State<LoginLoadingDialog> {
   }
 
   Future<void> login() async {
+    final navigator = Navigator.of(context);
     bool valid = await context.read<HostService>().login(
           Credentials(
             username: widget.username,
             password: widget.password,
           ),
         );
-    await Navigator.of(context).maybePop();
+    await navigator.maybePop();
     if (valid) {
       widget.onDone?.call();
     } else {
