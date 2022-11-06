@@ -1,56 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/widgets.dart';
 
-abstract class ProxyValueNotifier<T, P extends Listenable>
-    extends ChangeNotifier implements ValueNotifier<T> {
-  ProxyValueNotifier({required P this.parent}) {
-    parent!.addListener(_updateValue);
-    _value = fromParent() as T;
-  }
-
-  ProxyValueNotifier.single(T value) : parent = null {
-    _value = value;
-  }
-
-  final P? parent;
-
-  late T _value;
-
-  void _updateValue() {
-    T? updated = fromParent();
-    if (updated != null) {
-      _value = updated;
-      notifyListeners();
-    }
-  }
-
-  @protected
-  T? fromParent();
-
-  @protected
-  void toParent(T value);
-
-  bool get orphan => parent == null || fromParent() == null;
-
-  @override
-  T get value => _value;
-
-  @override
-  set value(T value) {
-    if (orphan) {
-      _value = value;
-      notifyListeners();
-    }
-    toParent(value);
-  }
-
-  @override
-  void dispose() {
-    parent?.removeListener(_updateValue);
-    super.dispose();
-  }
-}
-
 class ListenableListener extends StatefulWidget {
   const ListenableListener({
     super.key,

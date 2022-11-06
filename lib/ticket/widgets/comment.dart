@@ -7,7 +7,7 @@ import 'package:provider/provider.dart';
 class CommentReportScreen extends StatelessWidget {
   const CommentReportScreen({required this.comment});
 
-  final CommentController comment;
+  final Comment comment;
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +15,7 @@ class CommentReportScreen extends StatelessWidget {
       title: Text('Comment #${comment.id}'),
       onReport: (reason) => validateCall(
         () => context.read<Client>().reportComment(
-              comment.value.id,
+              comment.id,
               reason,
             ),
       ),

@@ -14,15 +14,15 @@ class CommentTile extends StatelessWidget {
     this.hasActions = true,
   });
 
-  final CommentController comment;
+  final Comment comment;
   final bool hasActions;
 
   @override
   Widget build(BuildContext context) {
     Widget title() {
       return TimedText(
-        created: comment.value.createdAt,
-        updated: comment.value.updatedAt,
+        created: comment.createdAt,
+        updated: comment.updatedAt,
         child: DefaultTextStyle(
           style: Theme.of(context).textTheme.bodyText2!.copyWith(
                 color: dimTextColor(context),
@@ -30,11 +30,11 @@ class CommentTile extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 4),
             child: InkWell(
-              child: Text(comment.value.creatorName),
+              child: Text(comment.creatorName),
               onTap: () => Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (context) => UserLoadingPage(
-                    comment.value.creatorId.toString(),
+                    comment.creatorId.toString(),
                   ),
                 ),
               ),
@@ -59,7 +59,7 @@ class CommentTile extends StatelessWidget {
                 title(),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [Expanded(child: DText(comment.value.body))],
+                  children: [Expanded(child: DText(comment.body))],
                 ),
               ],
             ),
@@ -75,48 +75,54 @@ class CommentTile extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             DimSubtree(
-              child: AnimatedSelector(
-                animation: comment,
-                selector: () => [comment.value.voteStatus],
-                builder: (context, child) => VoteDisplay(
-                  padding: EdgeInsets.zero,
-                  score: comment.value.score,
-                  status: comment.value.voteStatus,
-                  onUpvote: context.read<Client>().hasLogin
-                      ? (isLiked) async {
-                          comment
-                              .vote(upvote: true, replace: !isLiked)
-                              .then((value) {
-                            if (!value) {
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(SnackBar(
-                                duration: const Duration(seconds: 1),
-                                content: Text(
-                                    'Failed to upvote comment #${comment.id}'),
-                              ));
-                            }
-                          });
-                          return !isLiked;
-                        }
-                      : null,
-                  onDownvote: context.read<Client>().hasLogin
-                      ? (isLiked) async {
-                          comment
-                              .vote(upvote: false, replace: !isLiked)
-                              .then((value) {
-                            if (!value) {
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(SnackBar(
-                                duration: const Duration(seconds: 1),
-                                content: Text(
-                                    'Failed to downvote comment #${comment.id}'),
-                              ));
-                            }
-                          });
-                          return !isLiked;
-                        }
-                      : null,
-                ),
+              child: VoteDisplay(
+                padding: EdgeInsets.zero,
+                score: comment.score,
+                status: comment.voteStatus,
+                onUpvote: context.read<Client>().hasLogin
+                    ? (isLiked) async {
+                        CommentsController controller =
+                            context.read<CommentsController>();
+                        final messenger = ScaffoldMessenger.of(context);
+                        controller
+                            .vote(
+                                comment: comment,
+                                upvote: true,
+                                replace: !isLiked)
+                            .then((value) {
+                          if (!value) {
+                            messenger.showSnackBar(SnackBar(
+                              duration: const Duration(seconds: 1),
+                              content: Text(
+                                  'Failed to upvote comment #${comment.id}'),
+                            ));
+                          }
+                        });
+                        return !isLiked;
+                      }
+                    : null,
+                onDownvote: context.read<Client>().hasLogin
+                    ? (isLiked) async {
+                        CommentsController controller =
+                            context.read<CommentsController>();
+                        final messenger = ScaffoldMessenger.of(context);
+                        controller
+                            .vote(
+                                comment: comment,
+                                upvote: false,
+                                replace: !isLiked)
+                            .then((value) {
+                          if (!value) {
+                            messenger.showSnackBar(SnackBar(
+                              duration: const Duration(seconds: 1),
+                              content: Text(
+                                  'Failed to downvote comment #${comment.id}'),
+                            ));
+                          }
+                        });
+                        return !isLiked;
+                      }
+                    : null,
               ),
             ),
             const Spacer(),
@@ -125,17 +131,24 @@ class CommentTile extends StatelessWidget {
               onSelected: (value) => value(),
               itemBuilder: (context) => [
                 if (context.read<Client>().credentials?.username ==
-                    comment.value.creatorName)
+                    comment.creatorName)
                   PopupMenuTile(
                     title: 'Edit',
                     icon: Icons.edit,
                     value: () => guardWithLogin(
                       context: context,
-                      // TODO refresh controller
-                      callback: () => editComment(
-                        context: context,
-                        comment: comment.value,
-                      ),
+                      callback: () {
+                        CommentsController controller =
+                            context.read<CommentsController>();
+                        editComment(
+                          context: context,
+                          comment: comment,
+                        ).then((value) {
+                          if (value) {
+                            controller.refresh(force: true);
+                          }
+                        });
+                      },
                       error: 'You must be logged in to edit comments!',
                     ),
                   ),
@@ -145,10 +158,18 @@ class CommentTile extends StatelessWidget {
                   value: () => guardWithLogin(
                     context: context,
                     // TODO refresh controller
-                    callback: () => replyComment(
-                      context: context,
-                      comment: comment.value,
-                    ),
+                    callback: () {
+                      CommentsController controller =
+                          context.read<CommentsController>();
+                      replyComment(
+                        context: context,
+                        comment: comment,
+                      ).then((value) {
+                        if (value) {
+                          controller.refresh(force: true);
+                        }
+                      });
+                    },
                     error: 'You must be logged in to reply to comments!',
                   ),
                 ),
@@ -192,7 +213,7 @@ class CommentTile extends StatelessWidget {
       child: Column(
         children: [
           Hero(
-            tag: comment.value.hero,
+            tag: comment.hero,
             child: body(),
             flightShuttleBuilder: (
               flightContext,
@@ -210,7 +231,7 @@ class CommentTile extends StatelessWidget {
             ),
           ),
           if (hasActions) actions(),
-          if (comment.value.warningType != null)
+          if (comment.warningType != null)
             Padding(
               padding: const EdgeInsets.only(left: 24),
               child: Row(
@@ -224,7 +245,7 @@ class CommentTile extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    MessageWarning.byId(comment.value.warningType!).message,
+                    MessageWarning.byId(comment.warningType!).message,
                     style: Theme.of(context).textTheme.bodyText2!.copyWith(
                           color: Theme.of(context).errorColor,
                         ),

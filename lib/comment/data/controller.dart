@@ -1,4 +1,3 @@
-import 'package:collection/collection.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/comment/comment.dart';
 import 'package:e1547/interface/interface.dart';
@@ -22,50 +21,24 @@ class CommentsController extends CursorDataController<Comment>
   @override
   @protected
   int getId(Comment item) => item.id;
-}
 
-class CommentsProvider
-    extends SubChangeNotifierProvider<Client, CommentsController> {
-  CommentsProvider({required int postId, super.child, super.builder})
-      : super(
-          create: (context, client) =>
-              CommentsController(client: client, postId: postId),
-          selector: (context) => [postId],
-        );
-}
-
-class CommentController
-    extends ProxyValueNotifier<Comment, CommentsController> {
-  CommentController({
-    required this.client,
-    required this.id,
-    required super.parent,
-  });
-
-  final Client client;
-  final int id;
-
-  @override
-  Comment? fromParent() =>
-      parent?.itemList?.firstWhereOrNull((value) => value.id == id);
-
-  @override
-  void toParent(Comment value) {
-    if (!orphan) {
-      parent!.updateItem(
-        parent!.itemList!.indexOf(this.value),
-        value,
-        force: true,
-      );
+  void replaceComment(Comment comment, {bool force = false}) {
+    int index = itemList?.indexWhere((e) => e.id == comment.id) ?? -1;
+    if (index == -1) {
+      throw StateError('Post isnt owned by this controller');
     }
+    updateItem(index, comment, force: force);
   }
 
   Future<bool> vote({
+    required Comment comment,
     required bool upvote,
     required bool replace,
   }) async {
+    assertOwnsItem(comment);
     try {
-      await client.voteComment(value.id, upvote, replace);
+      await client.voteComment(comment.id, upvote, replace);
+      Comment value = comment;
       if (value.voteStatus == VoteStatus.unknown) {
         if (upvote) {
           value = value.copyWith(
@@ -105,6 +78,7 @@ class CommentController
           }
         }
       }
+      replaceComment(comment);
       return true;
     } on DioError {
       return false;
@@ -112,12 +86,12 @@ class CommentController
   }
 }
 
-class CommentProvider extends SubChangeNotifierProvider2<Client,
-    CommentsController, CommentController> {
-  CommentProvider({required int id, super.child, super.builder})
+class CommentsProvider
+    extends SubChangeNotifierProvider<Client, CommentsController> {
+  CommentsProvider({required int postId, super.child, super.builder})
       : super(
-          create: (context, client, parent) =>
-              CommentController(client: client, id: id, parent: parent),
-          selector: (context) => [id],
+          create: (context, client) =>
+              CommentsController(client: client, postId: postId),
+          selector: (context) => [postId],
         );
 }

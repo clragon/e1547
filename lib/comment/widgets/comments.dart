@@ -59,13 +59,7 @@ class PostCommentsPage extends StatelessWidget {
             pagingController: controller,
             builderDelegate: defaultPagedChildBuilderDelegate(
               pagingController: controller,
-              itemBuilder: (context, item, index) => CommentProvider(
-                id: item.id,
-                child: Consumer<CommentController>(
-                  builder: (context, controller, child) =>
-                      CommentTile(comment: controller),
-                ),
-              ),
+              itemBuilder: (context, item, index) => CommentTile(comment: item),
               onEmpty: const Text('No comments'),
               onError: const Text('Failed to load comments'),
             ),
