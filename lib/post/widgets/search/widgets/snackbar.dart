@@ -1,7 +1,6 @@
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:talker/talker.dart';
 
@@ -16,12 +15,12 @@ Future<void> postDownloadingNotification(
     timeout: const Duration(milliseconds: 100),
     process: (item) async {
       try {
-        await item.download(context.read<AppInfo>());
+        await item.download(
+          settings: context.read<Settings>(),
+          appInfo: context.read<AppInfo>(),
+        );
         return true;
-      } catch (exception, stacktrace) {
-        if (kDebugMode) {
-          rethrow;
-        }
+      } on PostDownloadException catch (exception, stacktrace) {
         talker?.handle(exception, stacktrace);
         return false;
       }

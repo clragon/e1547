@@ -94,6 +94,14 @@ class Settings with SharedPrefsSettings {
       createSetting<bool>(key: 'showBeta', initialValue: false);
   late final ValueNotifier<bool> upvoteFavs =
       createSetting<bool>(key: 'upvoteFavs', initialValue: false);
+  late final ValueNotifier<String> downloadPath = createSetting<String>(
+    key: 'downloadPath',
+    initialValue: Uri(
+      scheme: 'content',
+      host: 'com.android.externalstorage.documents',
+      path: '/tree/primary${Uri.encodeComponent(':Pictures')}',
+    ).toString(),
+  );
   late final ValueNotifier<bool> muteVideos =
       createSetting<bool>(key: 'muteVideos', initialValue: true);
 

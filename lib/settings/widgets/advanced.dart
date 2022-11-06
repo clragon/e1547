@@ -4,6 +4,7 @@ import 'package:e1547/app/widgets/lock.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_storage/saf.dart';
 
 class AdvancedSettingsPage extends StatefulWidget {
   @override
@@ -25,7 +26,7 @@ class _AdvancedSettingsPageState extends State<AdvancedSettingsPage> {
             padding: defaultActionListPadding
                 .add(LimitedWidthLayout.of(context).padding),
             children: [
-              const SettingsHeader(title: 'Server'),
+              const SettingsHeader(title: 'Client'),
               ValueListenableBuilder<bool>(
                 valueListenable: settings.upvoteFavs,
                 builder: (context, value, child) => SwitchListTile(
@@ -37,6 +38,22 @@ class _AdvancedSettingsPageState extends State<AdvancedSettingsPage> {
                   onChanged: (value) => settings.upvoteFavs.value = value,
                 ),
               ),
+              if (Platform.isAndroid)
+                ValueListenableBuilder<String>(
+                  valueListenable: settings.downloadPath,
+                  builder: (context, value, child) => ListTile(
+                    title: const Text('Download location'),
+                    subtitle: Text(Uri.decodeComponent(Uri.parse(value).path)),
+                    leading: const Icon(Icons.folder),
+                    onTap: () async {
+                      Uri? result =
+                          await openDocumentTree(initialUri: Uri.parse(value));
+                      if (result != null) {
+                        settings.downloadPath.value = result.toString();
+                      }
+                    },
+                  ),
+                ),
               const Divider(),
               const SettingsHeader(title: 'Display'),
               ValueListenableBuilder<bool>(
