@@ -8,92 +8,102 @@ import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
 
 class CurrentUserAvatar extends StatelessWidget {
-  const CurrentUserAvatar({this.enabled = false});
-
-  final bool enabled;
+  const CurrentUserAvatar();
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<Future<PostsController?>>(
-      builder: (context, controller, child) => AsyncBuilder<PostsController?>(
-        future: controller,
+    return Consumer<CurrentUserAvatarValue>(
+      builder: (context, value, child) => AsyncBuilder<PostsController?>(
+        future: value.controller,
         builder: (context, value) => UserAvatar(
+          id: value?.itemList!.first.id,
           controller: value,
-          enabled: enabled,
         ),
       ),
     );
   }
 }
 
+class CurrentUserAvatarValue {
+  CurrentUserAvatarValue({
+    required this.client,
+    required this.denylist,
+  });
+
+  final Client client;
+  final DenylistService denylist;
+  late final Future<PostsController?> _controller = _createController();
+
+  Future<PostsController?> get controller => _controller;
+
+  Future<PostsController?> _createController() async {
+    int? id = (await client.currentUser())?.avatarId;
+    if (id != null) {
+      PostsController controller = PostsController.single(
+        client: client,
+        denylist: denylist,
+        id: id,
+        denyMode: DenyListMode.unavailable,
+      );
+      return controller.loadFirstPage();
+    }
+    return null;
+  }
+}
+
 class CurrentUserAvatarProvider
-    extends SubProvider2<Client, DenylistService, Future<PostsController?>> {
+    extends SubProvider2<Client, DenylistService, CurrentUserAvatarValue> {
   CurrentUserAvatarProvider({super.child, super.builder})
       : super(
-          create: (context, client, denylist) async {
-            int? id = (await client.currentUser())?.avatarId;
-            if (id != null) {
-              PostsController controller = PostsController.single(
-                client: client,
-                denylist: denylist,
-                id: id,
-                denyMode: DenyListMode.unavailable,
-              );
-              return controller.loadFirstPage();
-            }
-            return null;
-          },
-          dispose: (context, value) async => (await value)?.dispose(),
+          create: (context, client, denylist) => CurrentUserAvatarValue(
+            client: client,
+            denylist: denylist,
+          ),
+          dispose: (context, value) async =>
+              (await value.controller)?.dispose(),
           selector: (context) => [context.watch<Client>().credentials],
         );
 }
 
 class UserAvatar extends StatelessWidget {
-  const UserAvatar({super.key, required this.controller, this.enabled = false});
+  const UserAvatar({super.key, required this.controller, required this.id});
 
   final PostsController? controller;
-  final bool enabled;
+  final int? id;
 
   @override
   Widget build(BuildContext context) {
-    return _UserAvatarProvider(
-      controller: controller,
-      child: Consumer<Future<PostController?>>(
-        builder: (context, controller, child) => AsyncBuilder<PostController?>(
-          future: controller,
-          builder: (context, value) => Avatar(
-            value,
-            enabled: enabled,
-          ),
+    int? id = this.id;
+    PostsController? controller = this.controller;
+    if (id == null || controller == null) {
+      return const EmptyAvatar();
+    }
+    return SubValueBuilder<Future<PostsController>>(
+      create: (context) => controller.loadFirstPage(),
+      selector: (context) => [controller],
+      builder: (context, _) => PostsControllerConnector(
+        id: id,
+        controller: controller,
+        builder: (context, post) => Avatar(
+          post,
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => PostsControllerConnector(
+                  id: id,
+                  controller: controller,
+                  builder: (context, post) => PostsRouteConnector(
+                    controller: controller,
+                    child: PostDetail(post: post!),
+                  ),
+                ),
+              ),
+            );
+          },
         ),
       ),
     );
   }
-}
-
-class _UserAvatarProvider
-    extends SubProvider2<Client, DenylistService, Future<PostController?>> {
-  _UserAvatarProvider({
-    required PostsController? controller,
-    super.child,
-    super.builder, // ignore: unused_element
-  }) : super(
-          create: (context, client, denylist) async {
-            if (controller != null) {
-              await controller.loadFirstPage();
-              return PostController(
-                client: client,
-                denylist: denylist,
-                parent: controller,
-                id: controller.itemList!.first.id,
-              );
-            } else {
-              return null;
-            }
-          },
-          selector: (context) => [controller],
-          dispose: (context, value) async => (await value)?.dispose(),
-        );
 }
 
 class PostAvatar extends StatelessWidget {
@@ -104,69 +114,49 @@ class PostAvatar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (id == null) {
-      return const UserAvatar(controller: null);
+      return const EmptyAvatar();
     } else {
       return PostsProvider.single(
         id: id!,
         child: Consumer<PostsController>(
           builder: (context, controller, child) =>
-              UserAvatar(controller: controller),
+              UserAvatar(id: id, controller: controller),
         ),
       );
     }
   }
 }
 
-class PostIdAvatar extends StatelessWidget {
-  const PostIdAvatar({required this.id, required this.controller});
-
-  final int id;
-  final PostsController controller;
-
-  @override
-  Widget build(BuildContext context) {
-    return ChangeNotifierProvider.value(
-      value: controller,
-      child: PostProvider(
-        id: id,
-        child: Consumer<PostController>(
-          builder: (context, controller, child) => Avatar(controller),
-        ),
-      ),
-    );
-  }
-}
-
 class Avatar extends StatelessWidget {
-  const Avatar(this.post, {this.enabled = false});
+  const Avatar(this.post, {this.onTap});
 
-  final PostController? post;
-  final bool enabled;
+  final Post? post;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
-    if (post != null && post!.value.sample.url != null) {
+    if (post?.sample.url != null) {
       return GestureDetector(
-        onTap: enabled
-            ? () => Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => PostDetail(controller: post!),
-                  ),
-                )
-            : null,
+        onTap: onTap,
         child: PostTileOverlay(
-          controller: post!,
+          post: post!,
           child: Hero(
-            tag: post!.value.link,
+            tag: post!.link,
             child: CircleAvatar(
-              foregroundImage:
-                  CachedNetworkImageProvider(post!.value.sample.url!),
+              foregroundImage: CachedNetworkImageProvider(post!.sample.url!),
             ),
           ),
         ),
       );
     } else {
-      return const AppIcon();
+      return const EmptyAvatar();
     }
   }
+}
+
+class EmptyAvatar extends StatelessWidget {
+  const EmptyAvatar({super.key});
+
+  @override
+  Widget build(BuildContext context) => const AppIcon();
 }

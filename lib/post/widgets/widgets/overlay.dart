@@ -5,55 +5,50 @@ import 'package:flutter/material.dart';
 
 class ImageOverlay extends StatelessWidget {
   const ImageOverlay({
-    required this.controller,
+    required this.post,
     required this.builder,
   });
 
-  final PostController controller;
+  final Post post;
   final WidgetBuilder builder;
-
-  Post get post => controller.value;
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: Listenable.merge([controller]),
-      builder: (context, child) {
-        Widget centerText(String text) {
-          return Center(
-            child: Text(
-              text,
-              textAlign: TextAlign.center,
-            ),
-          );
-        }
+    PostsController? controller = context.read<PostsController?>();
 
-        if (post.flags.deleted) {
-          return centerText('Post was deleted');
-        }
-        if (post.file.url == null) {
-          return centerText('Image unavailable in safe mode');
-        }
-        if (controller.isDenied && !post.isFavorited) {
-          return centerText('Post is blacklisted');
-        }
+    Widget centerText(String text) {
+      return Center(
+        child: Text(
+          text,
+          textAlign: TextAlign.center,
+        ),
+      );
+    }
 
-        if (post.type == PostType.unsupported) {
-          return IconMessage(
-            title: Text('${post.file.ext} files are not supported'),
-            icon: const Icon(Icons.image_not_supported_outlined),
-            action: Padding(
-              padding: const EdgeInsets.all(4),
-              child: TextButton(
-                onPressed: () async => launch(post.file.url!),
-                child: const Text('Open'),
-              ),
-            ),
-          );
-        }
+    if (post.flags.deleted) {
+      return centerText('Post was deleted');
+    }
+    if (post.file.url == null) {
+      return centerText('Image unavailable in safe mode');
+    }
+    if ((controller?.isDenied(post) ?? false) && !post.isFavorited) {
+      return centerText('Post is blacklisted');
+    }
 
-        return builder(context);
-      },
-    );
+    if (post.type == PostType.unsupported) {
+      return IconMessage(
+        title: Text('${post.file.ext} files are not supported'),
+        icon: const Icon(Icons.image_not_supported_outlined),
+        action: Padding(
+          padding: const EdgeInsets.all(4),
+          child: TextButton(
+            onPressed: () async => launch(post.file.url!),
+            child: const Text('Open'),
+          ),
+        ),
+      );
+    }
+
+    return builder(context);
   }
 }

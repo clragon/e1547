@@ -17,7 +17,7 @@ class PostReportImage extends StatelessWidget {
     this.isLoading = false,
   });
 
-  final PostController post;
+  final Post post;
   final bool isLoading;
   final double height;
 
@@ -36,11 +36,11 @@ class PostReportImage extends StatelessWidget {
             child: ReportLoadingOverlay(
               isLoading: isLoading,
               child: ImageOverlay(
-                controller: post,
+                post: post,
                 builder: (context) => Hero(
-                  tag: post.value.link,
+                  tag: post.link,
                   child: PostImageWidget(
-                    post: post.value,
+                    post: post,
                     size: PostImageSize.sample,
                     fit: BoxFit.cover,
                   ),
@@ -57,7 +57,7 @@ class PostReportImage extends StatelessWidget {
 class PostReportScreen extends StatefulWidget {
   const PostReportScreen({required this.post});
 
-  final PostController post;
+  final Post post;
 
   @override
   State<PostReportScreen> createState() => _PostReportScreenState();
@@ -88,7 +88,7 @@ class _PostReportScreenState extends State<PostReportScreen> {
       final messenger = ScaffoldMessenger.of(context);
       try {
         await context.read<Client>().reportPost(
-              widget.post.value.id,
+          widget.post.id,
               type!.id,
               reasonController.text.trim(),
             );
@@ -172,7 +172,7 @@ class _PostReportScreenState extends State<PostReportScreen> {
 class PostFlagScreen extends StatefulWidget {
   const PostFlagScreen({required this.post});
 
-  final PostController post;
+  final Post post;
 
   @override
   State<PostFlagScreen> createState() => _PostFlagScreenState();
@@ -205,7 +205,7 @@ class _PostFlagScreenState extends State<PostFlagScreen> {
       final messenger = ScaffoldMessenger.of(context);
       try {
         await context.read<Client>().flagPost(
-              widget.post.value.id,
+          widget.post.id,
               type!.title,
               parent: int.tryParse(parentController.text),
             );

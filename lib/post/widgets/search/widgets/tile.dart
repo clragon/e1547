@@ -12,7 +12,7 @@ import 'package:flutter/material.dart';
 class PostImageTile extends StatelessWidget {
   const PostImageTile({
     super.key,
-    required this.controller,
+    required this.post,
     this.size,
     this.fit,
     this.showProgress,
@@ -21,7 +21,7 @@ class PostImageTile extends StatelessWidget {
     this.bottomBar,
   });
 
-  final PostController controller;
+  final Post post;
   final VoidCallback? onTap;
   final PostImageSize? size;
   final BoxFit? fit;
@@ -31,47 +31,44 @@ class PostImageTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder<Post>(
-      valueListenable: controller,
-      builder: (context, post, child) => Card(
-        clipBehavior: Clip.antiAlias,
-        child: SelectionItemOverlay(
-          item: post,
-          child: Stack(
-            fit: StackFit.passthrough,
-            clipBehavior: Clip.none,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Expanded(
-                    child: PostTileOverlay(
-                      controller: controller,
-                      child: Hero(
-                        tag: post.link,
-                        child: PostImageWidget(
-                          post: post,
-                          size: size ?? PostImageSize.sample,
-                          fit: fit ?? BoxFit.cover,
-                          showProgress: showProgress ?? false,
-                          withLowRes: withLowRes ?? false,
-                          cacheSize: context.read<LowResCacheSize?>()?.size,
-                        ),
+    return Card(
+      clipBehavior: Clip.antiAlias,
+      child: SelectionItemOverlay(
+        item: post,
+        child: Stack(
+          fit: StackFit.passthrough,
+          clipBehavior: Clip.none,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                  child: PostTileOverlay(
+                    post: post,
+                    child: Hero(
+                      tag: post.link,
+                      child: PostImageWidget(
+                        post: post,
+                        size: size ?? PostImageSize.sample,
+                        fit: fit ?? BoxFit.cover,
+                        showProgress: showProgress ?? false,
+                        withLowRes: withLowRes ?? false,
+                        cacheSize: context.read<LowResCacheSize?>()?.size,
                       ),
                     ),
                   ),
-                  if (bottomBar != null) bottomBar!,
-                ],
-              ),
-              Positioned(top: 0, right: 0, child: PostImageTag(post: post)),
-              Material(
-                type: MaterialType.transparency,
-                child: InkWell(
-                  onTap: onTap,
                 ),
+                if (bottomBar != null) bottomBar!,
+              ],
+            ),
+            Positioned(top: 0, right: 0, child: PostImageTag(post: post)),
+            Material(
+              type: MaterialType.transparency,
+              child: InkWell(
+                onTap: onTap,
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -108,42 +105,34 @@ class PostImageTag extends StatelessWidget {
 }
 
 class PostTileOverlay extends StatelessWidget {
-  const PostTileOverlay({required this.controller, required this.child});
+  const PostTileOverlay({required this.post, required this.child});
 
-  final PostController controller;
+  final Post post;
   final Widget child;
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: controller,
-      builder: (context, child) {
-        Post post = controller.value;
-        if (post.flags.deleted) {
-          return const Center(child: Text('deleted'));
-        }
-        if (post.type == PostType.unsupported) {
-          return const Center(child: Text('unsupported'));
-        }
-        if (post.file.url == null) {
-          return const Center(child: Text('unsafe'));
-        }
-        if (controller.isDenied) {
-          return const Center(child: Text('blacklisted'));
-        }
-        return child!;
-      },
-      child: child,
-    );
+    PostsController? controller = context.read<PostsController?>();
+    if (post.flags.deleted) {
+      return const Center(child: Text('deleted'));
+    }
+    if (post.type == PostType.unsupported) {
+      return const Center(child: Text('unsupported'));
+    }
+    if (post.file.url == null) {
+      return const Center(child: Text('unsafe'));
+    }
+    if (controller?.isDenied(post) ?? false) {
+      return const Center(child: Text('blacklisted'));
+    }
+    return child;
   }
 }
 
 class PostInfoBar extends StatelessWidget {
-  const PostInfoBar({required this.controller});
+  const PostInfoBar({required this.post});
 
-  final PostController controller;
-
-  Post get post => controller.value;
+  final Post post;
 
   @override
   Widget build(BuildContext context) {
@@ -159,46 +148,37 @@ class PostInfoBar extends StatelessWidget {
                 child: Wrap(
                   alignment: WrapAlignment.spaceEvenly,
                   children: [
-                    AnimatedSelector(
-                      animation: Listenable.merge([controller]),
-                      selector: () => [post.voteStatus],
-                      builder: (context, child) => Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(post.score.total.toString()),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 4),
-                            child: Icon(
-                              post.score.total >= 0
-                                  ? Icons.arrow_upward
-                                  : Icons.arrow_downward,
-                              color: {
-                                VoteStatus.upvoted: Colors.deepOrange,
-                                VoteStatus.downvoted: Colors.blue,
-                                VoteStatus.unknown: null,
-                              }[post.voteStatus],
-                            ),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(post.score.total.toString()),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 4),
+                          child: Icon(
+                            post.score.total >= 0
+                                ? Icons.arrow_upward
+                                : Icons.arrow_downward,
+                            color: {
+                              VoteStatus.upvoted: Colors.deepOrange,
+                              VoteStatus.downvoted: Colors.blue,
+                              VoteStatus.unknown: null,
+                            }[post.voteStatus],
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                    AnimatedSelector(
-                      animation: Listenable.merge([controller]),
-                      selector: () => [post.isFavorited],
-                      builder: (context, child) => Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(post.favCount.toString()),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 4),
-                            child: Icon(
-                              Icons.favorite,
-                              color:
-                                  post.isFavorited ? Colors.pinkAccent : null,
-                            ),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(post.favCount.toString()),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 4),
+                          child: Icon(
+                            Icons.favorite,
+                            color: post.isFavorited ? Colors.pinkAccent : null,
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                     Row(
                       mainAxisSize: MainAxisSize.min,
@@ -231,22 +211,22 @@ class PostInfoBar extends StatelessWidget {
   }
 }
 
-void defaultPushPostDetail(BuildContext context, PostController controller) {
+void defaultPushPostDetail(BuildContext context, Post post) {
+  PostsController? controller = context.read<PostsController?>();
   int? cacheSize = context.read<LowResCacheSize>().size;
   Navigator.of(context).push(
     MaterialPageRoute(
       builder: (context) => LowResCacheSizeProvider(
         size: cacheSize,
-        child: controller.parent != null
-            ? PostControllerConnector(
-                controller: controller.parent!,
+        child: controller != null
+            ? PostsRouteConnector(
+                controller: controller,
                 child: PostDetailGallery(
-                  controller: controller.parent!,
-                  initialPage:
-                      controller.parent!.itemList!.indexOf(controller.value),
+                  controller: controller,
+                  initialPage: controller.itemList!.indexOf(post),
                 ),
               )
-            : PostDetail(controller: controller),
+            : PostDetail(post: post),
       ),
     ),
   );
@@ -254,22 +234,22 @@ void defaultPushPostDetail(BuildContext context, PostController controller) {
 
 class PostTile extends StatelessWidget {
   const PostTile({
-    required this.controller,
+    required this.post,
     this.onTap,
   });
 
-  final PostController controller;
+  final Post post;
   final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     return PostImageTile(
-      controller: controller,
-      onTap: onTap ?? () => defaultPushPostDetail(context, controller),
+      post: post,
+      onTap: onTap ?? () => defaultPushPostDetail(context, post),
       bottomBar: ValueListenableBuilder<bool>(
         valueListenable: context.watch<Settings>().showPostInfo,
         builder: (context, value, child) =>
-            value ? PostInfoBar(controller: controller) : const SizedBox(),
+            value ? PostInfoBar(post: post) : const SizedBox(),
       ),
     );
   }
@@ -278,25 +258,23 @@ class PostTile extends StatelessWidget {
 class PostComicTile extends StatelessWidget {
   const PostComicTile({
     super.key,
-    required this.controller,
+    required this.post,
   });
 
-  final PostController controller;
-
-  Post get post => controller.value;
+  final Post post;
 
   @override
   Widget build(BuildContext context) {
     return AspectRatio(
       aspectRatio: post.file.width / post.file.height,
       child: PostImageTile(
-        controller: controller,
+        post: post,
         size: post.type == PostType.video
             ? PostImageSize.sample
             : PostImageSize.file,
         withLowRes: true,
         showProgress: false,
-        onTap: () => defaultPushPostDetail(context, controller),
+        onTap: () => defaultPushPostDetail(context, post),
       ),
     );
   }
@@ -305,12 +283,10 @@ class PostComicTile extends StatelessWidget {
 class PostFeedTile extends StatelessWidget {
   const PostFeedTile({
     super.key,
-    required this.controller,
+    required this.post,
   });
 
-  final PostController controller;
-
-  Post get post => controller.value;
+  final Post post;
 
   @override
   Widget build(BuildContext context) {
@@ -335,61 +311,53 @@ class PostFeedTile extends StatelessWidget {
                 Text(post.commentCount.toString()),
               ],
             ),
-            AnimatedSelector(
-              animation: controller,
-              selector: () => [post.voteStatus],
-              builder: (context, child) => VoteDisplay(
-                status: post.voteStatus,
-                score: post.score.total,
-                onUpvote: (isLiked) async {
-                  final messenger = ScaffoldMessenger.of(context);
-                  if (context.read<Client>().hasLogin) {
-                    controller
-                        .vote(upvote: true, replace: !isLiked)
-                        .then((value) {
-                      if (!value) {
-                        messenger.showSnackBar(SnackBar(
-                          duration: const Duration(seconds: 1),
-                          content: Text('Failed to upvote Post #${post.id}'),
-                        ));
-                      }
-                    });
-                    return !isLiked;
-                  } else {
-                    return false;
-                  }
-                },
-                onDownvote: (isLiked) async {
-                  final messenger = ScaffoldMessenger.of(context);
-                  if (context.read<Client>().hasLogin) {
-                    controller
-                        .vote(upvote: false, replace: !isLiked)
-                        .then((value) {
-                      if (!value) {
-                        messenger.showSnackBar(SnackBar(
-                          duration: const Duration(seconds: 1),
-                          content: Text('Failed to downvote Post #${post.id}'),
-                        ));
-                      }
-                    });
-                    return !isLiked;
-                  } else {
-                    return false;
-                  }
-                },
-              ),
+            VoteDisplay(
+              status: post.voteStatus,
+              score: post.score.total,
+              onUpvote: (isLiked) async {
+                PostsController controller = context.read<PostsController>();
+                final messenger = ScaffoldMessenger.of(context);
+                if (context.read<Client>().hasLogin) {
+                  controller
+                      .vote(post: post, upvote: true, replace: !isLiked)
+                      .then((value) {
+                    if (!value) {
+                      messenger.showSnackBar(SnackBar(
+                        duration: const Duration(seconds: 1),
+                        content: Text('Failed to upvote Post #${post.id}'),
+                      ));
+                    }
+                  });
+                  return !isLiked;
+                } else {
+                  return false;
+                }
+              },
+              onDownvote: (isLiked) async {
+                PostsController controller = context.read<PostsController>();
+                final messenger = ScaffoldMessenger.of(context);
+                if (context.read<Client>().hasLogin) {
+                  controller
+                      .vote(post: post, upvote: false, replace: !isLiked)
+                      .then((value) {
+                    if (!value) {
+                      messenger.showSnackBar(SnackBar(
+                        duration: const Duration(seconds: 1),
+                        content: Text('Failed to downvote Post #${post.id}'),
+                      ));
+                    }
+                  });
+                  return !isLiked;
+                } else {
+                  return false;
+                }
+              },
             ),
             Row(
               children: [
-                FavoriteButton(controller: controller),
+                FavoriteButton(post: post),
                 const SizedBox(width: 4),
-                AnimatedSelector(
-                  animation: controller,
-                  selector: () => [post.favCount],
-                  builder: (context, child) => Text(
-                    post.favCount.toString(),
-                  ),
-                ),
+                Text(post.favCount.toString()),
               ],
             ),
             IconButton(
@@ -434,23 +402,29 @@ class PostFeedTile extends StatelessWidget {
         child: AspectRatio(
           aspectRatio: max(post.file.width / post.file.height, 0.9),
           child: PostImageTile(
-            controller: controller,
-            onTap: () => Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => PostVideoRoute(
-                  post: post,
-                  child: LowResCacheSizeProvider(
-                    size: cacheSize,
-                    child: controller.parent != null
-                        ? PostControllerConnector(
-                            controller: controller.parent!,
-                            child: PostFullscreen(controller: controller),
-                          )
-                        : PostFullscreen(controller: controller),
+            post: post,
+            onTap: () {
+              PostsController? controller = context.read<PostsController?>();
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => PostVideoRoute(
+                    post: post,
+                    child: LowResCacheSizeProvider(
+                      size: cacheSize,
+                      child: controller != null
+                          ? Provider.value(
+                              value: controller,
+                              child: PostsRouteConnector(
+                                controller: controller,
+                                child: PostFullscreen(post: post),
+                              ),
+                            )
+                          : PostFullscreen(post: post),
+                    ),
                   ),
                 ),
-              ),
-            ),
+              );
+            },
           ),
         ),
       );
@@ -459,7 +433,7 @@ class PostFeedTile extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(4),
       child: InkWell(
-        onTap: () => defaultPushPostDetail(context, controller),
+        onTap: () => defaultPushPostDetail(context, post),
         child: Padding(
           padding: const EdgeInsets.all(8).copyWith(bottom: 0),
           child: Column(

@@ -51,15 +51,13 @@ class PoolTile extends StatelessWidget {
     if (pool.postIds.isNotEmpty && controller != null) {
       int thumbnail = pool.postIds.first;
       if (controller.ids?.contains(thumbnail) ?? false) {
-        if (controller.itemList?.firstWhereOrNull((e) => e.id == thumbnail) !=
-            null) {
-          image = PostProvider(
-            id: thumbnail,
-            parent: controller,
-            child: Consumer<PostController>(
-              builder: (context, controller, child) => PostImageTile(
-                controller: controller,
-              ),
+        Post? post =
+            controller.itemList?.firstWhereOrNull((e) => e.id == thumbnail);
+        if (post != null) {
+          image = Provider<PostsController>.value(
+            value: controller,
+            child: PostImageTile(
+              post: post,
             ),
           );
         }

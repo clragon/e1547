@@ -32,13 +32,21 @@ class UserPage extends StatelessWidget {
       child: Consumer<_UserPageControllers>(
         builder: (context, controllers, child) {
           Map<Widget, WidgetBuilder> tabs = {
-            const Tab(text: 'Favorites'): (context) => postDisplay(
-                  context: context,
-                  controller: controllers.favoritePosts,
+            const Tab(text: 'Favorites'): (context) =>
+                ChangeNotifierProvider<PostsController>.value(
+                  value: controllers.favoritePosts,
+                  child: postDisplay(
+                    context: context,
+                    controller: controllers.favoritePosts,
+                  ),
                 ),
-            const Tab(text: 'Uploads'): (context) => postDisplay(
-                  context: context,
-                  controller: controllers.uploadedPosts,
+            const Tab(text: 'Uploads'): (context) =>
+                ChangeNotifierProvider<PostsController>.value(
+                  value: controllers.uploadedPosts,
+                  child: postDisplay(
+                    context: context,
+                    controller: controllers.uploadedPosts,
+                  ),
                 ),
             const Tab(text: 'About'): (context) => UserInfo(user: user),
           };
@@ -145,8 +153,8 @@ class UserSliverAppBar extends StatelessWidget {
                   height: 100,
                   width: 100,
                   child: UserAvatar(
+                    id: user.avatarId,
                     controller: avatar,
-                    enabled: true,
                   ),
                 ),
                 Padding(
@@ -261,8 +269,12 @@ class UserInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget info(IconData icon, String title, String value,
-        {VoidCallback? onLongPress}) {
+    Widget info(
+      IconData icon,
+      String title,
+      String value, {
+      VoidCallback? onLongPress,
+    }) {
       return UserInfoTile(
         icon: icon,
         title: title,

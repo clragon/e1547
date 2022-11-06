@@ -47,14 +47,8 @@ class Post with _$Post {
       : fileRaw;
 }
 
-mixin PostFile {
-  abstract final int width;
-  abstract final int height;
-  abstract final String? url;
-}
-
 @freezed
-class PostPreviewFile with _$PostPreviewFile, PostFile {
+class PostPreviewFile with _$PostPreviewFile {
   const factory PostPreviewFile({
     required int width,
     required int height,
@@ -66,7 +60,7 @@ class PostPreviewFile with _$PostPreviewFile, PostFile {
 }
 
 @freezed
-class PostSampleFile with _$PostSampleFile, PostFile {
+class PostSampleFile with _$PostSampleFile {
   const factory PostSampleFile({
     required bool has,
     required int height,
@@ -79,7 +73,7 @@ class PostSampleFile with _$PostSampleFile, PostFile {
 }
 
 @freezed
-class PostSourceFile with _$PostSourceFile, PostFile {
+class PostSourceFile with _$PostSourceFile {
   const factory PostSourceFile({
     required int width,
     required int height,

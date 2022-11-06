@@ -507,7 +507,7 @@ extension Loading<T extends RawDataController> on T {
 
   /// Requests and waits for the first Page of this controller to be loaded.
   ///
-  /// Triggers a new page to be loaded.
+  /// Triggers a page request for the first page key.
   /// If the page load fails, a [ControllerLoadingException] will be thrown.
   Future<T> loadFirstPage() async {
     Future<void> loaded = waitForFirstPage();

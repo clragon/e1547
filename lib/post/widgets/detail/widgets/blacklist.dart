@@ -4,14 +4,15 @@ import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 
 class DenylistTagDisplay extends StatelessWidget {
-  const DenylistTagDisplay({super.key, required this.controller});
+  const DenylistTagDisplay({super.key, required this.post});
 
-  final PostController controller;
+  final Post post;
 
   @override
   Widget build(BuildContext context) {
+    PostsController controller = context.read<PostsController>();
     return CrossFade.builder(
-      showChild: controller.isDenied,
+      showChild: controller.isDenied(post),
       builder: (context) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -24,26 +25,26 @@ class DenylistTagDisplay extends StatelessWidget {
               ),
             ),
           ),
-          ...controller.deniers!.map(
-            (e) => Column(
-              children: [
-                Row(
+          ...controller.getDeniers(post)!.map(
+                (e) => Column(
                   children: [
-                    Expanded(
-                      child: ListTile(
-                        leading: const Icon(Icons.block),
-                        title: Wrap(
-                          children: [
-                            ...e.split(' ').trim().map(DenyListTagCard.new),
-                          ],
+                    Row(
+                      children: [
+                        Expanded(
+                          child: ListTile(
+                            leading: const Icon(Icons.block),
+                            title: Wrap(
+                              children: [
+                                ...e.split(' ').trim().map(DenyListTagCard.new),
+                              ],
+                            ),
+                          ),
                         ),
-                      ),
+                      ],
                     ),
                   ],
                 ),
-              ],
-            ),
-          ),
+              ),
           const Divider(),
         ],
       ),

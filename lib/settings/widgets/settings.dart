@@ -69,7 +69,9 @@ class _SettingsPageState extends State<SettingsPage> {
                         subtitle: value?.levelString != null
                             ? Text(value!.levelString.toLowerCase())
                             : null,
-                        leading: const CurrentUserAvatar(),
+                        leading: const IgnorePointer(
+                          child: CurrentUserAvatar(),
+                        ),
                         separated: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 12),
                           child: IgnorePointer(

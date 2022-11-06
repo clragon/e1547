@@ -1,11 +1,12 @@
+import 'package:collection/collection.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/history/history.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 
-class PostControllerConnector extends StatefulWidget {
-  const PostControllerConnector({
+class PostsRouteConnector extends StatefulWidget {
+  const PostsRouteConnector({
     super.key,
     required this.controller,
     required this.child,
@@ -15,11 +16,10 @@ class PostControllerConnector extends StatefulWidget {
   final Widget child;
 
   @override
-  State<PostControllerConnector> createState() =>
-      _PostControllerConnectorState();
+  State<PostsRouteConnector> createState() => _PostsRouteConnectorState();
 }
 
-class _PostControllerConnectorState extends State<PostControllerConnector> {
+class _PostsRouteConnectorState extends State<PostsRouteConnector> {
   late List<Post>? pageItems = widget.controller.itemList;
 
   void popOrRemove() {
@@ -48,6 +48,33 @@ class _PostControllerConnectorState extends State<PostControllerConnector> {
         listenable: widget.controller,
         child: widget.child,
       );
+}
+
+class PostsControllerConnector extends StatelessWidget {
+  const PostsControllerConnector({
+    super.key,
+    required this.id,
+    required this.controller,
+    required this.builder,
+  });
+
+  final int id;
+  final PostsController controller;
+  final Widget Function(BuildContext context, Post? value) builder;
+
+  @override
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider<PostsController>.value(
+      value: controller,
+      child: AnimatedBuilder(
+        animation: controller,
+        builder: (context, child) => builder(
+          context,
+          controller.itemList?.firstWhereOrNull((e) => e.id == id),
+        ),
+      ),
+    );
+  }
 }
 
 class PostHistoryConnector extends StatefulWidget {

@@ -8,9 +8,9 @@ import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'appbar.dart';
 
 class PostDetail extends StatefulWidget {
-  const PostDetail({required this.controller, this.onTapImage});
+  const PostDetail({required this.post, this.onTapImage});
 
-  final PostController controller;
+  final Post post;
   final VoidCallback? onTapImage;
 
   @override
@@ -18,9 +18,7 @@ class PostDetail extends StatefulWidget {
 }
 
 class _PostDetailState extends State<PostDetail> {
-  Post get post => widget.controller.value;
-
-  set post(Post value) => widget.controller.value = value;
+  Post get post => widget.post;
 
   @override
   void didChangeDependencies() {
@@ -44,7 +42,7 @@ class _PostDetailState extends State<PostDetail> {
           child: AnimatedSize(
             duration: defaultAnimationDuration,
             child: PostDetailImageDisplay(
-              post: widget.controller,
+              post: post,
               onTap: () {
                 PostVideoRoute.of(context).keepPlaying();
                 if (!(context.read<PostEditingController>().editing) &&
@@ -53,8 +51,7 @@ class _PostDetailState extends State<PostDetail> {
                 } else {
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (context) =>
-                          PostFullscreen(controller: widget.controller),
+                      builder: (context) => PostFullscreen(post: post),
                     ),
                   );
                 }
@@ -78,10 +75,10 @@ class _PostDetailState extends State<PostDetail> {
       );
 
   Widget upperBodyExtension(BuildContext context) => Padding(
-        padding: const EdgeInsets.symmetric(
+    padding: const EdgeInsets.symmetric(
           horizontal: 20,
         ),
-        child: LikeDisplay(controller: widget.controller),
+        child: LikeDisplay(post: post),
       );
 
   Widget middleBody(BuildContext context) => Padding(
@@ -90,7 +87,7 @@ class _PostDetailState extends State<PostDetail> {
           children: [
             PostEditorChild(
               shown: false,
-              child: LikeDisplay(controller: widget.controller),
+              child: LikeDisplay(post: post),
             ),
             PostEditorChild(
               shown: false,
@@ -111,9 +108,9 @@ class _PostDetailState extends State<PostDetail> {
             ),
             PostEditorChild(
               shown: false,
-              child: DenylistTagDisplay(controller: widget.controller),
+              child: DenylistTagDisplay(post: post),
             ),
-            TagDisplay(post: widget.controller.value),
+            TagDisplay(post: post),
             PostEditorChild(
               shown: false,
               child: FileDisplay(
@@ -133,80 +130,76 @@ class _PostDetailState extends State<PostDetail> {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: widget.controller,
-      builder: (context, child) => PostVideoRoute(
+    return PostVideoRoute(
+      post: post,
+      child: PostHistoryConnector(
         post: post,
-        child: PostHistoryConnector(
+        child: PostEditor(
           post: post,
-          child: PostEditor(
-            post: post,
-            child: Scaffold(
-              extendBodyBehindAppBar: true,
-              appBar: PostDetailAppBar(controller: widget.controller),
-              floatingActionButton: context.read<Client>().hasLogin
-                  ? PostDetailFloatingActionButton(
-                      controller: widget.controller)
-                  : null,
-              body: MediaQuery.removeViewInsets(
-                context: context,
-                removeTop: true,
-                child: LayoutBuilder(
-                  builder: (context, constraints) {
-                    if (constraints.maxWidth < 1000) {
-                      return ListView(
-                        primary: true,
-                        padding: EdgeInsets.only(
-                          top: MediaQuery.of(context).padding.top,
-                          bottom: kBottomNavigationBarHeight + 24,
-                        ),
-                        children: [
-                          image(context, constraints),
-                          upperBody(context),
-                          middleBody(context),
-                          lowerBody(context),
-                        ],
-                      );
+          child: Scaffold(
+            extendBodyBehindAppBar: true,
+            appBar: PostDetailAppBar(post: post),
+            floatingActionButton: context.read<Client>().hasLogin
+                ? PostDetailFloatingActionButton(post: post)
+                : null,
+            body: MediaQuery.removeViewInsets(
+              context: context,
+              removeTop: true,
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  if (constraints.maxWidth < 1000) {
+                    return ListView(
+                      primary: true,
+                      padding: EdgeInsets.only(
+                        top: MediaQuery.of(context).padding.top,
+                        bottom: kBottomNavigationBarHeight + 24,
+                      ),
+                      children: [
+                        image(context, constraints),
+                        upperBody(context),
+                        middleBody(context),
+                        lowerBody(context),
+                      ],
+                    );
+                  } else {
+                    double sideBarWidth;
+                    if (constraints.maxWidth > 1400) {
+                      sideBarWidth = 404;
                     } else {
-                      double sideBarWidth;
-                      if (constraints.maxWidth > 1400) {
-                        sideBarWidth = 404;
-                      } else {
-                        sideBarWidth = 304;
-                      }
-                      return Row(
-                        children: [
-                          Expanded(
-                            child: PostDetailCommentsWrapper(
-                              controller: widget.controller,
-                              children: [
-                                image(context, constraints),
-                                upperBody(context),
-                                upperBodyExtension(context),
-                              ],
-                            ),
-                          ),
-                          SizedBox(
-                            width: sideBarWidth,
-                            child: ListView(
-                              primary: false,
-                              padding: EdgeInsets.only(
-                                top: MediaQuery.of(context).padding.top,
-                                bottom: defaultActionListPadding.bottom,
-                              ),
-                              children: [
-                                const SizedBox(
-                                  height: 56,
-                                ),
-                                lowerBody(context),
-                              ],
-                            ),
-                          ),
-                        ],
-                      );
+                      sideBarWidth = 304;
                     }
-                  },
-                ),
+                    return Row(
+                      children: [
+                        Expanded(
+                          child: PostDetailCommentsWrapper(
+                            post: post,
+                            children: [
+                              image(context, constraints),
+                              upperBody(context),
+                              upperBodyExtension(context),
+                            ],
+                          ),
+                        ),
+                        SizedBox(
+                          width: sideBarWidth,
+                          child: ListView(
+                            primary: false,
+                            padding: EdgeInsets.only(
+                              top: MediaQuery.of(context).padding.top,
+                              bottom: defaultActionListPadding.bottom,
+                            ),
+                            children: [
+                              const SizedBox(
+                                height: 56,
+                              ),
+                              lowerBody(context),
+                            ],
+                          ),
+                        ),
+                      ],
+                    );
+                  }
+                },
               ),
             ),
           ),
@@ -219,16 +212,12 @@ class _PostDetailState extends State<PostDetail> {
 class PostDetailCommentsWrapper extends StatelessWidget {
   const PostDetailCommentsWrapper({
     super.key,
-    required this.controller,
+    required this.post,
     required this.children,
   });
 
-  final PostController controller;
+  final Post post;
   final List<Widget> children;
-
-  Post get post => controller.value;
-
-  set post(Post value) => controller.value = value;
 
   @override
   Widget build(BuildContext context) {
@@ -289,10 +278,14 @@ class PostDetailCommentsWrapper extends StatelessWidget {
                                 value: () => guardWithLogin(
                                   context: context,
                                   callback: () async {
+                                    PostsController controller =
+                                        context.read<PostsController>();
                                     if (await writeComment(
                                         context: context, postId: post.id)) {
-                                      post = post.copyWith(
-                                        commentCount: post.commentCount + 1,
+                                      controller.replacePost(
+                                        post.copyWith(
+                                          commentCount: post.commentCount + 1,
+                                        ),
                                       );
                                     }
                                   },

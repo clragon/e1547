@@ -38,17 +38,9 @@ Widget postGrid({
         itemBuilder: itemBuilder,
       );
 
-  Widget itemBuilder(context, item, index) => PostProvider(
-        id: item.id,
-        parent: controller,
-        child: Consumer<PostController>(
-          builder: (context, post, child) {
-            return LowResCacheSizeProvider(
-              size: TileLayout.of(context).tileSize * 2,
-              child: PostTile(controller: post),
-            );
-          },
-        ),
+  Widget itemBuilder(context, item, index) => LowResCacheSizeProvider(
+        size: TileLayout.of(context).tileSize * 2,
+        child: PostTile(post: item),
       );
 
   switch (TileLayout.of(context).stagger) {
@@ -98,15 +90,9 @@ Widget postComic({
       pagingController: controller,
       onEmpty: const Text('No posts'),
       onError: const Text('Failed to load posts'),
-      itemBuilder: (context, item, index) => PostProvider(
-        id: item.id,
-        parent: controller,
-        child: Consumer<PostController>(
-          builder: (context, post, child) => LowResCacheSizeProvider(
-            size: 800,
-            child: PostComicTile(controller: post),
-          ),
-        ),
+      itemBuilder: (context, item, index) => LowResCacheSizeProvider(
+        size: 800,
+        child: PostComicTile(post: item),
       ),
     ),
   );
@@ -125,19 +111,13 @@ Widget postTimeline({
       pagingController: controller,
       onEmpty: const Text('No posts'),
       onError: const Text('Failed to load posts'),
-      itemBuilder: (context, item, index) => PostProvider(
-        id: item.id,
-        parent: controller,
-        child: Consumer<PostController>(
-          builder: (context, post, child) => LowResCacheSizeProvider(
-            size: 800,
-            child: Column(
-              children: [
-                PostFeedTile(controller: post),
-                const Divider(indent: 8, endIndent: 8),
-              ],
-            ),
-          ),
+      itemBuilder: (context, item, index) => LowResCacheSizeProvider(
+        size: 800,
+        child: Column(
+          children: [
+            PostFeedTile(post: item),
+            const Divider(indent: 8, endIndent: 8),
+          ],
         ),
       ),
     ),

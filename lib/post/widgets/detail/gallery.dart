@@ -59,21 +59,16 @@ class _PostDetailGalleryState extends State<PostDetailGallery>
               loadNextPage(index);
               return PrimaryScrollController(
                 controller: ScrollController(),
-                child: PostProvider(
-                  id: controller.itemList![index].id,
-                  child: Consumer<PostController>(
-                    builder: (context, postController, child) => PostDetail(
-                      controller: postController,
-                      onTapImage: () => Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => PostControllerConnector(
-                            controller: controller,
-                            child: PostFullscreenGallery(
-                              controller: controller,
-                              initialPage: index,
-                              onPageChanged: pageController.jumpToPage,
-                            ),
-                          ),
+                child: PostDetail(
+                  post: controller.itemList![index],
+                  onTapImage: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => PostsRouteConnector(
+                        controller: controller,
+                        child: PostFullscreenGallery(
+                          controller: controller,
+                          initialPage: index,
+                          onPageChanged: pageController.jumpToPage,
                         ),
                       ),
                     ),

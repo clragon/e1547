@@ -22,9 +22,7 @@ class UserDrawerHeader extends StatelessWidget {
               const SizedBox(
                 height: 72,
                 width: 72,
-                child: CurrentUserAvatar(
-                  enabled: true,
-                ),
+                child: CurrentUserAvatar(),
               ),
               Expanded(
                 child: Padding(

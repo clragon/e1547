@@ -53,15 +53,10 @@ class _PostFullscreenGalleryState extends State<PostFullscreenGallery>
         value: widget.controller,
         child: Consumer<PostsController>(
           builder: (context, controller, child) => PageView.builder(
-            itemCount: controller.itemList?.length,
+            itemCount: controller.itemList?.length ?? 0,
             controller: widget.pageController ?? pageController,
-            itemBuilder: (context, index) => PostProvider(
-              id: controller.itemList![index].id,
-              child: Consumer<PostController>(
-                builder: (context, post, child) => PostFullscreenBody(
-                  controller: post,
-                ),
-              ),
+            itemBuilder: (context, index) => PostFullscreenBody(
+              post: controller.itemList![index],
             ),
             onPageChanged: (index) {
               currentPage.value = index;

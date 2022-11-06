@@ -1,5 +1,3 @@
-import 'package:e1547/client/client.dart';
-import 'package:e1547/denylist/denylist.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
@@ -47,8 +45,7 @@ Future<void> postFavoritingNotification(
   PostsController controller,
   bool isLiked,
 ) {
-  Client client = context.read<Client>();
-  DenylistService denylist = context.read<DenylistService>();
+  PostsController controller = context.read<PostsController>();
   bool upvote = context.read<Settings>().upvoteFavs.value;
   return loadingNotification<Post>(
     context: context,
@@ -56,24 +53,22 @@ Future<void> postFavoritingNotification(
     items: items,
     timeout: const Duration(milliseconds: 300),
     process: (post) async {
-      PostController postController = PostController(
-        client: client,
-        denylist: denylist,
-        id: post.id,
-        parent: controller,
-      );
       if (isLiked) {
         if (post.isFavorited) {
-          return postController.unfav();
+          return controller.unfav(post);
         } else {
           return true;
         }
       } else {
         if (!post.isFavorited) {
           return Future(() async {
-            bool result = await postController.fav();
+            bool result = await controller.fav(post);
             if (result && upvote) {
-              result = await postController.vote(upvote: true, replace: true);
+              result = await controller.vote(
+                post: post,
+                upvote: true,
+                replace: true,
+              );
             }
             return result;
           });

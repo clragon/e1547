@@ -4,13 +4,9 @@ import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 
 class PostDetailFloatingActionButton extends StatelessWidget {
-  const PostDetailFloatingActionButton({super.key, required this.controller});
+  const PostDetailFloatingActionButton({super.key, required this.post});
 
-  final PostController controller;
-
-  Post get post => controller.value;
-
-  set post(Post value) => controller.value = value;
+  final Post post;
 
   @override
   Widget build(BuildContext context) {
@@ -18,19 +14,16 @@ class PostDetailFloatingActionButton extends StatelessWidget {
         context.watch<PostEditingController>();
 
     Future<void> editPost() async {
+      final messenger = ScaffoldMessenger.of(context);
       editingController.setLoading(true);
       Map<String, String?>? body = editingController.value?.toForm();
       if (body != null) {
         try {
-          await context
-              .read<Client>()
-              .updatePost(editingController.post.id, body);
-          post = post.copyWith(tags: editingController.value!.tags);
-          await controller.reset();
+          await context.read<PostsController>().updatePost(post, body);
           editingController.stopEditing();
         } on DioError {
           editingController.setLoading(false);
-          ScaffoldMessenger.of(context).showSnackBar(
+          messenger.showSnackBar(
             SnackBar(
               duration: const Duration(seconds: 1),
               content: Text('failed to edit Post #${post.id}'),
@@ -70,7 +63,7 @@ class PostDetailFloatingActionButton extends StatelessWidget {
           ? Icon(editingController.isShown ? Icons.add : Icons.check)
           : Padding(
               padding: const EdgeInsets.only(left: 2),
-              child: FavoriteButton(controller: controller),
+              child: FavoriteButton(post: post),
             ),
     );
   }

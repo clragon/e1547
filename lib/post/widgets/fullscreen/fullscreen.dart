@@ -6,25 +6,22 @@ import 'package:photo_view/photo_view.dart';
 class PostFullscreen extends StatelessWidget {
   const PostFullscreen({
     super.key,
-    required this.controller,
+    required this.post,
     this.showFrame,
   });
 
-  final PostController controller;
+  final Post post;
   final bool? showFrame;
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: controller,
-      builder: (context, child) => PostHistoryConnector(
-        post: controller.value,
-        child: PostFullscreenFrame(
-          post: controller.value,
-          visible: showFrame,
-          child: PostFullscreenBody(
-            controller: controller,
-          ),
+    return PostHistoryConnector(
+      post: post,
+      child: PostFullscreenFrame(
+        post: post,
+        visible: showFrame,
+        child: PostFullscreenBody(
+          post: post,
         ),
       ),
     );
@@ -32,35 +29,34 @@ class PostFullscreen extends StatelessWidget {
 }
 
 class PostFullscreenBody extends StatelessWidget {
-  const PostFullscreenBody({required this.controller});
+  const PostFullscreenBody({required this.post});
 
-  final PostController controller;
+  final Post post;
 
   @override
   Widget build(BuildContext context) {
     return PostVideoRoute(
-      post: controller.value,
+      post: post,
       stopOnDispose: false,
       child: ImageOverlay(
-        controller: controller,
+        post: post,
         builder: (context) {
-          switch (controller.value.type) {
+          switch (post.type) {
             case PostType.image:
               return PhotoViewGestureDetectorScope(
                 axis: Axis.horizontal,
                 child: PhotoView.customChild(
-                  heroAttributes:
-                      PhotoViewHeroAttributes(tag: controller.value.link),
+                  heroAttributes: PhotoViewHeroAttributes(tag: post.link),
                   backgroundDecoration:
                       const BoxDecoration(color: Colors.transparent),
-                  childSize: Size(controller.value.file.width.toDouble(),
-                      controller.value.file.height.toDouble()),
+                  childSize: Size(
+                      post.file.width.toDouble(), post.file.height.toDouble()),
                   initialScale: PhotoViewComputedScale.contained,
                   minScale: PhotoViewComputedScale.contained,
                   maxScale: PhotoViewComputedScale.covered * 6,
                   child: PostImageWidget(
                     fit: BoxFit.cover,
-                    post: controller.value,
+                    post: post,
                     size: PostImageSize.file,
                     lowResCacheSize: context.read<LowResCacheSize?>()?.size,
                   ),
@@ -69,12 +65,12 @@ class PostFullscreenBody extends StatelessWidget {
             case PostType.video:
               return Center(
                 child: Hero(
-                  tag: controller.value.link,
+                  tag: post.link,
                   child: PostVideoLoader(
-                    post: controller.value,
+                    post: post,
                     child: VideoGestures(
-                      videoController: controller.value.getVideo(context)!,
-                      child: PostVideoWidget(post: controller.value),
+                      videoController: post.getVideo(context)!,
+                      child: PostVideoWidget(post: post),
                     ),
                   ),
                 ),

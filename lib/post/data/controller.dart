@@ -142,6 +142,14 @@ class PostsController extends DataController<Post>
     super.dispose();
   }
 
+  void replacePost(Post post, {bool force = false}) {
+    int index = itemList?.indexWhere((e) => e.id == post.id) ?? -1;
+    if (index == -1) {
+      throw StateError('Post isnt owned by this controller');
+    }
+    updateItem(index, post, force: force);
+  }
+
   List<String>? getDeniers(Post post) {
     assertOwnsItem(post);
     return (_deniedPosts ?? _previousDeniedPosts!)[post].maybeUnmodifiable();
@@ -165,182 +173,62 @@ class PostsController extends DataController<Post>
     _allowedPosts.remove(post);
     refilter();
   }
-}
 
-enum DenyListMode {
-  unavailable,
-  filtering,
-  plain,
-}
-
-typedef PostProviderCallback = Future<List<Post>> Function(
-    String search, int page, bool force)?;
-
-class PostsProvider extends SubChangeNotifierProvider2<Client, DenylistService,
-    PostsController> {
-  PostsProvider({
-    PostProviderCallback provider,
-    String? search,
-    bool denying = true,
-    bool canSearch = true,
-    DenyListMode denyMode = DenyListMode.filtering,
-    super.child,
-    super.builder,
-  }) : super(
-          create: (context, client, denylist) => PostsController(
-            client: client,
-            denylist: denylist,
-            provider: provider,
-            search: search,
-            denying: denying,
-            canSearch: canSearch,
-            denyMode: denyMode,
-          ),
-        );
-
-  PostsProvider.single({
-    required int id,
-    DenyListMode denyMode = DenyListMode.plain,
-    super.child,
-    super.builder,
-  }) : super(
-          create: (context, client, denylist) => PostsController.single(
-            id: id,
-            client: client,
-            denylist: denylist,
-            denyMode: denyMode,
-          ),
-        );
-}
-
-class PostController extends ProxyValueNotifier<Post, PostsController> {
-  PostController({
-    required this.client,
-    required this.denylist,
-    required this.id,
-    required super.parent,
-  }) {
-    _registerDenying();
-  }
-
-  final Client client;
-  final DenylistService denylist;
-
-  final int id;
-
-  @override
-  Post? fromParent() =>
-      parent?.itemList?.firstWhereOrNull((value) => value.id == id);
-
-  @override
-  void toParent(Post value) {
-    if (!orphan) {
-      parent!.updateItem(
-        parent!.itemList!.indexOf(this.value),
-        value,
-        force: true,
-      );
-    }
-  }
-
-  void _registerDenying() {
-    if (!orphan) {
-      parent!.addListener(_updateDenied);
-      parent!.addListener(_updateAllowed);
-    } else {
-      denylist.addListener(_updateDenied);
-    }
-    _updateDenied();
-    _updateAllowed();
-  }
-
-  void _updateDenied() {
-    if (!orphan) {
-      _deniers = parent!.getDeniers(value);
-    } else {
-      if (_isAllowed) {
-        _deniers = null;
-      } else {
-        _deniers = value.getDeniers(denylist.items);
-      }
-    }
-    notifyListeners();
-  }
-
-  void _updateAllowed() {
-    if (!orphan) {
-      _isAllowed = parent!.isAllowed(value);
-      notifyListeners();
-    }
-  }
-
-  List<String>? _deniers;
-  List<String>? get deniers => _deniers.maybeUnmodifiable();
-  bool get isDenied => _deniers != null;
-
-  bool _isAllowed = false;
-  bool get isAllowed => _isAllowed;
-  set isAllowed(bool value) {
-    if (!orphan) {
-      if (value) {
-        parent!.allow(this.value);
-      } else {
-        parent!.unallow(this.value);
-      }
-    } else {
-      _isAllowed = value;
-      _updateDenied();
-    }
-  }
-
-  @override
-  void dispose() {
-    parent?.removeListener(_updateDenied);
-    parent?.removeListener(_updateAllowed);
-    denylist.removeListener(_updateDenied);
-    super.dispose();
-  }
-
-  Future<bool> fav() async {
-    value = value.copyWith(
-      isFavorited: true,
-      favCount: value.favCount + 1,
+  Future<bool> fav(Post post) async {
+    assertOwnsItem(post);
+    replacePost(
+      post.copyWith(
+        isFavorited: true,
+        favCount: post.favCount + 1,
+      ),
+      force: true,
     );
     try {
-      await client.addFavorite(value.id);
+      await client.addFavorite(post.id);
       return true;
     } on DioError {
-      value = value.copyWith(
-        isFavorited: false,
-        favCount: value.favCount - 1,
+      replacePost(
+        post.copyWith(
+          isFavorited: false,
+          favCount: post.favCount - 1,
+        ),
       );
       return false;
     }
   }
 
-  Future<bool> unfav() async {
-    value = value.copyWith(
-      isFavorited: false,
-      favCount: value.favCount - 1,
+  Future<bool> unfav(Post post) async {
+    assertOwnsItem(post);
+    replacePost(
+      post.copyWith(
+        isFavorited: false,
+        favCount: post.favCount - 1,
+      ),
+      force: true,
     );
     try {
-      await client.removeFavorite(value.id);
+      await client.removeFavorite(post.id);
       return true;
     } on DioError {
-      value = value.copyWith(
-        isFavorited: true,
-        favCount: value.favCount + 1,
+      replacePost(
+        post.copyWith(
+          isFavorited: true,
+          favCount: post.favCount + 1,
+        ),
       );
       return false;
     }
   }
 
   Future<bool> vote({
+    required Post post,
     required bool upvote,
     required bool replace,
   }) async {
+    assertOwnsItem(post);
     try {
-      await client.votePost(value.id, upvote, replace);
+      await client.votePost(post.id, upvote, replace);
+      Post value = post;
       if (value.voteStatus == VoteStatus.unknown) {
         if (upvote) {
           value = value.copyWith(
@@ -400,33 +288,69 @@ class PostController extends ProxyValueNotifier<Post, PostsController> {
           }
         }
       }
+      replacePost(value);
       return true;
     } on DioError {
       return false;
     }
   }
 
-  Future<void> reset() async {
-    value = await client.post(value.id, force: true);
+  Future<void> resetPost(Post post) async {
+    assertOwnsItem(post);
+    replacePost(await client.post(post.id, force: true));
+  }
+
+  // TODO: create a PostUpdate Object instead of a Map
+  Future<void> updatePost(Post post, Map<String, String?> body) async {
+    assertOwnsItem(post);
+    await client.updatePost(post.id, body);
+    await resetPost(post);
   }
 }
 
-class PostProvider extends SubChangeNotifierProvider2<Client, DenylistService,
-    PostController> {
-  PostProvider({
-    required int id,
-    PostsController? parent,
+enum DenyListMode {
+  unavailable,
+  filtering,
+  plain,
+}
+
+typedef PostProviderCallback = Future<List<Post>> Function(
+    String search, int page, bool force)?;
+
+class PostsProvider extends SubChangeNotifierProvider2<Client, DenylistService,
+    PostsController> {
+  PostsProvider({
+    PostProviderCallback provider,
+    String? search,
+    bool denying = true,
+    bool canSearch = true,
+    DenyListMode denyMode = DenyListMode.filtering,
     super.child,
     super.builder,
   }) : super(
-          create: (context, client, denylist) => PostController(
+          create: (context, client, denylist) => PostsController(
             client: client,
             denylist: denylist,
-            id: id,
-            parent: parent ?? context.read<PostsController>(),
+            provider: provider,
+            search: search,
+            denying: denying,
+            canSearch: canSearch,
+            denyMode: denyMode,
           ),
-          selector: (context) =>
-              [id, parent ?? context.watch<PostsController>()],
+        );
+
+  PostsProvider.single({
+    required int id,
+    DenyListMode denyMode = DenyListMode.plain,
+    super.child,
+    super.builder,
+  }) : super(
+          create: (context, client, denylist) => PostsController.single(
+            id: id,
+            client: client,
+            denylist: denylist,
+            denyMode: denyMode,
+          ),
         );
 }
 

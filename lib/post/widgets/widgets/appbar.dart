@@ -33,7 +33,7 @@ List<PopupMenuItem<VoidCallback>> postMenuPostActions(
 
 List<PopupMenuItem<VoidCallback>> postMenuUserActions(
   BuildContext context,
-  PostController controller,
+  Post post,
 ) {
   return [
     if (context.read<PostEditingController?>() != null)
@@ -52,10 +52,11 @@ List<PopupMenuItem<VoidCallback>> postMenuUserActions(
       value: () => guardWithLogin(
         context: context,
         callback: () async {
-          if (await writeComment(
-              context: context, postId: controller.value.id)) {
-            controller.value = controller.value
-                .copyWith(commentCount: controller.value.commentCount + 1);
+          if (await writeComment(context: context, postId: post.id)) {
+            PostsController controller = context.read<PostsController>();
+            controller.replacePost(
+              post.copyWith(commentCount: post.commentCount + 1),
+            );
           }
         },
         error: 'You must be logged in to comment!',
@@ -68,7 +69,7 @@ List<PopupMenuItem<VoidCallback>> postMenuUserActions(
         context: context,
         callback: () => Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (context) => PostReportScreen(post: controller),
+            builder: (context) => PostReportScreen(post: post),
           ),
         ),
         error: 'You must be logged in to report posts!',
@@ -81,7 +82,7 @@ List<PopupMenuItem<VoidCallback>> postMenuUserActions(
         context: context,
         callback: () => Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (context) => PostFlagScreen(post: controller),
+            builder: (context) => PostFlagScreen(post: post),
           ),
         ),
         error: 'You must be logged in to flag posts!',
