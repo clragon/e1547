@@ -70,4 +70,10 @@ class ActionController extends ChangeNotifier {
     action = () => execute(submit);
     notifyListeners();
   }
+
+  @override
+  void dispose() {
+    errorTimer?.cancel();
+    super.dispose();
+  }
 }

@@ -89,21 +89,24 @@ class HostService extends ChangeNotifier {
   }
 
   Future<void> setCustomHost(String value) async {
-    if (host.isEmpty) {
+    if (value.isEmpty) {
+      if (host == customHost) {
+        host = defaultHost;
+      }
       customHost = null;
     } else {
       try {
-        await _getClient().get('https://$host');
+        await _getClient().get('https://$value');
         await Future.delayed(const Duration(seconds: 1));
-        if (host == defaultHost) {
-          throw CustomHostDefaultException(host: host);
-        } else if (allowedHosts.contains(host)) {
-          customHost = host;
+        if (value == defaultHost) {
+          throw CustomHostDefaultException(host: value);
+        } else if (allowedHosts.contains(value)) {
+          customHost = value;
         } else {
-          throw CustomHostIncompatibleException(host: host);
+          throw CustomHostIncompatibleException(host: value);
         }
       } on DioError {
-        throw CustomHostUnreachableException(host: host);
+        throw CustomHostUnreachableException(host: value);
       }
     }
   }
