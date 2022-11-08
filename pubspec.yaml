@@ -56,7 +56,7 @@ dependencies:
   permission_handler: ^10.0.0
   pub_semver: ^2.1.2
   relative_time: ^2.2.1
-  shared_storage: ^0.5.0
+  shared_storage: ^0.6.0
   share_plus: ^6.2.0
   shared_preferences: ^2.0.11
   sqflite: ^2.2.0+3

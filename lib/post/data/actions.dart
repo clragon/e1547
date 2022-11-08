@@ -14,7 +14,7 @@ import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:mime/mime.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:shared_storage/saf.dart';
+import 'package:shared_storage/shared_storage.dart';
 
 extension PostTagging on Post {
   bool hasTag(String tag) {
@@ -171,7 +171,7 @@ extension PostDownloading on Post {
         if (file != null) {
           Digest downloadMd5 = md5.convert(downloadBytes);
           Digest fileMd5 = md5.convert(await _throwOnNull(
-            file.getContent(Uri.base),
+            file.getContent(),
             'Could not read SAF file!',
           ));
           if (downloadMd5 != fileMd5) {
