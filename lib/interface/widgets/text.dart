@@ -24,10 +24,11 @@ class TimedText extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.baseline,
       textBaseline: TextBaseline.ideographic,
       children: [
-        child,
+        Flexible(child: child),
         Text(
           ' • ${created.relativeTime(context)}'
           '${updated != null && updated!.isAfter(created) ? ' (edited)' : ''}',
+          maxLines: 1,
           style: TextStyle(
             fontSize: 12,
             color: dimTextColor(context),

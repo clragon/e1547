@@ -42,9 +42,9 @@ extension Identification on History {
     if (parsed.name != null) {
       switch (type) {
         case LinkType.user:
-          return 'User ${parsed.name}';
+          return '${parsed.name} - User';
         case LinkType.wiki:
-          return 'Wiki ${parsed.name}';
+          return '${parsed.name} - Wiki';
         default:
           break;
       }

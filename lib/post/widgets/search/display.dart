@@ -113,12 +113,7 @@ Widget postTimeline({
       onError: const Text('Failed to load posts'),
       itemBuilder: (context, item, index) => LowResCacheSizeProvider(
         size: 800,
-        child: Column(
-          children: [
-            PostFeedTile(post: item),
-            const Divider(indent: 8, endIndent: 8),
-          ],
-        ),
+        child: PostFeedTile(post: item),
       ),
     ),
   );

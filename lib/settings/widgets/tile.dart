@@ -97,6 +97,7 @@ class ImageTile extends StatelessWidget {
     this.onTap,
     this.onLongPress,
     this.hero,
+    this.showTitle,
   });
 
   final Widget title;
@@ -108,73 +109,72 @@ class ImageTile extends StatelessWidget {
   final VoidCallback? onTap;
   final VoidCallback? onLongPress;
   final String? hero;
+  final bool? showTitle;
 
   @override
   Widget build(BuildContext context) {
     final bool centerTitle = images?.isEmpty ?? true;
-    return Column(
-      children: [
-        Material(
-          type: MaterialType.transparency,
-          clipBehavior: Clip.antiAlias,
-          borderRadius: const BorderRadius.all(Radius.circular(4)),
-          child: InkWell(
-            onTap: onTap,
-            onLongPress: onLongPress,
-            child: Column(
+    return Material(
+      type: MaterialType.transparency,
+      clipBehavior: Clip.antiAlias,
+      borderRadius: const BorderRadius.all(Radius.circular(4)),
+      child: InkWell(
+        onTap: onTap,
+        onLongPress: onLongPress,
+        child: Column(
+          children: [
+            Stack(
+              fit: StackFit.passthrough,
               children: [
-                Stack(
-                  fit: StackFit.passthrough,
-                  children: [
-                    SizedBox(
-                      height: images?.isNotEmpty ?? true ? 300 : 150,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          centerTitle
-                              ? Expanded(
-                                  child: Card(
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(16),
-                                      child: Center(
-                                        child: DefaultTextStyle(
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .headline6!,
-                                          textAlign: TextAlign.center,
-                                          child: title,
-                                        ),
-                                      ),
+                SizedBox(
+                  height: images?.isNotEmpty ?? true ? 300 : 150,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      centerTitle
+                          ? Expanded(
+                              child: Card(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(16),
+                                  child: Center(
+                                    child: DefaultTextStyle(
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .headline6!,
+                                      textAlign: TextAlign.center,
+                                      child: title,
                                     ),
                                   ),
-                                )
-                              : Expanded(
-                                  child: hero != null
-                                      ? Hero(
-                                          tag: hero!,
-                                          child: ImageGrid(images: images),
-                                        )
-                                      : ImageGrid(images: images),
                                 ),
-                        ],
-                      ),
-                    ),
-                    const Positioned.fill(
-                      child: Material(type: MaterialType.transparency),
-                    ),
-                  ],
+                              ),
+                            )
+                          : Expanded(
+                              child: hero != null
+                                  ? Hero(
+                                      tag: hero!,
+                                      child: ImageGrid(images: images),
+                                    )
+                                  : ImageGrid(images: images),
+                            ),
+                    ],
+                  ),
                 ),
-                ListTile(
-                  title: !centerTitle ? title : null,
-                  subtitle: subtitle,
-                  trailing: trailing,
+                const Positioned.fill(
+                  child: Material(type: MaterialType.transparency),
                 ),
               ],
             ),
-          ),
+            if ((!centerTitle && (showTitle ?? true)) ||
+                subtitle != null ||
+                trailing != null)
+              ListTile(
+                title: !centerTitle ? title : null,
+                subtitle: subtitle,
+                trailing: trailing,
+              ),
+          ],
         ),
-        const Divider(),
-      ],
+      ),
     );
   }
 }

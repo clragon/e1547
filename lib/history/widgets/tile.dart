@@ -14,72 +14,121 @@ class HistoryTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(4),
-      child: SelectionItemOverlay<History>(
-        item: entry,
-        padding: const EdgeInsets.only(bottom: 16),
-        child: ImageTile(
-          images: entry.thumbnails,
-          onTap: parseLinkOnTap(context, entry.link),
-          title: Padding(
-            padding: const EdgeInsets.only(top: 8),
-            child: Text(entry.getName(context)),
-          ),
-          subtitle: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(bottom: 4),
-                child: Text(formatTime(entry.visitedAt)),
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(4),
+          child: InkWell(
+            onTap: parseLinkOnTap(context, entry.link),
+            child: SelectionItemOverlay<History>(
+              item: entry,
+              child: Padding(
+                padding: const EdgeInsets.all(8),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TimedText(
+                            created: entry.visitedAt,
+                            child: DefaultTextStyle(
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyText2!
+                                  .copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              child: Padding(
+                                padding: const EdgeInsets.only(top: 8),
+                                child: Text(entry.getName(context)),
+                              ),
+                            ),
+                          ),
+                        ),
+                        PopupMenuButton<VoidCallback>(
+                          icon: Icon(
+                            Icons.more_vert,
+                            color: dimTextColor(context),
+                          ),
+                          iconSize: 18,
+                          onSelected: (value) => value(),
+                          itemBuilder: (context) => [
+                            if (entry.isSearch(LinkType.post))
+                              PopupMenuTile(
+                                title: 'Wiki',
+                                icon: Icons.info,
+                                value: () => tagSearchSheet(
+                                  context: context,
+                                  tag: parseLink(entry.link)!.search!,
+                                ),
+                              ),
+                            if (entry.subtitle != null)
+                              PopupMenuTile(
+                                title: 'Description',
+                                icon: Icons.description,
+                                value: () => historySheet(
+                                  context: context,
+                                  entry: entry,
+                                ),
+                              ),
+                            PopupMenuTile(
+                              title: 'Share',
+                              icon: Icons.share,
+                              value: () => Share.share(
+                                context,
+                                context.read<Client>().withHost(entry.link),
+                              ),
+                            ),
+                            if (context.read<HistoriesController?>() != null)
+                              PopupMenuTile(
+                                title: 'Delete',
+                                icon: Icons.delete,
+                                value: () => context
+                                    .read<HistoriesController>()
+                                    .remove(entry),
+                              ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    if (entry.subtitle?.isNotEmpty ?? false)
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 8, horizontal: 8),
+                              child: IgnorePointer(
+                                child: Opacity(
+                                  opacity: 0.7,
+                                  child: DText(entry.subtitle!.ellipse(400)),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      )
+                    else
+                      const SizedBox(height: 8),
+                    ImageTile(
+                      images: entry.thumbnails,
+                      title: Padding(
+                        padding: const EdgeInsets.only(top: 8),
+                        child: Text(entry.getName(context)),
+                      ),
+                      showTitle: false,
+                    ),
+                  ],
+                ),
               ),
-              if (entry.subtitle?.isNotEmpty ?? false)
-                IgnorePointer(
-                  child: DText(entry.subtitle!.ellipse(400)),
-                ),
-            ],
-          ),
-          trailing: PopupMenuButton<VoidCallback>(
-            icon: const Icon(Icons.more_vert),
-            onSelected: (value) => value(),
-            itemBuilder: (context) => [
-              if (entry.isSearch(LinkType.post))
-                PopupMenuTile(
-                  title: 'Wiki',
-                  icon: Icons.info,
-                  value: () => tagSearchSheet(
-                    context: context,
-                    tag: parseLink(entry.link)!.search!,
-                  ),
-                ),
-              if (entry.subtitle != null)
-                PopupMenuTile(
-                  title: 'Description',
-                  icon: Icons.description,
-                  value: () => historySheet(
-                    context: context,
-                    entry: entry,
-                  ),
-                ),
-              PopupMenuTile(
-                title: 'Share',
-                icon: Icons.share,
-                value: () => Share.share(
-                  context,
-                  context.read<Client>().withHost(entry.link),
-                ),
-              ),
-              if (context.read<HistoriesController?>() != null)
-                PopupMenuTile(
-                  title: 'Delete',
-                  icon: Icons.delete,
-                  value: () =>
-                      context.read<HistoriesController>().remove(entry),
-                ),
-            ],
+            ),
           ),
         ),
-      ),
+        const Divider(indent: 8, endIndent: 8),
+      ],
     );
   }
 }

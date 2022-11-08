@@ -377,8 +377,8 @@ class PostFeedTile extends StatelessWidget {
         icon: Icon(
           Icons.more_vert,
           color: dimTextColor(context),
-          size: 18,
         ),
+        iconSize: 18,
         onSelected: (value) => value(),
         itemBuilder: (context) => [
           if (post.file.url != null)
@@ -412,7 +412,7 @@ class PostFeedTile extends StatelessWidget {
                     child: LowResCacheSizeProvider(
                       size: cacheSize,
                       child: controller != null
-                          ? Provider.value(
+                          ? ChangeNotifierProvider.value(
                               value: controller,
                               child: PostsRouteConnector(
                                 controller: controller,
@@ -430,50 +430,57 @@ class PostFeedTile extends StatelessWidget {
       );
     }
 
-    return Padding(
-      padding: const EdgeInsets.all(4),
-      child: InkWell(
-        onTap: () => defaultPushPostDetail(context, post),
-        child: Padding(
-          padding: const EdgeInsets.all(8).copyWith(bottom: 0),
-          child: Column(
-            children: [
-              Row(
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(4),
+          child: InkWell(
+            onTap: () => defaultPushPostDetail(context, post),
+            child: Padding(
+              padding: const EdgeInsets.all(8).copyWith(bottom: 0),
+              child: Column(
                 children: [
-                  const SizedBox(width: 4),
-                  TimedText(
-                    created: post.createdAt,
-                    child: DefaultTextStyle(
-                      style: Theme.of(context).textTheme.bodyText2!.copyWith(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
+                  Row(
+                    children: [
+                      const SizedBox(width: 4),
+                      Expanded(
+                        child: TimedText(
+                          created: post.createdAt,
+                          child: DefaultTextStyle(
+                            style:
+                                Theme.of(context).textTheme.bodyText2!.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
+                            child: ArtistName(post: post),
                           ),
-                      child: ArtistName(post: post),
-                    ),
+                        ),
+                      ),
+                      menu(),
+                    ],
                   ),
-                  const Spacer(),
-                  menu(),
+                  if (post.description.isNotEmpty)
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 8, horizontal: 8),
+                            child: DText(post.description.ellipse(200)),
+                          ),
+                        ),
+                      ],
+                    ),
+                  image(),
+                  const SizedBox(height: 8),
+                  actions(),
                 ],
               ),
-              if (post.description.isNotEmpty)
-                Row(
-                  children: [
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 8, horizontal: 8),
-                        child: DText(post.description.ellipse(200)),
-                      ),
-                    ),
-                  ],
-                ),
-              image(),
-              const SizedBox(height: 8),
-              actions(),
-            ],
+            ),
           ),
         ),
-      ),
+        const Divider(indent: 8, endIndent: 8),
+      ],
     );
   }
 }
