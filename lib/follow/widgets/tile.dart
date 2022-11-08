@@ -180,18 +180,17 @@ class FollowTile extends StatelessWidget {
               Positioned.fill(
                 child: Material(
                   type: MaterialType.transparency,
-                  child: InkWell(
-                    onTap: () => Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => SearchPage(
-                          tags: follow.tags,
-                          reversePools: (follow.unseen ?? 0) > 0,
+                  child: SelectionItemOverlay<Follow>(
+                    item: follow,
+                    child: InkWell(
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => SearchPage(
+                            tags: follow.tags,
+                            reversePools: (follow.unseen ?? 0) > 0,
+                          ),
                         ),
                       ),
-                    ),
-                    onLongPress: () => followSheet(
-                      context: context,
-                      tag: follow.tags,
                     ),
                   ),
                 ),
@@ -215,24 +214,50 @@ class FollowTile extends StatelessWidget {
                         maxLines: 1,
                         softWrap: true,
                       ),
+                      CrossFade(
+                        showChild: follow.alias != null,
+                        child: DimSubtree(
+                          child: Text(
+                            'alias ${follow.alias}',
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                          ),
+                        ),
+                      ),
+                      CrossFade(
+                        showChild: follow.title != null &&
+                            follow.tags.split(' ').length > 1,
+                        child: DimSubtree(
+                          child: Text(
+                            tagToTitle(follow.tags),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                          ),
+                        ),
+                      ),
                       DimSubtree(
                         opacity: 0.7,
                         child: Row(
                           children: [
-                            if (follow.type != FollowType.update)
-                              Padding(
+                            CrossFade(
+                              showChild: follow.type != FollowType.update,
+                              child: Padding(
                                 padding: const EdgeInsets.only(right: 4),
                                 child: Icon(
                                   getFollowIcon(follow.type),
                                 ),
                               ),
-                            if ((follow.unseen ?? 0) > 0)
-                              Expanded(
+                            ),
+                            Expanded(
+                              child: CrossFade(
+                                style: FadeAnimationStyle.stacked,
+                                showChild: (follow.unseen ?? 0) > 0,
                                 child: Text(
                                   getStatusText(),
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               ),
+                            ),
                           ],
                         ),
                       ),

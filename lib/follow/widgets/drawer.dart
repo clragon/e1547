@@ -39,7 +39,7 @@ class _FollowMarkReadTileState extends State<FollowMarkReadTile> {
                 : const Text('no unseen posts'),
             onTap: () {
               Scaffold.of(context).closeEndDrawer();
-              service.markAllAsRead();
+              service.markAsSeen();
             },
           ),
         ),

@@ -41,6 +41,14 @@ extension Updating on Follow {
     return updated;
   }
 
+  Follow withSeen() {
+    Follow updated = this;
+    if ((updated.unseen ?? 0) > 0) {
+      updated = updated.copyWith(unseen: 0);
+    }
+    return updated;
+  }
+
   Follow withLatest(Post? post, {bool foreground = false}) {
     Follow updated = this;
     if (foreground && updated.unseen != 0) {

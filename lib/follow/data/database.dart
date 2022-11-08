@@ -178,7 +178,7 @@ class FollowsDatabase extends _$FollowsDatabase {
             ..where((tbl) => (tbl.unseen.isBiggerThanValue(0))))
           .watch();
 
-  Future<void> markAllAsRead({String? host}) => (update(followsTable)
+  Future<void> markAsSeen({String? host}) => (update(followsTable)
         ..where((tbl) => _hostQuery(tbl, host))
         ..where((tbl) => (tbl.unseen.isBiggerThanValue(0))))
       .write(const FollowCompanion(unseen: Value(0)));

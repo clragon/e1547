@@ -183,11 +183,13 @@ class SelectionAppBar<T> extends StatelessWidget with AppBarBuilderWidget {
             Text('${layoutData!.selections.length} items'),
         leading: IconButton(
           icon: const Icon(Icons.clear),
+          tooltip: 'Abort',
           onPressed: layoutData!.clear,
         ),
         actions: [
           IconButton(
             icon: const Icon(Icons.select_all),
+            tooltip: 'Select all',
             onPressed: layoutData.selectAll,
           ),
           ...actionBuilder(context, layoutData),

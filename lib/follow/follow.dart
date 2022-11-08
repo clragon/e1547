@@ -5,10 +5,10 @@ export 'data/follow.dart';
 export 'data/service.dart';
 export 'data/updater.dart';
 // widgets
+export 'widgets/appbar.dart';
 export 'widgets/drawer.dart';
 export 'widgets/folder.dart';
 export 'widgets/icon.dart';
-export 'widgets/sheet.dart';
 export 'widgets/switcher.dart';
 export 'widgets/tile.dart';
 export 'widgets/timeline.dart';

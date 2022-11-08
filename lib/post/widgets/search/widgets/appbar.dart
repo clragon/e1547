@@ -28,8 +28,8 @@ class PostSelectionAppBar extends StatelessWidget with AppBarBuilderWidget {
             data.onChanged({});
           },
         ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4),
+        InkResponse(
+          onTap: () {},
           child: LikeButton(
             isLiked: data.selections.isNotEmpty &&
                 data.selections.every((post) => post.isFavorited),
