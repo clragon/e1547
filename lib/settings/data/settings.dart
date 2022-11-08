@@ -13,11 +13,11 @@ Future<Settings> initializeSettings() async {
   return settings;
 }
 
-class Settings with SharedPrefsSettings {
+class Settings with NotifiedPreferences {
   late final ValueNotifier<Credentials?> credentials = createSetting(
     key: 'credentials',
     initialValue: null,
-    getSetting: (prefs, key) {
+    read: (prefs, key) {
       String? value = prefs.getString(key);
       if (value != null) {
         return Credentials.fromJson(json.decode(value));
@@ -25,7 +25,7 @@ class Settings with SharedPrefsSettings {
         return null;
       }
     },
-    setSetting: (prefs, key, value) {
+    write: (prefs, key, value) {
       if (value == null) {
         prefs.remove(key);
       } else {
@@ -46,7 +46,7 @@ class Settings with SharedPrefsSettings {
   late final ValueNotifier<List<PrefsFollow>?> follows = createSetting(
     key: 'follows',
     initialValue: null,
-    getSetting: (prefs, key) {
+    read: (prefs, key) {
       List<String>? value = prefs.getStringList(key);
       if (value != null) {
         return value.map((e) => PrefsFollow.fromJson(json.decode(e))).toList();
@@ -54,7 +54,7 @@ class Settings with SharedPrefsSettings {
         return null;
       }
     },
-    setSetting: (prefs, key, value) async {
+    write: (prefs, key, value) async {
       if (value == null) {
         prefs.remove(key);
       } else {
