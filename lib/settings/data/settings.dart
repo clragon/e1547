@@ -4,34 +4,20 @@ import 'package:e1547/app/app.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/interface/interface.dart';
-import 'package:e1547/settings/settings.dart';
 import 'package:flutter/foundation.dart';
-
-Future<Settings> initializeSettings() async {
-  Settings settings = Settings();
-  await settings.initialize();
-  return settings;
-}
+import 'package:notified_preferences/notified_preferences.dart';
 
 class Settings with NotifiedPreferences {
-  late final ValueNotifier<Credentials?> credentials = createSetting(
+  static Future<Settings> getInstance() async {
+    Settings settings = Settings();
+    await settings.initialize();
+    return settings;
+  }
+
+  late final ValueNotifier<Credentials?> credentials = createJsonSetting(
     key: 'credentials',
     initialValue: null,
-    read: (prefs, key) {
-      String? value = prefs.getString(key);
-      if (value != null) {
-        return Credentials.fromJson(json.decode(value));
-      } else {
-        return null;
-      }
-    },
-    write: (prefs, key, value) {
-      if (value == null) {
-        prefs.remove(key);
-      } else {
-        prefs.setString(key, json.encode(value.toJson()));
-      }
-    },
+    fromJson: Credentials.fromJson,
   );
 
   late final ValueNotifier<AppTheme> theme = createEnumSetting(
@@ -46,24 +32,14 @@ class Settings with NotifiedPreferences {
   late final ValueNotifier<List<PrefsFollow>?> follows = createSetting(
     key: 'follows',
     initialValue: null,
-    read: (prefs, key) {
-      List<String>? value = prefs.getStringList(key);
-      if (value != null) {
-        return value.map((e) => PrefsFollow.fromJson(json.decode(e))).toList();
-      } else {
-        return null;
-      }
-    },
-    write: (prefs, key, value) async {
-      if (value == null) {
-        prefs.remove(key);
-      } else {
-        await prefs.setStringList(
-          key,
-          value.map((e) => json.encode(e.toJson())).toList(),
-        );
-      }
-    },
+    read: (prefs, key) => prefs
+        .getStringList(key)
+        ?.map((e) => PrefsFollow.fromJson(json.decode(e)))
+        .toList(),
+    write: (prefs, key, value) => prefs.setStringListOrNull(
+      key,
+      value?.map(json.encode).toList(),
+    ),
   );
 
   late final ValueNotifier<bool> writeHistory =

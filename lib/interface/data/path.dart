@@ -1,19 +1,19 @@
 import 'package:path_provider/path_provider.dart';
 
-Future<EnvironmentPaths> initializeEnvironmentPaths() async => EnvironmentPaths(
-      temporaryDirectory: (await getTemporaryDirectory()).path,
-      applicationSupportDirectory:
-          (await getApplicationSupportDirectory()).path,
-      applicationDocumentsDirectory:
-          (await getApplicationDocumentsDirectory()).path,
-    );
-
 class EnvironmentPaths {
   EnvironmentPaths({
     required this.temporaryDirectory,
     required this.applicationSupportDirectory,
     required this.applicationDocumentsDirectory,
   });
+
+  static Future<EnvironmentPaths> getInstance() async => EnvironmentPaths(
+        temporaryDirectory: (await getTemporaryDirectory()).path,
+        applicationSupportDirectory:
+            (await getApplicationSupportDirectory()).path,
+        applicationDocumentsDirectory:
+            (await getApplicationDocumentsDirectory()).path,
+      );
 
   /// Path to the temporary directory on the device that is not backed up and is
   /// suitable for storing caches of downloaded files.

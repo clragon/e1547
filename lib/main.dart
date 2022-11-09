@@ -19,8 +19,8 @@ Future<void> main() async {
   await initializeSql();
   WindowManager? windowManager = await initializeWindowManager();
   AppInfo appInfo = await initializeAppInfo();
-  Settings settings = await initializeSettings();
-  EnvironmentPaths paths = await initializeEnvironmentPaths();
+  Settings settings = await Settings.getInstance();
+  EnvironmentPaths paths = await EnvironmentPaths.getInstance();
   await migrateFollows(settings);
   runApp(
     MultiProvider(
