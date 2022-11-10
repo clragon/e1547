@@ -1,6 +1,5 @@
 import 'package:e1547/app/app.dart';
 import 'package:e1547/client/client.dart';
-import 'package:e1547/follow/follow.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:flutter/foundation.dart';
 import 'package:notified_preferences/notified_preferences.dart';
@@ -26,13 +25,6 @@ class Settings with NotifiedPreferences {
 
   late final ValueNotifier<List<String>> denylist =
       createSetting(key: 'blacklist', initialValue: []);
-  @Deprecated('Follows are now found in their own SQL database')
-  late final ValueNotifier<List<PrefsFollow>?> follows = createJsonSetting(
-    key: 'follows',
-    initialValue: null,
-    fromJson: (json) =>
-        List<PrefsFollow>.from(json.map((e) => PrefsFollow.fromJson(e))),
-  );
 
   late final ValueNotifier<bool> writeHistory =
       createSetting(key: 'writeHistory', initialValue: true);

@@ -40,7 +40,8 @@ mixin _$Topic {
 /// @nodoc
 abstract class $TopicCopyWith<$Res> {
   factory $TopicCopyWith(Topic value, $Res Function(Topic) then) =
-      _$TopicCopyWithImpl<$Res>;
+      _$TopicCopyWithImpl<$Res, Topic>;
+  @useResult
   $Res call(
       {int id,
       int creatorId,
@@ -56,73 +57,76 @@ abstract class $TopicCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$TopicCopyWithImpl<$Res> implements $TopicCopyWith<$Res> {
+class _$TopicCopyWithImpl<$Res, $Val extends Topic>
+    implements $TopicCopyWith<$Res> {
   _$TopicCopyWithImpl(this._value, this._then);
 
-  final Topic _value;
   // ignore: unused_field
-  final $Res Function(Topic) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? id = freezed,
-    Object? creatorId = freezed,
-    Object? updaterId = freezed,
-    Object? title = freezed,
-    Object? responseCount = freezed,
-    Object? isSticky = freezed,
-    Object? isLocked = freezed,
-    Object? isHidden = freezed,
-    Object? createdAt = freezed,
-    Object? updatedAt = freezed,
-    Object? categoryId = freezed,
+    Object? id = null,
+    Object? creatorId = null,
+    Object? updaterId = null,
+    Object? title = null,
+    Object? responseCount = null,
+    Object? isSticky = null,
+    Object? isLocked = null,
+    Object? isHidden = null,
+    Object? createdAt = null,
+    Object? updatedAt = null,
+    Object? categoryId = null,
   }) {
     return _then(_value.copyWith(
-      id: id == freezed
+      id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as int,
-      creatorId: creatorId == freezed
+      creatorId: null == creatorId
           ? _value.creatorId
           : creatorId // ignore: cast_nullable_to_non_nullable
               as int,
-      updaterId: updaterId == freezed
+      updaterId: null == updaterId
           ? _value.updaterId
           : updaterId // ignore: cast_nullable_to_non_nullable
               as int,
-      title: title == freezed
+      title: null == title
           ? _value.title
           : title // ignore: cast_nullable_to_non_nullable
               as String,
-      responseCount: responseCount == freezed
+      responseCount: null == responseCount
           ? _value.responseCount
           : responseCount // ignore: cast_nullable_to_non_nullable
               as int,
-      isSticky: isSticky == freezed
+      isSticky: null == isSticky
           ? _value.isSticky
           : isSticky // ignore: cast_nullable_to_non_nullable
               as bool,
-      isLocked: isLocked == freezed
+      isLocked: null == isLocked
           ? _value.isLocked
           : isLocked // ignore: cast_nullable_to_non_nullable
               as bool,
-      isHidden: isHidden == freezed
+      isHidden: null == isHidden
           ? _value.isHidden
           : isHidden // ignore: cast_nullable_to_non_nullable
               as bool,
-      createdAt: createdAt == freezed
+      createdAt: null == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
-      updatedAt: updatedAt == freezed
+      updatedAt: null == updatedAt
           ? _value.updatedAt
           : updatedAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
-      categoryId: categoryId == freezed
+      categoryId: null == categoryId
           ? _value.categoryId
           : categoryId // ignore: cast_nullable_to_non_nullable
               as int,
-    ));
+    ) as $Val);
   }
 }
 
@@ -131,6 +135,7 @@ abstract class _$$_TopicCopyWith<$Res> implements $TopicCopyWith<$Res> {
   factory _$$_TopicCopyWith(_$_Topic value, $Res Function(_$_Topic) then) =
       __$$_TopicCopyWithImpl<$Res>;
   @override
+  @useResult
   $Res call(
       {int id,
       int creatorId,
@@ -146,70 +151,68 @@ abstract class _$$_TopicCopyWith<$Res> implements $TopicCopyWith<$Res> {
 }
 
 /// @nodoc
-class __$$_TopicCopyWithImpl<$Res> extends _$TopicCopyWithImpl<$Res>
+class __$$_TopicCopyWithImpl<$Res> extends _$TopicCopyWithImpl<$Res, _$_Topic>
     implements _$$_TopicCopyWith<$Res> {
   __$$_TopicCopyWithImpl(_$_Topic _value, $Res Function(_$_Topic) _then)
-      : super(_value, (v) => _then(v as _$_Topic));
+      : super(_value, _then);
 
-  @override
-  _$_Topic get _value => super._value as _$_Topic;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? id = freezed,
-    Object? creatorId = freezed,
-    Object? updaterId = freezed,
-    Object? title = freezed,
-    Object? responseCount = freezed,
-    Object? isSticky = freezed,
-    Object? isLocked = freezed,
-    Object? isHidden = freezed,
-    Object? createdAt = freezed,
-    Object? updatedAt = freezed,
-    Object? categoryId = freezed,
+    Object? id = null,
+    Object? creatorId = null,
+    Object? updaterId = null,
+    Object? title = null,
+    Object? responseCount = null,
+    Object? isSticky = null,
+    Object? isLocked = null,
+    Object? isHidden = null,
+    Object? createdAt = null,
+    Object? updatedAt = null,
+    Object? categoryId = null,
   }) {
     return _then(_$_Topic(
-      id: id == freezed
+      id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as int,
-      creatorId: creatorId == freezed
+      creatorId: null == creatorId
           ? _value.creatorId
           : creatorId // ignore: cast_nullable_to_non_nullable
               as int,
-      updaterId: updaterId == freezed
+      updaterId: null == updaterId
           ? _value.updaterId
           : updaterId // ignore: cast_nullable_to_non_nullable
               as int,
-      title: title == freezed
+      title: null == title
           ? _value.title
           : title // ignore: cast_nullable_to_non_nullable
               as String,
-      responseCount: responseCount == freezed
+      responseCount: null == responseCount
           ? _value.responseCount
           : responseCount // ignore: cast_nullable_to_non_nullable
               as int,
-      isSticky: isSticky == freezed
+      isSticky: null == isSticky
           ? _value.isSticky
           : isSticky // ignore: cast_nullable_to_non_nullable
               as bool,
-      isLocked: isLocked == freezed
+      isLocked: null == isLocked
           ? _value.isLocked
           : isLocked // ignore: cast_nullable_to_non_nullable
               as bool,
-      isHidden: isHidden == freezed
+      isHidden: null == isHidden
           ? _value.isHidden
           : isHidden // ignore: cast_nullable_to_non_nullable
               as bool,
-      createdAt: createdAt == freezed
+      createdAt: null == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
-      updatedAt: updatedAt == freezed
+      updatedAt: null == updatedAt
           ? _value.updatedAt
           : updatedAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
-      categoryId: categoryId == freezed
+      categoryId: null == categoryId
           ? _value.categoryId
           : categoryId // ignore: cast_nullable_to_non_nullable
               as int,
@@ -269,39 +272,47 @@ class _$_Topic implements _Topic {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_Topic &&
-            const DeepCollectionEquality().equals(other.id, id) &&
-            const DeepCollectionEquality().equals(other.creatorId, creatorId) &&
-            const DeepCollectionEquality().equals(other.updaterId, updaterId) &&
-            const DeepCollectionEquality().equals(other.title, title) &&
-            const DeepCollectionEquality()
-                .equals(other.responseCount, responseCount) &&
-            const DeepCollectionEquality().equals(other.isSticky, isSticky) &&
-            const DeepCollectionEquality().equals(other.isLocked, isLocked) &&
-            const DeepCollectionEquality().equals(other.isHidden, isHidden) &&
-            const DeepCollectionEquality().equals(other.createdAt, createdAt) &&
-            const DeepCollectionEquality().equals(other.updatedAt, updatedAt) &&
-            const DeepCollectionEquality()
-                .equals(other.categoryId, categoryId));
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.creatorId, creatorId) ||
+                other.creatorId == creatorId) &&
+            (identical(other.updaterId, updaterId) ||
+                other.updaterId == updaterId) &&
+            (identical(other.title, title) || other.title == title) &&
+            (identical(other.responseCount, responseCount) ||
+                other.responseCount == responseCount) &&
+            (identical(other.isSticky, isSticky) ||
+                other.isSticky == isSticky) &&
+            (identical(other.isLocked, isLocked) ||
+                other.isLocked == isLocked) &&
+            (identical(other.isHidden, isHidden) ||
+                other.isHidden == isHidden) &&
+            (identical(other.createdAt, createdAt) ||
+                other.createdAt == createdAt) &&
+            (identical(other.updatedAt, updatedAt) ||
+                other.updatedAt == updatedAt) &&
+            (identical(other.categoryId, categoryId) ||
+                other.categoryId == categoryId));
   }
 
   @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(
       runtimeType,
-      const DeepCollectionEquality().hash(id),
-      const DeepCollectionEquality().hash(creatorId),
-      const DeepCollectionEquality().hash(updaterId),
-      const DeepCollectionEquality().hash(title),
-      const DeepCollectionEquality().hash(responseCount),
-      const DeepCollectionEquality().hash(isSticky),
-      const DeepCollectionEquality().hash(isLocked),
-      const DeepCollectionEquality().hash(isHidden),
-      const DeepCollectionEquality().hash(createdAt),
-      const DeepCollectionEquality().hash(updatedAt),
-      const DeepCollectionEquality().hash(categoryId));
+      id,
+      creatorId,
+      updaterId,
+      title,
+      responseCount,
+      isSticky,
+      isLocked,
+      isHidden,
+      createdAt,
+      updatedAt,
+      categoryId);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$_TopicCopyWith<_$_Topic> get copyWith =>
       __$$_TopicCopyWithImpl<_$_Topic>(this, _$identity);
 

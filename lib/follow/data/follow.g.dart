@@ -54,18 +54,3 @@ Map<String, dynamic> _$$_FollowRequestToJson(_$_FollowRequest instance) =>
       'alias': instance.alias,
       'type': _$FollowTypeEnumMap[instance.type]!,
     };
-
-_$_PrefsFollow _$$_PrefsFollowFromJson(Map<String, dynamic> json) =>
-    _$_PrefsFollow(
-      tags: json['tags'] as String,
-      alias: json['alias'] as String?,
-      type: $enumDecodeNullable(_$FollowTypeEnumMap, json['type']) ??
-          FollowType.update,
-    );
-
-Map<String, dynamic> _$$_PrefsFollowToJson(_$_PrefsFollow instance) =>
-    <String, dynamic>{
-      'tags': instance.tags,
-      'alias': instance.alias,
-      'type': _$FollowTypeEnumMap[instance.type]!,
-    };

@@ -39,15 +39,3 @@ enum FollowType {
   notify,
   bookmark,
 }
-
-@freezed
-class PrefsFollow with _$PrefsFollow {
-  const factory PrefsFollow({
-    required String tags,
-    String? alias,
-    @Default(FollowType.update) FollowType type,
-  }) = _PrefsFollow;
-
-  factory PrefsFollow.fromJson(Map<String, dynamic> json) =>
-      _$PrefsFollowFromJson(json);
-}

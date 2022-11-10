@@ -46,7 +46,8 @@ mixin _$Comment {
 /// @nodoc
 abstract class $CommentCopyWith<$Res> {
   factory $CommentCopyWith(Comment value, $Res Function(Comment) then) =
-      _$CommentCopyWithImpl<$Res>;
+      _$CommentCopyWithImpl<$Res, Comment>;
+  @useResult
   $Res call(
       {int id,
       DateTime createdAt,
@@ -67,98 +68,101 @@ abstract class $CommentCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$CommentCopyWithImpl<$Res> implements $CommentCopyWith<$Res> {
+class _$CommentCopyWithImpl<$Res, $Val extends Comment>
+    implements $CommentCopyWith<$Res> {
   _$CommentCopyWithImpl(this._value, this._then);
 
-  final Comment _value;
   // ignore: unused_field
-  final $Res Function(Comment) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? id = freezed,
-    Object? createdAt = freezed,
-    Object? postId = freezed,
-    Object? creatorId = freezed,
-    Object? body = freezed,
-    Object? score = freezed,
-    Object? updatedAt = freezed,
-    Object? updaterId = freezed,
-    Object? doNotBumpPost = freezed,
-    Object? isHidden = freezed,
-    Object? isSticky = freezed,
+    Object? id = null,
+    Object? createdAt = null,
+    Object? postId = null,
+    Object? creatorId = null,
+    Object? body = null,
+    Object? score = null,
+    Object? updatedAt = null,
+    Object? updaterId = null,
+    Object? doNotBumpPost = null,
+    Object? isHidden = null,
+    Object? isSticky = null,
     Object? warningType = freezed,
     Object? warningUserId = freezed,
-    Object? creatorName = freezed,
-    Object? updaterName = freezed,
-    Object? voteStatus = freezed,
+    Object? creatorName = null,
+    Object? updaterName = null,
+    Object? voteStatus = null,
   }) {
     return _then(_value.copyWith(
-      id: id == freezed
+      id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as int,
-      createdAt: createdAt == freezed
+      createdAt: null == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
-      postId: postId == freezed
+      postId: null == postId
           ? _value.postId
           : postId // ignore: cast_nullable_to_non_nullable
               as int,
-      creatorId: creatorId == freezed
+      creatorId: null == creatorId
           ? _value.creatorId
           : creatorId // ignore: cast_nullable_to_non_nullable
               as int,
-      body: body == freezed
+      body: null == body
           ? _value.body
           : body // ignore: cast_nullable_to_non_nullable
               as String,
-      score: score == freezed
+      score: null == score
           ? _value.score
           : score // ignore: cast_nullable_to_non_nullable
               as int,
-      updatedAt: updatedAt == freezed
+      updatedAt: null == updatedAt
           ? _value.updatedAt
           : updatedAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
-      updaterId: updaterId == freezed
+      updaterId: null == updaterId
           ? _value.updaterId
           : updaterId // ignore: cast_nullable_to_non_nullable
               as int,
-      doNotBumpPost: doNotBumpPost == freezed
+      doNotBumpPost: null == doNotBumpPost
           ? _value.doNotBumpPost
           : doNotBumpPost // ignore: cast_nullable_to_non_nullable
               as bool,
-      isHidden: isHidden == freezed
+      isHidden: null == isHidden
           ? _value.isHidden
           : isHidden // ignore: cast_nullable_to_non_nullable
               as bool,
-      isSticky: isSticky == freezed
+      isSticky: null == isSticky
           ? _value.isSticky
           : isSticky // ignore: cast_nullable_to_non_nullable
               as bool,
-      warningType: warningType == freezed
+      warningType: freezed == warningType
           ? _value.warningType
           : warningType // ignore: cast_nullable_to_non_nullable
               as int?,
-      warningUserId: warningUserId == freezed
+      warningUserId: freezed == warningUserId
           ? _value.warningUserId
           : warningUserId // ignore: cast_nullable_to_non_nullable
               as int?,
-      creatorName: creatorName == freezed
+      creatorName: null == creatorName
           ? _value.creatorName
           : creatorName // ignore: cast_nullable_to_non_nullable
               as String,
-      updaterName: updaterName == freezed
+      updaterName: null == updaterName
           ? _value.updaterName
           : updaterName // ignore: cast_nullable_to_non_nullable
               as String,
-      voteStatus: voteStatus == freezed
+      voteStatus: null == voteStatus
           ? _value.voteStatus
           : voteStatus // ignore: cast_nullable_to_non_nullable
               as VoteStatus,
-    ));
+    ) as $Val);
   }
 }
 
@@ -168,6 +172,7 @@ abstract class _$$_CommentCopyWith<$Res> implements $CommentCopyWith<$Res> {
           _$_Comment value, $Res Function(_$_Comment) then) =
       __$$_CommentCopyWithImpl<$Res>;
   @override
+  @useResult
   $Res call(
       {int id,
       DateTime createdAt,
@@ -188,95 +193,94 @@ abstract class _$$_CommentCopyWith<$Res> implements $CommentCopyWith<$Res> {
 }
 
 /// @nodoc
-class __$$_CommentCopyWithImpl<$Res> extends _$CommentCopyWithImpl<$Res>
+class __$$_CommentCopyWithImpl<$Res>
+    extends _$CommentCopyWithImpl<$Res, _$_Comment>
     implements _$$_CommentCopyWith<$Res> {
   __$$_CommentCopyWithImpl(_$_Comment _value, $Res Function(_$_Comment) _then)
-      : super(_value, (v) => _then(v as _$_Comment));
+      : super(_value, _then);
 
-  @override
-  _$_Comment get _value => super._value as _$_Comment;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? id = freezed,
-    Object? createdAt = freezed,
-    Object? postId = freezed,
-    Object? creatorId = freezed,
-    Object? body = freezed,
-    Object? score = freezed,
-    Object? updatedAt = freezed,
-    Object? updaterId = freezed,
-    Object? doNotBumpPost = freezed,
-    Object? isHidden = freezed,
-    Object? isSticky = freezed,
+    Object? id = null,
+    Object? createdAt = null,
+    Object? postId = null,
+    Object? creatorId = null,
+    Object? body = null,
+    Object? score = null,
+    Object? updatedAt = null,
+    Object? updaterId = null,
+    Object? doNotBumpPost = null,
+    Object? isHidden = null,
+    Object? isSticky = null,
     Object? warningType = freezed,
     Object? warningUserId = freezed,
-    Object? creatorName = freezed,
-    Object? updaterName = freezed,
-    Object? voteStatus = freezed,
+    Object? creatorName = null,
+    Object? updaterName = null,
+    Object? voteStatus = null,
   }) {
     return _then(_$_Comment(
-      id: id == freezed
+      id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as int,
-      createdAt: createdAt == freezed
+      createdAt: null == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
-      postId: postId == freezed
+      postId: null == postId
           ? _value.postId
           : postId // ignore: cast_nullable_to_non_nullable
               as int,
-      creatorId: creatorId == freezed
+      creatorId: null == creatorId
           ? _value.creatorId
           : creatorId // ignore: cast_nullable_to_non_nullable
               as int,
-      body: body == freezed
+      body: null == body
           ? _value.body
           : body // ignore: cast_nullable_to_non_nullable
               as String,
-      score: score == freezed
+      score: null == score
           ? _value.score
           : score // ignore: cast_nullable_to_non_nullable
               as int,
-      updatedAt: updatedAt == freezed
+      updatedAt: null == updatedAt
           ? _value.updatedAt
           : updatedAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
-      updaterId: updaterId == freezed
+      updaterId: null == updaterId
           ? _value.updaterId
           : updaterId // ignore: cast_nullable_to_non_nullable
               as int,
-      doNotBumpPost: doNotBumpPost == freezed
+      doNotBumpPost: null == doNotBumpPost
           ? _value.doNotBumpPost
           : doNotBumpPost // ignore: cast_nullable_to_non_nullable
               as bool,
-      isHidden: isHidden == freezed
+      isHidden: null == isHidden
           ? _value.isHidden
           : isHidden // ignore: cast_nullable_to_non_nullable
               as bool,
-      isSticky: isSticky == freezed
+      isSticky: null == isSticky
           ? _value.isSticky
           : isSticky // ignore: cast_nullable_to_non_nullable
               as bool,
-      warningType: warningType == freezed
+      warningType: freezed == warningType
           ? _value.warningType
           : warningType // ignore: cast_nullable_to_non_nullable
               as int?,
-      warningUserId: warningUserId == freezed
+      warningUserId: freezed == warningUserId
           ? _value.warningUserId
           : warningUserId // ignore: cast_nullable_to_non_nullable
               as int?,
-      creatorName: creatorName == freezed
+      creatorName: null == creatorName
           ? _value.creatorName
           : creatorName // ignore: cast_nullable_to_non_nullable
               as String,
-      updaterName: updaterName == freezed
+      updaterName: null == updaterName
           ? _value.updaterName
           : updaterName // ignore: cast_nullable_to_non_nullable
               as String,
-      voteStatus: voteStatus == freezed
+      voteStatus: null == voteStatus
           ? _value.voteStatus
           : voteStatus // ignore: cast_nullable_to_non_nullable
               as VoteStatus,
@@ -352,53 +356,60 @@ class _$_Comment implements _Comment {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_Comment &&
-            const DeepCollectionEquality().equals(other.id, id) &&
-            const DeepCollectionEquality().equals(other.createdAt, createdAt) &&
-            const DeepCollectionEquality().equals(other.postId, postId) &&
-            const DeepCollectionEquality().equals(other.creatorId, creatorId) &&
-            const DeepCollectionEquality().equals(other.body, body) &&
-            const DeepCollectionEquality().equals(other.score, score) &&
-            const DeepCollectionEquality().equals(other.updatedAt, updatedAt) &&
-            const DeepCollectionEquality().equals(other.updaterId, updaterId) &&
-            const DeepCollectionEquality()
-                .equals(other.doNotBumpPost, doNotBumpPost) &&
-            const DeepCollectionEquality().equals(other.isHidden, isHidden) &&
-            const DeepCollectionEquality().equals(other.isSticky, isSticky) &&
-            const DeepCollectionEquality()
-                .equals(other.warningType, warningType) &&
-            const DeepCollectionEquality()
-                .equals(other.warningUserId, warningUserId) &&
-            const DeepCollectionEquality()
-                .equals(other.creatorName, creatorName) &&
-            const DeepCollectionEquality()
-                .equals(other.updaterName, updaterName) &&
-            const DeepCollectionEquality()
-                .equals(other.voteStatus, voteStatus));
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.createdAt, createdAt) ||
+                other.createdAt == createdAt) &&
+            (identical(other.postId, postId) || other.postId == postId) &&
+            (identical(other.creatorId, creatorId) ||
+                other.creatorId == creatorId) &&
+            (identical(other.body, body) || other.body == body) &&
+            (identical(other.score, score) || other.score == score) &&
+            (identical(other.updatedAt, updatedAt) ||
+                other.updatedAt == updatedAt) &&
+            (identical(other.updaterId, updaterId) ||
+                other.updaterId == updaterId) &&
+            (identical(other.doNotBumpPost, doNotBumpPost) ||
+                other.doNotBumpPost == doNotBumpPost) &&
+            (identical(other.isHidden, isHidden) ||
+                other.isHidden == isHidden) &&
+            (identical(other.isSticky, isSticky) ||
+                other.isSticky == isSticky) &&
+            (identical(other.warningType, warningType) ||
+                other.warningType == warningType) &&
+            (identical(other.warningUserId, warningUserId) ||
+                other.warningUserId == warningUserId) &&
+            (identical(other.creatorName, creatorName) ||
+                other.creatorName == creatorName) &&
+            (identical(other.updaterName, updaterName) ||
+                other.updaterName == updaterName) &&
+            (identical(other.voteStatus, voteStatus) ||
+                other.voteStatus == voteStatus));
   }
 
   @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(
       runtimeType,
-      const DeepCollectionEquality().hash(id),
-      const DeepCollectionEquality().hash(createdAt),
-      const DeepCollectionEquality().hash(postId),
-      const DeepCollectionEquality().hash(creatorId),
-      const DeepCollectionEquality().hash(body),
-      const DeepCollectionEquality().hash(score),
-      const DeepCollectionEquality().hash(updatedAt),
-      const DeepCollectionEquality().hash(updaterId),
-      const DeepCollectionEquality().hash(doNotBumpPost),
-      const DeepCollectionEquality().hash(isHidden),
-      const DeepCollectionEquality().hash(isSticky),
-      const DeepCollectionEquality().hash(warningType),
-      const DeepCollectionEquality().hash(warningUserId),
-      const DeepCollectionEquality().hash(creatorName),
-      const DeepCollectionEquality().hash(updaterName),
-      const DeepCollectionEquality().hash(voteStatus));
+      id,
+      createdAt,
+      postId,
+      creatorId,
+      body,
+      score,
+      updatedAt,
+      updaterId,
+      doNotBumpPost,
+      isHidden,
+      isSticky,
+      warningType,
+      warningUserId,
+      creatorName,
+      updaterName,
+      voteStatus);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$_CommentCopyWith<_$_Comment> get copyWith =>
       __$$_CommentCopyWithImpl<_$_Comment>(this, _$identity);
 

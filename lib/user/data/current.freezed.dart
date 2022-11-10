@@ -96,7 +96,8 @@ mixin _$CurrentUser {
 abstract class $CurrentUserCopyWith<$Res> {
   factory $CurrentUserCopyWith(
           CurrentUser value, $Res Function(CurrentUser) then) =
-      _$CurrentUserCopyWithImpl<$Res>;
+      _$CurrentUserCopyWithImpl<$Res, CurrentUser>;
+  @useResult
   $Res call(
       {int wikiPageVersionCount,
       int artistVersionCount,
@@ -166,343 +167,346 @@ abstract class $CurrentUserCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$CurrentUserCopyWithImpl<$Res> implements $CurrentUserCopyWith<$Res> {
+class _$CurrentUserCopyWithImpl<$Res, $Val extends CurrentUser>
+    implements $CurrentUserCopyWith<$Res> {
   _$CurrentUserCopyWithImpl(this._value, this._then);
 
-  final CurrentUser _value;
   // ignore: unused_field
-  final $Res Function(CurrentUser) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? wikiPageVersionCount = freezed,
-    Object? artistVersionCount = freezed,
-    Object? poolVersionCount = freezed,
-    Object? forumPostCount = freezed,
-    Object? commentCount = freezed,
-    Object? flagCount = freezed,
-    Object? positiveFeedbackCount = freezed,
-    Object? neutralFeedbackCount = freezed,
-    Object? negativeFeedbackCount = freezed,
-    Object? uploadLimit = freezed,
-    Object? id = freezed,
-    Object? createdAt = freezed,
-    Object? name = freezed,
-    Object? level = freezed,
-    Object? baseUploadLimit = freezed,
-    Object? postUploadCount = freezed,
-    Object? postUpdateCount = freezed,
-    Object? noteUpdateCount = freezed,
-    Object? isBanned = freezed,
-    Object? canApprovePosts = freezed,
-    Object? canUploadFree = freezed,
-    Object? levelString = freezed,
+    Object? wikiPageVersionCount = null,
+    Object? artistVersionCount = null,
+    Object? poolVersionCount = null,
+    Object? forumPostCount = null,
+    Object? commentCount = null,
+    Object? flagCount = null,
+    Object? positiveFeedbackCount = null,
+    Object? neutralFeedbackCount = null,
+    Object? negativeFeedbackCount = null,
+    Object? uploadLimit = null,
+    Object? id = null,
+    Object? createdAt = null,
+    Object? name = null,
+    Object? level = null,
+    Object? baseUploadLimit = null,
+    Object? postUploadCount = null,
+    Object? postUpdateCount = null,
+    Object? noteUpdateCount = null,
+    Object? isBanned = null,
+    Object? canApprovePosts = null,
+    Object? canUploadFree = null,
+    Object? levelString = null,
     Object? avatarId = freezed,
-    Object? showAvatars = freezed,
-    Object? blacklistAvatars = freezed,
-    Object? blacklistUsers = freezed,
-    Object? descriptionCollapsedInitially = freezed,
-    Object? hideComments = freezed,
-    Object? showHiddenComments = freezed,
-    Object? showPostStatistics = freezed,
-    Object? hasMail = freezed,
-    Object? receiveEmailNotifications = freezed,
-    Object? enableKeyboardNavigation = freezed,
-    Object? enablePrivacyMode = freezed,
-    Object? styleUsernames = freezed,
-    Object? enableAutoComplete = freezed,
-    Object? hasSavedSearches = freezed,
-    Object? disableCroppedThumbnails = freezed,
-    Object? disableMobileGestures = freezed,
-    Object? enableSafeMode = freezed,
-    Object? disableResponsiveMode = freezed,
-    Object? disablePostTooltips = freezed,
-    Object? noFlagging = freezed,
-    Object? noFeedback = freezed,
-    Object? disableUserDmails = freezed,
-    Object? enableCompactUploader = freezed,
-    Object? updatedAt = freezed,
-    Object? email = freezed,
-    Object? lastLoggedInAt = freezed,
+    Object? showAvatars = null,
+    Object? blacklistAvatars = null,
+    Object? blacklistUsers = null,
+    Object? descriptionCollapsedInitially = null,
+    Object? hideComments = null,
+    Object? showHiddenComments = null,
+    Object? showPostStatistics = null,
+    Object? hasMail = null,
+    Object? receiveEmailNotifications = null,
+    Object? enableKeyboardNavigation = null,
+    Object? enablePrivacyMode = null,
+    Object? styleUsernames = null,
+    Object? enableAutoComplete = null,
+    Object? hasSavedSearches = null,
+    Object? disableCroppedThumbnails = null,
+    Object? disableMobileGestures = null,
+    Object? enableSafeMode = null,
+    Object? disableResponsiveMode = null,
+    Object? disablePostTooltips = null,
+    Object? noFlagging = null,
+    Object? noFeedback = null,
+    Object? disableUserDmails = null,
+    Object? enableCompactUploader = null,
+    Object? updatedAt = null,
+    Object? email = null,
+    Object? lastLoggedInAt = null,
     Object? lastForumReadAt = freezed,
     Object? recentTags = freezed,
-    Object? commentThreshold = freezed,
-    Object? defaultImageSize = freezed,
+    Object? commentThreshold = null,
+    Object? defaultImageSize = null,
     Object? favoriteTags = freezed,
-    Object? blacklistedTags = freezed,
-    Object? timeZone = freezed,
-    Object? perPage = freezed,
+    Object? blacklistedTags = null,
+    Object? timeZone = null,
+    Object? perPage = null,
     Object? customStyle = freezed,
-    Object? favoriteCount = freezed,
-    Object? apiRegenMultiplier = freezed,
-    Object? apiBurstLimit = freezed,
-    Object? remainingApiLimit = freezed,
-    Object? statementTimeout = freezed,
-    Object? favoriteLimit = freezed,
-    Object? tagQueryLimit = freezed,
+    Object? favoriteCount = null,
+    Object? apiRegenMultiplier = null,
+    Object? apiBurstLimit = null,
+    Object? remainingApiLimit = null,
+    Object? statementTimeout = null,
+    Object? favoriteLimit = null,
+    Object? tagQueryLimit = null,
   }) {
     return _then(_value.copyWith(
-      wikiPageVersionCount: wikiPageVersionCount == freezed
+      wikiPageVersionCount: null == wikiPageVersionCount
           ? _value.wikiPageVersionCount
           : wikiPageVersionCount // ignore: cast_nullable_to_non_nullable
               as int,
-      artistVersionCount: artistVersionCount == freezed
+      artistVersionCount: null == artistVersionCount
           ? _value.artistVersionCount
           : artistVersionCount // ignore: cast_nullable_to_non_nullable
               as int,
-      poolVersionCount: poolVersionCount == freezed
+      poolVersionCount: null == poolVersionCount
           ? _value.poolVersionCount
           : poolVersionCount // ignore: cast_nullable_to_non_nullable
               as int,
-      forumPostCount: forumPostCount == freezed
+      forumPostCount: null == forumPostCount
           ? _value.forumPostCount
           : forumPostCount // ignore: cast_nullable_to_non_nullable
               as int,
-      commentCount: commentCount == freezed
+      commentCount: null == commentCount
           ? _value.commentCount
           : commentCount // ignore: cast_nullable_to_non_nullable
               as int,
-      flagCount: flagCount == freezed
+      flagCount: null == flagCount
           ? _value.flagCount
           : flagCount // ignore: cast_nullable_to_non_nullable
               as int,
-      positiveFeedbackCount: positiveFeedbackCount == freezed
+      positiveFeedbackCount: null == positiveFeedbackCount
           ? _value.positiveFeedbackCount
           : positiveFeedbackCount // ignore: cast_nullable_to_non_nullable
               as int,
-      neutralFeedbackCount: neutralFeedbackCount == freezed
+      neutralFeedbackCount: null == neutralFeedbackCount
           ? _value.neutralFeedbackCount
           : neutralFeedbackCount // ignore: cast_nullable_to_non_nullable
               as int,
-      negativeFeedbackCount: negativeFeedbackCount == freezed
+      negativeFeedbackCount: null == negativeFeedbackCount
           ? _value.negativeFeedbackCount
           : negativeFeedbackCount // ignore: cast_nullable_to_non_nullable
               as int,
-      uploadLimit: uploadLimit == freezed
+      uploadLimit: null == uploadLimit
           ? _value.uploadLimit
           : uploadLimit // ignore: cast_nullable_to_non_nullable
               as int,
-      id: id == freezed
+      id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as int,
-      createdAt: createdAt == freezed
+      createdAt: null == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
-      name: name == freezed
+      name: null == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
-      level: level == freezed
+      level: null == level
           ? _value.level
           : level // ignore: cast_nullable_to_non_nullable
               as int,
-      baseUploadLimit: baseUploadLimit == freezed
+      baseUploadLimit: null == baseUploadLimit
           ? _value.baseUploadLimit
           : baseUploadLimit // ignore: cast_nullable_to_non_nullable
               as int,
-      postUploadCount: postUploadCount == freezed
+      postUploadCount: null == postUploadCount
           ? _value.postUploadCount
           : postUploadCount // ignore: cast_nullable_to_non_nullable
               as int,
-      postUpdateCount: postUpdateCount == freezed
+      postUpdateCount: null == postUpdateCount
           ? _value.postUpdateCount
           : postUpdateCount // ignore: cast_nullable_to_non_nullable
               as int,
-      noteUpdateCount: noteUpdateCount == freezed
+      noteUpdateCount: null == noteUpdateCount
           ? _value.noteUpdateCount
           : noteUpdateCount // ignore: cast_nullable_to_non_nullable
               as int,
-      isBanned: isBanned == freezed
+      isBanned: null == isBanned
           ? _value.isBanned
           : isBanned // ignore: cast_nullable_to_non_nullable
               as bool,
-      canApprovePosts: canApprovePosts == freezed
+      canApprovePosts: null == canApprovePosts
           ? _value.canApprovePosts
           : canApprovePosts // ignore: cast_nullable_to_non_nullable
               as bool,
-      canUploadFree: canUploadFree == freezed
+      canUploadFree: null == canUploadFree
           ? _value.canUploadFree
           : canUploadFree // ignore: cast_nullable_to_non_nullable
               as bool,
-      levelString: levelString == freezed
+      levelString: null == levelString
           ? _value.levelString
           : levelString // ignore: cast_nullable_to_non_nullable
               as String,
-      avatarId: avatarId == freezed
+      avatarId: freezed == avatarId
           ? _value.avatarId
           : avatarId // ignore: cast_nullable_to_non_nullable
               as int?,
-      showAvatars: showAvatars == freezed
+      showAvatars: null == showAvatars
           ? _value.showAvatars
           : showAvatars // ignore: cast_nullable_to_non_nullable
               as bool,
-      blacklistAvatars: blacklistAvatars == freezed
+      blacklistAvatars: null == blacklistAvatars
           ? _value.blacklistAvatars
           : blacklistAvatars // ignore: cast_nullable_to_non_nullable
               as bool,
-      blacklistUsers: blacklistUsers == freezed
+      blacklistUsers: null == blacklistUsers
           ? _value.blacklistUsers
           : blacklistUsers // ignore: cast_nullable_to_non_nullable
               as bool,
-      descriptionCollapsedInitially: descriptionCollapsedInitially == freezed
+      descriptionCollapsedInitially: null == descriptionCollapsedInitially
           ? _value.descriptionCollapsedInitially
           : descriptionCollapsedInitially // ignore: cast_nullable_to_non_nullable
               as bool,
-      hideComments: hideComments == freezed
+      hideComments: null == hideComments
           ? _value.hideComments
           : hideComments // ignore: cast_nullable_to_non_nullable
               as bool,
-      showHiddenComments: showHiddenComments == freezed
+      showHiddenComments: null == showHiddenComments
           ? _value.showHiddenComments
           : showHiddenComments // ignore: cast_nullable_to_non_nullable
               as bool,
-      showPostStatistics: showPostStatistics == freezed
+      showPostStatistics: null == showPostStatistics
           ? _value.showPostStatistics
           : showPostStatistics // ignore: cast_nullable_to_non_nullable
               as bool,
-      hasMail: hasMail == freezed
+      hasMail: null == hasMail
           ? _value.hasMail
           : hasMail // ignore: cast_nullable_to_non_nullable
               as bool,
-      receiveEmailNotifications: receiveEmailNotifications == freezed
+      receiveEmailNotifications: null == receiveEmailNotifications
           ? _value.receiveEmailNotifications
           : receiveEmailNotifications // ignore: cast_nullable_to_non_nullable
               as bool,
-      enableKeyboardNavigation: enableKeyboardNavigation == freezed
+      enableKeyboardNavigation: null == enableKeyboardNavigation
           ? _value.enableKeyboardNavigation
           : enableKeyboardNavigation // ignore: cast_nullable_to_non_nullable
               as bool,
-      enablePrivacyMode: enablePrivacyMode == freezed
+      enablePrivacyMode: null == enablePrivacyMode
           ? _value.enablePrivacyMode
           : enablePrivacyMode // ignore: cast_nullable_to_non_nullable
               as bool,
-      styleUsernames: styleUsernames == freezed
+      styleUsernames: null == styleUsernames
           ? _value.styleUsernames
           : styleUsernames // ignore: cast_nullable_to_non_nullable
               as bool,
-      enableAutoComplete: enableAutoComplete == freezed
+      enableAutoComplete: null == enableAutoComplete
           ? _value.enableAutoComplete
           : enableAutoComplete // ignore: cast_nullable_to_non_nullable
               as bool,
-      hasSavedSearches: hasSavedSearches == freezed
+      hasSavedSearches: null == hasSavedSearches
           ? _value.hasSavedSearches
           : hasSavedSearches // ignore: cast_nullable_to_non_nullable
               as bool,
-      disableCroppedThumbnails: disableCroppedThumbnails == freezed
+      disableCroppedThumbnails: null == disableCroppedThumbnails
           ? _value.disableCroppedThumbnails
           : disableCroppedThumbnails // ignore: cast_nullable_to_non_nullable
               as bool,
-      disableMobileGestures: disableMobileGestures == freezed
+      disableMobileGestures: null == disableMobileGestures
           ? _value.disableMobileGestures
           : disableMobileGestures // ignore: cast_nullable_to_non_nullable
               as bool,
-      enableSafeMode: enableSafeMode == freezed
+      enableSafeMode: null == enableSafeMode
           ? _value.enableSafeMode
           : enableSafeMode // ignore: cast_nullable_to_non_nullable
               as bool,
-      disableResponsiveMode: disableResponsiveMode == freezed
+      disableResponsiveMode: null == disableResponsiveMode
           ? _value.disableResponsiveMode
           : disableResponsiveMode // ignore: cast_nullable_to_non_nullable
               as bool,
-      disablePostTooltips: disablePostTooltips == freezed
+      disablePostTooltips: null == disablePostTooltips
           ? _value.disablePostTooltips
           : disablePostTooltips // ignore: cast_nullable_to_non_nullable
               as bool,
-      noFlagging: noFlagging == freezed
+      noFlagging: null == noFlagging
           ? _value.noFlagging
           : noFlagging // ignore: cast_nullable_to_non_nullable
               as bool,
-      noFeedback: noFeedback == freezed
+      noFeedback: null == noFeedback
           ? _value.noFeedback
           : noFeedback // ignore: cast_nullable_to_non_nullable
               as bool,
-      disableUserDmails: disableUserDmails == freezed
+      disableUserDmails: null == disableUserDmails
           ? _value.disableUserDmails
           : disableUserDmails // ignore: cast_nullable_to_non_nullable
               as bool,
-      enableCompactUploader: enableCompactUploader == freezed
+      enableCompactUploader: null == enableCompactUploader
           ? _value.enableCompactUploader
           : enableCompactUploader // ignore: cast_nullable_to_non_nullable
               as bool,
-      updatedAt: updatedAt == freezed
+      updatedAt: null == updatedAt
           ? _value.updatedAt
           : updatedAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
-      email: email == freezed
+      email: null == email
           ? _value.email
           : email // ignore: cast_nullable_to_non_nullable
               as String,
-      lastLoggedInAt: lastLoggedInAt == freezed
+      lastLoggedInAt: null == lastLoggedInAt
           ? _value.lastLoggedInAt
           : lastLoggedInAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
-      lastForumReadAt: lastForumReadAt == freezed
+      lastForumReadAt: freezed == lastForumReadAt
           ? _value.lastForumReadAt
           : lastForumReadAt // ignore: cast_nullable_to_non_nullable
               as DateTime?,
-      recentTags: recentTags == freezed
+      recentTags: freezed == recentTags
           ? _value.recentTags
           : recentTags // ignore: cast_nullable_to_non_nullable
               as String?,
-      commentThreshold: commentThreshold == freezed
+      commentThreshold: null == commentThreshold
           ? _value.commentThreshold
           : commentThreshold // ignore: cast_nullable_to_non_nullable
               as int,
-      defaultImageSize: defaultImageSize == freezed
+      defaultImageSize: null == defaultImageSize
           ? _value.defaultImageSize
           : defaultImageSize // ignore: cast_nullable_to_non_nullable
               as String,
-      favoriteTags: favoriteTags == freezed
+      favoriteTags: freezed == favoriteTags
           ? _value.favoriteTags
           : favoriteTags // ignore: cast_nullable_to_non_nullable
               as String?,
-      blacklistedTags: blacklistedTags == freezed
+      blacklistedTags: null == blacklistedTags
           ? _value.blacklistedTags
           : blacklistedTags // ignore: cast_nullable_to_non_nullable
               as String,
-      timeZone: timeZone == freezed
+      timeZone: null == timeZone
           ? _value.timeZone
           : timeZone // ignore: cast_nullable_to_non_nullable
               as String,
-      perPage: perPage == freezed
+      perPage: null == perPage
           ? _value.perPage
           : perPage // ignore: cast_nullable_to_non_nullable
               as int,
-      customStyle: customStyle == freezed
+      customStyle: freezed == customStyle
           ? _value.customStyle
           : customStyle // ignore: cast_nullable_to_non_nullable
               as String?,
-      favoriteCount: favoriteCount == freezed
+      favoriteCount: null == favoriteCount
           ? _value.favoriteCount
           : favoriteCount // ignore: cast_nullable_to_non_nullable
               as int,
-      apiRegenMultiplier: apiRegenMultiplier == freezed
+      apiRegenMultiplier: null == apiRegenMultiplier
           ? _value.apiRegenMultiplier
           : apiRegenMultiplier // ignore: cast_nullable_to_non_nullable
               as int,
-      apiBurstLimit: apiBurstLimit == freezed
+      apiBurstLimit: null == apiBurstLimit
           ? _value.apiBurstLimit
           : apiBurstLimit // ignore: cast_nullable_to_non_nullable
               as int,
-      remainingApiLimit: remainingApiLimit == freezed
+      remainingApiLimit: null == remainingApiLimit
           ? _value.remainingApiLimit
           : remainingApiLimit // ignore: cast_nullable_to_non_nullable
               as int,
-      statementTimeout: statementTimeout == freezed
+      statementTimeout: null == statementTimeout
           ? _value.statementTimeout
           : statementTimeout // ignore: cast_nullable_to_non_nullable
               as int,
-      favoriteLimit: favoriteLimit == freezed
+      favoriteLimit: null == favoriteLimit
           ? _value.favoriteLimit
           : favoriteLimit // ignore: cast_nullable_to_non_nullable
               as int,
-      tagQueryLimit: tagQueryLimit == freezed
+      tagQueryLimit: null == tagQueryLimit
           ? _value.tagQueryLimit
           : tagQueryLimit // ignore: cast_nullable_to_non_nullable
               as int,
-    ));
+    ) as $Val);
   }
 }
 
@@ -513,6 +517,7 @@ abstract class _$$_CurrentUserCopyWith<$Res>
           _$_CurrentUser value, $Res Function(_$_CurrentUser) then) =
       __$$_CurrentUserCopyWithImpl<$Res>;
   @override
+  @useResult
   $Res call(
       {int wikiPageVersionCount,
       int artistVersionCount,
@@ -582,341 +587,340 @@ abstract class _$$_CurrentUserCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_CurrentUserCopyWithImpl<$Res> extends _$CurrentUserCopyWithImpl<$Res>
+class __$$_CurrentUserCopyWithImpl<$Res>
+    extends _$CurrentUserCopyWithImpl<$Res, _$_CurrentUser>
     implements _$$_CurrentUserCopyWith<$Res> {
   __$$_CurrentUserCopyWithImpl(
       _$_CurrentUser _value, $Res Function(_$_CurrentUser) _then)
-      : super(_value, (v) => _then(v as _$_CurrentUser));
+      : super(_value, _then);
 
-  @override
-  _$_CurrentUser get _value => super._value as _$_CurrentUser;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? wikiPageVersionCount = freezed,
-    Object? artistVersionCount = freezed,
-    Object? poolVersionCount = freezed,
-    Object? forumPostCount = freezed,
-    Object? commentCount = freezed,
-    Object? flagCount = freezed,
-    Object? positiveFeedbackCount = freezed,
-    Object? neutralFeedbackCount = freezed,
-    Object? negativeFeedbackCount = freezed,
-    Object? uploadLimit = freezed,
-    Object? id = freezed,
-    Object? createdAt = freezed,
-    Object? name = freezed,
-    Object? level = freezed,
-    Object? baseUploadLimit = freezed,
-    Object? postUploadCount = freezed,
-    Object? postUpdateCount = freezed,
-    Object? noteUpdateCount = freezed,
-    Object? isBanned = freezed,
-    Object? canApprovePosts = freezed,
-    Object? canUploadFree = freezed,
-    Object? levelString = freezed,
+    Object? wikiPageVersionCount = null,
+    Object? artistVersionCount = null,
+    Object? poolVersionCount = null,
+    Object? forumPostCount = null,
+    Object? commentCount = null,
+    Object? flagCount = null,
+    Object? positiveFeedbackCount = null,
+    Object? neutralFeedbackCount = null,
+    Object? negativeFeedbackCount = null,
+    Object? uploadLimit = null,
+    Object? id = null,
+    Object? createdAt = null,
+    Object? name = null,
+    Object? level = null,
+    Object? baseUploadLimit = null,
+    Object? postUploadCount = null,
+    Object? postUpdateCount = null,
+    Object? noteUpdateCount = null,
+    Object? isBanned = null,
+    Object? canApprovePosts = null,
+    Object? canUploadFree = null,
+    Object? levelString = null,
     Object? avatarId = freezed,
-    Object? showAvatars = freezed,
-    Object? blacklistAvatars = freezed,
-    Object? blacklistUsers = freezed,
-    Object? descriptionCollapsedInitially = freezed,
-    Object? hideComments = freezed,
-    Object? showHiddenComments = freezed,
-    Object? showPostStatistics = freezed,
-    Object? hasMail = freezed,
-    Object? receiveEmailNotifications = freezed,
-    Object? enableKeyboardNavigation = freezed,
-    Object? enablePrivacyMode = freezed,
-    Object? styleUsernames = freezed,
-    Object? enableAutoComplete = freezed,
-    Object? hasSavedSearches = freezed,
-    Object? disableCroppedThumbnails = freezed,
-    Object? disableMobileGestures = freezed,
-    Object? enableSafeMode = freezed,
-    Object? disableResponsiveMode = freezed,
-    Object? disablePostTooltips = freezed,
-    Object? noFlagging = freezed,
-    Object? noFeedback = freezed,
-    Object? disableUserDmails = freezed,
-    Object? enableCompactUploader = freezed,
-    Object? updatedAt = freezed,
-    Object? email = freezed,
-    Object? lastLoggedInAt = freezed,
+    Object? showAvatars = null,
+    Object? blacklistAvatars = null,
+    Object? blacklistUsers = null,
+    Object? descriptionCollapsedInitially = null,
+    Object? hideComments = null,
+    Object? showHiddenComments = null,
+    Object? showPostStatistics = null,
+    Object? hasMail = null,
+    Object? receiveEmailNotifications = null,
+    Object? enableKeyboardNavigation = null,
+    Object? enablePrivacyMode = null,
+    Object? styleUsernames = null,
+    Object? enableAutoComplete = null,
+    Object? hasSavedSearches = null,
+    Object? disableCroppedThumbnails = null,
+    Object? disableMobileGestures = null,
+    Object? enableSafeMode = null,
+    Object? disableResponsiveMode = null,
+    Object? disablePostTooltips = null,
+    Object? noFlagging = null,
+    Object? noFeedback = null,
+    Object? disableUserDmails = null,
+    Object? enableCompactUploader = null,
+    Object? updatedAt = null,
+    Object? email = null,
+    Object? lastLoggedInAt = null,
     Object? lastForumReadAt = freezed,
     Object? recentTags = freezed,
-    Object? commentThreshold = freezed,
-    Object? defaultImageSize = freezed,
+    Object? commentThreshold = null,
+    Object? defaultImageSize = null,
     Object? favoriteTags = freezed,
-    Object? blacklistedTags = freezed,
-    Object? timeZone = freezed,
-    Object? perPage = freezed,
+    Object? blacklistedTags = null,
+    Object? timeZone = null,
+    Object? perPage = null,
     Object? customStyle = freezed,
-    Object? favoriteCount = freezed,
-    Object? apiRegenMultiplier = freezed,
-    Object? apiBurstLimit = freezed,
-    Object? remainingApiLimit = freezed,
-    Object? statementTimeout = freezed,
-    Object? favoriteLimit = freezed,
-    Object? tagQueryLimit = freezed,
+    Object? favoriteCount = null,
+    Object? apiRegenMultiplier = null,
+    Object? apiBurstLimit = null,
+    Object? remainingApiLimit = null,
+    Object? statementTimeout = null,
+    Object? favoriteLimit = null,
+    Object? tagQueryLimit = null,
   }) {
     return _then(_$_CurrentUser(
-      wikiPageVersionCount: wikiPageVersionCount == freezed
+      wikiPageVersionCount: null == wikiPageVersionCount
           ? _value.wikiPageVersionCount
           : wikiPageVersionCount // ignore: cast_nullable_to_non_nullable
               as int,
-      artistVersionCount: artistVersionCount == freezed
+      artistVersionCount: null == artistVersionCount
           ? _value.artistVersionCount
           : artistVersionCount // ignore: cast_nullable_to_non_nullable
               as int,
-      poolVersionCount: poolVersionCount == freezed
+      poolVersionCount: null == poolVersionCount
           ? _value.poolVersionCount
           : poolVersionCount // ignore: cast_nullable_to_non_nullable
               as int,
-      forumPostCount: forumPostCount == freezed
+      forumPostCount: null == forumPostCount
           ? _value.forumPostCount
           : forumPostCount // ignore: cast_nullable_to_non_nullable
               as int,
-      commentCount: commentCount == freezed
+      commentCount: null == commentCount
           ? _value.commentCount
           : commentCount // ignore: cast_nullable_to_non_nullable
               as int,
-      flagCount: flagCount == freezed
+      flagCount: null == flagCount
           ? _value.flagCount
           : flagCount // ignore: cast_nullable_to_non_nullable
               as int,
-      positiveFeedbackCount: positiveFeedbackCount == freezed
+      positiveFeedbackCount: null == positiveFeedbackCount
           ? _value.positiveFeedbackCount
           : positiveFeedbackCount // ignore: cast_nullable_to_non_nullable
               as int,
-      neutralFeedbackCount: neutralFeedbackCount == freezed
+      neutralFeedbackCount: null == neutralFeedbackCount
           ? _value.neutralFeedbackCount
           : neutralFeedbackCount // ignore: cast_nullable_to_non_nullable
               as int,
-      negativeFeedbackCount: negativeFeedbackCount == freezed
+      negativeFeedbackCount: null == negativeFeedbackCount
           ? _value.negativeFeedbackCount
           : negativeFeedbackCount // ignore: cast_nullable_to_non_nullable
               as int,
-      uploadLimit: uploadLimit == freezed
+      uploadLimit: null == uploadLimit
           ? _value.uploadLimit
           : uploadLimit // ignore: cast_nullable_to_non_nullable
               as int,
-      id: id == freezed
+      id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as int,
-      createdAt: createdAt == freezed
+      createdAt: null == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
-      name: name == freezed
+      name: null == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
-      level: level == freezed
+      level: null == level
           ? _value.level
           : level // ignore: cast_nullable_to_non_nullable
               as int,
-      baseUploadLimit: baseUploadLimit == freezed
+      baseUploadLimit: null == baseUploadLimit
           ? _value.baseUploadLimit
           : baseUploadLimit // ignore: cast_nullable_to_non_nullable
               as int,
-      postUploadCount: postUploadCount == freezed
+      postUploadCount: null == postUploadCount
           ? _value.postUploadCount
           : postUploadCount // ignore: cast_nullable_to_non_nullable
               as int,
-      postUpdateCount: postUpdateCount == freezed
+      postUpdateCount: null == postUpdateCount
           ? _value.postUpdateCount
           : postUpdateCount // ignore: cast_nullable_to_non_nullable
               as int,
-      noteUpdateCount: noteUpdateCount == freezed
+      noteUpdateCount: null == noteUpdateCount
           ? _value.noteUpdateCount
           : noteUpdateCount // ignore: cast_nullable_to_non_nullable
               as int,
-      isBanned: isBanned == freezed
+      isBanned: null == isBanned
           ? _value.isBanned
           : isBanned // ignore: cast_nullable_to_non_nullable
               as bool,
-      canApprovePosts: canApprovePosts == freezed
+      canApprovePosts: null == canApprovePosts
           ? _value.canApprovePosts
           : canApprovePosts // ignore: cast_nullable_to_non_nullable
               as bool,
-      canUploadFree: canUploadFree == freezed
+      canUploadFree: null == canUploadFree
           ? _value.canUploadFree
           : canUploadFree // ignore: cast_nullable_to_non_nullable
               as bool,
-      levelString: levelString == freezed
+      levelString: null == levelString
           ? _value.levelString
           : levelString // ignore: cast_nullable_to_non_nullable
               as String,
-      avatarId: avatarId == freezed
+      avatarId: freezed == avatarId
           ? _value.avatarId
           : avatarId // ignore: cast_nullable_to_non_nullable
               as int?,
-      showAvatars: showAvatars == freezed
+      showAvatars: null == showAvatars
           ? _value.showAvatars
           : showAvatars // ignore: cast_nullable_to_non_nullable
               as bool,
-      blacklistAvatars: blacklistAvatars == freezed
+      blacklistAvatars: null == blacklistAvatars
           ? _value.blacklistAvatars
           : blacklistAvatars // ignore: cast_nullable_to_non_nullable
               as bool,
-      blacklistUsers: blacklistUsers == freezed
+      blacklistUsers: null == blacklistUsers
           ? _value.blacklistUsers
           : blacklistUsers // ignore: cast_nullable_to_non_nullable
               as bool,
-      descriptionCollapsedInitially: descriptionCollapsedInitially == freezed
+      descriptionCollapsedInitially: null == descriptionCollapsedInitially
           ? _value.descriptionCollapsedInitially
           : descriptionCollapsedInitially // ignore: cast_nullable_to_non_nullable
               as bool,
-      hideComments: hideComments == freezed
+      hideComments: null == hideComments
           ? _value.hideComments
           : hideComments // ignore: cast_nullable_to_non_nullable
               as bool,
-      showHiddenComments: showHiddenComments == freezed
+      showHiddenComments: null == showHiddenComments
           ? _value.showHiddenComments
           : showHiddenComments // ignore: cast_nullable_to_non_nullable
               as bool,
-      showPostStatistics: showPostStatistics == freezed
+      showPostStatistics: null == showPostStatistics
           ? _value.showPostStatistics
           : showPostStatistics // ignore: cast_nullable_to_non_nullable
               as bool,
-      hasMail: hasMail == freezed
+      hasMail: null == hasMail
           ? _value.hasMail
           : hasMail // ignore: cast_nullable_to_non_nullable
               as bool,
-      receiveEmailNotifications: receiveEmailNotifications == freezed
+      receiveEmailNotifications: null == receiveEmailNotifications
           ? _value.receiveEmailNotifications
           : receiveEmailNotifications // ignore: cast_nullable_to_non_nullable
               as bool,
-      enableKeyboardNavigation: enableKeyboardNavigation == freezed
+      enableKeyboardNavigation: null == enableKeyboardNavigation
           ? _value.enableKeyboardNavigation
           : enableKeyboardNavigation // ignore: cast_nullable_to_non_nullable
               as bool,
-      enablePrivacyMode: enablePrivacyMode == freezed
+      enablePrivacyMode: null == enablePrivacyMode
           ? _value.enablePrivacyMode
           : enablePrivacyMode // ignore: cast_nullable_to_non_nullable
               as bool,
-      styleUsernames: styleUsernames == freezed
+      styleUsernames: null == styleUsernames
           ? _value.styleUsernames
           : styleUsernames // ignore: cast_nullable_to_non_nullable
               as bool,
-      enableAutoComplete: enableAutoComplete == freezed
+      enableAutoComplete: null == enableAutoComplete
           ? _value.enableAutoComplete
           : enableAutoComplete // ignore: cast_nullable_to_non_nullable
               as bool,
-      hasSavedSearches: hasSavedSearches == freezed
+      hasSavedSearches: null == hasSavedSearches
           ? _value.hasSavedSearches
           : hasSavedSearches // ignore: cast_nullable_to_non_nullable
               as bool,
-      disableCroppedThumbnails: disableCroppedThumbnails == freezed
+      disableCroppedThumbnails: null == disableCroppedThumbnails
           ? _value.disableCroppedThumbnails
           : disableCroppedThumbnails // ignore: cast_nullable_to_non_nullable
               as bool,
-      disableMobileGestures: disableMobileGestures == freezed
+      disableMobileGestures: null == disableMobileGestures
           ? _value.disableMobileGestures
           : disableMobileGestures // ignore: cast_nullable_to_non_nullable
               as bool,
-      enableSafeMode: enableSafeMode == freezed
+      enableSafeMode: null == enableSafeMode
           ? _value.enableSafeMode
           : enableSafeMode // ignore: cast_nullable_to_non_nullable
               as bool,
-      disableResponsiveMode: disableResponsiveMode == freezed
+      disableResponsiveMode: null == disableResponsiveMode
           ? _value.disableResponsiveMode
           : disableResponsiveMode // ignore: cast_nullable_to_non_nullable
               as bool,
-      disablePostTooltips: disablePostTooltips == freezed
+      disablePostTooltips: null == disablePostTooltips
           ? _value.disablePostTooltips
           : disablePostTooltips // ignore: cast_nullable_to_non_nullable
               as bool,
-      noFlagging: noFlagging == freezed
+      noFlagging: null == noFlagging
           ? _value.noFlagging
           : noFlagging // ignore: cast_nullable_to_non_nullable
               as bool,
-      noFeedback: noFeedback == freezed
+      noFeedback: null == noFeedback
           ? _value.noFeedback
           : noFeedback // ignore: cast_nullable_to_non_nullable
               as bool,
-      disableUserDmails: disableUserDmails == freezed
+      disableUserDmails: null == disableUserDmails
           ? _value.disableUserDmails
           : disableUserDmails // ignore: cast_nullable_to_non_nullable
               as bool,
-      enableCompactUploader: enableCompactUploader == freezed
+      enableCompactUploader: null == enableCompactUploader
           ? _value.enableCompactUploader
           : enableCompactUploader // ignore: cast_nullable_to_non_nullable
               as bool,
-      updatedAt: updatedAt == freezed
+      updatedAt: null == updatedAt
           ? _value.updatedAt
           : updatedAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
-      email: email == freezed
+      email: null == email
           ? _value.email
           : email // ignore: cast_nullable_to_non_nullable
               as String,
-      lastLoggedInAt: lastLoggedInAt == freezed
+      lastLoggedInAt: null == lastLoggedInAt
           ? _value.lastLoggedInAt
           : lastLoggedInAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
-      lastForumReadAt: lastForumReadAt == freezed
+      lastForumReadAt: freezed == lastForumReadAt
           ? _value.lastForumReadAt
           : lastForumReadAt // ignore: cast_nullable_to_non_nullable
               as DateTime?,
-      recentTags: recentTags == freezed
+      recentTags: freezed == recentTags
           ? _value.recentTags
           : recentTags // ignore: cast_nullable_to_non_nullable
               as String?,
-      commentThreshold: commentThreshold == freezed
+      commentThreshold: null == commentThreshold
           ? _value.commentThreshold
           : commentThreshold // ignore: cast_nullable_to_non_nullable
               as int,
-      defaultImageSize: defaultImageSize == freezed
+      defaultImageSize: null == defaultImageSize
           ? _value.defaultImageSize
           : defaultImageSize // ignore: cast_nullable_to_non_nullable
               as String,
-      favoriteTags: favoriteTags == freezed
+      favoriteTags: freezed == favoriteTags
           ? _value.favoriteTags
           : favoriteTags // ignore: cast_nullable_to_non_nullable
               as String?,
-      blacklistedTags: blacklistedTags == freezed
+      blacklistedTags: null == blacklistedTags
           ? _value.blacklistedTags
           : blacklistedTags // ignore: cast_nullable_to_non_nullable
               as String,
-      timeZone: timeZone == freezed
+      timeZone: null == timeZone
           ? _value.timeZone
           : timeZone // ignore: cast_nullable_to_non_nullable
               as String,
-      perPage: perPage == freezed
+      perPage: null == perPage
           ? _value.perPage
           : perPage // ignore: cast_nullable_to_non_nullable
               as int,
-      customStyle: customStyle == freezed
+      customStyle: freezed == customStyle
           ? _value.customStyle
           : customStyle // ignore: cast_nullable_to_non_nullable
               as String?,
-      favoriteCount: favoriteCount == freezed
+      favoriteCount: null == favoriteCount
           ? _value.favoriteCount
           : favoriteCount // ignore: cast_nullable_to_non_nullable
               as int,
-      apiRegenMultiplier: apiRegenMultiplier == freezed
+      apiRegenMultiplier: null == apiRegenMultiplier
           ? _value.apiRegenMultiplier
           : apiRegenMultiplier // ignore: cast_nullable_to_non_nullable
               as int,
-      apiBurstLimit: apiBurstLimit == freezed
+      apiBurstLimit: null == apiBurstLimit
           ? _value.apiBurstLimit
           : apiBurstLimit // ignore: cast_nullable_to_non_nullable
               as int,
-      remainingApiLimit: remainingApiLimit == freezed
+      remainingApiLimit: null == remainingApiLimit
           ? _value.remainingApiLimit
           : remainingApiLimit // ignore: cast_nullable_to_non_nullable
               as int,
-      statementTimeout: statementTimeout == freezed
+      statementTimeout: null == statementTimeout
           ? _value.statementTimeout
           : statementTimeout // ignore: cast_nullable_to_non_nullable
               as int,
-      favoriteLimit: favoriteLimit == freezed
+      favoriteLimit: null == favoriteLimit
           ? _value.favoriteLimit
           : favoriteLimit // ignore: cast_nullable_to_non_nullable
               as int,
-      tagQueryLimit: tagQueryLimit == freezed
+      tagQueryLimit: null == tagQueryLimit
           ? _value.tagQueryLimit
           : tagQueryLimit // ignore: cast_nullable_to_non_nullable
               as int,
@@ -1138,189 +1142,187 @@ class _$_CurrentUser implements _CurrentUser {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_CurrentUser &&
-            const DeepCollectionEquality()
-                .equals(other.wikiPageVersionCount, wikiPageVersionCount) &&
-            const DeepCollectionEquality()
-                .equals(other.artistVersionCount, artistVersionCount) &&
-            const DeepCollectionEquality()
-                .equals(other.poolVersionCount, poolVersionCount) &&
-            const DeepCollectionEquality()
-                .equals(other.forumPostCount, forumPostCount) &&
-            const DeepCollectionEquality()
-                .equals(other.commentCount, commentCount) &&
-            const DeepCollectionEquality().equals(other.flagCount, flagCount) &&
-            const DeepCollectionEquality()
-                .equals(other.positiveFeedbackCount, positiveFeedbackCount) &&
-            const DeepCollectionEquality()
-                .equals(other.neutralFeedbackCount, neutralFeedbackCount) &&
-            const DeepCollectionEquality()
-                .equals(other.negativeFeedbackCount, negativeFeedbackCount) &&
-            const DeepCollectionEquality()
-                .equals(other.uploadLimit, uploadLimit) &&
-            const DeepCollectionEquality().equals(other.id, id) &&
-            const DeepCollectionEquality().equals(other.createdAt, createdAt) &&
-            const DeepCollectionEquality().equals(other.name, name) &&
-            const DeepCollectionEquality().equals(other.level, level) &&
-            const DeepCollectionEquality()
-                .equals(other.baseUploadLimit, baseUploadLimit) &&
-            const DeepCollectionEquality()
-                .equals(other.postUploadCount, postUploadCount) &&
-            const DeepCollectionEquality()
-                .equals(other.postUpdateCount, postUpdateCount) &&
-            const DeepCollectionEquality()
-                .equals(other.noteUpdateCount, noteUpdateCount) &&
-            const DeepCollectionEquality().equals(other.isBanned, isBanned) &&
-            const DeepCollectionEquality()
-                .equals(other.canApprovePosts, canApprovePosts) &&
-            const DeepCollectionEquality()
-                .equals(other.canUploadFree, canUploadFree) &&
-            const DeepCollectionEquality()
-                .equals(other.levelString, levelString) &&
-            const DeepCollectionEquality().equals(other.avatarId, avatarId) &&
-            const DeepCollectionEquality()
-                .equals(other.showAvatars, showAvatars) &&
-            const DeepCollectionEquality()
-                .equals(other.blacklistAvatars, blacklistAvatars) &&
-            const DeepCollectionEquality()
-                .equals(other.blacklistUsers, blacklistUsers) &&
-            const DeepCollectionEquality().equals(
-                other.descriptionCollapsedInitially,
-                descriptionCollapsedInitially) &&
-            const DeepCollectionEquality()
-                .equals(other.hideComments, hideComments) &&
-            const DeepCollectionEquality()
-                .equals(other.showHiddenComments, showHiddenComments) &&
-            const DeepCollectionEquality()
-                .equals(other.showPostStatistics, showPostStatistics) &&
-            const DeepCollectionEquality().equals(other.hasMail, hasMail) &&
-            const DeepCollectionEquality().equals(
-                other.receiveEmailNotifications, receiveEmailNotifications) &&
-            const DeepCollectionEquality().equals(
-                other.enableKeyboardNavigation, enableKeyboardNavigation) &&
-            const DeepCollectionEquality()
-                .equals(other.enablePrivacyMode, enablePrivacyMode) &&
-            const DeepCollectionEquality()
-                .equals(other.styleUsernames, styleUsernames) &&
-            const DeepCollectionEquality()
-                .equals(other.enableAutoComplete, enableAutoComplete) &&
-            const DeepCollectionEquality()
-                .equals(other.hasSavedSearches, hasSavedSearches) &&
-            const DeepCollectionEquality().equals(
-                other.disableCroppedThumbnails, disableCroppedThumbnails) &&
-            const DeepCollectionEquality()
-                .equals(other.disableMobileGestures, disableMobileGestures) &&
-            const DeepCollectionEquality()
-                .equals(other.enableSafeMode, enableSafeMode) &&
-            const DeepCollectionEquality()
-                .equals(other.disableResponsiveMode, disableResponsiveMode) &&
-            const DeepCollectionEquality()
-                .equals(other.disablePostTooltips, disablePostTooltips) &&
-            const DeepCollectionEquality()
-                .equals(other.noFlagging, noFlagging) &&
-            const DeepCollectionEquality()
-                .equals(other.noFeedback, noFeedback) &&
-            const DeepCollectionEquality()
-                .equals(other.disableUserDmails, disableUserDmails) &&
-            const DeepCollectionEquality()
-                .equals(other.enableCompactUploader, enableCompactUploader) &&
-            const DeepCollectionEquality().equals(other.updatedAt, updatedAt) &&
-            const DeepCollectionEquality().equals(other.email, email) &&
-            const DeepCollectionEquality()
-                .equals(other.lastLoggedInAt, lastLoggedInAt) &&
-            const DeepCollectionEquality()
-                .equals(other.lastForumReadAt, lastForumReadAt) &&
-            const DeepCollectionEquality()
-                .equals(other.recentTags, recentTags) &&
-            const DeepCollectionEquality()
-                .equals(other.commentThreshold, commentThreshold) &&
-            const DeepCollectionEquality().equals(other.defaultImageSize, defaultImageSize) &&
-            const DeepCollectionEquality().equals(other.favoriteTags, favoriteTags) &&
-            const DeepCollectionEquality().equals(other.blacklistedTags, blacklistedTags) &&
-            const DeepCollectionEquality().equals(other.timeZone, timeZone) &&
-            const DeepCollectionEquality().equals(other.perPage, perPage) &&
-            const DeepCollectionEquality().equals(other.customStyle, customStyle) &&
-            const DeepCollectionEquality().equals(other.favoriteCount, favoriteCount) &&
-            const DeepCollectionEquality().equals(other.apiRegenMultiplier, apiRegenMultiplier) &&
-            const DeepCollectionEquality().equals(other.apiBurstLimit, apiBurstLimit) &&
-            const DeepCollectionEquality().equals(other.remainingApiLimit, remainingApiLimit) &&
-            const DeepCollectionEquality().equals(other.statementTimeout, statementTimeout) &&
-            const DeepCollectionEquality().equals(other.favoriteLimit, favoriteLimit) &&
-            const DeepCollectionEquality().equals(other.tagQueryLimit, tagQueryLimit));
+            (identical(other.wikiPageVersionCount, wikiPageVersionCount) ||
+                other.wikiPageVersionCount == wikiPageVersionCount) &&
+            (identical(other.artistVersionCount, artistVersionCount) ||
+                other.artistVersionCount == artistVersionCount) &&
+            (identical(other.poolVersionCount, poolVersionCount) ||
+                other.poolVersionCount == poolVersionCount) &&
+            (identical(other.forumPostCount, forumPostCount) ||
+                other.forumPostCount == forumPostCount) &&
+            (identical(other.commentCount, commentCount) ||
+                other.commentCount == commentCount) &&
+            (identical(other.flagCount, flagCount) ||
+                other.flagCount == flagCount) &&
+            (identical(other.positiveFeedbackCount, positiveFeedbackCount) ||
+                other.positiveFeedbackCount == positiveFeedbackCount) &&
+            (identical(other.neutralFeedbackCount, neutralFeedbackCount) ||
+                other.neutralFeedbackCount == neutralFeedbackCount) &&
+            (identical(other.negativeFeedbackCount, negativeFeedbackCount) ||
+                other.negativeFeedbackCount == negativeFeedbackCount) &&
+            (identical(other.uploadLimit, uploadLimit) ||
+                other.uploadLimit == uploadLimit) &&
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.createdAt, createdAt) ||
+                other.createdAt == createdAt) &&
+            (identical(other.name, name) || other.name == name) &&
+            (identical(other.level, level) || other.level == level) &&
+            (identical(other.baseUploadLimit, baseUploadLimit) ||
+                other.baseUploadLimit == baseUploadLimit) &&
+            (identical(other.postUploadCount, postUploadCount) ||
+                other.postUploadCount == postUploadCount) &&
+            (identical(other.postUpdateCount, postUpdateCount) ||
+                other.postUpdateCount == postUpdateCount) &&
+            (identical(other.noteUpdateCount, noteUpdateCount) ||
+                other.noteUpdateCount == noteUpdateCount) &&
+            (identical(other.isBanned, isBanned) ||
+                other.isBanned == isBanned) &&
+            (identical(other.canApprovePosts, canApprovePosts) ||
+                other.canApprovePosts == canApprovePosts) &&
+            (identical(other.canUploadFree, canUploadFree) ||
+                other.canUploadFree == canUploadFree) &&
+            (identical(other.levelString, levelString) ||
+                other.levelString == levelString) &&
+            (identical(other.avatarId, avatarId) ||
+                other.avatarId == avatarId) &&
+            (identical(other.showAvatars, showAvatars) ||
+                other.showAvatars == showAvatars) &&
+            (identical(other.blacklistAvatars, blacklistAvatars) ||
+                other.blacklistAvatars == blacklistAvatars) &&
+            (identical(other.blacklistUsers, blacklistUsers) ||
+                other.blacklistUsers == blacklistUsers) &&
+            (identical(other.descriptionCollapsedInitially, descriptionCollapsedInitially) ||
+                other.descriptionCollapsedInitially ==
+                    descriptionCollapsedInitially) &&
+            (identical(other.hideComments, hideComments) ||
+                other.hideComments == hideComments) &&
+            (identical(other.showHiddenComments, showHiddenComments) ||
+                other.showHiddenComments == showHiddenComments) &&
+            (identical(other.showPostStatistics, showPostStatistics) ||
+                other.showPostStatistics == showPostStatistics) &&
+            (identical(other.hasMail, hasMail) || other.hasMail == hasMail) &&
+            (identical(other.receiveEmailNotifications, receiveEmailNotifications) ||
+                other.receiveEmailNotifications == receiveEmailNotifications) &&
+            (identical(other.enableKeyboardNavigation, enableKeyboardNavigation) ||
+                other.enableKeyboardNavigation == enableKeyboardNavigation) &&
+            (identical(other.enablePrivacyMode, enablePrivacyMode) ||
+                other.enablePrivacyMode == enablePrivacyMode) &&
+            (identical(other.styleUsernames, styleUsernames) ||
+                other.styleUsernames == styleUsernames) &&
+            (identical(other.enableAutoComplete, enableAutoComplete) ||
+                other.enableAutoComplete == enableAutoComplete) &&
+            (identical(other.hasSavedSearches, hasSavedSearches) ||
+                other.hasSavedSearches == hasSavedSearches) &&
+            (identical(other.disableCroppedThumbnails, disableCroppedThumbnails) ||
+                other.disableCroppedThumbnails == disableCroppedThumbnails) &&
+            (identical(other.disableMobileGestures, disableMobileGestures) ||
+                other.disableMobileGestures == disableMobileGestures) &&
+            (identical(other.enableSafeMode, enableSafeMode) ||
+                other.enableSafeMode == enableSafeMode) &&
+            (identical(other.disableResponsiveMode, disableResponsiveMode) ||
+                other.disableResponsiveMode == disableResponsiveMode) &&
+            (identical(other.disablePostTooltips, disablePostTooltips) ||
+                other.disablePostTooltips == disablePostTooltips) &&
+            (identical(other.noFlagging, noFlagging) ||
+                other.noFlagging == noFlagging) &&
+            (identical(other.noFeedback, noFeedback) || other.noFeedback == noFeedback) &&
+            (identical(other.disableUserDmails, disableUserDmails) || other.disableUserDmails == disableUserDmails) &&
+            (identical(other.enableCompactUploader, enableCompactUploader) || other.enableCompactUploader == enableCompactUploader) &&
+            (identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt) &&
+            (identical(other.email, email) || other.email == email) &&
+            (identical(other.lastLoggedInAt, lastLoggedInAt) || other.lastLoggedInAt == lastLoggedInAt) &&
+            (identical(other.lastForumReadAt, lastForumReadAt) || other.lastForumReadAt == lastForumReadAt) &&
+            (identical(other.recentTags, recentTags) || other.recentTags == recentTags) &&
+            (identical(other.commentThreshold, commentThreshold) || other.commentThreshold == commentThreshold) &&
+            (identical(other.defaultImageSize, defaultImageSize) || other.defaultImageSize == defaultImageSize) &&
+            (identical(other.favoriteTags, favoriteTags) || other.favoriteTags == favoriteTags) &&
+            (identical(other.blacklistedTags, blacklistedTags) || other.blacklistedTags == blacklistedTags) &&
+            (identical(other.timeZone, timeZone) || other.timeZone == timeZone) &&
+            (identical(other.perPage, perPage) || other.perPage == perPage) &&
+            (identical(other.customStyle, customStyle) || other.customStyle == customStyle) &&
+            (identical(other.favoriteCount, favoriteCount) || other.favoriteCount == favoriteCount) &&
+            (identical(other.apiRegenMultiplier, apiRegenMultiplier) || other.apiRegenMultiplier == apiRegenMultiplier) &&
+            (identical(other.apiBurstLimit, apiBurstLimit) || other.apiBurstLimit == apiBurstLimit) &&
+            (identical(other.remainingApiLimit, remainingApiLimit) || other.remainingApiLimit == remainingApiLimit) &&
+            (identical(other.statementTimeout, statementTimeout) || other.statementTimeout == statementTimeout) &&
+            (identical(other.favoriteLimit, favoriteLimit) || other.favoriteLimit == favoriteLimit) &&
+            (identical(other.tagQueryLimit, tagQueryLimit) || other.tagQueryLimit == tagQueryLimit));
   }
 
   @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hashAll([
         runtimeType,
-        const DeepCollectionEquality().hash(wikiPageVersionCount),
-        const DeepCollectionEquality().hash(artistVersionCount),
-        const DeepCollectionEquality().hash(poolVersionCount),
-        const DeepCollectionEquality().hash(forumPostCount),
-        const DeepCollectionEquality().hash(commentCount),
-        const DeepCollectionEquality().hash(flagCount),
-        const DeepCollectionEquality().hash(positiveFeedbackCount),
-        const DeepCollectionEquality().hash(neutralFeedbackCount),
-        const DeepCollectionEquality().hash(negativeFeedbackCount),
-        const DeepCollectionEquality().hash(uploadLimit),
-        const DeepCollectionEquality().hash(id),
-        const DeepCollectionEquality().hash(createdAt),
-        const DeepCollectionEquality().hash(name),
-        const DeepCollectionEquality().hash(level),
-        const DeepCollectionEquality().hash(baseUploadLimit),
-        const DeepCollectionEquality().hash(postUploadCount),
-        const DeepCollectionEquality().hash(postUpdateCount),
-        const DeepCollectionEquality().hash(noteUpdateCount),
-        const DeepCollectionEquality().hash(isBanned),
-        const DeepCollectionEquality().hash(canApprovePosts),
-        const DeepCollectionEquality().hash(canUploadFree),
-        const DeepCollectionEquality().hash(levelString),
-        const DeepCollectionEquality().hash(avatarId),
-        const DeepCollectionEquality().hash(showAvatars),
-        const DeepCollectionEquality().hash(blacklistAvatars),
-        const DeepCollectionEquality().hash(blacklistUsers),
-        const DeepCollectionEquality().hash(descriptionCollapsedInitially),
-        const DeepCollectionEquality().hash(hideComments),
-        const DeepCollectionEquality().hash(showHiddenComments),
-        const DeepCollectionEquality().hash(showPostStatistics),
-        const DeepCollectionEquality().hash(hasMail),
-        const DeepCollectionEquality().hash(receiveEmailNotifications),
-        const DeepCollectionEquality().hash(enableKeyboardNavigation),
-        const DeepCollectionEquality().hash(enablePrivacyMode),
-        const DeepCollectionEquality().hash(styleUsernames),
-        const DeepCollectionEquality().hash(enableAutoComplete),
-        const DeepCollectionEquality().hash(hasSavedSearches),
-        const DeepCollectionEquality().hash(disableCroppedThumbnails),
-        const DeepCollectionEquality().hash(disableMobileGestures),
-        const DeepCollectionEquality().hash(enableSafeMode),
-        const DeepCollectionEquality().hash(disableResponsiveMode),
-        const DeepCollectionEquality().hash(disablePostTooltips),
-        const DeepCollectionEquality().hash(noFlagging),
-        const DeepCollectionEquality().hash(noFeedback),
-        const DeepCollectionEquality().hash(disableUserDmails),
-        const DeepCollectionEquality().hash(enableCompactUploader),
-        const DeepCollectionEquality().hash(updatedAt),
-        const DeepCollectionEquality().hash(email),
-        const DeepCollectionEquality().hash(lastLoggedInAt),
-        const DeepCollectionEquality().hash(lastForumReadAt),
-        const DeepCollectionEquality().hash(recentTags),
-        const DeepCollectionEquality().hash(commentThreshold),
-        const DeepCollectionEquality().hash(defaultImageSize),
-        const DeepCollectionEquality().hash(favoriteTags),
-        const DeepCollectionEquality().hash(blacklistedTags),
-        const DeepCollectionEquality().hash(timeZone),
-        const DeepCollectionEquality().hash(perPage),
-        const DeepCollectionEquality().hash(customStyle),
-        const DeepCollectionEquality().hash(favoriteCount),
-        const DeepCollectionEquality().hash(apiRegenMultiplier),
-        const DeepCollectionEquality().hash(apiBurstLimit),
-        const DeepCollectionEquality().hash(remainingApiLimit),
-        const DeepCollectionEquality().hash(statementTimeout),
-        const DeepCollectionEquality().hash(favoriteLimit),
-        const DeepCollectionEquality().hash(tagQueryLimit)
+        wikiPageVersionCount,
+        artistVersionCount,
+        poolVersionCount,
+        forumPostCount,
+        commentCount,
+        flagCount,
+        positiveFeedbackCount,
+        neutralFeedbackCount,
+        negativeFeedbackCount,
+        uploadLimit,
+        id,
+        createdAt,
+        name,
+        level,
+        baseUploadLimit,
+        postUploadCount,
+        postUpdateCount,
+        noteUpdateCount,
+        isBanned,
+        canApprovePosts,
+        canUploadFree,
+        levelString,
+        avatarId,
+        showAvatars,
+        blacklistAvatars,
+        blacklistUsers,
+        descriptionCollapsedInitially,
+        hideComments,
+        showHiddenComments,
+        showPostStatistics,
+        hasMail,
+        receiveEmailNotifications,
+        enableKeyboardNavigation,
+        enablePrivacyMode,
+        styleUsernames,
+        enableAutoComplete,
+        hasSavedSearches,
+        disableCroppedThumbnails,
+        disableMobileGestures,
+        enableSafeMode,
+        disableResponsiveMode,
+        disablePostTooltips,
+        noFlagging,
+        noFeedback,
+        disableUserDmails,
+        enableCompactUploader,
+        updatedAt,
+        email,
+        lastLoggedInAt,
+        lastForumReadAt,
+        recentTags,
+        commentThreshold,
+        defaultImageSize,
+        favoriteTags,
+        blacklistedTags,
+        timeZone,
+        perPage,
+        customStyle,
+        favoriteCount,
+        apiRegenMultiplier,
+        apiBurstLimit,
+        remainingApiLimit,
+        statementTimeout,
+        favoriteLimit,
+        tagQueryLimit
       ]);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$_CurrentUserCopyWith<_$_CurrentUser> get copyWith =>
       __$$_CurrentUserCopyWithImpl<_$_CurrentUser>(this, _$identity);
 

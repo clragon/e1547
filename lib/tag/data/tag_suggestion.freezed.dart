@@ -36,7 +36,8 @@ mixin _$TagSuggestion {
 abstract class $TagSuggestionCopyWith<$Res> {
   factory $TagSuggestionCopyWith(
           TagSuggestion value, $Res Function(TagSuggestion) then) =
-      _$TagSuggestionCopyWithImpl<$Res>;
+      _$TagSuggestionCopyWithImpl<$Res, TagSuggestion>;
+  @useResult
   $Res call(
       {int id,
       String name,
@@ -46,44 +47,46 @@ abstract class $TagSuggestionCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$TagSuggestionCopyWithImpl<$Res>
+class _$TagSuggestionCopyWithImpl<$Res, $Val extends TagSuggestion>
     implements $TagSuggestionCopyWith<$Res> {
   _$TagSuggestionCopyWithImpl(this._value, this._then);
 
-  final TagSuggestion _value;
   // ignore: unused_field
-  final $Res Function(TagSuggestion) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? id = freezed,
-    Object? name = freezed,
-    Object? postCount = freezed,
-    Object? category = freezed,
+    Object? id = null,
+    Object? name = null,
+    Object? postCount = null,
+    Object? category = null,
     Object? antecedentName = freezed,
   }) {
     return _then(_value.copyWith(
-      id: id == freezed
+      id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as int,
-      name: name == freezed
+      name: null == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
-      postCount: postCount == freezed
+      postCount: null == postCount
           ? _value.postCount
           : postCount // ignore: cast_nullable_to_non_nullable
               as int,
-      category: category == freezed
+      category: null == category
           ? _value.category
           : category // ignore: cast_nullable_to_non_nullable
               as int,
-      antecedentName: antecedentName == freezed
+      antecedentName: freezed == antecedentName
           ? _value.antecedentName
           : antecedentName // ignore: cast_nullable_to_non_nullable
               as String?,
-    ));
+    ) as $Val);
   }
 }
 
@@ -94,6 +97,7 @@ abstract class _$$_TagSuggestionCopyWith<$Res>
           _$_TagSuggestion value, $Res Function(_$_TagSuggestion) then) =
       __$$_TagSuggestionCopyWithImpl<$Res>;
   @override
+  @useResult
   $Res call(
       {int id,
       String name,
@@ -104,41 +108,39 @@ abstract class _$$_TagSuggestionCopyWith<$Res>
 
 /// @nodoc
 class __$$_TagSuggestionCopyWithImpl<$Res>
-    extends _$TagSuggestionCopyWithImpl<$Res>
+    extends _$TagSuggestionCopyWithImpl<$Res, _$_TagSuggestion>
     implements _$$_TagSuggestionCopyWith<$Res> {
   __$$_TagSuggestionCopyWithImpl(
       _$_TagSuggestion _value, $Res Function(_$_TagSuggestion) _then)
-      : super(_value, (v) => _then(v as _$_TagSuggestion));
+      : super(_value, _then);
 
-  @override
-  _$_TagSuggestion get _value => super._value as _$_TagSuggestion;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? id = freezed,
-    Object? name = freezed,
-    Object? postCount = freezed,
-    Object? category = freezed,
+    Object? id = null,
+    Object? name = null,
+    Object? postCount = null,
+    Object? category = null,
     Object? antecedentName = freezed,
   }) {
     return _then(_$_TagSuggestion(
-      id: id == freezed
+      id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as int,
-      name: name == freezed
+      name: null == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
-      postCount: postCount == freezed
+      postCount: null == postCount
           ? _value.postCount
           : postCount // ignore: cast_nullable_to_non_nullable
               as int,
-      category: category == freezed
+      category: null == category
           ? _value.category
           : category // ignore: cast_nullable_to_non_nullable
               as int,
-      antecedentName: antecedentName == freezed
+      antecedentName: freezed == antecedentName
           ? _value.antecedentName
           : antecedentName // ignore: cast_nullable_to_non_nullable
               as String?,
@@ -180,26 +182,24 @@ class _$_TagSuggestion implements _TagSuggestion {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_TagSuggestion &&
-            const DeepCollectionEquality().equals(other.id, id) &&
-            const DeepCollectionEquality().equals(other.name, name) &&
-            const DeepCollectionEquality().equals(other.postCount, postCount) &&
-            const DeepCollectionEquality().equals(other.category, category) &&
-            const DeepCollectionEquality()
-                .equals(other.antecedentName, antecedentName));
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.name, name) || other.name == name) &&
+            (identical(other.postCount, postCount) ||
+                other.postCount == postCount) &&
+            (identical(other.category, category) ||
+                other.category == category) &&
+            (identical(other.antecedentName, antecedentName) ||
+                other.antecedentName == antecedentName));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      const DeepCollectionEquality().hash(id),
-      const DeepCollectionEquality().hash(name),
-      const DeepCollectionEquality().hash(postCount),
-      const DeepCollectionEquality().hash(category),
-      const DeepCollectionEquality().hash(antecedentName));
+  int get hashCode =>
+      Object.hash(runtimeType, id, name, postCount, category, antecedentName);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$_TagSuggestionCopyWith<_$_TagSuggestion> get copyWith =>
       __$$_TagSuggestionCopyWithImpl<_$_TagSuggestion>(this, _$identity);
 

@@ -35,7 +35,8 @@ mixin _$HistoriesSearch {
 abstract class $HistoriesSearchCopyWith<$Res> {
   factory $HistoriesSearchCopyWith(
           HistoriesSearch value, $Res Function(HistoriesSearch) then) =
-      _$HistoriesSearchCopyWithImpl<$Res>;
+      _$HistoriesSearchCopyWithImpl<$Res, HistoriesSearch>;
+  @useResult
   $Res call(
       {DateTime? date,
       Set<HistorySearchFilter> searchFilters,
@@ -43,34 +44,36 @@ abstract class $HistoriesSearchCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$HistoriesSearchCopyWithImpl<$Res>
+class _$HistoriesSearchCopyWithImpl<$Res, $Val extends HistoriesSearch>
     implements $HistoriesSearchCopyWith<$Res> {
   _$HistoriesSearchCopyWithImpl(this._value, this._then);
 
-  final HistoriesSearch _value;
   // ignore: unused_field
-  final $Res Function(HistoriesSearch) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? date = freezed,
-    Object? searchFilters = freezed,
-    Object? typeFilters = freezed,
+    Object? searchFilters = null,
+    Object? typeFilters = null,
   }) {
     return _then(_value.copyWith(
-      date: date == freezed
+      date: freezed == date
           ? _value.date
           : date // ignore: cast_nullable_to_non_nullable
               as DateTime?,
-      searchFilters: searchFilters == freezed
+      searchFilters: null == searchFilters
           ? _value.searchFilters
           : searchFilters // ignore: cast_nullable_to_non_nullable
               as Set<HistorySearchFilter>,
-      typeFilters: typeFilters == freezed
+      typeFilters: null == typeFilters
           ? _value.typeFilters
           : typeFilters // ignore: cast_nullable_to_non_nullable
               as Set<HistoryTypeFilter>,
-    ));
+    ) as $Val);
   }
 }
 
@@ -81,6 +84,7 @@ abstract class _$$_HistoriesSearchCopyWith<$Res>
           _$_HistoriesSearch value, $Res Function(_$_HistoriesSearch) then) =
       __$$_HistoriesSearchCopyWithImpl<$Res>;
   @override
+  @useResult
   $Res call(
       {DateTime? date,
       Set<HistorySearchFilter> searchFilters,
@@ -89,31 +93,29 @@ abstract class _$$_HistoriesSearchCopyWith<$Res>
 
 /// @nodoc
 class __$$_HistoriesSearchCopyWithImpl<$Res>
-    extends _$HistoriesSearchCopyWithImpl<$Res>
+    extends _$HistoriesSearchCopyWithImpl<$Res, _$_HistoriesSearch>
     implements _$$_HistoriesSearchCopyWith<$Res> {
   __$$_HistoriesSearchCopyWithImpl(
       _$_HistoriesSearch _value, $Res Function(_$_HistoriesSearch) _then)
-      : super(_value, (v) => _then(v as _$_HistoriesSearch));
+      : super(_value, _then);
 
-  @override
-  _$_HistoriesSearch get _value => super._value as _$_HistoriesSearch;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? date = freezed,
-    Object? searchFilters = freezed,
-    Object? typeFilters = freezed,
+    Object? searchFilters = null,
+    Object? typeFilters = null,
   }) {
     return _then(_$_HistoriesSearch(
-      date: date == freezed
+      date: freezed == date
           ? _value.date
           : date // ignore: cast_nullable_to_non_nullable
               as DateTime?,
-      searchFilters: searchFilters == freezed
+      searchFilters: null == searchFilters
           ? _value._searchFilters
           : searchFilters // ignore: cast_nullable_to_non_nullable
               as Set<HistorySearchFilter>,
-      typeFilters: typeFilters == freezed
+      typeFilters: null == typeFilters
           ? _value._typeFilters
           : typeFilters // ignore: cast_nullable_to_non_nullable
               as Set<HistoryTypeFilter>,
@@ -161,7 +163,7 @@ class _$_HistoriesSearch extends _HistoriesSearch {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_HistoriesSearch &&
-            const DeepCollectionEquality().equals(other.date, date) &&
+            (identical(other.date, date) || other.date == date) &&
             const DeepCollectionEquality()
                 .equals(other._searchFilters, _searchFilters) &&
             const DeepCollectionEquality()
@@ -172,12 +174,13 @@ class _$_HistoriesSearch extends _HistoriesSearch {
   @override
   int get hashCode => Object.hash(
       runtimeType,
-      const DeepCollectionEquality().hash(date),
+      date,
       const DeepCollectionEquality().hash(_searchFilters),
       const DeepCollectionEquality().hash(_typeFilters));
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$_HistoriesSearchCopyWith<_$_HistoriesSearch> get copyWith =>
       __$$_HistoriesSearchCopyWithImpl<_$_HistoriesSearch>(this, _$identity);
 

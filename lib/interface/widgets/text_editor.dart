@@ -72,7 +72,7 @@ class _TextEditorState extends State<TextEditor> {
           onPressed: isLoading
               ? null
               : () async {
-            final messenger = ScaffoldMessenger.of(context);
+                  final messenger = ScaffoldMessenger.of(context);
                   String text = textController.text.trim();
                   setState(() {
                     isLoading = true;
@@ -87,7 +87,7 @@ class _TextEditorState extends State<TextEditor> {
                       content: Text(error),
                       behavior: SnackBarBehavior.floating,
                     ));
-            }
+                  }
                 },
           child: Icon(Icons.check, color: Theme.of(context).iconTheme.color),
         ),

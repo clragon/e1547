@@ -40,7 +40,8 @@ mixin _$Pool {
 /// @nodoc
 abstract class $PoolCopyWith<$Res> {
   factory $PoolCopyWith(Pool value, $Res Function(Pool) then) =
-      _$PoolCopyWithImpl<$Res>;
+      _$PoolCopyWithImpl<$Res, Pool>;
+  @useResult
   $Res call(
       {int id,
       String name,
@@ -56,73 +57,76 @@ abstract class $PoolCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$PoolCopyWithImpl<$Res> implements $PoolCopyWith<$Res> {
+class _$PoolCopyWithImpl<$Res, $Val extends Pool>
+    implements $PoolCopyWith<$Res> {
   _$PoolCopyWithImpl(this._value, this._then);
 
-  final Pool _value;
   // ignore: unused_field
-  final $Res Function(Pool) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? id = freezed,
-    Object? name = freezed,
-    Object? createdAt = freezed,
-    Object? updatedAt = freezed,
-    Object? creatorId = freezed,
-    Object? description = freezed,
-    Object? isActive = freezed,
-    Object? category = freezed,
-    Object? postIds = freezed,
-    Object? creatorName = freezed,
-    Object? postCount = freezed,
+    Object? id = null,
+    Object? name = null,
+    Object? createdAt = null,
+    Object? updatedAt = null,
+    Object? creatorId = null,
+    Object? description = null,
+    Object? isActive = null,
+    Object? category = null,
+    Object? postIds = null,
+    Object? creatorName = null,
+    Object? postCount = null,
   }) {
     return _then(_value.copyWith(
-      id: id == freezed
+      id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as int,
-      name: name == freezed
+      name: null == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
-      createdAt: createdAt == freezed
+      createdAt: null == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
-      updatedAt: updatedAt == freezed
+      updatedAt: null == updatedAt
           ? _value.updatedAt
           : updatedAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
-      creatorId: creatorId == freezed
+      creatorId: null == creatorId
           ? _value.creatorId
           : creatorId // ignore: cast_nullable_to_non_nullable
               as int,
-      description: description == freezed
+      description: null == description
           ? _value.description
           : description // ignore: cast_nullable_to_non_nullable
               as String,
-      isActive: isActive == freezed
+      isActive: null == isActive
           ? _value.isActive
           : isActive // ignore: cast_nullable_to_non_nullable
               as bool,
-      category: category == freezed
+      category: null == category
           ? _value.category
           : category // ignore: cast_nullable_to_non_nullable
               as Category,
-      postIds: postIds == freezed
+      postIds: null == postIds
           ? _value.postIds
           : postIds // ignore: cast_nullable_to_non_nullable
               as List<int>,
-      creatorName: creatorName == freezed
+      creatorName: null == creatorName
           ? _value.creatorName
           : creatorName // ignore: cast_nullable_to_non_nullable
               as String,
-      postCount: postCount == freezed
+      postCount: null == postCount
           ? _value.postCount
           : postCount // ignore: cast_nullable_to_non_nullable
               as int,
-    ));
+    ) as $Val);
   }
 }
 
@@ -131,6 +135,7 @@ abstract class _$$_PoolCopyWith<$Res> implements $PoolCopyWith<$Res> {
   factory _$$_PoolCopyWith(_$_Pool value, $Res Function(_$_Pool) then) =
       __$$_PoolCopyWithImpl<$Res>;
   @override
+  @useResult
   $Res call(
       {int id,
       String name,
@@ -146,70 +151,68 @@ abstract class _$$_PoolCopyWith<$Res> implements $PoolCopyWith<$Res> {
 }
 
 /// @nodoc
-class __$$_PoolCopyWithImpl<$Res> extends _$PoolCopyWithImpl<$Res>
+class __$$_PoolCopyWithImpl<$Res> extends _$PoolCopyWithImpl<$Res, _$_Pool>
     implements _$$_PoolCopyWith<$Res> {
   __$$_PoolCopyWithImpl(_$_Pool _value, $Res Function(_$_Pool) _then)
-      : super(_value, (v) => _then(v as _$_Pool));
+      : super(_value, _then);
 
-  @override
-  _$_Pool get _value => super._value as _$_Pool;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? id = freezed,
-    Object? name = freezed,
-    Object? createdAt = freezed,
-    Object? updatedAt = freezed,
-    Object? creatorId = freezed,
-    Object? description = freezed,
-    Object? isActive = freezed,
-    Object? category = freezed,
-    Object? postIds = freezed,
-    Object? creatorName = freezed,
-    Object? postCount = freezed,
+    Object? id = null,
+    Object? name = null,
+    Object? createdAt = null,
+    Object? updatedAt = null,
+    Object? creatorId = null,
+    Object? description = null,
+    Object? isActive = null,
+    Object? category = null,
+    Object? postIds = null,
+    Object? creatorName = null,
+    Object? postCount = null,
   }) {
     return _then(_$_Pool(
-      id: id == freezed
+      id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as int,
-      name: name == freezed
+      name: null == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
-      createdAt: createdAt == freezed
+      createdAt: null == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
-      updatedAt: updatedAt == freezed
+      updatedAt: null == updatedAt
           ? _value.updatedAt
           : updatedAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
-      creatorId: creatorId == freezed
+      creatorId: null == creatorId
           ? _value.creatorId
           : creatorId // ignore: cast_nullable_to_non_nullable
               as int,
-      description: description == freezed
+      description: null == description
           ? _value.description
           : description // ignore: cast_nullable_to_non_nullable
               as String,
-      isActive: isActive == freezed
+      isActive: null == isActive
           ? _value.isActive
           : isActive // ignore: cast_nullable_to_non_nullable
               as bool,
-      category: category == freezed
+      category: null == category
           ? _value.category
           : category // ignore: cast_nullable_to_non_nullable
               as Category,
-      postIds: postIds == freezed
+      postIds: null == postIds
           ? _value._postIds
           : postIds // ignore: cast_nullable_to_non_nullable
               as List<int>,
-      creatorName: creatorName == freezed
+      creatorName: null == creatorName
           ? _value.creatorName
           : creatorName // ignore: cast_nullable_to_non_nullable
               as String,
-      postCount: postCount == freezed
+      postCount: null == postCount
           ? _value.postCount
           : postCount // ignore: cast_nullable_to_non_nullable
               as int,
@@ -274,39 +277,46 @@ class _$_Pool implements _Pool {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_Pool &&
-            const DeepCollectionEquality().equals(other.id, id) &&
-            const DeepCollectionEquality().equals(other.name, name) &&
-            const DeepCollectionEquality().equals(other.createdAt, createdAt) &&
-            const DeepCollectionEquality().equals(other.updatedAt, updatedAt) &&
-            const DeepCollectionEquality().equals(other.creatorId, creatorId) &&
-            const DeepCollectionEquality()
-                .equals(other.description, description) &&
-            const DeepCollectionEquality().equals(other.isActive, isActive) &&
-            const DeepCollectionEquality().equals(other.category, category) &&
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.name, name) || other.name == name) &&
+            (identical(other.createdAt, createdAt) ||
+                other.createdAt == createdAt) &&
+            (identical(other.updatedAt, updatedAt) ||
+                other.updatedAt == updatedAt) &&
+            (identical(other.creatorId, creatorId) ||
+                other.creatorId == creatorId) &&
+            (identical(other.description, description) ||
+                other.description == description) &&
+            (identical(other.isActive, isActive) ||
+                other.isActive == isActive) &&
+            (identical(other.category, category) ||
+                other.category == category) &&
             const DeepCollectionEquality().equals(other._postIds, _postIds) &&
-            const DeepCollectionEquality()
-                .equals(other.creatorName, creatorName) &&
-            const DeepCollectionEquality().equals(other.postCount, postCount));
+            (identical(other.creatorName, creatorName) ||
+                other.creatorName == creatorName) &&
+            (identical(other.postCount, postCount) ||
+                other.postCount == postCount));
   }
 
   @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(
       runtimeType,
-      const DeepCollectionEquality().hash(id),
-      const DeepCollectionEquality().hash(name),
-      const DeepCollectionEquality().hash(createdAt),
-      const DeepCollectionEquality().hash(updatedAt),
-      const DeepCollectionEquality().hash(creatorId),
-      const DeepCollectionEquality().hash(description),
-      const DeepCollectionEquality().hash(isActive),
-      const DeepCollectionEquality().hash(category),
+      id,
+      name,
+      createdAt,
+      updatedAt,
+      creatorId,
+      description,
+      isActive,
+      category,
       const DeepCollectionEquality().hash(_postIds),
-      const DeepCollectionEquality().hash(creatorName),
-      const DeepCollectionEquality().hash(postCount));
+      creatorName,
+      postCount);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$_PoolCopyWith<_$_Pool> get copyWith =>
       __$$_PoolCopyWithImpl<_$_Pool>(this, _$identity);
 

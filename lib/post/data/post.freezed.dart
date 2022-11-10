@@ -55,7 +55,8 @@ mixin _$Post {
 /// @nodoc
 abstract class $PostCopyWith<$Res> {
   factory $PostCopyWith(Post value, $Res Function(Post) then) =
-      _$PostCopyWithImpl<$Res>;
+      _$PostCopyWithImpl<$Res, Post>;
+  @useResult
   $Res call(
       {int id,
       DateTime createdAt,
@@ -91,179 +92,188 @@ abstract class $PostCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$PostCopyWithImpl<$Res> implements $PostCopyWith<$Res> {
+class _$PostCopyWithImpl<$Res, $Val extends Post>
+    implements $PostCopyWith<$Res> {
   _$PostCopyWithImpl(this._value, this._then);
 
-  final Post _value;
   // ignore: unused_field
-  final $Res Function(Post) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? id = freezed,
-    Object? createdAt = freezed,
+    Object? id = null,
+    Object? createdAt = null,
     Object? updatedAt = freezed,
-    Object? fileRaw = freezed,
-    Object? preview = freezed,
-    Object? sample = freezed,
-    Object? score = freezed,
-    Object? tags = freezed,
+    Object? fileRaw = null,
+    Object? preview = null,
+    Object? sample = null,
+    Object? score = null,
+    Object? tags = null,
     Object? lockedTags = freezed,
     Object? changeSeq = freezed,
-    Object? flags = freezed,
-    Object? rating = freezed,
-    Object? favCount = freezed,
-    Object? sources = freezed,
-    Object? pools = freezed,
-    Object? relationships = freezed,
+    Object? flags = null,
+    Object? rating = null,
+    Object? favCount = null,
+    Object? sources = null,
+    Object? pools = null,
+    Object? relationships = null,
     Object? approverId = freezed,
-    Object? uploaderId = freezed,
-    Object? description = freezed,
-    Object? commentCount = freezed,
-    Object? isFavorited = freezed,
-    Object? hasNotes = freezed,
+    Object? uploaderId = null,
+    Object? description = null,
+    Object? commentCount = null,
+    Object? isFavorited = null,
+    Object? hasNotes = null,
     Object? duration = freezed,
-    Object? voteStatus = freezed,
+    Object? voteStatus = null,
   }) {
     return _then(_value.copyWith(
-      id: id == freezed
+      id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as int,
-      createdAt: createdAt == freezed
+      createdAt: null == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
-      updatedAt: updatedAt == freezed
+      updatedAt: freezed == updatedAt
           ? _value.updatedAt
           : updatedAt // ignore: cast_nullable_to_non_nullable
               as DateTime?,
-      fileRaw: fileRaw == freezed
+      fileRaw: null == fileRaw
           ? _value.fileRaw
           : fileRaw // ignore: cast_nullable_to_non_nullable
               as PostSourceFile,
-      preview: preview == freezed
+      preview: null == preview
           ? _value.preview
           : preview // ignore: cast_nullable_to_non_nullable
               as PostPreviewFile,
-      sample: sample == freezed
+      sample: null == sample
           ? _value.sample
           : sample // ignore: cast_nullable_to_non_nullable
               as PostSampleFile,
-      score: score == freezed
+      score: null == score
           ? _value.score
           : score // ignore: cast_nullable_to_non_nullable
               as Score,
-      tags: tags == freezed
+      tags: null == tags
           ? _value.tags
           : tags // ignore: cast_nullable_to_non_nullable
               as Map<String, List<String>>,
-      lockedTags: lockedTags == freezed
+      lockedTags: freezed == lockedTags
           ? _value.lockedTags
           : lockedTags // ignore: cast_nullable_to_non_nullable
               as List<String>?,
-      changeSeq: changeSeq == freezed
+      changeSeq: freezed == changeSeq
           ? _value.changeSeq
           : changeSeq // ignore: cast_nullable_to_non_nullable
               as int?,
-      flags: flags == freezed
+      flags: null == flags
           ? _value.flags
           : flags // ignore: cast_nullable_to_non_nullable
               as Flags,
-      rating: rating == freezed
+      rating: null == rating
           ? _value.rating
           : rating // ignore: cast_nullable_to_non_nullable
               as Rating,
-      favCount: favCount == freezed
+      favCount: null == favCount
           ? _value.favCount
           : favCount // ignore: cast_nullable_to_non_nullable
               as int,
-      sources: sources == freezed
+      sources: null == sources
           ? _value.sources
           : sources // ignore: cast_nullable_to_non_nullable
               as List<String>,
-      pools: pools == freezed
+      pools: null == pools
           ? _value.pools
           : pools // ignore: cast_nullable_to_non_nullable
               as List<int>,
-      relationships: relationships == freezed
+      relationships: null == relationships
           ? _value.relationships
           : relationships // ignore: cast_nullable_to_non_nullable
               as Relationships,
-      approverId: approverId == freezed
+      approverId: freezed == approverId
           ? _value.approverId
           : approverId // ignore: cast_nullable_to_non_nullable
               as int?,
-      uploaderId: uploaderId == freezed
+      uploaderId: null == uploaderId
           ? _value.uploaderId
           : uploaderId // ignore: cast_nullable_to_non_nullable
               as int,
-      description: description == freezed
+      description: null == description
           ? _value.description
           : description // ignore: cast_nullable_to_non_nullable
               as String,
-      commentCount: commentCount == freezed
+      commentCount: null == commentCount
           ? _value.commentCount
           : commentCount // ignore: cast_nullable_to_non_nullable
               as int,
-      isFavorited: isFavorited == freezed
+      isFavorited: null == isFavorited
           ? _value.isFavorited
           : isFavorited // ignore: cast_nullable_to_non_nullable
               as bool,
-      hasNotes: hasNotes == freezed
+      hasNotes: null == hasNotes
           ? _value.hasNotes
           : hasNotes // ignore: cast_nullable_to_non_nullable
               as bool,
-      duration: duration == freezed
+      duration: freezed == duration
           ? _value.duration
           : duration // ignore: cast_nullable_to_non_nullable
               as double?,
-      voteStatus: voteStatus == freezed
+      voteStatus: null == voteStatus
           ? _value.voteStatus
           : voteStatus // ignore: cast_nullable_to_non_nullable
               as VoteStatus,
-    ));
+    ) as $Val);
   }
 
   @override
+  @pragma('vm:prefer-inline')
   $PostSourceFileCopyWith<$Res> get fileRaw {
     return $PostSourceFileCopyWith<$Res>(_value.fileRaw, (value) {
-      return _then(_value.copyWith(fileRaw: value));
+      return _then(_value.copyWith(fileRaw: value) as $Val);
     });
   }
 
   @override
+  @pragma('vm:prefer-inline')
   $PostPreviewFileCopyWith<$Res> get preview {
     return $PostPreviewFileCopyWith<$Res>(_value.preview, (value) {
-      return _then(_value.copyWith(preview: value));
+      return _then(_value.copyWith(preview: value) as $Val);
     });
   }
 
   @override
+  @pragma('vm:prefer-inline')
   $PostSampleFileCopyWith<$Res> get sample {
     return $PostSampleFileCopyWith<$Res>(_value.sample, (value) {
-      return _then(_value.copyWith(sample: value));
+      return _then(_value.copyWith(sample: value) as $Val);
     });
   }
 
   @override
+  @pragma('vm:prefer-inline')
   $ScoreCopyWith<$Res> get score {
     return $ScoreCopyWith<$Res>(_value.score, (value) {
-      return _then(_value.copyWith(score: value));
+      return _then(_value.copyWith(score: value) as $Val);
     });
   }
 
   @override
+  @pragma('vm:prefer-inline')
   $FlagsCopyWith<$Res> get flags {
     return $FlagsCopyWith<$Res>(_value.flags, (value) {
-      return _then(_value.copyWith(flags: value));
+      return _then(_value.copyWith(flags: value) as $Val);
     });
   }
 
   @override
+  @pragma('vm:prefer-inline')
   $RelationshipsCopyWith<$Res> get relationships {
     return $RelationshipsCopyWith<$Res>(_value.relationships, (value) {
-      return _then(_value.copyWith(relationships: value));
+      return _then(_value.copyWith(relationships: value) as $Val);
     });
   }
 }
@@ -273,6 +283,7 @@ abstract class _$$_PostCopyWith<$Res> implements $PostCopyWith<$Res> {
   factory _$$_PostCopyWith(_$_Post value, $Res Function(_$_Post) then) =
       __$$_PostCopyWithImpl<$Res>;
   @override
+  @useResult
   $Res call(
       {int id,
       DateTime createdAt,
@@ -314,135 +325,133 @@ abstract class _$$_PostCopyWith<$Res> implements $PostCopyWith<$Res> {
 }
 
 /// @nodoc
-class __$$_PostCopyWithImpl<$Res> extends _$PostCopyWithImpl<$Res>
+class __$$_PostCopyWithImpl<$Res> extends _$PostCopyWithImpl<$Res, _$_Post>
     implements _$$_PostCopyWith<$Res> {
   __$$_PostCopyWithImpl(_$_Post _value, $Res Function(_$_Post) _then)
-      : super(_value, (v) => _then(v as _$_Post));
+      : super(_value, _then);
 
-  @override
-  _$_Post get _value => super._value as _$_Post;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? id = freezed,
-    Object? createdAt = freezed,
+    Object? id = null,
+    Object? createdAt = null,
     Object? updatedAt = freezed,
-    Object? fileRaw = freezed,
-    Object? preview = freezed,
-    Object? sample = freezed,
-    Object? score = freezed,
-    Object? tags = freezed,
+    Object? fileRaw = null,
+    Object? preview = null,
+    Object? sample = null,
+    Object? score = null,
+    Object? tags = null,
     Object? lockedTags = freezed,
     Object? changeSeq = freezed,
-    Object? flags = freezed,
-    Object? rating = freezed,
-    Object? favCount = freezed,
-    Object? sources = freezed,
-    Object? pools = freezed,
-    Object? relationships = freezed,
+    Object? flags = null,
+    Object? rating = null,
+    Object? favCount = null,
+    Object? sources = null,
+    Object? pools = null,
+    Object? relationships = null,
     Object? approverId = freezed,
-    Object? uploaderId = freezed,
-    Object? description = freezed,
-    Object? commentCount = freezed,
-    Object? isFavorited = freezed,
-    Object? hasNotes = freezed,
+    Object? uploaderId = null,
+    Object? description = null,
+    Object? commentCount = null,
+    Object? isFavorited = null,
+    Object? hasNotes = null,
     Object? duration = freezed,
-    Object? voteStatus = freezed,
+    Object? voteStatus = null,
   }) {
     return _then(_$_Post(
-      id: id == freezed
+      id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as int,
-      createdAt: createdAt == freezed
+      createdAt: null == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
-      updatedAt: updatedAt == freezed
+      updatedAt: freezed == updatedAt
           ? _value.updatedAt
           : updatedAt // ignore: cast_nullable_to_non_nullable
               as DateTime?,
-      fileRaw: fileRaw == freezed
+      fileRaw: null == fileRaw
           ? _value.fileRaw
           : fileRaw // ignore: cast_nullable_to_non_nullable
               as PostSourceFile,
-      preview: preview == freezed
+      preview: null == preview
           ? _value.preview
           : preview // ignore: cast_nullable_to_non_nullable
               as PostPreviewFile,
-      sample: sample == freezed
+      sample: null == sample
           ? _value.sample
           : sample // ignore: cast_nullable_to_non_nullable
               as PostSampleFile,
-      score: score == freezed
+      score: null == score
           ? _value.score
           : score // ignore: cast_nullable_to_non_nullable
               as Score,
-      tags: tags == freezed
+      tags: null == tags
           ? _value._tags
           : tags // ignore: cast_nullable_to_non_nullable
               as Map<String, List<String>>,
-      lockedTags: lockedTags == freezed
+      lockedTags: freezed == lockedTags
           ? _value._lockedTags
           : lockedTags // ignore: cast_nullable_to_non_nullable
               as List<String>?,
-      changeSeq: changeSeq == freezed
+      changeSeq: freezed == changeSeq
           ? _value.changeSeq
           : changeSeq // ignore: cast_nullable_to_non_nullable
               as int?,
-      flags: flags == freezed
+      flags: null == flags
           ? _value.flags
           : flags // ignore: cast_nullable_to_non_nullable
               as Flags,
-      rating: rating == freezed
+      rating: null == rating
           ? _value.rating
           : rating // ignore: cast_nullable_to_non_nullable
               as Rating,
-      favCount: favCount == freezed
+      favCount: null == favCount
           ? _value.favCount
           : favCount // ignore: cast_nullable_to_non_nullable
               as int,
-      sources: sources == freezed
+      sources: null == sources
           ? _value._sources
           : sources // ignore: cast_nullable_to_non_nullable
               as List<String>,
-      pools: pools == freezed
+      pools: null == pools
           ? _value._pools
           : pools // ignore: cast_nullable_to_non_nullable
               as List<int>,
-      relationships: relationships == freezed
+      relationships: null == relationships
           ? _value.relationships
           : relationships // ignore: cast_nullable_to_non_nullable
               as Relationships,
-      approverId: approverId == freezed
+      approverId: freezed == approverId
           ? _value.approverId
           : approverId // ignore: cast_nullable_to_non_nullable
               as int?,
-      uploaderId: uploaderId == freezed
+      uploaderId: null == uploaderId
           ? _value.uploaderId
           : uploaderId // ignore: cast_nullable_to_non_nullable
               as int,
-      description: description == freezed
+      description: null == description
           ? _value.description
           : description // ignore: cast_nullable_to_non_nullable
               as String,
-      commentCount: commentCount == freezed
+      commentCount: null == commentCount
           ? _value.commentCount
           : commentCount // ignore: cast_nullable_to_non_nullable
               as int,
-      isFavorited: isFavorited == freezed
+      isFavorited: null == isFavorited
           ? _value.isFavorited
           : isFavorited // ignore: cast_nullable_to_non_nullable
               as bool,
-      hasNotes: hasNotes == freezed
+      hasNotes: null == hasNotes
           ? _value.hasNotes
           : hasNotes // ignore: cast_nullable_to_non_nullable
               as bool,
-      duration: duration == freezed
+      duration: freezed == duration
           ? _value.duration
           : duration // ignore: cast_nullable_to_non_nullable
               as double?,
-      voteStatus: voteStatus == freezed
+      voteStatus: null == voteStatus
           ? _value.voteStatus
           : voteStatus // ignore: cast_nullable_to_non_nullable
               as VoteStatus,
@@ -569,72 +578,79 @@ class _$_Post extends _Post {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_Post &&
-            const DeepCollectionEquality().equals(other.id, id) &&
-            const DeepCollectionEquality().equals(other.createdAt, createdAt) &&
-            const DeepCollectionEquality().equals(other.updatedAt, updatedAt) &&
-            const DeepCollectionEquality().equals(other.fileRaw, fileRaw) &&
-            const DeepCollectionEquality().equals(other.preview, preview) &&
-            const DeepCollectionEquality().equals(other.sample, sample) &&
-            const DeepCollectionEquality().equals(other.score, score) &&
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.createdAt, createdAt) ||
+                other.createdAt == createdAt) &&
+            (identical(other.updatedAt, updatedAt) ||
+                other.updatedAt == updatedAt) &&
+            (identical(other.fileRaw, fileRaw) || other.fileRaw == fileRaw) &&
+            (identical(other.preview, preview) || other.preview == preview) &&
+            (identical(other.sample, sample) || other.sample == sample) &&
+            (identical(other.score, score) || other.score == score) &&
             const DeepCollectionEquality().equals(other._tags, _tags) &&
             const DeepCollectionEquality()
                 .equals(other._lockedTags, _lockedTags) &&
-            const DeepCollectionEquality().equals(other.changeSeq, changeSeq) &&
-            const DeepCollectionEquality().equals(other.flags, flags) &&
-            const DeepCollectionEquality().equals(other.rating, rating) &&
-            const DeepCollectionEquality().equals(other.favCount, favCount) &&
+            (identical(other.changeSeq, changeSeq) ||
+                other.changeSeq == changeSeq) &&
+            (identical(other.flags, flags) || other.flags == flags) &&
+            (identical(other.rating, rating) || other.rating == rating) &&
+            (identical(other.favCount, favCount) ||
+                other.favCount == favCount) &&
             const DeepCollectionEquality().equals(other._sources, _sources) &&
             const DeepCollectionEquality().equals(other._pools, _pools) &&
-            const DeepCollectionEquality()
-                .equals(other.relationships, relationships) &&
-            const DeepCollectionEquality()
-                .equals(other.approverId, approverId) &&
-            const DeepCollectionEquality()
-                .equals(other.uploaderId, uploaderId) &&
-            const DeepCollectionEquality()
-                .equals(other.description, description) &&
-            const DeepCollectionEquality()
-                .equals(other.commentCount, commentCount) &&
-            const DeepCollectionEquality()
-                .equals(other.isFavorited, isFavorited) &&
-            const DeepCollectionEquality().equals(other.hasNotes, hasNotes) &&
-            const DeepCollectionEquality().equals(other.duration, duration) &&
-            const DeepCollectionEquality()
-                .equals(other.voteStatus, voteStatus));
+            (identical(other.relationships, relationships) ||
+                other.relationships == relationships) &&
+            (identical(other.approverId, approverId) ||
+                other.approverId == approverId) &&
+            (identical(other.uploaderId, uploaderId) ||
+                other.uploaderId == uploaderId) &&
+            (identical(other.description, description) ||
+                other.description == description) &&
+            (identical(other.commentCount, commentCount) ||
+                other.commentCount == commentCount) &&
+            (identical(other.isFavorited, isFavorited) ||
+                other.isFavorited == isFavorited) &&
+            (identical(other.hasNotes, hasNotes) ||
+                other.hasNotes == hasNotes) &&
+            (identical(other.duration, duration) ||
+                other.duration == duration) &&
+            (identical(other.voteStatus, voteStatus) ||
+                other.voteStatus == voteStatus));
   }
 
   @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hashAll([
         runtimeType,
-        const DeepCollectionEquality().hash(id),
-        const DeepCollectionEquality().hash(createdAt),
-        const DeepCollectionEquality().hash(updatedAt),
-        const DeepCollectionEquality().hash(fileRaw),
-        const DeepCollectionEquality().hash(preview),
-        const DeepCollectionEquality().hash(sample),
-        const DeepCollectionEquality().hash(score),
+        id,
+        createdAt,
+        updatedAt,
+        fileRaw,
+        preview,
+        sample,
+        score,
         const DeepCollectionEquality().hash(_tags),
         const DeepCollectionEquality().hash(_lockedTags),
-        const DeepCollectionEquality().hash(changeSeq),
-        const DeepCollectionEquality().hash(flags),
-        const DeepCollectionEquality().hash(rating),
-        const DeepCollectionEquality().hash(favCount),
+        changeSeq,
+        flags,
+        rating,
+        favCount,
         const DeepCollectionEquality().hash(_sources),
         const DeepCollectionEquality().hash(_pools),
-        const DeepCollectionEquality().hash(relationships),
-        const DeepCollectionEquality().hash(approverId),
-        const DeepCollectionEquality().hash(uploaderId),
-        const DeepCollectionEquality().hash(description),
-        const DeepCollectionEquality().hash(commentCount),
-        const DeepCollectionEquality().hash(isFavorited),
-        const DeepCollectionEquality().hash(hasNotes),
-        const DeepCollectionEquality().hash(duration),
-        const DeepCollectionEquality().hash(voteStatus)
+        relationships,
+        approverId,
+        uploaderId,
+        description,
+        commentCount,
+        isFavorited,
+        hasNotes,
+        duration,
+        voteStatus
       ]);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$_PostCopyWith<_$_Post> get copyWith =>
       __$$_PostCopyWithImpl<_$_Post>(this, _$identity);
 
@@ -751,39 +767,42 @@ mixin _$PostPreviewFile {
 abstract class $PostPreviewFileCopyWith<$Res> {
   factory $PostPreviewFileCopyWith(
           PostPreviewFile value, $Res Function(PostPreviewFile) then) =
-      _$PostPreviewFileCopyWithImpl<$Res>;
+      _$PostPreviewFileCopyWithImpl<$Res, PostPreviewFile>;
+  @useResult
   $Res call({int width, int height, String? url});
 }
 
 /// @nodoc
-class _$PostPreviewFileCopyWithImpl<$Res>
+class _$PostPreviewFileCopyWithImpl<$Res, $Val extends PostPreviewFile>
     implements $PostPreviewFileCopyWith<$Res> {
   _$PostPreviewFileCopyWithImpl(this._value, this._then);
 
-  final PostPreviewFile _value;
   // ignore: unused_field
-  final $Res Function(PostPreviewFile) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? width = freezed,
-    Object? height = freezed,
+    Object? width = null,
+    Object? height = null,
     Object? url = freezed,
   }) {
     return _then(_value.copyWith(
-      width: width == freezed
+      width: null == width
           ? _value.width
           : width // ignore: cast_nullable_to_non_nullable
               as int,
-      height: height == freezed
+      height: null == height
           ? _value.height
           : height // ignore: cast_nullable_to_non_nullable
               as int,
-      url: url == freezed
+      url: freezed == url
           ? _value.url
           : url // ignore: cast_nullable_to_non_nullable
               as String?,
-    ));
+    ) as $Val);
   }
 }
 
@@ -794,36 +813,35 @@ abstract class _$$_PostPreviewFileCopyWith<$Res>
           _$_PostPreviewFile value, $Res Function(_$_PostPreviewFile) then) =
       __$$_PostPreviewFileCopyWithImpl<$Res>;
   @override
+  @useResult
   $Res call({int width, int height, String? url});
 }
 
 /// @nodoc
 class __$$_PostPreviewFileCopyWithImpl<$Res>
-    extends _$PostPreviewFileCopyWithImpl<$Res>
+    extends _$PostPreviewFileCopyWithImpl<$Res, _$_PostPreviewFile>
     implements _$$_PostPreviewFileCopyWith<$Res> {
   __$$_PostPreviewFileCopyWithImpl(
       _$_PostPreviewFile _value, $Res Function(_$_PostPreviewFile) _then)
-      : super(_value, (v) => _then(v as _$_PostPreviewFile));
+      : super(_value, _then);
 
-  @override
-  _$_PostPreviewFile get _value => super._value as _$_PostPreviewFile;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? width = freezed,
-    Object? height = freezed,
+    Object? width = null,
+    Object? height = null,
     Object? url = freezed,
   }) {
     return _then(_$_PostPreviewFile(
-      width: width == freezed
+      width: null == width
           ? _value.width
           : width // ignore: cast_nullable_to_non_nullable
               as int,
-      height: height == freezed
+      height: null == height
           ? _value.height
           : height // ignore: cast_nullable_to_non_nullable
               as int,
-      url: url == freezed
+      url: freezed == url
           ? _value.url
           : url // ignore: cast_nullable_to_non_nullable
               as String?,
@@ -857,21 +875,18 @@ class _$_PostPreviewFile implements _PostPreviewFile {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_PostPreviewFile &&
-            const DeepCollectionEquality().equals(other.width, width) &&
-            const DeepCollectionEquality().equals(other.height, height) &&
-            const DeepCollectionEquality().equals(other.url, url));
+            (identical(other.width, width) || other.width == width) &&
+            (identical(other.height, height) || other.height == height) &&
+            (identical(other.url, url) || other.url == url));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      const DeepCollectionEquality().hash(width),
-      const DeepCollectionEquality().hash(height),
-      const DeepCollectionEquality().hash(url));
+  int get hashCode => Object.hash(runtimeType, width, height, url);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$_PostPreviewFileCopyWith<_$_PostPreviewFile> get copyWith =>
       __$$_PostPreviewFileCopyWithImpl<_$_PostPreviewFile>(this, _$identity);
 
@@ -925,44 +940,47 @@ mixin _$PostSampleFile {
 abstract class $PostSampleFileCopyWith<$Res> {
   factory $PostSampleFileCopyWith(
           PostSampleFile value, $Res Function(PostSampleFile) then) =
-      _$PostSampleFileCopyWithImpl<$Res>;
+      _$PostSampleFileCopyWithImpl<$Res, PostSampleFile>;
+  @useResult
   $Res call({bool has, int height, int width, String? url});
 }
 
 /// @nodoc
-class _$PostSampleFileCopyWithImpl<$Res>
+class _$PostSampleFileCopyWithImpl<$Res, $Val extends PostSampleFile>
     implements $PostSampleFileCopyWith<$Res> {
   _$PostSampleFileCopyWithImpl(this._value, this._then);
 
-  final PostSampleFile _value;
   // ignore: unused_field
-  final $Res Function(PostSampleFile) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? has = freezed,
-    Object? height = freezed,
-    Object? width = freezed,
+    Object? has = null,
+    Object? height = null,
+    Object? width = null,
     Object? url = freezed,
   }) {
     return _then(_value.copyWith(
-      has: has == freezed
+      has: null == has
           ? _value.has
           : has // ignore: cast_nullable_to_non_nullable
               as bool,
-      height: height == freezed
+      height: null == height
           ? _value.height
           : height // ignore: cast_nullable_to_non_nullable
               as int,
-      width: width == freezed
+      width: null == width
           ? _value.width
           : width // ignore: cast_nullable_to_non_nullable
               as int,
-      url: url == freezed
+      url: freezed == url
           ? _value.url
           : url // ignore: cast_nullable_to_non_nullable
               as String?,
-    ));
+    ) as $Val);
   }
 }
 
@@ -973,41 +991,40 @@ abstract class _$$_PostSampleFileCopyWith<$Res>
           _$_PostSampleFile value, $Res Function(_$_PostSampleFile) then) =
       __$$_PostSampleFileCopyWithImpl<$Res>;
   @override
+  @useResult
   $Res call({bool has, int height, int width, String? url});
 }
 
 /// @nodoc
 class __$$_PostSampleFileCopyWithImpl<$Res>
-    extends _$PostSampleFileCopyWithImpl<$Res>
+    extends _$PostSampleFileCopyWithImpl<$Res, _$_PostSampleFile>
     implements _$$_PostSampleFileCopyWith<$Res> {
   __$$_PostSampleFileCopyWithImpl(
       _$_PostSampleFile _value, $Res Function(_$_PostSampleFile) _then)
-      : super(_value, (v) => _then(v as _$_PostSampleFile));
+      : super(_value, _then);
 
-  @override
-  _$_PostSampleFile get _value => super._value as _$_PostSampleFile;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? has = freezed,
-    Object? height = freezed,
-    Object? width = freezed,
+    Object? has = null,
+    Object? height = null,
+    Object? width = null,
     Object? url = freezed,
   }) {
     return _then(_$_PostSampleFile(
-      has: has == freezed
+      has: null == has
           ? _value.has
           : has // ignore: cast_nullable_to_non_nullable
               as bool,
-      height: height == freezed
+      height: null == height
           ? _value.height
           : height // ignore: cast_nullable_to_non_nullable
               as int,
-      width: width == freezed
+      width: null == width
           ? _value.width
           : width // ignore: cast_nullable_to_non_nullable
               as int,
-      url: url == freezed
+      url: freezed == url
           ? _value.url
           : url // ignore: cast_nullable_to_non_nullable
               as String?,
@@ -1046,23 +1063,19 @@ class _$_PostSampleFile implements _PostSampleFile {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_PostSampleFile &&
-            const DeepCollectionEquality().equals(other.has, has) &&
-            const DeepCollectionEquality().equals(other.height, height) &&
-            const DeepCollectionEquality().equals(other.width, width) &&
-            const DeepCollectionEquality().equals(other.url, url));
+            (identical(other.has, has) || other.has == has) &&
+            (identical(other.height, height) || other.height == height) &&
+            (identical(other.width, width) || other.width == width) &&
+            (identical(other.url, url) || other.url == url));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      const DeepCollectionEquality().hash(has),
-      const DeepCollectionEquality().hash(height),
-      const DeepCollectionEquality().hash(width),
-      const DeepCollectionEquality().hash(url));
+  int get hashCode => Object.hash(runtimeType, has, height, width, url);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$_PostSampleFileCopyWith<_$_PostSampleFile> get copyWith =>
       __$$_PostSampleFileCopyWithImpl<_$_PostSampleFile>(this, _$identity);
 
@@ -1121,55 +1134,58 @@ mixin _$PostSourceFile {
 abstract class $PostSourceFileCopyWith<$Res> {
   factory $PostSourceFileCopyWith(
           PostSourceFile value, $Res Function(PostSourceFile) then) =
-      _$PostSourceFileCopyWithImpl<$Res>;
+      _$PostSourceFileCopyWithImpl<$Res, PostSourceFile>;
+  @useResult
   $Res call(
       {int width, int height, String ext, int size, String md5, String? url});
 }
 
 /// @nodoc
-class _$PostSourceFileCopyWithImpl<$Res>
+class _$PostSourceFileCopyWithImpl<$Res, $Val extends PostSourceFile>
     implements $PostSourceFileCopyWith<$Res> {
   _$PostSourceFileCopyWithImpl(this._value, this._then);
 
-  final PostSourceFile _value;
   // ignore: unused_field
-  final $Res Function(PostSourceFile) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? width = freezed,
-    Object? height = freezed,
-    Object? ext = freezed,
-    Object? size = freezed,
-    Object? md5 = freezed,
+    Object? width = null,
+    Object? height = null,
+    Object? ext = null,
+    Object? size = null,
+    Object? md5 = null,
     Object? url = freezed,
   }) {
     return _then(_value.copyWith(
-      width: width == freezed
+      width: null == width
           ? _value.width
           : width // ignore: cast_nullable_to_non_nullable
               as int,
-      height: height == freezed
+      height: null == height
           ? _value.height
           : height // ignore: cast_nullable_to_non_nullable
               as int,
-      ext: ext == freezed
+      ext: null == ext
           ? _value.ext
           : ext // ignore: cast_nullable_to_non_nullable
               as String,
-      size: size == freezed
+      size: null == size
           ? _value.size
           : size // ignore: cast_nullable_to_non_nullable
               as int,
-      md5: md5 == freezed
+      md5: null == md5
           ? _value.md5
           : md5 // ignore: cast_nullable_to_non_nullable
               as String,
-      url: url == freezed
+      url: freezed == url
           ? _value.url
           : url // ignore: cast_nullable_to_non_nullable
               as String?,
-    ));
+    ) as $Val);
   }
 }
 
@@ -1180,52 +1196,51 @@ abstract class _$$_PostSourceFileCopyWith<$Res>
           _$_PostSourceFile value, $Res Function(_$_PostSourceFile) then) =
       __$$_PostSourceFileCopyWithImpl<$Res>;
   @override
+  @useResult
   $Res call(
       {int width, int height, String ext, int size, String md5, String? url});
 }
 
 /// @nodoc
 class __$$_PostSourceFileCopyWithImpl<$Res>
-    extends _$PostSourceFileCopyWithImpl<$Res>
+    extends _$PostSourceFileCopyWithImpl<$Res, _$_PostSourceFile>
     implements _$$_PostSourceFileCopyWith<$Res> {
   __$$_PostSourceFileCopyWithImpl(
       _$_PostSourceFile _value, $Res Function(_$_PostSourceFile) _then)
-      : super(_value, (v) => _then(v as _$_PostSourceFile));
+      : super(_value, _then);
 
-  @override
-  _$_PostSourceFile get _value => super._value as _$_PostSourceFile;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? width = freezed,
-    Object? height = freezed,
-    Object? ext = freezed,
-    Object? size = freezed,
-    Object? md5 = freezed,
+    Object? width = null,
+    Object? height = null,
+    Object? ext = null,
+    Object? size = null,
+    Object? md5 = null,
     Object? url = freezed,
   }) {
     return _then(_$_PostSourceFile(
-      width: width == freezed
+      width: null == width
           ? _value.width
           : width // ignore: cast_nullable_to_non_nullable
               as int,
-      height: height == freezed
+      height: null == height
           ? _value.height
           : height // ignore: cast_nullable_to_non_nullable
               as int,
-      ext: ext == freezed
+      ext: null == ext
           ? _value.ext
           : ext // ignore: cast_nullable_to_non_nullable
               as String,
-      size: size == freezed
+      size: null == size
           ? _value.size
           : size // ignore: cast_nullable_to_non_nullable
               as int,
-      md5: md5 == freezed
+      md5: null == md5
           ? _value.md5
           : md5 // ignore: cast_nullable_to_non_nullable
               as String,
-      url: url == freezed
+      url: freezed == url
           ? _value.url
           : url // ignore: cast_nullable_to_non_nullable
               as String?,
@@ -1270,27 +1285,22 @@ class _$_PostSourceFile implements _PostSourceFile {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_PostSourceFile &&
-            const DeepCollectionEquality().equals(other.width, width) &&
-            const DeepCollectionEquality().equals(other.height, height) &&
-            const DeepCollectionEquality().equals(other.ext, ext) &&
-            const DeepCollectionEquality().equals(other.size, size) &&
-            const DeepCollectionEquality().equals(other.md5, md5) &&
-            const DeepCollectionEquality().equals(other.url, url));
+            (identical(other.width, width) || other.width == width) &&
+            (identical(other.height, height) || other.height == height) &&
+            (identical(other.ext, ext) || other.ext == ext) &&
+            (identical(other.size, size) || other.size == size) &&
+            (identical(other.md5, md5) || other.md5 == md5) &&
+            (identical(other.url, url) || other.url == url));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      const DeepCollectionEquality().hash(width),
-      const DeepCollectionEquality().hash(height),
-      const DeepCollectionEquality().hash(ext),
-      const DeepCollectionEquality().hash(size),
-      const DeepCollectionEquality().hash(md5),
-      const DeepCollectionEquality().hash(url));
+  int get hashCode =>
+      Object.hash(runtimeType, width, height, ext, size, md5, url);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$_PostSourceFileCopyWith<_$_PostSourceFile> get copyWith =>
       __$$_PostSourceFileCopyWithImpl<_$_PostSourceFile>(this, _$identity);
 
@@ -1353,7 +1363,8 @@ mixin _$Flags {
 /// @nodoc
 abstract class $FlagsCopyWith<$Res> {
   factory $FlagsCopyWith(Flags value, $Res Function(Flags) then) =
-      _$FlagsCopyWithImpl<$Res>;
+      _$FlagsCopyWithImpl<$Res, Flags>;
+  @useResult
   $Res call(
       {bool pending,
       bool flagged,
@@ -1364,48 +1375,51 @@ abstract class $FlagsCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$FlagsCopyWithImpl<$Res> implements $FlagsCopyWith<$Res> {
+class _$FlagsCopyWithImpl<$Res, $Val extends Flags>
+    implements $FlagsCopyWith<$Res> {
   _$FlagsCopyWithImpl(this._value, this._then);
 
-  final Flags _value;
   // ignore: unused_field
-  final $Res Function(Flags) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? pending = freezed,
-    Object? flagged = freezed,
-    Object? noteLocked = freezed,
-    Object? statusLocked = freezed,
-    Object? ratingLocked = freezed,
-    Object? deleted = freezed,
+    Object? pending = null,
+    Object? flagged = null,
+    Object? noteLocked = null,
+    Object? statusLocked = null,
+    Object? ratingLocked = null,
+    Object? deleted = null,
   }) {
     return _then(_value.copyWith(
-      pending: pending == freezed
+      pending: null == pending
           ? _value.pending
           : pending // ignore: cast_nullable_to_non_nullable
               as bool,
-      flagged: flagged == freezed
+      flagged: null == flagged
           ? _value.flagged
           : flagged // ignore: cast_nullable_to_non_nullable
               as bool,
-      noteLocked: noteLocked == freezed
+      noteLocked: null == noteLocked
           ? _value.noteLocked
           : noteLocked // ignore: cast_nullable_to_non_nullable
               as bool,
-      statusLocked: statusLocked == freezed
+      statusLocked: null == statusLocked
           ? _value.statusLocked
           : statusLocked // ignore: cast_nullable_to_non_nullable
               as bool,
-      ratingLocked: ratingLocked == freezed
+      ratingLocked: null == ratingLocked
           ? _value.ratingLocked
           : ratingLocked // ignore: cast_nullable_to_non_nullable
               as bool,
-      deleted: deleted == freezed
+      deleted: null == deleted
           ? _value.deleted
           : deleted // ignore: cast_nullable_to_non_nullable
               as bool,
-    ));
+    ) as $Val);
   }
 }
 
@@ -1414,6 +1428,7 @@ abstract class _$$_FlagsCopyWith<$Res> implements $FlagsCopyWith<$Res> {
   factory _$$_FlagsCopyWith(_$_Flags value, $Res Function(_$_Flags) then) =
       __$$_FlagsCopyWithImpl<$Res>;
   @override
+  @useResult
   $Res call(
       {bool pending,
       bool flagged,
@@ -1424,45 +1439,43 @@ abstract class _$$_FlagsCopyWith<$Res> implements $FlagsCopyWith<$Res> {
 }
 
 /// @nodoc
-class __$$_FlagsCopyWithImpl<$Res> extends _$FlagsCopyWithImpl<$Res>
+class __$$_FlagsCopyWithImpl<$Res> extends _$FlagsCopyWithImpl<$Res, _$_Flags>
     implements _$$_FlagsCopyWith<$Res> {
   __$$_FlagsCopyWithImpl(_$_Flags _value, $Res Function(_$_Flags) _then)
-      : super(_value, (v) => _then(v as _$_Flags));
+      : super(_value, _then);
 
-  @override
-  _$_Flags get _value => super._value as _$_Flags;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? pending = freezed,
-    Object? flagged = freezed,
-    Object? noteLocked = freezed,
-    Object? statusLocked = freezed,
-    Object? ratingLocked = freezed,
-    Object? deleted = freezed,
+    Object? pending = null,
+    Object? flagged = null,
+    Object? noteLocked = null,
+    Object? statusLocked = null,
+    Object? ratingLocked = null,
+    Object? deleted = null,
   }) {
     return _then(_$_Flags(
-      pending: pending == freezed
+      pending: null == pending
           ? _value.pending
           : pending // ignore: cast_nullable_to_non_nullable
               as bool,
-      flagged: flagged == freezed
+      flagged: null == flagged
           ? _value.flagged
           : flagged // ignore: cast_nullable_to_non_nullable
               as bool,
-      noteLocked: noteLocked == freezed
+      noteLocked: null == noteLocked
           ? _value.noteLocked
           : noteLocked // ignore: cast_nullable_to_non_nullable
               as bool,
-      statusLocked: statusLocked == freezed
+      statusLocked: null == statusLocked
           ? _value.statusLocked
           : statusLocked // ignore: cast_nullable_to_non_nullable
               as bool,
-      ratingLocked: ratingLocked == freezed
+      ratingLocked: null == ratingLocked
           ? _value.ratingLocked
           : ratingLocked // ignore: cast_nullable_to_non_nullable
               as bool,
-      deleted: deleted == freezed
+      deleted: null == deleted
           ? _value.deleted
           : deleted // ignore: cast_nullable_to_non_nullable
               as bool,
@@ -1507,30 +1520,25 @@ class _$_Flags implements _Flags {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_Flags &&
-            const DeepCollectionEquality().equals(other.pending, pending) &&
-            const DeepCollectionEquality().equals(other.flagged, flagged) &&
-            const DeepCollectionEquality()
-                .equals(other.noteLocked, noteLocked) &&
-            const DeepCollectionEquality()
-                .equals(other.statusLocked, statusLocked) &&
-            const DeepCollectionEquality()
-                .equals(other.ratingLocked, ratingLocked) &&
-            const DeepCollectionEquality().equals(other.deleted, deleted));
+            (identical(other.pending, pending) || other.pending == pending) &&
+            (identical(other.flagged, flagged) || other.flagged == flagged) &&
+            (identical(other.noteLocked, noteLocked) ||
+                other.noteLocked == noteLocked) &&
+            (identical(other.statusLocked, statusLocked) ||
+                other.statusLocked == statusLocked) &&
+            (identical(other.ratingLocked, ratingLocked) ||
+                other.ratingLocked == ratingLocked) &&
+            (identical(other.deleted, deleted) || other.deleted == deleted));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      const DeepCollectionEquality().hash(pending),
-      const DeepCollectionEquality().hash(flagged),
-      const DeepCollectionEquality().hash(noteLocked),
-      const DeepCollectionEquality().hash(statusLocked),
-      const DeepCollectionEquality().hash(ratingLocked),
-      const DeepCollectionEquality().hash(deleted));
+  int get hashCode => Object.hash(runtimeType, pending, flagged, noteLocked,
+      statusLocked, ratingLocked, deleted);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$_FlagsCopyWith<_$_Flags> get copyWith =>
       __$$_FlagsCopyWithImpl<_$_Flags>(this, _$identity);
 
@@ -1592,7 +1600,8 @@ mixin _$Relationships {
 abstract class $RelationshipsCopyWith<$Res> {
   factory $RelationshipsCopyWith(
           Relationships value, $Res Function(Relationships) then) =
-      _$RelationshipsCopyWithImpl<$Res>;
+      _$RelationshipsCopyWithImpl<$Res, Relationships>;
+  @useResult
   $Res call(
       {int? parentId,
       bool hasChildren,
@@ -1601,39 +1610,41 @@ abstract class $RelationshipsCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$RelationshipsCopyWithImpl<$Res>
+class _$RelationshipsCopyWithImpl<$Res, $Val extends Relationships>
     implements $RelationshipsCopyWith<$Res> {
   _$RelationshipsCopyWithImpl(this._value, this._then);
 
-  final Relationships _value;
   // ignore: unused_field
-  final $Res Function(Relationships) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? parentId = freezed,
-    Object? hasChildren = freezed,
-    Object? hasActiveChildren = freezed,
-    Object? children = freezed,
+    Object? hasChildren = null,
+    Object? hasActiveChildren = null,
+    Object? children = null,
   }) {
     return _then(_value.copyWith(
-      parentId: parentId == freezed
+      parentId: freezed == parentId
           ? _value.parentId
           : parentId // ignore: cast_nullable_to_non_nullable
               as int?,
-      hasChildren: hasChildren == freezed
+      hasChildren: null == hasChildren
           ? _value.hasChildren
           : hasChildren // ignore: cast_nullable_to_non_nullable
               as bool,
-      hasActiveChildren: hasActiveChildren == freezed
+      hasActiveChildren: null == hasActiveChildren
           ? _value.hasActiveChildren
           : hasActiveChildren // ignore: cast_nullable_to_non_nullable
               as bool,
-      children: children == freezed
+      children: null == children
           ? _value.children
           : children // ignore: cast_nullable_to_non_nullable
               as List<int>,
-    ));
+    ) as $Val);
   }
 }
 
@@ -1644,6 +1655,7 @@ abstract class _$$_RelationshipsCopyWith<$Res>
           _$_Relationships value, $Res Function(_$_Relationships) then) =
       __$$_RelationshipsCopyWithImpl<$Res>;
   @override
+  @useResult
   $Res call(
       {int? parentId,
       bool hasChildren,
@@ -1653,36 +1665,34 @@ abstract class _$$_RelationshipsCopyWith<$Res>
 
 /// @nodoc
 class __$$_RelationshipsCopyWithImpl<$Res>
-    extends _$RelationshipsCopyWithImpl<$Res>
+    extends _$RelationshipsCopyWithImpl<$Res, _$_Relationships>
     implements _$$_RelationshipsCopyWith<$Res> {
   __$$_RelationshipsCopyWithImpl(
       _$_Relationships _value, $Res Function(_$_Relationships) _then)
-      : super(_value, (v) => _then(v as _$_Relationships));
+      : super(_value, _then);
 
-  @override
-  _$_Relationships get _value => super._value as _$_Relationships;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? parentId = freezed,
-    Object? hasChildren = freezed,
-    Object? hasActiveChildren = freezed,
-    Object? children = freezed,
+    Object? hasChildren = null,
+    Object? hasActiveChildren = null,
+    Object? children = null,
   }) {
     return _then(_$_Relationships(
-      parentId: parentId == freezed
+      parentId: freezed == parentId
           ? _value.parentId
           : parentId // ignore: cast_nullable_to_non_nullable
               as int?,
-      hasChildren: hasChildren == freezed
+      hasChildren: null == hasChildren
           ? _value.hasChildren
           : hasChildren // ignore: cast_nullable_to_non_nullable
               as bool,
-      hasActiveChildren: hasActiveChildren == freezed
+      hasActiveChildren: null == hasActiveChildren
           ? _value.hasActiveChildren
           : hasActiveChildren // ignore: cast_nullable_to_non_nullable
               as bool,
-      children: children == freezed
+      children: null == children
           ? _value._children
           : children // ignore: cast_nullable_to_non_nullable
               as List<int>,
@@ -1726,25 +1736,23 @@ class _$_Relationships implements _Relationships {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_Relationships &&
-            const DeepCollectionEquality().equals(other.parentId, parentId) &&
-            const DeepCollectionEquality()
-                .equals(other.hasChildren, hasChildren) &&
-            const DeepCollectionEquality()
-                .equals(other.hasActiveChildren, hasActiveChildren) &&
+            (identical(other.parentId, parentId) ||
+                other.parentId == parentId) &&
+            (identical(other.hasChildren, hasChildren) ||
+                other.hasChildren == hasChildren) &&
+            (identical(other.hasActiveChildren, hasActiveChildren) ||
+                other.hasActiveChildren == hasActiveChildren) &&
             const DeepCollectionEquality().equals(other._children, _children));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      const DeepCollectionEquality().hash(parentId),
-      const DeepCollectionEquality().hash(hasChildren),
-      const DeepCollectionEquality().hash(hasActiveChildren),
-      const DeepCollectionEquality().hash(_children));
+  int get hashCode => Object.hash(runtimeType, parentId, hasChildren,
+      hasActiveChildren, const DeepCollectionEquality().hash(_children));
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$_RelationshipsCopyWith<_$_Relationships> get copyWith =>
       __$$_RelationshipsCopyWithImpl<_$_Relationships>(this, _$identity);
 
@@ -1798,38 +1806,42 @@ mixin _$Score {
 /// @nodoc
 abstract class $ScoreCopyWith<$Res> {
   factory $ScoreCopyWith(Score value, $Res Function(Score) then) =
-      _$ScoreCopyWithImpl<$Res>;
+      _$ScoreCopyWithImpl<$Res, Score>;
+  @useResult
   $Res call({int up, int down, int total});
 }
 
 /// @nodoc
-class _$ScoreCopyWithImpl<$Res> implements $ScoreCopyWith<$Res> {
+class _$ScoreCopyWithImpl<$Res, $Val extends Score>
+    implements $ScoreCopyWith<$Res> {
   _$ScoreCopyWithImpl(this._value, this._then);
 
-  final Score _value;
   // ignore: unused_field
-  final $Res Function(Score) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? up = freezed,
-    Object? down = freezed,
-    Object? total = freezed,
+    Object? up = null,
+    Object? down = null,
+    Object? total = null,
   }) {
     return _then(_value.copyWith(
-      up: up == freezed
+      up: null == up
           ? _value.up
           : up // ignore: cast_nullable_to_non_nullable
               as int,
-      down: down == freezed
+      down: null == down
           ? _value.down
           : down // ignore: cast_nullable_to_non_nullable
               as int,
-      total: total == freezed
+      total: null == total
           ? _value.total
           : total // ignore: cast_nullable_to_non_nullable
               as int,
-    ));
+    ) as $Val);
   }
 }
 
@@ -1838,34 +1850,33 @@ abstract class _$$_ScoreCopyWith<$Res> implements $ScoreCopyWith<$Res> {
   factory _$$_ScoreCopyWith(_$_Score value, $Res Function(_$_Score) then) =
       __$$_ScoreCopyWithImpl<$Res>;
   @override
+  @useResult
   $Res call({int up, int down, int total});
 }
 
 /// @nodoc
-class __$$_ScoreCopyWithImpl<$Res> extends _$ScoreCopyWithImpl<$Res>
+class __$$_ScoreCopyWithImpl<$Res> extends _$ScoreCopyWithImpl<$Res, _$_Score>
     implements _$$_ScoreCopyWith<$Res> {
   __$$_ScoreCopyWithImpl(_$_Score _value, $Res Function(_$_Score) _then)
-      : super(_value, (v) => _then(v as _$_Score));
+      : super(_value, _then);
 
-  @override
-  _$_Score get _value => super._value as _$_Score;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? up = freezed,
-    Object? down = freezed,
-    Object? total = freezed,
+    Object? up = null,
+    Object? down = null,
+    Object? total = null,
   }) {
     return _then(_$_Score(
-      up: up == freezed
+      up: null == up
           ? _value.up
           : up // ignore: cast_nullable_to_non_nullable
               as int,
-      down: down == freezed
+      down: null == down
           ? _value.down
           : down // ignore: cast_nullable_to_non_nullable
               as int,
-      total: total == freezed
+      total: null == total
           ? _value.total
           : total // ignore: cast_nullable_to_non_nullable
               as int,
@@ -1898,21 +1909,18 @@ class _$_Score implements _Score {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_Score &&
-            const DeepCollectionEquality().equals(other.up, up) &&
-            const DeepCollectionEquality().equals(other.down, down) &&
-            const DeepCollectionEquality().equals(other.total, total));
+            (identical(other.up, up) || other.up == up) &&
+            (identical(other.down, down) || other.down == down) &&
+            (identical(other.total, total) || other.total == total));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      const DeepCollectionEquality().hash(up),
-      const DeepCollectionEquality().hash(down),
-      const DeepCollectionEquality().hash(total));
+  int get hashCode => Object.hash(runtimeType, up, down, total);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$_ScoreCopyWith<_$_Score> get copyWith =>
       __$$_ScoreCopyWithImpl<_$_Score>(this, _$identity);
 

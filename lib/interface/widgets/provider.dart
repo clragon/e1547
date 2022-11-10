@@ -265,7 +265,7 @@ class SubProvider3<T, T2, T3, R> extends SubProvider2<T, T2, R> {
     SubValueSelector? selector,
     super.dispose,
   }) : super(
-    create: (context, value, value2) => create(
+          create: (context, value, value2) => create(
             context,
             value,
             value2,
@@ -434,7 +434,7 @@ class SubChangeNotifierProvider2<T, T2, R extends ChangeNotifier>
     SubProviderUpdate2<T, T2, R>? update,
     SubValueSelector? selector,
   }) : super(
-    create: (context, value) => create(
+          create: (context, value) => create(
             context,
             value,
             Provider.of<T2>(context),
@@ -458,7 +458,7 @@ class SubChangeNotifierProvider3<T, T2, T3, R extends ChangeNotifier>
     SubProviderUpdate3<T, T2, T3, R>? update,
     SubValueSelector? selector,
   }) : super(
-    create: (context, value, value2) => create(
+          create: (context, value, value2) => create(
             context,
             value,
             value2,

@@ -34,33 +34,37 @@ mixin _$Credentials {
 abstract class $CredentialsCopyWith<$Res> {
   factory $CredentialsCopyWith(
           Credentials value, $Res Function(Credentials) then) =
-      _$CredentialsCopyWithImpl<$Res>;
+      _$CredentialsCopyWithImpl<$Res, Credentials>;
+  @useResult
   $Res call({String username, @JsonKey(name: 'apikey') String password});
 }
 
 /// @nodoc
-class _$CredentialsCopyWithImpl<$Res> implements $CredentialsCopyWith<$Res> {
+class _$CredentialsCopyWithImpl<$Res, $Val extends Credentials>
+    implements $CredentialsCopyWith<$Res> {
   _$CredentialsCopyWithImpl(this._value, this._then);
 
-  final Credentials _value;
   // ignore: unused_field
-  final $Res Function(Credentials) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? username = freezed,
-    Object? password = freezed,
+    Object? username = null,
+    Object? password = null,
   }) {
     return _then(_value.copyWith(
-      username: username == freezed
+      username: null == username
           ? _value.username
           : username // ignore: cast_nullable_to_non_nullable
               as String,
-      password: password == freezed
+      password: null == password
           ? _value.password
           : password // ignore: cast_nullable_to_non_nullable
               as String,
-    ));
+    ) as $Val);
   }
 }
 
@@ -71,30 +75,30 @@ abstract class _$$_CredentialsCopyWith<$Res>
           _$_Credentials value, $Res Function(_$_Credentials) then) =
       __$$_CredentialsCopyWithImpl<$Res>;
   @override
+  @useResult
   $Res call({String username, @JsonKey(name: 'apikey') String password});
 }
 
 /// @nodoc
-class __$$_CredentialsCopyWithImpl<$Res> extends _$CredentialsCopyWithImpl<$Res>
+class __$$_CredentialsCopyWithImpl<$Res>
+    extends _$CredentialsCopyWithImpl<$Res, _$_Credentials>
     implements _$$_CredentialsCopyWith<$Res> {
   __$$_CredentialsCopyWithImpl(
       _$_Credentials _value, $Res Function(_$_Credentials) _then)
-      : super(_value, (v) => _then(v as _$_Credentials));
+      : super(_value, _then);
 
-  @override
-  _$_Credentials get _value => super._value as _$_Credentials;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? username = freezed,
-    Object? password = freezed,
+    Object? username = null,
+    Object? password = null,
   }) {
     return _then(_$_Credentials(
-      username: username == freezed
+      username: null == username
           ? _value.username
           : username // ignore: cast_nullable_to_non_nullable
               as String,
-      password: password == freezed
+      password: null == password
           ? _value.password
           : password // ignore: cast_nullable_to_non_nullable
               as String,
@@ -128,19 +132,19 @@ class _$_Credentials extends _Credentials {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_Credentials &&
-            const DeepCollectionEquality().equals(other.username, username) &&
-            const DeepCollectionEquality().equals(other.password, password));
+            (identical(other.username, username) ||
+                other.username == username) &&
+            (identical(other.password, password) ||
+                other.password == password));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      const DeepCollectionEquality().hash(username),
-      const DeepCollectionEquality().hash(password));
+  int get hashCode => Object.hash(runtimeType, username, password);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$_CredentialsCopyWith<_$_Credentials> get copyWith =>
       __$$_CredentialsCopyWithImpl<_$_Credentials>(this, _$identity);
 

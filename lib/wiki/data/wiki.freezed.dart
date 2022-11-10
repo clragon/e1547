@@ -41,7 +41,8 @@ mixin _$Wiki {
 /// @nodoc
 abstract class $WikiCopyWith<$Res> {
   factory $WikiCopyWith(Wiki value, $Res Function(Wiki) then) =
-      _$WikiCopyWithImpl<$Res>;
+      _$WikiCopyWithImpl<$Res, Wiki>;
+  @useResult
   $Res call(
       {int id,
       DateTime createdAt,
@@ -58,78 +59,81 @@ abstract class $WikiCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$WikiCopyWithImpl<$Res> implements $WikiCopyWith<$Res> {
+class _$WikiCopyWithImpl<$Res, $Val extends Wiki>
+    implements $WikiCopyWith<$Res> {
   _$WikiCopyWithImpl(this._value, this._then);
 
-  final Wiki _value;
   // ignore: unused_field
-  final $Res Function(Wiki) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? id = freezed,
-    Object? createdAt = freezed,
+    Object? id = null,
+    Object? createdAt = null,
     Object? updatedAt = freezed,
-    Object? title = freezed,
-    Object? body = freezed,
-    Object? creatorId = freezed,
-    Object? isLocked = freezed,
+    Object? title = null,
+    Object? body = null,
+    Object? creatorId = null,
+    Object? isLocked = null,
     Object? updaterId = freezed,
-    Object? isDeleted = freezed,
-    Object? otherNames = freezed,
-    Object? creatorName = freezed,
-    Object? categoryName = freezed,
+    Object? isDeleted = null,
+    Object? otherNames = null,
+    Object? creatorName = null,
+    Object? categoryName = null,
   }) {
     return _then(_value.copyWith(
-      id: id == freezed
+      id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as int,
-      createdAt: createdAt == freezed
+      createdAt: null == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
-      updatedAt: updatedAt == freezed
+      updatedAt: freezed == updatedAt
           ? _value.updatedAt
           : updatedAt // ignore: cast_nullable_to_non_nullable
               as DateTime?,
-      title: title == freezed
+      title: null == title
           ? _value.title
           : title // ignore: cast_nullable_to_non_nullable
               as String,
-      body: body == freezed
+      body: null == body
           ? _value.body
           : body // ignore: cast_nullable_to_non_nullable
               as String,
-      creatorId: creatorId == freezed
+      creatorId: null == creatorId
           ? _value.creatorId
           : creatorId // ignore: cast_nullable_to_non_nullable
               as int,
-      isLocked: isLocked == freezed
+      isLocked: null == isLocked
           ? _value.isLocked
           : isLocked // ignore: cast_nullable_to_non_nullable
               as bool,
-      updaterId: updaterId == freezed
+      updaterId: freezed == updaterId
           ? _value.updaterId
           : updaterId // ignore: cast_nullable_to_non_nullable
               as int?,
-      isDeleted: isDeleted == freezed
+      isDeleted: null == isDeleted
           ? _value.isDeleted
           : isDeleted // ignore: cast_nullable_to_non_nullable
               as bool,
-      otherNames: otherNames == freezed
+      otherNames: null == otherNames
           ? _value.otherNames
           : otherNames // ignore: cast_nullable_to_non_nullable
               as List<String>,
-      creatorName: creatorName == freezed
+      creatorName: null == creatorName
           ? _value.creatorName
           : creatorName // ignore: cast_nullable_to_non_nullable
               as String,
-      categoryName: categoryName == freezed
+      categoryName: null == categoryName
           ? _value.categoryName
           : categoryName // ignore: cast_nullable_to_non_nullable
               as int,
-    ));
+    ) as $Val);
   }
 }
 
@@ -138,6 +142,7 @@ abstract class _$$_WikiCopyWith<$Res> implements $WikiCopyWith<$Res> {
   factory _$$_WikiCopyWith(_$_Wiki value, $Res Function(_$_Wiki) then) =
       __$$_WikiCopyWithImpl<$Res>;
   @override
+  @useResult
   $Res call(
       {int id,
       DateTime createdAt,
@@ -154,75 +159,73 @@ abstract class _$$_WikiCopyWith<$Res> implements $WikiCopyWith<$Res> {
 }
 
 /// @nodoc
-class __$$_WikiCopyWithImpl<$Res> extends _$WikiCopyWithImpl<$Res>
+class __$$_WikiCopyWithImpl<$Res> extends _$WikiCopyWithImpl<$Res, _$_Wiki>
     implements _$$_WikiCopyWith<$Res> {
   __$$_WikiCopyWithImpl(_$_Wiki _value, $Res Function(_$_Wiki) _then)
-      : super(_value, (v) => _then(v as _$_Wiki));
+      : super(_value, _then);
 
-  @override
-  _$_Wiki get _value => super._value as _$_Wiki;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? id = freezed,
-    Object? createdAt = freezed,
+    Object? id = null,
+    Object? createdAt = null,
     Object? updatedAt = freezed,
-    Object? title = freezed,
-    Object? body = freezed,
-    Object? creatorId = freezed,
-    Object? isLocked = freezed,
+    Object? title = null,
+    Object? body = null,
+    Object? creatorId = null,
+    Object? isLocked = null,
     Object? updaterId = freezed,
-    Object? isDeleted = freezed,
-    Object? otherNames = freezed,
-    Object? creatorName = freezed,
-    Object? categoryName = freezed,
+    Object? isDeleted = null,
+    Object? otherNames = null,
+    Object? creatorName = null,
+    Object? categoryName = null,
   }) {
     return _then(_$_Wiki(
-      id: id == freezed
+      id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as int,
-      createdAt: createdAt == freezed
+      createdAt: null == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
-      updatedAt: updatedAt == freezed
+      updatedAt: freezed == updatedAt
           ? _value.updatedAt
           : updatedAt // ignore: cast_nullable_to_non_nullable
               as DateTime?,
-      title: title == freezed
+      title: null == title
           ? _value.title
           : title // ignore: cast_nullable_to_non_nullable
               as String,
-      body: body == freezed
+      body: null == body
           ? _value.body
           : body // ignore: cast_nullable_to_non_nullable
               as String,
-      creatorId: creatorId == freezed
+      creatorId: null == creatorId
           ? _value.creatorId
           : creatorId // ignore: cast_nullable_to_non_nullable
               as int,
-      isLocked: isLocked == freezed
+      isLocked: null == isLocked
           ? _value.isLocked
           : isLocked // ignore: cast_nullable_to_non_nullable
               as bool,
-      updaterId: updaterId == freezed
+      updaterId: freezed == updaterId
           ? _value.updaterId
           : updaterId // ignore: cast_nullable_to_non_nullable
               as int?,
-      isDeleted: isDeleted == freezed
+      isDeleted: null == isDeleted
           ? _value.isDeleted
           : isDeleted // ignore: cast_nullable_to_non_nullable
               as bool,
-      otherNames: otherNames == freezed
+      otherNames: null == otherNames
           ? _value._otherNames
           : otherNames // ignore: cast_nullable_to_non_nullable
               as List<String>,
-      creatorName: creatorName == freezed
+      creatorName: null == creatorName
           ? _value.creatorName
           : creatorName // ignore: cast_nullable_to_non_nullable
               as String,
-      categoryName: categoryName == freezed
+      categoryName: null == categoryName
           ? _value.categoryName
           : categoryName // ignore: cast_nullable_to_non_nullable
               as int,
@@ -290,42 +293,49 @@ class _$_Wiki implements _Wiki {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_Wiki &&
-            const DeepCollectionEquality().equals(other.id, id) &&
-            const DeepCollectionEquality().equals(other.createdAt, createdAt) &&
-            const DeepCollectionEquality().equals(other.updatedAt, updatedAt) &&
-            const DeepCollectionEquality().equals(other.title, title) &&
-            const DeepCollectionEquality().equals(other.body, body) &&
-            const DeepCollectionEquality().equals(other.creatorId, creatorId) &&
-            const DeepCollectionEquality().equals(other.isLocked, isLocked) &&
-            const DeepCollectionEquality().equals(other.updaterId, updaterId) &&
-            const DeepCollectionEquality().equals(other.isDeleted, isDeleted) &&
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.createdAt, createdAt) ||
+                other.createdAt == createdAt) &&
+            (identical(other.updatedAt, updatedAt) ||
+                other.updatedAt == updatedAt) &&
+            (identical(other.title, title) || other.title == title) &&
+            (identical(other.body, body) || other.body == body) &&
+            (identical(other.creatorId, creatorId) ||
+                other.creatorId == creatorId) &&
+            (identical(other.isLocked, isLocked) ||
+                other.isLocked == isLocked) &&
+            (identical(other.updaterId, updaterId) ||
+                other.updaterId == updaterId) &&
+            (identical(other.isDeleted, isDeleted) ||
+                other.isDeleted == isDeleted) &&
             const DeepCollectionEquality()
                 .equals(other._otherNames, _otherNames) &&
-            const DeepCollectionEquality()
-                .equals(other.creatorName, creatorName) &&
-            const DeepCollectionEquality()
-                .equals(other.categoryName, categoryName));
+            (identical(other.creatorName, creatorName) ||
+                other.creatorName == creatorName) &&
+            (identical(other.categoryName, categoryName) ||
+                other.categoryName == categoryName));
   }
 
   @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(
       runtimeType,
-      const DeepCollectionEquality().hash(id),
-      const DeepCollectionEquality().hash(createdAt),
-      const DeepCollectionEquality().hash(updatedAt),
-      const DeepCollectionEquality().hash(title),
-      const DeepCollectionEquality().hash(body),
-      const DeepCollectionEquality().hash(creatorId),
-      const DeepCollectionEquality().hash(isLocked),
-      const DeepCollectionEquality().hash(updaterId),
-      const DeepCollectionEquality().hash(isDeleted),
+      id,
+      createdAt,
+      updatedAt,
+      title,
+      body,
+      creatorId,
+      isLocked,
+      updaterId,
+      isDeleted,
       const DeepCollectionEquality().hash(_otherNames),
-      const DeepCollectionEquality().hash(creatorName),
-      const DeepCollectionEquality().hash(categoryName));
+      creatorName,
+      categoryName);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$_WikiCopyWith<_$_Wiki> get copyWith =>
       __$$_WikiCopyWithImpl<_$_Wiki>(this, _$identity);
 

@@ -35,7 +35,8 @@ mixin _$History {
 /// @nodoc
 abstract class $HistoryCopyWith<$Res> {
   factory $HistoryCopyWith(History value, $Res Function(History) then) =
-      _$HistoryCopyWithImpl<$Res>;
+      _$HistoryCopyWithImpl<$Res, History>;
+  @useResult
   $Res call(
       {int id,
       DateTime visitedAt,
@@ -46,48 +47,51 @@ abstract class $HistoryCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$HistoryCopyWithImpl<$Res> implements $HistoryCopyWith<$Res> {
+class _$HistoryCopyWithImpl<$Res, $Val extends History>
+    implements $HistoryCopyWith<$Res> {
   _$HistoryCopyWithImpl(this._value, this._then);
 
-  final History _value;
   // ignore: unused_field
-  final $Res Function(History) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? id = freezed,
-    Object? visitedAt = freezed,
-    Object? link = freezed,
-    Object? thumbnails = freezed,
+    Object? id = null,
+    Object? visitedAt = null,
+    Object? link = null,
+    Object? thumbnails = null,
     Object? title = freezed,
     Object? subtitle = freezed,
   }) {
     return _then(_value.copyWith(
-      id: id == freezed
+      id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as int,
-      visitedAt: visitedAt == freezed
+      visitedAt: null == visitedAt
           ? _value.visitedAt
           : visitedAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
-      link: link == freezed
+      link: null == link
           ? _value.link
           : link // ignore: cast_nullable_to_non_nullable
               as String,
-      thumbnails: thumbnails == freezed
+      thumbnails: null == thumbnails
           ? _value.thumbnails
           : thumbnails // ignore: cast_nullable_to_non_nullable
               as List<String>,
-      title: title == freezed
+      title: freezed == title
           ? _value.title
           : title // ignore: cast_nullable_to_non_nullable
               as String?,
-      subtitle: subtitle == freezed
+      subtitle: freezed == subtitle
           ? _value.subtitle
           : subtitle // ignore: cast_nullable_to_non_nullable
               as String?,
-    ));
+    ) as $Val);
   }
 }
 
@@ -97,6 +101,7 @@ abstract class _$$_HistoryCopyWith<$Res> implements $HistoryCopyWith<$Res> {
           _$_History value, $Res Function(_$_History) then) =
       __$$_HistoryCopyWithImpl<$Res>;
   @override
+  @useResult
   $Res call(
       {int id,
       DateTime visitedAt,
@@ -107,45 +112,44 @@ abstract class _$$_HistoryCopyWith<$Res> implements $HistoryCopyWith<$Res> {
 }
 
 /// @nodoc
-class __$$_HistoryCopyWithImpl<$Res> extends _$HistoryCopyWithImpl<$Res>
+class __$$_HistoryCopyWithImpl<$Res>
+    extends _$HistoryCopyWithImpl<$Res, _$_History>
     implements _$$_HistoryCopyWith<$Res> {
   __$$_HistoryCopyWithImpl(_$_History _value, $Res Function(_$_History) _then)
-      : super(_value, (v) => _then(v as _$_History));
+      : super(_value, _then);
 
-  @override
-  _$_History get _value => super._value as _$_History;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? id = freezed,
-    Object? visitedAt = freezed,
-    Object? link = freezed,
-    Object? thumbnails = freezed,
+    Object? id = null,
+    Object? visitedAt = null,
+    Object? link = null,
+    Object? thumbnails = null,
     Object? title = freezed,
     Object? subtitle = freezed,
   }) {
     return _then(_$_History(
-      id: id == freezed
+      id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as int,
-      visitedAt: visitedAt == freezed
+      visitedAt: null == visitedAt
           ? _value.visitedAt
           : visitedAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
-      link: link == freezed
+      link: null == link
           ? _value.link
           : link // ignore: cast_nullable_to_non_nullable
               as String,
-      thumbnails: thumbnails == freezed
+      thumbnails: null == thumbnails
           ? _value._thumbnails
           : thumbnails // ignore: cast_nullable_to_non_nullable
               as List<String>,
-      title: title == freezed
+      title: freezed == title
           ? _value.title
           : title // ignore: cast_nullable_to_non_nullable
               as String?,
-      subtitle: subtitle == freezed
+      subtitle: freezed == subtitle
           ? _value.subtitle
           : subtitle // ignore: cast_nullable_to_non_nullable
               as String?,
@@ -196,28 +200,25 @@ class _$_History implements _History {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_History &&
-            const DeepCollectionEquality().equals(other.id, id) &&
-            const DeepCollectionEquality().equals(other.visitedAt, visitedAt) &&
-            const DeepCollectionEquality().equals(other.link, link) &&
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.visitedAt, visitedAt) ||
+                other.visitedAt == visitedAt) &&
+            (identical(other.link, link) || other.link == link) &&
             const DeepCollectionEquality()
                 .equals(other._thumbnails, _thumbnails) &&
-            const DeepCollectionEquality().equals(other.title, title) &&
-            const DeepCollectionEquality().equals(other.subtitle, subtitle));
+            (identical(other.title, title) || other.title == title) &&
+            (identical(other.subtitle, subtitle) ||
+                other.subtitle == subtitle));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      const DeepCollectionEquality().hash(id),
-      const DeepCollectionEquality().hash(visitedAt),
-      const DeepCollectionEquality().hash(link),
-      const DeepCollectionEquality().hash(_thumbnails),
-      const DeepCollectionEquality().hash(title),
-      const DeepCollectionEquality().hash(subtitle));
+  int get hashCode => Object.hash(runtimeType, id, visitedAt, link,
+      const DeepCollectionEquality().hash(_thumbnails), title, subtitle);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$_HistoryCopyWith<_$_History> get copyWith =>
       __$$_HistoryCopyWithImpl<_$_History>(this, _$identity);
 
@@ -280,7 +281,8 @@ mixin _$HistoryRequest {
 abstract class $HistoryRequestCopyWith<$Res> {
   factory $HistoryRequestCopyWith(
           HistoryRequest value, $Res Function(HistoryRequest) then) =
-      _$HistoryRequestCopyWithImpl<$Res>;
+      _$HistoryRequestCopyWithImpl<$Res, HistoryRequest>;
+  @useResult
   $Res call(
       {DateTime visitedAt,
       String link,
@@ -290,44 +292,46 @@ abstract class $HistoryRequestCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$HistoryRequestCopyWithImpl<$Res>
+class _$HistoryRequestCopyWithImpl<$Res, $Val extends HistoryRequest>
     implements $HistoryRequestCopyWith<$Res> {
   _$HistoryRequestCopyWithImpl(this._value, this._then);
 
-  final HistoryRequest _value;
   // ignore: unused_field
-  final $Res Function(HistoryRequest) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? visitedAt = freezed,
-    Object? link = freezed,
-    Object? thumbnails = freezed,
+    Object? visitedAt = null,
+    Object? link = null,
+    Object? thumbnails = null,
     Object? title = freezed,
     Object? subtitle = freezed,
   }) {
     return _then(_value.copyWith(
-      visitedAt: visitedAt == freezed
+      visitedAt: null == visitedAt
           ? _value.visitedAt
           : visitedAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
-      link: link == freezed
+      link: null == link
           ? _value.link
           : link // ignore: cast_nullable_to_non_nullable
               as String,
-      thumbnails: thumbnails == freezed
+      thumbnails: null == thumbnails
           ? _value.thumbnails
           : thumbnails // ignore: cast_nullable_to_non_nullable
               as List<String>,
-      title: title == freezed
+      title: freezed == title
           ? _value.title
           : title // ignore: cast_nullable_to_non_nullable
               as String?,
-      subtitle: subtitle == freezed
+      subtitle: freezed == subtitle
           ? _value.subtitle
           : subtitle // ignore: cast_nullable_to_non_nullable
               as String?,
-    ));
+    ) as $Val);
   }
 }
 
@@ -338,6 +342,7 @@ abstract class _$$_HistoryRequestCopyWith<$Res>
           _$_HistoryRequest value, $Res Function(_$_HistoryRequest) then) =
       __$$_HistoryRequestCopyWithImpl<$Res>;
   @override
+  @useResult
   $Res call(
       {DateTime visitedAt,
       String link,
@@ -348,41 +353,39 @@ abstract class _$$_HistoryRequestCopyWith<$Res>
 
 /// @nodoc
 class __$$_HistoryRequestCopyWithImpl<$Res>
-    extends _$HistoryRequestCopyWithImpl<$Res>
+    extends _$HistoryRequestCopyWithImpl<$Res, _$_HistoryRequest>
     implements _$$_HistoryRequestCopyWith<$Res> {
   __$$_HistoryRequestCopyWithImpl(
       _$_HistoryRequest _value, $Res Function(_$_HistoryRequest) _then)
-      : super(_value, (v) => _then(v as _$_HistoryRequest));
+      : super(_value, _then);
 
-  @override
-  _$_HistoryRequest get _value => super._value as _$_HistoryRequest;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? visitedAt = freezed,
-    Object? link = freezed,
-    Object? thumbnails = freezed,
+    Object? visitedAt = null,
+    Object? link = null,
+    Object? thumbnails = null,
     Object? title = freezed,
     Object? subtitle = freezed,
   }) {
     return _then(_$_HistoryRequest(
-      visitedAt: visitedAt == freezed
+      visitedAt: null == visitedAt
           ? _value.visitedAt
           : visitedAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
-      link: link == freezed
+      link: null == link
           ? _value.link
           : link // ignore: cast_nullable_to_non_nullable
               as String,
-      thumbnails: thumbnails == freezed
+      thumbnails: null == thumbnails
           ? _value._thumbnails
           : thumbnails // ignore: cast_nullable_to_non_nullable
               as List<String>,
-      title: title == freezed
+      title: freezed == title
           ? _value.title
           : title // ignore: cast_nullable_to_non_nullable
               as String?,
-      subtitle: subtitle == freezed
+      subtitle: freezed == subtitle
           ? _value.subtitle
           : subtitle // ignore: cast_nullable_to_non_nullable
               as String?,
@@ -431,26 +434,24 @@ class _$_HistoryRequest implements _HistoryRequest {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_HistoryRequest &&
-            const DeepCollectionEquality().equals(other.visitedAt, visitedAt) &&
-            const DeepCollectionEquality().equals(other.link, link) &&
+            (identical(other.visitedAt, visitedAt) ||
+                other.visitedAt == visitedAt) &&
+            (identical(other.link, link) || other.link == link) &&
             const DeepCollectionEquality()
                 .equals(other._thumbnails, _thumbnails) &&
-            const DeepCollectionEquality().equals(other.title, title) &&
-            const DeepCollectionEquality().equals(other.subtitle, subtitle));
+            (identical(other.title, title) || other.title == title) &&
+            (identical(other.subtitle, subtitle) ||
+                other.subtitle == subtitle));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      const DeepCollectionEquality().hash(visitedAt),
-      const DeepCollectionEquality().hash(link),
-      const DeepCollectionEquality().hash(_thumbnails),
-      const DeepCollectionEquality().hash(title),
-      const DeepCollectionEquality().hash(subtitle));
+  int get hashCode => Object.hash(runtimeType, visitedAt, link,
+      const DeepCollectionEquality().hash(_thumbnails), title, subtitle);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$_HistoryRequestCopyWith<_$_HistoryRequest> get copyWith =>
       __$$_HistoryRequestCopyWithImpl<_$_HistoryRequest>(this, _$identity);
 

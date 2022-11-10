@@ -21,7 +21,6 @@ Future<void> main() async {
   AppInfo appInfo = await initializeAppInfo();
   Settings settings = await Settings.getInstance();
   EnvironmentPaths paths = await EnvironmentPaths.getInstance();
-  await migrateFollows(settings);
   runApp(
     MultiProvider(
       providers: [
@@ -34,50 +33,4 @@ Future<void> main() async {
       child: const App(),
     ),
   );
-}
-
-Future<void> migrateFollows(Settings settings) async {
-  // ignore:deprecated_member_use_from_same_package
-  List<PrefsFollow>? follows = settings.follows.value;
-  if (follows != null) {
-    FollowsService service = FollowsService.connect(
-      connectDatabase('follows.sqlite'),
-    );
-    await service.transaction(() async {
-      String defaultHost = settings.host.value;
-      if (defaultHost == settings.customHost.value) {
-        defaultHost = 'e926.net';
-      }
-      await service.addAll(
-        defaultHost,
-        follows
-            .map(
-              (e) => FollowRequest(
-                tags: e.tags,
-                title: e.alias,
-                type: e.type,
-              ),
-            )
-            .toList(),
-      );
-      String? customHost = settings.customHost.value;
-      if (customHost != null) {
-        await service.addAll(
-          customHost,
-          follows
-              .map(
-                (e) => FollowRequest(
-                  tags: e.tags,
-                  title: e.alias,
-                  type: e.type,
-                ),
-              )
-              .toList(),
-        );
-      }
-    });
-    await service.close();
-    // ignore:deprecated_member_use_from_same_package
-    settings.follows.value = null;
-  }
 }

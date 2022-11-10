@@ -18,7 +18,6 @@ class FollowCompanion extends UpdateCompanion<Follow> {
   final Value<int?> unseen;
   final Value<String?> thumbnail;
   final Value<DateTime?> updated;
-
   const FollowCompanion({
     this.id = const Value.absent(),
     this.host = const Value.absent(),

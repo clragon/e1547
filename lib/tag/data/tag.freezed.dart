@@ -38,7 +38,8 @@ mixin _$Tag {
 /// @nodoc
 abstract class $TagCopyWith<$Res> {
   factory $TagCopyWith(Tag value, $Res Function(Tag) then) =
-      _$TagCopyWithImpl<$Res>;
+      _$TagCopyWithImpl<$Res, Tag>;
+  @useResult
   $Res call(
       {int id,
       String name,
@@ -52,63 +53,65 @@ abstract class $TagCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$TagCopyWithImpl<$Res> implements $TagCopyWith<$Res> {
+class _$TagCopyWithImpl<$Res, $Val extends Tag> implements $TagCopyWith<$Res> {
   _$TagCopyWithImpl(this._value, this._then);
 
-  final Tag _value;
   // ignore: unused_field
-  final $Res Function(Tag) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? id = freezed,
-    Object? name = freezed,
-    Object? postCount = freezed,
-    Object? relatedTags = freezed,
-    Object? relatedTagsUpdatedAt = freezed,
-    Object? category = freezed,
-    Object? isLocked = freezed,
-    Object? createdAt = freezed,
-    Object? updatedAt = freezed,
+    Object? id = null,
+    Object? name = null,
+    Object? postCount = null,
+    Object? relatedTags = null,
+    Object? relatedTagsUpdatedAt = null,
+    Object? category = null,
+    Object? isLocked = null,
+    Object? createdAt = null,
+    Object? updatedAt = null,
   }) {
     return _then(_value.copyWith(
-      id: id == freezed
+      id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as int,
-      name: name == freezed
+      name: null == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
-      postCount: postCount == freezed
+      postCount: null == postCount
           ? _value.postCount
           : postCount // ignore: cast_nullable_to_non_nullable
               as int,
-      relatedTags: relatedTags == freezed
+      relatedTags: null == relatedTags
           ? _value.relatedTags
           : relatedTags // ignore: cast_nullable_to_non_nullable
               as String,
-      relatedTagsUpdatedAt: relatedTagsUpdatedAt == freezed
+      relatedTagsUpdatedAt: null == relatedTagsUpdatedAt
           ? _value.relatedTagsUpdatedAt
           : relatedTagsUpdatedAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
-      category: category == freezed
+      category: null == category
           ? _value.category
           : category // ignore: cast_nullable_to_non_nullable
               as int,
-      isLocked: isLocked == freezed
+      isLocked: null == isLocked
           ? _value.isLocked
           : isLocked // ignore: cast_nullable_to_non_nullable
               as bool,
-      createdAt: createdAt == freezed
+      createdAt: null == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
-      updatedAt: updatedAt == freezed
+      updatedAt: null == updatedAt
           ? _value.updatedAt
           : updatedAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
-    ));
+    ) as $Val);
   }
 }
 
@@ -117,6 +120,7 @@ abstract class _$$_TagCopyWith<$Res> implements $TagCopyWith<$Res> {
   factory _$$_TagCopyWith(_$_Tag value, $Res Function(_$_Tag) then) =
       __$$_TagCopyWithImpl<$Res>;
   @override
+  @useResult
   $Res call(
       {int id,
       String name,
@@ -130,60 +134,58 @@ abstract class _$$_TagCopyWith<$Res> implements $TagCopyWith<$Res> {
 }
 
 /// @nodoc
-class __$$_TagCopyWithImpl<$Res> extends _$TagCopyWithImpl<$Res>
+class __$$_TagCopyWithImpl<$Res> extends _$TagCopyWithImpl<$Res, _$_Tag>
     implements _$$_TagCopyWith<$Res> {
   __$$_TagCopyWithImpl(_$_Tag _value, $Res Function(_$_Tag) _then)
-      : super(_value, (v) => _then(v as _$_Tag));
+      : super(_value, _then);
 
-  @override
-  _$_Tag get _value => super._value as _$_Tag;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? id = freezed,
-    Object? name = freezed,
-    Object? postCount = freezed,
-    Object? relatedTags = freezed,
-    Object? relatedTagsUpdatedAt = freezed,
-    Object? category = freezed,
-    Object? isLocked = freezed,
-    Object? createdAt = freezed,
-    Object? updatedAt = freezed,
+    Object? id = null,
+    Object? name = null,
+    Object? postCount = null,
+    Object? relatedTags = null,
+    Object? relatedTagsUpdatedAt = null,
+    Object? category = null,
+    Object? isLocked = null,
+    Object? createdAt = null,
+    Object? updatedAt = null,
   }) {
     return _then(_$_Tag(
-      id: id == freezed
+      id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as int,
-      name: name == freezed
+      name: null == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
-      postCount: postCount == freezed
+      postCount: null == postCount
           ? _value.postCount
           : postCount // ignore: cast_nullable_to_non_nullable
               as int,
-      relatedTags: relatedTags == freezed
+      relatedTags: null == relatedTags
           ? _value.relatedTags
           : relatedTags // ignore: cast_nullable_to_non_nullable
               as String,
-      relatedTagsUpdatedAt: relatedTagsUpdatedAt == freezed
+      relatedTagsUpdatedAt: null == relatedTagsUpdatedAt
           ? _value.relatedTagsUpdatedAt
           : relatedTagsUpdatedAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
-      category: category == freezed
+      category: null == category
           ? _value.category
           : category // ignore: cast_nullable_to_non_nullable
               as int,
-      isLocked: isLocked == freezed
+      isLocked: null == isLocked
           ? _value.isLocked
           : isLocked // ignore: cast_nullable_to_non_nullable
               as bool,
-      createdAt: createdAt == freezed
+      createdAt: null == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
-      updatedAt: updatedAt == freezed
+      updatedAt: null == updatedAt
           ? _value.updatedAt
           : updatedAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
@@ -236,35 +238,32 @@ class _$_Tag implements _Tag {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_Tag &&
-            const DeepCollectionEquality().equals(other.id, id) &&
-            const DeepCollectionEquality().equals(other.name, name) &&
-            const DeepCollectionEquality().equals(other.postCount, postCount) &&
-            const DeepCollectionEquality()
-                .equals(other.relatedTags, relatedTags) &&
-            const DeepCollectionEquality()
-                .equals(other.relatedTagsUpdatedAt, relatedTagsUpdatedAt) &&
-            const DeepCollectionEquality().equals(other.category, category) &&
-            const DeepCollectionEquality().equals(other.isLocked, isLocked) &&
-            const DeepCollectionEquality().equals(other.createdAt, createdAt) &&
-            const DeepCollectionEquality().equals(other.updatedAt, updatedAt));
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.name, name) || other.name == name) &&
+            (identical(other.postCount, postCount) ||
+                other.postCount == postCount) &&
+            (identical(other.relatedTags, relatedTags) ||
+                other.relatedTags == relatedTags) &&
+            (identical(other.relatedTagsUpdatedAt, relatedTagsUpdatedAt) ||
+                other.relatedTagsUpdatedAt == relatedTagsUpdatedAt) &&
+            (identical(other.category, category) ||
+                other.category == category) &&
+            (identical(other.isLocked, isLocked) ||
+                other.isLocked == isLocked) &&
+            (identical(other.createdAt, createdAt) ||
+                other.createdAt == createdAt) &&
+            (identical(other.updatedAt, updatedAt) ||
+                other.updatedAt == updatedAt));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      const DeepCollectionEquality().hash(id),
-      const DeepCollectionEquality().hash(name),
-      const DeepCollectionEquality().hash(postCount),
-      const DeepCollectionEquality().hash(relatedTags),
-      const DeepCollectionEquality().hash(relatedTagsUpdatedAt),
-      const DeepCollectionEquality().hash(category),
-      const DeepCollectionEquality().hash(isLocked),
-      const DeepCollectionEquality().hash(createdAt),
-      const DeepCollectionEquality().hash(updatedAt));
+  int get hashCode => Object.hash(runtimeType, id, name, postCount, relatedTags,
+      relatedTagsUpdatedAt, category, isLocked, createdAt, updatedAt);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$_TagCopyWith<_$_Tag> get copyWith =>
       __$$_TagCopyWithImpl<_$_Tag>(this, _$identity);
 

@@ -39,7 +39,8 @@ mixin _$Reply {
 /// @nodoc
 abstract class $ReplyCopyWith<$Res> {
   factory $ReplyCopyWith(Reply value, $Res Function(Reply) then) =
-      _$ReplyCopyWithImpl<$Res>;
+      _$ReplyCopyWithImpl<$Res, Reply>;
+  @useResult
   $Res call(
       {int id,
       DateTime createdAt,
@@ -54,68 +55,71 @@ abstract class $ReplyCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$ReplyCopyWithImpl<$Res> implements $ReplyCopyWith<$Res> {
+class _$ReplyCopyWithImpl<$Res, $Val extends Reply>
+    implements $ReplyCopyWith<$Res> {
   _$ReplyCopyWithImpl(this._value, this._then);
 
-  final Reply _value;
   // ignore: unused_field
-  final $Res Function(Reply) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? id = freezed,
-    Object? createdAt = freezed,
-    Object? updatedAt = freezed,
-    Object? body = freezed,
-    Object? creatorId = freezed,
+    Object? id = null,
+    Object? createdAt = null,
+    Object? updatedAt = null,
+    Object? body = null,
+    Object? creatorId = null,
     Object? updaterId = freezed,
-    Object? topicId = freezed,
-    Object? isHidden = freezed,
+    Object? topicId = null,
+    Object? isHidden = null,
     Object? warningType = freezed,
     Object? warningUserId = freezed,
   }) {
     return _then(_value.copyWith(
-      id: id == freezed
+      id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as int,
-      createdAt: createdAt == freezed
+      createdAt: null == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
-      updatedAt: updatedAt == freezed
+      updatedAt: null == updatedAt
           ? _value.updatedAt
           : updatedAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
-      body: body == freezed
+      body: null == body
           ? _value.body
           : body // ignore: cast_nullable_to_non_nullable
               as String,
-      creatorId: creatorId == freezed
+      creatorId: null == creatorId
           ? _value.creatorId
           : creatorId // ignore: cast_nullable_to_non_nullable
               as int,
-      updaterId: updaterId == freezed
+      updaterId: freezed == updaterId
           ? _value.updaterId
           : updaterId // ignore: cast_nullable_to_non_nullable
               as int?,
-      topicId: topicId == freezed
+      topicId: null == topicId
           ? _value.topicId
           : topicId // ignore: cast_nullable_to_non_nullable
               as int,
-      isHidden: isHidden == freezed
+      isHidden: null == isHidden
           ? _value.isHidden
           : isHidden // ignore: cast_nullable_to_non_nullable
               as bool,
-      warningType: warningType == freezed
+      warningType: freezed == warningType
           ? _value.warningType
           : warningType // ignore: cast_nullable_to_non_nullable
               as int?,
-      warningUserId: warningUserId == freezed
+      warningUserId: freezed == warningUserId
           ? _value.warningUserId
           : warningUserId // ignore: cast_nullable_to_non_nullable
               as int?,
-    ));
+    ) as $Val);
   }
 }
 
@@ -124,6 +128,7 @@ abstract class _$$_ReplyCopyWith<$Res> implements $ReplyCopyWith<$Res> {
   factory _$$_ReplyCopyWith(_$_Reply value, $Res Function(_$_Reply) then) =
       __$$_ReplyCopyWithImpl<$Res>;
   @override
+  @useResult
   $Res call(
       {int id,
       DateTime createdAt,
@@ -138,65 +143,63 @@ abstract class _$$_ReplyCopyWith<$Res> implements $ReplyCopyWith<$Res> {
 }
 
 /// @nodoc
-class __$$_ReplyCopyWithImpl<$Res> extends _$ReplyCopyWithImpl<$Res>
+class __$$_ReplyCopyWithImpl<$Res> extends _$ReplyCopyWithImpl<$Res, _$_Reply>
     implements _$$_ReplyCopyWith<$Res> {
   __$$_ReplyCopyWithImpl(_$_Reply _value, $Res Function(_$_Reply) _then)
-      : super(_value, (v) => _then(v as _$_Reply));
+      : super(_value, _then);
 
-  @override
-  _$_Reply get _value => super._value as _$_Reply;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? id = freezed,
-    Object? createdAt = freezed,
-    Object? updatedAt = freezed,
-    Object? body = freezed,
-    Object? creatorId = freezed,
+    Object? id = null,
+    Object? createdAt = null,
+    Object? updatedAt = null,
+    Object? body = null,
+    Object? creatorId = null,
     Object? updaterId = freezed,
-    Object? topicId = freezed,
-    Object? isHidden = freezed,
+    Object? topicId = null,
+    Object? isHidden = null,
     Object? warningType = freezed,
     Object? warningUserId = freezed,
   }) {
     return _then(_$_Reply(
-      id: id == freezed
+      id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as int,
-      createdAt: createdAt == freezed
+      createdAt: null == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
-      updatedAt: updatedAt == freezed
+      updatedAt: null == updatedAt
           ? _value.updatedAt
           : updatedAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
-      body: body == freezed
+      body: null == body
           ? _value.body
           : body // ignore: cast_nullable_to_non_nullable
               as String,
-      creatorId: creatorId == freezed
+      creatorId: null == creatorId
           ? _value.creatorId
           : creatorId // ignore: cast_nullable_to_non_nullable
               as int,
-      updaterId: updaterId == freezed
+      updaterId: freezed == updaterId
           ? _value.updaterId
           : updaterId // ignore: cast_nullable_to_non_nullable
               as int?,
-      topicId: topicId == freezed
+      topicId: null == topicId
           ? _value.topicId
           : topicId // ignore: cast_nullable_to_non_nullable
               as int,
-      isHidden: isHidden == freezed
+      isHidden: null == isHidden
           ? _value.isHidden
           : isHidden // ignore: cast_nullable_to_non_nullable
               as bool,
-      warningType: warningType == freezed
+      warningType: freezed == warningType
           ? _value.warningType
           : warningType // ignore: cast_nullable_to_non_nullable
               as int?,
-      warningUserId: warningUserId == freezed
+      warningUserId: freezed == warningUserId
           ? _value.warningUserId
           : warningUserId // ignore: cast_nullable_to_non_nullable
               as int?,
@@ -253,37 +256,33 @@ class _$_Reply implements _Reply {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_Reply &&
-            const DeepCollectionEquality().equals(other.id, id) &&
-            const DeepCollectionEquality().equals(other.createdAt, createdAt) &&
-            const DeepCollectionEquality().equals(other.updatedAt, updatedAt) &&
-            const DeepCollectionEquality().equals(other.body, body) &&
-            const DeepCollectionEquality().equals(other.creatorId, creatorId) &&
-            const DeepCollectionEquality().equals(other.updaterId, updaterId) &&
-            const DeepCollectionEquality().equals(other.topicId, topicId) &&
-            const DeepCollectionEquality().equals(other.isHidden, isHidden) &&
-            const DeepCollectionEquality()
-                .equals(other.warningType, warningType) &&
-            const DeepCollectionEquality()
-                .equals(other.warningUserId, warningUserId));
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.createdAt, createdAt) ||
+                other.createdAt == createdAt) &&
+            (identical(other.updatedAt, updatedAt) ||
+                other.updatedAt == updatedAt) &&
+            (identical(other.body, body) || other.body == body) &&
+            (identical(other.creatorId, creatorId) ||
+                other.creatorId == creatorId) &&
+            (identical(other.updaterId, updaterId) ||
+                other.updaterId == updaterId) &&
+            (identical(other.topicId, topicId) || other.topicId == topicId) &&
+            (identical(other.isHidden, isHidden) ||
+                other.isHidden == isHidden) &&
+            (identical(other.warningType, warningType) ||
+                other.warningType == warningType) &&
+            (identical(other.warningUserId, warningUserId) ||
+                other.warningUserId == warningUserId));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      const DeepCollectionEquality().hash(id),
-      const DeepCollectionEquality().hash(createdAt),
-      const DeepCollectionEquality().hash(updatedAt),
-      const DeepCollectionEquality().hash(body),
-      const DeepCollectionEquality().hash(creatorId),
-      const DeepCollectionEquality().hash(updaterId),
-      const DeepCollectionEquality().hash(topicId),
-      const DeepCollectionEquality().hash(isHidden),
-      const DeepCollectionEquality().hash(warningType),
-      const DeepCollectionEquality().hash(warningUserId));
+  int get hashCode => Object.hash(runtimeType, id, createdAt, updatedAt, body,
+      creatorId, updaterId, topicId, isHidden, warningType, warningUserId);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$_ReplyCopyWith<_$_Reply> get copyWith =>
       __$$_ReplyCopyWithImpl<_$_Reply>(this, _$identity);
 

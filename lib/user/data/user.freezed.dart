@@ -52,7 +52,8 @@ mixin _$User {
 /// @nodoc
 abstract class $UserCopyWith<$Res> {
   factory $UserCopyWith(User value, $Res Function(User) then) =
-      _$UserCopyWithImpl<$Res>;
+      _$UserCopyWithImpl<$Res, User>;
+  @useResult
   $Res call(
       {int wikiPageVersionCount,
       int artistVersionCount,
@@ -80,133 +81,136 @@ abstract class $UserCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$UserCopyWithImpl<$Res> implements $UserCopyWith<$Res> {
+class _$UserCopyWithImpl<$Res, $Val extends User>
+    implements $UserCopyWith<$Res> {
   _$UserCopyWithImpl(this._value, this._then);
 
-  final User _value;
   // ignore: unused_field
-  final $Res Function(User) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? wikiPageVersionCount = freezed,
-    Object? artistVersionCount = freezed,
-    Object? poolVersionCount = freezed,
-    Object? forumPostCount = freezed,
-    Object? commentCount = freezed,
-    Object? flagCount = freezed,
-    Object? positiveFeedbackCount = freezed,
-    Object? neutralFeedbackCount = freezed,
-    Object? negativeFeedbackCount = freezed,
-    Object? uploadLimit = freezed,
-    Object? id = freezed,
-    Object? createdAt = freezed,
-    Object? name = freezed,
-    Object? level = freezed,
-    Object? baseUploadLimit = freezed,
-    Object? postUploadCount = freezed,
-    Object? postUpdateCount = freezed,
-    Object? noteUpdateCount = freezed,
-    Object? isBanned = freezed,
-    Object? canApprovePosts = freezed,
-    Object? canUploadFree = freezed,
-    Object? levelString = freezed,
+    Object? wikiPageVersionCount = null,
+    Object? artistVersionCount = null,
+    Object? poolVersionCount = null,
+    Object? forumPostCount = null,
+    Object? commentCount = null,
+    Object? flagCount = null,
+    Object? positiveFeedbackCount = null,
+    Object? neutralFeedbackCount = null,
+    Object? negativeFeedbackCount = null,
+    Object? uploadLimit = null,
+    Object? id = null,
+    Object? createdAt = null,
+    Object? name = null,
+    Object? level = null,
+    Object? baseUploadLimit = null,
+    Object? postUploadCount = null,
+    Object? postUpdateCount = null,
+    Object? noteUpdateCount = null,
+    Object? isBanned = null,
+    Object? canApprovePosts = null,
+    Object? canUploadFree = null,
+    Object? levelString = null,
     Object? avatarId = freezed,
   }) {
     return _then(_value.copyWith(
-      wikiPageVersionCount: wikiPageVersionCount == freezed
+      wikiPageVersionCount: null == wikiPageVersionCount
           ? _value.wikiPageVersionCount
           : wikiPageVersionCount // ignore: cast_nullable_to_non_nullable
               as int,
-      artistVersionCount: artistVersionCount == freezed
+      artistVersionCount: null == artistVersionCount
           ? _value.artistVersionCount
           : artistVersionCount // ignore: cast_nullable_to_non_nullable
               as int,
-      poolVersionCount: poolVersionCount == freezed
+      poolVersionCount: null == poolVersionCount
           ? _value.poolVersionCount
           : poolVersionCount // ignore: cast_nullable_to_non_nullable
               as int,
-      forumPostCount: forumPostCount == freezed
+      forumPostCount: null == forumPostCount
           ? _value.forumPostCount
           : forumPostCount // ignore: cast_nullable_to_non_nullable
               as int,
-      commentCount: commentCount == freezed
+      commentCount: null == commentCount
           ? _value.commentCount
           : commentCount // ignore: cast_nullable_to_non_nullable
               as int,
-      flagCount: flagCount == freezed
+      flagCount: null == flagCount
           ? _value.flagCount
           : flagCount // ignore: cast_nullable_to_non_nullable
               as int,
-      positiveFeedbackCount: positiveFeedbackCount == freezed
+      positiveFeedbackCount: null == positiveFeedbackCount
           ? _value.positiveFeedbackCount
           : positiveFeedbackCount // ignore: cast_nullable_to_non_nullable
               as int,
-      neutralFeedbackCount: neutralFeedbackCount == freezed
+      neutralFeedbackCount: null == neutralFeedbackCount
           ? _value.neutralFeedbackCount
           : neutralFeedbackCount // ignore: cast_nullable_to_non_nullable
               as int,
-      negativeFeedbackCount: negativeFeedbackCount == freezed
+      negativeFeedbackCount: null == negativeFeedbackCount
           ? _value.negativeFeedbackCount
           : negativeFeedbackCount // ignore: cast_nullable_to_non_nullable
               as int,
-      uploadLimit: uploadLimit == freezed
+      uploadLimit: null == uploadLimit
           ? _value.uploadLimit
           : uploadLimit // ignore: cast_nullable_to_non_nullable
               as int,
-      id: id == freezed
+      id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as int,
-      createdAt: createdAt == freezed
+      createdAt: null == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
-      name: name == freezed
+      name: null == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
-      level: level == freezed
+      level: null == level
           ? _value.level
           : level // ignore: cast_nullable_to_non_nullable
               as int,
-      baseUploadLimit: baseUploadLimit == freezed
+      baseUploadLimit: null == baseUploadLimit
           ? _value.baseUploadLimit
           : baseUploadLimit // ignore: cast_nullable_to_non_nullable
               as int,
-      postUploadCount: postUploadCount == freezed
+      postUploadCount: null == postUploadCount
           ? _value.postUploadCount
           : postUploadCount // ignore: cast_nullable_to_non_nullable
               as int,
-      postUpdateCount: postUpdateCount == freezed
+      postUpdateCount: null == postUpdateCount
           ? _value.postUpdateCount
           : postUpdateCount // ignore: cast_nullable_to_non_nullable
               as int,
-      noteUpdateCount: noteUpdateCount == freezed
+      noteUpdateCount: null == noteUpdateCount
           ? _value.noteUpdateCount
           : noteUpdateCount // ignore: cast_nullable_to_non_nullable
               as int,
-      isBanned: isBanned == freezed
+      isBanned: null == isBanned
           ? _value.isBanned
           : isBanned // ignore: cast_nullable_to_non_nullable
               as bool,
-      canApprovePosts: canApprovePosts == freezed
+      canApprovePosts: null == canApprovePosts
           ? _value.canApprovePosts
           : canApprovePosts // ignore: cast_nullable_to_non_nullable
               as bool,
-      canUploadFree: canUploadFree == freezed
+      canUploadFree: null == canUploadFree
           ? _value.canUploadFree
           : canUploadFree // ignore: cast_nullable_to_non_nullable
               as bool,
-      levelString: levelString == freezed
+      levelString: null == levelString
           ? _value.levelString
           : levelString // ignore: cast_nullable_to_non_nullable
               as String,
-      avatarId: avatarId == freezed
+      avatarId: freezed == avatarId
           ? _value.avatarId
           : avatarId // ignore: cast_nullable_to_non_nullable
               as int?,
-    ));
+    ) as $Val);
   }
 }
 
@@ -215,6 +219,7 @@ abstract class _$$_UserCopyWith<$Res> implements $UserCopyWith<$Res> {
   factory _$$_UserCopyWith(_$_User value, $Res Function(_$_User) then) =
       __$$_UserCopyWithImpl<$Res>;
   @override
+  @useResult
   $Res call(
       {int wikiPageVersionCount,
       int artistVersionCount,
@@ -242,130 +247,128 @@ abstract class _$$_UserCopyWith<$Res> implements $UserCopyWith<$Res> {
 }
 
 /// @nodoc
-class __$$_UserCopyWithImpl<$Res> extends _$UserCopyWithImpl<$Res>
+class __$$_UserCopyWithImpl<$Res> extends _$UserCopyWithImpl<$Res, _$_User>
     implements _$$_UserCopyWith<$Res> {
   __$$_UserCopyWithImpl(_$_User _value, $Res Function(_$_User) _then)
-      : super(_value, (v) => _then(v as _$_User));
+      : super(_value, _then);
 
-  @override
-  _$_User get _value => super._value as _$_User;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? wikiPageVersionCount = freezed,
-    Object? artistVersionCount = freezed,
-    Object? poolVersionCount = freezed,
-    Object? forumPostCount = freezed,
-    Object? commentCount = freezed,
-    Object? flagCount = freezed,
-    Object? positiveFeedbackCount = freezed,
-    Object? neutralFeedbackCount = freezed,
-    Object? negativeFeedbackCount = freezed,
-    Object? uploadLimit = freezed,
-    Object? id = freezed,
-    Object? createdAt = freezed,
-    Object? name = freezed,
-    Object? level = freezed,
-    Object? baseUploadLimit = freezed,
-    Object? postUploadCount = freezed,
-    Object? postUpdateCount = freezed,
-    Object? noteUpdateCount = freezed,
-    Object? isBanned = freezed,
-    Object? canApprovePosts = freezed,
-    Object? canUploadFree = freezed,
-    Object? levelString = freezed,
+    Object? wikiPageVersionCount = null,
+    Object? artistVersionCount = null,
+    Object? poolVersionCount = null,
+    Object? forumPostCount = null,
+    Object? commentCount = null,
+    Object? flagCount = null,
+    Object? positiveFeedbackCount = null,
+    Object? neutralFeedbackCount = null,
+    Object? negativeFeedbackCount = null,
+    Object? uploadLimit = null,
+    Object? id = null,
+    Object? createdAt = null,
+    Object? name = null,
+    Object? level = null,
+    Object? baseUploadLimit = null,
+    Object? postUploadCount = null,
+    Object? postUpdateCount = null,
+    Object? noteUpdateCount = null,
+    Object? isBanned = null,
+    Object? canApprovePosts = null,
+    Object? canUploadFree = null,
+    Object? levelString = null,
     Object? avatarId = freezed,
   }) {
     return _then(_$_User(
-      wikiPageVersionCount: wikiPageVersionCount == freezed
+      wikiPageVersionCount: null == wikiPageVersionCount
           ? _value.wikiPageVersionCount
           : wikiPageVersionCount // ignore: cast_nullable_to_non_nullable
               as int,
-      artistVersionCount: artistVersionCount == freezed
+      artistVersionCount: null == artistVersionCount
           ? _value.artistVersionCount
           : artistVersionCount // ignore: cast_nullable_to_non_nullable
               as int,
-      poolVersionCount: poolVersionCount == freezed
+      poolVersionCount: null == poolVersionCount
           ? _value.poolVersionCount
           : poolVersionCount // ignore: cast_nullable_to_non_nullable
               as int,
-      forumPostCount: forumPostCount == freezed
+      forumPostCount: null == forumPostCount
           ? _value.forumPostCount
           : forumPostCount // ignore: cast_nullable_to_non_nullable
               as int,
-      commentCount: commentCount == freezed
+      commentCount: null == commentCount
           ? _value.commentCount
           : commentCount // ignore: cast_nullable_to_non_nullable
               as int,
-      flagCount: flagCount == freezed
+      flagCount: null == flagCount
           ? _value.flagCount
           : flagCount // ignore: cast_nullable_to_non_nullable
               as int,
-      positiveFeedbackCount: positiveFeedbackCount == freezed
+      positiveFeedbackCount: null == positiveFeedbackCount
           ? _value.positiveFeedbackCount
           : positiveFeedbackCount // ignore: cast_nullable_to_non_nullable
               as int,
-      neutralFeedbackCount: neutralFeedbackCount == freezed
+      neutralFeedbackCount: null == neutralFeedbackCount
           ? _value.neutralFeedbackCount
           : neutralFeedbackCount // ignore: cast_nullable_to_non_nullable
               as int,
-      negativeFeedbackCount: negativeFeedbackCount == freezed
+      negativeFeedbackCount: null == negativeFeedbackCount
           ? _value.negativeFeedbackCount
           : negativeFeedbackCount // ignore: cast_nullable_to_non_nullable
               as int,
-      uploadLimit: uploadLimit == freezed
+      uploadLimit: null == uploadLimit
           ? _value.uploadLimit
           : uploadLimit // ignore: cast_nullable_to_non_nullable
               as int,
-      id: id == freezed
+      id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as int,
-      createdAt: createdAt == freezed
+      createdAt: null == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
-      name: name == freezed
+      name: null == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
-      level: level == freezed
+      level: null == level
           ? _value.level
           : level // ignore: cast_nullable_to_non_nullable
               as int,
-      baseUploadLimit: baseUploadLimit == freezed
+      baseUploadLimit: null == baseUploadLimit
           ? _value.baseUploadLimit
           : baseUploadLimit // ignore: cast_nullable_to_non_nullable
               as int,
-      postUploadCount: postUploadCount == freezed
+      postUploadCount: null == postUploadCount
           ? _value.postUploadCount
           : postUploadCount // ignore: cast_nullable_to_non_nullable
               as int,
-      postUpdateCount: postUpdateCount == freezed
+      postUpdateCount: null == postUpdateCount
           ? _value.postUpdateCount
           : postUpdateCount // ignore: cast_nullable_to_non_nullable
               as int,
-      noteUpdateCount: noteUpdateCount == freezed
+      noteUpdateCount: null == noteUpdateCount
           ? _value.noteUpdateCount
           : noteUpdateCount // ignore: cast_nullable_to_non_nullable
               as int,
-      isBanned: isBanned == freezed
+      isBanned: null == isBanned
           ? _value.isBanned
           : isBanned // ignore: cast_nullable_to_non_nullable
               as bool,
-      canApprovePosts: canApprovePosts == freezed
+      canApprovePosts: null == canApprovePosts
           ? _value.canApprovePosts
           : canApprovePosts // ignore: cast_nullable_to_non_nullable
               as bool,
-      canUploadFree: canUploadFree == freezed
+      canUploadFree: null == canUploadFree
           ? _value.canUploadFree
           : canUploadFree // ignore: cast_nullable_to_non_nullable
               as bool,
-      levelString: levelString == freezed
+      levelString: null == levelString
           ? _value.levelString
           : levelString // ignore: cast_nullable_to_non_nullable
               as String,
-      avatarId: avatarId == freezed
+      avatarId: freezed == avatarId
           ? _value.avatarId
           : avatarId // ignore: cast_nullable_to_non_nullable
               as int?,
@@ -460,78 +463,83 @@ class _$_User implements _User {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_User &&
-            const DeepCollectionEquality()
-                .equals(other.wikiPageVersionCount, wikiPageVersionCount) &&
-            const DeepCollectionEquality()
-                .equals(other.artistVersionCount, artistVersionCount) &&
-            const DeepCollectionEquality()
-                .equals(other.poolVersionCount, poolVersionCount) &&
-            const DeepCollectionEquality()
-                .equals(other.forumPostCount, forumPostCount) &&
-            const DeepCollectionEquality()
-                .equals(other.commentCount, commentCount) &&
-            const DeepCollectionEquality().equals(other.flagCount, flagCount) &&
-            const DeepCollectionEquality()
-                .equals(other.positiveFeedbackCount, positiveFeedbackCount) &&
-            const DeepCollectionEquality()
-                .equals(other.neutralFeedbackCount, neutralFeedbackCount) &&
-            const DeepCollectionEquality()
-                .equals(other.negativeFeedbackCount, negativeFeedbackCount) &&
-            const DeepCollectionEquality()
-                .equals(other.uploadLimit, uploadLimit) &&
-            const DeepCollectionEquality().equals(other.id, id) &&
-            const DeepCollectionEquality().equals(other.createdAt, createdAt) &&
-            const DeepCollectionEquality().equals(other.name, name) &&
-            const DeepCollectionEquality().equals(other.level, level) &&
-            const DeepCollectionEquality()
-                .equals(other.baseUploadLimit, baseUploadLimit) &&
-            const DeepCollectionEquality()
-                .equals(other.postUploadCount, postUploadCount) &&
-            const DeepCollectionEquality()
-                .equals(other.postUpdateCount, postUpdateCount) &&
-            const DeepCollectionEquality()
-                .equals(other.noteUpdateCount, noteUpdateCount) &&
-            const DeepCollectionEquality().equals(other.isBanned, isBanned) &&
-            const DeepCollectionEquality()
-                .equals(other.canApprovePosts, canApprovePosts) &&
-            const DeepCollectionEquality()
-                .equals(other.canUploadFree, canUploadFree) &&
-            const DeepCollectionEquality()
-                .equals(other.levelString, levelString) &&
-            const DeepCollectionEquality().equals(other.avatarId, avatarId));
+            (identical(other.wikiPageVersionCount, wikiPageVersionCount) ||
+                other.wikiPageVersionCount == wikiPageVersionCount) &&
+            (identical(other.artistVersionCount, artistVersionCount) ||
+                other.artistVersionCount == artistVersionCount) &&
+            (identical(other.poolVersionCount, poolVersionCount) ||
+                other.poolVersionCount == poolVersionCount) &&
+            (identical(other.forumPostCount, forumPostCount) ||
+                other.forumPostCount == forumPostCount) &&
+            (identical(other.commentCount, commentCount) ||
+                other.commentCount == commentCount) &&
+            (identical(other.flagCount, flagCount) ||
+                other.flagCount == flagCount) &&
+            (identical(other.positiveFeedbackCount, positiveFeedbackCount) ||
+                other.positiveFeedbackCount == positiveFeedbackCount) &&
+            (identical(other.neutralFeedbackCount, neutralFeedbackCount) ||
+                other.neutralFeedbackCount == neutralFeedbackCount) &&
+            (identical(other.negativeFeedbackCount, negativeFeedbackCount) ||
+                other.negativeFeedbackCount == negativeFeedbackCount) &&
+            (identical(other.uploadLimit, uploadLimit) ||
+                other.uploadLimit == uploadLimit) &&
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.createdAt, createdAt) ||
+                other.createdAt == createdAt) &&
+            (identical(other.name, name) || other.name == name) &&
+            (identical(other.level, level) || other.level == level) &&
+            (identical(other.baseUploadLimit, baseUploadLimit) ||
+                other.baseUploadLimit == baseUploadLimit) &&
+            (identical(other.postUploadCount, postUploadCount) ||
+                other.postUploadCount == postUploadCount) &&
+            (identical(other.postUpdateCount, postUpdateCount) ||
+                other.postUpdateCount == postUpdateCount) &&
+            (identical(other.noteUpdateCount, noteUpdateCount) ||
+                other.noteUpdateCount == noteUpdateCount) &&
+            (identical(other.isBanned, isBanned) ||
+                other.isBanned == isBanned) &&
+            (identical(other.canApprovePosts, canApprovePosts) ||
+                other.canApprovePosts == canApprovePosts) &&
+            (identical(other.canUploadFree, canUploadFree) ||
+                other.canUploadFree == canUploadFree) &&
+            (identical(other.levelString, levelString) ||
+                other.levelString == levelString) &&
+            (identical(other.avatarId, avatarId) ||
+                other.avatarId == avatarId));
   }
 
   @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hashAll([
         runtimeType,
-        const DeepCollectionEquality().hash(wikiPageVersionCount),
-        const DeepCollectionEquality().hash(artistVersionCount),
-        const DeepCollectionEquality().hash(poolVersionCount),
-        const DeepCollectionEquality().hash(forumPostCount),
-        const DeepCollectionEquality().hash(commentCount),
-        const DeepCollectionEquality().hash(flagCount),
-        const DeepCollectionEquality().hash(positiveFeedbackCount),
-        const DeepCollectionEquality().hash(neutralFeedbackCount),
-        const DeepCollectionEquality().hash(negativeFeedbackCount),
-        const DeepCollectionEquality().hash(uploadLimit),
-        const DeepCollectionEquality().hash(id),
-        const DeepCollectionEquality().hash(createdAt),
-        const DeepCollectionEquality().hash(name),
-        const DeepCollectionEquality().hash(level),
-        const DeepCollectionEquality().hash(baseUploadLimit),
-        const DeepCollectionEquality().hash(postUploadCount),
-        const DeepCollectionEquality().hash(postUpdateCount),
-        const DeepCollectionEquality().hash(noteUpdateCount),
-        const DeepCollectionEquality().hash(isBanned),
-        const DeepCollectionEquality().hash(canApprovePosts),
-        const DeepCollectionEquality().hash(canUploadFree),
-        const DeepCollectionEquality().hash(levelString),
-        const DeepCollectionEquality().hash(avatarId)
+        wikiPageVersionCount,
+        artistVersionCount,
+        poolVersionCount,
+        forumPostCount,
+        commentCount,
+        flagCount,
+        positiveFeedbackCount,
+        neutralFeedbackCount,
+        negativeFeedbackCount,
+        uploadLimit,
+        id,
+        createdAt,
+        name,
+        level,
+        baseUploadLimit,
+        postUploadCount,
+        postUpdateCount,
+        noteUpdateCount,
+        isBanned,
+        canApprovePosts,
+        canUploadFree,
+        levelString,
+        avatarId
       ]);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$_UserCopyWith<_$_User> get copyWith =>
       __$$_UserCopyWithImpl<_$_User>(this, _$identity);
 
