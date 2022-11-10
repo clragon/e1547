@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:e1547/app/app.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/follow/follow.dart';
@@ -17,7 +15,7 @@ class Settings with NotifiedPreferences {
   late final ValueNotifier<Credentials?> credentials = createJsonSetting(
     key: 'credentials',
     initialValue: null,
-    fromJson: Credentials.fromJson,
+    fromJson: (json) => Credentials.fromJson(json),
   );
 
   late final ValueNotifier<AppTheme> theme = createEnumSetting(
@@ -29,17 +27,11 @@ class Settings with NotifiedPreferences {
   late final ValueNotifier<List<String>> denylist =
       createSetting(key: 'blacklist', initialValue: []);
   @Deprecated('Follows are now found in their own SQL database')
-  late final ValueNotifier<List<PrefsFollow>?> follows = createSetting(
+  late final ValueNotifier<List<PrefsFollow>?> follows = createJsonSetting(
     key: 'follows',
     initialValue: null,
-    read: (prefs, key) => prefs
-        .getStringList(key)
-        ?.map((e) => PrefsFollow.fromJson(json.decode(e)))
-        .toList(),
-    write: (prefs, key, value) => prefs.setStringListOrNull(
-      key,
-      value?.map(json.encode).toList(),
-    ),
+    fromJson: (json) =>
+        List<PrefsFollow>.from(json.map((e) => PrefsFollow.fromJson(e))),
   );
 
   late final ValueNotifier<bool> writeHistory =

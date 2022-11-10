@@ -738,7 +738,7 @@ packages:
       name: notified_preferences
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.0"
+    version: "2.0.0"
   octo_image:
     dependency: transitive
     description:
