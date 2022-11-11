@@ -11,16 +11,15 @@ final DTextParser searchParser = DTextParser(
     return plainText(
       context: context,
       text: name,
-      state: state.spoiler
-          ? state
-          : state.copyWith(
-              link: true,
-              onTap: () => Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => SearchPage(tags: tags),
-                ),
-              ),
+      state: state.push(
+        TextStateLink(
+          () => Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => SearchPage(tags: tags),
             ),
+          ),
+        ),
+      ),
     );
   },
 );

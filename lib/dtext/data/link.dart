@@ -70,7 +70,7 @@ InlineSpan parseDTextLink({
   required BuildContext context,
   required String link,
   required String? name,
-  required TextState state,
+  required TextStateStack state,
   bool insite = false,
 }) {
   String? display = name ?? linkToDisplay(link);
@@ -98,12 +98,7 @@ InlineSpan parseDTextLink({
       parseDText(
         context,
         display,
-        state.spoiler
-            ? state
-            : state.copyWith(
-                link: true,
-                onTap: onTap,
-              ),
+        state.push(TextStateLink(onTap)),
         parsers: [tagParser],
       ),
     ],

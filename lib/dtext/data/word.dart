@@ -70,18 +70,13 @@ InlineSpan parseWord({
   required LinkWord word,
   required int id,
   required String result,
-  required TextState state,
+  required TextStateStack state,
 }) =>
     plainText(
       context: context,
       text: result,
-      state: state.spoiler
-          ? state
-          : state.copyWith(
-              link: true,
-              onTap: parseLinkOnTap(context, word.toLink(id)) ??
-                  () => launch(
-                        context.read<Client>().withHost(word.toLink(id)),
-                      ),
-            ),
+      state: state.push(
+        TextStateLink(parseLinkOnTap(context, word.toLink(id)) ??
+            () => launch(context.read<Client>().withHost(word.toLink(id)))),
+      ),
     );

@@ -2,7 +2,7 @@ import 'package:e1547/dtext/dtext.dart';
 import 'package:flutter/material.dart';
 
 typedef DTextTransformer = DTextParserResult? Function(
-    BuildContext context, RegExpMatch match, TextState state);
+    BuildContext context, RegExpMatch match, TextStateStack state);
 
 class DTextParser {
   const DTextParser.builder({required this.regex, required this.tranformer});
@@ -12,7 +12,7 @@ class DTextParser {
     required InlineSpan Function(
       BuildContext context,
       RegExpMatch match,
-      TextState state,
+      TextStateStack state,
     )
         tranformer,
   }) =>
@@ -38,7 +38,7 @@ class DTextParserResult {
 
   final InlineSpan span;
   final String text;
-  final TextState state;
+  final TextStateStack state;
 }
 
 extension Stringing on RegExpMatch {

@@ -1,5 +1,4 @@
 import 'package:e1547/dtext/dtext.dart';
-import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
 
 final DTextParser blockParser = DTextParser.builder(
@@ -97,55 +96,61 @@ final DTextParser tagParser = DTextParser.builder(
     TextStateTag? stateTag = TextStateTag.values.asNameMap()[tag.key];
 
     if (stateTag != null) {
-      TextState updated = state;
-      // add textStyle
+      TextStateStack updated = state;
+
+      TextStateStack withActive<T extends TextState>(bool active, T state) {
+        if (tag.active) {
+          return updated.push(state);
+        } else {
+          return updated.pop<T>();
+        }
+      }
+
       switch (stateTag) {
         case TextStateTag.b:
-          updated = updated.copyWith(bold: tag.active);
+          updated = withActive(tag.active, TextStateBold());
           break;
         case TextStateTag.i:
-          updated = updated.copyWith(italic: tag.active);
+          updated = withActive(tag.active, TextStateItalic());
           break;
         case TextStateTag.u:
-          updated = updated.copyWith(underline: tag.active);
+          updated = withActive(tag.active, TextStateUnderline());
           break;
         case TextStateTag.o:
-          // not supported on the site.
-          // updated.overline = active;
+          updated = withActive(tag.active, TextStateOverline());
           break;
         case TextStateTag.s:
-          updated = updated.copyWith(strikeout: tag.active);
+          updated = withActive(tag.active, TextStateStrikeout());
           break;
         case TextStateTag.color:
-          // This is based on user permissions. Too much effort.
+          if (tag.active) {
+            String? color = tag.value;
+            if (color != null) {
+              updated = updated.push(TextStateColor(color));
+            }
+          } else {
+            updated = updated.pop<TextStateColor>();
+          }
           break;
         case TextStateTag.sup:
-          // I have no idea how to implement this.
+          updated = withActive(tag.active, TextStateSuperText());
           break;
         case TextStateTag.sub:
-          // I have no idea how to implement this.
+          updated = withActive(tag.active, TextStateSubText());
           break;
         case TextStateTag.spoiler:
-          if (!tag.active) {
-            updated = updated.copyWith(
-              spoiler: false,
-              highlight: false,
-              onTap: null,
-            );
-          } else {
-            bool spoilered =
-                context.watch<SpoilerController>().isSpoilered(after);
-            updated = updated.copyWith(
-              spoiler: spoilered,
-              highlight: !spoilered,
-              onTap: () => context.read<SpoilerController>().toggle(after),
-            );
-          }
+          updated = withActive(tag.active, TextStateSpoiler(after));
           break;
       }
 
       return DTextParserResult(
-        span: const TextSpan(),
+        span: updated == state
+            ? plainText(
+                context: context,
+                text: tag.tag,
+                state: state,
+              )
+            : const TextSpan(),
         text: after,
         state: updated,
       );

@@ -5,8 +5,6 @@ final DTextParser codeParser = DTextParser(
   tranformer: (context, match, state) => plainText(
     context: context,
     text: ' ${match.namedGroup('code')!} ',
-    state: state.copyWith(
-      highlight: true,
-    ),
+    state: state.push(TextStateInlineCode()),
   ),
 );

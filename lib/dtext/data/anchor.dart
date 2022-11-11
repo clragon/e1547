@@ -34,12 +34,7 @@ final DTextParser anchorParser = DTextParser(
     return plainText(
       context: context,
       text: name,
-      state: state.spoiler
-          ? state
-          : state.copyWith(
-              link: true,
-              onTap: onTap,
-            ),
+      state: state.push(TextStateLink(onTap)),
     );
   },
 );

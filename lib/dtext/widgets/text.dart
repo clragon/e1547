@@ -29,7 +29,7 @@ class DText extends StatelessWidget {
       Widget child = ChangeNotifierProvider<SpoilerController>(
         create: (context) => SpoilerController(),
         builder: (context, child) => Text.rich(
-          parseDText(context, result, const TextState()),
+          parseDText(context, result, const TextStateStack()),
           maxLines: maxLines,
           overflow: overflow,
           textAlign: textAlign,

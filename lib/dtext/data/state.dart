@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
 
-part 'state.freezed.dart';
+/*
 
-@freezed
-class TextState with _$TextState {
-  const factory TextState({
     @Default(false) bool bold,
     @Default(false) bool italic,
     @Default(false) bool strikeout,
@@ -16,7 +12,84 @@ class TextState with _$TextState {
     @Default(false) bool highlight,
     @Default(false) bool spoiler,
     VoidCallback? onTap,
-  }) = _TextState;
+ */
+
+abstract class TextState {
+  const TextState();
+}
+
+class TextStateBold extends TextState {}
+
+class TextStateItalic extends TextState {}
+
+class TextStateStrikeout extends TextState {}
+
+class TextStateUnderline extends TextState {}
+
+class TextStateOverline extends TextState {}
+
+class TextStateInlineCode extends TextState {}
+
+class TextStateColor extends TextState {
+  const TextStateColor(this.color);
+
+  final String color;
+}
+
+class TextStateSuperText extends TextState {}
+
+class TextStateSubText extends TextState {}
+
+class TextStateHeader extends TextState {
+  const TextStateHeader(this.size);
+
+  final int size;
+}
+
+class TextStateLink extends TextState {
+  const TextStateLink(this.onTap);
+
+  final VoidCallback? onTap;
+}
+
+class TextStateSpoiler extends TextState {
+  const TextStateSpoiler(this.text);
+
+  final String text;
+}
+
+class TextStateStack {
+  const TextStateStack([List<TextState>? states])
+      : _states = states ?? const [];
+
+  /// The list of states in this stack.
+  final List<TextState> _states;
+
+  /// Retrieves the closest instance of a state [T].
+  T? getClosest<T extends TextState>() {
+    List<T> targets = _states.whereType<T>().toList();
+    if (targets.isEmpty) return null;
+    return targets.last;
+  }
+
+  /// Checks whether the Stack has a certain state [T].
+  bool hasState<T extends TextState>() => getClosest<T>() != null;
+
+  /// Adds a new TextState to the stack.
+  TextStateStack push(TextState state) => TextStateStack(
+        List.of(_states)..add(state),
+      );
+
+  /// Removes the last inserted State if it is of Type [T].
+  /// Otherwise, nothing happens.
+  TextStateStack pop<T extends TextState>() {
+    if (_states.isNotEmpty && _states.last is T) {
+      return TextStateStack(
+        List.of(_states)..remove(_states.last),
+      );
+    }
+    return this;
+  }
 }
 
 enum TextStateTag {
@@ -67,6 +140,9 @@ class TextTag {
   final bool active;
   final bool expanded;
   final String? value;
+
+  @override
+  String toString() => '$tag$after';
 
   static String _singleBrackets(String value) => [
         r'(?<!\[)', // prevent double brackets

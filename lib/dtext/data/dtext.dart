@@ -14,7 +14,7 @@ final List<DTextParser> allDtextParsers = [
   ...linkWordParsers,
 ];
 
-InlineSpan parseDText(BuildContext context, String text, TextState state,
+InlineSpan parseDText(BuildContext context, String text, TextStateStack state,
     {List<DTextParser>? parsers}) {
   parsers ??= allDtextParsers;
 
@@ -51,7 +51,7 @@ InlineSpan parseDText(BuildContext context, String text, TextState state,
   DTextParserResult? result;
 
   for (final entry in sorted) {
-    result = entry.value.tranformer(context, entry.key, state.copyWith());
+    result = entry.value.tranformer(context, entry.key, state);
     if (result != null) {
       spans.addAll([
         plainText(context: context, text: entry.key.before, state: state),
