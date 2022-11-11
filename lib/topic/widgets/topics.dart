@@ -35,7 +35,10 @@ class _TopicsPageState extends State<TopicsPage> with DrawerEntry {
             );
           },
           child: RefreshableControllerPage(
-            appBar: const DefaultAppBar(title: Text('Topics')),
+            appBar: const DefaultAppBar(
+              title: Text('Topics'),
+              actions: [ContextDrawerButton()],
+            ),
             floatingActionButton: SheetFloatingActionButton(
               actionIcon: Icons.search,
               builder: (context, actionController) => ControlledTextField(
@@ -47,6 +50,10 @@ class _TopicsPageState extends State<TopicsPage> with DrawerEntry {
               ),
             ),
             drawer: const NavigationDrawer(),
+            endDrawer: ContextDrawer(
+              title: const Text('Topics'),
+              children: [TopicTagEditingTile(controller: controller)],
+            ),
             controller: controller,
             child: PagedListView(
               primary: true,

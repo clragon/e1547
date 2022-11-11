@@ -3,6 +3,7 @@ export 'data/actions.dart';
 export 'data/controller.dart';
 export 'data/topic.dart';
 // widgets
+export 'widgets/drawer.dart';
 export 'widgets/loading.dart';
 export 'widgets/sheet.dart';
 export 'widgets/tile.dart';
