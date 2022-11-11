@@ -1,4 +1,5 @@
 import 'package:e1547/dtext/dtext.dart';
+import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
 
 final DTextParser blockParser = DTextParser.builder(
@@ -49,11 +50,6 @@ final DTextParser blockParser = DTextParser.builder(
       Widget blocked;
 
       switch (block) {
-        case TextBlock.spoiler:
-          blocked = SpoilerWrap(
-            child: Text.rich(parseDText(context, between, state)),
-          );
-          break;
         case TextBlock.code:
           blocked = QuoteWrap(
             child: Text.rich(
@@ -129,10 +125,30 @@ final DTextParser tagParser = DTextParser.builder(
         case TextStateTag.sub:
           // I have no idea how to implement this.
           break;
+        case TextStateTag.spoiler:
+          if (!tag.active) {
+            updated = updated.copyWith(
+              spoiler: false,
+              highlight: false,
+              onTap: null,
+            );
+          } else {
+            bool spoilered =
+                context.watch<SpoilerController>().isSpoilered(after);
+            updated = updated.copyWith(
+              spoiler: spoilered,
+              highlight: !spoilered,
+              onTap: () => context.read<SpoilerController>().toggle(after),
+            );
+          }
+          break;
       }
 
       return DTextParserResult(
-          span: const TextSpan(), text: after, state: updated);
+        span: const TextSpan(),
+        text: after,
+        state: updated,
+      );
     } else {
       return null;
     }

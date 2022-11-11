@@ -1,67 +1,28 @@
-import 'package:e1547/interface/interface.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 
-class SpoilerWrap extends StatefulWidget {
-  const SpoilerWrap({required this.child});
+/// Provides spoilering and unspoilering text segments.
+class SpoilerController extends ChangeNotifier {
+  List<String> _unspoilered = [];
 
-  final Widget child;
-
-  @override
-  State<SpoilerWrap> createState() => _SpoilerWrapState();
-}
-
-class _SpoilerWrapState extends State<SpoilerWrap> {
-  bool visible = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: Stack(
-        children: [
-          InkWell(
-            onTap: () => setState(() => visible = !visible),
-            child: Padding(
-              padding: const EdgeInsets.all(8),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [widget.child],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          Positioned.fill(
-            child: IgnorePointer(
-              ignoring: visible,
-              child: InkWell(
-                onTap: () => setState(() => visible = !visible),
-                child: AnimatedOpacity(
-                  opacity: visible ? 0 : 1,
-                  duration: defaultAnimationDuration,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.black,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: const Center(
-                      child: Text(
-                        'SPOILER',
-                        style: TextStyle(
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          )
-        ],
-      ),
-    );
+  void _with(List<String> Function(List<String> value) call) {
+    List<String> result = call(List.from(_unspoilered));
+    if (!const DeepCollectionEquality().equals(_unspoilered, result)) {
+      _unspoilered = result;
+      notifyListeners();
+    }
   }
+
+  /// Whether a given text segment is currently spoilered.
+  bool isSpoilered(String text) => !_unspoilered.contains(text);
+
+  /// Unspoilers a text segment.
+  void unspoiler(String text) => _with((value) => value..add(text));
+
+  /// Restoers spoiler on a given text segment.
+  void respoiler(String text) => _with((value) => value..remove(text));
+
+  /// Toggles the spoiler status of a text segment.
+  void toggle(String text) =>
+      isSpoilered(text) ? unspoiler(text) : respoiler(text);
 }

@@ -8,11 +8,11 @@ export 'data/link.dart';
 export 'data/list.dart';
 export 'data/parser.dart';
 export 'data/search.dart';
-export 'data/tags.dart';
+export 'data/state.dart';
 export 'data/word.dart';
 // widgets
 export 'widgets/editor.dart';
-export 'widgets/field.dart';
+export 'widgets/text.dart';
 export 'widgets/plain.dart';
 export 'widgets/quote.dart';
 export 'widgets/section.dart';

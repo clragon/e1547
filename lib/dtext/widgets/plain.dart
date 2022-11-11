@@ -29,13 +29,15 @@ TextSpan plainText({
       fontStyle: state.italic ? FontStyle.italic : null,
       fontSize: state.header ? 18 : null,
       decoration: TextDecoration.combine([
-        state.strikeout ? TextDecoration.lineThrough : TextDecoration.none,
-        state.underline ? TextDecoration.underline : TextDecoration.none,
-        state.overline ? TextDecoration.overline : TextDecoration.none,
+        if (state.strikeout) TextDecoration.lineThrough,
+        if (state.underline) TextDecoration.underline,
+        if (state.overline) TextDecoration.overline,
       ]),
-      background: state.highlight
-          ? (Paint()..color = Theme.of(context).cardColor)
-          : null,
+      backgroundColor: state.spoiler
+          ? Theme.of(context).textTheme.bodyText2!.color!.withOpacity(1)
+          : state.highlight
+              ? Theme.of(context).cardColor
+              : null,
     ),
   );
 }

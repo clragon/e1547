@@ -75,11 +75,13 @@ InlineSpan parseWord({
     plainText(
       context: context,
       text: result,
-      state: state.copyWith(
-        link: true,
-        onTap: parseLinkOnTap(context, word.toLink(id)) ??
-            () => launch(
-                  context.read<Client>().withHost(word.toLink(id)),
-                ),
-      ),
+      state: state.spoiler
+          ? state
+          : state.copyWith(
+              link: true,
+              onTap: parseLinkOnTap(context, word.toLink(id)) ??
+                  () => launch(
+                        context.read<Client>().withHost(word.toLink(id)),
+                      ),
+            ),
     );

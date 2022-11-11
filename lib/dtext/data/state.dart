@@ -1,50 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-class TextState {
-  const TextState({
-    this.bold = false,
-    this.italic = false,
-    this.strikeout = false,
-    this.underline = false,
-    this.overline = false,
-    this.header = false,
-    this.link = false,
-    this.highlight = false,
-    this.onTap,
-  });
+part 'state.freezed.dart';
 
-  final bool bold;
-  final bool italic;
-  final bool strikeout;
-  final bool underline;
-  final bool overline;
-  final bool header;
-  final bool link;
-  final bool highlight;
-  final VoidCallback? onTap;
-
-  TextState copyWith({
-    bool? bold,
-    bool? italic,
-    bool? strikeout,
-    bool? underline,
-    bool? overline,
-    bool? header,
-    bool? link,
-    bool? highlight,
+@freezed
+class TextState with _$TextState {
+  const factory TextState({
+    @Default(false) bool bold,
+    @Default(false) bool italic,
+    @Default(false) bool strikeout,
+    @Default(false) bool underline,
+    @Default(false) bool overline,
+    @Default(false) bool header,
+    @Default(false) bool link,
+    @Default(false) bool highlight,
+    @Default(false) bool spoiler,
     VoidCallback? onTap,
-  }) =>
-      TextState(
-        bold: bold ?? this.bold,
-        italic: italic ?? this.italic,
-        strikeout: strikeout ?? this.strikeout,
-        underline: underline ?? this.underline,
-        overline: overline ?? this.overline,
-        header: header ?? this.header,
-        link: link ?? this.link,
-        highlight: highlight ?? this.highlight,
-        onTap: onTap ?? this.onTap,
-      );
+  }) = _TextState;
 }
 
 enum TextStateTag {
@@ -56,10 +28,10 @@ enum TextStateTag {
   color,
   sup,
   sub,
+  spoiler,
 }
 
 enum TextBlock {
-  spoiler,
   code,
   section,
   quote,

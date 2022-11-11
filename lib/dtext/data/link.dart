@@ -1,8 +1,9 @@
 import 'package:e1547/app/app.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/dtext/dtext.dart';
+import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+
 import 'package:username_generator/username_generator.dart';
 
 final DTextParser linkParser = DTextParser(
@@ -97,10 +98,12 @@ InlineSpan parseDTextLink({
       parseDText(
         context,
         display,
-        state.copyWith(
-          link: true,
-          onTap: onTap,
-        ),
+        state.spoiler
+            ? state
+            : state.copyWith(
+                link: true,
+                onTap: onTap,
+              ),
         parsers: [tagParser],
       ),
     ],
