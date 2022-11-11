@@ -96,16 +96,15 @@ class _PostDetailImageToggleState extends State<PostDetailImageToggle> {
           appInfo: service.appInfo,
           cache: service.cache,
         );
-        replacement ??= await unsafeClient.post(post.id);
-        controller.replacePost(
-          post.copyWith(
-            fileRaw: post.fileRaw.copyWith(url: replacement!.fileRaw.url),
-            preview: post.preview.copyWith(url: replacement!.preview.url),
-            sample: post.sample.copyWith(url: replacement!.sample.url),
-          ),
+        replacement = await unsafeClient.post(post.id);
+        Post updated = post.copyWith(
+          fileRaw: post.fileRaw.copyWith(url: replacement!.fileRaw.url),
+          preview: post.preview.copyWith(url: replacement!.preview.url),
+          sample: post.sample.copyWith(url: replacement!.sample.url),
         );
-        if (!controller.isDenied(post)) {
-          controller.allow(post);
+        controller.replacePost(updated);
+        if (!controller.isDenied(updated)) {
+          controller.allow(updated);
         }
       }
     } else {
@@ -132,51 +131,54 @@ class _PostDetailImageToggleState extends State<PostDetailImageToggle> {
 
   @override
   Widget build(BuildContext context) {
-    if (!post.flags.deleted) {
-      PostsController controller = context.read<PostsController>();
-      return CrossFade.builder(
-        showChild: post.file.url == null ||
-            (!post.isFavorited && controller.isDenied(post)) ||
-            controller.isAllowed(post),
-        duration: const Duration(milliseconds: 200),
-        builder: (context) => Card(
-          color:
-              controller.isAllowed(post) ? Colors.black12 : Colors.transparent,
-          elevation: 0,
-          child: InkWell(
-            onTap: onToggle,
-            child: Padding(
-              padding: const EdgeInsets.all(8),
-              child: Row(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 2),
-                    child: Icon(
-                      controller.isAllowed(post)
-                          ? Icons.visibility_off
-                          : Icons.visibility,
-                      size: 16,
+    return PostsConnector(
+      post: post,
+      builder: (context, post) {
+        if (post.flags.deleted) return const SizedBox.shrink();
+        PostsController controller = context.watch<PostsController>();
+        return CrossFade.builder(
+          showChild: post.file.url == null ||
+              (!post.isFavorited && controller.isDenied(post)) ||
+              controller.isAllowed(post),
+          duration: const Duration(milliseconds: 200),
+          builder: (context) => Card(
+            color: controller.isAllowed(post)
+                ? Colors.black12
+                : Colors.transparent,
+            elevation: 0,
+            child: InkWell(
+              onTap: onToggle,
+              child: Padding(
+                padding: const EdgeInsets.all(8),
+                child: Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 2),
+                      child: Icon(
+                        controller.isAllowed(post)
+                            ? Icons.visibility_off
+                            : Icons.visibility,
+                        size: 16,
+                      ),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 5),
-                    child: Text(controller.isAllowed(post) ? 'hide' : 'show'),
-                  ),
-                  CrossFade(
-                    showChild: loading,
-                    child: const SizedCircularProgressIndicator(
-                      size: 16,
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 5),
+                      child: Text(controller.isAllowed(post) ? 'hide' : 'show'),
                     ),
-                  ),
-                ],
+                    CrossFade(
+                      showChild: loading,
+                      child: const SizedCircularProgressIndicator(
+                        size: 16,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
-        ),
-      );
-    } else {
-      return const SizedBox.shrink();
-    }
+        );
+      },
+    );
   }
 }
 
@@ -193,85 +195,90 @@ class PostDetailImageActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    VoidCallback? onTap;
+    return PostsConnector(
+      post: post,
+      builder: (context, post) {
+        VoidCallback? onTap;
 
-    PostsController controller = context.read<PostsController>();
-    bool visible = post.file.url != null &&
-        (!controller.isDenied(post) || post.isFavorited);
+        PostsController controller = context.watch<PostsController>();
+        bool visible = post.file.url != null &&
+            (!controller.isDenied(post) || post.isFavorited);
 
-    if (visible) {
-      onTap = post.type == PostType.unsupported
-          ? () => launch(post.file.url!)
-          : onOpen;
-    }
+        if (visible) {
+          onTap = post.type == PostType.unsupported
+              ? () => launch(post.file.url!)
+              : onOpen;
+        }
 
-    Widget fullscreenButton() {
-      if (post.type == PostType.video && onTap != null) {
-        return CrossFade.builder(
-          showChild: visible,
-          builder: (context) => Card(
-            elevation: 0,
-            color: Colors.black12,
-            child: InkWell(
-              onTap: onTap,
-              child: const Padding(
-                padding: EdgeInsets.all(4),
-                child: Icon(
-                  Icons.fullscreen,
-                  size: 24,
-                  color: Colors.white,
+        Widget fullscreenButton() {
+          if (post.type == PostType.video && onTap != null) {
+            return CrossFade.builder(
+              showChild: visible,
+              builder: (context) => Card(
+                elevation: 0,
+                color: Colors.black12,
+                child: InkWell(
+                  onTap: onTap,
+                  child: const Padding(
+                    padding: EdgeInsets.all(4),
+                    child: Icon(
+                      Icons.fullscreen,
+                      size: 24,
+                      color: Colors.white,
+                    ),
+                  ),
                 ),
               ),
+            );
+          } else {
+            return const SizedBox.shrink();
+          }
+        }
+
+        Widget muteButton() {
+          return CrossFade.builder(
+            showChild: post.type == PostType.video && post.file.url != null,
+            builder: (context) => const Card(
+              elevation: 0,
+              color: Colors.black12,
+              child: VideoHandlerVolumeControl(),
             ),
-          ),
+          );
+        }
+
+        CachedVideoPlayerController? videoController = post.getVideo(context);
+
+        return Stack(
+          fit: StackFit.passthrough,
+          children: [
+            InkWell(
+              hoverColor: Colors.transparent,
+              onTap: videoController != null
+                  ? () => videoController.value.isPlaying
+                      ? videoController.pause()
+                      : videoController.play()
+                  : onTap,
+              child: child,
+            ),
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                child: Row(
+                  children: [
+                    muteButton(),
+                    const Spacer(),
+                    fullscreenButton(),
+                    PostDetailImageToggle(post: post),
+                  ],
+                ),
+              ),
+            )
+          ],
         );
-      } else {
-        return const SizedBox.shrink();
-      }
-    }
-
-    Widget muteButton() {
-      return CrossFade.builder(
-        showChild: post.type == PostType.video && post.file.url != null,
-        builder: (context) => const Card(
-          elevation: 0,
-          color: Colors.black12,
-          child: VideoHandlerVolumeControl(),
-        ),
-      );
-    }
-
-    CachedVideoPlayerController? videoController = post.getVideo(context);
-
-    return Stack(
-      fit: StackFit.passthrough,
-      children: [
-        InkWell(
-          hoverColor: Colors.transparent,
-          onTap: videoController != null
-              ? () => videoController.value.isPlaying
-                  ? videoController.pause()
-                  : videoController.play()
-              : onTap,
-          child: child,
-        ),
-        Positioned(
-          bottom: 0,
-          left: 0,
-          right: 0,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 4),
-            child: Row(
-              children: [
-                muteButton(),
-                const Spacer(),
-                fullscreenButton(),
-                PostDetailImageToggle(post: post),
-              ],
-            ),
-          ),
-        )
-      ],
+      },
     );
   }
 }

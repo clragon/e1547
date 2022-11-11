@@ -77,6 +77,26 @@ class PostsControllerConnector extends StatelessWidget {
   }
 }
 
+class PostsConnector extends StatelessWidget {
+  const PostsConnector({
+    super.key,
+    required this.post,
+    required this.builder,
+  });
+
+  final Post post;
+  final Widget Function(BuildContext context, Post value) builder;
+
+  @override
+  Widget build(BuildContext context) {
+    Post? post = context.watch<PostsController?>()?.itemList?.firstWhereOrNull(
+              (e) => e.id == this.post.id,
+            ) ??
+        this.post;
+    return builder(context, post);
+  }
+}
+
 class PostHistoryConnector extends StatefulWidget {
   const PostHistoryConnector({
     super.key,

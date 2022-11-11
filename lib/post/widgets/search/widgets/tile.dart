@@ -112,20 +112,25 @@ class PostTileOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    PostsController? controller = context.read<PostsController?>();
-    if (post.flags.deleted) {
-      return const Center(child: Text('deleted'));
-    }
-    if (post.type == PostType.unsupported) {
-      return const Center(child: Text('unsupported'));
-    }
-    if (post.file.url == null) {
-      return const Center(child: Text('unsafe'));
-    }
-    if (controller?.isDenied(post) ?? false) {
-      return const Center(child: Text('blacklisted'));
-    }
-    return child;
+    return PostsConnector(
+      post: post,
+      builder: (context, post) {
+        PostsController? controller = context.watch<PostsController?>();
+        if (post.flags.deleted) {
+          return const Center(child: Text('deleted'));
+        }
+        if (post.type == PostType.unsupported) {
+          return const Center(child: Text('unsupported'));
+        }
+        if (post.file.url == null) {
+          return const Center(child: Text('unsafe'));
+        }
+        if (controller?.isDenied(post) ?? false) {
+          return const Center(child: Text('blacklisted'));
+        }
+        return child;
+      },
+    );
   }
 }
 
