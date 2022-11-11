@@ -46,27 +46,27 @@ final DTextParser blockParser = DTextParser.builder(
 
       between = between.trim();
 
-      Widget blocked;
+      WidgetBuilder blocked;
 
       switch (block) {
         case TextBlock.code:
-          blocked = QuoteWrap(
-            child: Text.rich(
-              plainText(context: context, text: between, state: state),
-            ),
-          );
+          blocked = (context) => QuoteWrap(
+                child: Text.rich(
+                  plainText(context: context, text: between, state: state),
+                ),
+              );
           break;
         case TextBlock.section:
-          blocked = SectionWrap(
-            title: tag.value,
-            expanded: tag.expanded,
-            child: Text.rich(parseDText(context, between, state)),
-          );
+          blocked = (context) => SectionWrap(
+                title: tag.value,
+                expanded: tag.expanded,
+                child: Text.rich(parseDText(context, between, state)),
+              );
           break;
         case TextBlock.quote:
-          blocked = QuoteWrap(
-            child: Text.rich(parseDText(context, between, state)),
-          );
+          blocked = (context) => QuoteWrap(
+                child: Text.rich(parseDText(context, between, state)),
+              );
           break;
       }
 
@@ -76,7 +76,9 @@ final DTextParser blockParser = DTextParser.builder(
         span: WidgetSpan(
           child: MediaQuery(
             data: MediaQuery.of(context).copyWith(textScaleFactor: 1),
-            child: blocked,
+            child: SpoilerProvider(
+              builder: (context, child) => blocked(context),
+            ),
           ),
         ),
         text: after,
