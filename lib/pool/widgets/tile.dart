@@ -54,7 +54,7 @@ class PoolTile extends StatelessWidget {
         Post? post =
             controller.itemList?.firstWhereOrNull((e) => e.id == thumbnail);
         if (post != null) {
-          image = Provider<PostsController>.value(
+          image = ChangeNotifierProvider<PostsController>.value(
             value: controller,
             child: PostImageTile(
               post: post,
@@ -64,44 +64,47 @@ class PoolTile extends StatelessWidget {
       }
     }
 
-    return Card(
-      child: InkWell(
-        onTap: onPressed,
-        onLongPress: () => poolSheet(context, pool),
-        child: AnimatedSize(
-          duration: defaultAnimationDuration,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ConstrainedBox(
-                constraints: const BoxConstraints(
-                  maxHeight: 300,
-                ),
-                child: image ?? const SizedBox.shrink(),
-              ),
-              title(),
-              if (pool.description.isNotEmpty)
-                Padding(
-                  padding: const EdgeInsets.only(
-                    left: 16,
-                    right: 16,
-                    bottom: 8,
-                  ),
-                  child: IgnorePointer(
-                    child: Opacity(
-                      opacity: 0.5,
-                      child: DText(
-                        pool.description.ellipse(
-                          image == null ? 400 : 200,
+    return Column(
+      children: [
+        InkWell(
+          onTap: onPressed,
+          onLongPress: () => poolSheet(context, pool),
+          child: AnimatedSize(
+            duration: defaultAnimationDuration,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                title(),
+                if (pool.description.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      left: 16,
+                      right: 16,
+                      bottom: 8,
+                    ),
+                    child: IgnorePointer(
+                      child: Opacity(
+                        opacity: 0.5,
+                        child: DText(
+                          pool.description.ellipse(
+                            image == null ? 400 : 200,
+                          ),
                         ),
                       ),
                     ),
                   ),
+                ConstrainedBox(
+                  constraints: const BoxConstraints(
+                    maxHeight: 300,
+                  ),
+                  child: image ?? const SizedBox.shrink(),
                 ),
-            ],
+              ],
+            ),
           ),
         ),
-      ),
+        const Divider(indent: 8, endIndent: 8),
+      ],
     );
   }
 }

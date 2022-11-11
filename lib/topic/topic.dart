@@ -5,5 +5,5 @@ export 'data/topic.dart';
 // widgets
 export 'widgets/loading.dart';
 export 'widgets/sheet.dart';
-export 'widgets/topic.dart';
+export 'widgets/tile.dart';
 export 'widgets/topics.dart';

@@ -4,4 +4,4 @@ export 'data/controller.dart';
 export 'data/reply.dart';
 // widgets
 export 'widgets/replies.dart';
-export 'widgets/reply.dart';
+export 'widgets/tile.dart';

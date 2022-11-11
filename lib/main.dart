@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:e1547/app/app.dart';
-import 'package:e1547/follow/follow.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';

@@ -5,6 +5,7 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
+import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
@@ -25,67 +26,82 @@ class _PoolsPageState extends State<PoolsPage> with DrawerEntry {
   Widget build(BuildContext context) {
     return PoolsProvider(
       search: widget.search,
-      child: Consumer<PoolsController>(
-        builder: (context, controller, child) => ListenableListener(
-          initialize: true,
-          listenable: controller.search,
-          listener: () async {
-            HistoriesService service = context.read<HistoriesService>();
-            Client client = context.read<Client>();
-            await controller.waitForFirstPage();
-            await service.addPoolSearch(
-              client.host,
-              controller.search.value,
-              pools: controller.itemList,
-            );
-          },
-          child: RefreshableControllerPage.builder(
-            appBar: const DefaultAppBar(
-              title: Text('Pools'),
-            ),
-            floatingActionButton: SheetFloatingActionButton(
-              actionIcon: Icons.search,
-              builder: (context, actionController) => PoolSearchInput(
-                controller: controller,
-                actionController: actionController,
+      child: PoolThumbnailProvider(
+        child: Consumer<PoolsController>(
+          builder: (context, controller, child) => ListenableListener(
+            initialize: true,
+            listenable: controller.search,
+            listener: () async {
+              HistoriesService service = context.read<HistoriesService>();
+              Client client = context.read<Client>();
+              await controller.waitForFirstPage();
+              await service.addPoolSearch(
+                client.host,
+                controller.search.value,
+                pools: controller.itemList,
+              );
+            },
+            child: RefreshableControllerPage.builder(
+              appBar: const DefaultAppBar(
+                title: Text('Pools'),
+                actions: [ContextDrawerButton()],
               ),
-            ),
-            drawer: const NavigationDrawer(),
-            controller: controller,
-            builder: (context, child) => AnimatedBuilder(
-              animation: context.watch<Settings>().tileSize,
-              builder: (context, child) {
-                return TileLayout(
-                  tileSize: context.watch<Settings>().tileSize.value,
-                  child: child!,
-                );
-              },
-              child: child,
-            ),
-            child: (context) => PagedMasonryGridView<int, Pool>.count(
-              primary: true,
-              showNewPageProgressIndicatorAsGridChild: false,
-              showNewPageErrorIndicatorAsGridChild: false,
-              showNoMoreItemsIndicatorAsGridChild: false,
-              padding: defaultListPadding,
-              pagingController: controller,
-              crossAxisCount:
-                  (TileLayout.of(context).crossAxisCount * 0.5).round(),
-              builderDelegate: defaultPagedChildBuilderDelegate<Pool>(
+              floatingActionButton: SheetFloatingActionButton(
+                actionIcon: Icons.search,
+                builder: (context, actionController) => PoolSearchInput(
+                  controller: controller,
+                  actionController: actionController,
+                ),
+              ),
+              drawer: const NavigationDrawer(),
+              endDrawer: context.watch<ExtraPostsController?>() != null
+                  ? ContextDrawer(
+                      title: const Text('Pools'),
+                      children: [
+                        DrawerDenySwitch(
+                            controller: context.watch<ExtraPostsController>()),
+                        DrawerTagCounter(
+                            controller: context.watch<ExtraPostsController>()),
+                      ],
+                    )
+                  : null,
+              controller: controller,
+              builder: (context, child) => AnimatedBuilder(
+                animation: context.watch<Settings>().tileSize,
+                builder: (context, child) {
+                  return TileLayout(
+                    tileSize: context.watch<Settings>().tileSize.value,
+                    child: child!,
+                  );
+                },
+                child: child,
+              ),
+              child: (context) => PagedMasonryGridView<int, Pool>.count(
+                primary: true,
+                showNewPageProgressIndicatorAsGridChild: false,
+                showNewPageErrorIndicatorAsGridChild: false,
+                showNoMoreItemsIndicatorAsGridChild: false,
+                padding: defaultListPadding,
                 pagingController: controller,
-                itemBuilder: (context, item, index) => LowResCacheSizeProvider(
-                  size: TileLayout.of(context).tileSize * 4,
-                  child: PoolTile(
-                    pool: item,
-                    onPressed: () => Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => PoolPage(pool: item),
+                crossAxisCount:
+                    (TileLayout.of(context).crossAxisCount * 0.5).round(),
+                builderDelegate: defaultPagedChildBuilderDelegate<Pool>(
+                  pagingController: controller,
+                  itemBuilder: (context, item, index) =>
+                      LowResCacheSizeProvider(
+                    size: TileLayout.of(context).tileSize * 4,
+                    child: PoolTile(
+                      pool: item,
+                      onPressed: () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => PoolPage(pool: item),
+                        ),
                       ),
                     ),
                   ),
+                  onEmpty: const Text('No pools'),
+                  onError: const Text('Failed to load pools'),
                 ),
-                onEmpty: const Text('No pools'),
-                onError: const Text('Failed to load pools'),
               ),
             ),
           ),

@@ -46,8 +46,27 @@ class _PostsRouteConnectorState extends State<PostsRouteConnector> {
   Widget build(BuildContext context) => ListenableListener(
         listener: updatePages,
         listenable: widget.controller,
-        child: widget.child,
+        child: ChangeNotifierProvider.value(
+          value: widget.controller,
+          child: widget.child,
+        ),
       );
+}
+
+class PostsIdConnector extends StatelessWidget {
+  const PostsIdConnector({super.key, required this.id, required this.builder});
+
+  final int id;
+  final Widget Function(BuildContext context, Post? value) builder;
+
+  @override
+  Widget build(BuildContext context) {
+    PostsController? controller = context.watch<PostsController>();
+    return builder(
+      context,
+      controller.itemList?.firstWhereOrNull((e) => e.id == id),
+    );
+  }
 }
 
 class PostsControllerConnector extends StatelessWidget {
@@ -66,12 +85,9 @@ class PostsControllerConnector extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<PostsController>.value(
       value: controller,
-      child: AnimatedBuilder(
-        animation: controller,
-        builder: (context, child) => builder(
-          context,
-          controller.itemList?.firstWhereOrNull((e) => e.id == id),
-        ),
+      child: PostsIdConnector(
+        id: id,
+        builder: builder,
       ),
     );
   }
@@ -89,11 +105,13 @@ class PostsConnector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Post? post = context.watch<PostsController?>()?.itemList?.firstWhereOrNull(
-              (e) => e.id == this.post.id,
-            ) ??
-        this.post;
-    return builder(context, post);
+    return PostsIdConnector(
+      id: post.id,
+      builder: (context, post) => builder(
+        context,
+        post ?? this.post,
+      ),
+    );
   }
 }
 
