@@ -1,4 +1,3 @@
-import 'package:e1547/client/client.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
@@ -15,8 +14,7 @@ class _FollowsTimelinePageState extends State<FollowsTimelinePage> {
   @override
   Widget build(BuildContext context) {
     return PostsProvider(
-      provider: (search, page, force) async {
-        Client client = context.read<Client>();
+      provider: (client, search, page, force) async {
         FollowsService service = context.read<FollowsService>();
         return client.tagPosts(
           (await service.getAll(host: client.host)).map((e) => e.tags).toList(),

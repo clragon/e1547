@@ -469,8 +469,7 @@ class PostFeedTile extends StatelessWidget {
                       children: [
                         Expanded(
                           child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 8, horizontal: 8),
+                            padding: const EdgeInsets.all(8),
                             child: DText(post.description.ellipse(200)),
                           ),
                         ),

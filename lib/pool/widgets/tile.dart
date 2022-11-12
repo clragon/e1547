@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:collection/collection.dart';
 import 'package:e1547/dtext/dtext.dart';
 import 'package:e1547/interface/interface.dart';
@@ -19,26 +21,21 @@ class PoolTile extends StatelessWidget {
   Widget build(BuildContext context) {
     Widget title() {
       return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 12),
+        padding: const EdgeInsets.symmetric(vertical: 8),
         child: Row(
           children: [
             Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Text(
-                  tagToName(pool.name),
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.subtitle1,
-                  maxLines: 1,
-                ),
+              child: Text(
+                tagToName(pool.name),
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.subtitle1,
+                maxLines: 1,
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.only(left: 4, right: 16),
-              child: Text(
-                pool.postIds.length.toString(),
-                style: Theme.of(context).textTheme.subtitle1,
-              ),
+            const SizedBox(width: 4),
+            Text(
+              pool.postIds.length.toString(),
+              style: Theme.of(context).textTheme.subtitle1,
             ),
           ],
         ),
@@ -46,60 +43,59 @@ class PoolTile extends StatelessWidget {
     }
 
     Widget? image;
-    ExtraPostsController? controller = context.watch<ExtraPostsController?>();
+    PoolsController? controller = context.watch<PoolsController?>();
 
     if (pool.postIds.isNotEmpty && controller != null) {
       int thumbnail = pool.postIds.first;
-      if (controller.ids?.contains(thumbnail) ?? false) {
-        Post? post =
-            controller.itemList?.firstWhereOrNull((e) => e.id == thumbnail);
-        if (post != null) {
-          image = ChangeNotifierProvider<PostsController>.value(
-            value: controller,
-            child: PostImageTile(
-              post: post,
+      Post? post = controller.thumbnails.itemList
+          ?.firstWhereOrNull((e) => e.id == thumbnail);
+      if (post != null) {
+        image = ChangeNotifierProvider<PostsController>.value(
+          value: controller.thumbnails,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxHeight: 400),
+            child: AspectRatio(
+              aspectRatio: max(post.file.width / post.file.height, 0.9),
+              child: PostImageTile(post: post),
             ),
-          );
-        }
+          ),
+        );
       }
     }
 
     return Column(
       children: [
-        InkWell(
-          onTap: onPressed,
-          onLongPress: () => poolSheet(context, pool),
-          child: AnimatedSize(
-            duration: defaultAnimationDuration,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                title(),
-                if (pool.description.isNotEmpty)
-                  Padding(
-                    padding: const EdgeInsets.only(
-                      left: 16,
-                      right: 16,
-                      bottom: 8,
-                    ),
-                    child: IgnorePointer(
-                      child: Opacity(
-                        opacity: 0.5,
-                        child: DText(
-                          pool.description.ellipse(
-                            image == null ? 400 : 200,
+        Padding(
+          padding: const EdgeInsets.all(4),
+          child: InkWell(
+            onTap: onPressed,
+            onLongPress: () => poolSheet(context, pool),
+            child: Padding(
+              padding: const EdgeInsets.all(8),
+              child: AnimatedSize(
+                duration: defaultAnimationDuration,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    title(),
+                    if (pool.description.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: IgnorePointer(
+                          child: Opacity(
+                            opacity: 0.5,
+                            child: DText(
+                              pool.description.ellipse(
+                                image == null ? 400 : 200,
+                              ),
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ),
-                ConstrainedBox(
-                  constraints: const BoxConstraints(
-                    maxHeight: 300,
-                  ),
-                  child: image ?? const SizedBox.shrink(),
+                    if (image != null) image,
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
         ),

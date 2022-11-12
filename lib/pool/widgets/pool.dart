@@ -23,12 +23,12 @@ class _PoolPageState extends State<PoolPage> {
   @override
   Widget build(BuildContext context) {
     return PostsProvider(
-      provider: (tags, page, force) => context.read<Client>().poolPosts(
-            widget.pool.id,
-            page,
-            reverse: reversePool,
-            force: force,
-          ),
+      provider: (client, tags, page, force) => client.poolPosts(
+        widget.pool.id,
+        page,
+        reverse: reversePool,
+        force: force,
+      ),
       canSearch: false,
       child: Consumer<PostsController>(
         builder: (context, controller, child) => ListenableListener(

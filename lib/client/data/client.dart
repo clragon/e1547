@@ -318,6 +318,7 @@ class Client {
     int? limit,
     bool? force,
   }) async {
+    if (tags.isEmpty) return [];
     int max = 40;
     int pages = (tags.length / max).ceil();
     int chunkSize = (tags.length / pages).ceil();

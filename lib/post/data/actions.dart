@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:cached_video_player/cached_video_player.dart';
 import 'package:crypto/crypto.dart';
+import 'package:e1547/client/client.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
@@ -299,7 +300,152 @@ extension PostVideoPlaying on Post {
 }
 
 extension PostLinking on Post {
+  static String getPostLink(int id) => '/posts/$id';
+
   String get link => getPostLink(id);
 }
 
-String getPostLink(int id) => '/posts/$id';
+mixin PostsActionController<KeyType> on RawDataController<KeyType, Post> {
+  Client get client;
+
+  void replacePost(Post post, {bool force = false}) {
+    int index = itemList?.indexWhere((e) => e.id == post.id) ?? -1;
+    if (index == -1) {
+      throw StateError('Post isnt owned by this controller');
+    }
+    updateItem(index, post, force: force);
+  }
+
+  Future<bool> fav(Post post) async {
+    assertOwnsItem(post);
+    replacePost(
+      post.copyWith(
+        isFavorited: true,
+        favCount: post.favCount + 1,
+      ),
+      force: true,
+    );
+    try {
+      await client.addFavorite(post.id);
+      return true;
+    } on DioError {
+      replacePost(
+        post.copyWith(
+          isFavorited: false,
+          favCount: post.favCount - 1,
+        ),
+      );
+      return false;
+    }
+  }
+
+  Future<bool> unfav(Post post) async {
+    assertOwnsItem(post);
+    replacePost(
+      post.copyWith(
+        isFavorited: false,
+        favCount: post.favCount - 1,
+      ),
+      force: true,
+    );
+    try {
+      await client.removeFavorite(post.id);
+      return true;
+    } on DioError {
+      replacePost(
+        post.copyWith(
+          isFavorited: true,
+          favCount: post.favCount + 1,
+        ),
+      );
+      return false;
+    }
+  }
+
+  Future<bool> vote({
+    required Post post,
+    required bool upvote,
+    required bool replace,
+  }) async {
+    assertOwnsItem(post);
+    try {
+      await client.votePost(post.id, upvote, replace);
+      Post value = post;
+      if (value.voteStatus == VoteStatus.unknown) {
+        if (upvote) {
+          value = value.copyWith(
+            score: value.score.copyWith(
+              total: value.score.total + 1,
+              up: value.score.up + 1,
+            ),
+            voteStatus: VoteStatus.upvoted,
+          );
+        } else {
+          value = value.copyWith(
+            score: value.score.copyWith(
+              total: value.score.total - 1,
+              down: value.score.down + 1,
+            ),
+            voteStatus: VoteStatus.downvoted,
+          );
+        }
+      } else {
+        if (upvote) {
+          if (value.voteStatus == VoteStatus.upvoted) {
+            value = value.copyWith(
+              score: value.score.copyWith(
+                total: value.score.total - 1,
+                down: value.score.down + 1,
+              ),
+              voteStatus: VoteStatus.unknown,
+            );
+          } else {
+            value = value.copyWith(
+              score: value.score.copyWith(
+                total: value.score.total + 2,
+                up: value.score.up + 1,
+                down: value.score.down - 1,
+              ),
+              voteStatus: VoteStatus.upvoted,
+            );
+          }
+        } else {
+          if (value.voteStatus == VoteStatus.upvoted) {
+            value = value.copyWith(
+              score: value.score.copyWith(
+                total: value.score.total - 2,
+                up: value.score.up - 1,
+                down: value.score.down + 1,
+              ),
+              voteStatus: VoteStatus.downvoted,
+            );
+          } else {
+            value = value.copyWith(
+              score: value.score.copyWith(
+                total: value.score.total + 1,
+                up: value.score.up + 1,
+              ),
+              voteStatus: VoteStatus.unknown,
+            );
+          }
+        }
+      }
+      replacePost(value);
+      return true;
+    } on DioError {
+      return false;
+    }
+  }
+
+  Future<void> resetPost(Post post) async {
+    assertOwnsItem(post);
+    replacePost(await client.post(post.id, force: true));
+  }
+
+  // TODO: create a PostUpdate Object instead of a Map
+  Future<void> updatePost(Post post, Map<String, String?> body) async {
+    assertOwnsItem(post);
+    await client.updatePost(post.id, body);
+    await resetPost(post);
+  }
+}

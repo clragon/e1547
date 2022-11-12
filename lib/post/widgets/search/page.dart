@@ -61,7 +61,7 @@ class _PostsPageState extends State<PostsPage> {
               ],
             ),
           ),
-          if (widget.controller.denyMode != DenyListMode.unavailable)
+          if (widget.controller.filterMode != PostFilterMode.unavailable)
             DrawerDenySwitch(controller: widget.controller),
           DrawerTagCounter(controller: widget.controller),
         ],

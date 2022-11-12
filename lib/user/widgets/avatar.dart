@@ -43,7 +43,7 @@ class CurrentUserAvatarValue {
         client: client,
         denylist: denylist,
         id: id,
-        denyMode: DenyListMode.unavailable,
+        filterMode: PostFilterMode.unavailable,
       );
       return controller.loadFirstPage();
     }
