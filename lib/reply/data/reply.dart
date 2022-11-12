@@ -1,3 +1,4 @@
+import 'package:e1547/comment/comment.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'reply.freezed.dart';
@@ -14,7 +15,7 @@ class Reply with _$Reply {
     required int? updaterId,
     required int topicId,
     required bool isHidden,
-    required int? warningType,
+    required WarningType? warningType,
     required int? warningUserId,
   }) = _Reply;
 

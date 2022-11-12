@@ -83,7 +83,26 @@ class ReplyTile extends StatelessWidget {
                       ),
                     ),
                   ],
-                )
+                ),
+                if (reply.warningType != null)
+                  Row(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        child: Icon(
+                          Icons.warning_amber,
+                          size: smallIconSize(context),
+                          color: Theme.of(context).errorColor,
+                        ),
+                      ),
+                      Text(
+                        reply.warningType!.message,
+                        style: Theme.of(context).textTheme.bodyText2!.copyWith(
+                              color: Theme.of(context).errorColor,
+                            ),
+                      ),
+                    ],
+                  ),
               ],
             ),
           ),

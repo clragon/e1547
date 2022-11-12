@@ -18,7 +18,7 @@ class Comment with _$Comment {
     required bool doNotBumpPost,
     required bool isHidden,
     required bool isSticky,
-    required int? warningType,
+    required WarningType? warningType,
     required int? warningUserId,
     required String creatorName,
     required String updaterName,
@@ -27,4 +27,22 @@ class Comment with _$Comment {
 
   factory Comment.fromJson(Map<String, dynamic> json) =>
       _$CommentFromJson(json);
+}
+
+@JsonEnum()
+enum WarningType {
+  warning,
+  record,
+  ban;
+
+  String get message {
+    switch (this) {
+      case warning:
+        return 'User received a warning for this message';
+      case record:
+        return 'User received a record for this message';
+      case ban:
+        return 'User was banned for this message';
+    }
+  }
 }

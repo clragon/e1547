@@ -31,7 +31,9 @@ mixin _$Comment {
   bool get doNotBumpPost => throw _privateConstructorUsedError;
   bool get isHidden => throw _privateConstructorUsedError;
   bool get isSticky => throw _privateConstructorUsedError;
-  int? get warningType => throw _privateConstructorUsedError;
+
+  WarningType? get warningType => throw _privateConstructorUsedError;
+
   int? get warningUserId => throw _privateConstructorUsedError;
   String get creatorName => throw _privateConstructorUsedError;
   String get updaterName => throw _privateConstructorUsedError;
@@ -60,7 +62,7 @@ abstract class $CommentCopyWith<$Res> {
       bool doNotBumpPost,
       bool isHidden,
       bool isSticky,
-      int? warningType,
+      WarningType? warningType,
       int? warningUserId,
       String creatorName,
       String updaterName,
@@ -145,7 +147,7 @@ class _$CommentCopyWithImpl<$Res, $Val extends Comment>
       warningType: freezed == warningType
           ? _value.warningType
           : warningType // ignore: cast_nullable_to_non_nullable
-              as int?,
+              as WarningType?,
       warningUserId: freezed == warningUserId
           ? _value.warningUserId
           : warningUserId // ignore: cast_nullable_to_non_nullable
@@ -185,7 +187,7 @@ abstract class _$$_CommentCopyWith<$Res> implements $CommentCopyWith<$Res> {
       bool doNotBumpPost,
       bool isHidden,
       bool isSticky,
-      int? warningType,
+      WarningType? warningType,
       int? warningUserId,
       String creatorName,
       String updaterName,
@@ -267,7 +269,7 @@ class __$$_CommentCopyWithImpl<$Res>
       warningType: freezed == warningType
           ? _value.warningType
           : warningType // ignore: cast_nullable_to_non_nullable
-              as int?,
+              as WarningType?,
       warningUserId: freezed == warningUserId
           ? _value.warningUserId
           : warningUserId // ignore: cast_nullable_to_non_nullable
@@ -335,7 +337,7 @@ class _$_Comment implements _Comment {
   @override
   final bool isSticky;
   @override
-  final int? warningType;
+  final WarningType? warningType;
   @override
   final int? warningUserId;
   @override
@@ -434,7 +436,7 @@ abstract class _Comment implements Comment {
       required final bool doNotBumpPost,
       required final bool isHidden,
       required final bool isSticky,
-      required final int? warningType,
+      required final WarningType? warningType,
       required final int? warningUserId,
       required final String creatorName,
       required final String updaterName,
@@ -462,10 +464,13 @@ abstract class _Comment implements Comment {
   bool get doNotBumpPost;
   @override
   bool get isHidden;
+
   @override
   bool get isSticky;
+
   @override
-  int? get warningType;
+  WarningType? get warningType;
+
   @override
   int? get warningUserId;
   @override
