@@ -1,0 +1,16 @@
+e1547 provides a polished and comfortable browsing experience for your favorite image board, e621 (as well as e926).
+
+<h2><b> Features </b></h2>
+- Browse and search posts and pools of posts
+- Favorite, comment on, up and downvote, and edit posts
+- View the newest, hottest and your favorite posts
+- Save Images to your device
+- Follow tags, like artists or characters
+- Display post info, launch searches from tags
+- Access tag wikis by long-pressing
+- Extensive local blacklist support, synced with the site
+- History of all pages you visited
+- Play videos, with double tap skip function
+- Supports DText, the e6 markdown language
+- Experimental forum support
+- Multiple themes and personalization options

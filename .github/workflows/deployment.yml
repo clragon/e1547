@@ -66,8 +66,8 @@ jobs:
           KEYCONFIG: ${{ secrets.KEYCONFIG }}
         run: |
           mkdir -p android/app/keys
-          echo "$KEYSTORE" | base64 -d > android/app/keys/key.pkcs
-          echo "$KEYCONFIG" | base64 -d > android/app/keys/key.properties
+          echo "$KEYSTORE" | base64 -d > android/keys/key.pkcs
+          echo "$KEYCONFIG" | base64 -d > android/keys/key.properties
 
       - name: get dependencies
         run: flutter pub get
