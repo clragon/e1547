@@ -53,10 +53,10 @@ class AppInfo extends PackageInfo {
   /// Developer of the app.
   final String developer;
 
-  /// Name of the app github (developer/repo, not full link).
+  /// Name of the app github (developer/repo).
   final String? github;
 
-  /// Discord server invite link ID (link id only, not full link).
+  /// Discord server invite link ID (id only).
   final String? discord;
 
   /// Developer website link (without http/s).
@@ -113,7 +113,7 @@ class AppInfo extends PackageInfo {
   }
 
   /// Retrieves versions which are newer than the currently installed one.
-  Future<List<AppVersion>?> getNewVersions() async {
+  Future<List<AppVersion>?> getNewVersions({bool beta = false}) async {
     List<AppVersion>? releases = await getVersions();
     if (releases != null) {
       releases = List.from(releases);
@@ -124,7 +124,9 @@ class AppInfo extends PackageInfo {
         return null;
       }
       releases.removeWhere(
-        (e) => Version.prioritize(e.version, current.version) < 1,
+        (e) =>
+            e.version.compareTo(current.version) < 1 ||
+            (!beta && Version.prioritize(e.version, current.version) < 1),
       );
     }
     return releases;
