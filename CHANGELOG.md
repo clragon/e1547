@@ -24,12 +24,15 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - topic tile design
 
 ## [14.0.1] - 2022-11-08
+hosting restored
 
 ### Fixed
 
 - host switch in settings
 
 ## [14.0.0] - 2022-11-07
+
+keeping up to date
 
 ### Added
 
@@ -49,6 +52,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [13.0.1] - 2022-10-23
 
+pools open
+
 ### Fixed
 
 - pool parsing
@@ -56,6 +61,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - comment upvoting
 
 ## [13.0.0] - 2022-10-09
+
+tweet
 
 ### Added
 
@@ -68,6 +75,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [12.2.0] - 2022-09-06
 
+comics in the library
+
 ### Added
 
 - pool reader mode
@@ -78,11 +87,15 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [12.1.1] - 2022-09-06
 
+new receptionist
+
 ### Fixed
 
 - deleting history entries
 
 ## [12.1.0] - 2022-09-05
+
+furnished library
 
 ### Added
 
@@ -102,6 +115,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - blacklist sync on login
 
 ### [12.0.0] - 2022-07-31
+
+The library of alexandria
 
 ### Added
 
@@ -129,6 +144,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [11.0.0] - 2022-06-21
 
+portal to the outside
+
 ### Added
 
 - deep link support
@@ -148,11 +165,15 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [10.1.3] - 2022-04-15
 
+compress the library
+
 ### Changed
 
 - history limit to 3'000
 
 ## [10.1.2] - 2022-04-15
+
+stop the library from exploding
 
 ### Changed
 
@@ -164,6 +185,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - deleting history entries over limit
 
 ## [10.1.1] - 2022-04-06
+
+borrow a book
 
 ### Added
 
@@ -183,6 +206,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [10.1.0] - 2022-03-19
 
+bookkeeping
+
 ### Added
 
 - filter for history
@@ -194,6 +219,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - follow and history tile sizes
 
 ## [10.0.1] - 2022-03-14
+
+writing history
 
 ### Added
 
@@ -218,10 +245,11 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - scroll to top button
 
 ## [10.0.0] - 2022-03-14 [YANKED]
-
 Lost to time
 
 ## [1.9.10] - 2021-12-15
+
+android juice
 
 ### Fixed
 
@@ -231,11 +259,15 @@ Lost to time
 
 ## [1.9.9] - 2021-11-25
 
+release me but for real this time
+
 ### Fixed
 
 - gallery desynchronisation issue
 
 ## [1.9.8] - 2021-11-25 [YANKED]
+
+release me
 
 ### Fixed
 
@@ -247,6 +279,8 @@ Lost to time
 
 ## [1.9.7] - 2021-11-24
 
+You must be logged in to do that!
+
 ### Changed
 
 - logged in user only actions are now always visible
@@ -256,6 +290,8 @@ Lost to time
 - detail view swiping requesting pages
 
 ## [1.9.6] - 2021-11-23
+
+its getting personal
 
 ### Added
 
@@ -280,6 +316,8 @@ Lost to time
 
 ## [1.9.5] - 2021-11-16
 
+hear no bugs, see no bugs.
+
 ### Added
 
 - context (right side) drawer buttons in appbars
@@ -296,6 +334,8 @@ Lost to time
 - dtext links
 
 ## [1.9.4] - 2021-11-14
+
+like shiny diamond
 
 ### Added
 
@@ -314,6 +354,8 @@ Lost to time
 
 ## [1.9.3] - 2021-11-07
 
+like shiny marble
+
 ### Fixed
 
 - android apk being invalid
@@ -322,6 +364,8 @@ Lost to time
 
 ## [1.9.2] - 2021-11-01
 
+PlayStore preparation 2
+
 ### Fixed
 
 - blacklisting follows
@@ -329,6 +373,8 @@ Lost to time
 - downloads failing
 
 ## [1.9.1] - 2021-10-30
+
+float like a butterfly
 
 ### Added
 
@@ -345,6 +391,8 @@ Lost to time
 - blacklist editor
 
 ## [1.9.0] - 2021-10-27
+
+sting like a bee
 
 ### Added
 
@@ -375,6 +423,8 @@ Lost to time
 
 ## [1.8.1] - 2021-07-07
 
+loading indicators and contextual drawers
+
 ### Added
 
 - loading indicator for new pages
@@ -390,6 +440,8 @@ Lost to time
 - post editing issues
 
 ## [1.8.0] - 2021-06-19
+
+follow tags, but for real this time
 
 ### Added
 
@@ -408,6 +460,8 @@ Lost to time
 - editing posts
 
 ## [1.7.4] - 2021-05-27
+
+the i in iOS
 
 ### Added
 
@@ -428,6 +482,8 @@ Lost to time
 
 ## [1.7.3] - 2021-04-15
 
+maximum control
+
 ### Added
 
 - blacklist drawer
@@ -444,6 +500,8 @@ Lost to time
 
 ## [1.7.2] - 2020-11-16
 
+recycling
+
 ### Added
 
 - better tag search
@@ -455,6 +513,8 @@ Lost to time
 - favorite / blacklist issues
 
 ## [1.7.1] - 2020-11-16
+
+multipost drifting
 
 ### Added
 
@@ -473,12 +533,16 @@ Lost to time
 
 ## [1.7.0] - 2020-10-23
 
+motion pictures
+
 ### Added
 
 - video support
 - ui animations
 
 ## [1.6.2] - 2020-09-26
+
+4 elements
 
 ### Added
 
@@ -490,6 +554,8 @@ Lost to time
 - detail view design
 
 ## [1.6.1] - 2020-09-15
+
+Now this is swiping!
 
 ### Added
 
@@ -506,6 +572,8 @@ Lost to time
 
 ## [1.6.0] - 2020-08-10
 
+Making your voice heard
+
 ### Added
 
 - writing comments
@@ -520,17 +588,23 @@ Lost to time
 
 ## [1.5.2] - 2020-07-26
 
+Quality of Life II
+
 ### Changed
 
 - following screen design
 
 ## [1.5.1] - 2020-07-21
 
+Edit Hotpatch
+
 ### Fixed
 
 - post editing
 
 ## [1.5.0] - 2020-07-21
+
+Post Editing
 
 ### Added
 
@@ -549,6 +623,8 @@ Lost to time
 
 ## [1.4.3] - 2020-07-11
 
+PlayStore preparation
+
 ### Added
 
 - warning about host switching
@@ -561,6 +637,8 @@ Lost to time
 
 ## [1.4.2] - 2020-06-23
 
+Update hotpatch
+
 ### Changed
 
 - changelog to display all new versions
@@ -571,11 +649,15 @@ Lost to time
 
 ## [1.4.1] - 2020-06-23
 
+UI color hotpatch
+
 ### Fixed
 
 - system ui color changing
 
 ## [1.4.0] - 2020-06-23
+
+I'm blue
 
 ### Added
 
@@ -588,6 +670,8 @@ Lost to time
 
 ## [1.3.5] - 2020-06-09
 
+swiper, no swiping
+
 ### Added
 
 - iOS support
@@ -597,6 +681,8 @@ Lost to time
 - search tab in drawer
 
 ## [1.3.4] - 2020-05-17
+
+Landscape mode+
 
 ### Added
 
@@ -609,11 +695,15 @@ Lost to time
 
 ## [1.3.3] - 2020-05-02
 
+Date hotpatch
+
 ### Fixed
 
 - parsing updated_at json
 
 ## [1.3.2] - 2020-05-01
+
+Download hotpatch
 
 ### Fixed
 
@@ -622,12 +712,16 @@ Lost to time
 
 ## [1.3.1] - 2020-04-24
 
+Toolbar rework
+
 ### Added
 
 - wiki dialog in search appbar
 - following pools
 
 ## [1.3.0] - 2020-04-23
+
+Following tags
 
 ### Added
 
@@ -637,11 +731,15 @@ Lost to time
 
 ## [1.2.8] - 2020-04-22
 
+Better better DText
+
 ### Changed
 
 - dtext parsing
 
 ## [1.2.7] - 2020-04-21
+
+Better DText
 
 ### Added
 
@@ -654,6 +752,8 @@ Lost to time
 
 ## [1.2.6] - 2020-04-20
 
+Login hotpatch
+
 ### Added
 
 - tag autocomplete for search
@@ -664,6 +764,8 @@ Lost to time
 - logging in
 
 ## [1.2.5] - 2020-04-19
+
+Blacklists
 
 ### Added
 
@@ -676,6 +778,8 @@ Lost to time
 
 ## [1.2.4] - 2020-04-17
 
+Voting
+
 ### Added
 
 - voting on posts
@@ -687,6 +791,8 @@ Lost to time
 
 ## [1.2.3] - 2020-04-16
 
+Pool hotpatch
+
 ### Added
 
 - opening deleted post children
@@ -697,6 +803,8 @@ Lost to time
 - displaying onsite links
 
 ## [1.2.2] - 2020-04-14
+
+More patches (we're getting there)
 
 ### Added
 
@@ -717,6 +825,8 @@ Lost to time
 
 ## [1.2.1] - 2020-04-13
 
+Patches
+
 ### Added
 
 - post parent links
@@ -731,6 +841,8 @@ Lost to time
 - settings changes refreshing the app
 
 ## [1.2.0] - 2020-04-13
+
+Posts should now look fancy
 
 ### Added
 
@@ -749,6 +861,8 @@ Lost to time
 
 ## [1.1.5] - 2020-04-11
 
+Quality of Life
+
 ### Added
 
 - more dtext support for pool descriptions
@@ -765,11 +879,15 @@ Lost to time
 
 ## [1.1.4] - 2020-04-11
 
+New API keys supported
+
 ### Added
 
 - support for newer API keys
 
 ## [1.1.3] - 2020-04-11
+
+Regex made me do this
 
 ### Added
 
@@ -787,11 +905,15 @@ Lost to time
 
 ## [1.1.2] - 2020-04-10
 
+This one line ruined it all
+
 ### Fixed
 
 - Fixed hiding webms
 
 ## [1.1.1] - 2020-04-10
+
+The water was leaking so we used flex tape
 
 ### Added
 
@@ -811,6 +933,8 @@ Lost to time
 
 ## [1.1.0] - 2020-04-10
 
+Now with water.
+
 ### Added
 
 - pool search
@@ -818,11 +942,15 @@ Lost to time
 
 ## [1.0.1] - 2020-03-16
 
+No more pages
+
 ### Changed
 
 - pagination to infinite scroll
 
 ## [1.0.0] - 2020-03-08
+
+Soft reboot
 
 ### Added
 
