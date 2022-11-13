@@ -72,6 +72,9 @@ class TextStateStack {
     return targets.last;
   }
 
+  /// Retrieves the all instances of a state [T].
+  List<T> getAll<T extends TextState>() => _states.whereType<T>().toList();
+
   /// Checks whether the Stack has a certain state [T].
   bool hasState<T extends TextState>() => getClosest<T>() != null;
 

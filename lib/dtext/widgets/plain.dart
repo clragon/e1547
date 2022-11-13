@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:e1547/dtext/dtext.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:flutter/gestures.dart';
@@ -21,13 +22,21 @@ TextSpan plainText({
 
   SpoilerController spoilerController = context.watch<SpoilerController>();
 
+  List<TextStateSpoiler> spoilers = state.getAll();
   TextStateSpoiler? spoiler = state.getClosest();
   TextStateLink? link = state.getClosest();
 
-  bool isSpoilered =
-      spoiler != null && spoilerController.isSpoilered(spoiler.text);
+  bool isSpoilered = spoilers.any((e) => spoilerController.isSpoilered(e.text));
 
-  void toggleSpoiler() => spoilerController.toggle(spoiler!.text);
+  void toggleSpoiler() {
+    TextStateSpoiler? spoiler =
+        spoilers.firstWhereOrNull((e) => spoilerController.isSpoilered(e.text));
+    if (spoiler != null) {
+      spoilerController.unspoiler(spoiler.text);
+    } else {
+      spoilerController.respoiler(spoilers.last.text);
+    }
+  }
 
   VoidCallback? onTap;
 
@@ -45,6 +54,14 @@ TextSpan plainText({
   if (header != null) {
     fontSize = Theme.of(context).textTheme.bodyText2!.fontSize!;
     fontSize = fontSize + (header.size * 2);
+  }
+
+  Color? textColor;
+
+  if (isSpoilered) {
+    textColor = Colors.transparent;
+  } else if (link != null) {
+    textColor = Colors.blue[400];
   }
 
   TextStateInlineCode? code = state.getClosest();
@@ -66,7 +83,7 @@ TextSpan plainText({
     text: text,
     recognizer: onTap != null ? (TapGestureRecognizer()..onTap = onTap) : null,
     style: TextStyle(
-      color: !isSpoilered && link != null ? Colors.blue[400] : null,
+      color: textColor,
       fontWeight: state.hasState<TextStateBold>() ? FontWeight.bold : null,
       fontStyle: state.hasState<TextStateItalic>() ? FontStyle.italic : null,
       fontSize: fontSize,
