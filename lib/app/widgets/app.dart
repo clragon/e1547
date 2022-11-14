@@ -18,6 +18,7 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        SettingsProvider(),
         AdaptiveScaffoldScope(),
         HostServiceProvider(),
         NavigationProvider(

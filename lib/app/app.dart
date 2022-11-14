@@ -1,4 +1,5 @@
 // data
+export 'data/database.dart';
 export 'data/info.dart';
 export 'data/link.dart';
 export 'data/navigation.dart';

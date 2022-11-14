@@ -3,6 +3,7 @@
 /// Using them in such a manner could cause conflicts,
 /// because no two controllers should be attached to the Settings.
 
+import 'package:e1547/app/app.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/denylist/denylist.dart';
 import 'package:e1547/follow/follow.dart';
@@ -13,17 +14,17 @@ import 'package:e1547/user/user.dart';
 import 'package:flutter/material.dart';
 
 class HostServiceProvider extends SubChangeNotifierProvider3<AppInfo, Settings,
-    EnvironmentPaths, HostService> {
+    AppDatabases, HostService> {
   HostServiceProvider({super.child, TransitionBuilder? builder})
       : super(
-          create: (context, appInfo, settings, paths) => HostService(
+          create: (context, appInfo, settings, databases) => HostService(
             defaultHost: appInfo.defaultHost,
             allowedHosts: appInfo.allowedHosts,
             host: settings.host.value,
             customHost: settings.customHost.value,
             credentials: settings.credentials.value,
             appInfo: appInfo,
-            cachePath: paths.temporaryDirectory,
+            cache: databases.httpCache,
           ),
           builder: (context, child) => ListenableListener(
             listenable: context.watch<HostService>(),
@@ -41,17 +42,27 @@ class HostServiceProvider extends SubChangeNotifierProvider3<AppInfo, Settings,
         );
 }
 
-class HistoriesServiceProvider
-    extends SubChangeNotifierProvider2<AppInfo, Settings, HistoriesService> {
+class HistoriesServiceProvider extends SubChangeNotifierProvider2<AppDatabases,
+    Settings, HistoriesService> {
   HistoriesServiceProvider({
     super.child,
     TransitionBuilder? builder,
   }) : super(
-          create: (context, appInfo, settings) => HistoriesService(
-            database: connectDatabase(appInfo.historyDb),
-            enabled: settings.writeHistory.value,
-            trimming: settings.trimHistory.value,
-          ),
+          create: (context, databases, settings) {
+            if (databases.historyDb.isolated) {
+              return HistoriesService.connect(
+                database: databases.historyDb.connection!,
+                enabled: settings.writeHistory.value,
+                trimming: settings.trimHistory.value,
+              );
+            } else {
+              return HistoriesService(
+                database: databases.historyDb.executor!,
+                enabled: settings.writeHistory.value,
+                trimming: settings.trimHistory.value,
+              );
+            }
+          },
           builder: (context, child) => ListenableListener(
             listenable: context.watch<HistoriesService>(),
             listener: () {
@@ -65,14 +76,22 @@ class HistoriesServiceProvider
         );
 }
 
-class FollowsProvider extends SubProvider<AppInfo, FollowsService> {
+class FollowsProvider extends SubProvider<AppDatabases, FollowsService> {
   FollowsProvider({
     super.child,
     TransitionBuilder? builder,
   }) : super(
-          create: (context, appInfo) => FollowsService.connect(
-            connectDatabase(appInfo.followDb),
-          ),
+          create: (context, databases) {
+            if (databases.followDb.isolated) {
+              return FollowsService.connect(
+                databases.followDb.connection!,
+              );
+            } else {
+              return FollowsService(
+                databases.followDb.executor!,
+              );
+            }
+          },
           builder: (context, child) => ListenableListener(
             listenable: context.watch<HostService>(),
             listener: () {
@@ -104,6 +123,15 @@ class DenylistProvider
               settings.denylist.value = value;
               await client.updateBlacklist(value);
             },
+          ),
+        );
+}
+
+class SettingsProvider extends SubProvider<AppDatabases, Settings> {
+  SettingsProvider({super.child, super.builder})
+      : super(
+          create: (context, databases) => Settings(
+            databases.preferences,
           ),
         );
 }

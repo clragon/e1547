@@ -2,11 +2,9 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
-import 'package:dio_cache_interceptor_db_store/dio_cache_interceptor_db_store.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:flutter/foundation.dart';
-import 'package:path/path.dart';
 
 class HostService extends ChangeNotifier {
   HostService({
@@ -15,22 +13,16 @@ class HostService extends ChangeNotifier {
     required List<String> allowedHosts,
     String? host,
     String? customHost,
-    required String cachePath,
+    this.cache,
     Credentials? credentials,
   })  : allowedHosts = {defaultHost, ...allowedHosts}.toList(),
         _host = host ?? defaultHost,
         _customHost = customHost,
-        _credentials = credentials,
-        cache = DbCacheStore(
-          databasePath: join(
-            cachePath,
-            appInfo.appName,
-          ),
-        );
+        _credentials = credentials;
 
   @override
   void dispose() {
-    cache.close();
+    cache?.close();
     super.dispose();
   }
 
@@ -38,7 +30,7 @@ class HostService extends ChangeNotifier {
   final String defaultHost;
   final List<String> allowedHosts;
 
-  CacheStore cache;
+  CacheStore? cache;
 
   String _host;
 

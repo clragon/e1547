@@ -4,12 +4,11 @@ import 'package:e1547/interface/interface.dart';
 import 'package:flutter/foundation.dart';
 import 'package:notified_preferences/notified_preferences.dart';
 
-class Settings with NotifiedPreferences {
-  static Future<Settings> getInstance() async {
-    Settings settings = Settings();
-    await settings.initialize();
-    return settings;
-  }
+class Settings extends NotifiedSettings {
+  Settings(super.preferences);
+
+  static Future<Settings> getInstance() async =>
+      Settings(await SharedPreferences.getInstance());
 
   late final ValueNotifier<Credentials?> credentials = createJsonSetting(
     key: 'credentials',

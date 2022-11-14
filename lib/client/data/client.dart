@@ -23,7 +23,7 @@ class Client {
   Client({
     required this.host,
     required this.appInfo,
-    required this.cache,
+    this.cache,
     this.credentials,
   }) {
     _dio = Dio(
@@ -39,18 +39,20 @@ class Client {
         connectTimeout: 30000,
       ),
     );
-    _dio.interceptors.add(
-      CacheInterceptor(
-        options: _defaultCacheOptions.copyWith(
-          store: cache,
+    if (cache != null) {
+      _dio.interceptors.add(
+        CacheInterceptor(
+          options: _defaultCacheOptions.copyWith(
+            store: cache,
+          ),
         ),
-      ),
-    );
+      );
+    }
   }
 
   final String host;
   final AppInfo appInfo;
-  final CacheStore cache;
+  final CacheStore? cache;
   final CacheStore _memoryCache = MemCacheStore();
   final Credentials? credentials;
 
@@ -186,7 +188,7 @@ class Client {
   }
 
   Future<void> updatePost(int postId, Map<String, String?> body) async {
-    await cache.deleteFromPath(
+    await cache?.deleteFromPath(
       RegExp(RegExp.escape('posts/$postId.json')),
     );
 
@@ -196,7 +198,7 @@ class Client {
   Future<void> votePost(int postId, bool upvote, bool replace) async {
     ensureLogin();
 
-    await cache.deleteFromPath(RegExp(RegExp.escape('posts/$postId.json')));
+    await cache?.deleteFromPath(RegExp(RegExp.escape('posts/$postId.json')));
 
     await _dio.post('posts/$postId/votes.json', queryParameters: {
       'score': upvote ? 1 : -1,
@@ -249,7 +251,7 @@ class Client {
   Future<void> addFavorite(int postId) async {
     ensureLogin();
 
-    await cache.deleteFromPath(RegExp(RegExp.escape('posts/$postId.json')));
+    await cache?.deleteFromPath(RegExp(RegExp.escape('posts/$postId.json')));
 
     await _dio.post('favorites.json', queryParameters: {'post_id': postId});
   }
@@ -257,7 +259,7 @@ class Client {
   Future<void> removeFavorite(int postId) async {
     ensureLogin();
 
-    await cache.deleteFromPath(RegExp(RegExp.escape('posts/$postId.json')));
+    await cache?.deleteFromPath(RegExp(RegExp.escape('posts/$postId.json')));
 
     await _dio.delete('favorites/$postId.json');
   }
@@ -546,7 +548,7 @@ class Client {
 
   Future<void> postComment(int postId, String text) async {
     ensureLogin();
-    await cache.deleteFromPath(
+    await cache?.deleteFromPath(
       RegExp(RegExp.escape('comments.json')),
       queryParams: {'search[post_id]': postId.toString()},
     );
@@ -562,12 +564,12 @@ class Client {
 
   Future<void> updateComment(int commentId, int postId, String text) async {
     ensureLogin();
-    await cache.deleteFromPath(
+    await cache?.deleteFromPath(
       RegExp(RegExp.escape('comments.json')),
       queryParams: {'search[post_id]': postId.toString()},
     );
 
-    await cache.deleteFromPath(
+    await cache?.deleteFromPath(
       RegExp(RegExp.escape('comments/$commentId.json')),
     );
 

@@ -8,6 +8,4 @@ Future<AppInfo> initializeAppInfo() async => AppInfo.fromPlatform(
       website: 'e1547.clynamic.net',
       defaultHost: 'e926.net',
       allowedHosts: ['e621.net'],
-      followDb: 'follows.sqlite',
-      historyDb: 'history.sqlite',
     );

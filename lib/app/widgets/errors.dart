@@ -9,7 +9,8 @@ class ErrorNotifier extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Talker talker = context.read<Talker>();
+    Talker? talker = context.read<Talker?>();
+    if (talker == null) return child;
     return LoggerErrorNotifier(
       onOpenLogs: () =>
           context.read<NavigationController>().navigatorKey.currentState!.push(

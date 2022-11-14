@@ -12,8 +12,6 @@ class AppInfo extends PackageInfo {
     required this.website,
     required this.defaultHost,
     required this.allowedHosts,
-    required this.followDb,
-    required this.historyDb,
     required super.appName,
     required super.packageName,
     required super.version,
@@ -29,8 +27,6 @@ class AppInfo extends PackageInfo {
     required String? website,
     required String defaultHost,
     required List<String> allowedHosts,
-    required String followDb,
-    required String historyDb,
   }) async {
     PackageInfo info = await PackageInfo.fromPlatform();
     return AppInfo(
@@ -40,8 +36,6 @@ class AppInfo extends PackageInfo {
       website: website,
       defaultHost: defaultHost,
       allowedHosts: allowedHosts,
-      followDb: followDb,
-      historyDb: historyDb,
       appName: info.appName,
       packageName: info.packageName,
       version: info.version,
@@ -70,12 +64,6 @@ class AppInfo extends PackageInfo {
 
   /// List of allow hosts for the app.
   List<String> allowedHosts;
-
-  /// Name of the default database for follows.
-  String followDb;
-
-  /// Name of the default database for history.
-  String historyDb;
 
   /// Retrieves all app versions from github.
   Future<List<AppVersion>?> getVersions() async {
