@@ -19,9 +19,7 @@ class HistoriesTable extends Table {
 
 @DriftDatabase(tables: [HistoriesTable])
 class HistoriesDatabase extends _$HistoriesDatabase {
-  HistoriesDatabase(super.e);
-
-  HistoriesDatabase.connect(super.e) : super.connect();
+  HistoriesDatabase(super.e) : super.connect();
 
   @override
   int get schemaVersion => 1;

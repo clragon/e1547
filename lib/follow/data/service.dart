@@ -6,8 +6,6 @@ import 'package:e1547/follow/follow.dart';
 class FollowsService extends FollowsDatabase {
   FollowsService(super.e);
 
-  FollowsService.connect(super.e) : super.connect();
-
   Future<Follow?> getFollow(String host, String tag) =>
       watchFollow(host, tag).first;
 

@@ -11,20 +11,8 @@ class AppDatabases {
     required this.httpCache,
   });
 
-  final DatabaseCarrier historyDb;
-  final DatabaseCarrier followDb;
+  final DatabaseConnection historyDb;
+  final DatabaseConnection followDb;
   final CacheStore httpCache;
   final SharedPreferences preferences;
-}
-
-/// Holds a database that can be connected to.
-class DatabaseCarrier {
-  DatabaseCarrier(QueryExecutor this.executor) : connection = null;
-
-  DatabaseCarrier.connect(DatabaseConnection this.connection) : executor = null;
-
-  final QueryExecutor? executor;
-  final DatabaseConnection? connection;
-
-  bool get isolated => connection != null;
 }

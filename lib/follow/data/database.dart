@@ -37,9 +37,7 @@ class FollowsTable extends Table {
 
 @DriftDatabase(tables: [FollowsTable])
 class FollowsDatabase extends _$FollowsDatabase {
-  FollowsDatabase(super.e);
-
-  FollowsDatabase.connect(super.e) : super.connect();
+  FollowsDatabase(super.e) : super.connect();
 
   @override
   int get schemaVersion => 1;

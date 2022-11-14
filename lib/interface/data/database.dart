@@ -16,12 +16,14 @@ void initializeSql() {
   }
 }
 
-LazyDatabase openDatabase(String name) => LazyDatabase(
-      () async {
-        final dir = await getApplicationSupportDirectory();
-        final file = File(join(dir.path, name));
-        return NativeDatabase(file);
-      },
+DatabaseConnection openDatabase(String name) => DatabaseConnection(
+      LazyDatabase(
+        () async {
+          final dir = await getApplicationSupportDirectory();
+          final file = File(join(dir.path, name));
+          return NativeDatabase(file);
+        },
+      ),
     );
 
 DatabaseConnection connectDatabase(String name) => DatabaseConnection.delayed(

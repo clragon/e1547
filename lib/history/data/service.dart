@@ -13,18 +13,6 @@ import 'package:flutter/material.dart';
 
 class HistoriesService extends HistoriesDatabase with ChangeNotifier {
   HistoriesService({
-    required QueryExecutor database,
-    bool enabled = true,
-    bool trimming = false,
-    int trimAmount = 5000,
-    Duration trimAge = const Duration(days: 90),
-  })  : _enabled = enabled,
-        _trimming = trimming,
-        _trimAmount = trimAmount,
-        _trimAge = trimAge,
-        super(database);
-
-  HistoriesService.connect({
     required DatabaseConnection database,
     bool enabled = true,
     bool trimming = false,
@@ -34,7 +22,7 @@ class HistoriesService extends HistoriesDatabase with ChangeNotifier {
         _trimming = trimming,
         _trimAmount = trimAmount,
         _trimAge = trimAge,
-        super.connect(database);
+        super(database);
 
   bool _enabled;
 

@@ -48,21 +48,11 @@ class HistoriesServiceProvider extends SubChangeNotifierProvider2<AppDatabases,
     super.child,
     TransitionBuilder? builder,
   }) : super(
-          create: (context, databases, settings) {
-            if (databases.historyDb.isolated) {
-              return HistoriesService.connect(
-                database: databases.historyDb.connection!,
-                enabled: settings.writeHistory.value,
-                trimming: settings.trimHistory.value,
-              );
-            } else {
-              return HistoriesService(
-                database: databases.historyDb.executor!,
-                enabled: settings.writeHistory.value,
-                trimming: settings.trimHistory.value,
-              );
-            }
-          },
+          create: (context, databases, settings) => HistoriesService(
+            database: databases.historyDb,
+            enabled: settings.writeHistory.value,
+            trimming: settings.trimHistory.value,
+          ),
           builder: (context, child) => ListenableListener(
             listenable: context.watch<HistoriesService>(),
             listener: () {
@@ -81,17 +71,9 @@ class FollowsProvider extends SubProvider<AppDatabases, FollowsService> {
     super.child,
     TransitionBuilder? builder,
   }) : super(
-          create: (context, databases) {
-            if (databases.followDb.isolated) {
-              return FollowsService.connect(
-                databases.followDb.connection!,
-              );
-            } else {
-              return FollowsService(
-                databases.followDb.executor!,
-              );
-            }
-          },
+          create: (context, databases) => FollowsService(
+            databases.followDb,
+          ),
           builder: (context, child) => ListenableListener(
             listenable: context.watch<HostService>(),
             listener: () {

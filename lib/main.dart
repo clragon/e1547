@@ -21,12 +21,8 @@ Future<void> main() async {
         Provider.value(
           value: AppDatabases(
             preferences: await SharedPreferences.getInstance(),
-            followDb: DatabaseCarrier.connect(
-              connectDatabase('follows.sqlite'),
-            ),
-            historyDb: DatabaseCarrier.connect(
-              connectDatabase('history.sqlite'),
-            ),
+            followDb: connectDatabase('follows.sqlite'),
+            historyDb: connectDatabase('history.sqlite'),
             httpCache: DbCacheStore(
               databasePath: (await getTemporaryDirectory()).path,
             ),
