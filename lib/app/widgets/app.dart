@@ -19,15 +19,15 @@ class App extends StatelessWidget {
     return MultiProvider(
       providers: [
         SettingsProvider(),
-        AdaptiveScaffoldScope(),
         HostServiceProvider(),
+        DenylistProvider(),
+        FollowsProvider(),
+        HistoriesServiceProvider(),
+        AdaptiveScaffoldScope(),
         NavigationProvider(
           destinations: rootDestintations,
           drawerHeader: (context) => UserDrawerHeader(),
         ),
-        DenylistProvider(),
-        FollowsProvider(),
-        HistoriesServiceProvider(),
         CurrentUserAvatarProvider(),
       ],
       child: Consumer3<AppInfo, Settings, NavigationController>(
