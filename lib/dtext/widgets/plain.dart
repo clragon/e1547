@@ -53,7 +53,7 @@ TextSpan plainText({
   double? fontSize;
   if (header != null) {
     fontSize = Theme.of(context).textTheme.bodyText2!.fontSize!;
-    fontSize = fontSize + (header.size * 2);
+    fontSize = fontSize + ((header.size - 7).abs() * 2);
   }
 
   Color? textColor;
