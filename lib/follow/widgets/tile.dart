@@ -135,7 +135,7 @@ class FollowTile extends StatelessWidget {
         text += '+';
       }
       text += ' new post';
-      if (follow.unseen! > 1) {
+      if (unseen > 1) {
         text += 's';
       }
       return text;
