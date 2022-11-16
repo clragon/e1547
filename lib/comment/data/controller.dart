@@ -22,12 +22,12 @@ class CommentsController extends CursorDataController<Comment>
   @protected
   int getId(Comment item) => item.id;
 
-  void replaceComment(Comment comment, {bool force = false}) {
+  void replaceComment(Comment comment) {
     int index = itemList?.indexWhere((e) => e.id == comment.id) ?? -1;
     if (index == -1) {
-      throw StateError('Post isnt owned by this controller');
+      throw StateError('Comment isnt owned by this controller');
     }
-    updateItem(index, comment, force: force);
+    updateItem(index, comment);
   }
 
   Future<bool> vote({
@@ -36,49 +36,50 @@ class CommentsController extends CursorDataController<Comment>
     required bool replace,
   }) async {
     assertOwnsItem(comment);
-    try {
-      await client.voteComment(comment.id, upvote, replace);
-      Comment value = comment;
-      if (value.voteStatus == VoteStatus.unknown) {
-        if (upvote) {
+    Comment value = comment;
+    if (value.voteStatus == VoteStatus.unknown) {
+      if (upvote) {
+        value = value.copyWith(
+          score: value.score + 1,
+          voteStatus: VoteStatus.upvoted,
+        );
+      } else {
+        value = value.copyWith(
+          score: value.score - 1,
+          voteStatus: VoteStatus.downvoted,
+        );
+      }
+    } else {
+      if (upvote) {
+        if (value.voteStatus == VoteStatus.upvoted) {
           value = value.copyWith(
-            score: value.score + 1,
-            voteStatus: VoteStatus.upvoted,
+            score: value.score - 1,
+            voteStatus: VoteStatus.unknown,
           );
         } else {
           value = value.copyWith(
-            score: value.score - 1,
-            voteStatus: VoteStatus.downvoted,
+            score: value.score + 2,
+            voteStatus: VoteStatus.upvoted,
           );
         }
       } else {
-        if (upvote) {
-          if (value.voteStatus == VoteStatus.upvoted) {
-            value = value.copyWith(
-              score: value.score - 1,
-              voteStatus: VoteStatus.unknown,
-            );
-          } else {
-            value = value.copyWith(
-              score: value.score + 2,
-              voteStatus: VoteStatus.upvoted,
-            );
-          }
+        if (value.voteStatus == VoteStatus.upvoted) {
+          value = value.copyWith(
+            score: value.score - 2,
+            voteStatus: VoteStatus.downvoted,
+          );
         } else {
-          if (value.voteStatus == VoteStatus.upvoted) {
-            value = value.copyWith(
-              score: value.score - 2,
-              voteStatus: VoteStatus.downvoted,
-            );
-          } else {
-            value = value.copyWith(
-              score: value.score + 1,
-              voteStatus: VoteStatus.unknown,
-            );
-          }
+          value = value.copyWith(
+            score: value.score + 1,
+            voteStatus: VoteStatus.unknown,
+          );
         }
       }
-      replaceComment(comment);
+    }
+    replaceComment(comment);
+    try {
+      await client.voteComment(comment.id, upvote, replace);
+      evictCache();
       return true;
     } on DioError {
       return false;

@@ -308,12 +308,12 @@ extension PostLinking on Post {
 mixin PostsActionController<KeyType> on RawDataController<KeyType, Post> {
   Client get client;
 
-  void replacePost(Post post, {bool force = false}) {
+  void replacePost(Post post) {
     int index = itemList?.indexWhere((e) => e.id == post.id) ?? -1;
     if (index == -1) {
       throw StateError('Post isnt owned by this controller');
     }
-    updateItem(index, post, force: force);
+    updateItem(index, post);
   }
 
   Future<bool> fav(Post post) async {
@@ -323,10 +323,10 @@ mixin PostsActionController<KeyType> on RawDataController<KeyType, Post> {
         isFavorited: true,
         favCount: post.favCount + 1,
       ),
-      force: true,
     );
     try {
       await client.addFavorite(post.id);
+      evictCache();
       return true;
     } on DioError {
       replacePost(
@@ -346,10 +346,10 @@ mixin PostsActionController<KeyType> on RawDataController<KeyType, Post> {
         isFavorited: false,
         favCount: post.favCount - 1,
       ),
-      force: true,
     );
     try {
       await client.removeFavorite(post.id);
+      evictCache();
       return true;
     } on DioError {
       replacePost(
@@ -368,69 +368,70 @@ mixin PostsActionController<KeyType> on RawDataController<KeyType, Post> {
     required bool replace,
   }) async {
     assertOwnsItem(post);
-    try {
-      await client.votePost(post.id, upvote, replace);
-      Post value = post;
-      if (value.voteStatus == VoteStatus.unknown) {
-        if (upvote) {
-          value = value.copyWith(
-            score: value.score.copyWith(
-              total: value.score.total + 1,
-              up: value.score.up + 1,
-            ),
-            voteStatus: VoteStatus.upvoted,
-          );
-        } else {
+    Post value = post;
+    if (value.voteStatus == VoteStatus.unknown) {
+      if (upvote) {
+        value = value.copyWith(
+          score: value.score.copyWith(
+            total: value.score.total + 1,
+            up: value.score.up + 1,
+          ),
+          voteStatus: VoteStatus.upvoted,
+        );
+      } else {
+        value = value.copyWith(
+          score: value.score.copyWith(
+            total: value.score.total - 1,
+            down: value.score.down + 1,
+          ),
+          voteStatus: VoteStatus.downvoted,
+        );
+      }
+    } else {
+      if (upvote) {
+        if (value.voteStatus == VoteStatus.upvoted) {
           value = value.copyWith(
             score: value.score.copyWith(
               total: value.score.total - 1,
               down: value.score.down + 1,
             ),
-            voteStatus: VoteStatus.downvoted,
+            voteStatus: VoteStatus.unknown,
+          );
+        } else {
+          value = value.copyWith(
+            score: value.score.copyWith(
+              total: value.score.total + 2,
+              up: value.score.up + 1,
+              down: value.score.down - 1,
+            ),
+            voteStatus: VoteStatus.upvoted,
           );
         }
       } else {
-        if (upvote) {
-          if (value.voteStatus == VoteStatus.upvoted) {
-            value = value.copyWith(
-              score: value.score.copyWith(
-                total: value.score.total - 1,
-                down: value.score.down + 1,
-              ),
-              voteStatus: VoteStatus.unknown,
-            );
-          } else {
-            value = value.copyWith(
-              score: value.score.copyWith(
-                total: value.score.total + 2,
-                up: value.score.up + 1,
-                down: value.score.down - 1,
-              ),
-              voteStatus: VoteStatus.upvoted,
-            );
-          }
+        if (value.voteStatus == VoteStatus.upvoted) {
+          value = value.copyWith(
+            score: value.score.copyWith(
+              total: value.score.total - 2,
+              up: value.score.up - 1,
+              down: value.score.down + 1,
+            ),
+            voteStatus: VoteStatus.downvoted,
+          );
         } else {
-          if (value.voteStatus == VoteStatus.upvoted) {
-            value = value.copyWith(
-              score: value.score.copyWith(
-                total: value.score.total - 2,
-                up: value.score.up - 1,
-                down: value.score.down + 1,
-              ),
-              voteStatus: VoteStatus.downvoted,
-            );
-          } else {
-            value = value.copyWith(
-              score: value.score.copyWith(
-                total: value.score.total + 1,
-                up: value.score.up + 1,
-              ),
-              voteStatus: VoteStatus.unknown,
-            );
-          }
+          value = value.copyWith(
+            score: value.score.copyWith(
+              total: value.score.total + 1,
+              up: value.score.up + 1,
+            ),
+            voteStatus: VoteStatus.unknown,
+          );
         }
       }
-      replacePost(value);
+    }
+    replacePost(value);
+    try {
+      await client.votePost(post.id, upvote, replace);
+      evictCache();
       return true;
     } on DioError {
       return false;
@@ -440,6 +441,7 @@ mixin PostsActionController<KeyType> on RawDataController<KeyType, Post> {
   Future<void> resetPost(Post post) async {
     assertOwnsItem(post);
     replacePost(await client.post(post.id, force: true));
+    evictCache();
   }
 
   // TODO: create a PostUpdate Object instead of a Map

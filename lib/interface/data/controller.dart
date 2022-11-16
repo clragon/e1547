@@ -102,9 +102,7 @@ abstract class RawDataController<KeyType, ItemType>
   }
 
   /// Replaces the [item] at [index] in the [itemlist].
-  ///
-  /// If [force] is true, the cache is deleted.
-  void updateItem(int index, ItemType item, {bool force = false}) {
+  void updateItem(int index, ItemType item) {
     assertHasItems();
     List<ItemType> updated = List.from(itemList!);
     updated[index] = item;
@@ -113,10 +111,6 @@ abstract class RawDataController<KeyType, ItemType>
       itemList: updated,
       error: error,
     );
-    // this renews the cache
-    if (force) {
-      provide(firstPageKey, force);
-    }
   }
 
   /// Checks if the controller can queue a refresh.
@@ -470,7 +464,13 @@ mixin RefreshableController<PageKeyType, ItemType>
   }
 }
 
-extension Loading<T extends RawDataController> on T {
+extension DataControllerCache<PageKeyType, ItemType>
+    on RawDataController<PageKeyType, ItemType> {
+  @protected
+  Future<void> evictCache() async => provide(firstPageKey, true);
+}
+
+extension DataControllerLoading<T extends RawDataController> on T {
   /// Waits for the first Page of this controller to be loaded.
   ///
   /// If the controller has already loaded the page, will return immediately.
@@ -520,7 +520,7 @@ extension Loading<T extends RawDataController> on T {
 }
 
 class ControllerLoadingException implements Exception {
-  /// This Exception is thrown when using [Loading.waitForFirstPage] or [Loading.loadFirstPage]
+  /// This Exception is thrown when using [DataControllerLoading.waitForFirstPage] or [DataControllerLoading.loadFirstPage]
   /// and the loading of the page fails.
   ControllerLoadingException(this.inner);
 
