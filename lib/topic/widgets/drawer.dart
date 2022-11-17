@@ -12,7 +12,7 @@ class TopicTagEditingTile extends StatelessWidget {
       valueListenable: controller.hideTagEditing,
       builder: (context, value, child) => SwitchListTile(
         secondary: const Icon(Icons.inventory_outlined),
-        title: const Text('hide tags'),
+        title: const Text('hide tags edits'),
         subtitle: Text(
           value
               ? 'hide tag alias and implications'

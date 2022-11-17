@@ -27,6 +27,13 @@ class PoolsController extends DataController<Pool>
 
   @override
   @protected
+  void reset() {
+    thumbnails.refresh();
+    super.reset();
+  }
+
+  @override
+  @protected
   List<Listenable> getRefreshListeners() =>
       super.getRefreshListeners()..add(search);
 
