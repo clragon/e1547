@@ -31,7 +31,7 @@ const Color accentColor = Color(0xFFffc107);
 ThemeData prepareTheme(ThemeData theme) => theme.copyWith(
       applyElevationOverlayColor: false,
       dialogBackgroundColor: theme.canvasColor,
-      switchTheme: SwitchThemeData(
+      switchTheme: theme.switchTheme.copyWith(
         thumbColor: MaterialStateProperty.resolveWith(
           (states) => states.contains(MaterialState.selected)
               ? theme.colorScheme.secondary
@@ -43,14 +43,14 @@ ThemeData prepareTheme(ThemeData theme) => theme.copyWith(
               : null,
         ),
       ),
-      checkboxTheme: CheckboxThemeData(
+  checkboxTheme: theme.checkboxTheme.copyWith(
         fillColor: MaterialStateProperty.resolveWith(
           (states) => states.contains(MaterialState.selected)
               ? theme.colorScheme.primary
               : null,
         ),
       ),
-      appBarTheme: AppBarTheme(
+  appBarTheme: theme.appBarTheme.copyWith(
         systemOverlayStyle: SystemUiOverlayStyle(
           statusBarColor: Colors.transparent,
           statusBarBrightness: theme.brightness,
@@ -66,11 +66,11 @@ ThemeData prepareTheme(ThemeData theme) => theme.copyWith(
         color: theme.canvasColor,
         foregroundColor: theme.iconTheme.color,
       ),
-      bannerTheme: MaterialBannerThemeData(
+      bannerTheme: theme.bannerTheme.copyWith(
         backgroundColor: theme.canvasColor,
       ),
-      tooltipTheme: const TooltipThemeData(
-        waitDuration: Duration(milliseconds: 400),
+      tooltipTheme: theme.tooltipTheme.copyWith(
+        waitDuration: const Duration(milliseconds: 400),
       ),
     );
 
