@@ -1,0 +1,37 @@
+default_platform(:android)
+
+platform :ios do
+  desc "Useful on CI, this lane installs Flutter."
+  lane :bootstrap do
+    flutter_bootstrap(flutter_channel: 'stable')
+  end
+end
+
+platform :android do
+  lane :bootstrap do
+    flutter_bootstrap(
+      flutter_channel: 'stable',
+      android_licenses: {
+        'android-sdk-license' => '24333f8a63b6825ea9c5514f83c2829b004d1fee',
+      },
+    )
+  end
+end
+
+desc "Build project."
+lane :build do
+
+  build_args = []
+  elsif lane_context[SharedValues::PLATFORM_NAME] == :ios
+    build_args << '--no-codesign'
+  end
+
+  output_file = flutter_build(
+    build_args: build_args,
+  )
+end
+
+lane :deploy do
+  gradle(task: "clean assembleRelease")
+  upload_to_play_store
+end

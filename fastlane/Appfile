@@ -1,0 +1,4 @@
+json_key_file("android\keys\playstore.json") # Path to the json secret file - Follow https://docs.fastlane.tools/actions/supply/#setup to get one
+package_name("net.e1547") # e.g. com.krausefx.app
+app_identifier("net.e1547") # The bundle identifier of your app
+# apple_id("[[APPLE_ID]]") # Your Apple Developer Portal username
