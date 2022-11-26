@@ -68,6 +68,74 @@ class PagedGroupedListView<PageKeyType, ItemType, SortType>
 
   @override
   Widget buildChildLayout(BuildContext context) {
+    return PagedSliverGroupedListView(
+      pagingController: pagingController,
+      builderDelegate: builderDelegate,
+      shrinkWrapFirstPageIndicators: shrinkWrapFirstPageIndicators,
+      groupBy: groupBy,
+      groupComparator: groupComparator,
+      groupSeparatorBuilder: groupSeparatorBuilder,
+      groupHeaderBuilder: groupHeaderBuilder,
+      itemComparator: itemComparator,
+      order: order,
+      sort: sort,
+      separator: separator,
+    );
+  }
+}
+
+class PagedSliverGroupedListView<PageKeyType, ItemType, SortType>
+    extends StatelessWidget {
+  const PagedSliverGroupedListView({
+    super.key,
+    required this.pagingController,
+    required this.builderDelegate,
+    this.shrinkWrapFirstPageIndicators = false,
+    required this.groupBy,
+    this.groupComparator,
+    this.groupSeparatorBuilder,
+    this.groupHeaderBuilder,
+    this.itemComparator,
+    this.order = GroupedListOrder.ASC,
+    this.sort = true,
+    this.separator = const SizedBox.shrink(),
+  });
+
+  /// Matches [PagedLayoutBuilder.pagingController].
+  final PagingController<PageKeyType, ItemType> pagingController;
+
+  /// Matches [PagedLayoutBuilder.builderDelegate].
+  final PagedChildBuilderDelegate<ItemType> builderDelegate;
+
+  /// Matches [PagedLayoutBuilder.shrinkWrapFirstPageIndicators].
+  final bool shrinkWrapFirstPageIndicators;
+
+  /// Matches [SliverGroupedList.groupBy].
+  final SortType Function(ItemType element) groupBy;
+
+  /// Matches [SliverGroupedList.groupComparator].
+  final int Function(SortType value1, SortType value2)? groupComparator;
+
+  /// Matches [SliverGroupedList.itemComparator].
+  final int Function(ItemType element1, ItemType element2)? itemComparator;
+
+  /// Matches [SliverGroupedList.groupSeparatorBuilder].
+  final Widget Function(SortType value)? groupSeparatorBuilder;
+
+  /// Matches [SliverGroupedList.groupHeaderBuilder].
+  final Widget Function(ItemType element)? groupHeaderBuilder;
+
+  /// Matches [SliverGroupedList.order].
+  final GroupedListOrder order;
+
+  /// Matches [SliverGroupedList.sort].
+  final bool sort;
+
+  /// Matches [SliverGroupedList.separator].
+  final Widget separator;
+
+  @override
+  Widget build(BuildContext context) {
     Widget buildLayout(
       IndexedWidgetBuilder itemBuilder,
       int itemCount, {
@@ -101,39 +169,33 @@ class PagedGroupedListView<PageKeyType, ItemType, SortType>
       pagingController: pagingController,
       builderDelegate: builderDelegate,
       shrinkWrapFirstPageIndicators: shrinkWrapFirstPageIndicators,
-      completedListingBuilder: (
-        context,
-        itemBuilder,
-        itemCount,
-        noMoreItemsIndicatorBuilder,
-      ) =>
+      completedListingBuilder: (context,
+          itemBuilder,
+          itemCount,
+          noMoreItemsIndicatorBuilder,) =>
           buildLayout(
-        itemBuilder,
-        itemCount,
-        statusIndicatorBuilder: noMoreItemsIndicatorBuilder,
-      ),
-      loadingListingBuilder: (
-        context,
-        itemBuilder,
-        itemCount,
-        progressIndicatorBuilder,
-      ) =>
+            itemBuilder,
+            itemCount,
+            statusIndicatorBuilder: noMoreItemsIndicatorBuilder,
+          ),
+      loadingListingBuilder: (context,
+          itemBuilder,
+          itemCount,
+          progressIndicatorBuilder,) =>
           buildLayout(
-        itemBuilder,
-        itemCount,
-        statusIndicatorBuilder: progressIndicatorBuilder,
-      ),
-      errorListingBuilder: (
-        context,
-        itemBuilder,
-        itemCount,
-        errorIndicatorBuilder,
-      ) =>
+            itemBuilder,
+            itemCount,
+            statusIndicatorBuilder: progressIndicatorBuilder,
+          ),
+      errorListingBuilder: (context,
+          itemBuilder,
+          itemCount,
+          errorIndicatorBuilder,) =>
           buildLayout(
-        itemBuilder,
-        itemCount,
-        statusIndicatorBuilder: errorIndicatorBuilder,
-      ),
+            itemBuilder,
+            itemCount,
+            statusIndicatorBuilder: errorIndicatorBuilder,
+          ),
     );
   }
 }
