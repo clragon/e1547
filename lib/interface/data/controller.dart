@@ -53,7 +53,7 @@ abstract class DataController<KeyType, ItemType>
     await _pageLock.protect(page, reset: replace, () async {
       PageResponse<KeyType, ItemType> response = await requestPage(page);
       if (response.error != null) {
-        return failure(error);
+        return failure(response.error!);
       }
       if (_disposed) return;
       if (replace) {
@@ -69,7 +69,7 @@ abstract class DataController<KeyType, ItemType>
   /// Called when a request of this controller fails.
   @protected
   @mustCallSuper
-  void failure(Exception error) => this.error = error;
+  void failure(Object error) => this.error = error;
 
   /// Called when a request of this controller succeeds.
   @protected
@@ -395,7 +395,7 @@ mixin RefreshableController<PageKeyType, ItemType>
 
   @override
   @protected
-  void failure(Exception error) {
+  void failure(Object error) {
     super.failure(error);
     refreshController.refreshFailed();
   }
