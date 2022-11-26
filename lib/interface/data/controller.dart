@@ -1,20 +1,17 @@
 import 'dart:async';
-import 'dart:math';
 
 import 'package:collection/collection.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:flutter/foundation.dart';
-import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:mutex/mutex.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-export 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart'
-    show PagingState;
+export 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
-abstract class RawDataController<KeyType, ItemType>
+abstract class DataController<KeyType, ItemType>
     extends PagingController<KeyType, ItemType> {
   /// A controller for a paged widget.
-  RawDataController({required super.firstPageKey}) {
+  DataController({required super.firstPageKey}) {
     super.addPageRequestListener(loadPage);
     _refreshListeners.forEach((e) => e.addListener(refresh));
     super.addListener(_maybeReset);
@@ -41,6 +38,34 @@ abstract class RawDataController<KeyType, ItemType>
     super.dispose();
   }
 
+  /// Called to get the next page of items for [page].
+  @protected
+  Future<PageResponse<KeyType, ItemType>> requestPage(KeyType page);
+
+  /// Loads a page of items and adds them to the list.
+  ///
+  /// - If replace is true, itemList is replace by the result. Used for background refreshes.
+  @protected
+  Future<void> loadPage(
+    KeyType page, {
+    bool replace = false,
+  }) async {
+    await _pageLock.protect(page, reset: replace, () async {
+      PageResponse<KeyType, ItemType> response = await requestPage(page);
+      if (response.error != null) {
+        return failure(error);
+      }
+      if (_disposed) return;
+      if (replace) {
+        reset();
+        value = response.toState();
+      } else {
+        appendPage(response.itemList!, response.nextPageKey);
+      }
+      success();
+    });
+  }
+
   /// Called when a request of this controller fails.
   @protected
   @mustCallSuper
@@ -51,68 +76,7 @@ abstract class RawDataController<KeyType, ItemType>
   @mustCallSuper
   void success() {}
 
-  // TODO: find a replacement for this.
-  /// Called when the [itemList] is changed entirely.
-  ///
-  /// Can be used to reset additional resources which depend on itemList.
-  @protected
-  @mustCallSuper
-  void reset() {}
-
-  /// Calls [reset] if the [itemList] has been set to null.
-  void _maybeReset() {
-    if (value.itemList == null) {
-      reset();
-    }
-  }
-
-  /// Allows adding listeners that trigger a refresh by overriding this function.
-  ///
-  /// Can be used in mixins which do not have a constructor.
-  @protected
-  @mustCallSuper
-  List<Listenable> getRefreshListeners() => [];
-
-  /// Called to get the next page of items for [page].
-  ///
-  /// If [force] is true, caching should be ignored.
-  @protected
-  Future<List<ItemType>> provide(KeyType page, bool force);
-
-  /// Called to get the next page key, based on the current page key and the current list of items.
-  @protected
-  KeyType provideNextPageKey(KeyType current, List<ItemType> items);
-
-  /// Ensures that the controller has a non-null [itemList].
-  @protected
-  void assertHasItems() {
-    if (itemList == null) {
-      throw StateError(
-          'Controller cannot modify item when the itemList is empty');
-    }
-  }
-
-  /// Ensures that the controller contains the [item] in its [itemList]
-  @protected
-  void assertOwnsItem(ItemType item) {
-    assertHasItems();
-    if (itemList == null || !itemList!.contains(item)) {
-      throw StateError('Item isnt owned by this controller');
-    }
-  }
-
-  /// Replaces the [item] at [index] in the [itemlist].
-  void updateItem(int index, ItemType item) {
-    assertHasItems();
-    List<ItemType> updated = List.from(itemList!);
-    updated[index] = item;
-    value = PagingState(
-      nextPageKey: nextPageKey,
-      itemList: updated,
-      error: error,
-    );
-  }
-
+  // TODO: throw this away, if possible.
   /// Checks if the controller can queue a refresh.
   /// If there is currently a refresh queued, this returns false.
   Future<bool> _canRefresh() async {
@@ -128,112 +92,100 @@ abstract class RawDataController<KeyType, ItemType>
   }
 
   @override
-  Future<void> refresh({bool background = false, bool force = false}) async {
+  void refresh({bool background = false}) async {
     if (!await _canRefresh()) return;
-    return loadPage(
-      firstPageKey,
-      reset: true,
-      background: background,
-      force: force,
-    );
-  }
-
-  /// Loads a page of items and adds them to the list.
-  ///
-  /// - If reset is true, the list will be emptied before adding the new items.
-  /// - If background is true, the new items are loaded before the list is reset.
-  /// - If force is true, the item cache is ignored.
-  @protected
-  Future<void> loadPage(
-    KeyType page, {
-    bool reset = false,
-    bool background = false,
-    bool force = false,
-  }) async {
-    try {
-      await _pageLock.protect(page, reset: reset, () async {
-        if (reset && !background) {
-          value = PagingState<KeyType, ItemType>(
-            nextPageKey: page,
-          );
-        }
-        List<ItemType> items = await provide(page, force);
-        if (_disposed) return;
-        if (reset) {
-          if (background) {
-            this.reset();
-          }
-          value = PagingState(
-            nextPageKey: provideNextPageKey(page, items),
-            itemList: items,
-          );
-        } else {
-          if (items.isNotEmpty) {
-            appendPage(items, provideNextPageKey(page, items));
-          } else {
-            appendLastPage(items);
-          }
-        }
-        success();
-      });
-    } on Exception catch (error) {
-      failure(error);
-    }
-  }
-}
-
-abstract class DataController<T> extends RawDataController<int, T> {
-  /// A [RawDataController] that uses positive integers as page keys.
-  DataController({super.firstPageKey = 1});
-
-  @override
-  @protected
-  int provideNextPageKey(int current, List<T> items) => current + 1;
-}
-
-abstract class CursorDataController<T> extends RawDataController<String, T> {
-  CursorDataController() : super(firstPageKey: _cursorFirstPage);
-
-  ValueNotifier<bool> orderByOldest = ValueNotifier(true);
-
-  static const String _cursorFirstPage = 'a0';
-  static const String _indexFirstPage = '1';
-
-  @override
-  String get firstPageKey =>
-      orderByOldest.value ? _cursorFirstPage : _indexFirstPage;
-
-  @protected
-  int getId(T item);
-
-  @override
-  @protected
-  String provideNextPageKey(String current, List<T> items) {
-    if (orderByOldest.value) {
-      if (items.isEmpty) return _cursorFirstPage;
-      return 'a${items.map((e) => getId(e)).reduce(max).toString()}';
+    if (background) {
+      await loadPage(
+        firstPageKey,
+        replace: true,
+      );
     } else {
-      return (int.parse(current) + 1).toString();
+      value = PagingState<KeyType, ItemType>(
+        nextPageKey: firstPageKey,
+      );
     }
   }
 
-  @override
+  /// Allows adding listeners that trigger a refresh by overriding this function.
+  ///
+  /// Can be used in mixins which do not have a constructor.
   @protected
-  List<Listenable> getRefreshListeners() =>
-      super.getRefreshListeners()..add(orderByOldest);
+  @mustCallSuper
+  List<Listenable> getRefreshListeners() => [];
 
-  @override
-  set value(PagingState<String, T> state) {
-    List<T>? newItems = state.itemList;
-    if (newItems != null && orderByOldest.value) {
-      newItems.sort((a, b) => getId(a).compareTo(getId(b)));
+  /// Called when the [itemList] is changed entirely.
+  @protected
+  @mustCallSuper
+  void reset() {}
+
+  /// Calls [reset] if the [itemList] has been set to null.
+  void _maybeReset() {
+    if (value.itemList == null) {
+      reset();
     }
-    super.value = PagingState(
-      nextPageKey: state.nextPageKey,
-      itemList: newItems,
-      error: state.error,
+  }
+
+  /// Ensures that the controller contains the [item] in its [itemList]
+  @protected
+  void assertOwnsItem(ItemType item) {
+    if (itemList == null || !itemList!.contains(item)) {
+      throw StateError('$runtimeType doesn\'t own this ${item.runtimeType}');
+    }
+  }
+
+  /// Replaces the [item] at [index] in the [itemlist].
+  void updateItem(int index, ItemType item) {
+    if ((itemList?.length ?? -1) < index) {
+      throw StateError('$runtimeType doesn\'t have an item at $index');
+    }
+    List<ItemType> updated = List.from(itemList!);
+    updated[index] = item;
+    value = PagingState(
+      nextPageKey: nextPageKey,
+      itemList: updated,
+      error: error,
     );
   }
+}
+
+class PageResponse<KeyType, ItemType> {
+  /// The response for a page request.
+  const PageResponse({
+    required List<ItemType> this.itemList,
+    required this.nextPageKey,
+  }) : error = null;
+
+  /// The response for a page request.
+  ///
+  /// Is treated as the last page to be added.
+  const PageResponse.last({
+    required List<ItemType> this.itemList,
+  })  : nextPageKey = null,
+        error = null;
+
+  /// The response for a page request.
+  ///
+  /// Is treated as a failed page request.
+  const PageResponse.error({
+    required Object this.error,
+  })  : itemList = null,
+        nextPageKey = null;
+
+  /// The key for the next page.
+  ///
+  /// If null, this is treated as the last page.
+  final KeyType? nextPageKey;
+
+  /// The list of items for this page.
+  final List<ItemType>? itemList;
+
+  /// The error that was thrown during loading this page.
+  final Object? error;
+
+  PagingState<KeyType, ItemType> toState() => PagingState<KeyType, ItemType>(
+        itemList: itemList,
+        nextPageKey: nextPageKey,
+      );
 }
 
 class PageLock<KeyType> {
@@ -343,7 +295,7 @@ class KeyAlreadyUsedException<KeyType> implements Exception {
 }
 
 mixin FilterableController<PageKeyType, ItemType>
-    on RawDataController<PageKeyType, ItemType> {
+    on DataController<PageKeyType, ItemType> {
   /// List of actual items of this controller.
   List<ItemType>? _rawItemList;
 
@@ -393,13 +345,11 @@ mixin FilterableController<PageKeyType, ItemType>
 
   @override
   void updateItem(int index, ItemType item, {bool force = false}) {
-    assertHasItems();
+    if ((itemList?.length ?? -1) < index) {
+      throw StateError('$runtimeType doesn\'t have an item at $index');
+    }
     _rawItemList![_rawItemList!.indexOf(itemList![index])] = item;
     refilter();
-    // this renews the cache
-    if (force) {
-      provide(firstPageKey, force);
-    }
   }
 
   /// Filters items and returns the filtered list.
@@ -419,7 +369,7 @@ mixin FilterableController<PageKeyType, ItemType>
 }
 
 mixin SearchableController<PageKeyType, ItemType>
-    on RawDataController<PageKeyType, ItemType> {
+    on DataController<PageKeyType, ItemType> {
   /// The current search of this controller.
   ValueNotifier<String> get search => ValueNotifier('');
 
@@ -436,7 +386,7 @@ mixin SearchableController<PageKeyType, ItemType>
 }
 
 mixin RefreshableController<PageKeyType, ItemType>
-    on RawDataController<PageKeyType, ItemType> {
+    on DataController<PageKeyType, ItemType> {
   /// The [RefreshController] for this controller.
   ///
   /// Will automatically be set to the right states (success and failure).
@@ -464,13 +414,7 @@ mixin RefreshableController<PageKeyType, ItemType>
   }
 }
 
-extension DataControllerCache<PageKeyType, ItemType>
-    on RawDataController<PageKeyType, ItemType> {
-  @protected
-  Future<void> evictCache() async => provide(firstPageKey, true);
-}
-
-extension DataControllerLoading<T extends RawDataController> on T {
+extension DataControllerLoading<T extends DataController> on T {
   /// Waits for the first Page of this controller to be loaded.
   ///
   /// If the controller has already loaded the page, will return immediately.

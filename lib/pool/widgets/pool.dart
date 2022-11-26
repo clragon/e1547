@@ -23,7 +23,7 @@ class _PoolPageState extends State<PoolPage> {
   @override
   Widget build(BuildContext context) {
     return PostsProvider(
-      provider: (client, tags, page, force) => client.poolPosts(
+      fetch: (client, tags, page, force) => client.poolPosts(
         widget.pool.id,
         page,
         reverse: reversePool,

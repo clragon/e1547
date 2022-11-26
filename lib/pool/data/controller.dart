@@ -5,7 +5,7 @@ import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 
-class PoolsController extends DataController<Pool>
+class PoolsController extends PageClientDataController<Pool>
     with SearchableController, RefreshableController {
   PoolsController({
     required this.client,
@@ -17,6 +17,7 @@ class PoolsController extends DataController<Pool>
           denylist: denylist,
         );
 
+  @override
   final Client client;
   final DenylistService denylist;
 
@@ -39,7 +40,7 @@ class PoolsController extends DataController<Pool>
 
   @override
   @protected
-  Future<List<Pool>> provide(int page, bool force) async {
+  Future<List<Pool>> fetch(int page, bool force) async {
     List<Pool> pools =
         await client.pools(page, search: search.value, force: force);
     List<int> ids = pools
@@ -83,12 +84,12 @@ class ThumbnailController<KeyType, ItemType> extends PostsController {
   Future<void> loadIds(List<int> ids, {bool force = false}) async {
     int index = _ids.length;
     _ids[index] = ids;
-    await loadPage(index, force: force);
+    await loadPage(index);
   }
 
   @override
   @protected
-  Future<List<Post>> provide(int page, bool force) async {
+  Future<List<Post>> fetch(int page, bool force) async {
     List<int>? ids = _ids[page];
     if (ids == null) return [];
     List<int> available = itemList?.map((e) => e.id).toList() ?? [];

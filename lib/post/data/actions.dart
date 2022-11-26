@@ -305,7 +305,7 @@ extension PostLinking on Post {
   String get link => getPostLink(id);
 }
 
-mixin PostsActionController<KeyType> on RawDataController<KeyType, Post> {
+mixin PostsActionController<KeyType> on ClientDataController<KeyType, Post> {
   Client get client;
 
   void replacePost(Post post) {

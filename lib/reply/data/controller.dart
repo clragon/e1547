@@ -3,7 +3,7 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/reply/reply.dart';
 import 'package:flutter/material.dart';
 
-class RepliesController extends CursorDataController<Reply>
+class RepliesController extends CursorClientDataController<Reply>
     with RefreshableController {
   RepliesController({
     required this.client,
@@ -11,6 +11,7 @@ class RepliesController extends CursorDataController<Reply>
     bool orderByOldest = true,
   }) : orderByOldest = ValueNotifier(orderByOldest);
 
+  @override
   final Client client;
 
   final int topicId;
@@ -19,7 +20,7 @@ class RepliesController extends CursorDataController<Reply>
 
   @override
   @protected
-  Future<List<Reply>> provide(String page, bool force) =>
+  Future<List<Reply>> fetch(String page, bool force) =>
       client.replies(topicId, page, force: force);
 
   @override

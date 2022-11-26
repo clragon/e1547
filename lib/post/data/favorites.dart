@@ -37,7 +37,7 @@ class FavoritePostsController extends PostsController {
   }
 
   @override
-  Future<List<Post>> provide(int page, bool force) async {
+  Future<List<Post>> fetch(int page, bool force) async {
     if (!client.hasLogin) {
       throw NoUserLoginException('Cannot browse favorites without login');
     }
@@ -57,7 +57,7 @@ class FavoritePostsController extends PostsController {
         search.value = 'fav:${client.credentials?.username}';
       }
     }
-    return super.refresh(background: background, force: force);
+    return super.refresh(background: background);
   }
 }
 

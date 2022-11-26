@@ -33,6 +33,7 @@ String formatTime(DateTime time) =>
     DateFormat.jm(Platform.localeName).format(time);
 
 String dateOrName(DateTime date) {
+  // TODO: add week days for current week.
   String title = formatDate(date);
   DateTime today = DateUtils.dateOnly(DateTime.now());
   if (today.isAtSameMomentAs(DateUtils.dateOnly(date))) {

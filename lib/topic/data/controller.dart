@@ -3,13 +3,14 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/topic/topic.dart';
 import 'package:flutter/material.dart';
 
-class TopicsController extends DataController<Topic>
+class TopicsController extends PageClientDataController<Topic>
     with RefreshableController, SearchableController, FilterableController {
   TopicsController({required this.client, String? search})
       : search = ValueNotifier<String>(search ?? '') {
     _filterNotifiers.forEach((e) => e.addListener(refilter));
   }
 
+  @override
   final Client client;
 
   @override
@@ -21,7 +22,7 @@ class TopicsController extends DataController<Topic>
 
   @override
   @protected
-  Future<List<Topic>> provide(int page, bool force) =>
+  Future<List<Topic>> fetch(int page, bool force) =>
       client.topics(page, search: search.value, force: force);
 
   @override

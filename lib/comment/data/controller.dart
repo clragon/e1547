@@ -5,17 +5,18 @@ import 'package:flutter/material.dart';
 
 import 'comment.dart';
 
-class CommentsController extends CursorDataController<Comment>
+class CommentsController extends CursorClientDataController<Comment>
     with RefreshableController {
   CommentsController({required this.client, required this.postId});
 
+  @override
   final Client client;
 
   final int postId;
 
   @override
   @protected
-  Future<List<Comment>> provide(String page, bool force) =>
+  Future<List<Comment>> fetch(String page, bool force) =>
       client.comments(postId, page, force: force);
 
   @override

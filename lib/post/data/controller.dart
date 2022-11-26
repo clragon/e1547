@@ -5,7 +5,7 @@ import 'package:e1547/post/post.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 
-class PostsController extends DataController<Post>
+class PostsController extends PageClientDataController<Post>
     with
         PostsActionController,
         SearchableController,
@@ -15,12 +15,12 @@ class PostsController extends DataController<Post>
   PostsController({
     required this.client,
     required this.denylist,
-    PostGetCallback? provider,
+    PostFetchCallback? fetch,
     String? search,
     bool denying = true,
     this.canSearch = true,
     this.filterMode = PostFilterMode.filtering,
-  })  : _provider = provider,
+  })  : _fetch = fetch,
         search = ValueNotifier(sortTags(search ?? '')) {
     this.denying = denying;
     _filterNotifiers.forEach((e) => e.addListener(refilter));
@@ -36,7 +36,7 @@ class PostsController extends DataController<Post>
     controller = PostsController(
       client: client,
       denylist: denylist,
-      provider: (client, search, page, force) async => [
+      fetch: (client, search, page, force) async => [
         if (page == controller.firstPageKey)
           await client.post(id, force: force),
       ],
@@ -48,7 +48,7 @@ class PostsController extends DataController<Post>
 
   @override
   final Client client;
-  final PostGetCallback? _provider;
+  final PostFetchCallback? _fetch;
 
   @override
   final ValueNotifier<String> search;
@@ -62,9 +62,9 @@ class PostsController extends DataController<Post>
 
   @override
   @protected
-  Future<List<Post>> provide(int page, bool force) async {
-    if (_provider != null) {
-      return _provider!(client, search.value, page, force);
+  Future<List<Post>> fetch(int page, bool force) async {
+    if (_fetch != null) {
+      return _fetch!(client, search.value, page, force);
     } else {
       return client.posts(page, search: search.value, force: force);
     }
@@ -77,13 +77,13 @@ class PostsController extends DataController<Post>
   }
 }
 
-typedef PostGetCallback = Future<List<Post>> Function(
+typedef PostFetchCallback = Future<List<Post>> Function(
     Client client, String search, int page, bool force);
 
 class PostsProvider extends SubChangeNotifierProvider2<Client, DenylistService,
     PostsController> {
   PostsProvider({
-    PostGetCallback? provider,
+    PostFetchCallback? fetch,
     String? search,
     bool denying = true,
     bool canSearch = true,
@@ -94,7 +94,7 @@ class PostsProvider extends SubChangeNotifierProvider2<Client, DenylistService,
           create: (context, client, denylist) => PostsController(
             client: client,
             denylist: denylist,
-            provider: provider,
+            fetch: fetch,
             search: search,
             denying: denying,
             canSearch: canSearch,

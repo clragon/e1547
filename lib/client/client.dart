@@ -1,6 +1,7 @@
 // data
 export 'data/cache.dart';
 export 'data/client.dart';
+export 'data/controller.dart';
 export 'data/credentials.dart';
 export 'data/host.dart';
 // widgets

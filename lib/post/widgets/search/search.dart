@@ -28,7 +28,7 @@ class _SearchPageState extends State<SearchPage> {
     return Consumer<Client>(
       builder: (context, client, child) => PostsProvider(
         search: widget.tags,
-        provider: (client, tags, page, force) => client.posts(
+        fetch: (client, tags, page, force) => client.posts(
           page,
           search: tags,
           reversePools: reversePools,

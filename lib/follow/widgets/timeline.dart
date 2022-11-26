@@ -14,7 +14,7 @@ class _FollowsTimelinePageState extends State<FollowsTimelinePage> {
   @override
   Widget build(BuildContext context) {
     return PostsProvider(
-      provider: (client, search, page, force) async {
+      fetch: (client, search, page, force) async {
         FollowsService service = context.read<FollowsService>();
         return client.tagPosts(
           (await service.getAll(host: client.host)).map((e) => e.tags).toList(),
