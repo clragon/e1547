@@ -15,6 +15,9 @@ class CurrentUserAvatar extends StatelessWidget {
     return Consumer<CurrentUserAvatarValue>(
       builder: (context, value, child) => AsyncBuilder<PostsController?>(
         future: value.controller,
+        error: (context, error, stacktrace) => const CircleAvatar(
+          child: Icon(Icons.warning_amber),
+        ),
         builder: (context, value) => UserAvatar(
           id: value?.itemList!.first.id,
           controller: value,
