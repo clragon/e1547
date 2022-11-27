@@ -33,6 +33,7 @@ class HostServiceProvider extends SubChangeNotifierProvider3<AppInfo, Settings,
               Settings settings = context.read<Settings>();
               settings.host.value = service.host;
               settings.customHost.value = service.customHost;
+              settings.credentials.value = service.credentials;
             },
             child: ClientProvider(
               builder: builder,
