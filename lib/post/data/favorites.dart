@@ -46,6 +46,7 @@ class FavoritePostsController extends PostsController {
       search: search.value,
       orderFavorites: orderFavorites.value,
       force: force,
+      cancelToken: cancelToken,
     );
   }
 

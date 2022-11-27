@@ -1,4 +1,3 @@
-import 'package:e1547/client/client.dart';
 import 'package:e1547/history/history.dart';
 import 'package:e1547/interface/interface.dart';
 
@@ -20,11 +19,10 @@ class _FavPageState extends State<FavPage> with DrawerEntry {
         builder: (context, controller, child) => ListenableListener(
           listener: () async {
             HistoriesService service = context.read<HistoriesService>();
-            Client client = context.read<Client>();
             try {
               await controller.waitForFirstPage();
               await service.addPostSearch(
-                client.host,
+                controller.client.host,
                 controller.search.value,
                 posts: controller.itemList,
               );

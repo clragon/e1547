@@ -20,8 +20,12 @@ class RepliesController extends CursorClientDataController<Reply>
 
   @override
   @protected
-  Future<List<Reply>> fetch(String page, bool force) =>
-      client.replies(topicId, page, force: force);
+  Future<List<Reply>> fetch(String page, bool force) => client.replies(
+        topicId,
+        page,
+        force: force,
+        cancelToken: cancelToken,
+      );
 
   @override
   @protected

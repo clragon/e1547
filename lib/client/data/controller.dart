@@ -15,9 +15,20 @@ mixin ClientDataController<KeyType, ItemType>
   @protected
   Future<void> evictCache() => fetch(firstPageKey, true);
 
-  // TODO: cancel all requests
+  CancelToken _cancelToken = CancelToken();
+
+  CancelToken get cancelToken => ReadOnlyCancelToken(_cancelToken);
+
+  @override
+  void dispose() {
+    _cancelToken.cancel('$runtimeType was disposed');
+    super.dispose();
+  }
+
   @override
   void refresh({bool background = false}) async {
+    _cancelToken.cancel('$runtimeType is being refreshed');
+    _cancelToken = CancelToken();
     await evictCache();
     super.refresh(background: background);
   }

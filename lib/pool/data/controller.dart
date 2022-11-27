@@ -41,8 +41,12 @@ class PoolsController extends PageClientDataController<Pool>
   @override
   @protected
   Future<List<Pool>> fetch(int page, bool force) async {
-    List<Pool> pools =
-        await client.pools(page, search: search.value, force: force);
+    List<Pool> pools = await client.pools(
+      page,
+      search: search.value,
+      force: force,
+      cancelToken: cancelToken,
+    );
     List<int> ids = pools
         .map((e) => e.postIds.isNotEmpty ? e.postIds.first : null)
         .where((e) => e != null)

@@ -36,9 +36,9 @@ class PostsController extends PageClientDataController<Post>
     controller = PostsController(
       client: client,
       denylist: denylist,
-      fetch: (client, search, page, force) async => [
+      fetch: (search, page, force) async => [
         if (page == controller.firstPageKey)
-          await client.post(id, force: force),
+          await controller.client.post(id, force: force),
       ],
       canSearch: false,
       filterMode: filterMode,
@@ -64,9 +64,14 @@ class PostsController extends PageClientDataController<Post>
   @protected
   Future<List<Post>> fetch(int page, bool force) async {
     if (_fetch != null) {
-      return _fetch!(client, search.value, page, force);
+      return _fetch!(search.value, page, force);
     } else {
-      return client.posts(page, search: search.value, force: force);
+      return client.posts(
+        page,
+        search: search.value,
+        force: force,
+        cancelToken: cancelToken,
+      );
     }
   }
 
@@ -78,12 +83,18 @@ class PostsController extends PageClientDataController<Post>
 }
 
 typedef PostFetchCallback = Future<List<Post>> Function(
-    Client client, String search, int page, bool force);
+    String search, int page, bool force);
 
 class PostsProvider extends SubChangeNotifierProvider2<Client, DenylistService,
     PostsController> {
   PostsProvider({
-    PostFetchCallback? fetch,
+    Future<List<Post>> Function(
+      PostsController controller,
+      String search,
+      int page,
+      bool force,
+    )?
+        fetch,
     String? search,
     bool denying = true,
     bool canSearch = true,
@@ -91,15 +102,22 @@ class PostsProvider extends SubChangeNotifierProvider2<Client, DenylistService,
     super.child,
     super.builder,
   }) : super(
-          create: (context, client, denylist) => PostsController(
-            client: client,
-            denylist: denylist,
-            fetch: fetch,
-            search: search,
-            denying: denying,
-            canSearch: canSearch,
-            filterMode: filterMode,
-          ),
+          create: (context, client, denylist) {
+            late PostsController controller;
+            controller = PostsController(
+              client: client,
+              denylist: denylist,
+              fetch: fetch != null
+                  ? (search, page, force) =>
+                      fetch(controller, search, page, force)
+                  : null,
+              search: search,
+              denying: denying,
+              canSearch: canSearch,
+              filterMode: filterMode,
+            );
+            return controller;
+          },
         );
 
   PostsProvider.single({

@@ -133,8 +133,11 @@ class _TagInputState extends State<TagInput> {
         }
         if (tagToRaw(tags[selection].trim()).isNotEmpty &&
             !tags[selection].contains(':')) {
-          return context.read<Client>().autocomplete(tagToRaw(tags[selection]),
-              category: widget.category);
+          return context
+              .read<Client>()
+              .autocomplete(tagToRaw(tags[selection]),
+                  category: widget.category)
+              .then((value) => value.take(3));
         } else {
           return [];
         }

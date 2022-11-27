@@ -69,7 +69,10 @@ abstract class DataController<KeyType, ItemType>
   /// Called when a request of this controller fails.
   @protected
   @mustCallSuper
-  void failure(Object error) => this.error = error;
+  void failure(Object error) {
+    if (_disposed) return;
+    this.error = error;
+  }
 
   /// Called when a request of this controller succeeds.
   @protected

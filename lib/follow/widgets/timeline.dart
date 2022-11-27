@@ -14,12 +14,15 @@ class _FollowsTimelinePageState extends State<FollowsTimelinePage> {
   @override
   Widget build(BuildContext context) {
     return PostsProvider(
-      fetch: (client, search, page, force) async {
+      fetch: (controller, search, page, force) async {
         FollowsService service = context.read<FollowsService>();
-        return client.tagPosts(
-          (await service.getAll(host: client.host)).map((e) => e.tags).toList(),
+        return controller.client.tagPosts(
+          (await service.getAll(host: controller.client.host))
+              .map((e) => e.tags)
+              .toList(),
           page,
           force: force,
+          cancelToken: controller.cancelToken,
         );
       },
       canSearch: false,

@@ -17,7 +17,7 @@ import 'package:e1547/topic/topic.dart';
 import 'package:e1547/user/user.dart';
 import 'package:e1547/wiki/wiki.dart';
 
-export 'package:dio/dio.dart' show DioError;
+export 'package:dio/dio.dart' show DioError, CancelToken;
 
 class Client {
   Client({
@@ -48,6 +48,7 @@ class Client {
         ),
       );
     }
+    _dio.interceptors.add(DefaultCancelTokenInterceptor(_cancelToken));
   }
 
   final String host;
@@ -55,6 +56,9 @@ class Client {
   final CacheStore? cache;
   final CacheStore _memoryCache = MemCacheStore();
   final Credentials? credentials;
+  final CancelToken _cancelToken = CancelToken();
+
+  CancelToken get cancelToken => ReadOnlyCancelToken(_cancelToken);
 
   late Dio _dio;
 
@@ -77,6 +81,11 @@ class Client {
           )
           .toOptions();
 
+  void close() {
+    _cancelToken.cancel('$runtimeType has been closed');
+    _dio.close();
+  }
+
   bool get hasLogin => credentials != null;
 
   void ensureLogin() {
@@ -98,11 +107,12 @@ class Client {
     int? limit,
     String? search,
     bool? force,
+    CancelToken? cancelToken,
   }) async {
     String? tags = search != null ? sortTags(search) : '';
     Map body = await _dio
         .get(
-          'posts.json',
+      'posts.json',
           queryParameters: {
             'tags': tags,
             'page': page,
@@ -112,6 +122,7 @@ class Client {
             params: {'tags': tags},
             force: force,
           ),
+          cancelToken: cancelToken,
         )
         .then((response) => response.data);
 
@@ -122,6 +133,7 @@ class Client {
     List<int> ids, {
     int limit = 80,
     bool? force,
+    CancelToken? cancelToken,
   }) async {
     limit = max(0, min(limit, 100));
 
@@ -135,7 +147,12 @@ class Client {
     for (final chunk in chunks) {
       if (chunk.isEmpty) continue;
       String filter = 'id:${chunk.join(',')}';
-      List<Post> part = await postsRaw(1, search: filter, force: force);
+      List<Post> part = await postsRaw(
+        1,
+        search: filter,
+        force: force,
+        cancelToken: cancelToken,
+      );
       Map<int, Post> table = {for (Post e in part) e.id: e};
       part = (chunk.map((e) => table[e]).toList()
             ..removeWhere((e) => e == null))
@@ -152,13 +169,15 @@ class Client {
     bool? reversePools,
     bool? orderFavorites,
     bool? force,
+    CancelToken? cancelToken,
   }) async {
     Map<RegExp, Future<List<Post>> Function(RegExpMatch match)> redirects = {
       poolRegex(): (match) => poolPosts(
-            int.parse(match.namedGroup('id')!),
+        int.parse(match.namedGroup('id')!),
             page,
             reverse: reversePools ?? false,
             force: force,
+            cancelToken: cancelToken,
           ),
       if ((orderFavorites ?? false) && credentials?.username != null)
         favRegex(credentials!.username): (match) =>
@@ -176,11 +195,12 @@ class Client {
         .then((value) => value.whereNot((e) => e.isIgnored()).toList());
   }
 
-  Future<Post> post(int postId, {bool? force}) async {
+  Future<Post> post(int postId, {bool? force, CancelToken? cancelToken}) async {
     Map<String, dynamic> body = await _dio
         .get(
           'posts/$postId.json',
           options: _options(force: force),
+          cancelToken: cancelToken,
         )
         .then((response) => response.data);
 
@@ -233,7 +253,12 @@ class Client {
     );
   }
 
-  Future<List<Post>> favorites(int page, {int? limit, bool? force}) async {
+  Future<List<Post>> favorites(
+    int page, {
+    int? limit,
+    bool? force,
+    CancelToken? cancelToken,
+  }) async {
     Map body = await _dio
         .get(
           'favorites.json',
@@ -242,6 +267,7 @@ class Client {
             'limit': limit,
           },
           options: _options(force: force),
+          cancelToken: cancelToken,
         )
         .then((response) => response.data);
 
@@ -264,7 +290,12 @@ class Client {
     await _dio.delete('favorites/$postId.json');
   }
 
-  Future<List<Pool>> pools(int page, {String? search, bool? force}) async {
+  Future<List<Pool>> pools(
+    int page, {
+    String? search,
+    bool? force,
+    CancelToken? cancelToken,
+  }) async {
     List<dynamic> body = await _dio
         .get(
           'pools.json',
@@ -276,6 +307,7 @@ class Client {
             force: force,
             params: {'search[name_matches]': search},
           ),
+          cancelToken: cancelToken,
         )
         .then((response) => response.data);
 
@@ -288,11 +320,12 @@ class Client {
     return pools;
   }
 
-  Future<Pool> pool(int poolId, {bool? force}) async {
+  Future<Pool> pool(int poolId, {bool? force, CancelToken? cancelToken}) async {
     Map<String, dynamic> body = await _dio
         .get(
           'pools/$poolId.json',
           options: _options(force: force),
+          cancelToken: cancelToken,
         )
         .then((response) => response.data);
 
@@ -304,14 +337,16 @@ class Client {
     int page, {
     bool reverse = false,
     bool? force,
+    CancelToken? cancelToken,
   }) async {
     int limit = 80;
-    Pool pool = await this.pool(poolId, force: force);
+    Pool pool = await this.pool(poolId, force: force, cancelToken: cancelToken);
     List<int> ids = reverse ? pool.postIds.reversed.toList() : pool.postIds;
     int lower = (page - 1) * limit;
     if (lower > ids.length) return [];
     ids = ids.sublist(lower).take(limit).toList();
-    return postsChunk(ids, limit: limit, force: force);
+    return postsChunk(ids,
+        limit: limit, force: force, cancelToken: cancelToken);
   }
 
   Future<List<Post>> tagPosts(
@@ -319,6 +354,7 @@ class Client {
     int page, {
     int? limit,
     bool? force,
+    CancelToken? cancelToken,
   }) async {
     if (tags.isEmpty) return [];
     int max = 40;
@@ -331,10 +367,21 @@ class Client {
     List<String> chunk =
         tags.sublist((tagPage - 1) * chunkSize).take(chunkSize).toList();
     String filter = chunk.map((e) => '~$e').join(' ');
-    return postsRaw(sitePage, search: filter, limit: limit, force: force);
+    return postsRaw(
+      sitePage,
+      search: filter,
+      limit: limit,
+      force: force,
+      cancelToken: cancelToken,
+    );
   }
 
-  Future<List<Wiki>> wikis(int page, {String? search, bool? force}) async {
+  Future<List<Wiki>> wikis(
+    int page, {
+    String? search,
+    bool? force,
+    CancelToken? cancelToken,
+  }) async {
     List<dynamic> body = await _dio
         .get(
           'wiki_pages.json',
@@ -346,28 +393,39 @@ class Client {
             force: force,
             params: {'search[title]': search},
           ),
+          cancelToken: cancelToken,
         )
         .then((response) => response.data);
 
     return body.map((entry) => Wiki.fromJson(entry)).toList();
   }
 
-  Future<Wiki> wiki(String name, {bool? force}) async {
+  Future<Wiki> wiki(
+    String name, {
+    bool? force,
+    CancelToken? cancelToken,
+  }) async {
     Map<String, dynamic> body = await _dio
         .get(
           'wiki_pages/$name.json',
           options: _options(force: force),
+          cancelToken: cancelToken,
         )
         .then((response) => response.data);
 
     return Wiki.fromJson(body);
   }
 
-  Future<User> user(String name, {bool? force}) async {
+  Future<User> user(
+    String name, {
+    bool? force,
+    CancelToken? cancelToken,
+  }) async {
     Map<String, dynamic> body = await _dio
         .get(
           'users/$name.json',
           options: _options(force: force),
+          cancelToken: cancelToken,
         )
         .then((response) => response.data);
 
@@ -385,7 +443,10 @@ class Client {
     );
   }
 
-  Future<CurrentUser?> currentUser({bool? force}) async {
+  Future<CurrentUser?> currentUser({
+    bool? force,
+    CancelToken? cancelToken,
+  }) async {
     if (!hasLogin) {
       return null;
     }
@@ -397,6 +458,7 @@ class Client {
             force: force,
             store: _memoryCache,
           ),
+          cancelToken: cancelToken,
         )
         .then((response) => response.data);
 
@@ -412,7 +474,12 @@ class Client {
         data: FormData.fromMap(body));
   }
 
-  Future<List<Tag>> tags(String search, {int? category, bool? force}) async {
+  Future<List<Tag>> tags(
+    String search, {
+    int? category,
+    bool? force,
+    CancelToken? cancelToken,
+  }) async {
     final body = await _dio
         .get(
           'tags.json',
@@ -423,6 +490,7 @@ class Client {
             'limit': 3,
           },
           options: _options(force: force),
+          cancelToken: cancelToken,
         )
         .then((response) => response.data);
     List<Tag> tags = [];
@@ -438,6 +506,7 @@ class Client {
     String search, {
     int? category,
     bool? force,
+    CancelToken? cancelToken,
   }) async {
     if (category == null) {
       if (search.length < 3) {
@@ -445,7 +514,7 @@ class Client {
       }
       final body = await _dio
           .get(
-            'tags/autocomplete.json',
+        'tags/autocomplete.json',
             queryParameters: {
               'search[name_matches]': search,
             },
@@ -453,6 +522,7 @@ class Client {
               force: force,
               maxAge: const Duration(days: 7),
             ),
+            cancelToken: cancelToken,
           )
           .then((response) => response.data);
       List<TagSuggestion> tags = [];
@@ -461,7 +531,6 @@ class Client {
           tags.add(TagSuggestion.fromJson(tag));
         }
       }
-      tags = tags.take(3).toList();
       return tags;
     } else {
       List<TagSuggestion> tags = [];
@@ -484,7 +553,11 @@ class Client {
     }
   }
 
-  Future<String?> getTagAlias(String tag, {bool? force}) async {
+  Future<String?> getTagAlias(
+    String tag, {
+    bool? force,
+    CancelToken? cancelToken,
+  }) async {
     final body = await _dio
         .get(
           'tag_aliases.json',
@@ -497,6 +570,7 @@ class Client {
               'search[antecedent_name]': tag,
             },
           ),
+          cancelToken: cancelToken,
         )
         .then((value) => value.data);
 
@@ -507,19 +581,24 @@ class Client {
     return null;
   }
 
-  Future<List<Comment>> comments(int postId, String page, {bool? force}) async {
+  Future<List<Comment>> comments(int postId,
+      String page, {
+        bool? force,
+        CancelToken? cancelToken,
+      }) async {
     final body = await _dio
         .get(
-          'comments.json',
-          queryParameters: {
-            'group_by': 'comment',
-            'search[post_id]': postId,
-            'page': page,
-          },
-          options: _options(
-            force: force,
-            params: {'search[post_id]': postId.toString()},
-          ),
+      'comments.json',
+      queryParameters: {
+        'group_by': 'comment',
+        'search[post_id]': postId,
+        'page': page,
+      },
+      options: _options(
+        force: force,
+        params: {'search[post_id]': postId.toString()},
+      ),
+      cancelToken: cancelToken,
         )
         .then((response) => response.data);
 
@@ -533,13 +612,18 @@ class Client {
     return comments;
   }
 
-  Future<Comment> comment(int commentId, {bool? force}) async {
+  Future<Comment> comment(
+    int commentId, {
+    bool? force,
+    CancelToken? cancelToken,
+  }) async {
     ensureLogin();
 
     Map<String, dynamic> body = await _dio
         .get(
           'comments.json/$commentId.json',
           options: _options(force: force),
+          cancelToken: cancelToken,
         )
         .then((response) => response.data);
 
@@ -612,11 +696,12 @@ class Client {
     int page, {
     String? search,
     bool? force,
+    CancelToken? cancelToken,
   }) async {
     String? title = search?.isNotEmpty ?? false ? search : null;
     final body = await _dio
         .get(
-          'forum_topics.json',
+      'forum_topics.json',
           queryParameters: {
             'page': page,
             'search[title_matches]': title,
@@ -625,6 +710,7 @@ class Client {
             force: force,
             params: {'search[title_matches]': title},
           ),
+          cancelToken: cancelToken,
         )
         .then((response) => response.data);
 
@@ -638,18 +724,28 @@ class Client {
     return threads;
   }
 
-  Future<Topic> topic(int topicId, {bool? force}) async {
+  Future<Topic> topic(
+    int topicId, {
+    bool? force,
+    CancelToken? cancelToken,
+  }) async {
     Map<String, dynamic> body = await _dio
         .get(
           'forum_topics/$topicId.json',
           options: _options(force: force),
+          cancelToken: cancelToken,
         )
         .then((response) => response.data);
 
     return Topic.fromJson(body);
   }
 
-  Future<List<Reply>> replies(int topicId, String page, {bool? force}) async {
+  Future<List<Reply>> replies(
+    int topicId,
+    String page, {
+    bool? force,
+    CancelToken? cancelToken,
+  }) async {
     final body = await _dio
         .get(
           'forum_posts.json',
@@ -662,6 +758,7 @@ class Client {
             force: force,
             params: {'search[topic_id]': topicId.toString()},
           ),
+          cancelToken: cancelToken,
         )
         .then((response) => response.data);
 
@@ -675,11 +772,16 @@ class Client {
     return replies;
   }
 
-  Future<Reply> reply(int replyId, {bool? force}) async {
+  Future<Reply> reply(
+    int replyId, {
+    bool? force,
+    CancelToken? cancelToken,
+  }) async {
     Map<String, dynamic> body = await _dio
         .get(
           'forum_posts/$replyId.json',
           options: _options(force: force),
+          cancelToken: cancelToken,
         )
         .then((response) => response.data);
 
@@ -703,7 +805,7 @@ Future<T> rateLimit<T>(Future<T> call, [Duration? duration]) => Future.wait(
 class ClientProvider extends SubProvider<HostService, Client> {
   ClientProvider({super.child, super.builder})
       : super(
-          create: (context, config) => Client(
+    create: (context, config) => Client(
             host: config.host,
             credentials: config.credentials,
             appInfo: config.appInfo,
@@ -713,5 +815,6 @@ class ClientProvider extends SubProvider<HostService, Client> {
             HostService config = context.watch<HostService>();
             return [config.host, config.credentials];
           },
+          dispose: (context, client) => client.close(),
         );
 }

@@ -22,8 +22,12 @@ class TopicsController extends PageClientDataController<Topic>
 
   @override
   @protected
-  Future<List<Topic>> fetch(int page, bool force) =>
-      client.topics(page, search: search.value, force: force);
+  Future<List<Topic>> fetch(int page, bool force) => client.topics(
+        page,
+        search: search.value,
+        force: force,
+        cancelToken: cancelToken,
+      );
 
   @override
   List<Topic> filter(List<Topic> items) {

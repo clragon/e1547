@@ -16,8 +16,12 @@ class CommentsController extends CursorClientDataController<Comment>
 
   @override
   @protected
-  Future<List<Comment>> fetch(String page, bool force) =>
-      client.comments(postId, page, force: force);
+  Future<List<Comment>> fetch(String page, bool force) => client.comments(
+        postId,
+        page,
+        force: force,
+        cancelToken: cancelToken,
+      );
 
   @override
   @protected

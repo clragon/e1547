@@ -1,4 +1,3 @@
-import 'package:e1547/client/client.dart';
 import 'package:e1547/history/history.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
@@ -23,11 +22,10 @@ class _HomePageState extends State<HomePage> with DrawerEntry {
           listenable: controller.search,
           listener: () async {
             HistoriesService service = context.read<HistoriesService>();
-            Client client = context.read<Client>();
             context.read<Settings>().homeTags.value = controller.search.value;
             await controller.waitForFirstPage();
             service.addPostSearch(
-              client.host,
+              controller.client.host,
               controller.search.value,
               posts: controller.itemList,
             );
