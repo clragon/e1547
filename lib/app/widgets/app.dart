@@ -60,6 +60,7 @@ class App extends StatelessWidget {
                               client: context.read<Client>(),
                               denylist: context.read<DenylistService>().items,
                             ),
+                        initializeCurrentUserAvatar,
                       ],
                       child: ErrorNotifier(
                         child: LockScreen(
