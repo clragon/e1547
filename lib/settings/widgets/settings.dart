@@ -1,5 +1,4 @@
 import 'package:async_builder/async_builder.dart';
-import 'package:async_builder/init_builder.dart';
 import 'package:e1547/app/app.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/denylist/denylist.dart';
@@ -56,45 +55,56 @@ class _SettingsPageState extends State<SettingsPage> {
               ),
               Consumer<Client>(
                 builder: (context, client, child) =>
-                    InitBuilder<Future<CurrentUser?>>(
-                  getter: client.currentUser,
-                  builder: (context, future) => AsyncBuilder<CurrentUser?>(
-                    retain: true,
+                    SubValueBuilder<Future<CurrentUser?>>(
+                  create: (context) => client.currentUser(),
+                  selector: (context) => [client],
+                  builder: (context, future) => FutureBuilder<CurrentUser?>(
+                    // retain: true,
                     future: future,
-                    builder: (context, value) => CrossFade.builder(
-                      duration: const Duration(milliseconds: 200),
-                      showChild: client.credentials != null,
-                      builder: (context) => DividerListTile(
-                        title: Text(client.credentials!.username),
-                        subtitle: value?.levelString != null
-                            ? Text(value!.levelString.toLowerCase())
-                            : null,
-                        leading: const IgnorePointer(
-                          child: CurrentUserAvatar(),
-                        ),
-                        separated: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 12),
-                          child: IgnorePointer(
-                            child: IconButton(
-                              icon: const Icon(Icons.exit_to_app),
-                              onPressed: () => logout(context),
+                    // error: (context, error, stacktrace) => const ListTile(
+                    //     leading: Icon(Icons.warning_amber),
+                    //   ),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasError) {
+                        return const ListTile(
+                          leading: Icon(Icons.warning_amber),
+                        );
+                      }
+                      return CrossFade.builder(
+                        duration: const Duration(milliseconds: 200),
+                        showChild: client.credentials != null,
+                        builder: (context) => DividerListTile(
+                          title: Text(client.credentials!.username),
+                          subtitle: snapshot.data?.levelString != null
+                              ? Text(snapshot.data!.levelString.toLowerCase())
+                              : null,
+                          leading: const IgnorePointer(
+                            child: CurrentUserAvatar(),
+                          ),
+                          separated: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 12),
+                            child: IgnorePointer(
+                              child: IconButton(
+                                icon: const Icon(Icons.exit_to_app),
+                                onPressed: () => logout(context),
+                              ),
                             ),
                           ),
-                        ),
-                        onTap: () => Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                UserLoadingPage(client.credentials!.username),
+                          onTap: () => Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  UserLoadingPage(client.credentials!.username),
+                            ),
                           ),
+                          onTapSeparated: () => logout(context),
                         ),
-                        onTapSeparated: () => logout(context),
-                      ),
-                      secondChild: ListTile(
-                        title: const Text('Login'),
-                        leading: const Icon(Icons.person_add),
-                        onTap: () => Navigator.pushNamed(context, '/login'),
-                      ),
-                    ),
+                        secondChild: ListTile(
+                          title: const Text('Login'),
+                          leading: const Icon(Icons.person_add),
+                          onTap: () => Navigator.pushNamed(context, '/login'),
+                        ),
+                      );
+                    },
                   ),
                 ),
               ),

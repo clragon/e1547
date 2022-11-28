@@ -48,7 +48,6 @@ class Client {
         ),
       );
     }
-    _dio.interceptors.add(DefaultCancelTokenInterceptor(_cancelToken));
   }
 
   final String host;
@@ -56,9 +55,6 @@ class Client {
   final CacheStore? cache;
   final CacheStore _memoryCache = MemCacheStore();
   final Credentials? credentials;
-  final CancelToken _cancelToken = CancelToken();
-
-  CancelToken get cancelToken => ReadOnlyCancelToken(_cancelToken);
 
   late Dio _dio;
 
@@ -81,9 +77,8 @@ class Client {
           )
           .toOptions();
 
-  void close() {
-    _cancelToken.cancel('$runtimeType has been closed');
-    _dio.close();
+  void close({bool force = false}) {
+    _dio.close(force: force);
   }
 
   bool get hasLogin => credentials != null;
@@ -581,24 +576,25 @@ class Client {
     return null;
   }
 
-  Future<List<Comment>> comments(int postId,
-      String page, {
-        bool? force,
-        CancelToken? cancelToken,
-      }) async {
+  Future<List<Comment>> comments(
+    int postId,
+    String page, {
+    bool? force,
+    CancelToken? cancelToken,
+  }) async {
     final body = await _dio
         .get(
-      'comments.json',
-      queryParameters: {
-        'group_by': 'comment',
-        'search[post_id]': postId,
-        'page': page,
-      },
-      options: _options(
-        force: force,
-        params: {'search[post_id]': postId.toString()},
-      ),
-      cancelToken: cancelToken,
+          'comments.json',
+          queryParameters: {
+            'group_by': 'comment',
+            'search[post_id]': postId,
+            'page': page,
+          },
+          options: _options(
+            force: force,
+            params: {'search[post_id]': postId.toString()},
+          ),
+          cancelToken: cancelToken,
         )
         .then((response) => response.data);
 
@@ -813,8 +809,13 @@ class ClientProvider extends SubProvider<HostService, Client> {
           ),
           selector: (context) {
             HostService config = context.watch<HostService>();
-            return [config.host, config.credentials];
+            return [
+              config.host,
+              config.credentials,
+              config.appInfo,
+              config.cache
+            ];
           },
-          dispose: (context, client) => client.close(),
+          dispose: (context, client) => client.close(force: true),
         );
 }

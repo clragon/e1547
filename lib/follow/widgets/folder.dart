@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:async_builder/async_builder.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/denylist/data/service.dart';
 import 'package:e1547/follow/follow.dart';
@@ -81,86 +80,89 @@ class _FollowsFolderPageState extends State<FollowsFolderPage> {
             create: (context) => value.listen((event) => update()),
             dispose: (context, value) => value.cancel(),
             selector: (context) => [value],
-            builder: (context, _) => AsyncBuilder<List<Follow>>(
+            builder: (context, _) => StreamBuilder<List<Follow>>(
               stream: value,
-              builder: (context, follows) => SelectionLayout<Follow>(
-                items: follows,
-                child: SheetActions(
-                  controller: sheetController,
-                  child: RefreshableLoadingPage(
-                    onEmpty: const Text('No follows'),
-                    onError: const Text('Failed to load follows'),
-                    isError: false,
-                    isBuilt: follows != null,
-                    isLoading: follows == null,
-                    isEmpty: follows?.isEmpty ?? false,
-                    refreshController: refreshController,
-                    refreshHeader: RefreshablePageDefaultHeader(
-                      refreshingText:
-                          'Refreshing ${context.watch<FollowsUpdater>().remaining} follows...',
-                    ),
-                    builder: (context, child) => TileLayout(child: child),
-                    child: (context) => AlignedGridView.count(
-                      primary: true,
-                      padding: defaultActionListPadding,
-                      addAutomaticKeepAlives: false,
-                      itemCount: follows?.length ?? 0,
-                      itemBuilder: (context, index) => FollowTile(
-                        follow: follows![index],
+              builder: (context, snapshot) {
+                List<Follow>? follows = snapshot.data;
+                return SelectionLayout<Follow>(
+                  items: follows,
+                  child: SheetActions(
+                    controller: sheetController,
+                    child: RefreshableLoadingPage(
+                      onEmpty: const Text('No follows'),
+                      onError: const Text('Failed to load follows'),
+                      isError: snapshot.hasError,
+                      isBuilt: follows != null,
+                      isLoading: follows == null,
+                      isEmpty: follows?.isEmpty ?? false,
+                      refreshController: refreshController,
+                      refreshHeader: RefreshablePageDefaultHeader(
+                        refreshingText:
+                            'Refreshing ${context.watch<FollowsUpdater>().remaining} follows...',
                       ),
-                      crossAxisCount: TileLayout.of(context).crossAxisCount,
-                    ),
-                    appBar: FollowSelectionAppBar(
-                      service: service,
-                      child: const DefaultAppBar(
-                        title: Text('Follows'),
-                        actions: [ContextDrawerButton()],
+                      builder: (context, child) => TileLayout(child: child),
+                      child: (context) => AlignedGridView.count(
+                        primary: true,
+                        padding: defaultActionListPadding,
+                        addAutomaticKeepAlives: false,
+                        itemCount: follows?.length ?? 0,
+                        itemBuilder: (context, index) => FollowTile(
+                          follow: follows![index],
+                        ),
+                        crossAxisCount: TileLayout.of(context).crossAxisCount,
                       ),
-                    ),
-                    refresh: () async {
-                      try {
-                        await update(true);
-                        refreshController.refreshCompleted();
-                      } on DioError {
-                        refreshController.refreshFailed();
-                      }
-                    },
-                    drawer: const NavigationDrawer(),
-                    endDrawer: ContextDrawer(
-                      title: const Text('Follows'),
-                      children: [
-                        if (context.findAncestorWidgetOfExactType<
-                                FollowsSwitcherPage>() !=
-                            null)
-                          const FollowSwitcherTile(),
-                        const FollowEditingTile(),
-                        const Divider(),
-                        const FollowMarkReadTile(),
-                      ],
-                    ),
-                    floatingActionButton: SheetFloatingActionButton(
-                      builder: (context, actionController) =>
-                          ControlledTextWrapper(
-                        submit: (value) {
-                          value = value.trim();
-                          if (value.isNotEmpty) {
-                            service.addTag(client.host, value);
-                          }
-                        },
-                        actionController: actionController,
-                        builder: (context, controller, submit) => TagInput(
-                          controller: controller,
-                          textInputAction: TextInputAction.done,
-                          labelText: 'Add to follows',
-                          submit: submit,
+                      appBar: FollowSelectionAppBar(
+                        service: service,
+                        child: const DefaultAppBar(
+                          title: Text('Follows'),
+                          actions: [ContextDrawerButton()],
                         ),
                       ),
-                      actionIcon: Icons.add,
-                      confirmIcon: Icons.check,
+                      refresh: () async {
+                        try {
+                          await update(true);
+                          refreshController.refreshCompleted();
+                        } on DioError {
+                          refreshController.refreshFailed();
+                        }
+                      },
+                      drawer: const NavigationDrawer(),
+                      endDrawer: ContextDrawer(
+                        title: const Text('Follows'),
+                        children: [
+                          if (context.findAncestorWidgetOfExactType<
+                                  FollowsSwitcherPage>() !=
+                              null)
+                            const FollowSwitcherTile(),
+                          const FollowEditingTile(),
+                          const Divider(),
+                          const FollowMarkReadTile(),
+                        ],
+                      ),
+                      floatingActionButton: SheetFloatingActionButton(
+                        builder: (context, actionController) =>
+                            ControlledTextWrapper(
+                          submit: (value) {
+                            value = value.trim();
+                            if (value.isNotEmpty) {
+                              service.addTag(client.host, value);
+                            }
+                          },
+                          actionController: actionController,
+                          builder: (context, controller, submit) => TagInput(
+                            controller: controller,
+                            textInputAction: TextInputAction.done,
+                            labelText: 'Add to follows',
+                            submit: submit,
+                          ),
+                        ),
+                        actionIcon: Icons.add,
+                        confirmIcon: Icons.check,
+                      ),
                     ),
                   ),
-                ),
-              ),
+                );
+              },
             ),
           ),
         ),

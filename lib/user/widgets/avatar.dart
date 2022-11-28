@@ -1,4 +1,3 @@
-import 'package:async_builder/async_builder.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/denylist/denylist.dart';
@@ -8,17 +7,23 @@ import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
 
 Future<void> initializeCurrentUserAvatar(BuildContext context) async {
-  PostsController? controller =
-      await context.read<CurrentUserAvatarValue>().controller;
-  Post? avatar = controller?.itemList?.first;
-  if (avatar?.sample.url != null) {
-    // The buildcontext used here comes from MaterialApp,
-    // therefore if it goes invalid, the app is already closed.
-    // ignore: use_build_context_synchronously
-    precacheImage(
-      CachedNetworkImageProvider(avatar!.sample.url!),
-      context,
-    );
+  try {
+    PostsController? controller =
+        await context.read<CurrentUserAvatarValue>().controller;
+    Post? avatar = controller?.itemList?.first;
+    if (avatar?.sample.url != null) {
+      // The buildcontext used here comes from MaterialApp,
+      // therefore if it goes invalid, the app is already closed.
+      // ignore: use_build_context_synchronously
+      await precacheImage(
+        CachedNetworkImageProvider(avatar!.sample.url!),
+        context,
+      );
+    }
+  } on DioError catch (e) {
+    if (!CancelToken.isCancel(e)) {
+      rethrow;
+    }
   }
 }
 
@@ -28,15 +33,22 @@ class CurrentUserAvatar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer<CurrentUserAvatarValue>(
-      builder: (context, value, child) => AsyncBuilder<PostsController?>(
+      // TODO: replace this with AsyncBuilder and fix it
+      builder: (context, value, child) => FutureBuilder<PostsController?>(
         future: value.controller,
-        error: (context, error, stacktrace) => const CircleAvatar(
-          child: Icon(Icons.warning_amber),
-        ),
-        builder: (context, value) => UserAvatar(
-          id: value?.itemList!.first.id,
-          controller: value,
-        ),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return CircleAvatar(
+              backgroundColor: Theme.of(context).colorScheme.surface,
+              child: const Icon(Icons.warning_amber),
+            );
+          }
+
+          return UserAvatar(
+            id: snapshot.data?.itemList!.first.id,
+            controller: snapshot.data,
+          );
+        },
       ),
     );
   }
@@ -73,13 +85,13 @@ class CurrentUserAvatarProvider
     extends SubProvider2<Client, DenylistService, CurrentUserAvatarValue> {
   CurrentUserAvatarProvider({super.child, super.builder})
       : super(
-          create: (context, client, denylist) => CurrentUserAvatarValue(
+    create: (context, client, denylist) => CurrentUserAvatarValue(
             client: client,
             denylist: denylist,
           ),
-          dispose: (context, value) async =>
-              (await value.controller)?.dispose(),
-          selector: (context) => [context.watch<Client>().credentials],
+          dispose: (context, value) => value.controller
+              .then((value) => value?.dispose())
+              .onError((error, stackTrace) => null),
         );
 }
 

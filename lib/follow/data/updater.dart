@@ -19,12 +19,14 @@ class FollowsUpdater extends ChangeNotifier {
   Future<void> get finish => _runCompleter.future;
 
   bool _canceling = false;
+
   int _remaining = 0;
 
   int get remaining => _remaining;
-  Exception? _error;
 
-  Exception? get error => _error;
+  Object? _error;
+
+  Object? get error => _error;
 
   @override
   void dispose() {

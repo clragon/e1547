@@ -41,22 +41,23 @@ class _LoggerPageState extends State<LoggerPage> {
         appBar: DefaultAppBar(
           title: const Text('Logs'),
           actions: [
-            PopupMenuButton<VoidCallback>(
-              icon: const Icon(Icons.more_vert),
-              onSelected: (value) => value(),
-              itemBuilder: (context) => [
-                PopupMenuTile(
-                  title: 'Export',
-                  icon: Icons.share,
-                  value: export,
-                ),
-                PopupMenuTile(
-                  title: 'Clear',
-                  icon: Icons.delete_forever,
-                  value: () => setState(widget.talker.cleanHistory),
-                ),
-              ],
-            ),
+            if (widget.talker.history.isNotEmpty)
+              PopupMenuButton<VoidCallback>(
+                icon: const Icon(Icons.more_vert),
+                onSelected: (value) => value(),
+                itemBuilder: (context) => [
+                  PopupMenuTile(
+                    title: 'Export',
+                    icon: Icons.share,
+                    value: export,
+                  ),
+                  PopupMenuTile(
+                    title: 'Clear',
+                    icon: Icons.delete_forever,
+                    value: () => setState(widget.talker.cleanHistory),
+                  ),
+                ],
+              ),
           ],
         ),
         body: widget.talker.history.isNotEmpty

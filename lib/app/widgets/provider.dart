@@ -103,8 +103,14 @@ class DenylistProvider
               return user.blacklistedTags.split('\n');
             },
             push: (value) async {
-              settings.denylist.value = value;
-              await client.updateBlacklist(value);
+              try {
+                settings.denylist.value = value;
+                await client.updateBlacklist(value);
+              } on DioError catch (e) {
+                if (!CancelToken.isCancel(e)) {
+                  rethrow;
+                }
+              }
             },
           ),
         );

@@ -1,21 +1,5 @@
 import 'package:dio/dio.dart';
 
-class DefaultCancelTokenInterceptor extends Interceptor {
-  DefaultCancelTokenInterceptor(this.token);
-
-  final CancelToken token;
-
-  @override
-  void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-    if (options.cancelToken == null) {
-      options = options.copyWith(
-        cancelToken: token,
-      );
-    }
-    super.onRequest(options, handler);
-  }
-}
-
 class ReadOnlyCancelToken implements CancelToken {
   ReadOnlyCancelToken(this.other);
 
