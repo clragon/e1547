@@ -65,7 +65,7 @@ jobs:
           KEYSTORE: ${{ secrets.KEYSTORE }}
           KEYCONFIG: ${{ secrets.KEYCONFIG }}
         run: |
-          mkdir -p android/app/keys
+          mkdir -p android/keys
           echo "$KEYSTORE" | base64 -d > android/keys/key.pkcs
           echo "$KEYCONFIG" | base64 -d > android/keys/key.properties
 

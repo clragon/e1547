@@ -22,7 +22,7 @@ desc "Build project."
 lane :build do
 
   build_args = []
-  elsif lane_context[SharedValues::PLATFORM_NAME] == :ios
+  if lane_context[SharedValues::PLATFORM_NAME] == :ios
     build_args << '--no-codesign'
   end
 
@@ -31,7 +31,12 @@ lane :build do
   )
 end
 
-lane :deploy do
-  gradle(task: "clean assembleRelease")
-  upload_to_play_store
+lane :deploy do |options|
+  gradle(
+    task: "clean assembleRelease",
+    project_dir: "./android"
+  )
+  upload_to_play_store(
+    skip_upload_changelogs: true
+  )
 end

@@ -1,6 +1,6 @@
 name: e1547
 description: A mobile app for e621+e926.
-version: 15.0.0-beta.2+68
+version: 15.0.0+69
 publish_to: none
 
 environment:

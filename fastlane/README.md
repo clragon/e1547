@@ -14,15 +14,41 @@ fastlane_](https://docs.fastlane.tools/#installing-fastlane)
 
 # Available Actions
 
-## Android
-
-### android deploy
+### build
 
 ```sh
-[bundle exec] fastlane android deploy
+[bundle exec] fastlane build
 ```
 
-Deploy a new version to the Google Play
+Build project.
+
+### deploy
+
+```sh
+[bundle exec] fastlane deploy
+```
+
+----
+
+## iOS
+
+### ios bootstrap
+
+```sh
+[bundle exec] fastlane ios bootstrap
+```
+
+Useful on CI, this lane installs Flutter.
+
+----
+
+## Android
+
+### android bootstrap
+
+```sh
+[bundle exec] fastlane android bootstrap
+```
 
 ----
 
