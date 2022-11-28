@@ -96,7 +96,7 @@ class PostDetailCommentsWrapper extends StatelessWidget {
                               PopupMenuTile(
                                 title: 'Refresh',
                                 icon: Icons.refresh,
-                                value: () => controller.refresh(),
+                                value: () => controller.refresh(force: true),
                               ),
                               PopupMenuTile(
                                 icon: Icons.sort,

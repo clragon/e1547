@@ -37,7 +37,7 @@ class HistoriesController extends DataController<int, History>
   }
 
   @override
-  Future<PageResponse<int, History>> requestPage(int page) async {
+  Future<PageResponse<int, History>> requestPage(int page, bool force) async {
     try {
       List<History> items = await service.page(
         host: host,
@@ -84,16 +84,16 @@ class HistoriesProvider extends SubChangeNotifierProvider2<HistoriesService,
     Client, HistoriesController> {
   HistoriesProvider({HistoriesSearch? search, super.child, super.builder})
       : super(
-    create: (context, service, client) => HistoriesController(
-      service: service,
+          create: (context, service, client) => HistoriesController(
+            service: service,
             host: client.host,
             search: search,
           ),
-    update: (context, service, client, controller) {
-      if (search != null) {
-        controller.search.value = search;
-      }
-      return controller;
-    },
-  );
+          update: (context, service, client, controller) {
+            if (search != null) {
+              controller.search.value = search;
+            }
+            return controller;
+          },
+        );
 }

@@ -40,30 +40,43 @@ abstract class DataController<KeyType, ItemType>
 
   /// Called to get the next page of items for [page].
   @protected
-  Future<PageResponse<KeyType, ItemType>> requestPage(KeyType page);
+  Future<PageResponse<KeyType, ItemType>> requestPage(KeyType page, bool force);
 
   /// Loads a page of items and adds them to the list.
   ///
-  /// - If replace is true, itemList is replace by the result. Used for background refreshes.
+  /// - If reset is true, the list will be emptied before adding the new items.
+  /// - If background is true, the new items are loaded before the list is reset.
+  /// - If force is true, the item cache is ignored.
   @protected
   Future<void> loadPage(
     KeyType page, {
-    bool replace = false,
+    bool reset = false,
+    bool background = false,
+    bool force = false,
   }) async {
-    await _pageLock.protect(page, reset: replace, () async {
-      PageResponse<KeyType, ItemType> response = await requestPage(page);
-      if (response.error != null) {
-        return failure(response.error!);
-      }
-      if (_disposed) return;
-      if (replace) {
-        reset();
-        value = response.toState();
-      } else {
-        appendPage(response.itemList!, response.nextPageKey);
-      }
-      success();
-    });
+    try {
+      await _pageLock.protect(page, reset: reset, () async {
+        if (reset && !background) {
+          value = PagingState<KeyType, ItemType>(
+            nextPageKey: page,
+          );
+        }
+        PageResponse<KeyType, ItemType> response =
+            await requestPage(page, force);
+        if (_disposed) return;
+        if (reset) {
+          if (background) {
+            this.reset();
+          }
+          value = response.toState();
+        } else {
+          appendPage(response.itemList!, response.nextPageKey);
+        }
+        success();
+      });
+    } on Exception catch (error) {
+      failure(error);
+    }
   }
 
   /// Called when a request of this controller fails.
@@ -95,18 +108,14 @@ abstract class DataController<KeyType, ItemType>
   }
 
   @override
-  void refresh({bool background = false}) async {
+  void refresh({bool force = false, bool background = false}) async {
     if (!await _canRefresh()) return;
-    if (background) {
-      await loadPage(
-        firstPageKey,
-        replace: true,
-      );
-    } else {
-      value = PagingState<KeyType, ItemType>(
-        nextPageKey: firstPageKey,
-      );
-    }
+    return loadPage(
+      firstPageKey,
+      reset: true,
+      background: background,
+      force: force,
+    );
   }
 
   /// Allows adding listeners that trigger a refresh by overriding this function.

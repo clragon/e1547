@@ -15,7 +15,7 @@ mixin ClientDataController<KeyType, ItemType>
   @protected
   Future<void> evictCache() => fetch(firstPageKey, true);
 
-  CancelToken _cancelToken = CancelToken();
+  final CancelToken _cancelToken = CancelToken();
 
   CancelToken get cancelToken => ReadOnlyCancelToken(_cancelToken);
 
@@ -23,14 +23,6 @@ mixin ClientDataController<KeyType, ItemType>
   void dispose() {
     _cancelToken.cancel('$runtimeType was disposed');
     super.dispose();
-  }
-
-  @override
-  void refresh({bool background = false}) async {
-    _cancelToken.cancel('$runtimeType is being refreshed');
-    _cancelToken = CancelToken();
-    await evictCache();
-    super.refresh(background: background);
   }
 
   @protected
@@ -50,9 +42,10 @@ abstract class PageClientDataController<T> extends DataController<int, T>
   PageClientDataController({super.firstPageKey = 1});
 
   @override
-  Future<PageResponse<int, T>> requestPage(int page) async => withError(
+  Future<PageResponse<int, T>> requestPage(int page, bool force) async =>
+      withError(
         () async {
-          List<T> items = await fetch(page, false);
+          List<T> items = await fetch(page, force);
           if (items.isEmpty) {
             return PageResponse.last(itemList: items);
           } else {
@@ -79,9 +72,10 @@ abstract class CursorClientDataController<T> extends DataController<String, T>
   int getId(T item);
 
   @override
-  Future<PageResponse<String, T>> requestPage(String page) async => withError(
+  Future<PageResponse<String, T>> requestPage(String page, bool force) async =>
+      withError(
         () async {
-          List<T> items = await fetch(page, false);
+          List<T> items = await fetch(page, force);
           if (items.isEmpty) {
             return PageResponse.last(itemList: items);
           } else {
