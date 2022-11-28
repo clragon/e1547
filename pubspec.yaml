@@ -59,8 +59,6 @@ dependencies:
   relative_time: ^2.2.1
   shared_storage: ^0.6.0
   share_plus: ^6.2.0
-  sqflite: ^2.2.0+3
-  sqflite_common_ffi: ^2.2.0+1
   sqlite3_flutter_libs: ^0.5.10
   store_checker: ^1.1.0
   talker: ^2.0.0+1

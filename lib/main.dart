@@ -11,7 +11,6 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   Talker talker = Talker();
   registerFlutterErrorHandler(talker.handle);
-  initializeSql();
   runApp(
     MultiProvider(
       providers: [

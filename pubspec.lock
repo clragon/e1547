@@ -1151,7 +1151,7 @@ packages:
     source: hosted
     version: "1.9.0"
   sqflite:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: sqflite
       url: "https://pub.dartlang.org"
@@ -1164,13 +1164,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.4.0+2"
-  sqflite_common_ffi:
-    dependency: "direct main"
-    description:
-      name: sqflite_common_ffi
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.2.0+1"
   sqlite3:
     dependency: transitive
     description:
