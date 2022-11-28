@@ -14,22 +14,6 @@ fastlane_](https://docs.fastlane.tools/#installing-fastlane)
 
 # Available Actions
 
-### build
-
-```sh
-[bundle exec] fastlane build
-```
-
-Build project.
-
-### deploy
-
-```sh
-[bundle exec] fastlane deploy
-```
-
-----
-
 ## iOS
 
 ### ios bootstrap
@@ -38,7 +22,15 @@ Build project.
 [bundle exec] fastlane ios bootstrap
 ```
 
-Useful on CI, this lane installs Flutter.
+Ensures flutter is installed
+
+### ios build
+
+```sh
+[bundle exec] fastlane ios build
+```
+
+Build ipa file
 
 ----
 
@@ -49,6 +41,24 @@ Useful on CI, this lane installs Flutter.
 ```sh
 [bundle exec] fastlane android bootstrap
 ```
+
+Ensures flutter is installed
+
+### android build
+
+```sh
+[bundle exec] fastlane android build
+```
+
+Build apk file
+
+### android deploy
+
+```sh
+[bundle exec] fastlane android deploy
+```
+
+Build appbundle and upload to playstore
 
 ----
 

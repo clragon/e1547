@@ -1,13 +1,22 @@
 default_platform(:android)
 
 platform :ios do
-  desc "Useful on CI, this lane installs Flutter."
+  desc "Ensures flutter is installed"
   lane :bootstrap do
     flutter_bootstrap(flutter_channel: 'stable')
+  end
+
+  desc "Build ipa file"
+  lane :build do
+    flutter_build(
+        build_args: ['--no-codesign'],
+        build: 'ipa',
+    )
   end
 end
 
 platform :android do
+  desc "Ensures flutter is installed"
   lane :bootstrap do
     flutter_bootstrap(
       flutter_channel: 'stable',
@@ -16,27 +25,18 @@ platform :android do
       },
     )
   end
-end
 
-desc "Build project."
-lane :build do
-
-  build_args = []
-  if lane_context[SharedValues::PLATFORM_NAME] == :ios
-    build_args << '--no-codesign'
+  desc "Build apk file"
+  lane :build do
+    flutter_build(build: 'apk')
   end
 
-  output_file = flutter_build(
-    build_args: build_args,
-  )
-end
-
-lane :deploy do |options|
-  gradle(
-    task: "clean assembleRelease",
-    project_dir: "./android"
-  )
-  upload_to_play_store(
-    skip_upload_changelogs: true
-  )
+  desc "Build appbundle and upload to playstore"
+  lane :deploy do
+    flutter_build(build: 'appbundle')
+    upload_to_play_store(
+      aab_path: "build/app/outputs/bundle/release",
+      skip_upload_changelogs: true,
+    )
+  end
 end
