@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/settings/settings.dart';
@@ -20,8 +19,7 @@ class LockScreen extends StatefulWidget {
 class _LockScreenState extends State<LockScreen> {
   Object _instance = Object();
 
-  bool get biometrics => (context.read<Settings>().biometricAuth.value &&
-      (Platform.isAndroid || Platform.isIOS));
+  bool get biometrics => context.read<Settings>().biometricAuth.value;
 
   String? get pin => context.read<Settings>().appPin.value;
 
@@ -130,11 +128,16 @@ class _BiometricsLockScreenState extends State<BiometricsLockScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            const Icon(
+              Icons.fingerprint,
+              size: 60,
+            ),
+            const SizedBox(height: 20),
             Text(
               failed ? 'Failed to authenticate' : 'Please authenticate',
-              style:
-                  Theme.of(context).textTheme.bodyText2!.copyWith(fontSize: 20),
+              style: Theme.of(context).textTheme.headline6,
             ),
+            const SizedBox(height: 8),
             if (failed)
               TextButton(
                 onPressed: tryAuth,

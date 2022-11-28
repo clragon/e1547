@@ -1,9 +1,11 @@
 import 'dart:io';
 
+import 'package:async_builder/async_builder.dart';
 import 'package:e1547/app/widgets/lock.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
+import 'package:local_auth/local_auth.dart';
 import 'package:shared_storage/saf.dart';
 
 class AdvancedSettingsPage extends StatefulWidget {
@@ -99,18 +101,30 @@ class _AdvancedSettingsPageState extends State<AdvancedSettingsPage> {
                   },
                 ),
               ),
-              if (Platform.isAndroid || Platform.isIOS)
-                ValueListenableBuilder<bool>(
-                  valueListenable: settings.biometricAuth,
-                  builder: (context, value, child) => SwitchListTile(
-                    title: const Text('Biometric lock'),
-                    subtitle: Text(
-                        value ? 'biometrics enabled' : 'biometrics disabled'),
-                    secondary: const Icon(Icons.fingerprint),
-                    value: value,
-                    onChanged: (value) => settings.biometricAuth.value = value,
+              SubValueBuilder<Future<bool>>(
+                create: (context) => LocalAuthentication()
+                    .getAvailableBiometrics()
+                    .then((e) => e.isNotEmpty),
+                builder: (context, future) => AsyncBuilder<bool>(
+                  future: future,
+                  builder: (context, canAuth) => CrossFade(
+                    showChild: canAuth ?? false,
+                    child: ValueListenableBuilder<bool>(
+                      valueListenable: settings.biometricAuth,
+                      builder: (context, value, child) => SwitchListTile(
+                        title: const Text('Biometric lock'),
+                        subtitle: Text(value
+                            ? 'biometrics enabled'
+                            : 'biometrics disabled'),
+                        secondary: const Icon(Icons.fingerprint),
+                        value: value,
+                        onChanged: (value) =>
+                            settings.biometricAuth.value = value,
+                      ),
+                    ),
                   ),
                 ),
+              ),
               const Divider(),
               const SettingsHeader(title: 'Beta'),
               ValueListenableBuilder<bool>(
