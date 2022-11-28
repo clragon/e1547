@@ -9,7 +9,6 @@ mixin PostFilterableController<KeyType> on FilterableController<KeyType, Post> {
 
   DenylistService get denylist;
 
-  Map<Post, List<String>>? _previousDeniedPosts;
   Map<Post, List<String>>? _deniedPosts;
 
   Map<Post, List<String>>? get deniedPosts => _deniedPosts.maybeUnmodifiable();
@@ -40,7 +39,7 @@ mixin PostFilterableController<KeyType> on FilterableController<KeyType, Post> {
 
   List<String>? getDeniers(Post post) {
     assertOwnsItem(post);
-    return (_deniedPosts ?? _previousDeniedPosts!)[post].maybeUnmodifiable();
+    return _deniedPosts![post].maybeUnmodifiable();
   }
 
   bool isDenied(Post post) => getDeniers(post) != null;
@@ -84,7 +83,6 @@ mixin PostFilterableController<KeyType> on FilterableController<KeyType, Post> {
       }
       return false;
     });
-    _previousDeniedPosts = null;
     return result;
   }
 
@@ -92,9 +90,6 @@ mixin PostFilterableController<KeyType> on FilterableController<KeyType, Post> {
   @protected
   void refilter() {
     if (rawItemList == null) return;
-    if (_deniedPosts != null) {
-      _previousDeniedPosts = _deniedPosts;
-    }
     _deniedPosts = null;
     super.refilter();
   }
@@ -102,13 +97,12 @@ mixin PostFilterableController<KeyType> on FilterableController<KeyType, Post> {
   @override
   @protected
   @mustCallSuper
-  void reset() {
-    if (_deniedPosts != null) {
-      _previousDeniedPosts = _deniedPosts;
+  void reset({bool hasLoaded = false}) {
+    if (hasLoaded) {
+      _deniedPosts = null;
+      _allowedPosts = [];
     }
-    _deniedPosts = null;
-    _allowedPosts = [];
-    super.reset();
+    super.reset(hasLoaded: hasLoaded);
   }
 }
 

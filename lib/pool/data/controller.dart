@@ -28,9 +28,11 @@ class PoolsController extends PageClientDataController<Pool>
 
   @override
   @protected
-  void reset() {
-    thumbnails.refresh();
-    super.reset();
+  void reset({bool hasLoaded = false}) {
+    if (!hasLoaded) {
+      thumbnails.reset();
+    }
+    super.reset(hasLoaded: hasLoaded);
   }
 
   @override
@@ -79,16 +81,15 @@ class ThumbnailController<KeyType, ItemType> extends PostsController {
   Map<int, List<int>> _ids = {};
 
   @override
-  @protected
-  void reset() {
+  void reset({bool hasLoaded = false}) {
     _ids = {};
-    super.reset();
+    super.reset(hasLoaded: hasLoaded);
   }
 
   Future<void> loadIds(List<int> ids, {bool force = false}) async {
     int index = _ids.length;
     _ids[index] = ids;
-    await loadPage(index);
+    await loadPage(index, force: force);
   }
 
   @override
@@ -98,6 +99,10 @@ class ThumbnailController<KeyType, ItemType> extends PostsController {
     if (ids == null) return [];
     List<int> available = itemList?.map((e) => e.id).toList() ?? [];
     ids.removeWhere(available.contains);
-    return client.postsChunk(ids);
+    return client.postsChunk(
+      ids,
+      force: force,
+      cancelToken: cancelToken,
+    );
   }
 }

@@ -56,18 +56,20 @@ abstract class DataController<KeyType, ItemType>
   }) async {
     try {
       await _pageLock.protect(page, reset: reset, () async {
-        if (reset && !background) {
-          value = PagingState<KeyType, ItemType>(
-            nextPageKey: page,
-          );
+        if (reset) {
+          if (background) {
+            this.reset();
+          } else {
+            value = PagingState<KeyType, ItemType>(
+              nextPageKey: page,
+            );
+          }
         }
         PageResponse<KeyType, ItemType> response =
             await requestPage(page, force);
         if (_disposed) return;
         if (reset) {
-          if (background) {
-            this.reset();
-          }
+          this.reset(hasLoaded: true);
           value = response.toState();
         } else {
           appendPage(response.itemList!, response.nextPageKey);
@@ -92,7 +94,7 @@ abstract class DataController<KeyType, ItemType>
   @mustCallSuper
   void success() {}
 
-  // TODO: throw this away, if possible.
+  // TODO: replace all of this with a Queue
   /// Checks if the controller can queue a refresh.
   /// If there is currently a refresh queued, this returns false.
   Future<bool> _canRefresh() async {
@@ -128,7 +130,7 @@ abstract class DataController<KeyType, ItemType>
   /// Called when the [itemList] is changed entirely.
   @protected
   @mustCallSuper
-  void reset() {}
+  void reset({bool hasLoaded = false}) {}
 
   /// Calls [reset] if the [itemList] has been set to null.
   void _maybeReset() {
