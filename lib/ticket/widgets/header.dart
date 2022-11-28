@@ -17,7 +17,7 @@ class ReportFormHeader extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           DefaultTextStyle(
-            style: Theme.of(context).textTheme.bodyText2!.copyWith(
+            style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                   fontSize: 20,
                 ),
             child: title,

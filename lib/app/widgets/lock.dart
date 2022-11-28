@@ -135,7 +135,7 @@ class _BiometricsLockScreenState extends State<BiometricsLockScreen> {
             const SizedBox(height: 20),
             Text(
               failed ? 'Failed to authenticate' : 'Please authenticate',
-              style: Theme.of(context).textTheme.headline6,
+              style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: 8),
             if (failed)

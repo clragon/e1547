@@ -25,8 +25,7 @@ class Comment with _$Comment {
     @JsonKey(ignore: true) @Default(VoteStatus.unknown) VoteStatus voteStatus,
   }) = _Comment;
 
-  factory Comment.fromJson(Map<String, dynamic> json) =>
-      _$CommentFromJson(json);
+  factory Comment.fromJson(dynamic json) => _$CommentFromJson(json);
 }
 
 @JsonEnum()

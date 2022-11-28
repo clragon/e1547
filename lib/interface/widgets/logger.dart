@@ -123,7 +123,7 @@ class _LoggerCardState extends State<LoggerCard> {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
               child: DefaultTextStyle(
-                style: Theme.of(context).textTheme.bodyText2!.copyWith(
+                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                       color: item.logLevel.color,
                     ),
                 child: Stack(
@@ -265,7 +265,7 @@ class _LoggerErrorNotifierState extends State<LoggerErrorNotifier> {
           duration: const Duration(seconds: 3),
           content: Builder(
             builder: (context) {
-              TextStyle style = Theme.of(context).textTheme.bodyText2!;
+              TextStyle style = Theme.of(context).textTheme.bodyMedium!;
               Color textColor = style.color!;
               double textLuminance = textColor.computeLuminance();
               double colorDifference =
@@ -274,12 +274,12 @@ class _LoggerErrorNotifierState extends State<LoggerErrorNotifier> {
                 if (textLuminance > 0.5) {
                   textColor = ThemeData(brightness: Brightness.light)
                       .textTheme
-                      .subtitle1!
+                      .titleMedium!
                       .color!;
                 } else {
                   textColor = ThemeData(brightness: Brightness.dark)
                       .textTheme
-                      .subtitle1!
+                      .titleMedium!
                       .color!;
                 }
               }

@@ -36,7 +36,7 @@ class _SettingsPageState extends State<SettingsPage> {
             children: [
               const SettingsHeader(title: 'Server'),
               Consumer<HostService>(
-                builder: (context, service, child) => TapRegion(
+                builder: (context, service, child) => MouseCursorRegion(
                   behavior: HitTestBehavior.translucent,
                   onLongPress: () => setCustomHost(context),
                   child: SwitchListTile(

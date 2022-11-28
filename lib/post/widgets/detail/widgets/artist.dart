@@ -119,7 +119,7 @@ class ArtistName extends StatelessWidget {
           return Text(
             'no artist',
             style: TextStyle(
-                color: Theme.of(context).textTheme.subtitle2!.color,
+                color: Theme.of(context).textTheme.titleSmall!.color,
                 fontStyle: FontStyle.italic),
           );
         }

@@ -34,7 +34,7 @@ class HistoryTile extends StatelessWidget {
                             child: DefaultTextStyle(
                               style: Theme.of(context)
                                   .textTheme
-                                  .bodyText2!
+                                  .bodyMedium!
                                   .copyWith(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 16,

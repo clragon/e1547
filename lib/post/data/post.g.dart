@@ -12,11 +12,10 @@ _$_Post _$$_PostFromJson(Map<String, dynamic> json) => _$_Post(
       updatedAt: json['updated_at'] == null
           ? null
           : DateTime.parse(json['updated_at'] as String),
-      fileRaw: PostSourceFile.fromJson(json['file'] as Map<String, dynamic>),
-      preview:
-          PostPreviewFile.fromJson(json['preview'] as Map<String, dynamic>),
-      sample: PostSampleFile.fromJson(json['sample'] as Map<String, dynamic>),
-      score: Score.fromJson(json['score'] as Map<String, dynamic>),
+      fileRaw: PostSourceFile.fromJson(json['file']),
+      preview: PostPreviewFile.fromJson(json['preview']),
+      sample: PostSampleFile.fromJson(json['sample']),
+      score: Score.fromJson(json['score']),
       tags: (json['tags'] as Map<String, dynamic>).map(
         (k, e) =>
             MapEntry(k, (e as List<dynamic>).map((e) => e as String).toList()),
@@ -25,14 +24,13 @@ _$_Post _$$_PostFromJson(Map<String, dynamic> json) => _$_Post(
           ?.map((e) => e as String)
           .toList(),
       changeSeq: json['change_seq'] as int?,
-      flags: Flags.fromJson(json['flags'] as Map<String, dynamic>),
+      flags: Flags.fromJson(json['flags']),
       rating: $enumDecode(_$RatingEnumMap, json['rating']),
       favCount: json['fav_count'] as int,
       sources:
           (json['sources'] as List<dynamic>).map((e) => e as String).toList(),
       pools: (json['pools'] as List<dynamic>).map((e) => e as int).toList(),
-      relationships:
-          Relationships.fromJson(json['relationships'] as Map<String, dynamic>),
+      relationships: Relationships.fromJson(json['relationships']),
       approverId: json['approver_id'] as int?,
       uploaderId: json['uploader_id'] as int,
       description: json['description'] as String,

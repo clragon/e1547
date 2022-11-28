@@ -73,6 +73,5 @@ class CurrentUser with _$CurrentUser {
     required int tagQueryLimit,
   }) = _CurrentUser;
 
-  factory CurrentUser.fromJson(Map<String, dynamic> json) =>
-      _$CurrentUserFromJson(json);
+  factory CurrentUser.fromJson(dynamic json) => _$CurrentUserFromJson(json);
 }

@@ -37,7 +37,7 @@ class TopicSheet extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 8),
                     child: Text(
                       tagToRaw(topic.title),
-                      style: Theme.of(context).textTheme.headline6,
+                      style: Theme.of(context).textTheme.titleLarge,
                       softWrap: true,
                     ),
                   ),

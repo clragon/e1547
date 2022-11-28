@@ -15,8 +15,7 @@ class Credentials with _$Credentials {
     @JsonKey(name: 'apikey') required String password,
   }) = _Credentials;
 
-  factory Credentials.fromJson(Map<String, dynamic> json) =>
-      _$CredentialsFromJson(json);
+  factory Credentials.fromJson(dynamic json) => _$CredentialsFromJson(json);
 
   String get basicAuth =>
       'Basic ${base64Encode(utf8.encode('$username:$password'))}';

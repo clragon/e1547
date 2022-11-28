@@ -52,8 +52,8 @@ List<PopupMenuItem<VoidCallback>> postMenuUserActions(
       value: () => guardWithLogin(
         context: context,
         callback: () async {
+          PostsController controller = context.read<PostsController>();
           if (await writeComment(context: context, postId: post.id)) {
-            PostsController controller = context.read<PostsController>();
             controller.replacePost(
               post.copyWith(commentCount: post.commentCount + 1),
             );

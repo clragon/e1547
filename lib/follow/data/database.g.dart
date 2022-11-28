@@ -178,9 +178,7 @@ class $FollowsTableTable extends FollowsTable
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-
   $FollowsTableTable(this.attachedDatabase, [this._alias]);
-
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<int> id = GeneratedColumn<int>(
@@ -238,14 +236,11 @@ class $FollowsTableTable extends FollowsTable
   late final GeneratedColumn<DateTime> updated = GeneratedColumn<DateTime>(
       'updated', aliasedName, true,
       type: DriftSqlType.dateTime, requiredDuringInsert: false);
-
   @override
   List<GeneratedColumn> get $columns =>
       [id, host, tags, title, alias, type, latest, unseen, thumbnail, updated];
-
   @override
   String get aliasedName => _alias ?? 'follows_table';
-
   @override
   String get actualTableName => 'follows_table';
   @override
@@ -341,11 +336,9 @@ abstract class _$FollowsDatabase extends GeneratedDatabase {
   _$FollowsDatabase(QueryExecutor e) : super(e);
   _$FollowsDatabase.connect(DatabaseConnection c) : super.connect(c);
   late final $FollowsTableTable followsTable = $FollowsTableTable(this);
-
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
-
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities => [followsTable];
 }

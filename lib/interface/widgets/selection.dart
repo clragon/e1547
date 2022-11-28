@@ -226,7 +226,7 @@ class SelectionItemOverlay<T> extends StatelessWidget {
         children: [
           child,
           Positioned.fill(
-            child: TapRegion(
+            child: MouseCursorRegion(
               behavior: HitTestBehavior.translucent,
               onTap: layoutData.selections.isNotEmpty
                   ? () => layoutData.toggleSelection(item)

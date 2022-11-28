@@ -31,5 +31,5 @@ class User with _$User {
     required int? avatarId,
   }) = _User;
 
-  factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
+  factory User.fromJson(dynamic json) => _$UserFromJson(json);
 }

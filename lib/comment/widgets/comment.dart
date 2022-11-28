@@ -23,7 +23,7 @@ class CommentTile extends StatelessWidget {
         created: comment.createdAt,
         updated: comment.updatedAt,
         child: DefaultTextStyle(
-          style: Theme.of(context).textTheme.bodyText2!.copyWith(
+          style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                 color: dimTextColor(context),
               ),
           child: Padding(
@@ -240,13 +240,13 @@ class CommentTile extends StatelessWidget {
                     child: Icon(
                       Icons.warning_amber,
                       size: smallIconSize(context),
-                      color: Theme.of(context).errorColor,
+                      color: Theme.of(context).colorScheme.error,
                     ),
                   ),
                   Text(
                     comment.warningType!.message,
-                    style: Theme.of(context).textTheme.bodyText2!.copyWith(
-                          color: Theme.of(context).errorColor,
+                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                          color: Theme.of(context).colorScheme.error,
                         ),
                   ),
                 ],

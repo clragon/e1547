@@ -14,8 +14,7 @@ class History with _$History {
     required String? subtitle,
   }) = _History;
 
-  factory History.fromJson(Map<String, dynamic> json) =>
-      _$HistoryFromJson(json);
+  factory History.fromJson(dynamic json) => _$HistoryFromJson(json);
 }
 
 @freezed
@@ -28,6 +27,6 @@ class HistoryRequest with _$HistoryRequest {
     String? subtitle,
   }) = _HistoryRequest;
 
-  factory HistoryRequest.fromJson(Map<String, dynamic> json) =>
+  factory HistoryRequest.fromJson(dynamic json) =>
       _$HistoryRequestFromJson(json);
 }

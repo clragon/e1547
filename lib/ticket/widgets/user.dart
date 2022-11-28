@@ -54,7 +54,7 @@ class UserReportScreen extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 16),
             child: Text(
               user.name,
-              style: Theme.of(context).textTheme.headline6,
+              style: Theme.of(context).textTheme.titleLarge,
             ),
           ),
         ],

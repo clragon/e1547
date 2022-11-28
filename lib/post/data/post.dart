@@ -37,7 +37,7 @@ class Post with _$Post {
     @JsonKey(ignore: true) @Default(VoteStatus.unknown) VoteStatus voteStatus,
   }) = _Post;
 
-  factory Post.fromJson(Map<String, dynamic> json) => _$PostFromJson(json);
+  factory Post.fromJson(dynamic json) => _$PostFromJson(json);
 
   PostSourceFile get file => Platform.isIOS && fileRaw.ext == 'webm'
       ? fileRaw.copyWith(
@@ -55,7 +55,7 @@ class PostPreviewFile with _$PostPreviewFile {
     required String? url,
   }) = _PostPreviewFile;
 
-  factory PostPreviewFile.fromJson(Map<String, dynamic> json) =>
+  factory PostPreviewFile.fromJson(dynamic json) =>
       _$PostPreviewFileFromJson(json);
 }
 
@@ -68,7 +68,7 @@ class PostSampleFile with _$PostSampleFile {
     required String? url,
   }) = _PostSampleFile;
 
-  factory PostSampleFile.fromJson(Map<String, dynamic> json) =>
+  factory PostSampleFile.fromJson(dynamic json) =>
       _$PostSampleFileFromJson(json);
 }
 
@@ -83,7 +83,7 @@ class PostSourceFile with _$PostSourceFile {
     required String? url,
   }) = _PostSourceFile;
 
-  factory PostSourceFile.fromJson(Map<String, dynamic> json) =>
+  factory PostSourceFile.fromJson(dynamic json) =>
       _$PostSourceFileFromJson(json);
 }
 
@@ -98,7 +98,7 @@ class Flags with _$Flags {
     required bool deleted,
   }) = _Flags;
 
-  factory Flags.fromJson(Map<String, dynamic> json) => _$FlagsFromJson(json);
+  factory Flags.fromJson(dynamic json) => _$FlagsFromJson(json);
 }
 
 @JsonEnum()
@@ -113,8 +113,7 @@ class Relationships with _$Relationships {
     required List<int> children,
   }) = _Relationships;
 
-  factory Relationships.fromJson(Map<String, dynamic> json) =>
-      _$RelationshipsFromJson(json);
+  factory Relationships.fromJson(dynamic json) => _$RelationshipsFromJson(json);
 }
 
 @freezed
@@ -125,5 +124,5 @@ class Score with _$Score {
     required int total,
   }) = _Score;
 
-  factory Score.fromJson(Map<String, dynamic> json) => _$ScoreFromJson(json);
+  factory Score.fromJson(dynamic json) => _$ScoreFromJson(json);
 }

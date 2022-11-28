@@ -89,7 +89,7 @@ class ActionBottomSheet extends StatelessWidget {
                       padding: const EdgeInsets.only(right: 10),
                       child: Icon(
                         Icons.clear,
-                        color: Theme.of(context).errorColor,
+                        color: Theme.of(context).colorScheme.error,
                       ),
                     ),
                   ),
@@ -219,7 +219,7 @@ class DefaultSheetBody extends StatelessWidget {
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8),
                       child: DefaultTextStyle(
-                        style: Theme.of(context).textTheme.headline6!,
+                        style: Theme.of(context).textTheme.titleLarge!,
                         child: title!,
                       ),
                     ),

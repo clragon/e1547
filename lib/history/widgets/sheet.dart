@@ -39,7 +39,7 @@ class HistorySheet extends StatelessWidget {
           : Center(
               child: Text(
                 'no description',
-                style: Theme.of(context).textTheme.bodyText2!.copyWith(
+                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                       color: dimTextColor(context),
                       fontStyle: FontStyle.italic,
                     ),

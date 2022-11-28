@@ -92,13 +92,13 @@ class ReplyTile extends StatelessWidget {
                         child: Icon(
                           Icons.warning_amber,
                           size: smallIconSize(context),
-                          color: Theme.of(context).errorColor,
+                          color: Theme.of(context).colorScheme.error,
                         ),
                       ),
                       Text(
                         reply.warningType!.message,
-                        style: Theme.of(context).textTheme.bodyText2!.copyWith(
-                              color: Theme.of(context).errorColor,
+                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                              color: Theme.of(context).colorScheme.error,
                             ),
                       ),
                     ],

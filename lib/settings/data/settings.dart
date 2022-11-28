@@ -13,7 +13,7 @@ class Settings extends NotifiedSettings {
   late final ValueNotifier<Credentials?> credentials = createJsonSetting(
     key: 'credentials',
     initialValue: null,
-    fromJson: (json) => Credentials.fromJson(json),
+    fromJson: Credentials.fromJson,
   );
 
   late final ValueNotifier<AppTheme> theme = createEnumSetting(

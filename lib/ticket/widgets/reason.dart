@@ -88,17 +88,20 @@ class _ReasonReportScreenState extends State<ReasonReportScreen> {
                           duration: defaultAnimationDuration,
                           curve: Curves.easeInOut,
                         );
+                        NavigatorState navigator = Navigator.of(context);
+                        ScaffoldMessengerState messenger =
+                            ScaffoldMessenger.of(context);
                         if (await widget
                             .onReport(reasonController.text.trim())) {
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          messenger.showSnackBar(SnackBar(
                             duration: const Duration(seconds: 1),
                             content:
                                 Text(widget.onSuccess ?? 'Submitted report'),
                             behavior: SnackBarBehavior.floating,
                           ));
-                          Navigator.maybePop(context);
+                          navigator.maybePop();
                         } else {
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          messenger.showSnackBar(SnackBar(
                             duration: const Duration(seconds: 1),
                             content: Text(
                                 widget.onFailure ?? 'Failed to submit report'),

@@ -15,7 +15,7 @@ class HistoriesSearch with _$HistoriesSearch {
     required Set<HistoryTypeFilter> typeFilters,
   }) = _HistoriesSearch;
 
-  factory HistoriesSearch.fromJson(Map<String, dynamic> json) =>
+  factory HistoriesSearch.fromJson(dynamic json) =>
       _$HistoriesSearchFromJson(json);
 
   String buildLinkFilter() {

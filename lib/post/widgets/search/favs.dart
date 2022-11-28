@@ -64,7 +64,7 @@ class _FavPageState extends State<FavPage> with DrawerEntry {
                     secondary: const Icon(Icons.sort),
                     title: Text(
                       'Favorite order',
-                      style: Theme.of(context).textTheme.subtitle1,
+                      style: Theme.of(context).textTheme.titleMedium,
                     ),
                     subtitle: Text(controller.orderFavorites.value
                         ? 'added order'

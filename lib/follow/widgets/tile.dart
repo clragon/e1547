@@ -209,7 +209,7 @@ class FollowTile extends StatelessWidget {
                     children: [
                       Text(
                         follow.name,
-                        style: Theme.of(context).textTheme.headline6,
+                        style: Theme.of(context).textTheme.titleLarge,
                         overflow: TextOverflow.ellipsis,
                         maxLines: 1,
                         softWrap: true,

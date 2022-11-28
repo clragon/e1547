@@ -116,7 +116,7 @@ class DrawerDenyTile extends StatelessWidget {
           duration: const Duration(milliseconds: 200),
           builder: (context, value, child) => Text(
             value.toString(),
-            style: Theme.of(context).textTheme.headline6,
+            style: Theme.of(context).textTheme.titleLarge,
             textAlign: TextAlign.center,
           ),
         ),

@@ -52,7 +52,7 @@ TextSpan plainText({
   TextStateHeader? header = state.getClosest();
   double? fontSize;
   if (header != null) {
-    fontSize = Theme.of(context).textTheme.bodyText2!.fontSize!;
+    fontSize = Theme.of(context).textTheme.bodyMedium!.fontSize!;
     fontSize = fontSize + ((header.size - 7).abs() * 2);
   }
 
@@ -70,10 +70,10 @@ TextSpan plainText({
   if (spoiler != null) {
     if (isSpoilered) {
       backgrounColor =
-          Theme.of(context).textTheme.bodyText2!.color!.withOpacity(1);
+          Theme.of(context).textTheme.bodyMedium!.color!.withOpacity(1);
     } else {
       backgrounColor =
-          Theme.of(context).textTheme.bodyText2!.color!.withOpacity(0.1);
+          Theme.of(context).textTheme.bodyMedium!.color!.withOpacity(0.1);
     }
   } else if (code != null) {
     backgrounColor = Theme.of(context).cardColor;

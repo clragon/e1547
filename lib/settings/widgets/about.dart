@@ -19,7 +19,7 @@ class AppIcon extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       width: radius * 2,
       height: radius * 2,
-      child: Image.asset('assets/icon/round.png'),
+      child: Image.asset('assets/icon/app/round.png'),
     );
   }
 }
@@ -208,7 +208,7 @@ class NewVersionsDialog extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(vertical: 8),
                       child: Text(
                         '${release.name} (${release.version})',
-                        style: Theme.of(context).textTheme.headline6,
+                        style: Theme.of(context).textTheme.titleLarge,
                       ),
                     ),
                     Text(release.description!),

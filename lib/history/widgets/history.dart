@@ -35,8 +35,9 @@ class _HistoriesPageState extends State<HistoriesPage> {
                       showChild: controller.search.value.date != null,
                       builder: (context) => Text(
                         dateOrName(controller.search.value.date!),
-                        style: Theme.of(context).textTheme.bodyText2!.copyWith(
-                              color: Theme.of(context).textTheme.caption!.color,
+                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                              color:
+                                  Theme.of(context).textTheme.bodySmall!.color,
                             ),
                       ),
                     ),
@@ -55,7 +56,7 @@ class _HistoriesPageState extends State<HistoriesPage> {
                 if (dates.isEmpty) {
                   dates.add(DateTime.now());
                 }
-
+                if (!mounted) return;
                 DateTime? result = await showDatePicker(
                   context: context,
                   initialDate: controller.search.value.date ?? DateTime.now(),

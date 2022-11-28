@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:relative_time/relative_time.dart';
 
 Color dimTextColor(BuildContext context, [double opacity = 0.35]) =>
-    Theme.of(context).textTheme.bodyText2!.color!.withOpacity(opacity);
+    Theme.of(context).textTheme.bodyMedium!.color!.withOpacity(opacity);
 
 double smallIconSize(BuildContext context) => 18;
 
@@ -53,7 +53,7 @@ class DimSubtree extends StatelessWidget {
             size: smallIconSize(context),
           ),
       child: DefaultTextStyle(
-        style: Theme.of(context).textTheme.bodyText2!.copyWith(
+        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
               color: dimTextColor(context, opacity),
             ),
         child: child,

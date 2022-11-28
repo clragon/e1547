@@ -140,7 +140,7 @@ class ImageTile extends StatelessWidget {
                                     child: DefaultTextStyle(
                                       style: Theme.of(context)
                                           .textTheme
-                                          .headline6!,
+                                          .titleLarge!,
                                       textAlign: TextAlign.center,
                                       child: title,
                                     ),

@@ -143,9 +143,7 @@ class $HistoriesTableTable extends HistoriesTable
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-
   $HistoriesTableTable(this.attachedDatabase, [this._alias]);
-
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<int> id = GeneratedColumn<int>(
@@ -190,14 +188,11 @@ class $HistoriesTableTable extends HistoriesTable
   late final GeneratedColumn<String> subtitle = GeneratedColumn<String>(
       'subtitle', aliasedName, true,
       type: DriftSqlType.string, requiredDuringInsert: false);
-
   @override
   List<GeneratedColumn> get $columns =>
       [id, host, visitedAt, link, thumbnails, title, subtitle];
-
   @override
   String get aliasedName => _alias ?? 'histories_table';
-
   @override
   String get actualTableName => 'histories_table';
   @override
@@ -273,11 +268,9 @@ abstract class _$HistoriesDatabase extends GeneratedDatabase {
   _$HistoriesDatabase(QueryExecutor e) : super(e);
   _$HistoriesDatabase.connect(DatabaseConnection c) : super.connect(c);
   late final $HistoriesTableTable historiesTable = $HistoriesTableTable(this);
-
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
-
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities => [historiesTable];
 }

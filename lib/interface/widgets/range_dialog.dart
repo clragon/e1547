@@ -56,7 +56,7 @@ class _RangeDialogState extends State<RangeDialog> {
                 padding: const EdgeInsets.only(bottom: 20),
                 child: TextField(
                   keyboardType: TextInputType.number,
-                  style: Theme.of(context).textTheme.headline3,
+                  style: Theme.of(context).textTheme.displaySmall,
                   textAlign: TextAlign.center,
                   decoration: const InputDecoration(border: InputBorder.none),
                   controller: controller,

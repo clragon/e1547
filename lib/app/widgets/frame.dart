@@ -123,7 +123,7 @@ class _WindowFrameState extends State<WindowFrame> with WindowListener {
                             child: AnimatedDefaultTextStyle(
                               style: Theme.of(context)
                                   .textTheme
-                                  .bodyText2!
+                                  .bodyMedium!
                                   .copyWith(
                                     color: isFocused
                                         ? null

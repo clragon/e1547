@@ -1,6 +1,5 @@
 // data
 export 'data/info.dart';
-export 'data/info.dart';
 export 'data/settings.dart';
 // widgets
 export 'widgets/about.dart';

@@ -33,7 +33,7 @@ class TopicTile extends StatelessWidget {
                       children: [
                         Text(
                           topic.title,
-                          style: Theme.of(context).textTheme.subtitle1,
+                          style: Theme.of(context).textTheme.titleMedium,
                         ),
                         DimSubtree(
                           child: Text(
@@ -58,7 +58,7 @@ class TopicTile extends StatelessWidget {
                       children: [
                         Text(
                           topic.responseCount.toString(),
-                          style: Theme.of(context).textTheme.subtitle1,
+                          style: Theme.of(context).textTheme.titleMedium,
                         ),
                         if (topic.createdAt
                             .add(const Duration(minutes: 1))

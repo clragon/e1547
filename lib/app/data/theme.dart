@@ -43,7 +43,7 @@ ThemeData prepareTheme(ThemeData theme) => theme.copyWith(
               : null,
         ),
       ),
-  checkboxTheme: theme.checkboxTheme.copyWith(
+      checkboxTheme: theme.checkboxTheme.copyWith(
         fillColor: MaterialStateProperty.resolveWith(
           (states) => states.contains(MaterialState.selected)
               ? theme.colorScheme.primary

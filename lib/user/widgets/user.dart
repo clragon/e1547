@@ -161,7 +161,7 @@ class UserSliverAppBar extends StatelessWidget {
                   padding: const EdgeInsets.only(top: 16, bottom: 32),
                   child: Text(
                     user.name,
-                    style: Theme.of(context).textTheme.headline6,
+                    style: Theme.of(context).textTheme.titleLarge,
                   ),
                 ),
               ],
@@ -337,7 +337,7 @@ class UserInfoTile extends StatelessWidget {
             leading: Icon(icon),
             title: Text(title),
             trailing: DefaultTextStyle(
-              style: Theme.of(context).textTheme.subtitle1!,
+              style: Theme.of(context).textTheme.titleMedium!,
               child: InkWell(
                 onLongPress: onLongPress,
                 child: Text(value),

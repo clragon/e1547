@@ -55,7 +55,7 @@ Future<void> loadingNotification<T>({
             brightness: Theme.of(context).brightness == Brightness.dark
                 ? Brightness.light
                 : Brightness.dark,
-          ).textTheme.subtitle1)
+          ).textTheme.titleMedium)
       ?.color;
 
   messenger.showSnackBar(

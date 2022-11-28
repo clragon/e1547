@@ -8,7 +8,7 @@ class UserDrawerHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<Client>(
       builder: (context, client, child) => DrawerHeader(
-        child: TapRegion(
+        child: MouseCursorRegion(
           onTap: client.credentials != null
               ? () => Navigator.of(context).push(
                     MaterialPageRoute(
@@ -35,7 +35,7 @@ class UserDrawerHeader extends StatelessWidget {
                         Expanded(
                           child: Text(
                             client.credentials!.username,
-                            style: Theme.of(context).textTheme.headline6,
+                            style: Theme.of(context).textTheme.titleLarge,
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),

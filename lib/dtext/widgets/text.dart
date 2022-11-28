@@ -50,13 +50,13 @@ class DText extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 4),
             child: Icon(
               Icons.warning_amber_outlined,
-              color: Theme.of(context).errorColor,
+              color: Theme.of(context).colorScheme.error,
               size: 20,
             ),
           ),
           Text(
             'DText parsing has failed',
-            style: TextStyle(color: Theme.of(context).errorColor),
+            style: TextStyle(color: Theme.of(context).colorScheme.error),
           ),
         ],
       );

@@ -17,5 +17,18 @@ class Tag with _$Tag {
     required DateTime updatedAt,
   }) = _Tag;
 
-  factory Tag.fromJson(Map<String, dynamic> json) => _$TagFromJson(json);
+  factory Tag.fromJson(dynamic json) => _$TagFromJson(json);
+}
+
+@freezed
+class TagSuggestion with _$TagSuggestion {
+  const factory TagSuggestion({
+    required int id,
+    required String name,
+    required int postCount,
+    required int category,
+    required String? antecedentName,
+  }) = _TagSuggestion;
+
+  factory TagSuggestion.fromJson(dynamic json) => _$TagSuggestionFromJson(json);
 }

@@ -28,14 +28,14 @@ class PoolTile extends StatelessWidget {
               child: Text(
                 tagToName(pool.name),
                 overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.subtitle1,
+                style: Theme.of(context).textTheme.titleMedium,
                 maxLines: 1,
               ),
             ),
             const SizedBox(width: 4),
             Text(
               pool.postIds.length.toString(),
-              style: Theme.of(context).textTheme.subtitle1,
+              style: Theme.of(context).textTheme.titleMedium,
             ),
           ],
         ),

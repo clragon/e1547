@@ -19,7 +19,7 @@ class Pool with _$Pool {
     required int postCount,
   }) = _Pool;
 
-  factory Pool.fromJson(Map<String, dynamic> json) => _$PoolFromJson(json);
+  factory Pool.fromJson(dynamic json) => _$PoolFromJson(json);
 }
 
 @JsonEnum()

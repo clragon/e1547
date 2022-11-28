@@ -99,7 +99,7 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - assets/icon/round.png
+    - assets/icon/app/round.png
 
 # flutter pub run flutter_launcher_icons:main
 flutter_icons:
