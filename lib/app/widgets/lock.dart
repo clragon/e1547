@@ -62,13 +62,7 @@ class _LockScreenState extends State<LockScreen> {
                 )
             : null,
         onUnlocked: unlock,
-        secretsConfig: SecretsConfig(
-          spacing: 12,
-          secretConfig: SecretConfig(
-            borderColor: Theme.of(context).textTheme.bodyText2!.color!,
-            enabledColor: Theme.of(context).textTheme.bodyText2!.color!,
-          ),
-        ),
+        config: ScreenLockConfig(themeData: Theme.of(context)),
       );
     } else if (biometrics) {
       lock = BiometricsLockScreen(
@@ -196,6 +190,7 @@ Future<String?> registerPin(BuildContext context) async {
       completer.complete(null);
       Navigator.of(context).pop();
     },
+    config: ScreenLockConfig(themeData: Theme.of(context)),
   );
 
   return completer.future;
