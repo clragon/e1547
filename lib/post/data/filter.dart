@@ -33,9 +33,9 @@ mixin PostFilterableController<KeyType> on FilterableController<KeyType, Post> {
     refilter();
   }
 
-  List<Post> _allowedPosts = [];
+  List<int> _allowedPosts = [];
 
-  List<Post> get allowedPosts => List.unmodifiable(_allowedPosts);
+  List<int> get allowedPosts => List.unmodifiable(_allowedPosts);
 
   List<String>? getDeniers(Post post) {
     assertOwnsItem(post);
@@ -46,18 +46,18 @@ mixin PostFilterableController<KeyType> on FilterableController<KeyType, Post> {
 
   bool isAllowed(Post post) {
     assertOwnsItem(post);
-    return _allowedPosts.contains(post);
+    return _allowedPosts.contains(post.id);
   }
 
   void allow(Post post) {
     assertOwnsItem(post);
-    _allowedPosts.add(post);
+    _allowedPosts.add(post.id);
     refilter();
   }
 
   void unallow(Post post) {
     assertOwnsItem(post);
-    _allowedPosts.remove(post);
+    _allowedPosts.remove(post.id);
     refilter();
   }
 
@@ -73,7 +73,7 @@ mixin PostFilterableController<KeyType> on FilterableController<KeyType, Post> {
     List<Post> result = {for (final p in items) p.id: p}.values.toList();
 
     result.removeWhere((item) {
-      if (_allowedPosts.contains(item)) return false;
+      if (_allowedPosts.contains(item.id)) return false;
       List<String>? deniers = item.getDeniers(denylist);
       if (deniers != null) {
         _deniedPosts![item] = deniers;
