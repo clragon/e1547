@@ -28,9 +28,7 @@ mixin _$Reply {
   int? get updaterId => throw _privateConstructorUsedError;
   int get topicId => throw _privateConstructorUsedError;
   bool get isHidden => throw _privateConstructorUsedError;
-
   WarningType? get warningType => throw _privateConstructorUsedError;
-
   int? get warningUserId => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -325,13 +323,10 @@ abstract class _Reply implements Reply {
   int? get updaterId;
   @override
   int get topicId;
-
   @override
   bool get isHidden;
-
   @override
   WarningType? get warningType;
-
   @override
   int? get warningUserId;
   @override

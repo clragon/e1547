@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -13,16 +14,14 @@ class Share {
     }
   }
 
-  static Future<void> shareFile(
-    BuildContext context,
-    String text,
-    String path,
-  ) async {
+  static Future<void> shareFile(BuildContext context, String text) async {
     if (Platform.isAndroid || Platform.isIOS) {
-      File file = File(path);
-      await file.writeAsString(text, flush: true);
-      await plus.Share.shareFiles([file.path]);
-      await file.delete();
+      plus.XFile file = plus.XFile.fromData(
+        Uint8List.fromList(utf8.encode(text)),
+        name: '${DateTime.now().toIso8601String()}.log',
+        mimeType: 'text/plain',
+      );
+      await plus.Share.shareXFiles([file]);
     } else {
       return clipboard(context, text);
     }

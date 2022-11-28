@@ -6,8 +6,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
-import 'package:path/path.dart' show join;
-import 'package:path_provider/path_provider.dart';
 import 'package:talker/talker.dart';
 
 export 'package:talker/talker.dart' show TalkerDataInterface;
@@ -23,14 +21,7 @@ class LoggerPage extends StatefulWidget {
 
 class _LoggerPageState extends State<LoggerPage> {
   Future<void> export() async {
-    await Share.shareFile(
-      context,
-      widget.talker.history.text,
-      join(
-        (await getTemporaryDirectory()).path,
-        '${DateTime.now().toIso8601String()}.log',
-      ),
-    );
+    await Share.shareFile(context, widget.talker.history.text);
   }
 
   @override

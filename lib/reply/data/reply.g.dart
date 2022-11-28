@@ -20,8 +20,7 @@ _$_Reply _$$_ReplyFromJson(Map<String, dynamic> json) => _$_Reply(
       warningUserId: json['warning_user_id'] as int?,
     );
 
-Map<String, dynamic> _$$_ReplyToJson(_$_Reply instance) =>
-    <String, dynamic>{
+Map<String, dynamic> _$$_ReplyToJson(_$_Reply instance) => <String, dynamic>{
       'id': instance.id,
       'created_at': instance.createdAt.toIso8601String(),
       'updated_at': instance.updatedAt.toIso8601String(),

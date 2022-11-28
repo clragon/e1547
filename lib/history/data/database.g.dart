@@ -2,10 +2,6 @@
 
 part of 'database.dart';
 
-// **************************************************************************
-// DriftDatabaseGenerator
-// **************************************************************************
-
 // ignore_for_file: type=lint
 class HistoryCompanion extends UpdateCompanion<History> {
   final Value<int> id;
@@ -91,7 +87,7 @@ class HistoryCompanion extends UpdateCompanion<History> {
       map['link'] = Variable<String>(link.value);
     }
     if (thumbnails.present) {
-      final converter = $HistoriesTableTable.$converter0;
+      final converter = $HistoriesTableTable.$converterthumbnails;
       map['thumbnails'] = Variable<String>(converter.toSql(thumbnails.value));
     }
     if (title.present) {
@@ -147,50 +143,61 @@ class $HistoriesTableTable extends HistoriesTable
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
+
   $HistoriesTableTable(this.attachedDatabase, [this._alias]);
-  final VerificationMeta _idMeta = const VerificationMeta('id');
+
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<int> id = GeneratedColumn<int>(
       'id', aliasedName, false,
+      hasAutoIncrement: true,
       type: DriftSqlType.int,
       requiredDuringInsert: false,
-      defaultConstraints: 'PRIMARY KEY AUTOINCREMENT');
-  final VerificationMeta _hostMeta = const VerificationMeta('host');
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _hostMeta = const VerificationMeta('host');
   @override
   late final GeneratedColumn<String> host = GeneratedColumn<String>(
       'host', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
-  final VerificationMeta _visitedAtMeta = const VerificationMeta('visitedAt');
+  static const VerificationMeta _visitedAtMeta =
+      const VerificationMeta('visitedAt');
   @override
   late final GeneratedColumn<DateTime> visitedAt = GeneratedColumn<DateTime>(
       'visited_at', aliasedName, false,
       type: DriftSqlType.dateTime, requiredDuringInsert: true);
-  final VerificationMeta _linkMeta = const VerificationMeta('link');
+  static const VerificationMeta _linkMeta = const VerificationMeta('link');
   @override
   late final GeneratedColumn<String> link = GeneratedColumn<String>(
       'link', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
-  final VerificationMeta _thumbnailsMeta = const VerificationMeta('thumbnails');
+  static const VerificationMeta _thumbnailsMeta =
+      const VerificationMeta('thumbnails');
   @override
   late final GeneratedColumnWithTypeConverter<List<String>, String> thumbnails =
       GeneratedColumn<String>('thumbnails', aliasedName, false,
               type: DriftSqlType.string, requiredDuringInsert: true)
-          .withConverter<List<String>>($HistoriesTableTable.$converter0);
-  final VerificationMeta _titleMeta = const VerificationMeta('title');
+          .withConverter<List<String>>(
+              $HistoriesTableTable.$converterthumbnails);
+  static const VerificationMeta _titleMeta = const VerificationMeta('title');
   @override
   late final GeneratedColumn<String> title = GeneratedColumn<String>(
       'title', aliasedName, true,
       type: DriftSqlType.string, requiredDuringInsert: false);
-  final VerificationMeta _subtitleMeta = const VerificationMeta('subtitle');
+  static const VerificationMeta _subtitleMeta =
+      const VerificationMeta('subtitle');
   @override
   late final GeneratedColumn<String> subtitle = GeneratedColumn<String>(
       'subtitle', aliasedName, true,
       type: DriftSqlType.string, requiredDuringInsert: false);
+
   @override
   List<GeneratedColumn> get $columns =>
       [id, host, visitedAt, link, thumbnails, title, subtitle];
+
   @override
   String get aliasedName => _alias ?? 'histories_table';
+
   @override
   String get actualTableName => 'histories_table';
   @override
@@ -237,18 +244,18 @@ class $HistoriesTableTable extends HistoriesTable
   History map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return History(
-      id: attachedDatabase.options.types
+      id: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
-      visitedAt: attachedDatabase.options.types
+      visitedAt: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}visited_at'])!,
-      link: attachedDatabase.options.types
+      link: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}link'])!,
-      thumbnails: $HistoriesTableTable.$converter0.fromSql(attachedDatabase
-          .options.types
-          .read(DriftSqlType.string, data['${effectivePrefix}thumbnails'])!),
-      title: attachedDatabase.options.types
+      thumbnails: $HistoriesTableTable.$converterthumbnails.fromSql(
+          attachedDatabase.typeMapping.read(
+              DriftSqlType.string, data['${effectivePrefix}thumbnails'])!),
+      title: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}title']),
-      subtitle: attachedDatabase.options.types
+      subtitle: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}subtitle']),
     );
   }
@@ -258,7 +265,7 @@ class $HistoriesTableTable extends HistoriesTable
     return $HistoriesTableTable(attachedDatabase, alias);
   }
 
-  static TypeConverter<List<String>, String> $converter0 =
+  static TypeConverter<List<String>, String> $converterthumbnails =
       const StringListConverter();
 }
 
@@ -266,9 +273,11 @@ abstract class _$HistoriesDatabase extends GeneratedDatabase {
   _$HistoriesDatabase(QueryExecutor e) : super(e);
   _$HistoriesDatabase.connect(DatabaseConnection c) : super.connect(c);
   late final $HistoriesTableTable historiesTable = $HistoriesTableTable(this);
+
   @override
-  Iterable<TableInfo<Table, dynamic>> get allTables =>
+  Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
+
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities => [historiesTable];
 }

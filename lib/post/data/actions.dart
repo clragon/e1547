@@ -306,8 +306,6 @@ extension PostLinking on Post {
 }
 
 mixin PostsActionController<KeyType> on ClientDataController<KeyType, Post> {
-  Client get client;
-
   void replacePost(Post post) {
     int index = itemList?.indexWhere((e) => e.id == post.id) ?? -1;
     if (index == -1) {

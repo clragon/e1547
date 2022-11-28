@@ -31,9 +31,7 @@ mixin _$Comment {
   bool get doNotBumpPost => throw _privateConstructorUsedError;
   bool get isHidden => throw _privateConstructorUsedError;
   bool get isSticky => throw _privateConstructorUsedError;
-
   WarningType? get warningType => throw _privateConstructorUsedError;
-
   int? get warningUserId => throw _privateConstructorUsedError;
   String get creatorName => throw _privateConstructorUsedError;
   String get updaterName => throw _privateConstructorUsedError;
@@ -464,13 +462,10 @@ abstract class _Comment implements Comment {
   bool get doNotBumpPost;
   @override
   bool get isHidden;
-
   @override
   bool get isSticky;
-
   @override
   WarningType? get warningType;
-
   @override
   int? get warningUserId;
   @override

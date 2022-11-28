@@ -2,10 +2,6 @@
 
 part of 'database.dart';
 
-// **************************************************************************
-// DriftDatabaseGenerator
-// **************************************************************************
-
 // ignore_for_file: type=lint
 class FollowCompanion extends UpdateCompanion<Follow> {
   final Value<int> id;
@@ -114,7 +110,7 @@ class FollowCompanion extends UpdateCompanion<Follow> {
       map['alias'] = Variable<String>(alias.value);
     }
     if (type.present) {
-      final converter = $FollowsTableTable.$converter0;
+      final converter = $FollowsTableTable.$convertertype;
       map['type'] = Variable<String>(converter.toSql(type.value));
     }
     if (latest.present) {
@@ -182,65 +178,74 @@ class $FollowsTableTable extends FollowsTable
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
+
   $FollowsTableTable(this.attachedDatabase, [this._alias]);
-  final VerificationMeta _idMeta = const VerificationMeta('id');
+
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<int> id = GeneratedColumn<int>(
       'id', aliasedName, false,
+      hasAutoIncrement: true,
       type: DriftSqlType.int,
       requiredDuringInsert: false,
-      defaultConstraints: 'PRIMARY KEY AUTOINCREMENT');
-  final VerificationMeta _hostMeta = const VerificationMeta('host');
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _hostMeta = const VerificationMeta('host');
   @override
   late final GeneratedColumn<String> host = GeneratedColumn<String>(
       'host', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
-  final VerificationMeta _tagsMeta = const VerificationMeta('tags');
+  static const VerificationMeta _tagsMeta = const VerificationMeta('tags');
   @override
   late final GeneratedColumn<String> tags = GeneratedColumn<String>(
       'tags', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
-  final VerificationMeta _titleMeta = const VerificationMeta('title');
+  static const VerificationMeta _titleMeta = const VerificationMeta('title');
   @override
   late final GeneratedColumn<String> title = GeneratedColumn<String>(
       'title', aliasedName, true,
       type: DriftSqlType.string, requiredDuringInsert: false);
-  final VerificationMeta _aliasMeta = const VerificationMeta('alias');
+  static const VerificationMeta _aliasMeta = const VerificationMeta('alias');
   @override
   late final GeneratedColumn<String> alias = GeneratedColumn<String>(
       'alias', aliasedName, true,
       type: DriftSqlType.string, requiredDuringInsert: false);
-  final VerificationMeta _typeMeta = const VerificationMeta('type');
+  static const VerificationMeta _typeMeta = const VerificationMeta('type');
   @override
   late final GeneratedColumnWithTypeConverter<FollowType, String> type =
       GeneratedColumn<String>('type', aliasedName, false,
               type: DriftSqlType.string, requiredDuringInsert: true)
-          .withConverter<FollowType>($FollowsTableTable.$converter0);
-  final VerificationMeta _latestMeta = const VerificationMeta('latest');
+          .withConverter<FollowType>($FollowsTableTable.$convertertype);
+  static const VerificationMeta _latestMeta = const VerificationMeta('latest');
   @override
   late final GeneratedColumn<int> latest = GeneratedColumn<int>(
       'latest', aliasedName, true,
       type: DriftSqlType.int, requiredDuringInsert: false);
-  final VerificationMeta _unseenMeta = const VerificationMeta('unseen');
+  static const VerificationMeta _unseenMeta = const VerificationMeta('unseen');
   @override
   late final GeneratedColumn<int> unseen = GeneratedColumn<int>(
       'unseen', aliasedName, true,
       type: DriftSqlType.int, requiredDuringInsert: false);
-  final VerificationMeta _thumbnailMeta = const VerificationMeta('thumbnail');
+  static const VerificationMeta _thumbnailMeta =
+      const VerificationMeta('thumbnail');
   @override
   late final GeneratedColumn<String> thumbnail = GeneratedColumn<String>(
       'thumbnail', aliasedName, true,
       type: DriftSqlType.string, requiredDuringInsert: false);
-  final VerificationMeta _updatedMeta = const VerificationMeta('updated');
+  static const VerificationMeta _updatedMeta =
+      const VerificationMeta('updated');
   @override
   late final GeneratedColumn<DateTime> updated = GeneratedColumn<DateTime>(
       'updated', aliasedName, true,
       type: DriftSqlType.dateTime, requiredDuringInsert: false);
+
   @override
   List<GeneratedColumn> get $columns =>
       [id, host, tags, title, alias, type, latest, unseen, thumbnail, updated];
+
   @override
   String get aliasedName => _alias ?? 'follows_table';
+
   @override
   String get actualTableName => 'follows_table';
   @override
@@ -301,24 +306,24 @@ class $FollowsTableTable extends FollowsTable
   Follow map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return Follow(
-      id: attachedDatabase.options.types
+      id: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
-      tags: attachedDatabase.options.types
+      tags: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}tags'])!,
-      title: attachedDatabase.options.types
+      title: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}title']),
-      alias: attachedDatabase.options.types
+      alias: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}alias']),
-      type: $FollowsTableTable.$converter0.fromSql(attachedDatabase
-          .options.types
+      type: $FollowsTableTable.$convertertype.fromSql(attachedDatabase
+          .typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}type'])!),
-      latest: attachedDatabase.options.types
+      latest: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}latest']),
-      unseen: attachedDatabase.options.types
+      unseen: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}unseen']),
-      thumbnail: attachedDatabase.options.types
+      thumbnail: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}thumbnail']),
-      updated: attachedDatabase.options.types
+      updated: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}updated']),
     );
   }
@@ -328,7 +333,7 @@ class $FollowsTableTable extends FollowsTable
     return $FollowsTableTable(attachedDatabase, alias);
   }
 
-  static TypeConverter<FollowType, String> $converter0 =
+  static TypeConverter<FollowType, String> $convertertype =
       const StringEnumConverter(FollowType.values);
 }
 
@@ -336,9 +341,11 @@ abstract class _$FollowsDatabase extends GeneratedDatabase {
   _$FollowsDatabase(QueryExecutor e) : super(e);
   _$FollowsDatabase.connect(DatabaseConnection c) : super.connect(c);
   late final $FollowsTableTable followsTable = $FollowsTableTable(this);
+
   @override
-  Iterable<TableInfo<Table, dynamic>> get allTables =>
+  Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
+
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities => [followsTable];
 }

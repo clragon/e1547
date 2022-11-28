@@ -12,9 +12,9 @@ export 'data/state.dart';
 export 'data/word.dart';
 // widgets
 export 'widgets/editor.dart';
-export 'widgets/text.dart';
 export 'widgets/plain.dart';
 export 'widgets/quote.dart';
 export 'widgets/section.dart';
 export 'widgets/spoiler.dart';
+export 'widgets/text.dart';
 export 'widgets/username.dart';

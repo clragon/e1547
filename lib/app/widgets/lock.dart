@@ -55,37 +55,18 @@ class _LockScreenState extends State<LockScreen> {
                   onSuccess: unlock,
                 )
             : null,
-        didOpened: biometrics
+        onOpened: biometrics
             ? () => tryLocalAuth(
                   context: context,
                   onSuccess: unlock,
                 )
             : null,
-        didUnlocked: unlock,
-        screenLockConfig: ScreenLockConfig(
-          themeData: Theme.of(context).copyWith(
-            textTheme: TextTheme(
-              headline1:
-                  Theme.of(context).textTheme.headline1!.copyWith(fontSize: 20),
-              bodyText2:
-                  Theme.of(context).textTheme.bodyText2!.copyWith(fontSize: 18),
-            ),
-          ),
-        ),
+        onUnlocked: unlock,
         secretsConfig: SecretsConfig(
           spacing: 12,
           secretConfig: SecretConfig(
             borderColor: Theme.of(context).textTheme.bodyText2!.color!,
             enabledColor: Theme.of(context).textTheme.bodyText2!.color!,
-          ),
-        ),
-        keyPadConfig: const KeyPadConfig(
-          buttonConfig: StyledInputConfig(
-            textStyle: TextStyle(
-              fontSize: 36,
-            ),
-            height: 68,
-            width: 68,
           ),
         ),
       );
@@ -203,46 +184,18 @@ Future<void> tryLocalAuth({
 
 Future<String?> registerPin(BuildContext context) async {
   Completer<String?> completer = Completer();
-  await screenLock(
+  await screenLockCreate(
     title: const Text('Enter new PIN'),
     confirmTitle: const Text('Confirm new PIN'),
     context: context,
-    correctString: '',
-    confirmation: true,
-    didConfirmed: (result) {
+    onConfirmed: (result) {
       completer.complete(result);
       Navigator.of(context).pop();
     },
-    didCancelled: () {
+    onCancelled: () {
       completer.complete(null);
       Navigator.of(context).pop();
     },
-    screenLockConfig: ScreenLockConfig(
-      themeData: Theme.of(context).copyWith(
-        textTheme: TextTheme(
-          headline1:
-              Theme.of(context).textTheme.headline1!.copyWith(fontSize: 20),
-          bodyText2:
-              Theme.of(context).textTheme.bodyText2!.copyWith(fontSize: 18),
-        ),
-      ),
-    ),
-    secretsConfig: SecretsConfig(
-      spacing: 12,
-      secretConfig: SecretConfig(
-        borderColor: Theme.of(context).textTheme.bodyText2!.color!,
-        enabledColor: Theme.of(context).textTheme.bodyText2!.color!,
-      ),
-    ),
-    keyPadConfig: const KeyPadConfig(
-      buttonConfig: StyledInputConfig(
-        textStyle: TextStyle(
-          fontSize: 36,
-        ),
-        height: 68,
-        width: 68,
-      ),
-    ),
   );
 
   return completer.future;
