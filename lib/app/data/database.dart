@@ -15,4 +15,10 @@ class AppDatabases {
   final DatabaseConnection followDb;
   final CacheStore httpCache;
   final SharedPreferences preferences;
+
+  void dispose() {
+    historyDb.executor.close();
+    followDb.executor.close();
+    httpCache.close();
+  }
 }
