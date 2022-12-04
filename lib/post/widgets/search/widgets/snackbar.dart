@@ -64,7 +64,7 @@ Future<void> postFavoritingNotification(
             bool result = await controller.fav(post);
             if (result && upvote) {
               result = await controller.vote(
-                post: post,
+                post: controller.postById(post.id)!,
                 upvote: true,
                 replace: true,
               );

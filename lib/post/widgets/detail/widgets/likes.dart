@@ -115,7 +115,11 @@ class FavoriteButton extends StatelessWidget {
             controller.fav(post).then((value) {
               if (value) {
                 if (upvote) {
-                  controller.vote(post: post, upvote: true, replace: true);
+                  controller.vote(
+                    post: controller.postById(post.id)!,
+                    upvote: true,
+                    replace: true,
+                  );
                 }
               } else {
                 messenger.showSnackBar(
