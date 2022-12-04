@@ -53,7 +53,7 @@ class PostImageTile extends StatelessWidget {
                         fit: fit ?? BoxFit.cover,
                         showProgress: showProgress ?? false,
                         withLowRes: withLowRes ?? false,
-                        cacheSize: context.read<LowResCacheSize?>()?.size,
+                        cacheSize: context.watch<ImageCacheSize?>()?.size,
                       ),
                     ),
                   ),
@@ -218,10 +218,10 @@ class PostInfoBar extends StatelessWidget {
 
 void defaultPushPostDetail(BuildContext context, Post post) {
   PostsController? controller = context.read<PostsController?>();
-  int? cacheSize = context.read<LowResCacheSize>().size;
+  int? cacheSize = context.read<ImageCacheSize>().size;
   Navigator.of(context).push(
     MaterialPageRoute(
-      builder: (context) => LowResCacheSizeProvider(
+      builder: (context) => ImageCacheSizeProvider(
         size: cacheSize,
         child: controller != null
             ? PostsRouteConnector(
@@ -295,7 +295,7 @@ class PostFeedTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    int? cacheSize = context.read<LowResCacheSize>().size;
+    int? cacheSize = context.read<ImageCacheSize>().size;
 
     Widget actions() {
       return DimSubtree(
@@ -414,7 +414,7 @@ class PostFeedTile extends StatelessWidget {
                 MaterialPageRoute(
                   builder: (context) => PostVideoRoute(
                     post: post,
-                    child: LowResCacheSizeProvider(
+                    child: ImageCacheSizeProvider(
                       size: cacheSize,
                       child: controller != null
                           ? ChangeNotifierProvider.value(

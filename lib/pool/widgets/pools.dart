@@ -81,7 +81,7 @@ class _PoolsPageState extends State<PoolsPage> with DrawerEntry {
                   (TileLayout.of(context).crossAxisCount * 0.5).round(),
               builderDelegate: defaultPagedChildBuilderDelegate<Pool>(
                 pagingController: controller,
-                itemBuilder: (context, item, index) => LowResCacheSizeProvider(
+                itemBuilder: (context, item, index) => ImageCacheSizeProvider(
                   size: TileLayout.of(context).tileSize * 4,
                   child: PoolTile(
                     pool: item,

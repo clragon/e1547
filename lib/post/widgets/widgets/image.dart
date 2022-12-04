@@ -243,25 +243,25 @@ class ImageProgressWrapper extends StatelessWidget {
 Widget defaultErrorBuilder(BuildContext context, String url, dynamic error) =>
     const Center(child: Icon(Icons.warning_amber_outlined));
 
-class LowResCacheSize {
-  /// Configures the post lower resolution image cache size for a subtree.
-  const LowResCacheSize(this.size);
+class ImageCacheSize {
+  /// Configures the cache size for images.
+  const ImageCacheSize(this.size);
 
   /// The cache size of the image.
   final int? size;
 }
 
-class LowResCacheSizeProvider extends SubProvider0<LowResCacheSize> {
-  /// Provides a lower resolution image cache size to a subtree.
-  LowResCacheSizeProvider({required int? size, super.child, super.builder})
+class ImageCacheSizeProvider extends SubProvider0<ImageCacheSize> {
+  /// Provides the cache size for images to a subtree.
+  ImageCacheSizeProvider({required int? size, super.child, super.builder})
       : super(
-          create: (context) => LowResCacheSize(size),
+          create: (context) => ImageCacheSize(size),
           selector: (context) => [size],
         );
 
-  /// Removes the lower resolution cache size for a subtree.
-  LowResCacheSizeProvider.none({super.child, super.builder})
+  /// Removes the cache size for images for a subtree.
+  ImageCacheSizeProvider.none({super.child, super.builder})
       : super(
-          create: (context) => const LowResCacheSize(null),
+          create: (context) => const ImageCacheSize(null),
         );
 }

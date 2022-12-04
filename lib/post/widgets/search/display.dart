@@ -37,7 +37,7 @@ Widget postGrid({
         itemBuilder: itemBuilder,
       );
 
-  Widget itemBuilder(context, item, index) => LowResCacheSizeProvider(
+  Widget itemBuilder(context, item, index) => ImageCacheSizeProvider(
         size: TileLayout.of(context).tileSize * 2,
         child: PostTile(post: item),
       );
@@ -89,7 +89,7 @@ Widget postComic({
       pagingController: controller,
       onEmpty: const Text('No posts'),
       onError: const Text('Failed to load posts'),
-      itemBuilder: (context, item, index) => LowResCacheSizeProvider(
+      itemBuilder: (context, item, index) => ImageCacheSizeProvider(
         size: 800,
         child: PostComicTile(post: item),
       ),
@@ -110,7 +110,7 @@ Widget postTimeline({
       pagingController: controller,
       onEmpty: const Text('No posts'),
       onError: const Text('Failed to load posts'),
-      itemBuilder: (context, item, index) => LowResCacheSizeProvider(
+      itemBuilder: (context, item, index) => ImageCacheSizeProvider(
         size: 800,
         child: PostFeedTile(post: item),
       ),

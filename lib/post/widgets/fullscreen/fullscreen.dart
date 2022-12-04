@@ -58,7 +58,7 @@ class PostFullscreenBody extends StatelessWidget {
                     fit: BoxFit.cover,
                     post: post,
                     size: PostImageSize.file,
-                    lowResCacheSize: context.read<LowResCacheSize?>()?.size,
+                    lowResCacheSize: context.watch<ImageCacheSize?>()?.size,
                   ),
                 ),
               );
