@@ -5,7 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+## [15.0.1] - 2022-12-11
+
+better error handling
+
+### Fixed
+
+- error displays for when the site is down
+- retrying loading items
+- favorite and upvote setting
+
+### Changed
+
+- pool reader mode now enabled by default
+
 ## [15.0.0] - 2022-11-28
+
 niche specialisation
 
 ### Added
@@ -973,7 +990,9 @@ Soft reboot
 
 - API client bindings
 
-[unreleased]: https://github.com/clragon/e1547/compare/15.0.0...HEAD
+[unreleased]: https://github.com/clragon/e1547/compare/15.0.1...HEAD
+
+[15.0.1]: https://github.com/clragon/e1547/compare/15.0.0...15.0.1
 
 [15.0.0]: https://github.com/clragon/e1547/compare/14.0.1...15.0.0
 

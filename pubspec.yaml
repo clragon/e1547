@@ -1,6 +1,6 @@
 name: e1547
 description: A mobile app for e621+e926.
-version: 15.0.0+69
+version: 15.0.1+70
 publish_to: none
 
 environment:
@@ -83,7 +83,7 @@ dependency_overrides:
     git:
       url: https://github.com/llfbandit/dio_cache_interceptor.git
       path: dio_cache_interceptor_db_store
-      ref: 953c5b0
+      ref: 5c8ea0f
 
 dev_dependencies:
   flutter_lints: ^2.0.1
