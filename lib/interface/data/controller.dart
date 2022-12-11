@@ -233,7 +233,6 @@ class PageLock<KeyType> {
       _used.clear();
     }
     if (_used.contains(key)) {
-      _mutex.release();
       throw KeyAlreadyUsedException(key);
     }
     _currentKey = key;
@@ -281,8 +280,11 @@ class PageLock<KeyType> {
     } on KeyAlreadyUsedException {
       return null;
     } catch (_) {
-      release(null);
       rethrow;
+    } finally {
+      if (_mutex.isLocked) {
+        release(null);
+      }
     }
   }
 
