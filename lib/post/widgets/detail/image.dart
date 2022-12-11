@@ -81,6 +81,7 @@ class _PostDetailImageToggleState extends State<PostDetailImageToggle> {
 
   Future<void> onToggle() async {
     PostsController controller = context.read<PostsController>();
+    ScaffoldMessengerState messenger = ScaffoldMessenger.of(context);
     setState(() {
       loading = true;
     });
@@ -96,15 +97,25 @@ class _PostDetailImageToggleState extends State<PostDetailImageToggle> {
           appInfo: service.appInfo,
           cache: service.cache,
         );
-        replacement = await unsafeClient.post(post.id);
-        Post updated = post.copyWith(
-          fileRaw: post.fileRaw.copyWith(url: replacement!.fileRaw.url),
-          preview: post.preview.copyWith(url: replacement!.preview.url),
-          sample: post.sample.copyWith(url: replacement!.sample.url),
-        );
-        controller.replacePost(updated);
-        if (!controller.isDenied(updated)) {
-          controller.allow(updated);
+        try {
+          replacement = await unsafeClient.post(post.id);
+          Post updated = post.copyWith(
+            fileRaw: post.fileRaw.copyWith(url: replacement!.fileRaw.url),
+            preview: post.preview.copyWith(url: replacement!.preview.url),
+            sample: post.sample.copyWith(url: replacement!.sample.url),
+          );
+          controller.replacePost(updated);
+          if (!controller.isDenied(updated)) {
+            controller.allow(updated);
+          }
+        } on DioError {
+          messenger.showSnackBar(
+            SnackBar(
+              duration: const Duration(seconds: 1),
+              content: Text('Failed to load unsafe image of Post #${post.id}'),
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
         }
       }
     } else {
