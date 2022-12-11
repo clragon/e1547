@@ -239,7 +239,7 @@ class PageLock<KeyType> {
       _used.clear();
     }
     if (_used.contains(key)) {
-      throw KeyAlreadyUsedException(key);
+      throw KeyAlreadyUsedException<KeyType>(key);
     }
     _currentKey = key;
   }
@@ -283,9 +283,9 @@ class PageLock<KeyType> {
       T result = await criticalSection();
       release(key);
       return result;
-    } on KeyAlreadyUsedException<T> {
+    } on KeyAlreadyUsedException<KeyType> {
       return null;
-    } on KeyWasNotUsedException {
+    } on KeyWasNotUsedException<KeyType> {
       return null;
     } catch (_) {
       rethrow;
