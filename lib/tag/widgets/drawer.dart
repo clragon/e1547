@@ -15,6 +15,7 @@ class DrawerTagCounter extends StatelessWidget {
       animation: controller,
       builder: (context, child) => DrawerTagCounterBody(
         posts: controller.itemList,
+        controller: controller,
       ),
     );
   }
@@ -127,14 +128,19 @@ class DrawerTagCounterBody extends StatelessWidget {
                           ),
                         ],
                       ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8),
-                        child: Text(
-                          'failed to load tags',
-                          style: TextStyle(
-                            fontStyle: FontStyle.italic,
-                            color: dimTextColor(context),
-                          ),
+                      child: DimSubtree(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                            Icon(Icons.warning_amber, size: 12),
+                            Padding(
+                              padding: EdgeInsets.all(8),
+                              child: Text(
+                                'failed to load tags',
+                                style: TextStyle(fontStyle: FontStyle.italic),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
