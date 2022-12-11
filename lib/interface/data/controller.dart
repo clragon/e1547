@@ -54,29 +54,35 @@ abstract class DataController<KeyType, ItemType>
     bool background = false,
     bool force = false,
   }) async {
-    await _pageLock.protect(page, reset: reset, () async {
-      if (reset) {
-        if (background) {
-          this.reset();
-        } else {
-          value = PagingState<KeyType, ItemType>(
-            nextPageKey: page,
-          );
+    await _pageLock.protect(
+      page,
+      reset: reset,
+      () async {
+        if (reset) {
+          if (background) {
+            this.reset();
+          } else {
+            value = PagingState<KeyType, ItemType>(
+              nextPageKey: page,
+            );
+          }
         }
-      }
-      PageResponse<KeyType, ItemType> response = await requestPage(page, force);
-      if (_disposed) return;
-      if (response.error != null) {
-        return failure(response.error!);
-      }
-      if (reset) {
-        this.reset(hasLoaded: true);
-        value = response.toState();
-      } else {
-        appendPage(response.itemList!, response.nextPageKey);
-      }
-      success();
-    });
+        PageResponse<KeyType, ItemType> response =
+            await requestPage(page, force);
+        if (_disposed) return;
+        if (response.error != null) {
+          failure(response.error!);
+          throw KeyWasNotUsedException(page);
+        }
+        if (reset) {
+          this.reset(hasLoaded: true);
+          value = response.toState();
+        } else {
+          appendPage(response.itemList!, response.nextPageKey);
+        }
+        success();
+      },
+    );
   }
 
   /// Called when a request of this controller fails.
@@ -277,7 +283,9 @@ class PageLock<KeyType> {
       T result = await criticalSection();
       release(key);
       return result;
-    } on KeyAlreadyUsedException {
+    } on KeyAlreadyUsedException<T> {
+      return null;
+    } on KeyWasNotUsedException {
       return null;
     } catch (_) {
       rethrow;
@@ -306,6 +314,17 @@ class KeyAlreadyUsedException<KeyType> implements Exception {
 
   @override
   String toString() => "$runtimeType: $key was already used!";
+}
+
+class KeyWasNotUsedException<KeyType> implements Exception {
+  /// Exception thrown when a key that was acquired in a [PageLock] wasn't used (e.g. because the operation didn't complete).
+  const KeyWasNotUsedException(this.key);
+
+  /// The key that was attempted to be used.
+  final KeyType key;
+
+  @override
+  String toString() => "$runtimeType: $key was not used!";
 }
 
 mixin FilterableController<PageKeyType, ItemType>
