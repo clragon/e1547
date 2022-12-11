@@ -7,23 +7,17 @@ import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
 
 Future<void> initializeCurrentUserAvatar(BuildContext context) async {
-  try {
-    PostsController? controller =
-        await context.read<CurrentUserAvatarValue>().controller;
-    Post? avatar = controller?.itemList?.first;
-    if (avatar?.sample.url != null) {
-      // The buildcontext used here comes from MaterialApp,
-      // therefore if it goes invalid, the app is already closed.
-      // ignore: use_build_context_synchronously
-      await precacheImage(
-        CachedNetworkImageProvider(avatar!.sample.url!),
-        context,
-      );
-    }
-  } on DioError catch (e) {
-    if (!CancelToken.isCancel(e)) {
-      rethrow;
-    }
+  PostsController? controller =
+      await context.read<CurrentUserAvatarValue>().controller;
+  Post? avatar = controller?.itemList?.first;
+  if (avatar?.sample.url != null) {
+    // The buildcontext used here comes from MaterialApp,
+    // therefore if it goes invalid, the app is already closed.
+    // ignore: use_build_context_synchronously
+    await precacheImage(
+      CachedNetworkImageProvider(avatar!.sample.url!),
+      context,
+    );
   }
 }
 
@@ -67,15 +61,19 @@ class CurrentUserAvatarValue {
   Future<PostsController?> get controller => _controller;
 
   Future<PostsController?> _createController() async {
-    int? id = (await client.currentUser())?.avatarId;
-    if (id != null) {
-      PostsController controller = PostsController.single(
-        client: client,
-        denylist: denylist,
-        id: id,
-        filterMode: PostFilterMode.unavailable,
-      );
-      return controller.loadFirstPage();
+    try {
+      int? id = (await client.currentUser())?.avatarId;
+      if (id != null) {
+        PostsController controller = PostsController.single(
+          client: client,
+          denylist: denylist,
+          id: id,
+          filterMode: PostFilterMode.unavailable,
+        );
+        return controller.loadFirstPage();
+      }
+    } catch (e) {
+      return null;
     }
     return null;
   }

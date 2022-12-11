@@ -29,6 +29,7 @@ mixin ClientDataController<KeyType, ItemType>
   Future<PageResponse<KeyType, ItemType>> withError(
       Future<PageResponse<KeyType, ItemType>> Function() call) async {
     try {
+      // this must be awaited for the catch to work.
       return await call();
     } on DioError catch (e) {
       return PageResponse.error(error: e);

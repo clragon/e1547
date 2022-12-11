@@ -34,7 +34,7 @@ final List<NavigationRouteDestination> rootDestintations = [
     path: '/search',
     name: 'Search',
     icon: const Icon(Icons.search),
-    builder: (context) => const SearchPage(),
+    builder: (context) => const PostsSearchPage(),
     group: _drawerSearchGroup,
   ),
   NavigationDrawerDestination(

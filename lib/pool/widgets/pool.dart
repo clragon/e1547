@@ -36,12 +36,16 @@ class _PoolPageState extends State<PoolPage> {
           listener: () async {
             HistoriesService service = context.read<HistoriesService>();
             Client client = context.read<Client>();
-            await controller.waitForFirstPage();
-            await service.addPool(
-              client.host,
-              widget.pool,
-              posts: controller.itemList,
-            );
+            try {
+              await controller.waitForFirstPage();
+              await service.addPool(
+                client.host,
+                widget.pool,
+                posts: controller.itemList,
+              );
+            } on DioError {
+              return;
+            }
           },
           listenable: controller.search,
           child: PostsPage(

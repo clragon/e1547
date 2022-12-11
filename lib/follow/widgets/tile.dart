@@ -185,7 +185,7 @@ class FollowTile extends StatelessWidget {
                     child: InkWell(
                       onTap: () => Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (context) => SearchPage(
+                          builder: (context) => PostsSearchPage(
                             tags: follow.tags,
                             reversePools: (follow.unseen ?? 0) > 0,
                           ),

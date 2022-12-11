@@ -258,7 +258,7 @@ VoidCallback? parseLinkOnTap(BuildContext context, String link) {
         if (result.id != null) {
           return navWrapper((context) => PostLoadingPage(result.id!));
         }
-        return navWrapper((context) => SearchPage(tags: result.search));
+        return navWrapper((context) => PostsSearchPage(tags: result.search));
       case LinkType.pool:
         if (result.id != null) {
           return navWrapper((context) => PoolLoadingPage(result.id!));

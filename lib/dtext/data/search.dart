@@ -15,7 +15,7 @@ final DTextParser searchParser = DTextParser(
         TextStateLink(
           () => Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (context) => SearchPage(tags: tags),
+              builder: (context) => PostsSearchPage(tags: tags),
             ),
           ),
         ),

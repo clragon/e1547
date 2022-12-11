@@ -169,33 +169,39 @@ class PagedSliverGroupedListView<PageKeyType, ItemType, SortType>
       pagingController: pagingController,
       builderDelegate: builderDelegate,
       shrinkWrapFirstPageIndicators: shrinkWrapFirstPageIndicators,
-      completedListingBuilder: (context,
-          itemBuilder,
-          itemCount,
-          noMoreItemsIndicatorBuilder,) =>
+      completedListingBuilder: (
+        context,
+        itemBuilder,
+        itemCount,
+        noMoreItemsIndicatorBuilder,
+      ) =>
           buildLayout(
-            itemBuilder,
-            itemCount,
-            statusIndicatorBuilder: noMoreItemsIndicatorBuilder,
-          ),
-      loadingListingBuilder: (context,
-          itemBuilder,
-          itemCount,
-          progressIndicatorBuilder,) =>
+        itemBuilder,
+        itemCount,
+        statusIndicatorBuilder: noMoreItemsIndicatorBuilder,
+      ),
+      loadingListingBuilder: (
+        context,
+        itemBuilder,
+        itemCount,
+        progressIndicatorBuilder,
+      ) =>
           buildLayout(
-            itemBuilder,
-            itemCount,
-            statusIndicatorBuilder: progressIndicatorBuilder,
-          ),
-      errorListingBuilder: (context,
-          itemBuilder,
-          itemCount,
-          errorIndicatorBuilder,) =>
+        itemBuilder,
+        itemCount,
+        statusIndicatorBuilder: progressIndicatorBuilder,
+      ),
+      errorListingBuilder: (
+        context,
+        itemBuilder,
+        itemCount,
+        errorIndicatorBuilder,
+      ) =>
           buildLayout(
-            itemBuilder,
-            itemCount,
-            statusIndicatorBuilder: errorIndicatorBuilder,
-          ),
+        itemBuilder,
+        itemCount,
+        statusIndicatorBuilder: errorIndicatorBuilder,
+      ),
     );
   }
 }

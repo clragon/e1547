@@ -7,17 +7,17 @@ import 'package:e1547/post/post.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 
-class SearchPage extends StatefulWidget {
-  const SearchPage({this.tags, this.reversePools = false});
+class PostsSearchPage extends StatefulWidget {
+  const PostsSearchPage({this.tags, this.reversePools = false});
 
   final String? tags;
   final bool reversePools;
 
   @override
-  State<SearchPage> createState() => _SearchPageState();
+  State<PostsSearchPage> createState() => _PostsSearchPageState();
 }
 
-class _SearchPageState extends State<SearchPage> {
+class _PostsSearchPageState extends State<PostsSearchPage> {
   late bool reversePools = widget.reversePools;
   bool readerMode = false;
   bool loadingInfo = true;
@@ -66,7 +66,12 @@ class _SearchPageState extends State<SearchPage> {
               RegExpMatch? match = poolRegex().firstMatch(input.toString());
               if (input.length == 1 && match != null) {
                 if (match.namedGroup('id')! != pool?.id.toString()) {
-                  pool = await client.pool(int.parse(match.namedGroup('id')!));
+                  try {
+                    pool =
+                        await client.pool(int.parse(match.namedGroup('id')!));
+                  } on DioError {
+                    pool = null;
+                  }
                 }
               } else {
                 pool = null;
@@ -78,11 +83,16 @@ class _SearchPageState extends State<SearchPage> {
             }
 
             Future<void> updateSearch() async {
+              if (!mounted) return;
               String host = context.read<Client>().host;
               HistoriesService historiesService =
                   context.read<HistoriesService>();
               await updatePool();
-              await controller.waitForFirstPage();
+              try {
+                await controller.waitForFirstPage();
+              } on DioError {
+                return;
+              }
               await updateFollow();
               if (pool != null) {
                 historiesService.addPool(host, pool!,

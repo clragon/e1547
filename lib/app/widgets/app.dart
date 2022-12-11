@@ -62,6 +62,9 @@ class App extends StatelessWidget {
                             ),
                         initializeCurrentUserAvatar,
                       ],
+                      onError: (context, error) {
+                        // errors in startup actions are ignored.
+                      },
                       child: ErrorNotifier(
                         child: LockScreen(
                           child: AppLinkHandler(

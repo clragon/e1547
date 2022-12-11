@@ -32,12 +32,16 @@ class _PoolsPageState extends State<PoolsPage> with DrawerEntry {
           listener: () async {
             HistoriesService service = context.read<HistoriesService>();
             Client client = context.read<Client>();
-            await controller.waitForFirstPage();
-            await service.addPoolSearch(
-              client.host,
-              controller.search.value,
-              pools: controller.itemList,
-            );
+            try {
+              await controller.waitForFirstPage();
+              await service.addPoolSearch(
+                client.host,
+                controller.search.value,
+                pools: controller.itemList,
+              );
+            } on DioError {
+              return;
+            }
           },
           child: RefreshableControllerPage.builder(
             appBar: const DefaultAppBar(

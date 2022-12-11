@@ -1,11 +1,23 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
-typedef StartupCallback = void Function(BuildContext context);
+typedef StartupCallback = FutureOr<void> Function(BuildContext context);
 
 class StartupActions extends StatefulWidget {
-  const StartupActions({required this.child, required this.actions});
+  const StartupActions({
+    required this.child,
+    required this.actions,
+    this.onError,
+  });
 
+  /// List of all actions to execute when this widget is instantiated
   final List<StartupCallback> actions;
+
+  /// The error handler for any action that fails. If this is is null, the errors are thrown like normal.
+  final void Function(BuildContext context, Object error)? onError;
+
+  /// The child widget.
   final Widget child;
 
   @override
@@ -18,13 +30,21 @@ class _StartupActionsState extends State<StartupActions> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       for (final element in widget.actions) {
-        element(context);
+        Future(() async {
+          try {
+            await element(context);
+          } catch (e) {
+            if (widget.onError != null) {
+              widget.onError!(context, e);
+            } else {
+              rethrow;
+            }
+          }
+        });
       }
     });
   }
 
   @override
-  Widget build(BuildContext context) {
-    return widget.child;
-  }
+  Widget build(BuildContext context) => widget.child;
 }

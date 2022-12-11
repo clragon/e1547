@@ -54,31 +54,29 @@ abstract class DataController<KeyType, ItemType>
     bool background = false,
     bool force = false,
   }) async {
-    try {
-      await _pageLock.protect(page, reset: reset, () async {
-        if (reset) {
-          if (background) {
-            this.reset();
-          } else {
-            value = PagingState<KeyType, ItemType>(
-              nextPageKey: page,
-            );
-          }
-        }
-        PageResponse<KeyType, ItemType> response =
-            await requestPage(page, force);
-        if (_disposed) return;
-        if (reset) {
-          this.reset(hasLoaded: true);
-          value = response.toState();
+    await _pageLock.protect(page, reset: reset, () async {
+      if (reset) {
+        if (background) {
+          this.reset();
         } else {
-          appendPage(response.itemList!, response.nextPageKey);
+          value = PagingState<KeyType, ItemType>(
+            nextPageKey: page,
+          );
         }
-        success();
-      });
-    } on Exception catch (error) {
-      failure(error);
-    }
+      }
+      PageResponse<KeyType, ItemType> response = await requestPage(page, force);
+      if (_disposed) return;
+      if (response.error != null) {
+        return failure(response.error!);
+      }
+      if (reset) {
+        this.reset(hasLoaded: true);
+        value = response.toState();
+      } else {
+        appendPage(response.itemList!, response.nextPageKey);
+      }
+      success();
+    });
   }
 
   /// Called when a request of this controller fails.
@@ -434,7 +432,7 @@ extension DataControllerLoading<T extends DataController> on T {
   /// If the controller has already loaded the page, will return immediately.
   /// Does not trigger a new page load on it's own.
   ///
-  /// If the page load fails, a [ControllerLoadingException] will be thrown.
+  /// If the page load fails with an error, the error is thrown.
   Future<T> waitForFirstPage() async {
     await Future.delayed(Duration.zero);
     Completer<T> completer = Completer<T>();
@@ -453,7 +451,7 @@ extension DataControllerLoading<T extends DataController> on T {
         case PagingStatus.firstPageError:
         case PagingStatus.subsequentPageError:
           removeListener(onUpdate);
-          completer.completeError(ControllerLoadingException(error));
+          completer.completeError(error);
           break;
       }
     }
@@ -474,19 +472,5 @@ extension DataControllerLoading<T extends DataController> on T {
       await loaded;
     }
     return this;
-  }
-}
-
-class ControllerLoadingException implements Exception {
-  /// This Exception is thrown when using [DataControllerLoading.waitForFirstPage] or [DataControllerLoading.loadFirstPage]
-  /// and the loading of the page fails.
-  ControllerLoadingException(this.inner);
-
-  /// The exception that was thrown in the controller.
-  final Exception inner;
-
-  @override
-  String toString() {
-    return 'ControllerLoadingException($inner)';
   }
 }

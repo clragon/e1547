@@ -23,12 +23,16 @@ class RepliesPage extends StatelessWidget {
           listener: () async {
             HistoriesService service = context.read<HistoriesService>();
             Client client = context.read<Client>();
-            await controller.waitForFirstPage();
-            await service.addTopic(
-              client.host,
-              topic,
-              replies: controller.itemList!,
-            );
+            try {
+              await controller.waitForFirstPage();
+              await service.addTopic(
+                client.host,
+                topic,
+                replies: controller.itemList!,
+              );
+            } on DioError {
+              return;
+            }
           },
           child: RefreshableControllerPage(
             appBar: DefaultAppBar(

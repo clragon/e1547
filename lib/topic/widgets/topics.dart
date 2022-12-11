@@ -26,12 +26,16 @@ class _TopicsPageState extends State<TopicsPage> with DrawerEntry {
           listener: () async {
             HistoriesService service = context.read<HistoriesService>();
             Client client = context.read<Client>();
-            await controller.waitForFirstPage();
-            await service.addTopicSearch(
-              client.host,
-              controller.search.value,
-              topics: controller.itemList!,
-            );
+            try {
+              await controller.waitForFirstPage();
+              await service.addTopicSearch(
+                client.host,
+                controller.search.value,
+                topics: controller.itemList!,
+              );
+            } on DioError {
+              return;
+            }
           },
           child: RefreshableControllerPage(
             appBar: const DefaultAppBar(

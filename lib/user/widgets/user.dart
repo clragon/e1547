@@ -60,12 +60,16 @@ class UserPage extends StatelessWidget {
               listener: () async {
                 HistoriesService service = context.read<HistoriesService>();
                 Client client = context.read<Client>();
-                await controllers.profilePost?.waitForFirstPage();
-                await service.addUser(
-                  client.host,
-                  user,
-                  avatar: controllers.profilePost?.itemList?.first,
-                );
+                try {
+                  await controllers.profilePost?.waitForFirstPage();
+                  await service.addUser(
+                    client.host,
+                    user,
+                    avatar: controllers.profilePost?.itemList?.first,
+                  );
+                } on DioError {
+                  return;
+                }
               },
               child: Scaffold(
                 drawer: const NavigationDrawer(),

@@ -25,7 +25,7 @@ final DTextParser anchorParser = DTextParser(
       } else {
         onTap = () => Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => SearchPage(tags: tags),
+                builder: (context) => PostsSearchPage(tags: tags),
               ),
             );
       }

@@ -59,17 +59,8 @@ class _SettingsPageState extends State<SettingsPage> {
                   create: (context) => client.currentUser(),
                   selector: (context) => [client],
                   builder: (context, future) => FutureBuilder<CurrentUser?>(
-                    // retain: true,
                     future: future,
-                    // error: (context, error, stacktrace) => const ListTile(
-                    //     leading: Icon(Icons.warning_amber),
-                    //   ),
                     builder: (context, snapshot) {
-                      if (snapshot.hasError) {
-                        return const ListTile(
-                          leading: Icon(Icons.warning_amber),
-                        );
-                      }
                       return CrossFade.builder(
                         duration: const Duration(milliseconds: 200),
                         showChild: client.credentials != null,

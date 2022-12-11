@@ -50,7 +50,7 @@ ThemeData prepareTheme(ThemeData theme) => theme.copyWith(
               : null,
         ),
       ),
-  appBarTheme: theme.appBarTheme.copyWith(
+      appBarTheme: theme.appBarTheme.copyWith(
         systemOverlayStyle: SystemUiOverlayStyle(
           statusBarColor: Colors.transparent,
           statusBarBrightness: theme.brightness,

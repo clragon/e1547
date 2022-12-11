@@ -107,7 +107,7 @@ class Client {
     String? tags = search != null ? sortTags(search) : '';
     Map body = await _dio
         .get(
-      'posts.json',
+          'posts.json',
           queryParameters: {
             'tags': tags,
             'page': page,

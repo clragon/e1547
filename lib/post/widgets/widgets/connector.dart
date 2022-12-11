@@ -154,3 +154,36 @@ class _PostHistoryConnectorState extends State<PostHistoryConnector> {
   @override
   Widget build(BuildContext context) => widget.child;
 }
+
+class PostsControllerHistoryConnector extends StatelessWidget {
+  const PostsControllerHistoryConnector({
+    super.key,
+    required this.child,
+    required this.controller,
+  });
+
+  final PostsController controller;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListenableListener(
+      initialize: true,
+      listenable: controller.search,
+      listener: () async {
+        HistoriesService service = context.read<HistoriesService>();
+        try {
+          await controller.waitForFirstPage();
+          service.addPostSearch(
+            controller.client.host,
+            controller.search.value,
+            posts: controller.itemList,
+          );
+        } on DioError {
+          return;
+        }
+      },
+      child: child,
+    );
+  }
+}
