@@ -7,18 +7,18 @@ import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 
 class PoolPage extends StatefulWidget {
-  const PoolPage({required this.pool, this.reversed = false});
+  const PoolPage({required this.pool, this.oldestFirst = true});
 
   final Pool pool;
-  final bool reversed;
+  final bool oldestFirst;
 
   @override
   State<PoolPage> createState() => _PoolPageState();
 }
 
 class _PoolPageState extends State<PoolPage> {
-  late bool reversePool = widget.reversed;
-  bool readerMode = false;
+  late bool oldestFirst = widget.oldestFirst;
+  bool readerMode = true;
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +26,7 @@ class _PoolPageState extends State<PoolPage> {
       fetch: (controller, tags, page, force) => controller.client.poolPosts(
         widget.pool.id,
         page,
-        reverse: reversePool,
+        reverse: !oldestFirst,
         force: force,
         cancelToken: controller.cancelToken,
       ),
@@ -74,10 +74,10 @@ class _PoolPageState extends State<PoolPage> {
               ),
               Builder(
                 builder: (context) => PoolOrderSwitch(
-                  reversePool: reversePool,
+                  oldestFirst: oldestFirst,
                   onChange: (value) {
                     setState(() {
-                      reversePool = value;
+                      oldestFirst = value;
                     });
                     controller.refresh();
                     Scaffold.of(context).closeEndDrawer();
@@ -94,11 +94,11 @@ class _PoolPageState extends State<PoolPage> {
 
 class PoolOrderSwitch extends StatelessWidget {
   const PoolOrderSwitch({
-    required this.reversePool,
+    required this.oldestFirst,
     required this.onChange,
   });
 
-  final bool reversePool;
+  final bool oldestFirst;
   final ValueChanged<bool> onChange;
 
   @override
@@ -106,8 +106,8 @@ class PoolOrderSwitch extends StatelessWidget {
     return SwitchListTile(
       secondary: const Icon(Icons.sort),
       title: const Text('Pool order'),
-      subtitle: Text(reversePool ? 'newest first' : 'oldest first'),
-      value: reversePool,
+      subtitle: Text(oldestFirst ? 'oldest first' : 'newest first'),
+      value: oldestFirst,
       onChanged: onChange,
     );
   }

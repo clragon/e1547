@@ -160,7 +160,7 @@ class _PostsSearchPageState extends State<PostsSearchPage> {
                   if (pool != null)
                     Builder(
                       builder: (context) => PoolOrderSwitch(
-                        reversePool: reversePools,
+                        oldestFirst: reversePools,
                         onChange: (value) {
                           setState(() => reversePools = value);
                           controller.refresh();
