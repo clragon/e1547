@@ -280,7 +280,7 @@ class _LoginLoadingDialogState extends State<LoginLoadingDialog> {
 
   Future<void> login() async {
     final navigator = Navigator.of(context);
-    bool valid = await context.read<HostService>().login(
+    bool valid = await context.read<ClientService>().login(
           Credentials(
             username: widget.username,
             password: widget.password,
@@ -322,7 +322,7 @@ class _LoginLoadingDialogState extends State<LoginLoadingDialog> {
 }
 
 Future<void> logout(BuildContext context) async {
-  HostService config = context.read<HostService>();
+  ClientService config = context.read<ClientService>();
   String? name = config.credentials?.username;
   config.logout();
 

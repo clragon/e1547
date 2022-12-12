@@ -86,7 +86,7 @@ class _PostDetailImageToggleState extends State<PostDetailImageToggle> {
       loading = true;
     });
     if (post.file.url == null) {
-      HostService service = context.read<HostService>();
+      ClientService service = context.read<ClientService>();
       if (!service.hasCustomHost) {
         await setCustomHost(context);
       }
@@ -108,7 +108,7 @@ class _PostDetailImageToggleState extends State<PostDetailImageToggle> {
           if (!controller.isDenied(updated)) {
             controller.allow(updated);
           }
-        } on DioError {
+        } on ClientException {
           messenger.showSnackBar(
             SnackBar(
               duration: const Duration(seconds: 1),

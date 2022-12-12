@@ -67,7 +67,7 @@ class UserPage extends StatelessWidget {
                     user,
                     avatar: controllers.profilePost?.itemList?.first,
                   );
-                } on DioError {
+                } on ClientException {
                   return;
                 }
               },

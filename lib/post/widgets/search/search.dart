@@ -69,7 +69,7 @@ class _PostsSearchPageState extends State<PostsSearchPage> {
                   try {
                     pool =
                         await client.pool(int.parse(match.namedGroup('id')!));
-                  } on DioError {
+                  } on ClientException {
                     pool = null;
                   }
                 }
@@ -90,7 +90,7 @@ class _PostsSearchPageState extends State<PostsSearchPage> {
               await updatePool();
               try {
                 await controller.waitForFirstPage();
-              } on DioError {
+              } on ClientException {
                 return;
               }
               await updateFollow();

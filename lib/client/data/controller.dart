@@ -31,7 +31,7 @@ mixin ClientDataController<KeyType, ItemType>
     try {
       // this must be awaited for the catch to work.
       return await call();
-    } on DioError catch (e) {
+    } on ClientException catch (e) {
       return PageResponse.error(error: e);
     }
   }

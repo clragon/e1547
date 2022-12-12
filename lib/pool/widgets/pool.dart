@@ -43,7 +43,7 @@ class _PoolPageState extends State<PoolPage> {
                 widget.pool,
                 posts: controller.itemList,
               );
-            } on DioError {
+            } on ClientException {
               return;
             }
           },

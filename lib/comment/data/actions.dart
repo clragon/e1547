@@ -59,7 +59,7 @@ Future<bool> writeComment({
               }
               sent = true;
               navigator.maybePop();
-            } on DioError {
+            } on ClientException {
               return 'Failed to send comment!';
             }
           }

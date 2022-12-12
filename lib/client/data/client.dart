@@ -17,7 +17,9 @@ import 'package:e1547/topic/topic.dart';
 import 'package:e1547/user/user.dart';
 import 'package:e1547/wiki/wiki.dart';
 
-export 'package:dio/dio.dart' show DioError, CancelToken;
+export 'package:dio/dio.dart' show CancelToken;
+
+typedef ClientException = DioError;
 
 class Client {
   Client({
@@ -25,13 +27,16 @@ class Client {
     required this.appInfo,
     this.cache,
     this.credentials,
+    this.cookies,
   }) {
     _dio = Dio(
       BaseOptions(
-        baseUrl: 'https://$host/',
+        baseUrl: Uri.https(host, '/').toString(),
         headers: {
-          HttpHeaders.userAgentHeader:
-              '${appInfo.appName}/${appInfo.version} (${appInfo.developer})',
+          HttpHeaders.userAgentHeader: userAgent,
+          HttpHeaders.cookieHeader: cookies
+              ?.map((cookie) => '${cookie.name}=${cookie.value}')
+              .join('; '),
           if (credentials != null)
             HttpHeaders.authorizationHeader: credentials!.basicAuth,
         },
@@ -55,6 +60,10 @@ class Client {
   final CacheStore? cache;
   final CacheStore _memoryCache = MemCacheStore();
   final Credentials? credentials;
+  final List<Cookie>? cookies;
+
+  String get userAgent =>
+      '${appInfo.appName}/${appInfo.version} (${appInfo.developer})';
 
   late Dio _dio;
 
@@ -789,7 +798,7 @@ Future<bool> validateCall(Future<void> Function() call) async {
   try {
     await call();
     return true;
-  } on DioError {
+  } on ClientException {
     return false;
   }
 }
@@ -798,22 +807,24 @@ Future<T> rateLimit<T>(Future<T> call, [Duration? duration]) => Future.wait(
         [call, Future.delayed(duration ?? const Duration(milliseconds: 500))])
     .then((value) => value[0]);
 
-class ClientProvider extends SubProvider<HostService, Client> {
+class ClientProvider extends SubProvider<ClientService, Client> {
   ClientProvider({super.child, super.builder})
       : super(
-    create: (context, config) => Client(
-            host: config.host,
-            credentials: config.credentials,
-            appInfo: config.appInfo,
-            cache: config.cache,
+          create: (context, service) => Client(
+            host: service.host,
+            credentials: service.credentials,
+            appInfo: service.appInfo,
+            cache: service.cache,
+            cookies: service.cookies,
           ),
           selector: (context) {
-            HostService config = context.watch<HostService>();
+            ClientService service = context.watch<ClientService>();
             return [
-              config.host,
-              config.credentials,
-              config.appInfo,
-              config.cache
+              service.host,
+              service.credentials,
+              service.appInfo,
+              service.cache,
+              service.cookies,
             ];
           },
           dispose: (context, client) => client.close(force: true),

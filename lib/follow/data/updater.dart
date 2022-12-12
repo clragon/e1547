@@ -82,7 +82,7 @@ class FollowsUpdater extends ChangeNotifier {
           force: force,
         );
         _complete();
-      } on DioError catch (e) {
+      } on ClientException catch (e) {
         _fail(e);
       }
     }

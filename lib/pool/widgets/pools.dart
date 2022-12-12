@@ -39,7 +39,7 @@ class _PoolsPageState extends State<PoolsPage> with DrawerEntry {
                 controller.search.value,
                 pools: controller.itemList,
               );
-            } on DioError {
+            } on ClientException {
               return;
             }
           },

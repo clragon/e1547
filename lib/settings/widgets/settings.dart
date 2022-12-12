@@ -35,7 +35,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 .add(LimitedWidthLayout.of(context).padding),
             children: [
               const SettingsHeader(title: 'Server'),
-              Consumer<HostService>(
+              Consumer<ClientService>(
                 builder: (context, service, child) => MouseCursorRegion(
                   behavior: HitTestBehavior.translucent,
                   onLongPress: () => setCustomHost(context),

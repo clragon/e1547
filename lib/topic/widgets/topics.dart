@@ -33,7 +33,7 @@ class _TopicsPageState extends State<TopicsPage> with DrawerEntry {
                 controller.search.value,
                 topics: controller.itemList!,
               );
-            } on DioError {
+            } on ClientException {
               return;
             }
           },

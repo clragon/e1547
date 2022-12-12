@@ -11,10 +11,11 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   Talker talker = Talker();
   registerFlutterErrorHandler(talker.handle);
+  AppInfo appInfo = await initializeAppInfo();
   runApp(
     MultiProvider(
       providers: [
-        Provider.value(value: await initializeAppInfo()),
+        Provider.value(value: appInfo),
         Provider.value(value: await initializeWindowManager()),
         Provider.value(value: talker),
         Provider.value(
@@ -27,6 +28,7 @@ Future<void> main() async {
             ),
           ),
         ),
+        Provider.value(value: await initializeCookiesService(appInfo)),
       ],
       child: const App(),
     ),

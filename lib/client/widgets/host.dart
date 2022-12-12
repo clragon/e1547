@@ -4,7 +4,7 @@ import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
 
 Future<void> setCustomHost(BuildContext context) async {
-  HostService config = context.read<HostService>();
+  ClientService config = context.read<ClientService>();
   TextEditingController controller =
       TextEditingController(text: config.customHost);
 

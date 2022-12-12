@@ -30,7 +30,7 @@ class RepliesPage extends StatelessWidget {
                 topic,
                 replies: controller.itemList!,
               );
-            } on DioError {
+            } on ClientException {
               return;
             }
           },

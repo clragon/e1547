@@ -179,7 +179,7 @@ class PostsControllerHistoryConnector extends StatelessWidget {
             controller.search.value,
             posts: controller.itemList,
           );
-        } on DioError {
+        } on ClientException {
           return;
         }
       },

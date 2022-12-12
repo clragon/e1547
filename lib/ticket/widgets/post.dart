@@ -100,7 +100,7 @@ class _PostReportScreenState extends State<PostReportScreen> {
           content: Text('Reported post #${widget.post.id}'),
           behavior: SnackBarBehavior.floating,
         ));
-      } on DioError {
+      } on ClientException {
         messenger.showSnackBar(SnackBar(
           duration: const Duration(seconds: 1),
           content: Text('Failed to report post #${widget.post.id}'),
@@ -217,7 +217,7 @@ class _PostFlagScreenState extends State<PostFlagScreen> {
           content: Text('Flagged post #${widget.post.id}'),
           behavior: SnackBarBehavior.floating,
         ));
-      } on DioError {
+      } on ClientException {
         messenger.showSnackBar(SnackBar(
           duration: const Duration(seconds: 1),
           content: Text('Failed to flag post #${widget.post.id}'),

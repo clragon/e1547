@@ -86,7 +86,7 @@ class CommentsController extends CursorClientDataController<Comment>
       await client.voteComment(comment.id, upvote, replace);
       evictCache();
       return true;
-    } on DioError {
+    } on ClientException {
       return false;
     }
   }

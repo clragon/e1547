@@ -122,7 +122,7 @@ class _FollowsFolderPageState extends State<FollowsFolderPage> {
                         try {
                           await update(true);
                           refreshController.refreshCompleted();
-                        } on DioError {
+                        } on ClientException {
                           refreshController.refreshFailed();
                         }
                       },

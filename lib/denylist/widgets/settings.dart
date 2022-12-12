@@ -79,7 +79,7 @@ class _DenyListPageState extends State<DenyListPage> {
                       } else {
                         await denylist.replace(tag, value);
                       }
-                    } on DioError {
+                    } on ClientException {
                       throw const ActionControllerException(
                           message: 'Failed to update blacklist!');
                     }
@@ -117,7 +117,7 @@ class _DenyListPageState extends State<DenyListPage> {
                                   if (value.isNotEmpty) {
                                     await denylist.add(value);
                                   }
-                                } on DioError {
+                                } on ClientException {
                                   throw const ActionControllerException(
                                       message: 'Failed to update blacklist!');
                                 }

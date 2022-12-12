@@ -13,11 +13,12 @@ import 'package:e1547/settings/settings.dart';
 import 'package:e1547/user/user.dart';
 import 'package:flutter/material.dart';
 
-class HostServiceProvider extends SubChangeNotifierProvider3<AppInfo, Settings,
-    AppDatabases, HostService> {
-  HostServiceProvider({super.child, TransitionBuilder? builder})
+class ClientServiceProvider extends SubChangeNotifierProvider4<AppInfo,
+    Settings, AppDatabases, CookiesService, ClientService> {
+  ClientServiceProvider({super.child, TransitionBuilder? builder})
       : super(
-          create: (context, appInfo, settings, databases) => HostService(
+          create: (context, appInfo, settings, databases, cookies) =>
+              ClientService(
             defaultHost: appInfo.defaultHost,
             allowedHosts: appInfo.allowedHosts,
             host: settings.host.value,
@@ -25,15 +26,18 @@ class HostServiceProvider extends SubChangeNotifierProvider3<AppInfo, Settings,
             credentials: settings.credentials.value,
             appInfo: appInfo,
             cache: databases.httpCache,
+            cookies: cookies.cookies,
           ),
           builder: (context, child) => ListenableListener(
-            listenable: context.watch<HostService>(),
+            listenable: context.watch<ClientService>(),
             listener: () {
-              HostService service = context.read<HostService>();
+              ClientService service = context.read<ClientService>();
               Settings settings = context.read<Settings>();
+              CookiesService cookies = context.read<CookiesService>();
               settings.host.value = service.host;
               settings.customHost.value = service.customHost;
               settings.credentials.value = service.credentials;
+              cookies.save(service.cookies);
             },
             child: ClientProvider(
               builder: builder,
@@ -76,9 +80,9 @@ class FollowsProvider extends SubProvider<AppDatabases, FollowsService> {
             databases.followDb,
           ),
           builder: (context, child) => ListenableListener(
-            listenable: context.watch<HostService>(),
+            listenable: context.watch<ClientService>(),
             listener: () {
-              HostService service = context.read<HostService>();
+              ClientService service = context.read<ClientService>();
               Settings settings = context.read<Settings>();
               settings.host.value = service.host;
               settings.customHost.value = service.customHost;
@@ -106,7 +110,7 @@ class DenylistProvider
               try {
                 settings.denylist.value = value;
                 await client.updateBlacklist(value);
-              } on DioError catch (e) {
+              } on ClientException catch (e) {
                 if (!CancelToken.isCancel(e)) {
                   rethrow;
                 }

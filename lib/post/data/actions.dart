@@ -334,7 +334,7 @@ mixin PostsActionController<KeyType> on ClientDataController<KeyType, Post> {
       await client.addFavorite(post.id);
       evictCache();
       return true;
-    } on DioError {
+    } on ClientException {
       replacePost(
         post.copyWith(
           isFavorited: false,
@@ -357,7 +357,7 @@ mixin PostsActionController<KeyType> on ClientDataController<KeyType, Post> {
       await client.removeFavorite(post.id);
       evictCache();
       return true;
-    } on DioError {
+    } on ClientException {
       replacePost(
         post.copyWith(
           isFavorited: true,
@@ -439,7 +439,7 @@ mixin PostsActionController<KeyType> on ClientDataController<KeyType, Post> {
       await client.votePost(post.id, upvote, replace);
       evictCache();
       return true;
-    } on DioError {
+    } on ClientException {
       return false;
     }
   }

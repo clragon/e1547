@@ -5,9 +5,11 @@ import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
+import 'package:webview_cookie_manager/webview_cookie_manager.dart';
 
-class HostService extends ChangeNotifier {
-  HostService({
+class ClientService extends ChangeNotifier {
+  ClientService({
     required this.appInfo,
     required this.defaultHost,
     required List<String> allowedHosts,
@@ -15,10 +17,12 @@ class HostService extends ChangeNotifier {
     String? customHost,
     this.cache,
     Credentials? credentials,
+    List<Cookie> cookies = const [],
   })  : allowedHosts = {defaultHost, ...allowedHosts}.toList(),
         _host = host ?? defaultHost,
         _customHost = customHost,
-        _credentials = credentials;
+        _credentials = credentials,
+        _cookies = cookies;
 
   @override
   void dispose() {
@@ -66,6 +70,16 @@ class HostService extends ChangeNotifier {
 
   bool get isCustomHost => host == customHost;
 
+  List<Cookie> _cookies;
+
+  List<Cookie> get cookies => List.unmodifiable(_cookies);
+
+  set cookies(List<Cookie> value) {
+    if (_cookies == value) return;
+    _cookies = value;
+    notifyListeners();
+  }
+
   Dio _getClient() {
     return Dio(
       BaseOptions(
@@ -97,7 +111,7 @@ class HostService extends ChangeNotifier {
         } else {
           throw CustomHostIncompatibleException(host: value);
         }
-      } on DioError {
+      } on ClientException {
         throw CustomHostUnreachableException(host: value);
       }
     }
@@ -134,7 +148,7 @@ class HostService extends ChangeNotifier {
     }
   }
 
-  Future<void> logout() async => credentials = null;
+  void logout() => credentials = null;
 }
 
 abstract class CustomHostException implements Exception {
@@ -157,4 +171,52 @@ class CustomHostIncompatibleException extends CustomHostException {
 class CustomHostUnreachableException extends CustomHostException {
   CustomHostUnreachableException({required super.host})
       : super(message: 'Host cannot be reached');
+}
+
+class CookiesService {
+  CookiesService({
+    WebviewCookieManager? cookieManager,
+  }) : cookieManager = cookieManager ?? WebviewCookieManager();
+
+  final WebviewCookieManager cookieManager;
+
+  List<Cookie>? _cookies;
+
+  List<Cookie> get cookies {
+    if (_cookies == null) {
+      throw StateError(
+        '$runtimeType: load must be called at least once before accessing cookies!',
+      );
+    }
+    return List.unmodifiable(_cookies!);
+  }
+
+  /// Loads cookies from disk.
+  /// All already loaded cookies from [url] will be replaced.
+  /// This must be called at least once before [cookies] is accessed.
+  Future<void> load(String url) async {
+    _cookies?.removeWhere((e) => e.domain == url);
+    try {
+      _cookies = await cookieManager.getCookies(url);
+    } on MissingPluginException {
+      _cookies = [];
+    }
+  }
+
+  /// Loads cookies from disk.
+  /// All already loaded cookies from [urls] will be replaced.
+  Future<void> loadAll(List<String> urls) async {
+    for (final url in urls) {
+      await load(url);
+    }
+  }
+
+  /// Writes cookies to disk.
+  Future<void> save(List<Cookie> cookies) async {
+    try {
+      await cookieManager.setCookies(cookies);
+    } on MissingPluginException {
+      return;
+    }
+  }
 }

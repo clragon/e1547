@@ -171,7 +171,7 @@ class _ParentEditorState extends State<ParentEditor> {
       widget.editingController.value = widget.editingController.value!.copyWith(
         parentId: parent.id,
       );
-    } on DioError {
+    } on ClientException {
       showError('Invalid parent post');
     } on FormatException {
       showError('Invalid input');

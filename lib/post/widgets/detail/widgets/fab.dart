@@ -21,7 +21,7 @@ class PostDetailFloatingActionButton extends StatelessWidget {
         try {
           await context.read<PostsController>().updatePost(post, body);
           editingController.stopEditing();
-        } on DioError {
+        } on ClientException {
           editingController.setLoading(false);
           messenger.showSnackBar(
             SnackBar(

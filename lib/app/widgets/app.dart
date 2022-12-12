@@ -19,7 +19,7 @@ class App extends StatelessWidget {
     return MultiProvider(
       providers: [
         SettingsProvider(),
-        HostServiceProvider(),
+        ClientServiceProvider(),
         DenylistProvider(),
         FollowsProvider(),
         HistoriesServiceProvider(),
@@ -67,12 +67,14 @@ class App extends StatelessWidget {
                       },
                       child: ErrorNotifier(
                         child: LockScreen(
-                          child: AppLinkHandler(
-                            child: VideoHandlerData(
-                              handler: VideoHandler(
-                                muteVideos: settings.muteVideos.value,
+                          child: ClientFailureResolver(
+                            child: AppLinkHandler(
+                              child: VideoHandlerData(
+                                handler: VideoHandler(
+                                  muteVideos: settings.muteVideos.value,
+                                ),
+                                child: child!,
                               ),
-                              child: child!,
                             ),
                           ),
                         ),
