@@ -51,6 +51,17 @@ class FavoritePostsController extends PostsController {
   }
 
   @override
+  @protected
+  Future<PageResponse<int, Post>> withError(
+      Future<PageResponse<int, Post>> Function() call) async {
+    try {
+      return await super.withError(call);
+    } on NoUserLoginException catch (e) {
+      return PageResponse.error(error: e);
+    }
+  }
+
+  @override
   Future<void> refresh({bool background = false, bool force = false}) async {
     if (error is NoUserLoginException) {
       Credentials? credentials = client.credentials;

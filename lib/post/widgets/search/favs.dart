@@ -47,7 +47,7 @@ class _FavPageState extends State<FavPage> with DrawerEntry {
               ],
             ),
             onErrorIcon: const Icon(Icons.login),
-            loadingBuilder: (context, child) => Scaffold(
+            loadingBuilder: (context, child) => AdaptiveScaffold(
               appBar: const DefaultAppBar(title: Text('Favorites')),
               body: Center(child: child(context)),
               drawer: const NavigationDrawer(),
