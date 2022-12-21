@@ -178,20 +178,23 @@ class _PostDetailState extends State<PostDetail> {
                             ],
                           ),
                         ),
-                        SizedBox(
-                          width: sideBarWidth,
-                          child: ListView(
-                            primary: false,
-                            padding: EdgeInsets.only(
-                              top: MediaQuery.of(context).padding.top,
-                              bottom: defaultActionListPadding.bottom,
-                            ),
-                            children: [
-                              const SizedBox(
-                                height: 56,
+                        AnimatedSize(
+                          duration: defaultAnimationDuration,
+                          child: SizedBox(
+                            width: sideBarWidth,
+                            child: ListView(
+                              primary: false,
+                              padding: EdgeInsets.only(
+                                top: MediaQuery.of(context).padding.top,
+                                bottom: defaultActionListPadding.bottom,
                               ),
-                              lowerBody(context),
-                            ],
+                              children: [
+                                const SizedBox(
+                                  height: 56,
+                                ),
+                                lowerBody(context),
+                              ],
+                            ),
                           ),
                         ),
                       ],

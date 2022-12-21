@@ -19,6 +19,7 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController apiKeyController = TextEditingController();
 
+  bool obscurePassword = true;
   bool authFailed = false;
   String? previousPaste;
   Timer? pasteUndoTimer;
@@ -142,9 +143,22 @@ class _LoginPageState extends State<LoginPage> {
               border: const OutlineInputBorder(),
               suffixIcon: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: pasteButton(),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    pasteButton(),
+                    IconButton(
+                      icon: Icon(obscurePassword
+                          ? Icons.visibility_off
+                          : Icons.visibility),
+                      onPressed: () =>
+                          setState(() => obscurePassword = !obscurePassword),
+                    ),
+                  ],
+                ),
               ),
             ),
+            obscureText: obscurePassword,
             inputFormatters: [FilteringTextInputFormatter.deny(' ')],
             autofillHints: const [AutofillHints.password],
             textInputAction: TextInputAction.done,
@@ -174,6 +188,54 @@ class _LoginPageState extends State<LoginPage> {
       return inputField();
     }
 
+    Widget form() {
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 32, right: 32, bottom: 12),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Login',
+                  style: TextStyle(
+                    fontSize: 20,
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.launch),
+                  color: Colors.grey,
+                  onPressed: () {
+                    if (usernameController.text.isNotEmpty) {
+                      launch(context.read<Client>().withHost(
+                          '/users/${usernameController.text}/api_key'));
+                    } else {
+                      launch(context.read<Client>().withHost('/session/new'));
+                    }
+                  },
+                ),
+              ],
+            ),
+          ),
+          usernameField(),
+          apiKeyField(),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+            child: Row(
+              children: [
+                TextButton(
+                  onPressed: () =>
+                      launch(context.read<Client>().withHost('/users/new')),
+                  child: const Text('Don\'t have an account? Sign up here'),
+                ),
+              ],
+            ),
+          ),
+        ],
+      );
+    }
+
     return KeyboardDismisser(
       child: Form(
         child: Scaffold(
@@ -181,67 +243,60 @@ class _LoginPageState extends State<LoginPage> {
             leading: CloseButton(),
             elevation: 0,
           ),
-          body: LimitedWidthLayout.builder(
-            builder: (context) => ListView(
-              padding: LimitedWidthLayout.of(context)
-                  .padding
-                  .add(const EdgeInsets.all(16)),
-              children: [
-                const SizedBox(
-                  height: 300,
-                  child: Center(
-                    child: AppIcon(
-                      radius: 64,
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding:
-                      const EdgeInsets.only(left: 32, right: 32, bottom: 12),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          body: LayoutBuilder(
+            builder: (context, constraints) {
+              if (constraints.maxWidth < 1100 || constraints.maxHeight > 800) {
+                return LimitedWidthLayout.builder(
+                  builder: (context) => ListView(
+                    padding: LimitedWidthLayout.of(context)
+                        .padding
+                        .add(const EdgeInsets.all(16)),
                     children: [
-                      const Text(
-                        'Login',
-                        style: TextStyle(
-                          fontSize: 20,
+                      const SizedBox(
+                        height: 300,
+                        child: Center(
+                          child: AppIcon(
+                            radius: 64,
+                          ),
                         ),
                       ),
-                      IconButton(
-                        icon: const Icon(Icons.launch),
-                        color: Colors.grey,
-                        onPressed: () {
-                          if (usernameController.text.isNotEmpty) {
-                            launch(context.read<Client>().withHost(
-                                '/users/${usernameController.text}/api_key'));
-                          } else {
-                            launch(context
-                                .read<Client>()
-                                .withHost('/session/new'));
-                          }
-                        },
-                      ),
+                      form(),
                     ],
                   ),
-                ),
-                usernameField(),
-                apiKeyField(),
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                  child: Row(
-                    children: [
-                      TextButton(
-                        onPressed: () => launch(
-                            context.read<Client>().withHost('/users/new')),
-                        child:
-                            const Text('Don\'t have an account? Sign up here'),
+                );
+              } else {
+                return Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const AppIcon(radius: 64),
+                          const SizedBox(height: 32),
+                          Text(
+                            context.read<AppInfo>().appName,
+                            style: Theme.of(context).textTheme.titleLarge,
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+                    ),
+                    SizedBox(
+                      width: 700,
+                      child: Center(
+                        child: LimitedWidthLayout.builder(
+                          builder: (context) => SingleChildScrollView(
+                            padding: LimitedWidthLayout.of(context)
+                                .padding
+                                .add(const EdgeInsets.all(16)),
+                            child: form(),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              }
+            },
           ),
           floatingActionButton: Builder(
               builder: (context) => FloatingActionButton(

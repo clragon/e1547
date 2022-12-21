@@ -44,6 +44,7 @@ class _PostsRouteConnectorState extends State<PostsRouteConnector> {
 
   @override
   Widget build(BuildContext context) => ListenableListener(
+    initialize: true,
         listener: updatePages,
         listenable: widget.controller,
         child: ChangeNotifierProvider.value(
@@ -115,7 +116,7 @@ class PostsConnector extends StatelessWidget {
   }
 }
 
-class PostHistoryConnector extends StatefulWidget {
+class PostHistoryConnector extends StatelessWidget {
   const PostHistoryConnector({
     super.key,
     required this.post,
@@ -126,33 +127,14 @@ class PostHistoryConnector extends StatefulWidget {
   final Widget child;
 
   @override
-  State<PostHistoryConnector> createState() => _PostHistoryConnectorState();
-}
-
-class _PostHistoryConnectorState extends State<PostHistoryConnector> {
-  void addToHistory(Post post) {
-    context.read<HistoriesService>().addPost(
+  Widget build(BuildContext context) => ItemHistoryConnector<Post>(
+        item: post,
+        addToHistory: (context, service, item) => service.addPost(
           context.read<Client>().host,
-          widget.post,
-        );
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    addToHistory(widget.post);
-  }
-
-  @override
-  void didUpdateWidget(covariant PostHistoryConnector oldWidget) {
-    if (oldWidget.post != widget.post) {
-      addToHistory(widget.post);
-    }
-    super.didUpdateWidget(oldWidget);
-  }
-
-  @override
-  Widget build(BuildContext context) => widget.child;
+          post,
+        ),
+        child: child,
+      );
 }
 
 class PostsControllerHistoryConnector extends StatelessWidget {
@@ -166,24 +148,14 @@ class PostsControllerHistoryConnector extends StatelessWidget {
   final Widget child;
 
   @override
-  Widget build(BuildContext context) {
-    return ListenableListener(
-      initialize: true,
-      listenable: controller.search,
-      listener: () async {
-        HistoriesService service = context.read<HistoriesService>();
-        try {
-          await controller.waitForFirstPage();
-          service.addPostSearch(
-            controller.client.host,
-            controller.search.value,
-            posts: controller.itemList,
-          );
-        } on ClientException {
-          return;
-        }
-      },
-      child: child,
-    );
-  }
+  Widget build(BuildContext context) =>
+      ControllerHistoryConnector<PostsController>(
+        controller: controller,
+        addToHistory: (context, service, data) => service.addPostSearch(
+          data.client.host,
+          data.search.value,
+          posts: data.itemList,
+        ),
+        child: child,
+      );
 }

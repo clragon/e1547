@@ -22,12 +22,13 @@ class LimitedWidthLayout extends StatefulWidget {
   const LimitedWidthLayout.builder({
     required this.builder,
     this.maxWidth = 600,
-    this.tolerance = 100,
+    this.tolerance = 0,
   });
+
   factory LimitedWidthLayout({
     required Widget child,
     double maxWidth = 600,
-    double tolerance = 100,
+    double tolerance = 0,
   }) {
     return LimitedWidthLayout.builder(
       builder: (context) => child,

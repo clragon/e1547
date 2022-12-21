@@ -36,11 +36,15 @@ class SingleFuturePostsProvider
     extends SubProvider2<Client, DenylistService, Future<PostsController>> {
   SingleFuturePostsProvider({required int id, super.child, super.builder})
       : super(
-          create: (context, client, denylist) => PostsController.single(
-            id: id,
-            client: client,
-            denylist: denylist,
-          ).loadFirstPage(),
+          create: (context, client, denylist) => Future(() async {
+            final controller = PostsController.single(
+              id: id,
+              client: client,
+              denylist: denylist,
+            );
+            controller.loadFirstPage();
+            return controller;
+          }),
           selector: (context) => [id],
           dispose: (context, value) async => (await value).dispose(),
         );

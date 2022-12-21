@@ -1,6 +1,5 @@
 import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
-import 'package:sliver_tools/sliver_tools.dart';
 
 abstract class AppBarBuilderWidget implements PreferredSizeWidget {
   abstract final PreferredSizeWidget child;
@@ -20,37 +19,6 @@ class AppBarBuilder extends StatelessWidget with AppBarBuilderWidget {
   @override
   Widget build(BuildContext context) {
     return builder(context, child);
-  }
-}
-
-class AppBarPadding extends StatelessWidget with AppBarBuilderWidget {
-  const AppBarPadding({required this.child});
-
-  @override
-  final PreferredSizeWidget child;
-
-  @override
-  Size get preferredSize => Size(
-        child.preferredSize.width + defaultAppBarHorizontalPadding,
-        child.preferredSize.height + defaultAppBarTopPadding,
-      );
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding:
-          const EdgeInsets.symmetric(horizontal: defaultAppBarHorizontalPadding)
-              .add(
-        EdgeInsets.only(
-          top: defaultAppBarTopPadding + MediaQuery.of(context).padding.top,
-        ),
-      ),
-      child: MediaQuery.removePadding(
-        context: context,
-        removeTop: true,
-        child: child,
-      ),
-    );
   }
 }
 
@@ -166,18 +134,16 @@ class DefaultAppBar extends StatelessWidget with PreferredSizeWidget {
           effectiveActions = [...actions!, const SizedBox(width: 8)];
         }
 
-        return AppBarPadding(
-          child: AppBar(
-            leading: leadingConfig.leading,
-            leadingWidth: leadingConfig.leadingWidth,
-            actions: effectiveActions,
-            title: IgnorePointer(child: title),
-            elevation: elevation,
-            automaticallyImplyLeading: false,
-            flexibleSpace: const ScrollToTop(),
-            shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(4)),
-            ),
+        return AppBar(
+          leading: leadingConfig.leading,
+          leadingWidth: leadingConfig.leadingWidth,
+          actions: effectiveActions,
+          title: IgnorePointer(child: title),
+          elevation: elevation,
+          automaticallyImplyLeading: false,
+          flexibleSpace: const ScrollToTop(),
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(4)),
           ),
         );
       },
@@ -287,35 +253,6 @@ class TransparentAppBar extends StatelessWidget with AppBarBuilderWidget {
   }
 }
 
-class SliverAppBarPadding extends StatelessWidget {
-  const SliverAppBarPadding({required this.child});
-
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    return MultiSliver(
-      children: [
-        SliverPadding(
-          padding: EdgeInsets.only(
-            top: kContentPadding + MediaQuery.of(context).padding.top,
-          ),
-        ),
-        SliverPadding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: kContentPadding * 2,
-          ),
-          sliver: MediaQuery.removePadding(
-            context: context,
-            removeTop: true,
-            child: child,
-          ),
-        ),
-      ],
-    );
-  }
-}
-
 class DefaultSliverAppBar extends StatelessWidget {
   const DefaultSliverAppBar({
     this.leading,
@@ -349,8 +286,9 @@ class DefaultSliverAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SliverAppBarPadding(
-      child: SliverLayoutBuilder(
+    return SliverPadding(
+      padding: EdgeInsets.zero,
+      sliver: SliverLayoutBuilder(
         builder: (context, constraints) {
           AppBarLeadingConfiguration leadingConfig = getLeadingConfiguration(
             context: context,

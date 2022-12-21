@@ -447,16 +447,16 @@ mixin RefreshableController<PageKeyType, ItemType>
   }
 }
 
-extension DataControllerLoading<T extends DataController> on T {
+extension DataControllerLoading on DataController {
   /// Waits for the first Page of this controller to be loaded.
   ///
   /// If the controller has already loaded the page, will return immediately.
   /// Does not trigger a new page load on it's own.
   ///
   /// If the page load fails with an error, the error is thrown.
-  Future<T> waitForFirstPage() async {
+  Future<void> waitForFirstPage() async {
     await Future.delayed(Duration.zero);
-    Completer<T> completer = Completer<T>();
+    Completer<void> completer = Completer<void>();
 
     void onUpdate() {
       switch (value.status) {
@@ -467,7 +467,7 @@ extension DataControllerLoading<T extends DataController> on T {
         case PagingStatus.noItemsFound:
         case PagingStatus.completed:
           removeListener(onUpdate);
-          completer.complete(this);
+          completer.complete();
           break;
         case PagingStatus.firstPageError:
         case PagingStatus.subsequentPageError:
@@ -486,12 +486,11 @@ extension DataControllerLoading<T extends DataController> on T {
   ///
   /// Triggers a page request for the first page key.
   /// If the page load fails, a [ControllerLoadingException] will be thrown.
-  Future<T> loadFirstPage() async {
+  Future<void> loadFirstPage() async {
     Future<void> loaded = waitForFirstPage();
     if (nextPageKey == firstPageKey) {
       notifyPageRequestListeners(nextPageKey);
       await loaded;
     }
-    return this;
   }
 }

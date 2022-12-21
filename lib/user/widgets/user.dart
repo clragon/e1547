@@ -30,83 +30,172 @@ class UserPage extends StatelessWidget {
     return _UserPageProvider(
       user: user,
       child: Consumer<_UserPageControllers>(
-        builder: (context, controllers, child) {
-          Map<Widget, WidgetBuilder> tabs = {
-            const Tab(text: 'Favorites'): (context) =>
-                ChangeNotifierProvider<PostsController>.value(
-                  value: controllers.favoritePosts,
-                  child: postDisplay(
-                    context: context,
-                    controller: controllers.favoritePosts,
+        builder: (context, controllers, child) => LayoutBuilder(
+          builder: (context, constraints) {
+            Widget body;
+            PreferredSizeWidget? appbar;
+            Map<Widget, WidgetBuilder> tabs = {
+              const Tab(text: 'Favorites'): (context) =>
+                  ChangeNotifierProvider<PostsController>.value(
+                    value: controllers.favoritePosts,
+                    builder: (context, child) => postDisplay(
+                      context: context,
+                      controller: controllers.favoritePosts,
+                    ),
                   ),
-                ),
-            const Tab(text: 'Uploads'): (context) =>
-                ChangeNotifierProvider<PostsController>.value(
-                  value: controllers.uploadedPosts,
-                  child: postDisplay(
-                    context: context,
-                    controller: controllers.uploadedPosts,
+              const Tab(text: 'Uploads'): (context) =>
+                  ChangeNotifierProvider<PostsController>.value(
+                    value: controllers.uploadedPosts,
+                    builder: (context, child) => postDisplay(
+                      context: context,
+                      controller: controllers.uploadedPosts,
+                    ),
                   ),
-                ),
-            const Tab(text: 'About'): (context) => UserInfo(user: user),
-          };
+            };
 
-          return DefaultTabController(
-            length: tabs.length,
-            initialIndex: initialPage.index,
-            child: ListenableListener(
-              initialize: true,
-              listenable: Listenable.merge([controllers.profilePost]),
-              listener: () async {
-                HistoriesService service = context.read<HistoriesService>();
-                Client client = context.read<Client>();
-                try {
-                  await controllers.profilePost?.waitForFirstPage();
-                  await service.addUser(
-                    client.host,
-                    user,
-                    avatar: controllers.profilePost?.itemList?.first,
-                  );
-                } on ClientException {
-                  return;
-                }
-              },
-              child: Scaffold(
-                drawer: const NavigationDrawer(),
-                endDrawer: ContextDrawer(
-                  title: const Text('Posts'),
-                  children: [
-                    DrawerMultiDenySwitch(controllers: controllers.all),
-                    DrawerMultiTagCounter(controllers: controllers.all),
-                  ],
-                ),
-                body: NestedScrollView(
-                  headerSliverBuilder: (context, innerBoxIsScrolled) => [
-                    SliverOverlapAbsorber(
-                      handle: NestedScrollView.sliverOverlapAbsorberHandleFor(
-                        context,
-                      ),
-                      sliver: UserSliverAppBar(
-                        user: user,
-                        avatar: controllers.profilePost,
-                        tabs: tabs.keys.toList(),
+            if (constraints.maxWidth < 1100) {
+              body = NestedScrollView(
+                controller: PrimaryScrollController.of(context),
+                headerSliverBuilder: (context, innerBoxIsScrolled) => [
+                  SliverOverlapAbsorber(
+                    handle: NestedScrollView.sliverOverlapAbsorberHandleFor(
+                      context,
+                    ),
+                    sliver: UserSliverAppBar(
+                      user: user,
+                      avatar: controllers.profilePost,
+                      tabs: tabs.keys.toList(),
+                    ),
+                  ),
+                ],
+                body: LimitedWidthLayout(
+                  child: TileLayout(
+                    child: Builder(
+                      builder: (context) => TabBarView(
+                        children: tabs.values.map((e) => e(context)).toList(),
                       ),
                     ),
-                  ],
-                  body: LimitedWidthLayout(
-                    child: TileLayout(
-                      child: Builder(
-                        builder: (context) => TabBarView(
-                          children: tabs.values.map((e) => e(context)).toList(),
+                  ),
+                ),
+              );
+              tabs[const Tab(text: 'About')] =
+                  (context) => SingleChildScrollView(
+                        primary: false,
+                        padding: defaultListPadding
+                            .add(LimitedWidthLayout.of(context).padding),
+                        child: UserInfo(
+                            user: user, compact: constraints.maxWidth < 600),
+                      );
+            } else {
+              body = Row(
+                children: [
+                  SizedBox(
+                    width: 360,
+                    child: ListView(
+                      primary: false,
+                      padding: defaultListPadding,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                height: 100,
+                                width: 100,
+                                child: UserAvatar(
+                                  id: user.avatarId,
+                                  controller: controllers.profilePost,
+                                ),
+                              ),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.only(top: 16, bottom: 32),
+                                child: Text(
+                                  user.name,
+                                  style: Theme.of(context).textTheme.titleLarge,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        UserInfo(
+                          user: user,
+                          compact: false,
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: LimitedWidthLayout(
+                      child: TileLayout(
+                        child: Builder(
+                          builder: (context) => NestedScrollView(
+                            controller: PrimaryScrollController.of(context),
+                            headerSliverBuilder:
+                                (context, innerBoxIsScrolled) => [
+                              SliverAppBar(
+                                pinned: true,
+                                automaticallyImplyLeading: false,
+                                actions: const [SizedBox()],
+                                flexibleSpace: TabBar(
+                                  labelColor: Theme.of(context).iconTheme.color,
+                                  indicatorColor:
+                                      Theme.of(context).iconTheme.color,
+                                  tabs: tabs.keys
+                                      .toList()
+                                      .sublist(0, tabs.length)
+                                      .toList(),
+                                ),
+                              ),
+                            ],
+                            body: TabBarView(
+                              children: tabs.values
+                                  .toList()
+                                  .sublist(0, tabs.length)
+                                  .map((e) => e(context))
+                                  .toList(),
+                            ),
+                          ),
                         ),
                       ),
                     ),
                   ),
+                ],
+              );
+              appbar = const DefaultAppBar(
+                actions: [ContextDrawerButton()],
+                elevation: 0,
+              );
+            }
+
+            return ControllerHistoryConnector<PostsController?>(
+              controller: controllers.profilePost,
+              addToHistory: (context, service, data) => service.addUser(
+                context.read<Client>().host,
+                user,
+                avatar: data?.itemList?.first,
+              ),
+              child: DefaultTabController(
+                length: tabs.length,
+                initialIndex: initialPage.index,
+                child: Scaffold(
+                  appBar: appbar,
+                  drawer: const NavigationDrawer(),
+                  endDrawer: ContextDrawer(
+                    title: const Text('Posts'),
+                    children: [
+                      DrawerMultiDenySwitch(controllers: controllers.all),
+                      DrawerMultiTagCounter(controllers: controllers.all),
+                    ],
+                  ),
+                  body: body,
                 ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }
@@ -267,9 +356,10 @@ class _UserPageProvider
 }
 
 class UserInfo extends StatelessWidget {
-  const UserInfo({required this.user});
+  const UserInfo({required this.user, this.compact = true});
 
   final User user;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
@@ -284,12 +374,11 @@ class UserInfo extends StatelessWidget {
         title: title,
         value: value,
         onLongPress: onLongPress,
+        compact: compact,
       );
     }
 
-    return ListView(
-      padding:
-          defaultActionListPadding.add(LimitedWidthLayout.of(context).padding),
+    return Column(
       children: [
         info(
           Icons.tag,
@@ -320,48 +409,36 @@ class UserInfoTile extends StatelessWidget {
     required this.title,
     required this.icon,
     this.onLongPress,
-    this.maxWidth = 500,
+    this.compact = true,
   });
 
   final String value;
   final String title;
   final IconData icon;
   final VoidCallback? onLongPress;
-  final double maxWidth;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(builder: (context, constraints) {
-      if (constraints.maxWidth >= maxWidth) {
-        return IconTheme(
-          data: const IconThemeData(
-            color: Colors.grey,
-          ),
-          child: ListTile(
-            leading: Icon(icon),
-            title: Text(title),
-            trailing: DefaultTextStyle(
-              style: Theme.of(context).textTheme.titleMedium!,
-              child: InkWell(
-                onLongPress: onLongPress,
-                child: Text(value),
+    return IconTheme(
+      data: const IconThemeData(
+        color: Colors.grey,
+      ),
+      child: ListTile(
+        leading: Icon(icon),
+        title: Text(value),
+        subtitle: compact ? Text(title) : null,
+        trailing: compact
+            ? null
+            : DefaultTextStyle(
+                style: Theme.of(context).textTheme.titleMedium!,
+                child: InkWell(
+                  onLongPress: onLongPress,
+                  child: Text(value),
+                ),
               ),
-            ),
-          ),
-        );
-      } else {
-        return IconTheme(
-          data: const IconThemeData(
-            color: Colors.grey,
-          ),
-          child: ListTile(
-            leading: Icon(icon),
-            title: Text(value),
-            subtitle: Text(title),
-            onLongPress: onLongPress,
-          ),
-        );
-      }
-    });
+        onLongPress: onLongPress,
+      ),
+    );
   }
 }

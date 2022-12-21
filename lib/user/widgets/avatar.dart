@@ -70,7 +70,8 @@ class CurrentUserAvatarValue {
           id: id,
           filterMode: PostFilterMode.unavailable,
         );
-        return controller.loadFirstPage();
+        await controller.loadFirstPage();
+        return controller;
       }
     } catch (e) {
       return null;
@@ -107,7 +108,10 @@ class UserAvatar extends StatelessWidget {
       return const EmptyAvatar();
     }
     return SubValueBuilder<Future<PostsController>>(
-      create: (context) => controller.loadFirstPage(),
+      create: (context) => Future(() async {
+        controller.loadFirstPage();
+        return controller;
+      }),
       selector: (context) => [controller],
       builder: (context, _) => PostsControllerConnector(
         id: id,
