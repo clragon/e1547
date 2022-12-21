@@ -426,7 +426,7 @@ class UserInfoTile extends StatelessWidget {
       ),
       child: ListTile(
         leading: Icon(icon),
-        title: Text(value),
+        title: compact ? Text(value) : Text(title),
         subtitle: compact ? Text(title) : null,
         trailing: compact
             ? null
