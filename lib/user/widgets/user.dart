@@ -80,7 +80,7 @@ class UserPage extends StatelessWidget {
               );
               tabs[const Tab(text: 'About')] =
                   (context) => SingleChildScrollView(
-                        primary: false,
+                        primary: true,
                         padding: defaultListPadding
                             .add(LimitedWidthLayout.of(context).padding),
                         child: UserInfo(
