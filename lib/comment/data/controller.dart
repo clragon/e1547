@@ -41,41 +41,40 @@ class CommentsController extends CursorClientDataController<Comment>
     required bool replace,
   }) async {
     assertOwnsItem(comment);
-    Comment value = comment;
-    if (value.voteStatus == VoteStatus.unknown) {
+    if (comment.voteStatus == VoteStatus.unknown) {
       if (upvote) {
-        value = value.copyWith(
-          score: value.score + 1,
+        comment = comment.copyWith(
+          score: comment.score + 1,
           voteStatus: VoteStatus.upvoted,
         );
       } else {
-        value = value.copyWith(
-          score: value.score - 1,
+        comment = comment.copyWith(
+          score: comment.score - 1,
           voteStatus: VoteStatus.downvoted,
         );
       }
     } else {
       if (upvote) {
-        if (value.voteStatus == VoteStatus.upvoted) {
-          value = value.copyWith(
-            score: value.score - 1,
+        if (comment.voteStatus == VoteStatus.upvoted) {
+          comment = comment.copyWith(
+            score: comment.score - 1,
             voteStatus: VoteStatus.unknown,
           );
         } else {
-          value = value.copyWith(
-            score: value.score + 2,
+          comment = comment.copyWith(
+            score: comment.score + 2,
             voteStatus: VoteStatus.upvoted,
           );
         }
       } else {
-        if (value.voteStatus == VoteStatus.upvoted) {
-          value = value.copyWith(
-            score: value.score - 2,
+        if (comment.voteStatus == VoteStatus.upvoted) {
+          comment = comment.copyWith(
+            score: comment.score - 2,
             voteStatus: VoteStatus.downvoted,
           );
         } else {
-          value = value.copyWith(
-            score: value.score + 1,
+          comment = comment.copyWith(
+            score: comment.score + 1,
             voteStatus: VoteStatus.unknown,
           );
         }

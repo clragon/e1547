@@ -374,67 +374,66 @@ mixin PostsActionController<KeyType> on ClientDataController<KeyType, Post> {
     required bool replace,
   }) async {
     assertOwnsItem(post);
-    Post value = post;
-    if (value.voteStatus == VoteStatus.unknown) {
+    if (post.voteStatus == VoteStatus.unknown) {
       if (upvote) {
-        value = value.copyWith(
-          score: value.score.copyWith(
-            total: value.score.total + 1,
-            up: value.score.up + 1,
+        post = post.copyWith(
+          score: post.score.copyWith(
+            total: post.score.total + 1,
+            up: post.score.up + 1,
           ),
           voteStatus: VoteStatus.upvoted,
         );
       } else {
-        value = value.copyWith(
-          score: value.score.copyWith(
-            total: value.score.total - 1,
-            down: value.score.down + 1,
+        post = post.copyWith(
+          score: post.score.copyWith(
+            total: post.score.total - 1,
+            down: post.score.down + 1,
           ),
           voteStatus: VoteStatus.downvoted,
         );
       }
     } else {
       if (upvote) {
-        if (value.voteStatus == VoteStatus.upvoted) {
-          value = value.copyWith(
-            score: value.score.copyWith(
-              total: value.score.total - 1,
-              down: value.score.down + 1,
+        if (post.voteStatus == VoteStatus.upvoted) {
+          post = post.copyWith(
+            score: post.score.copyWith(
+              total: post.score.total - 1,
+              down: post.score.down + 1,
             ),
             voteStatus: VoteStatus.unknown,
           );
         } else {
-          value = value.copyWith(
-            score: value.score.copyWith(
-              total: value.score.total + 2,
-              up: value.score.up + 1,
-              down: value.score.down - 1,
+          post = post.copyWith(
+            score: post.score.copyWith(
+              total: post.score.total + 2,
+              up: post.score.up + 1,
+              down: post.score.down - 1,
             ),
             voteStatus: VoteStatus.upvoted,
           );
         }
       } else {
-        if (value.voteStatus == VoteStatus.upvoted) {
-          value = value.copyWith(
-            score: value.score.copyWith(
-              total: value.score.total - 2,
-              up: value.score.up - 1,
-              down: value.score.down + 1,
+        if (post.voteStatus == VoteStatus.upvoted) {
+          post = post.copyWith(
+            score: post.score.copyWith(
+              total: post.score.total - 2,
+              up: post.score.up - 1,
+              down: post.score.down + 1,
             ),
             voteStatus: VoteStatus.downvoted,
           );
         } else {
-          value = value.copyWith(
-            score: value.score.copyWith(
-              total: value.score.total + 1,
-              up: value.score.up + 1,
+          post = post.copyWith(
+            score: post.score.copyWith(
+              total: post.score.total + 1,
+              up: post.score.up + 1,
             ),
             voteStatus: VoteStatus.unknown,
           );
         }
       }
     }
-    replacePost(value);
+    replacePost(post);
     try {
       await client.votePost(post.id, upvote, replace);
       evictCache();
