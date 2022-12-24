@@ -84,7 +84,7 @@ class CurrentUserAvatarProvider
     extends SubProvider2<Client, DenylistService, CurrentUserAvatarValue> {
   CurrentUserAvatarProvider({super.child, super.builder})
       : super(
-    create: (context, client, denylist) => CurrentUserAvatarValue(
+          create: (context, client, denylist) => CurrentUserAvatarValue(
             client: client,
             denylist: denylist,
           ),
@@ -109,7 +109,7 @@ class UserAvatar extends StatelessWidget {
     }
     return SubValueBuilder<Future<PostsController>>(
       create: (context) => Future(() async {
-        controller.loadFirstPage();
+        await controller.loadFirstPage();
         return controller;
       }),
       selector: (context) => [controller],

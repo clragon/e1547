@@ -177,7 +177,7 @@ class Client {
   }) async {
     Map<RegExp, Future<List<Post>> Function(RegExpMatch match)> redirects = {
       poolRegex(): (match) => poolPosts(
-        int.parse(match.namedGroup('id')!),
+            int.parse(match.namedGroup('id')!),
             page,
             reverse: reversePools ?? false,
             force: force,

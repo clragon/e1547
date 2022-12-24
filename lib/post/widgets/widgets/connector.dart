@@ -44,7 +44,7 @@ class _PostsRouteConnectorState extends State<PostsRouteConnector> {
 
   @override
   Widget build(BuildContext context) => ListenableListener(
-    initialize: true,
+        initialize: true,
         listener: updatePages,
         listenable: widget.controller,
         child: ChangeNotifierProvider.value(

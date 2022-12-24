@@ -42,7 +42,7 @@ class SingleFuturePostsProvider
               client: client,
               denylist: denylist,
             );
-            controller.loadFirstPage();
+            await controller.loadFirstPage();
             return controller;
           }),
           selector: (context) => [id],
