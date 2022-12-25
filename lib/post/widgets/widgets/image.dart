@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
@@ -65,21 +67,21 @@ class PostImageWidget extends StatelessWidget {
                 cacheSize: cacheSize,
                 progressIndicatorBuilder: withLowRes
                     ? (context, url, progress) => ImageProgressWrapper(
-                          aspectRatio: aspectRatio,
-                          progress: progress.progress,
-                          child: lowResCacheSize != null
-                              ? RawPostImageWidget(
-                                  post: post,
-                                  size: PostImageSize.sample,
-                                  fit: fit,
-                                  cacheSize: lowResCacheSize,
-                                )
-                              : RawPostImageWidget(
-                                  post: post,
-                                  size: PostImageSize.preview,
-                                  fit: fit,
-                                ),
-                        )
+                  aspectRatio: aspectRatio,
+                  progress: progress.progress,
+                  child: lowResCacheSize != null
+                      ? RawPostImageWidget(
+                    post: post,
+                    size: PostImageSize.sample,
+                    fit: fit,
+                    cacheSize: lowResCacheSize,
+                  )
+                      : RawPostImageWidget(
+                    post: post,
+                    size: PostImageSize.preview,
+                    fit: fit,
+                  ),
+                )
                     : null,
               );
             case PostImageSize.file:
@@ -92,16 +94,16 @@ class PostImageWidget extends StatelessWidget {
                 cacheSize: cacheSize,
                 progressIndicatorBuilder: (context, url, progress) =>
                     ImageProgressWrapper(
-                  progress: progress.progress,
-                  aspectRatio: aspectRatio,
-                  child: RawPostImageWidget(
-                    post: post,
-                    size: PostImageSize.sample,
-                    showProgress: showProgress,
-                    fit: fit,
-                    cacheSize: lowResCacheSize,
-                  ),
-                ),
+                      progress: progress.progress,
+                      aspectRatio: aspectRatio,
+                      child: RawPostImageWidget(
+                        post: post,
+                        size: PostImageSize.sample,
+                        showProgress: showProgress,
+                        fit: fit,
+                        cacheSize: lowResCacheSize,
+                      ),
+                    ),
               );
           }
         },
@@ -133,13 +135,11 @@ class RawPostImageWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Duration fades =
-        stacked ? const Duration() : const Duration(milliseconds: 500);
+    stacked ? const Duration() : const Duration(milliseconds: 500);
 
-    Widget progressIndicator(
-      BuildContext context,
-      String url,
-      DownloadProgress progress,
-    ) {
+    Widget progressIndicator(BuildContext context,
+        String url,
+        DownloadProgress progress,) {
       return Center(
         child: SizedCircularProgressIndicator(
           size: 30,
@@ -196,7 +196,7 @@ class RawPostImageWidget extends StatelessWidget {
   }
 }
 
-class ImageProgressWrapper extends StatelessWidget {
+class ImageProgressWrapper extends StatefulWidget {
   const ImageProgressWrapper({
     super.key,
     required this.child,
@@ -214,22 +214,46 @@ class ImageProgressWrapper extends StatelessWidget {
   final double? progress;
 
   @override
+  State<ImageProgressWrapper> createState() => _ImageProgressWrapperState();
+}
+
+class _ImageProgressWrapperState extends State<ImageProgressWrapper> {
+  bool visible = false;
+
+  @override
+  void initState() {
+    super.initState();
+    Timer(
+      const Duration(milliseconds: 1000),
+      () {
+        if (mounted) {
+          setState(() => visible = true);
+        }
+      },
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
     return AspectRatio(
-      aspectRatio: aspectRatio,
+      aspectRatio: widget.aspectRatio,
       child: Stack(
         fit: StackFit.passthrough,
         alignment: Alignment.center,
         children: [
-          Positioned.fill(child: child),
-          if (progress != null)
+          Positioned.fill(child: widget.child),
+          if (widget.progress != null)
             Positioned(
               top: 0,
               right: 0,
               left: 0,
-              child: LinearProgressIndicator(
-                value: progress,
-                backgroundColor: Colors.transparent,
+              child: AnimatedOpacity(
+                opacity: visible ? 1 : 0,
+                duration: defaultAnimationDuration,
+                child: LinearProgressIndicator(
+                  value: widget.progress,
+                  backgroundColor: Colors.transparent,
+                ),
               ),
             ),
         ],
@@ -255,13 +279,13 @@ class ImageCacheSizeProvider extends SubProvider0<ImageCacheSize> {
   /// Provides the cache size for images to a subtree.
   ImageCacheSizeProvider({required int? size, super.child, super.builder})
       : super(
-          create: (context) => ImageCacheSize(size),
-          selector: (context) => [size],
-        );
+    create: (context) => ImageCacheSize(size),
+    selector: (context) => [size],
+  );
 
   /// Removes the cache size for images for a subtree.
   ImageCacheSizeProvider.none({super.child, super.builder})
       : super(
-          create: (context) => const ImageCacheSize(null),
-        );
+    create: (context) => const ImageCacheSize(null),
+  );
 }
