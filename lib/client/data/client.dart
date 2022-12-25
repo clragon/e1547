@@ -518,7 +518,7 @@ class Client {
       }
       final body = await _dio
           .get(
-        'tags/autocomplete.json',
+            'tags/autocomplete.json',
             queryParameters: {
               'search[name_matches]': search,
             },
