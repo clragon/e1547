@@ -1,7 +1,7 @@
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
-// ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target
+// ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'search.dart';
 
@@ -142,6 +142,7 @@ class _$_HistoriesSearch extends _HistoriesSearch {
   final Set<HistorySearchFilter> _searchFilters;
   @override
   Set<HistorySearchFilter> get searchFilters {
+    if (_searchFilters is EqualUnmodifiableSetView) return _searchFilters;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableSetView(_searchFilters);
   }
@@ -149,6 +150,7 @@ class _$_HistoriesSearch extends _HistoriesSearch {
   final Set<HistoryTypeFilter> _typeFilters;
   @override
   Set<HistoryTypeFilter> get typeFilters {
+    if (_typeFilters is EqualUnmodifiableSetView) return _typeFilters;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableSetView(_typeFilters);
   }

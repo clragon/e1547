@@ -1,7 +1,7 @@
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
-// ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target
+// ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'user.dart';
 
@@ -25,7 +25,11 @@ mixin _$User {
   int get poolVersionCount => throw _privateConstructorUsedError;
   int get forumPostCount => throw _privateConstructorUsedError;
   int get commentCount => throw _privateConstructorUsedError;
+
   int get flagCount => throw _privateConstructorUsedError;
+
+  int get favoriteCount => throw _privateConstructorUsedError;
+
   int get positiveFeedbackCount => throw _privateConstructorUsedError;
   int get neutralFeedbackCount => throw _privateConstructorUsedError;
   int get negativeFeedbackCount => throw _privateConstructorUsedError;
@@ -61,6 +65,7 @@ abstract class $UserCopyWith<$Res> {
       int forumPostCount,
       int commentCount,
       int flagCount,
+      int favoriteCount,
       int positiveFeedbackCount,
       int neutralFeedbackCount,
       int negativeFeedbackCount,
@@ -99,6 +104,7 @@ class _$UserCopyWithImpl<$Res, $Val extends User>
     Object? forumPostCount = null,
     Object? commentCount = null,
     Object? flagCount = null,
+    Object? favoriteCount = null,
     Object? positiveFeedbackCount = null,
     Object? neutralFeedbackCount = null,
     Object? negativeFeedbackCount = null,
@@ -141,6 +147,10 @@ class _$UserCopyWithImpl<$Res, $Val extends User>
       flagCount: null == flagCount
           ? _value.flagCount
           : flagCount // ignore: cast_nullable_to_non_nullable
+              as int,
+      favoriteCount: null == favoriteCount
+          ? _value.favoriteCount
+          : favoriteCount // ignore: cast_nullable_to_non_nullable
               as int,
       positiveFeedbackCount: null == positiveFeedbackCount
           ? _value.positiveFeedbackCount
@@ -227,6 +237,7 @@ abstract class _$$_UserCopyWith<$Res> implements $UserCopyWith<$Res> {
       int forumPostCount,
       int commentCount,
       int flagCount,
+      int favoriteCount,
       int positiveFeedbackCount,
       int neutralFeedbackCount,
       int negativeFeedbackCount,
@@ -261,6 +272,7 @@ class __$$_UserCopyWithImpl<$Res> extends _$UserCopyWithImpl<$Res, _$_User>
     Object? forumPostCount = null,
     Object? commentCount = null,
     Object? flagCount = null,
+    Object? favoriteCount = null,
     Object? positiveFeedbackCount = null,
     Object? neutralFeedbackCount = null,
     Object? negativeFeedbackCount = null,
@@ -303,6 +315,10 @@ class __$$_UserCopyWithImpl<$Res> extends _$UserCopyWithImpl<$Res, _$_User>
       flagCount: null == flagCount
           ? _value.flagCount
           : flagCount // ignore: cast_nullable_to_non_nullable
+              as int,
+      favoriteCount: null == favoriteCount
+          ? _value.favoriteCount
+          : favoriteCount // ignore: cast_nullable_to_non_nullable
               as int,
       positiveFeedbackCount: null == positiveFeedbackCount
           ? _value.positiveFeedbackCount
@@ -386,6 +402,7 @@ class _$_User implements _User {
       required this.forumPostCount,
       required this.commentCount,
       required this.flagCount,
+      required this.favoriteCount,
       required this.positiveFeedbackCount,
       required this.neutralFeedbackCount,
       required this.negativeFeedbackCount,
@@ -418,6 +435,8 @@ class _$_User implements _User {
   final int commentCount;
   @override
   final int flagCount;
+  @override
+  final int favoriteCount;
   @override
   final int positiveFeedbackCount;
   @override
@@ -455,7 +474,7 @@ class _$_User implements _User {
 
   @override
   String toString() {
-    return 'User(wikiPageVersionCount: $wikiPageVersionCount, artistVersionCount: $artistVersionCount, poolVersionCount: $poolVersionCount, forumPostCount: $forumPostCount, commentCount: $commentCount, flagCount: $flagCount, positiveFeedbackCount: $positiveFeedbackCount, neutralFeedbackCount: $neutralFeedbackCount, negativeFeedbackCount: $negativeFeedbackCount, uploadLimit: $uploadLimit, id: $id, createdAt: $createdAt, name: $name, level: $level, baseUploadLimit: $baseUploadLimit, postUploadCount: $postUploadCount, postUpdateCount: $postUpdateCount, noteUpdateCount: $noteUpdateCount, isBanned: $isBanned, canApprovePosts: $canApprovePosts, canUploadFree: $canUploadFree, levelString: $levelString, avatarId: $avatarId)';
+    return 'User(wikiPageVersionCount: $wikiPageVersionCount, artistVersionCount: $artistVersionCount, poolVersionCount: $poolVersionCount, forumPostCount: $forumPostCount, commentCount: $commentCount, flagCount: $flagCount, favoriteCount: $favoriteCount, positiveFeedbackCount: $positiveFeedbackCount, neutralFeedbackCount: $neutralFeedbackCount, negativeFeedbackCount: $negativeFeedbackCount, uploadLimit: $uploadLimit, id: $id, createdAt: $createdAt, name: $name, level: $level, baseUploadLimit: $baseUploadLimit, postUploadCount: $postUploadCount, postUpdateCount: $postUpdateCount, noteUpdateCount: $noteUpdateCount, isBanned: $isBanned, canApprovePosts: $canApprovePosts, canUploadFree: $canUploadFree, levelString: $levelString, avatarId: $avatarId)';
   }
 
   @override
@@ -475,6 +494,8 @@ class _$_User implements _User {
                 other.commentCount == commentCount) &&
             (identical(other.flagCount, flagCount) ||
                 other.flagCount == flagCount) &&
+            (identical(other.favoriteCount, favoriteCount) ||
+                other.favoriteCount == favoriteCount) &&
             (identical(other.positiveFeedbackCount, positiveFeedbackCount) ||
                 other.positiveFeedbackCount == positiveFeedbackCount) &&
             (identical(other.neutralFeedbackCount, neutralFeedbackCount) ||
@@ -518,6 +539,7 @@ class _$_User implements _User {
         forumPostCount,
         commentCount,
         flagCount,
+        favoriteCount,
         positiveFeedbackCount,
         neutralFeedbackCount,
         negativeFeedbackCount,
@@ -559,6 +581,7 @@ abstract class _User implements User {
       required final int forumPostCount,
       required final int commentCount,
       required final int flagCount,
+      required final int favoriteCount,
       required final int positiveFeedbackCount,
       required final int neutralFeedbackCount,
       required final int negativeFeedbackCount,
@@ -581,24 +604,37 @@ abstract class _User implements User {
 
   @override
   int get wikiPageVersionCount;
+
   @override
   int get artistVersionCount;
+
   @override
   int get poolVersionCount;
+
   @override
   int get forumPostCount;
+
   @override
   int get commentCount;
+
   @override
   int get flagCount;
+
+  @override
+  int get favoriteCount;
+
   @override
   int get positiveFeedbackCount;
+
   @override
   int get neutralFeedbackCount;
+
   @override
   int get negativeFeedbackCount;
+
   @override
   int get uploadLimit;
+
   @override
   int get id;
   @override

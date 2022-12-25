@@ -12,6 +12,7 @@ class User with _$User {
     required int forumPostCount,
     required int commentCount,
     required int flagCount,
+    required int favoriteCount,
     required int positiveFeedbackCount,
     required int neutralFeedbackCount,
     required int negativeFeedbackCount,

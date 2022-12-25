@@ -1,7 +1,7 @@
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
-// ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target
+// ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'post.dart';
 
@@ -513,6 +513,7 @@ class _$_Post extends _Post {
   final Map<String, List<String>> _tags;
   @override
   Map<String, List<String>> get tags {
+    if (_tags is EqualUnmodifiableMapView) return _tags;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableMapView(_tags);
   }
@@ -522,6 +523,7 @@ class _$_Post extends _Post {
   List<String>? get lockedTags {
     final value = _lockedTags;
     if (value == null) return null;
+    if (_lockedTags is EqualUnmodifiableListView) return _lockedTags;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(value);
   }
@@ -537,6 +539,7 @@ class _$_Post extends _Post {
   final List<String> _sources;
   @override
   List<String> get sources {
+    if (_sources is EqualUnmodifiableListView) return _sources;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(_sources);
   }
@@ -544,6 +547,7 @@ class _$_Post extends _Post {
   final List<int> _pools;
   @override
   List<int> get pools {
+    if (_pools is EqualUnmodifiableListView) return _pools;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(_pools);
   }
@@ -1722,6 +1726,7 @@ class _$_Relationships implements _Relationships {
   final List<int> _children;
   @override
   List<int> get children {
+    if (_children is EqualUnmodifiableListView) return _children;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(_children);
   }

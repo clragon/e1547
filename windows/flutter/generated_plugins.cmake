@@ -3,8 +3,8 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
-  app_links_windows
-  local_auth_windows
+        app_links
+        local_auth_windows
   permission_handler_windows
   screen_retriever
   share_plus

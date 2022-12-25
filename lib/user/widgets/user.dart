@@ -395,6 +395,7 @@ class UserInfo extends StatelessWidget {
         info(Icons.shield, 'rank', user.levelString.toLowerCase()),
         info(Icons.upload, 'posts', user.postUploadCount.toString()),
         info(Icons.edit, 'edits', user.postUpdateCount.toString()),
+        info(Icons.favorite, 'favorites', user.favoriteCount.toString()),
         info(Icons.comment, 'comments', user.commentCount.toString()),
         info(Icons.forum, 'forum', user.forumPostCount.toString()),
       ],

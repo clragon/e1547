@@ -1,7 +1,7 @@
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
-// ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target
+// ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'tag.dart';
 
@@ -303,13 +303,10 @@ abstract class _Tag implements Tag {
   int get category;
   @override
   bool get isLocked;
-
   @override
   DateTime get createdAt;
-
   @override
   DateTime get updatedAt;
-
   @override
   @JsonKey(ignore: true)
   _$$_TagCopyWith<_$_Tag> get copyWith => throw _privateConstructorUsedError;
@@ -322,17 +319,12 @@ TagSuggestion _$TagSuggestionFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$TagSuggestion {
   int get id => throw _privateConstructorUsedError;
-
   String get name => throw _privateConstructorUsedError;
-
   int get postCount => throw _privateConstructorUsedError;
-
   int get category => throw _privateConstructorUsedError;
-
   String? get antecedentName => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-
   @JsonKey(ignore: true)
   $TagSuggestionCopyWith<TagSuggestion> get copyWith =>
       throw _privateConstructorUsedError;
@@ -343,7 +335,6 @@ abstract class $TagSuggestionCopyWith<$Res> {
   factory $TagSuggestionCopyWith(
           TagSuggestion value, $Res Function(TagSuggestion) then) =
       _$TagSuggestionCopyWithImpl<$Res, TagSuggestion>;
-
   @useResult
   $Res call(
       {int id,
@@ -360,7 +351,6 @@ class _$TagSuggestionCopyWithImpl<$Res, $Val extends TagSuggestion>
 
   // ignore: unused_field
   final $Val _value;
-
   // ignore: unused_field
   final $Res Function($Val) _then;
 
@@ -404,7 +394,6 @@ abstract class _$$_TagSuggestionCopyWith<$Res>
   factory _$$_TagSuggestionCopyWith(
           _$_TagSuggestion value, $Res Function(_$_TagSuggestion) then) =
       __$$_TagSuggestionCopyWithImpl<$Res>;
-
   @override
   @useResult
   $Res call(
@@ -533,19 +522,14 @@ abstract class _TagSuggestion implements TagSuggestion {
 
   @override
   int get id;
-
   @override
   String get name;
-
   @override
   int get postCount;
-
   @override
   int get category;
-
   @override
   String? get antecedentName;
-
   @override
   @JsonKey(ignore: true)
   _$$_TagSuggestionCopyWith<_$_TagSuggestion> get copyWith =>

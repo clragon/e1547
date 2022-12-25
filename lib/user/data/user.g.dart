@@ -13,6 +13,7 @@ _$_User _$$_UserFromJson(Map<String, dynamic> json) => _$_User(
       forumPostCount: json['forum_post_count'] as int,
       commentCount: json['comment_count'] as int,
       flagCount: json['flag_count'] as int,
+      favoriteCount: json['favorite_count'] as int,
       positiveFeedbackCount: json['positive_feedback_count'] as int,
       neutralFeedbackCount: json['neutral_feedback_count'] as int,
       negativeFeedbackCount: json['negative_feedback_count'] as int,
@@ -32,13 +33,15 @@ _$_User _$$_UserFromJson(Map<String, dynamic> json) => _$_User(
       avatarId: json['avatar_id'] as int?,
     );
 
-Map<String, dynamic> _$$_UserToJson(_$_User instance) => <String, dynamic>{
+Map<String, dynamic> _$$_UserToJson(_$_User instance) =>
+    <String, dynamic>{
       'wiki_page_version_count': instance.wikiPageVersionCount,
       'artist_version_count': instance.artistVersionCount,
       'pool_version_count': instance.poolVersionCount,
       'forum_post_count': instance.forumPostCount,
       'comment_count': instance.commentCount,
       'flag_count': instance.flagCount,
+      'favorite_count': instance.favoriteCount,
       'positive_feedback_count': instance.positiveFeedbackCount,
       'neutral_feedback_count': instance.neutralFeedbackCount,
       'negative_feedback_count': instance.negativeFeedbackCount,
