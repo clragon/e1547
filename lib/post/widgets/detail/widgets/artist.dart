@@ -35,18 +35,15 @@ class ArtistDisplay extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Builder(
-                  builder: (context) => InkWell(
-                    child: Text('#${post.id}'),
-                    onLongPress: () {
-                      Clipboard.setData(
-                          ClipboardData(text: post.id.toString()));
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        duration: const Duration(seconds: 1),
-                        content: Text('Copied post id #${post.id}'),
-                      ));
-                    },
-                  ),
+                InkWell(
+                  child: Text('#${post.id}'),
+                  onLongPress: () {
+                    Clipboard.setData(ClipboardData(text: post.id.toString()));
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      duration: const Duration(seconds: 1),
+                      content: Text('Copied post id #${post.id}'),
+                    ));
+                  },
                 ),
                 InkWell(
                   child: Row(

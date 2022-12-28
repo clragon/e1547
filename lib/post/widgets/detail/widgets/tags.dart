@@ -25,18 +25,6 @@ class TagDisplay extends StatelessWidget {
         Map<String, List<String>>? tags =
             editingController?.value?.tags ?? post.tags;
 
-        Widget title(String category) {
-          return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-            child: Text(
-              '${category[0].toUpperCase()}${category.substring(1)}',
-              style: const TextStyle(
-                fontSize: 16,
-              ),
-            ),
-          );
-        }
-
         Widget tagCategory(String category) {
           return Wrap(
             children: [
@@ -81,7 +69,15 @@ class TagDisplay extends StatelessWidget {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              title(category),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                child: Text(
+                  '${category[0].toUpperCase()}${category.substring(1)}',
+                  style: const TextStyle(
+                    fontSize: 16,
+                  ),
+                ),
+              ),
               Row(children: [Expanded(child: tagCategory(category))]),
               const Divider(),
             ],
@@ -102,12 +98,12 @@ class TagDisplay extends StatelessWidget {
   }
 }
 
-Future<bool> onPostTagsEdit(
+bool onPostTagsEdit(
   BuildContext context,
   PostEditingController controller,
   String value,
   String category,
-) async {
+) {
   value = value.trim();
   if (value.isEmpty) {
     return true;
@@ -118,34 +114,29 @@ Future<bool> onPostTagsEdit(
   tags[category] = tags[category]!.toSet().toList();
   tags[category]!.sort();
   controller.value = controller.value!.copyWith(tags: tags);
-  if (category != 'general') {
-    final messenger = ScaffoldMessenger.of(context);
-    Future(() async {
-      for (String tag in edited) {
-        List<Tag> tags = await context.read<Client>().tags(tag);
-        String? target;
-        if (tags.isEmpty) {
-          target = 'general';
-        } else if (tags.first.name == tag &&
-            tags.first.category != TagCategory.byName(category).id) {
-          target = TagCategory.byId(tags.first.category).name;
-        }
-        if (target != null) {
-          Map<String, List<String>> tags = Map.from(controller.value!.tags);
-          tags[category]!.remove(tag);
-          tags[target]!.add(tag);
-          tags[target] = tags[target]!.toSet().toList();
-          tags[target]!.sort();
-          controller.value = controller.value!.copyWith(tags: tags);
-          messenger.showSnackBar(SnackBar(
-            duration: const Duration(milliseconds: 500),
-            content: Text('Moved $tag to $target tags'),
-            behavior: SnackBarBehavior.floating,
-          ));
-        }
-        await Future.delayed(const Duration(milliseconds: 200));
+  final client = context.read<Client>();
+  Future(() async {
+    for (String tag in edited) {
+      List<Tag> tags = await rateLimit(
+        client.tags(tag),
+        const Duration(milliseconds: 200),
+      );
+      String? target;
+      if (tags.isEmpty) {
+        target = 'general';
+      } else if (tags.first.name == tag &&
+          tags.first.category != TagCategory.byName(category).id) {
+        target = TagCategory.byId(tags.first.category).name;
       }
-    });
-  }
+      if (target != null) {
+        Map<String, List<String>> tags = Map.from(controller.value!.tags);
+        tags[category]!.remove(tag);
+        tags[target]!.add(tag);
+        tags[target] = tags[target]!.toSet().toList();
+        tags[target]!.sort();
+        controller.value = controller.value!.copyWith(tags: tags);
+      }
+    }
+  });
   return true;
 }

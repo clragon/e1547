@@ -4,7 +4,7 @@ import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
 
 typedef TextEditorSubmit = FutureOr<String?> Function(
-    BuildContext context, String text);
+    BuildContext context, String value);
 typedef TextEditorBuilder = Widget Function(
     BuildContext context, TextEditingController controller);
 
@@ -119,63 +119,60 @@ class _TextEditorState extends State<TextEditor> {
     return DefaultTabController(
       length: tabs.length,
       child: Builder(
-        builder: (context) {
-          TabController controller = DefaultTabController.of(context)!;
-          return ListenableListener(
-            initialize: true,
-            listenable: DefaultTabController.of(context)!,
-            listener: () {
-              if (hasPreview && controller.index == 0) {
-                if (!showBar) {
-                  setState(() {
-                    showBar = true;
-                  });
-                }
-              } else {
-                if (showBar) {
-                  FocusScope.of(context).unfocus();
-                  setState(() {
-                    showBar = false;
-                  });
-                }
+        builder: (context) => ListenableListener(
+          initialize: true,
+          listenable: DefaultTabController.of(context)!,
+          listener: () {
+            if (hasPreview && DefaultTabController.of(context)!.index == 0) {
+              if (!showBar) {
+                setState(() {
+                  showBar = true;
+                });
               }
-            },
-            child: Scaffold(
-              floatingActionButton: fab(),
-              bottomSheet: isLoading
-                  ? loadingBar()
-                  : showBar
-                      ? widget.bottomSheetBuilder?.call(context, textController)
-                      : null,
-              body: NestedScrollView(
-                headerSliverBuilder: (context, innerBoxIsScrolled) => [
-                  SliverOverlapAbsorber(
-                    handle: NestedScrollView.sliverOverlapAbsorberHandleFor(
-                      context,
-                    ),
-                    sliver: DefaultSliverAppBar(
-                      pinned: true,
-                      leading: ModalRoute.of(context)!.canPop
-                          ? const CloseButton()
-                          : null,
-                      title: widget.title,
-                      bottom: tabs.length > 1
-                          ? TabBar(
-                              tabs: tabs.keys.toList(),
-                              labelColor: Theme.of(context).iconTheme.color,
-                              indicatorColor: Theme.of(context).iconTheme.color,
-                            )
-                          : null,
-                    ),
+            } else {
+              if (showBar) {
+                FocusScope.of(context).unfocus();
+                setState(() {
+                  showBar = false;
+                });
+              }
+            }
+          },
+          child: Scaffold(
+            floatingActionButton: fab(),
+            bottomSheet: isLoading
+                ? loadingBar()
+                : showBar
+                    ? widget.bottomSheetBuilder?.call(context, textController)
+                    : null,
+            body: NestedScrollView(
+              headerSliverBuilder: (context, innerBoxIsScrolled) => [
+                SliverOverlapAbsorber(
+                  handle: NestedScrollView.sliverOverlapAbsorberHandleFor(
+                    context,
                   ),
-                ],
-                body: TabBarView(
-                  children: tabs.values.toList(),
+                  sliver: DefaultSliverAppBar(
+                    pinned: true,
+                    leading: ModalRoute.of(context)!.canPop
+                        ? const CloseButton()
+                        : null,
+                    title: widget.title,
+                    bottom: tabs.length > 1
+                        ? TabBar(
+                            tabs: tabs.keys.toList(),
+                            labelColor: Theme.of(context).iconTheme.color,
+                            indicatorColor: Theme.of(context).iconTheme.color,
+                          )
+                        : null,
+                  ),
                 ),
+              ],
+              body: TabBarView(
+                children: tabs.values.toList(),
               ),
             ),
-          );
-        },
+          ),
+        ),
       ),
     );
   }
