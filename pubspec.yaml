@@ -1,6 +1,6 @@
 name: e1547
 description: A mobile app for e621+e926.
-version: 15.0.2-beta.2+70
+version: 15.1.0+71
 publish_to: none
 
 environment:
@@ -116,3 +116,8 @@ flutter_icons:
 flutter_native_splash:
   color: "000000"
   image: "assets/icon/app/round.png"
+
+cider:
+  link_template:
+    tag: https://github.com/clragon/e1547/releases/tag/%tag%
+    diff: https://github.com/clragon/e1547/compare/%from%...%to%
