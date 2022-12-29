@@ -1,0 +1,6 @@
+Added
+- local blacklist
+- comment age and edited status
+
+Changed
+- refreshing is now pull to refresh

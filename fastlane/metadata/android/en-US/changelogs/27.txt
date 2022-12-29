@@ -1,0 +1,5 @@
+Changed
+- changelog to display all new versions
+
+Fixed
+- update notification

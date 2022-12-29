@@ -1,0 +1,11 @@
+Added
+- editing posts
+- infinite fullscreen swiping
+- dtext spoilers
+
+Changed
+- package name
+- blacklist page design
+
+Fixed
+- tag autocomplete

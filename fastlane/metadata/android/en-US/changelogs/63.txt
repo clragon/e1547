@@ -1,0 +1,2 @@
+Fixed
+- deleting history entries

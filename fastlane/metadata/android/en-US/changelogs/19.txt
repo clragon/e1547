@@ -1,0 +1,4 @@
+Added
+- followed tags page
+- following tags in wiki dialog
+- multiline editor for blacklist

@@ -1,0 +1,10 @@
+Added
+- video mute button
+- mute video settings
+
+Changed
+- video skip animation
+
+Fixed
+- login update
+- blacklist editor

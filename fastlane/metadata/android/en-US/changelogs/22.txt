@@ -1,0 +1,2 @@
+Fixed
+- parsing updated\_at json

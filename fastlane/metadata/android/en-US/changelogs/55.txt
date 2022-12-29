@@ -1,0 +1,17 @@
+Added
+- history for posts, pools and tags
+- http request caching
+- double tap appbar to scroll to top
+
+Changed
+- switched version number format to more closely resemble semantic versioning (1.9.10 -&gt; 9.10.0)
+- hiding post children if all are deleted
+
+Fixed
+- downloaded posts not showing in gallery (android)
+- blacklist syncrhonisation
+- comment parsing
+- follow tiles not updating during refresh
+
+Removed
+- scroll to top button

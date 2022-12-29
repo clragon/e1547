@@ -1,0 +1,6 @@
+Added
+- tag autocomplete for search
+- hiding blacklisted post detail images
+
+Fixed
+- logging in

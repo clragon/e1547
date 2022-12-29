@@ -1,0 +1,11 @@
+Added
+- post tile size configuration
+- post tile staggering
+- multiselecting post tiles with longpress
+
+Changed
+- tag input design
+- comments to be sorted oldest first
+
+Fixed
+- tag input issues

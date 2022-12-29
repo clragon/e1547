@@ -1,3 +1,6 @@
+require 'fileutils'
+require 'yaml'
+
 default_platform(:android)
 
 platform :ios do
@@ -31,12 +34,41 @@ platform :android do
     flutter_build(build: 'apk')
   end
 
+  desc "Writes playstore changelogs from Changelog.md"
+  lane :changelog do
+    populate_changelogs
+  end
+
   desc "Build appbundle and upload to playstore"
   lane :deploy do
+    populate_changelogs
     flutter_build(build: 'appbundle')
+    build_number = fetch_current_version.split("+")[1]
     upload_to_play_store(
       aab: "build/app/outputs/bundle/release/app-release.aab",
-      skip_upload_changelogs: true,
+      version_code: build_number,
     )
+  end
+end
+
+def fetch_current_version
+    YAML.safe_load(File.read('../pubspec.yaml'))['version']
+end
+
+def fetch_versions
+  path = "../CHANGELOG.md"
+  content = File.read(path)
+  regex = /## \[(.+\+\d+)\]/
+  content.scan(regex).map(&:first)
+end
+
+def populate_changelogs
+  changelogs = "./metadata/android/en-US/changelogs"
+  FileUtils.mkdir_p(changelogs)
+  fetch_versions.each do |version|
+    build_number = version.split("+")[1]
+    File.open("#{changelogs}/#{build_number}.txt", 'w') do |f|
+      f << read_changelog(section_identifier: "[#{version}]")
+    end
   end
 end

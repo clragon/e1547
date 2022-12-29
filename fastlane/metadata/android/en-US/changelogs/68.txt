@@ -1,0 +1,2 @@
+Fixed
+- host switch in settings

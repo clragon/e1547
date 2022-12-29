@@ -1,0 +1,12 @@
+Added
+- android download location
+- fast follow updating algorithm
+
+Changed
+- follows are now host dependant
+
+Fixed
+- history entries on wrong host
+- no history entry on host switch
+- history link sharing
+- downloads on certain android devices

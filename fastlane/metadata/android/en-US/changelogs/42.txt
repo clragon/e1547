@@ -1,0 +1,10 @@
+Added
+- loading indicator for new pages
+- double tapping videos to skip
+
+Changed
+- follow appbar action location to drawer
+- system ui visibility in fullscreen to visible
+
+Fixed
+- post editing issues

@@ -1,0 +1,6 @@
+Added
+- themes
+- showing blacklisted images
+
+Fixed
+- blacklist issues

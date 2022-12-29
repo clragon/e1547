@@ -1,0 +1,10 @@
+Added
+- more dtext support for pool descriptions
+- version check on about screen
+
+Changed
+- settings design
+- app reloading after settings change
+
+Fixed
+- network interupts causing infinite loading

@@ -1,0 +1,4 @@
+Fixed
+- support for android 12
+- videos not muting immediately
+- post reports always failing

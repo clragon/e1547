@@ -1,0 +1,4 @@
+Fixed
+- android apk being invalid
+- sending comments
+- mass-favoriting

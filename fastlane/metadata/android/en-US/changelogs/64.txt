@@ -1,0 +1,5 @@
+Added
+- pool reader mode
+
+Fixed
+- history mass-deleting

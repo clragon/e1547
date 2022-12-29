@@ -1,0 +1,12 @@
+Added
+- logout button in drawer
+- setting to hide webms
+- support for landscape
+
+Changed
+- login screen design
+- about screen design
+- favorites screen to prompt login
+
+Fixed
+- pool order

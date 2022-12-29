@@ -1,0 +1,6 @@
+Added
+- voting on posts
+- viewing post comments
+
+Fixed
+- displaying quotes

@@ -1,0 +1,7 @@
+Changed
+- pool reader mode now enabled by default
+
+Fixed
+- error displays for when the site is down
+- retrying loading items
+- favorite and upvote setting

@@ -1,0 +1,11 @@
+Added
+- history link in drawer
+
+Changed
+- dtext parsing
+
+Fixed
+- unable to read follows while refreshing
+
+Removed
+- fullscreen UI setting

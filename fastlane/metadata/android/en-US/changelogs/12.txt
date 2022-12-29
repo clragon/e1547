@@ -1,0 +1,14 @@
+Added
+- sharing post links
+- sharing pool links
+- long press tags to view wiki
+- viewing deleted posts
+- more dtext support
+- addvanced pool information
+
+Fixed
+- settings refreshing the correct page
+- downloading posts
+- dtext parsing links
+- opening posts from a different post causing infinite load
+- post duplicates in pools

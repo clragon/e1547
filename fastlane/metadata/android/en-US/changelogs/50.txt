@@ -1,0 +1,5 @@
+Changed
+- logged in user only actions are now always visible
+
+Fixed
+- detail view swiping requesting pages

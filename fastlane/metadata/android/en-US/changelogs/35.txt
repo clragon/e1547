@@ -1,0 +1,6 @@
+Added
+- user avatar in drawer
+- opening webms
+
+Changed
+- detail view design

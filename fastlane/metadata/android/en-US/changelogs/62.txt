@@ -1,0 +1,27 @@
+Added
+- better tablet layouts
+- infinite history
+- more history entry types
+- pool search suggestions
+- better link parsing
+
+Changed
+- history filter drawer
+- login screen design
+- search button is no longer behind autocomplete
+
+Fixed
+- history performance
+- large image grid performance
+- mass-favoriting
+- pool search switches
+- blacklist sync on login
+- detail gallery swiping requesting new pages
+- duplicate posts
+- log file exports
+- editing posts
+- blacklisting avatars
+
+Removed
+- "tiles adapt their size" grid option
+- tap comment to reply

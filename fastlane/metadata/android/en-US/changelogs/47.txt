@@ -1,0 +1,11 @@
+Added
+- reporting posts
+- flagging posts
+
+Changed
+- blue color theme
+- default home screen search
+- default video mute
+
+Fixed
+- editing post tags

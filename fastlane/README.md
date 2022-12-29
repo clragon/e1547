@@ -53,6 +53,14 @@ Ensures flutter is installed
 
 Build apk file
 
+### android changelog
+
+```sh
+[bundle exec] fastlane android changelog
+```
+
+Writes playstore changelogs from Changelog.md
+
 ### android deploy
 
 ```sh

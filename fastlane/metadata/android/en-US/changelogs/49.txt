@@ -1,0 +1,16 @@
+Added
+- user profiles
+- voting on comments
+- reporting comments
+- scroll to top button
+
+Changed
+- target sdk to 30
+
+Fixed
+- post duplication
+- video ui
+- forum usernames
+
+Removed
+- double tapping appbar to scroll to top

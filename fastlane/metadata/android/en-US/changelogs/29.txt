@@ -1,0 +1,7 @@
+Added
+- warning about host switching
+- replacing underscores with spaces in tags
+
+Fixed
+- multiple artists bug
+- alignment of large images

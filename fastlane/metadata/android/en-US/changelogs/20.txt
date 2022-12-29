@@ -1,0 +1,3 @@
+Added
+- wiki dialog in search appbar
+- following pools

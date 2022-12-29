@@ -1,0 +1,6 @@
+Changed
+- history screen is no longer a root view
+
+Fixed
+- lag when deleting history entries
+- deleting history entries over limit

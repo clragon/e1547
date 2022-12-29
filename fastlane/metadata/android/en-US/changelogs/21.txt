@@ -1,0 +1,3 @@
+Fixed
+- downloads on android 10
+- nested dtext parsing

@@ -1,0 +1,11 @@
+Added
+- blacklist drawer
+- multi-tag following
+- adding tags to the current search
+- more post tile grid options
+
+Changed
+- wiki dialog design
+- video player UI design
+- dtext parsing
+- themes

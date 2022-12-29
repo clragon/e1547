@@ -1,0 +1,23 @@
+Added
+- blacklist sync with server (please backup your blacklist)
+- advanced settings menu
+- auto-upvote when favoriting
+- post tile info bar
+- hiding system ui in fullscreen
+- experimental forum access
+- right side drawer actions for pool order
+- right side drawer actions for comment order
+- loading screens for dtext links
+
+Changed
+- settings options order
+- app icon
+- app theme colors
+- dtext link parsing
+
+Fixed
+- swiping on videos
+- posts not refreshing on login/logout
+- post tile size not updating
+- hero animations in landscape
+- updating user avatar

@@ -1,0 +1,13 @@
+Added
+- deep link support
+- app lockscreen
+- logging for errors
+- website link in about
+- more tablet layouts
+
+Changed
+- dtext parsing
+- snackbars to material banners
+
+Removed
+- combined follow screen

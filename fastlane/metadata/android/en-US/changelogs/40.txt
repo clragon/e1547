@@ -1,0 +1,13 @@
+Added
+- video support on iOS
+- image downloads for iOS
+- blacklisting with \~
+
+Changed
+- dtext parsing
+- error message design
+- light theme design
+
+Fixed
+- image zoom reset
+- wiki dialog tag subtraction

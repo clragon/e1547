@@ -1,0 +1,3 @@
+Added
+- pool search
+- clicking on artist names to launch a search

@@ -1,0 +1,4 @@
+Fixed
+- blacklisting follows
+- download indicators
+- downloads failing

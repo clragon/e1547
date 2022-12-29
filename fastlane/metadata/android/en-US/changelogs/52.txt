@@ -1,0 +1,2 @@
+Fixed
+- gallery desynchronisation issue

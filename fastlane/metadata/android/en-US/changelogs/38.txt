@@ -1,0 +1,7 @@
+Added
+- better tag search
+
+Fixed
+- performance issues
+- webm issues
+- favorite / blacklist issues

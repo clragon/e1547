@@ -1,0 +1,17 @@
+Added
+- multi-select for follows
+- pool thumbnails
+- cancelling requests
+
+Changed
+- dtext spoiler design
+- dtext parsing
+- pool tile design
+- topic tile design
+
+Fixed
+- saving logins
+- parsing comments and replies with warnings
+
+Removed
+- follows migration

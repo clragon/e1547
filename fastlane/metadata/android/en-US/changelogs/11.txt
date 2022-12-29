@@ -1,0 +1,10 @@
+Added
+- post parent links
+- post children links
+- clickable links in post descriptions
+
+Fixed
+- pool page lag
+- post blackscreens
+- favorite button while logged out
+- settings changes refreshing the app

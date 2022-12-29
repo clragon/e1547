@@ -1,0 +1,4 @@
+Fixed
+- pool parsing
+- auto-vote on favoriting
+- comment upvoting

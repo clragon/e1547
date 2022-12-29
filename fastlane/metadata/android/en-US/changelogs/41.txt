@@ -1,0 +1,12 @@
+Added
+- following screen
+
+Changed
+- pool ordering
+- progress indicators
+- landscape mode
+- performance
+
+Fixed
+- iOS video playing
+- editing posts

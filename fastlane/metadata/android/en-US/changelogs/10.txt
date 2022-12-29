@@ -1,0 +1,12 @@
+Added
+- post descriptions
+- more post information
+- clicking on tags to launch search
+- pool links on posts
+- changelogs in about screen
+- update hint in drawer
+- pool descriptions in pool screen
+- login button in settings
+
+Fixed
+- repeating posts

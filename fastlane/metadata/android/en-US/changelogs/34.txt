@@ -1,0 +1,9 @@
+Added
+- image preloading
+
+Changed
+- appbar design to floating
+
+Fixed
+- lag when swiping
+- keyboard closing when choosing autocomplete

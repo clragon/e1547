@@ -1,0 +1,9 @@
+Added
+- writing comments
+- editing comments
+- replying to comments
+- swichting host without page resets
+
+Fixed
+- blacklist ignoring rating
+- pool duplicate pages

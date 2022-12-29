@@ -1,0 +1,6 @@
+Added
+- iOS support
+- colors for tags
+- centering small images in detail view
+- swiping between images in fullscreen
+- search tab in drawer

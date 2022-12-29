@@ -1,0 +1,12 @@
+Added
+- cloudflare cookie resolving
+- favorite counts on user page
+
+Changed
+- user page layouts for wide screens
+- appbar design
+
+Fixed
+- favorites for users without login
+- comment upvoting
+- loading parent/child posts

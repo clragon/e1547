@@ -1,0 +1,6 @@
+Added
+- better landscape design
+
+Fixed
+- blacklist removing favorites
+- nested nested dtext parsing

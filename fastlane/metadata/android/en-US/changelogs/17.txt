@@ -1,0 +1,6 @@
+Added
+- blocking tags in wiki dialog
+- dtext parsing
+
+Fixed
+- wiki dialog overflow

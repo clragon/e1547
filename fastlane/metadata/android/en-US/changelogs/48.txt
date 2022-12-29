@@ -1,0 +1,11 @@
+Added
+- context (right side) drawer buttons in appbars
+- jump to last page button for topics
+
+Changed
+- appbar design
+- grid stagger settings name
+
+Fixed
+- logging in
+- dtext links

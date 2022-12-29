@@ -1,0 +1,10 @@
+Added
+- pool descriptions
+- links in pool descriptions
+
+Changed
+- app theme to be darker
+- empty post pages now indicate emptyness
+
+Fixed
+- clicking multiple artists

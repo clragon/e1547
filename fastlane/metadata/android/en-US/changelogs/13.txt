@@ -1,0 +1,6 @@
+Added
+- opening deleted post children
+
+Fixed
+- pool pages loading
+- displaying onsite links

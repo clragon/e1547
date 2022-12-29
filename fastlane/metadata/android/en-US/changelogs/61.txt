@@ -1,0 +1,19 @@
+Added
+- infinite history
+- more history entry types
+- pool search suggestions
+- better link parsing
+
+Changed
+- search button is no longer behind autocomplete
+
+Fixed
+- detail gallery swiping requesting new pages
+- duplicate posts
+- log file exports
+- editing posts
+- blacklisting avatars
+
+Removed
+- "tiles adapt their size" grid option
+- tap comment to reply

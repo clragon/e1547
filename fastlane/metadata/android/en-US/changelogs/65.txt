@@ -1,0 +1,6 @@
+Added
+- follow timeline screen
+
+Fixed
+- performance issues with favoriting
+- video mute button
