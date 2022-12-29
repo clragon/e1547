@@ -35,7 +35,7 @@ platform :android do
   lane :deploy do
     flutter_build(build: 'appbundle')
     upload_to_play_store(
-      aab_path: "build/app/outputs/bundle/release",
+      aab: "build/app/outputs/bundle/release/app-release.aab",
       skip_upload_changelogs: true,
     )
   end
