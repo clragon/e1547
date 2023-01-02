@@ -26,7 +26,7 @@ const MaterialColor primarySwatch = MaterialColor(
   },
 );
 
-const Color accentColor = Color(0xFFffc107);
+final Color accentColor = primarySwatch.shade400;
 
 ThemeData prepareTheme(ThemeData theme) => theme.copyWith(
       applyElevationOverlayColor: false,

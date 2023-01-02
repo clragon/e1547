@@ -54,6 +54,7 @@ class SectionWrap extends StatelessWidget {
           Positioned(
             top: 0,
             bottom: 0,
+            left: 0,
             child: Container(
               width: 5,
               decoration: BoxDecoration(
