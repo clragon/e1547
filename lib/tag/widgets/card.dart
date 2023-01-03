@@ -24,6 +24,7 @@ class TagCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      clipBehavior: Clip.antiAlias,
       child: TagGesture(
         tag: tag,
         wiki: wiki,
@@ -35,7 +36,7 @@ class TagCard extends StatelessWidget {
                 editing ||
                 onRemove != null)
               Container(
-                height: 26,
+                height: 27,
                 decoration: BoxDecoration(
                   color: stripeColor ??
                       (category != null
@@ -48,7 +49,8 @@ class TagCard extends StatelessWidget {
                 ),
                 child: CrossFade(
                   showChild: editing,
-                  secondChild: Container(width: 5),
+                  secondChild:
+                      SizedBox(width: Theme.of(context).useMaterial3 ? 12 : 5),
                   child: IconButton(
                     constraints: const BoxConstraints(),
                     padding: EdgeInsets.zero,
@@ -59,15 +61,15 @@ class TagCard extends StatelessWidget {
               ),
             Flexible(
               child: Padding(
-                padding:
-                    const EdgeInsets.only(top: 4, bottom: 4, right: 8, left: 6),
+                padding: const EdgeInsets.only(
+                    top: 4, bottom: 4, right: 10, left: 6),
                 child: Text(
                   tagToTitle(tag),
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
             ),
-            if (extra != null) ...extra!
+            if (extra != null) ...extra!,
           ],
         ),
       ),
