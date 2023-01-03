@@ -18,7 +18,7 @@ class Settings extends NotifiedSettings {
 
   late final ValueNotifier<AppTheme> theme = createEnumSetting(
     key: 'theme',
-    initialValue: appThemeMap.keys.elementAt(1),
+    initialValue: AppTheme.values.first,
     values: AppTheme.values,
   );
 

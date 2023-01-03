@@ -115,7 +115,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         children: [
                           Column(
                             mainAxisSize: MainAxisSize.min,
-                            children: appThemeMap.keys
+                            children: AppTheme.values
                                 .map(
                                   (theme) => ListTile(
                                     title: Text(theme.name),
@@ -124,7 +124,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                       width: 28,
                                       decoration: BoxDecoration(
                                         shape: BoxShape.circle,
-                                        color: appThemeMap[theme]!.cardColor,
+                                        color: theme.data.cardColor,
                                         border: Border.all(
                                           color: Theme.of(context)
                                               .iconTheme

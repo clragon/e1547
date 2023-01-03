@@ -3,13 +3,6 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-enum AppTheme {
-  light,
-  dark,
-  amoled,
-  blue,
-}
-
 const MaterialColor primarySwatch = MaterialColor(
   0xFFFCB328,
   <int, Color>{
@@ -27,6 +20,69 @@ const MaterialColor primarySwatch = MaterialColor(
 );
 
 final Color accentColor = primarySwatch.shade400;
+
+enum AppTheme {
+  dark,
+  amoled,
+  light,
+  blue;
+
+  ThemeData get data {
+    switch (this) {
+      case AppTheme.light:
+        return prepareTheme(
+          ThemeData.from(
+            colorScheme: ColorScheme.fromSwatch(
+              primarySwatch: primarySwatch,
+              accentColor: accentColor,
+              cardColor: Colors.white,
+              backgroundColor: Colors.grey[50],
+            ),
+          ),
+        ).copyWith(
+          floatingActionButtonTheme: const FloatingActionButtonThemeData(
+            foregroundColor: Colors.white,
+          ),
+        );
+      case AppTheme.dark:
+        return prepareTheme(
+          ThemeData.from(
+            colorScheme: ColorScheme.fromSwatch(
+              primarySwatch: primarySwatch,
+              accentColor: accentColor,
+              cardColor: Colors.grey[900],
+              backgroundColor: const Color.fromARGB(255, 20, 20, 20),
+              brightness: Brightness.dark,
+            ),
+          ),
+        );
+      case AppTheme.amoled:
+        return prepareTheme(
+          ThemeData.from(
+            colorScheme: ColorScheme.fromSwatch(
+              primarySwatch: primarySwatch,
+              accentColor: accentColor,
+              cardColor: const Color.fromARGB(255, 20, 20, 20),
+              backgroundColor: Colors.black,
+              brightness: Brightness.dark,
+            ),
+          ),
+        );
+      case AppTheme.blue:
+        return prepareTheme(
+          ThemeData.from(
+            colorScheme: ColorScheme.fromSwatch(
+              primarySwatch: primarySwatch,
+              accentColor: accentColor,
+              cardColor: const Color.fromARGB(255, 31, 60, 103),
+              backgroundColor: const Color.fromARGB(255, 15, 33, 60),
+              brightness: Brightness.dark,
+            ),
+          ),
+        );
+    }
+  }
+}
 
 ThemeData prepareTheme(ThemeData theme) => theme.copyWith(
       applyElevationOverlayColor: false,
@@ -73,56 +129,6 @@ ThemeData prepareTheme(ThemeData theme) => theme.copyWith(
         waitDuration: const Duration(milliseconds: 400),
       ),
     );
-
-final Map<AppTheme, ThemeData> appThemeMap = {
-  AppTheme.light: prepareTheme(
-    ThemeData.from(
-      colorScheme: ColorScheme.fromSwatch(
-        primarySwatch: primarySwatch,
-        accentColor: accentColor,
-        cardColor: Colors.white,
-        backgroundColor: Colors.grey[50],
-      ),
-    ),
-  ).copyWith(
-    floatingActionButtonTheme: const FloatingActionButtonThemeData(
-      foregroundColor: Colors.white,
-    ),
-  ),
-  AppTheme.dark: prepareTheme(
-    ThemeData.from(
-      colorScheme: ColorScheme.fromSwatch(
-        primarySwatch: primarySwatch,
-        accentColor: accentColor,
-        cardColor: Colors.grey[900],
-        backgroundColor: const Color.fromARGB(255, 20, 20, 20),
-        brightness: Brightness.dark,
-      ),
-    ),
-  ),
-  AppTheme.amoled: prepareTheme(
-    ThemeData.from(
-      colorScheme: ColorScheme.fromSwatch(
-        primarySwatch: primarySwatch,
-        accentColor: accentColor,
-        cardColor: const Color.fromARGB(255, 20, 20, 20),
-        backgroundColor: Colors.black,
-        brightness: Brightness.dark,
-      ),
-    ),
-  ),
-  AppTheme.blue: prepareTheme(
-    ThemeData.from(
-      colorScheme: ColorScheme.fromSwatch(
-        primarySwatch: primarySwatch,
-        accentColor: accentColor,
-        cardColor: const Color.fromARGB(255, 31, 60, 103),
-        backgroundColor: const Color.fromARGB(255, 15, 33, 60),
-        brightness: Brightness.dark,
-      ),
-    ),
-  ),
-};
 
 class DesktopScrollBehaviour extends ScrollBehavior {
   @override
