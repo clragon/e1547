@@ -107,6 +107,8 @@ ThemeData prepareTheme(ThemeData theme) => theme.copyWith(
         ),
       ),
       appBarTheme: theme.appBarTheme.copyWith(
+        surfaceTintColor:
+            theme.appBarTheme.backgroundColor ?? theme.colorScheme.background,
         systemOverlayStyle: SystemUiOverlayStyle(
           statusBarColor: Colors.transparent,
           statusBarBrightness: theme.brightness,
@@ -121,6 +123,10 @@ ThemeData prepareTheme(ThemeData theme) => theme.copyWith(
         ),
         color: theme.canvasColor,
         foregroundColor: theme.iconTheme.color,
+      ),
+      cardTheme: theme.cardTheme.copyWith(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+        surfaceTintColor: theme.cardTheme.color ?? theme.colorScheme.surface,
       ),
       bannerTheme: theme.bannerTheme.copyWith(
         backgroundColor: theme.canvasColor,

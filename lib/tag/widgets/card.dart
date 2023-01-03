@@ -24,7 +24,6 @@ class TagCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      clipBehavior: Clip.antiAlias,
       child: TagGesture(
         tag: tag,
         wiki: wiki,
@@ -49,8 +48,7 @@ class TagCard extends StatelessWidget {
                 ),
                 child: CrossFade(
                   showChild: editing,
-                  secondChild:
-                      SizedBox(width: Theme.of(context).useMaterial3 ? 12 : 5),
+                  secondChild: const SizedBox(width: 5),
                   child: IconButton(
                     constraints: const BoxConstraints(),
                     padding: EdgeInsets.zero,

@@ -57,10 +57,12 @@ AppBarLeadingConfiguration getLeadingConfiguration({
       if (alwaysShowDrawer && hasDrawer) {
         leadingWidth = 88;
         effectiveLeading = Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisSize: MainAxisSize.min,
           children: [
             const SizedBox(width: 8),
-            drawerButton(),
-            backButton,
+            Expanded(child: drawerButton()),
+            Expanded(child: backButton),
           ],
         );
       } else {
@@ -92,7 +94,7 @@ class DefaultAppBar extends StatelessWidget with PreferredSizeWidget {
   ///
   /// Contains extra behaviour such as:
   /// - double tap to scroll to the top of the primary scroll controller
-  /// -  showing drawer and back button at the same time on wide screens
+  /// - showing drawer and back button at the same time on wide screens
   const DefaultAppBar({
     this.leading,
     this.actions,
