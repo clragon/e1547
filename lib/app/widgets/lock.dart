@@ -72,23 +72,22 @@ class _LockScreenState extends State<LockScreen> {
 
     return ListenableListener(
       listener: this.lock,
-      listenable: context.read<Settings>().appPin,
-      child: ListenableListener(
-        listener: this.lock,
-        listenable: context.read<Settings>().biometricAuth,
-        child: Stack(
-          fit: StackFit.passthrough,
-          children: [
-            ExcludeFocus(
-              excluding: showLock,
-              child: Offstage(
-                offstage: showLock,
-                child: widget.child,
-              ),
+      listenable: Listenable.merge([
+        context.read<Settings>().appPin,
+        context.read<Settings>().biometricAuth
+      ]),
+      child: Stack(
+        fit: StackFit.passthrough,
+        children: [
+          ExcludeFocus(
+            excluding: showLock,
+            child: Offstage(
+              offstage: showLock,
+              child: widget.child,
             ),
-            if (showLock) KeyedSubtree(key: ObjectKey(_instance), child: lock)
-          ],
-        ),
+          ),
+          if (showLock) KeyedSubtree(key: ObjectKey(_instance), child: lock)
+        ],
       ),
     );
   }
