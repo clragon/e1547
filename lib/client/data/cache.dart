@@ -108,16 +108,6 @@ class CacheInterceptor extends DioCacheInterceptor {
 
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) async {
-    // Fixes bug in autocomplete endpoint cache-control header
-    if (RegExp(r'/autocomplete\.json.*')
-        .hasMatch(response.requestOptions.uri.path)) {
-      List<String>? header = response.headers[HttpHeaders.cacheControlHeader];
-      if (header != null) {
-        header = header.map((e) => e.replaceAll(';', ',')).toList();
-        response.headers.set(HttpHeaders.cacheControlHeader, header);
-      }
-    }
-
     final CacheConfig config = _getCacheConfig(response.requestOptions);
 
     final CacheControl cacheControl = CacheControl.fromHeader(
