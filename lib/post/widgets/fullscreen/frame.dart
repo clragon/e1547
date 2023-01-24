@@ -83,7 +83,7 @@ class _PostFullscreenFrameState extends State<PostFullscreenFrame>
     with RouteAware {
   late FrameController controller =
       widget.controller ?? FrameController(visible: widget.visible ?? false);
-  late NavigationController navigation;
+  late RouterDrawerController navigation;
 
   Future<void> toggleFrame(bool shown) async {
     if (shown) {
@@ -108,7 +108,7 @@ class _PostFullscreenFrameState extends State<PostFullscreenFrame>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    navigation = context.watch<NavigationController>();
+    navigation = context.watch<RouterDrawerController>();
     navigation.routeObserver
         .subscribe(this, ModalRoute.of(context) as PageRoute);
   }

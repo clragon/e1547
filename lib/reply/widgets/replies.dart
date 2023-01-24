@@ -47,7 +47,7 @@ class RepliesPage extends StatelessWidget {
               ],
             ),
             controller: controller,
-            drawer: const NavigationDrawer(),
+            drawer: const RouterDrawer(),
             endDrawer: ContextDrawer(
               title: const Text('Replies'),
               children: [

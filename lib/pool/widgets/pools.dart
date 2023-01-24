@@ -20,7 +20,7 @@ class PoolsPage extends StatefulWidget {
   State<StatefulWidget> createState() => _PoolsPageState();
 }
 
-class _PoolsPageState extends State<PoolsPage> with DrawerEntry {
+class _PoolsPageState extends State<PoolsPage> with RouterDrawerEntry {
   @override
   Widget build(BuildContext context) {
     return PoolsProvider(
@@ -55,7 +55,7 @@ class _PoolsPageState extends State<PoolsPage> with DrawerEntry {
                 actionController: actionController,
               ),
             ),
-            drawer: const NavigationDrawer(),
+            drawer: const RouterDrawer(),
             endDrawer: ContextDrawer(
               title: const Text('Pools'),
               children: [

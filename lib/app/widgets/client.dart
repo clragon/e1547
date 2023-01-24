@@ -32,7 +32,7 @@ class _ClientFailureResolverState extends State<ClientFailureResolver> {
   CancelToken _cancelToken = CancelToken();
 
   Future<void> check() async {
-    NavigationController controller = context.read<NavigationController>();
+    RouterDrawerController controller = context.read<RouterDrawerController>();
     try {
       await _client!.currentUser(cancelToken: _cancelToken);
     } on ClientException catch (e) {

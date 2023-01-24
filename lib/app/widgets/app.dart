@@ -30,7 +30,7 @@ class App extends StatelessWidget {
         ),
         CurrentUserAvatarProvider(),
       ],
-      child: Consumer3<AppInfo, Settings, NavigationController>(
+      child: Consumer3<AppInfo, Settings, RouterDrawerController>(
         builder: (context, appInfo, settings, navigation, child) =>
             ValueListenableBuilder<AppTheme>(
           valueListenable: settings.theme,

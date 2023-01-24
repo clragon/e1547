@@ -30,7 +30,7 @@ class WikiPage extends StatelessWidget {
           DText(wiki.body),
         ],
       ),
-      drawer: const NavigationDrawer(),
+      drawer: const RouterDrawer(),
     );
   }
 }

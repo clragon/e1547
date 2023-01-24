@@ -13,8 +13,8 @@ const String _drawerSearchGroup = 'search';
 const String _drawerCollectionsGroup = 'collections';
 const String _drawerSettingsGroup = 'settings';
 
-final List<NavigationRouteDestination> rootDestintations = [
-  NavigationDrawerDestination(
+final List<RouterDrawerDestination> rootDestintations = [
+  NamedRouterDrawerDestination(
     path: '/',
     name: 'Home',
     icon: const Icon(Icons.home),
@@ -22,7 +22,7 @@ final List<NavigationRouteDestination> rootDestintations = [
     unique: true,
     group: _drawerSearchGroup,
   ),
-  NavigationDrawerDestination(
+  NamedRouterDrawerDestination(
     path: '/hot',
     name: 'Hot',
     icon: const Icon(Icons.whatshot),
@@ -30,14 +30,14 @@ final List<NavigationRouteDestination> rootDestintations = [
     unique: true,
     group: _drawerSearchGroup,
   ),
-  NavigationDrawerDestination(
+  NamedRouterDrawerDestination(
     path: '/search',
     name: 'Search',
     icon: const Icon(Icons.search),
     builder: (context) => const PostsSearchPage(),
     group: _drawerSearchGroup,
   ),
-  NavigationDrawerDestination(
+  NamedRouterDrawerDestination(
     path: '/favorites',
     name: 'Favorites',
     icon: const Icon(Icons.favorite),
@@ -45,7 +45,7 @@ final List<NavigationRouteDestination> rootDestintations = [
     unique: true,
     group: _drawerCollectionsGroup,
   ),
-  NavigationDrawerDestination(
+  NamedRouterDrawerDestination(
     path: '/follows',
     name: 'Follows',
     icon: const Icon(Icons.turned_in),
@@ -53,7 +53,7 @@ final List<NavigationRouteDestination> rootDestintations = [
     unique: true,
     group: _drawerCollectionsGroup,
   ),
-  NavigationDrawerDestination(
+  NamedRouterDrawerDestination(
     path: '/pools',
     name: 'Pools',
     icon: const Icon(Icons.collections),
@@ -61,7 +61,7 @@ final List<NavigationRouteDestination> rootDestintations = [
     unique: true,
     group: _drawerCollectionsGroup,
   ),
-  NavigationDrawerDestination(
+  NamedRouterDrawerDestination(
     path: '/forum',
     name: 'Forum',
     icon: const Icon(Icons.forum),
@@ -70,7 +70,7 @@ final List<NavigationRouteDestination> rootDestintations = [
     unique: true,
     group: _drawerCollectionsGroup,
   ),
-  NavigationDrawerDestination(
+  NamedRouterDrawerDestination(
     path: '/history',
     name: 'History',
     icon: const Icon(Icons.history),
@@ -79,7 +79,7 @@ final List<NavigationRouteDestination> rootDestintations = [
     enabled: _nonRecursive<HistoriesPage>,
     group: _drawerSettingsGroup,
   ),
-  NavigationDrawerDestination(
+  NamedRouterDrawerDestination(
     path: '/settings',
     name: 'Settings',
     icon: const Icon(Icons.settings),
@@ -87,18 +87,18 @@ final List<NavigationRouteDestination> rootDestintations = [
     enabled: _nonRecursive<SettingsPage>,
     group: _drawerSettingsGroup,
   ),
-  NavigationDrawerDestination(
+  NamedRouterDrawerDestination(
     path: '/about',
     name: 'About',
     icon: DrawerUpdateIcon(),
     builder: (context) => const AboutPage(),
     group: _drawerSettingsGroup,
   ),
-  NavigationRouteDestination(
+  RouterDrawerDestination(
     path: '/login',
     builder: (context) => const LoginPage(),
   ),
-  NavigationRouteDestination(
+  RouterDrawerDestination(
     path: '/blacklist',
     builder: (context) => const DenyListPage(),
   ),

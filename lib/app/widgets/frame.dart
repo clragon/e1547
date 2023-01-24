@@ -239,7 +239,7 @@ class WindowShortcuts extends StatelessWidget {
         actions: {
           PopRouteIntent: CallbackAction<PopRouteIntent>(
             onInvoke: (intent) => context
-                .read<NavigationController>()
+                .read<RouterDrawerController>()
                 .navigatorKey
                 .currentState
                 ?.maybePop(),

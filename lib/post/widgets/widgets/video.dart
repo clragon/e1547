@@ -362,7 +362,7 @@ class PostVideoRoute extends StatefulWidget {
 
 class PostVideoRouteState extends State<PostVideoRoute> with RouteAware {
   late CachedVideoPlayerController? _videoController;
-  late NavigationController _navigation;
+  late RouterDrawerController _navigation;
   late final bool _wasPlaying;
   bool _keepPlaying = false;
 
@@ -391,7 +391,7 @@ class PostVideoRouteState extends State<PostVideoRoute> with RouteAware {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _navigation = context.watch<NavigationController>();
+    _navigation = context.watch<RouterDrawerController>();
     _navigation.routeObserver
         .subscribe(this, ModalRoute.of(context) as PageRoute);
     _videoController = widget.post.getVideo(context);

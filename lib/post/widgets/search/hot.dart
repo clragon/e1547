@@ -9,7 +9,7 @@ class HotPage extends StatefulWidget {
   State<HotPage> createState() => _HotPageState();
 }
 
-class _HotPageState extends State<HotPage> with DrawerEntry {
+class _HotPageState extends State<HotPage> with RouterDrawerEntry {
   @override
   Widget build(BuildContext context) {
     return PostsProvider(

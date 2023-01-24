@@ -50,7 +50,7 @@ class _HistoriesPageState extends State<HistoriesPage> {
               child: const Icon(Icons.search),
               onPressed: () async {
                 Locale locale = Localizations.localeOf(context);
-                ScrollController? scrollController =
+                ScrollController scrollController =
                     PrimaryScrollController.of(context);
                 List<DateTime> dates = await controller.service.dates();
                 if (dates.isEmpty) {
@@ -69,8 +69,8 @@ class _HistoriesPageState extends State<HistoriesPage> {
                 );
 
                 if (result != controller.search.value.date &&
-                    (scrollController?.hasClients ?? false)) {
-                  scrollController!.animateTo(0,
+                    scrollController.hasClients) {
+                  scrollController.animateTo(0,
                       duration: defaultAnimationDuration,
                       curve: Curves.easeInOut);
                 }
@@ -79,7 +79,7 @@ class _HistoriesPageState extends State<HistoriesPage> {
                     controller.search.value.copyWith(date: result);
               },
             ),
-            drawer: const NavigationDrawer(),
+            drawer: const RouterDrawer(),
             endDrawer: ContextDrawer(
               title: const Text('History'),
               children: [

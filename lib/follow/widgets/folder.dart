@@ -46,10 +46,10 @@ class _FollowsFolderPageState extends State<FollowsFolderPage> {
           );
           await updater.finish;
           if (mounted) {
-            ScrollController? scrollController =
+            ScrollController scrollController =
                 PrimaryScrollController.of(context);
-            if (scrollController?.hasClients ?? false) {
-              scrollController?.animateTo(
+            if (scrollController.hasClients) {
+              scrollController.animateTo(
                 0,
                 duration: defaultAnimationDuration,
                 curve: Curves.easeInOut,
@@ -126,7 +126,7 @@ class _FollowsFolderPageState extends State<FollowsFolderPage> {
                           refreshController.refreshFailed();
                         }
                       },
-                      drawer: const NavigationDrawer(),
+                      drawer: const RouterDrawer(),
                       endDrawer: ContextDrawer(
                         title: const Text('Follows'),
                         children: [

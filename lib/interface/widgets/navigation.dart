@@ -2,8 +2,8 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class NavigationRouteDestination {
-  const NavigationRouteDestination({
+class RouterDrawerDestination {
+  const RouterDrawerDestination({
     required this.path,
     required this.builder,
     this.unique = false,
@@ -14,11 +14,11 @@ class NavigationRouteDestination {
   final bool unique;
 }
 
-typedef NavigationSettingCallback = bool Function(BuildContext context);
+typedef RouterDrawerSettingCallback = bool Function(BuildContext context);
 
-class NavigationDrawerDestination<T extends Widget>
-    extends NavigationRouteDestination {
-  const NavigationDrawerDestination({
+class NamedRouterDrawerDestination<T extends Widget>
+    extends RouterDrawerDestination {
+  const NamedRouterDrawerDestination({
     required this.name,
     this.icon,
     this.group,
@@ -30,18 +30,18 @@ class NavigationDrawerDestination<T extends Widget>
   }) : super(builder: builder);
 
   final String name;
-  final NavigationSettingCallback? visible;
-  final NavigationSettingCallback? enabled;
+  final RouterDrawerSettingCallback? visible;
+  final RouterDrawerSettingCallback? enabled;
   final Widget? icon;
   final String? group;
 }
 
-class NavigationController extends ChangeNotifier {
-  NavigationController({required this.destinations, this.drawerHeader}) {
+class RouterDrawerController extends ChangeNotifier {
+  RouterDrawerController({required this.destinations, this.drawerHeader}) {
     routes = {for (final e in destinations) e.path: e.builder};
   }
 
-  final List<NavigationRouteDestination> destinations;
+  final List<RouterDrawerDestination> destinations;
   late final Map<String, WidgetBuilder> routes;
 
   final WidgetBuilder? drawerHeader;
@@ -58,8 +58,8 @@ class NavigationController extends ChangeNotifier {
   String? get drawerSelection => _drawerSelection;
 
   void setDrawerSelection<T extends Widget>() {
-    NavigationDrawerDestination? target = destinations
-        .whereType<NavigationDrawerDestination<T>>()
+    NamedRouterDrawerDestination? target = destinations
+        .whereType<NamedRouterDrawerDestination<T>>()
         .firstWhereOrNull((e) => e.unique);
     if (target != null && _drawerSelection != target.path) {
       _drawerSelection = target.path;
@@ -68,42 +68,43 @@ class NavigationController extends ChangeNotifier {
   }
 }
 
-class NavigationProvider extends ChangeNotifierProvider<NavigationController> {
+class NavigationProvider
+    extends ChangeNotifierProvider<RouterDrawerController> {
   NavigationProvider({
-    required List<NavigationRouteDestination> destinations,
+    required List<RouterDrawerDestination> destinations,
     WidgetBuilder? drawerHeader,
     super.child,
     super.builder,
   }) : super(
-          create: (context) => NavigationController(
+          create: (context) => RouterDrawerController(
             destinations: destinations,
             drawerHeader: drawerHeader,
           ),
         );
 }
 
-class NavigationDrawer extends StatelessWidget {
-  const NavigationDrawer();
+class RouterDrawer extends StatelessWidget {
+  const RouterDrawer();
 
-  List<NavigationDrawerDestination> getDrawerDestinations(
-      List<NavigationRouteDestination> destinations) {
+  List<NamedRouterDrawerDestination> getDrawerDestinations(
+      List<RouterDrawerDestination> destinations) {
     return destinations
-        .whereType<NavigationDrawerDestination>()
+        .whereType<NamedRouterDrawerDestination>()
         .toList()
-        .cast<NavigationDrawerDestination>();
+        .cast<NamedRouterDrawerDestination>();
   }
 
   @override
   Widget build(BuildContext context) {
-    final NavigationController controller =
-        context.watch<NavigationController>();
+    final RouterDrawerController controller =
+        context.watch<RouterDrawerController>();
 
     List<Widget> children = [];
     if (controller.drawerHeader != null) {
       children.add(controller.drawerHeader!(context));
     }
 
-    List<NavigationDrawerDestination> destinations =
+    List<NamedRouterDrawerDestination> destinations =
         getDrawerDestinations(controller.destinations);
 
     String? currentGroup = destinations.first.group;
@@ -145,12 +146,12 @@ class NavigationDrawer extends StatelessWidget {
   }
 }
 
-mixin DrawerEntry<T extends StatefulWidget> on State<T> {
+mixin RouterDrawerEntry<T extends StatefulWidget> on State<T> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (ModalRoute.of(context)!.isFirst) {
-      context.watch<NavigationController?>()?.setDrawerSelection<T>();
+      context.watch<RouterDrawerController?>()?.setDrawerSelection<T>();
     }
   }
 }

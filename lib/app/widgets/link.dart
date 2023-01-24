@@ -22,7 +22,7 @@ class _AppLinkHandlerState extends State<AppLinkHandler> {
   StreamSubscription? linkListener;
 
   Future<void> onInitialLink(Uri? url) async {
-    NavigationController controller = context.read<NavigationController>();
+    RouterDrawerController controller = context.read<RouterDrawerController>();
     if (url != null) {
       VoidCallback? action = parseLinkOnTap(
         controller.context!,
@@ -40,7 +40,7 @@ class _AppLinkHandlerState extends State<AppLinkHandler> {
   Future<void> onLink(Uri? url) async {
     if (url != null) {
       if (!executeLink(
-        context.read<NavigationController>().context!,
+        context.read<RouterDrawerController>().context!,
         url.toString(),
       )) {
         await launch(url.toString());

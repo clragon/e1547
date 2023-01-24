@@ -11,7 +11,7 @@ class FavPage extends StatefulWidget {
   State<FavPage> createState() => _FavPageState();
 }
 
-class _FavPageState extends State<FavPage> with DrawerEntry {
+class _FavPageState extends State<FavPage> with RouterDrawerEntry {
   @override
   Widget build(BuildContext context) {
     return FavoritePostsProvider(
@@ -50,7 +50,7 @@ class _FavPageState extends State<FavPage> with DrawerEntry {
             loadingBuilder: (context, child) => AdaptiveScaffold(
               appBar: const DefaultAppBar(title: Text('Favorites')),
               body: Center(child: child(context)),
-              drawer: const NavigationDrawer(),
+              drawer: const RouterDrawer(),
             ),
             child: (context) => PostsPage(
               controller: controller,

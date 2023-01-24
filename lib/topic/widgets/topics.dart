@@ -14,7 +14,7 @@ class TopicsPage extends StatefulWidget {
   State<TopicsPage> createState() => _TopicsPageState();
 }
 
-class _TopicsPageState extends State<TopicsPage> with DrawerEntry {
+class _TopicsPageState extends State<TopicsPage> with RouterDrawerEntry {
   @override
   Widget build(BuildContext context) {
     return TopicsProvider(
@@ -52,7 +52,7 @@ class _TopicsPageState extends State<TopicsPage> with DrawerEntry {
                 submit: (value) => controller.search.value = value,
               ),
             ),
-            drawer: const NavigationDrawer(),
+            drawer: const RouterDrawer(),
             endDrawer: ContextDrawer(
               title: const Text('Topics'),
               children: [TopicTagEditingTile(controller: controller)],

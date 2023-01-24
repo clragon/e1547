@@ -79,7 +79,7 @@ class _PostsPageState extends State<PostsPage> {
               controller: widget.controller,
               child: widget.appBar,
             ),
-            drawer: const NavigationDrawer(),
+            drawer: const RouterDrawer(),
             endDrawer: endDrawer(),
             floatingActionButton: floatingActionButton(),
             builder: (context, child) =>
