@@ -1,3 +1,4 @@
+import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -33,42 +34,45 @@ class _PostFullscreenGalleryState extends State<PostFullscreenGallery> {
       builder: (context, value, child) => Theme(
         data: Theme.of(context).copyWith(
           appBarTheme: Theme.of(context).appBarTheme.copyWith(
-                systemOverlayStyle:
-                    Theme.of(context).appBarTheme.systemOverlayStyle!.copyWith(
-                          statusBarIconBrightness: Brightness.light,
-                          statusBarColor: Colors.black26,
-                        ),
-              ),
+            systemOverlayStyle:
+            Theme.of(context).appBarTheme.systemOverlayStyle!.copyWith(
+              statusBarIconBrightness: Brightness.light,
+              statusBarColor: Colors.black26,
+            ),
+          ),
         ),
         child: widget.controller.itemList != null
             ? PostFullscreenFrame(
-                post: widget.controller.itemList![value],
-                visible: widget.showFrame,
-                child: child!,
-              )
+          post: widget.controller.itemList![value],
+          visible: widget.showFrame,
+          child: child!,
+        )
             : const SizedBox.shrink(),
       ),
       child: ChangeNotifierProvider.value(
         value: widget.controller,
         child: Consumer<PostsController>(
-          builder: (context, controller, child) => PageView.builder(
-            itemCount: controller.itemList?.length ?? 0,
-            controller: widget.pageController ?? pageController,
-            itemBuilder: (context, index) => PostFullscreenBody(
-              post: controller.itemList![index],
+          builder: (context, controller, child) => GalleryButtonWrapper(
+            controller: pageController,
+            child: PageView.builder(
+              itemCount: controller.itemList?.length ?? 0,
+              controller: widget.pageController ?? pageController,
+              itemBuilder: (context, index) => PostFullscreenBody(
+                post: controller.itemList![index],
+              ),
+              onPageChanged: (index) {
+                currentPage.value = index;
+                widget.onPageChanged?.call(index);
+                if (controller.itemList != null) {
+                  preloadPostImages(
+                    context: context,
+                    index: index,
+                    posts: controller.itemList!,
+                    size: PostImageSize.file,
+                  );
+                }
+              },
             ),
-            onPageChanged: (index) {
-              currentPage.value = index;
-              widget.onPageChanged?.call(index);
-              if (controller.itemList != null) {
-                preloadPostImages(
-                  context: context,
-                  index: index,
-                  posts: controller.itemList!,
-                  size: PostImageSize.file,
-                );
-              }
-            },
           ),
         ),
       ),

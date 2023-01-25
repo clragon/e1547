@@ -100,11 +100,15 @@ class HistoryTile extends StatelessWidget {
                           Expanded(
                             child: Padding(
                               padding: const EdgeInsets.symmetric(
-                                  vertical: 8, horizontal: 8),
-                              child: IgnorePointer(
-                                child: Opacity(
-                                  opacity: 0.7,
-                                  child: DText(entry.subtitle!.ellipse(400)),
+                                vertical: 8,
+                                horizontal: 8,
+                              ),
+                              child: ExcludeFocus(
+                                child: IgnorePointer(
+                                  child: Opacity(
+                                    opacity: 0.7,
+                                    child: DText(entry.subtitle!.ellipse(400)),
+                                  ),
                                 ),
                               ),
                             ),

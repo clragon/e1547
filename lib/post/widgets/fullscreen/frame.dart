@@ -207,9 +207,12 @@ class FrameChild extends StatelessWidget {
       return AnimatedOpacity(
         opacity: shown ? 1 : 0,
         duration: fadeOutDuration,
-        child: IgnorePointer(
-          ignoring: !shown,
-          child: child,
+        child: ExcludeFocus(
+          excluding: !shown,
+          child: IgnorePointer(
+            ignoring: !shown,
+            child: child,
+          ),
         ),
       );
     }

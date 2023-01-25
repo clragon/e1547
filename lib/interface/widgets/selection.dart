@@ -232,17 +232,19 @@ class SelectionItemOverlay<T> extends StatelessWidget {
                   ? () => layoutData.toggleSelection(item)
                   : null,
               onLongPress: () => layoutData.toggleSelection(item),
-              child: IgnorePointer(
-                child: AnimatedOpacity(
-                  duration: defaultAnimationDuration,
-                  opacity: layoutData.selections.contains(item) ? 1 : 0,
-                  child: Container(
-                    margin: padding,
-                    color: Colors.black38,
-                    child: const Icon(
-                      Icons.check_circle_outline,
-                      color: Colors.white,
-                      size: 60,
+              child: ExcludeFocus(
+                child: IgnorePointer(
+                  child: AnimatedOpacity(
+                    duration: defaultAnimationDuration,
+                    opacity: layoutData.selections.contains(item) ? 1 : 0,
+                    child: Container(
+                      margin: padding,
+                      color: Colors.black38,
+                      child: const Icon(
+                        Icons.check_circle_outline,
+                        color: Colors.white,
+                        size: 60,
+                      ),
                     ),
                   ),
                 ),

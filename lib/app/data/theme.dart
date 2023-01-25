@@ -136,10 +136,7 @@ ThemeData prepareTheme(ThemeData theme) => theme.copyWith(
       ),
     );
 
-class DesktopScrollBehaviour extends ScrollBehavior {
-  @override
-  Set<PointerDeviceKind> get dragDevices => PointerDeviceKind.values.toSet();
-
+class AndroidStretchScrollBehaviour extends ScrollBehavior {
   @override
   Widget buildOverscrollIndicator(
       BuildContext context, Widget child, ScrollableDetails details) {
