@@ -113,8 +113,9 @@ class PostDetailCommentsWrapper extends StatelessWidget {
                                   callback: () async {
                                     PostsController postsController =
                                         context.read<PostsController>();
-                                    if (await writeComment(
-                                        context: context, postId: post.id)) {
+                                    bool success = await writeComment(
+                                        context: context, postId: post.id);
+                                    if (success) {
                                       postsController.replacePost(
                                         post.copyWith(
                                           commentCount: post.commentCount + 1,

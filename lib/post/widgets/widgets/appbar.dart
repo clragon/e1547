@@ -53,7 +53,8 @@ List<PopupMenuItem<VoidCallback>> postMenuUserActions(
         context: context,
         callback: () async {
           PostsController controller = context.read<PostsController>();
-          if (await writeComment(context: context, postId: post.id)) {
+          bool success = await writeComment(context: context, postId: post.id);
+          if (success) {
             controller.replacePost(
               post.copyWith(commentCount: post.commentCount + 1),
             );
