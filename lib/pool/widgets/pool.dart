@@ -33,6 +33,8 @@ class _PoolPageState extends State<PoolPage> {
       canSearch: false,
       child: Consumer<PostsController>(
         builder: (context, controller, child) => ListenableListener(
+          initialize: true,
+          listenable: controller.search,
           listener: () async {
             HistoriesService service = context.read<HistoriesService>();
             Client client = context.read<Client>();
@@ -47,7 +49,6 @@ class _PoolPageState extends State<PoolPage> {
               return;
             }
           },
-          listenable: controller.search,
           child: PostsPage(
             controller: controller,
             displayType: readerMode ? PostDisplayType.comic : null,
