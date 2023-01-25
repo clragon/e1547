@@ -33,7 +33,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void saveAndTest(BuildContext context) {
-    FormState form = Form.of(context)!;
+    FormState form = Form.of(context);
     if (form.validate()) {
       showDialog(
         context: context,

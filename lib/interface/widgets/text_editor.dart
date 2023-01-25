@@ -121,9 +121,9 @@ class _TextEditorState extends State<TextEditor> {
       child: Builder(
         builder: (context) => ListenableListener(
           initialize: true,
-          listenable: DefaultTabController.of(context)!,
+          listenable: DefaultTabController.of(context),
           listener: () {
-            if (hasPreview && DefaultTabController.of(context)!.index == 0) {
+            if (hasPreview && DefaultTabController.of(context).index == 0) {
               if (!showBar) {
                 setState(() {
                   showBar = true;

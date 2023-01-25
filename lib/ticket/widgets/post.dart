@@ -78,7 +78,7 @@ class _PostReportScreenState extends State<PostReportScreen> {
   }
 
   Future<void> _sendReport(BuildContext context) async {
-    if (Form.of(context)!.validate()) {
+    if (Form.of(context).validate()) {
       setState(() => isLoading = true);
       scrollController.animateTo(
         0,
@@ -193,7 +193,7 @@ class _PostFlagScreenState extends State<PostFlagScreen> {
   }
 
   Future<void> _sendFlag(BuildContext context) async {
-    if (Form.of(context)!.validate()) {
+    if (Form.of(context).validate()) {
       setState(() {
         isLoading = true;
       });

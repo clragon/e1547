@@ -79,7 +79,7 @@ class _ReasonReportScreenState extends State<ReasonReportScreen> {
               onPressed: isLoading
                   ? null
                   : () async {
-                      if (Form.of(context)!.validate()) {
+                      if (Form.of(context).validate()) {
                         setState(() {
                           isLoading = true;
                         });
