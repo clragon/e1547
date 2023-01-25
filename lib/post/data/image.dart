@@ -34,23 +34,20 @@ Future<void> preloadPostImage({
   }
 }
 
-mixin PostImagePreloader<T extends StatefulWidget> on State<T> {
-  Future<void> preloadPostImages({
-    required int index,
-    required List<Post> posts,
-    required PostImageSize size,
-    int reach = 2,
-  }) async {
-    for (int i = -(reach + 1); i < reach; i++) {
-      if (!mounted) {
-        break;
-      }
-      int target = index + 1 + i;
-      if (0 < target && target < posts.length) {
-        Post post = posts[target];
-        if (post.type == PostType.image && post.file.url != null) {
-          await preloadPostImage(context: context, post: post, size: size);
-        }
+Future<void> preloadPostImages({
+  required BuildContext context,
+  required int index,
+  required List<Post> posts,
+  required PostImageSize size,
+  int reach = 2,
+}) async {
+  for (int i = -(reach + 1); i < reach; i++) {
+    int target = index + 1 + i;
+    if (0 < target && target < posts.length) {
+      Post post = posts[target];
+      if (post.type == PostType.image && post.file.url != null) {
+        if (!context.mounted) return;
+        await preloadPostImage(context: context, post: post, size: size);
       }
     }
   }

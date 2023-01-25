@@ -21,8 +21,7 @@ class PostDetailGallery extends StatefulWidget {
   State<PostDetailGallery> createState() => _PostDetailGalleryState();
 }
 
-class _PostDetailGalleryState extends State<PostDetailGallery>
-    with PostImagePreloader {
+class _PostDetailGalleryState extends State<PostDetailGallery> {
   bool hasRequestedNextPage = false;
   late PageController pageController = widget.pageController ??
       PageController(initialPage: widget.initialPage ?? 0);
@@ -79,6 +78,7 @@ class _PostDetailGalleryState extends State<PostDetailGallery>
             onPageChanged: (index) {
               widget.onPageChanged?.call(index);
               preloadPostImages(
+                context: context,
                 index: index,
                 posts: controller.itemList!,
                 size: PostImageSize.sample,
