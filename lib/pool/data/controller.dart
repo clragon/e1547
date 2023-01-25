@@ -72,7 +72,7 @@ class PoolsProvider extends SubChangeNotifierProvider2<Client, DenylistService,
         );
 }
 
-class ThumbnailController<KeyType, ItemType> extends PostsController {
+class ThumbnailController extends PostsController {
   ThumbnailController({
     required super.client,
     required super.denylist,

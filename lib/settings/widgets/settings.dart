@@ -60,42 +60,40 @@ class _SettingsPageState extends State<SettingsPage> {
                   selector: (context) => [client],
                   builder: (context, future) => FutureBuilder<CurrentUser?>(
                     future: future,
-                    builder: (context, snapshot) {
-                      return CrossFade.builder(
-                        duration: const Duration(milliseconds: 200),
-                        showChild: client.credentials != null,
-                        builder: (context) => DividerListTile(
-                          title: Text(client.credentials!.username),
-                          subtitle: snapshot.data?.levelString != null
-                              ? Text(snapshot.data!.levelString.toLowerCase())
-                              : null,
-                          leading: const IgnorePointer(
-                            child: CurrentUserAvatar(),
-                          ),
-                          separated: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 12),
-                            child: IgnorePointer(
-                              child: IconButton(
-                                icon: const Icon(Icons.exit_to_app),
-                                onPressed: () => logout(context),
-                              ),
+                    builder: (context, snapshot) => CrossFade.builder(
+                      duration: const Duration(milliseconds: 200),
+                      showChild: client.credentials != null,
+                      builder: (context) => DividerListTile(
+                        title: Text(client.credentials!.username),
+                        subtitle: snapshot.data?.levelString != null
+                            ? Text(snapshot.data!.levelString.toLowerCase())
+                            : null,
+                        leading: const IgnorePointer(
+                          child: CurrentUserAvatar(),
+                        ),
+                        separated: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                          child: IgnorePointer(
+                            child: IconButton(
+                              icon: const Icon(Icons.exit_to_app),
+                              onPressed: () => logout(context),
                             ),
                           ),
-                          onTap: () => Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  UserLoadingPage(client.credentials!.username),
-                            ),
+                        ),
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                UserLoadingPage(client.credentials!.username),
                           ),
-                          onTapSeparated: () => logout(context),
                         ),
-                        secondChild: ListTile(
-                          title: const Text('Login'),
-                          leading: const Icon(Icons.person_add),
-                          onTap: () => Navigator.pushNamed(context, '/login'),
-                        ),
-                      );
-                    },
+                        onTapSeparated: () => logout(context),
+                      ),
+                      secondChild: ListTile(
+                        title: const Text('Login'),
+                        leading: const Icon(Icons.person_add),
+                        onTap: () => Navigator.pushNamed(context, '/login'),
+                      ),
+                    ),
                   ),
                 ),
               ),

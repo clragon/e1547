@@ -52,11 +52,13 @@ class PoolTile extends StatelessWidget {
       if (post != null) {
         image = ChangeNotifierProvider<PostsController>.value(
           value: controller.thumbnails,
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxHeight: 400),
-            child: AspectRatio(
-              aspectRatio: max(post.file.width / post.file.height, 0.9),
-              child: PostImageTile(post: post),
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxHeight: 400),
+              child: AspectRatio(
+                aspectRatio: max(post.file.width / post.file.height, 0.9),
+                child: PostImageTile(post: post),
+              ),
             ),
           ),
         );
@@ -67,21 +69,20 @@ class PoolTile extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.all(4),
-          child: InkWell(
-            onTap: onPressed,
-            onLongPress: () => poolSheet(context, pool),
-            child: Padding(
-              padding: const EdgeInsets.all(8),
-              child: AnimatedSize(
-                duration: defaultAnimationDuration,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    title(),
-                    if (pool.description.isNotEmpty)
-                      Padding(
-                        padding: const EdgeInsets.all(8),
-                        child: IgnorePointer(
+          child: Stack(
+            fit: StackFit.passthrough,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8),
+                child: AnimatedSize(
+                  duration: defaultAnimationDuration,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      title(),
+                      if (pool.description.isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.all(8),
                           child: Opacity(
                             opacity: 0.5,
                             child: DText(
@@ -91,12 +92,21 @@ class PoolTile extends StatelessWidget {
                             ),
                           ),
                         ),
-                      ),
-                    if (image != null) image,
-                  ],
+                      if (image != null) image,
+                    ],
+                  ),
                 ),
               ),
-            ),
+              Positioned.fill(
+                child: Material(
+                  type: MaterialType.transparency,
+                  child: InkWell(
+                    onTap: onPressed,
+                    onLongPress: () => poolSheet(context, pool),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
         const Divider(indent: 8, endIndent: 8),

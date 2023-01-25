@@ -62,12 +62,13 @@ class PostImageTile extends StatelessWidget {
               ],
             ),
             Positioned(top: 0, right: 0, child: PostImageTag(post: post)),
-            Material(
-              type: MaterialType.transparency,
-              child: InkWell(
-                onTap: onTap,
+            if (onTap != null)
+              Material(
+                type: MaterialType.transparency,
+                child: InkWell(
+                  onTap: onTap,
+                ),
               ),
-            ),
           ],
         ),
       ),
