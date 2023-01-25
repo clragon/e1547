@@ -97,7 +97,7 @@ class _PostFullscreenFrameState extends State<PostFullscreenFrame>
   void initState() {
     super.initState();
     SystemChrome.setSystemUIChangeCallback(
-        (hidden) async => controller.toggleFrame(shown: !hidden));
+        (hidden) async => controller.toggleFrame(shown: hidden));
   }
 
   @override
