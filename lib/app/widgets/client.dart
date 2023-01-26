@@ -89,6 +89,12 @@ class CloudflareCaptchaResolver extends StatefulWidget {
 }
 
 class _CloudflareCaptchaResolverState extends State<CloudflareCaptchaResolver> {
+  late final WebViewController controller = WebViewController()
+    ..setUserAgent(context.read<Client>().userAgent)
+    ..setJavaScriptMode(JavaScriptMode.unrestricted)
+    ..setBackgroundColor(Theme.of(context).colorScheme.background)
+    ..loadRequest(Uri.https(context.read<Client>().host));
+
   bool read = false;
 
   Future<void> setCookies(BuildContext context) async {
@@ -151,12 +157,7 @@ class _CloudflareCaptchaResolverState extends State<CloudflareCaptchaResolver> {
           leading: const CloseButton(),
           title: const Text('Resolve host issue'),
         ),
-        body: WebView(
-          userAgent: context.watch<Client>().userAgent,
-          initialUrl: Uri.https(context.read<Client>().host).toString(),
-          javascriptMode: JavascriptMode.unrestricted,
-          backgroundColor: Theme.of(context).colorScheme.background,
-        ),
+        body: WebViewWidget(controller: controller),
         floatingActionButton: FloatingActionButton(
           child: const Icon(Icons.check),
           onPressed: () async {

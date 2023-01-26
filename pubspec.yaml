@@ -31,7 +31,7 @@ dependencies:
   pull_to_refresh: ^2.0.0
   sliding_sheet: ^0.5.0
   sliver_tools: ^0.2.8
-  webview_flutter: ^3.0.4
+  webview_flutter: ^4.0.2
 
   # data
   app_links: ^3.3.0
@@ -66,7 +66,7 @@ dependencies:
   url_launcher: ^6.1.7
   wakelock: ^0.6.1+2
   webview_cookie_manager: ^2.0.6
-  window_manager: ^0.2.5
+  window_manager: ^0.3.0
 
   username_generator:
     git: https://github.com/clragon/username_generator.git
@@ -89,8 +89,8 @@ dependency_overrides:
 
 dev_dependencies:
   flutter_lints: ^2.0.1
-  flutter_launcher_icons: ^0.10.0
-  flutter_native_splash: ^2.2.2
+  flutter_launcher_icons: ^0.11.0
+  flutter_native_splash: ^2.2.16
 
   # dart run build_runner build
   build_runner: ^2.1.11
@@ -111,6 +111,10 @@ flutter_icons:
   adaptive_icon_background: "assets/icon/app/background.png"
   adaptive_icon_foreground: "assets/icon/app/foreground.png"
   image_path: "assets/icon/app/icon.png"
+  windows:
+    generate: false
+    image_path: "assets/icon/app/round.png"
+    icon_size: 256
 
 # flutter pub run flutter_native_splash:create
 flutter_native_splash:
