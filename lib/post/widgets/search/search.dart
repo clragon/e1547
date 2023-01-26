@@ -8,10 +8,15 @@ import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 
 class PostsSearchPage extends StatefulWidget {
-  const PostsSearchPage({this.tags, this.reversePools = false});
+  const PostsSearchPage({
+    this.tags,
+    this.reversePools = false,
+    this.readerMode = false,
+  });
 
   final String? tags;
   final bool reversePools;
+  final bool readerMode;
 
   @override
   State<PostsSearchPage> createState() => _PostsSearchPageState();
@@ -19,7 +24,7 @@ class PostsSearchPage extends StatefulWidget {
 
 class _PostsSearchPageState extends State<PostsSearchPage> {
   late bool reversePools = widget.reversePools;
-  bool readerMode = false;
+  late bool readerMode = widget.readerMode;
   bool loadingInfo = true;
   Pool? pool;
 
