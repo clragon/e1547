@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -86,26 +84,6 @@ enum AppTheme {
 
 ThemeData prepareTheme(ThemeData theme) => theme.copyWith(
       applyElevationOverlayColor: false,
-      dialogBackgroundColor: theme.canvasColor,
-      switchTheme: theme.switchTheme.copyWith(
-        thumbColor: MaterialStateProperty.resolveWith(
-          (states) => states.contains(MaterialState.selected)
-              ? theme.colorScheme.secondary
-              : null,
-        ),
-        trackColor: MaterialStateProperty.resolveWith(
-          (states) => states.contains(MaterialState.selected)
-              ? theme.colorScheme.primary.withOpacity(0.5)
-              : null,
-        ),
-      ),
-      checkboxTheme: theme.checkboxTheme.copyWith(
-        fillColor: MaterialStateProperty.resolveWith(
-          (states) => states.contains(MaterialState.selected)
-              ? theme.colorScheme.primary
-              : null,
-        ),
-      ),
       appBarTheme: theme.appBarTheme.copyWith(
         surfaceTintColor:
             theme.appBarTheme.backgroundColor ?? theme.colorScheme.background,
@@ -126,7 +104,6 @@ ThemeData prepareTheme(ThemeData theme) => theme.copyWith(
       ),
       cardTheme: theme.cardTheme.copyWith(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
-        surfaceTintColor: theme.cardTheme.color ?? theme.colorScheme.surface,
       ),
       bannerTheme: theme.bannerTheme.copyWith(
         backgroundColor: theme.canvasColor,

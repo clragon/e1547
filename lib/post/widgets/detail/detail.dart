@@ -31,102 +31,102 @@ class _PostDetailState extends State<PostDetail> {
   }
 
   Widget image(BuildContext context, BoxConstraints constraints) => Padding(
-    padding: const EdgeInsets.only(bottom: 10),
-    child: ConstrainedBox(
-      constraints: BoxConstraints(
-        minHeight: max(300, (constraints.maxHeight / 2)),
+        padding: const EdgeInsets.only(bottom: 10),
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            minHeight: (constraints.maxHeight / 2),
             maxHeight: constraints.maxWidth > constraints.maxHeight
-                ? constraints.maxHeight * 0.8
+                ? max(400, constraints.maxHeight * 0.8)
                 : double.infinity,
           ),
-      child: AnimatedSize(
-        duration: defaultAnimationDuration,
-        child: PostDetailImageDisplay(
-          post: post,
-          onTap: () {
-            PostVideoRoute.of(context).keepPlaying();
-            if (!(context.read<PostEditingController>().editing) &&
-                widget.onTapImage != null) {
-              widget.onTapImage!();
-            } else {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => PostFullscreen(post: post),
-                ),
-              );
-            }
-          },
+          child: AnimatedSize(
+            duration: defaultAnimationDuration,
+            child: PostDetailImageDisplay(
+              post: post,
+              onTap: () {
+                PostVideoRoute.of(context).keepPlaying();
+                if (!(context.read<PostEditingController>().editing) &&
+                    widget.onTapImage != null) {
+                  widget.onTapImage!();
+                } else {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => PostFullscreen(post: post),
+                    ),
+                  );
+                }
+              },
+            ),
+          ),
         ),
-      ),
-    ),
-  );
+      );
 
   Widget upperBody(BuildContext context) => Padding(
-    padding: const EdgeInsets.symmetric(
-      horizontal: 20,
-    ),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        ArtistDisplay(post: post),
-        DescriptionDisplay(post: post),
-      ],
-    ),
-  );
+        padding: const EdgeInsets.symmetric(
+          horizontal: 20,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ArtistDisplay(post: post),
+            DescriptionDisplay(post: post),
+          ],
+        ),
+      );
 
   Widget upperBodyExtension(BuildContext context) => Padding(
-    padding: const EdgeInsets.symmetric(
-      horizontal: 20,
-    ),
-    child: LikeDisplay(post: post),
-  );
+        padding: const EdgeInsets.symmetric(
+          horizontal: 20,
+        ),
+        child: LikeDisplay(post: post),
+      );
 
   Widget middleBody(BuildContext context) => Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 20),
-    child: Column(
-      children: [
-        PostEditorChild(
-          shown: false,
-          child: LikeDisplay(post: post),
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Column(
+          children: [
+            PostEditorChild(
+              shown: false,
+              child: LikeDisplay(post: post),
+            ),
+            PostEditorChild(
+              shown: false,
+              child: CommentDisplay(post: post),
+            ),
+          ],
         ),
-        PostEditorChild(
-          shown: false,
-          child: CommentDisplay(post: post),
-        ),
-      ],
-    ),
-  );
+      );
 
   Widget lowerBody(BuildContext context) => Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 20),
-    child: Column(
-      children: [
-        RelationshipDisplay(post: post),
-        PostEditorChild(
-          shown: false,
-          child: PoolDisplay(post: post),
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Column(
+          children: [
+            RelationshipDisplay(post: post),
+            PostEditorChild(
+              shown: false,
+              child: PoolDisplay(post: post),
+            ),
+            PostEditorChild(
+              shown: false,
+              child: DenylistTagDisplay(post: post),
+            ),
+            TagDisplay(post: post),
+            PostEditorChild(
+              shown: false,
+              child: FileDisplay(
+                post: post,
+              ),
+            ),
+            PostEditorChild(
+              shown: true,
+              child: RatingDisplay(
+                post: post,
+              ),
+            ),
+            SourceDisplay(post: post),
+          ],
         ),
-        PostEditorChild(
-          shown: false,
-          child: DenylistTagDisplay(post: post),
-        ),
-        TagDisplay(post: post),
-        PostEditorChild(
-          shown: false,
-          child: FileDisplay(
-            post: post,
-          ),
-        ),
-        PostEditorChild(
-          shown: true,
-          child: RatingDisplay(
-            post: post,
-          ),
-        ),
-        SourceDisplay(post: post),
-      ],
-    ),
-  );
+      );
 
   @override
   Widget build(BuildContext context) {

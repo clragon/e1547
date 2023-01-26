@@ -36,7 +36,8 @@ class App extends StatelessWidget {
           valueListenable: settings.theme,
           builder: (context, value, child) => ExcludeSemantics(
             child: AnnotatedRegion<SystemUiOverlayStyle>(
-              value: value.data.appBarTheme.systemOverlayStyle!,
+              value: value.data.appBarTheme.systemOverlayStyle ??
+                  const SystemUiOverlayStyle(),
               child: MaterialApp(
                 title: appInfo.appName,
                 theme: value.data,
