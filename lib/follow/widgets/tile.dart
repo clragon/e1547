@@ -188,7 +188,7 @@ class FollowTile extends StatelessWidget {
                           builder: (context) => PostsSearchPage(
                             tags: follow.tags,
                             reversePools: (follow.unseen ?? 0) > 0,
-                            readerMode: true,
+                            readerMode: poolRegex().hasMatch(follow.tags),
                           ),
                         ),
                       ),
