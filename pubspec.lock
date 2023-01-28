@@ -541,10 +541,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_typeahead
-      sha256: "0ec56e1deac7556f3616f3cd53c9a25bf225dc8b72e9f44b5a7717e42bb467b5"
+      sha256: "9ed8fe6412ba4c1196c0cada258f476b42361d59e3c831e406ce263ba229ec1d"
       url: "https://pub.dev"
     source: hosted
-    version: "4.1.1"
+    version: "4.3.2"
   flutter_web_plugins:
     dependency: transitive
     description: flutter
@@ -1638,5 +1638,5 @@ packages:
     source: hosted
     version: "3.1.1"
 sdks:
-  dart: ">=2.18.4 <4.0.0"
+  dart: ">=2.19.0 <4.0.0"
   flutter: ">=3.3.0"
