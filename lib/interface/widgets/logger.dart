@@ -21,7 +21,11 @@ class LoggerPage extends StatefulWidget {
 
 class _LoggerPageState extends State<LoggerPage> {
   Future<void> export() async {
-    await Share.shareFile(context, widget.talker.history.text);
+    await Share.shareFile(
+      context,
+      widget.talker.history.text,
+      name: '${DateTime.now().toIso8601String()}.log',
+    );
   }
 
   @override
@@ -146,7 +150,7 @@ class _LoggerCardState extends State<LoggerCard> {
                               children: [
                                 ExpandablePanel(
                                   collapsed: Text(item.logShort),
-                                  expanded: Text(item.logLong),
+                                  expanded: Text(item.logLong.ellipse(500)),
                                 ),
                               ],
                             ),

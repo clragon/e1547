@@ -14,11 +14,15 @@ class Share {
     }
   }
 
-  static Future<void> shareFile(BuildContext context, String text) async {
+  static Future<void> shareFile(
+    BuildContext context,
+    String text, {
+    String? name,
+  }) async {
     if (Platform.isAndroid || Platform.isIOS) {
       plus.XFile file = plus.XFile.fromData(
         Uint8List.fromList(utf8.encode(text)),
-        name: '${DateTime.now().toIso8601String()}.log',
+        name: name,
         mimeType: 'text/plain',
       );
       await plus.Share.shareXFiles([file]);

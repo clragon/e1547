@@ -1083,10 +1083,10 @@ packages:
     dependency: "direct main"
     description:
       name: relative_time
-      sha256: "20ad0147364e84adf3b24ee4d82b3c1d7a620461b1eaa325501c85a163ed411e"
+      sha256: "6f4b169fd277e7afe6dd8bd8fa4d8bc1d887109cf6df1a02c0604a6ea4ba2466"
       url: "https://pub.dev"
     source: hosted
-    version: "2.2.1"
+    version: "3.0.0"
   rxdart:
     dependency: transitive
     description:
