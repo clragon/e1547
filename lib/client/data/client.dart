@@ -706,7 +706,7 @@ class Client {
     String? title = search?.isNotEmpty ?? false ? search : null;
     final body = await _dio
         .get(
-      'forum_topics.json',
+          'forum_topics.json',
           queryParameters: {
             'page': page,
             'search[title_matches]': title,

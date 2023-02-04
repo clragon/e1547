@@ -6,8 +6,7 @@ import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 
 class VideoButton extends StatefulWidget {
-  VideoButton({required this.videoController, this.size = 54})
-      : super(key: ObjectKey(videoController));
+  const VideoButton({super.key, required this.videoController, this.size = 54});
 
   final CachedVideoPlayerController videoController;
   final double size;
@@ -18,83 +17,80 @@ class VideoButton extends StatefulWidget {
 
 class _VideoButtonState extends State<VideoButton>
     with SingleTickerProviderStateMixin {
-  late AnimationController animationController =
-      AnimationController(vsync: this, duration: defaultAnimationDuration);
-
-  @override
-  void dispose() {
-    animationController.dispose();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
-    FrameController? frameController = FrameController.of(context);
-    return AnimatedBuilder(
-      animation: Listenable.merge([widget.videoController, frameController]),
-      builder: (context, child) {
-        bool loading = !widget.videoController.value.isInitialized ||
-            widget.videoController.value.isBuffering;
-        bool shown = !widget.videoController.value.isPlaying || loading;
-        if (frameController != null) {
-          shown = frameController.visible || shown;
-        }
+    ScaffoldFrameController? frameController = ScaffoldFrame.maybeOf(context);
+    return SubValueBuilder<AnimationController>(
+      create: (context) =>
+          AnimationController(vsync: this, duration: defaultAnimationDuration),
+      selector: (context) => [widget.videoController],
+      dispose: (context, value) => value.dispose(),
+      builder: (context, animationController) => AnimatedBuilder(
+        animation: Listenable.merge([widget.videoController, frameController]),
+        builder: (context, child) {
+          bool loading = !widget.videoController.value.isInitialized ||
+              widget.videoController.value.isBuffering;
+          bool shown = !widget.videoController.value.isPlaying || loading;
+          if (frameController != null) {
+            shown = frameController.visible || shown;
+          }
 
-        return FrameChild(
-          shown: shown,
-          child: Material(
-            clipBehavior: Clip.antiAlias,
-            shape: const CircleBorder(),
-            color: Colors.black26,
-            child: IconButton(
-              iconSize: widget.size,
-              onPressed: () {
-                if (widget.videoController.value.isPlaying) {
-                  frameController?.cancel();
-                  widget.videoController.pause();
-                } else {
-                  widget.videoController.play();
-                  frameController?.hideFrame(
-                      duration: const Duration(milliseconds: 500));
-                }
-              },
-              icon: Center(
-                child: CrossFade(
-                  secondChild: const Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(8),
-                      child: CircularProgressIndicator(),
+          return ScaffoldFrameChild(
+            shown: shown,
+            child: Material(
+              clipBehavior: Clip.antiAlias,
+              shape: const CircleBorder(),
+              color: Colors.black26,
+              child: IconButton(
+                iconSize: widget.size,
+                onPressed: () {
+                  if (widget.videoController.value.isPlaying) {
+                    frameController?.cancel();
+                    widget.videoController.pause();
+                  } else {
+                    widget.videoController.play();
+                    frameController?.hideFrame(
+                        duration: const Duration(milliseconds: 500));
+                  }
+                },
+                icon: Center(
+                  child: CrossFade(
+                    secondChild: const Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(8),
+                        child: CircularProgressIndicator(),
+                      ),
                     ),
-                  ),
-                  showChild:
-                      !widget.videoController.value.isPlaying || !loading,
-                  duration: const Duration(milliseconds: 100),
-                  child: ListenableListener(
-                    initialize: true,
-                    listenable: widget.videoController,
-                    listener: () {
-                      if (widget.videoController.value.isPlaying) {
-                        animationController.forward();
-                      } else {
-                        animationController.reverse();
-                      }
-                    },
-                    child: AnimatedBuilder(
-                      animation: animationController,
-                      builder: (context, child) => AnimatedIcon(
-                        icon: AnimatedIcons.play_pause,
-                        progress: animationController,
-                        size: widget.size,
-                        color: Colors.white,
+                    showChild:
+                        !widget.videoController.value.isPlaying || !loading,
+                    duration: const Duration(milliseconds: 100),
+                    child: ListenableListener(
+                      initialize: true,
+                      listenable: widget.videoController,
+                      listener: () {
+                        if (widget.videoController.value.isPlaying) {
+                          animationController.forward();
+                        } else {
+                          animationController.reverse();
+                        }
+                      },
+                      child: AnimatedBuilder(
+                        animation: animationController,
+                        builder: (context, child) => AnimatedIcon(
+                          icon: AnimatedIcons.play_pause,
+                          progress: animationController,
+                          size: widget.size,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
                   ),
                 ),
               ),
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 }
@@ -107,7 +103,7 @@ class VideoBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: FrameChild(
+      child: ScaffoldFrameChild(
         child: AnimatedBuilder(
           animation: videoController,
           builder: (context, child) => CrossFade.builder(
@@ -142,12 +138,12 @@ class VideoBar extends StatelessWidget {
                                   .toDouble(),
                             ),
                         onChangeStart: (value) =>
-                            FrameController.of(context)?.cancel(),
+                            ScaffoldFrame.maybeOf(context)?.cancel(),
                         onChanged: (value) => videoController
                             .seekTo(Duration(milliseconds: value.toInt())),
                         onChangeEnd: (value) {
                           if (videoController.value.isPlaying) {
-                            FrameController.of(context)?.hideFrame(
+                            ScaffoldFrame.maybeOf(context)?.hideFrame(
                                 duration: const Duration(seconds: 2));
                           }
                         },
@@ -392,8 +388,7 @@ class PostVideoRouteState extends State<PostVideoRoute> with RouteAware {
   void didChangeDependencies() {
     super.didChangeDependencies();
     _navigation = context.watch<RouterDrawerController>();
-    _navigation.routeObserver
-        .subscribe(this, ModalRoute.of(context) as PageRoute);
+    _navigation.routeObserver.subscribe(this, ModalRoute.of(context)!);
     _videoController = widget.post.getVideo(context);
   }
 
@@ -401,17 +396,16 @@ class PostVideoRouteState extends State<PostVideoRoute> with RouteAware {
   void reassemble() {
     super.reassemble();
     _navigation.routeObserver.unsubscribe(this);
-    _navigation.routeObserver
-        .subscribe(this, ModalRoute.of(context) as PageRoute);
+    _navigation.routeObserver.subscribe(this, ModalRoute.of(context)!);
   }
 
   @override
   void dispose() {
     _navigation.routeObserver.unsubscribe(this);
     if (widget.stopOnDispose && !_wasPlaying) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _videoController?.pause();
-      });
+      WidgetsBinding.instance.addPostFrameCallback(
+        (_) => _videoController?.pause(),
+      );
     }
     super.dispose();
   }

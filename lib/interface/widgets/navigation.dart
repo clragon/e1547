@@ -47,7 +47,7 @@ class RouterDrawerController extends ChangeNotifier {
   final WidgetBuilder? drawerHeader;
 
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
-  final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
+  final RouteObserver<Route<Object?>> routeObserver = RouteObserver<Route<Object?>>();
 
   NavigatorState? get navigator => navigatorKey.currentState;
 

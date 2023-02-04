@@ -1,7 +1,6 @@
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class PostFullscreenGallery extends StatefulWidget {
   const PostFullscreenGallery({
@@ -34,20 +33,14 @@ class _PostFullscreenGalleryState extends State<PostFullscreenGallery> {
       builder: (context, value, child) => Theme(
         data: Theme.of(context).copyWith(
           appBarTheme: Theme.of(context).appBarTheme.copyWith(
-            systemOverlayStyle:
-            Theme.of(context).appBarTheme.systemOverlayStyle!.copyWith(
-              statusBarIconBrightness: Brightness.light,
-              statusBarColor: Colors.black26,
-            ),
-          ),
+                systemOverlayStyle:
+                    Theme.of(context).appBarTheme.systemOverlayStyle!.copyWith(
+                          statusBarIconBrightness: Brightness.light,
+                          statusBarColor: Colors.black26,
+                        ),
+              ),
         ),
-        child: widget.controller.itemList != null
-            ? PostFullscreenFrame(
-          post: widget.controller.itemList![value],
-          visible: widget.showFrame,
-          child: child!,
-        )
-            : const SizedBox.shrink(),
+        child: ScaffoldFrame(child: child!),
       ),
       child: ChangeNotifierProvider.value(
         value: widget.controller,
@@ -57,7 +50,7 @@ class _PostFullscreenGalleryState extends State<PostFullscreenGallery> {
             child: PageView.builder(
               itemCount: controller.itemList?.length ?? 0,
               controller: widget.pageController ?? pageController,
-              itemBuilder: (context, index) => PostFullscreenBody(
+              itemBuilder: (context, index) => PostFullscreen(
                 post: controller.itemList![index],
               ),
               onPageChanged: (index) {
