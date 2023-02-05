@@ -135,7 +135,7 @@ class RawPostImageWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Duration fades =
-        stacked ? const Duration() : const Duration(milliseconds: 500);
+        stacked ? Duration.zero : const Duration(milliseconds: 500);
 
     Widget progressIndicator(
       BuildContext context,

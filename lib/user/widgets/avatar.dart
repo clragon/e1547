@@ -73,7 +73,7 @@ class CurrentUserAvatarValue {
         await controller.loadFirstPage();
         return controller;
       }
-    } catch (e) {
+    } on Exception {
       return null;
     }
     return null;

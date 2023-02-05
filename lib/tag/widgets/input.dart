@@ -317,13 +317,11 @@ class _AdvancedTagInputState extends State<AdvancedTagInput> {
             if (key == null) {
               return tags;
             }
-            // ignore: iterable_contains_unrelated_type
-            if (key == 'status' && tags.contains('status')) {
+            if (key == 'status' && tags.containsTag('status')) {
               tags.remove('status');
               return tags;
             }
-            // ignore: iterable_contains_unrelated_type
-            if (key == 'inpool' && tags.contains('inpool')) {
+            if (key == 'inpool' && tags.containsTag('inpool')) {
               tags.remove('inpool');
               return tags;
             }

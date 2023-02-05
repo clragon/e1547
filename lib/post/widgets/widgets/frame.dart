@@ -107,8 +107,6 @@ class ScaffoldFrameChild extends StatelessWidget {
   final bool? shown;
   final Widget child;
 
-  final Duration fadeOutDuration = const Duration(milliseconds: 50);
-
   @override
   Widget build(BuildContext context) {
     ScaffoldFrameController? controller = ScaffoldFrame.maybeOf(context);
@@ -117,7 +115,7 @@ class ScaffoldFrameChild extends StatelessWidget {
     Widget body() {
       return AnimatedOpacity(
         opacity: shown ? 1 : 0,
-        duration: fadeOutDuration,
+        duration: const Duration(milliseconds: 50),
         child: ExcludeFocus(
           excluding: !shown,
           child: IgnorePointer(

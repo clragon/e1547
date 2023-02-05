@@ -1,7 +1,7 @@
-/// This file contains global, app-wide default providers.
-/// They are not meant for usage further down the tree.
-/// Using them in such a manner could cause conflicts,
-/// because no two controllers should be attached to the Settings.
+// This file contains global, app-wide default providers.
+// They are not meant for usage further down the tree.
+// Using them in such a manner could cause conflicts,
+// because no two controllers should be attached to the Settings.
 
 import 'package:e1547/app/app.dart';
 import 'package:e1547/client/client.dart';

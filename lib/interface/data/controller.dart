@@ -151,7 +151,7 @@ abstract class DataController<KeyType, ItemType>
     }
   }
 
-  /// Replaces the [item] at [index] in the [itemlist].
+  /// Replaces the [item] at [index] in the [itemList].
   void updateItem(int index, ItemType item) {
     if ((itemList?.length ?? -1) < index) {
       throw StateError('$runtimeType doesn\'t have an item at $index');
@@ -287,8 +287,6 @@ class PageLock<KeyType> {
       return null;
     } on KeyWasNotUsedException<KeyType> {
       return null;
-    } catch (_) {
-      rethrow;
     } finally {
       if (_mutex.isLocked) {
         release(null);
@@ -313,7 +311,7 @@ class KeyAlreadyUsedException<KeyType> implements Exception {
   final KeyType key;
 
   @override
-  String toString() => "$runtimeType: $key was already used!";
+  String toString() => '$runtimeType: $key was already used!';
 }
 
 class KeyWasNotUsedException<KeyType> implements Exception {
@@ -324,7 +322,7 @@ class KeyWasNotUsedException<KeyType> implements Exception {
   final KeyType key;
 
   @override
-  String toString() => "$runtimeType: $key was not used!";
+  String toString() => '$runtimeType: $key was not used!';
 }
 
 mixin FilterableController<PageKeyType, ItemType>
@@ -483,9 +481,7 @@ extension DataControllerLoading on DataController {
   }
 
   /// Requests and waits for the first Page of this controller to be loaded.
-  ///
   /// Triggers a page request for the first page key.
-  /// If the page load fails, a [ControllerLoadingException] will be thrown.
   Future<void> loadFirstPage() async {
     Future<void> loaded = waitForFirstPage();
     if (nextPageKey == firstPageKey) {

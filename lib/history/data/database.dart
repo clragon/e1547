@@ -203,13 +203,11 @@ class HistoriesDatabase extends _$HistoriesDatabase {
       );
 
   Future<void> remove(History item) async =>
-      await (delete(historiesTable)..where((tbl) => tbl.id.equals(item.id)))
-          .go();
+      (delete(historiesTable)..where((tbl) => tbl.id.equals(item.id))).go();
 
-  Future<void> removeAll(List<History> items) async =>
-      await (delete(historiesTable)
-            ..where((tbl) => tbl.id.isIn(items.map((e) => e.id))))
-          .go();
+  Future<void> removeAll(List<History> items) async => (delete(historiesTable)
+        ..where((tbl) => tbl.id.isIn(items.map((e) => e.id))))
+      .go();
 
   Future<void> trim({
     String? host,

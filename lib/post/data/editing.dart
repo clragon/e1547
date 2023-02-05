@@ -1,7 +1,6 @@
 import 'package:e1547/interface/interface.dart';
+import 'package:e1547/post/data/post.dart';
 import 'package:flutter/material.dart';
-
-import 'post.dart';
 
 class PostEdit {
   PostEdit({

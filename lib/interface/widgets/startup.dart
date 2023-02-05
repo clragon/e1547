@@ -33,7 +33,7 @@ class _StartupActionsState extends State<StartupActions> {
         Future<void>(() async {
           try {
             await element(context);
-          } catch (e) {
+          } on Exception catch (e) {
             if (widget.onError != null) {
               widget.onError!(context, e);
             } else {

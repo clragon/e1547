@@ -1,12 +1,11 @@
 import 'package:e1547/client/client.dart';
 import 'package:e1547/dtext/dtext.dart';
 import 'package:e1547/pool/pool.dart';
+import 'package:e1547/pool/widgets/actions.dart';
+import 'package:e1547/pool/widgets/info.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
-
-import 'actions.dart';
-import 'info.dart';
 
 void poolDialog({required BuildContext context, required Pool pool}) {
   showDialog(
@@ -49,12 +48,13 @@ class PoolDialog extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                pool.description.isNotEmpty
-                    ? DText(pool.description)
-                    : const Text(
-                        'no description',
-                        style: TextStyle(fontStyle: FontStyle.italic),
-                      ),
+                if (pool.description.isNotEmpty)
+                  DText(pool.description)
+                else
+                  const Text(
+                    'no description',
+                    style: TextStyle(fontStyle: FontStyle.italic),
+                  ),
                 const Padding(
                   padding: EdgeInsets.only(top: 16, bottom: 8),
                   child: Divider(),

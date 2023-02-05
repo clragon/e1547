@@ -18,7 +18,7 @@ class ReadOnlyCancelToken implements CancelToken {
   Future<DioError> get whenCancel => other.whenCancel;
 
   @override
-  void cancel([reason]) =>
+  void cancel([dynamic reason]) =>
       throw UnsupportedError('Cannot cancel a read only cancel token');
 
   @override

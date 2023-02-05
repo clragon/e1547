@@ -28,17 +28,17 @@ enum ReportType {
   String get title {
     switch (this) {
       case rating:
-        return "Rating Abuse";
+        return 'Rating Abuse';
       case file:
-        return "Malicious File";
+        return 'Malicious File';
       case source:
-        return "Malicious Source";
+        return 'Malicious Source';
       case description:
-        return "Description Abuse";
+        return 'Description Abuse';
       case note:
-        return "Note Abuse";
+        return 'Note Abuse';
       case tagging:
-        return "Tagging Abuse";
+        return 'Tagging Abuse';
       default:
         throw ArgumentError('Invalid ReportType when fetching title');
     }
@@ -78,19 +78,19 @@ enum FlagType {
   String get title {
     switch (this) {
       case dnpArtist:
-        return "The artist of is on the avoid posting list";
+        return 'The artist of is on the avoid posting list';
       case payContent:
-        return "Paysite, commercial, or subscription content";
+        return 'Paysite, commercial, or subscription content';
       case trace:
         return "Trace of another artist's work";
       case previouslyDeleted:
-        return "Previously deleted";
+        return 'Previously deleted';
       case realPorn:
-        return "Real-life pornography";
+        return 'Real-life pornography';
       case corrupt:
-        return "File is either corrupted, broken, or otherwise does not work";
+        return 'File is either corrupted, broken, or otherwise does not work';
       case inferior:
-        return "Duplicate or inferior version of another post";
+        return 'Duplicate or inferior version of another post';
       default:
         throw ArgumentError('Invalid FlagType when fetching title');
     }
@@ -99,19 +99,19 @@ enum FlagType {
   String get description {
     switch (this) {
       case dnpArtist:
-        return "Certain artists have requested that their work is not to be published on this site, and were granted [[avoid_posting|Do Not Post]] status.\nSometimes, that status comes with conditions; see [[conditional_dnp]] for more information";
+        return 'Certain artists have requested that their work is not to be published on this site, and were granted [[avoid_posting|Do Not Post]] status.\nSometimes, that status comes with conditions; see [[conditional_dnp]] for more information';
       case payContent:
-        return "We do not host paysite or commercial content of any kind. This includes Patreon leaks, reposts from piracy websites, and so on.";
+        return 'We do not host paysite or commercial content of any kind. This includes Patreon leaks, reposts from piracy websites, and so on.';
       case trace:
         return "Images traced from other artists' artwork are not accepted on this site. Referencing from something is fine, but outright copying someone else's work is not.\nPlease, leave more information in the comments, or simply add the original artwork as the posts's parent if it's hosted on this site.";
       case previouslyDeleted:
         return "Posts usually get removed for a good reason, and reuploading of deleted content is not acceptable.\nPlease, leave more information in the comments, or simply add the original post as this post's parent.";
       case realPorn:
-        return "Posts featuring real-life pornography are not acceptable on this site. No exceptions.\nNote that images featuring non-erotic photographs are acceptable.";
+        return 'Posts featuring real-life pornography are not acceptable on this site. No exceptions.\nNote that images featuring non-erotic photographs are acceptable.';
       case corrupt:
-        return "Something about this post does not work quite right. This may be a broken video, or a corrupted image.\nEither way, in order to avoid confusion, please explain the situation in the comments.";
+        return 'Something about this post does not work quite right. This may be a broken video, or a corrupted image.\nEither way, in order to avoid confusion, please explain the situation in the comments.';
       case inferior:
-        return "A superior version of this post already exists on the site.\nThis may include images with better visal quality (larger, less compressed), but may also feature \"fixed\" versions, with visual mistakes accounted for by the artist.\nNote that edits and alternate versions do not fall under this category.";
+        return 'A superior version of this post already exists on the site.\nThis may include images with better visal quality (larger, less compressed), but may also feature "fixed" versions, with visual mistakes accounted for by the artist.\nNote that edits and alternate versions do not fall under this category.';
       default:
         throw ArgumentError('Invalid FlagType when fetching description');
     }

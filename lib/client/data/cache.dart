@@ -98,7 +98,7 @@ class CacheInterceptor extends DioCacheInterceptor {
 
     if (isForceRefreshing && hasPatterns) {
       await _getCacheStore(config).deleteFromPath(
-        config.pattern ?? RegExp(RegExp.escape(options.uri.path.toString())),
+        config.pattern ?? RegExp(RegExp.escape(options.uri.path)),
         queryParams: config.params,
       );
     }

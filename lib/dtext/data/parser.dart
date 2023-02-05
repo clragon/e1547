@@ -5,8 +5,6 @@ typedef DTextTransformer = DTextParserResult? Function(
     BuildContext context, RegExpMatch match, TextStateStack state);
 
 class DTextParser {
-  const DTextParser.builder({required this.regex, required this.tranformer});
-
   factory DTextParser({
     required RegExp regex,
     required InlineSpan Function(
@@ -24,6 +22,8 @@ class DTextParser {
           state: state,
         ),
       );
+
+  const DTextParser.builder({required this.regex, required this.tranformer});
 
   final RegExp regex;
   final DTextTransformer tranformer;

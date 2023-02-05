@@ -6,12 +6,11 @@ import 'package:e1547/follow/follow.dart';
 import 'package:e1547/history/history.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/settings/settings.dart';
+import 'package:e1547/settings/widgets/grid.dart';
 import 'package:e1547/user/user.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:talker/talker.dart';
-
-import 'grid.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage();

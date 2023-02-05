@@ -19,12 +19,6 @@ class LimitedWidthLayoutData extends InheritedWidget {
 }
 
 class LimitedWidthLayout extends StatefulWidget {
-  const LimitedWidthLayout.builder({
-    required this.builder,
-    this.maxWidth = 600,
-    this.tolerance = 0,
-  });
-
   factory LimitedWidthLayout({
     required Widget child,
     double maxWidth = 600,
@@ -36,6 +30,12 @@ class LimitedWidthLayout extends StatefulWidget {
       tolerance: tolerance,
     );
   }
+
+  const LimitedWidthLayout.builder({
+    required this.builder,
+    this.maxWidth = 600,
+    this.tolerance = 0,
+  });
 
   final double maxWidth;
   final double tolerance;

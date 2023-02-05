@@ -195,14 +195,14 @@ extension PostDownloading on Post {
       } else {
         String directory = (await getDownloadsDirectory())!.path;
         File target = File(join(directory, _downloadName()));
-        if (!await target.exists() ||
+        if (!target.existsSync() ||
             md5.convert(await download.readAsBytes()) !=
                 md5.convert(await target.readAsBytes())) {
           await download.copy(target.path);
         }
       }
-    } catch (exception) {
-      throw PostDownloadException.from(exception);
+    } on Exception catch (e) {
+      throw PostDownloadException.from(e);
     }
   }
 
@@ -212,8 +212,7 @@ extension PostDownloading on Post {
     if (artists.isNotEmpty) {
       filename = '${artists.join(', ')} - ';
     }
-    filename += '$id.${file.ext}';
-    return filename;
+    return filename += '$id.${file.ext}';
   }
 
   Future<T> _throwOnNull<T>(FutureOr<T?> future, String message) async {
@@ -236,13 +235,13 @@ class PostDownloadException implements Exception {
   @override
   String toString() {
     if (message != null) {
-      return "$runtimeType: $message";
+      return '$runtimeType: $message';
     }
     if (inner != null) {
       if (inner is PostDownloadException) {
         return inner.toString();
       }
-      return "$runtimeType: $inner";
+      return '$runtimeType: $inner';
     }
     return '$runtimeType: unknown cause!';
   }

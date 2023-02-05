@@ -36,12 +36,12 @@ class UserReportScreen extends StatelessWidget {
                 Positioned.fill(
                   child: CrossFade(
                     showChild: isLoading,
-                    child: Container(
-                      decoration: const BoxDecoration(
+                    child: const DecoratedBox(
+                      decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         color: Colors.black54,
                       ),
-                      child: const Center(
+                      child: Center(
                         child: CircularProgressIndicator(),
                       ),
                     ),

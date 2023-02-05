@@ -69,8 +69,7 @@ extension Updating on Follow {
       }
     }
 
-    updated = updated.withTimestamp();
-    return updated;
+    return updated.withTimestamp();
   }
 
   Follow withUnseen(List<Post> posts) {
@@ -89,8 +88,8 @@ extension Updating on Follow {
       }
       updated = updated.withLatest(newest);
     }
-    updated = updated.withTimestamp();
-    return updated;
+
+    return updated.withTimestamp();
   }
 }
 

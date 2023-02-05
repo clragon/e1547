@@ -84,18 +84,18 @@ class PostImageTag extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (post.file.ext == 'gif') {
-      return Container(
+      return const ColoredBox(
         color: Colors.black12,
-        child: const Icon(
+        child: Icon(
           Icons.gif,
           color: Colors.white,
         ),
       );
     }
     if (post.type == PostType.video) {
-      return Container(
+      return const ColoredBox(
         color: Colors.black12,
-        child: const Icon(
+        child: Icon(
           Icons.play_arrow,
           color: Colors.white,
         ),
@@ -144,7 +144,7 @@ class PostInfoBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return IconTheme(
       data: Theme.of(context).iconTheme.copyWith(size: 16),
-      child: Container(
+      child: ColoredBox(
         color: Theme.of(context).cardColor,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),

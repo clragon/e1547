@@ -8,12 +8,12 @@ part 'credentials.g.dart';
 
 @freezed
 class Credentials with _$Credentials {
-  const Credentials._();
-
   const factory Credentials({
     required String username,
     @JsonKey(name: 'apikey') required String password,
   }) = _Credentials;
+
+  const Credentials._();
 
   factory Credentials.fromJson(dynamic json) => _$CredentialsFromJson(json);
 

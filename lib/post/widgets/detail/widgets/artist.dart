@@ -110,7 +110,7 @@ class ArtistName extends StatelessWidget {
           return Text.rich(
             TextSpan(children: spans),
             overflow: TextOverflow.fade,
-            style: const TextStyle(fontSize: 14.0),
+            style: const TextStyle(fontSize: 14),
           );
         } else {
           return Text(

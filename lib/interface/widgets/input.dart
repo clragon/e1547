@@ -74,7 +74,7 @@ class SearchInputCutout extends ShapeBorder {
   final bool usePadding;
 
   @override
-  EdgeInsetsGeometry get dimensions => const EdgeInsets.only();
+  EdgeInsetsGeometry get dimensions => EdgeInsets.zero;
 
   @override
   Path getInnerPath(Rect rect, {TextDirection? textDirection}) => Path();

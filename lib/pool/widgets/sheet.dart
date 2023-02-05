@@ -2,11 +2,10 @@ import 'package:e1547/client/client.dart';
 import 'package:e1547/dtext/dtext.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/pool/pool.dart';
+import 'package:e1547/pool/widgets/actions.dart';
+import 'package:e1547/pool/widgets/info.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
-
-import 'actions.dart';
-import 'info.dart';
 
 Future<void> poolSheet(BuildContext context, Pool pool) async {
   return showDefaultSlidingBottomSheet(

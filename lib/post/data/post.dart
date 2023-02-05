@@ -8,8 +8,6 @@ part 'post.g.dart';
 
 @freezed
 class Post with _$Post {
-  const Post._();
-
   const factory Post({
     required int id,
     required DateTime createdAt,
@@ -36,6 +34,7 @@ class Post with _$Post {
     required double? duration,
     @JsonKey(ignore: true) @Default(VoteStatus.unknown) VoteStatus voteStatus,
   }) = _Post;
+  const Post._();
 
   factory Post.fromJson(dynamic json) => _$PostFromJson(json);
 

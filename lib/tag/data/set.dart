@@ -1,4 +1,5 @@
 import 'package:e1547/interface/interface.dart';
+import 'package:flutter/foundation.dart';
 
 class Tagset extends Iterable<StringTag> {
   Tagset(Set<StringTag> tags) : _tags = {for (final t in tags) t.name: t};
@@ -18,14 +19,9 @@ class Tagset extends Iterable<StringTag> {
   String get link => '/posts?tags=${toString()}';
 
   @override
-  bool contains(Object? element) {
-    if (element is String) {
-      return _tags.containsKey(element);
-    } else if (element is StringTag) {
-      return _tags.containsValue(element);
-    }
-    return false;
-  }
+  bool contains(Object? element) => _tags.containsValue(element);
+
+  bool containsTag(String tag) => _tags.containsKey(tag);
 
   String? operator [](String? name) {
     StringTag? t = _tags[name!];
@@ -89,16 +85,15 @@ class Tagset extends Iterable<StringTag> {
   }
 }
 
+@immutable
 class StringTag {
-  StringTag(this.name, [this.value]);
+  const StringTag(this.name, [this.value]);
 
   factory StringTag.parse(String tag) {
-    assert(tag.trim().isNotEmpty, "Can't parse an empty tag.");
-    List<String> components = tag.trim().split(':');
-    assert(components.length == 1 || components.length == 2);
-
-    String name = components[0];
-    String? value = components.length == 2 ? components[1] : null;
+    if (tag.trim().isEmpty) throw ArgumentError('StringTag cannot be empty.');
+    List<String> parts = tag.trim().split(':');
+    String name = parts[0];
+    String? value = parts.sublist(1).join(':');
     return StringTag(name, value);
   }
 

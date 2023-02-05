@@ -1,9 +1,8 @@
 import 'package:e1547/client/client.dart';
 import 'package:e1547/comment/comment.dart';
+import 'package:e1547/comment/data/comment.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
-
-import 'comment.dart';
 
 class CommentsController extends CursorClientDataController<Comment>
     with RefreshableController {

@@ -1,8 +1,7 @@
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
+import 'package:e1547/post/widgets/fullscreen/appbar.dart';
 import 'package:flutter/material.dart';
-
-import 'appbar.dart';
 
 class PostFullscreenFrame extends StatefulWidget {
   const PostFullscreenFrame({

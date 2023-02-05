@@ -5,11 +5,11 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 String escape(String text) {
-  return text.replaceAll('[', '\\[').replaceAll(']', '\\]');
+  return text.replaceAll('[', r'\[').replaceAll(']', r'\]');
 }
 
 String normalize(String text) {
-  return text.replaceAll('\\[', '[').replaceAll('\\]', ']');
+  return text.replaceAll(r'\[', '[').replaceAll(r'\]', ']');
 }
 
 TextSpan plainText({

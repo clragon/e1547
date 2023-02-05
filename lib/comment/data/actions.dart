@@ -1,9 +1,8 @@
 import 'package:e1547/client/client.dart';
+import 'package:e1547/comment/data/comment.dart';
 import 'package:e1547/dtext/dtext.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-import 'comment.dart';
 
 Future<bool> replyComment({
   required BuildContext context,

@@ -8,14 +8,6 @@ enum FadeAnimationStyle {
 }
 
 class CrossFade extends StatelessWidget {
-  const CrossFade.builder({
-    required this.showChild,
-    required this.builder,
-    this.secondChild,
-    this.duration,
-    this.style = FadeAnimationStyle.adjacent,
-  });
-
   factory CrossFade({
     required bool showChild,
     required Widget child,
@@ -31,6 +23,14 @@ class CrossFade extends StatelessWidget {
       style: style,
     );
   }
+
+  const CrossFade.builder({
+    required this.showChild,
+    required this.builder,
+    this.secondChild,
+    this.duration,
+    this.style = FadeAnimationStyle.adjacent,
+  });
 
   /// Builds the primary child of this widget.
   final WidgetBuilder builder;

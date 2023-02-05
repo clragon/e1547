@@ -124,6 +124,7 @@ class _VideoHandlerVolumeControlState extends State<VideoHandlerVolumeControl> {
   }
 }
 
+@immutable
 class VideoConfig {
   const VideoConfig({required this.url, required this.size});
 
@@ -131,7 +132,7 @@ class VideoConfig {
   final int size;
 
   @override
-  operator ==(Object other) =>
+  bool operator ==(Object other) =>
       other is VideoConfig && other.url == url && other.size == size;
 
   @override

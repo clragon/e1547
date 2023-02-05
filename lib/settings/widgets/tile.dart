@@ -131,31 +131,31 @@ class ImageTile extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      centerTitle
-                          ? Expanded(
-                              child: Card(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(16),
-                                  child: Center(
-                                    child: DefaultTextStyle(
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleLarge!,
-                                      textAlign: TextAlign.center,
-                                      child: title,
-                                    ),
-                                  ),
+                      if (centerTitle)
+                        Expanded(
+                          child: Card(
+                            child: Padding(
+                              padding: const EdgeInsets.all(16),
+                              child: Center(
+                                child: DefaultTextStyle(
+                                  style:
+                                      Theme.of(context).textTheme.titleLarge!,
+                                  textAlign: TextAlign.center,
+                                  child: title,
                                 ),
                               ),
-                            )
-                          : Expanded(
-                              child: hero != null
-                                  ? Hero(
-                                      tag: hero!,
-                                      child: ImageGrid(images: images),
-                                    )
-                                  : ImageGrid(images: images),
                             ),
+                          ),
+                        )
+                      else
+                        Expanded(
+                          child: hero != null
+                              ? Hero(
+                                  tag: hero!,
+                                  child: ImageGrid(images: images),
+                                )
+                              : ImageGrid(images: images),
+                        ),
                     ],
                   ),
                 ),

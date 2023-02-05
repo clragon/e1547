@@ -42,28 +42,28 @@ class PagedGroupedListView<PageKeyType, ItemType, SortType>
   /// Matches [PagedLayoutBuilder.shrinkWrapFirstPageIndicators].
   final bool shrinkWrapFirstPageIndicators;
 
-  /// Matches [SliverGroupedList.groupBy].
+  /// Matches [SliverGroupedListView.groupBy].
   final SortType Function(ItemType element) groupBy;
 
-  /// Matches [SliverGroupedList.groupComparator].
+  /// Matches [SliverGroupedListView.groupComparator].
   final int Function(SortType value1, SortType value2)? groupComparator;
 
-  /// Matches [SliverGroupedList.itemComparator].
+  /// Matches [SliverGroupedListView.itemComparator].
   final int Function(ItemType element1, ItemType element2)? itemComparator;
 
-  /// Matches [SliverGroupedList.groupSeparatorBuilder].
+  /// Matches [SliverGroupedListView.groupSeparatorBuilder].
   final Widget Function(SortType value)? groupSeparatorBuilder;
 
-  /// Matches [SliverGroupedList.groupHeaderBuilder].
+  /// Matches [SliverGroupedListView.groupHeaderBuilder].
   final Widget Function(ItemType element)? groupHeaderBuilder;
 
-  /// Matches [SliverGroupedList.order].
+  /// Matches [SliverGroupedListView.order].
   final GroupedListOrder order;
 
-  /// Matches [SliverGroupedList.sort].
+  /// Matches [SliverGroupedListView.sort].
   final bool sort;
 
-  /// Matches [SliverGroupedList.separator].
+  /// Matches [SliverGroupedListView.separator].
   final Widget separator;
 
   @override
@@ -110,28 +110,28 @@ class PagedSliverGroupedListView<PageKeyType, ItemType, SortType>
   /// Matches [PagedLayoutBuilder.shrinkWrapFirstPageIndicators].
   final bool shrinkWrapFirstPageIndicators;
 
-  /// Matches [SliverGroupedList.groupBy].
+  /// Matches [SliverGroupedListView.groupBy].
   final SortType Function(ItemType element) groupBy;
 
-  /// Matches [SliverGroupedList.groupComparator].
+  /// Matches [SliverGroupedListView.groupComparator].
   final int Function(SortType value1, SortType value2)? groupComparator;
 
-  /// Matches [SliverGroupedList.itemComparator].
+  /// Matches [SliverGroupedListView.itemComparator].
   final int Function(ItemType element1, ItemType element2)? itemComparator;
 
-  /// Matches [SliverGroupedList.groupSeparatorBuilder].
+  /// Matches [SliverGroupedListView.groupSeparatorBuilder].
   final Widget Function(SortType value)? groupSeparatorBuilder;
 
-  /// Matches [SliverGroupedList.groupHeaderBuilder].
+  /// Matches [SliverGroupedListView.groupHeaderBuilder].
   final Widget Function(ItemType element)? groupHeaderBuilder;
 
-  /// Matches [SliverGroupedList.order].
+  /// Matches [SliverGroupedListView.order].
   final GroupedListOrder order;
 
-  /// Matches [SliverGroupedList.sort].
+  /// Matches [SliverGroupedListView.sort].
   final bool sort;
 
-  /// Matches [SliverGroupedList.separator].
+  /// Matches [SliverGroupedListView.separator].
   final Widget separator;
 
   @override

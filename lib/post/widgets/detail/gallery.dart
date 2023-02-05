@@ -10,7 +10,10 @@ class PostDetailGallery extends StatefulWidget {
     this.initialPage,
     this.pageController,
     this.onPageChanged,
-  }) : assert(initialPage == null || pageController == null);
+  }) : assert(
+          initialPage == null || pageController == null,
+          'Cannot pass both initialPage and pageController',
+        );
 
   final PostsController controller;
   final int? initialPage;

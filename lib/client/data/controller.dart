@@ -91,7 +91,7 @@ abstract class CursorClientDataController<T> extends DataController<String, T>
   String _getNextpageKey(String current, List<T> items) {
     if (orderByOldest.value) {
       if (items.isEmpty) return _cursorFirstPage;
-      return 'a${items.map((e) => getId(e)).reduce(max).toString()}';
+      return 'a${items.map((e) => getId(e)).reduce(max)}';
     } else {
       return (int.parse(current) + 1).toString();
     }

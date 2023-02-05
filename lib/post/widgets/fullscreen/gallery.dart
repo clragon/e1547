@@ -9,7 +9,10 @@ class PostFullscreenGallery extends StatefulWidget {
     this.pageController,
     this.onPageChanged,
     this.showFrame,
-  }) : assert(initialPage == null || pageController == null);
+  }) : assert(
+          initialPage == null || pageController == null,
+          'Cannot pass both initialPage and pageController',
+        );
 
   final PostsController controller;
   final int? initialPage;

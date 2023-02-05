@@ -7,13 +7,12 @@ part 'search.g.dart';
 
 @freezed
 class HistoriesSearch with _$HistoriesSearch {
-  const HistoriesSearch._();
-
   const factory HistoriesSearch({
     DateTime? date,
     required Set<HistorySearchFilter> searchFilters,
     required Set<HistoryTypeFilter> typeFilters,
   }) = _HistoriesSearch;
+  const HistoriesSearch._();
 
   factory HistoriesSearch.fromJson(dynamic json) =>
       _$HistoriesSearchFromJson(json);

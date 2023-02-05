@@ -33,7 +33,7 @@ class PostsController extends PageClientDataController<Post>
     PostFilterMode filterMode = PostFilterMode.plain,
   }) {
     late PostsController controller;
-    controller = PostsController(
+    return controller = PostsController(
       client: client,
       denylist: denylist,
       fetch: (search, page, force) async => [
@@ -43,7 +43,6 @@ class PostsController extends PageClientDataController<Post>
       canSearch: false,
       filterMode: filterMode,
     );
-    return controller;
   }
 
   @override
@@ -104,7 +103,7 @@ class PostsProvider extends SubChangeNotifierProvider2<Client, DenylistService,
   }) : super(
           create: (context, client, denylist) {
             late PostsController controller;
-            controller = PostsController(
+            return controller = PostsController(
               client: client,
               denylist: denylist,
               fetch: fetch != null
@@ -116,7 +115,6 @@ class PostsProvider extends SubChangeNotifierProvider2<Client, DenylistService,
               canSearch: canSearch,
               filterMode: filterMode,
             );
-            return controller;
           },
         );
 

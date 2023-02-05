@@ -2,13 +2,12 @@ import 'package:async_builder/async_builder.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/history/history.dart';
 import 'package:e1547/history/widgets/appbar.dart';
+import 'package:e1547/history/widgets/list.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:grouped_list/grouped_list.dart';
 import 'package:intl/intl.dart';
-
-import 'list.dart';
 
 class HistoriesPage extends StatefulWidget {
   const HistoriesPage();
