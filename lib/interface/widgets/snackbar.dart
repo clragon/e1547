@@ -47,7 +47,7 @@ Future<void> loadingNotification<T>({
   }
 
   LoadingNotificationStatus status = LoadingNotificationStatus.loading;
-  final ValueNotifier<int> progress = ValueNotifier(0);
+  final ValueNotifier<int> progress = ValueNotifier<int>(0);
 
   ScaffoldMessengerState messenger = ScaffoldMessenger.of(context);
   Color? iconColor = (Theme.of(context).snackBarTheme.contentTextStyle ??

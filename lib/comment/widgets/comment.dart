@@ -82,7 +82,8 @@ class CommentTile extends StatelessWidget {
                     ? (isLiked) async {
                         CommentsController controller =
                             context.read<CommentsController>();
-                        final messenger = ScaffoldMessenger.of(context);
+                        ScaffoldMessengerState messenger =
+                            ScaffoldMessenger.of(context);
                         controller
                             .vote(
                                 comment: comment,
@@ -104,7 +105,8 @@ class CommentTile extends StatelessWidget {
                     ? (isLiked) async {
                         CommentsController controller =
                             context.read<CommentsController>();
-                        final messenger = ScaffoldMessenger.of(context);
+                        ScaffoldMessengerState messenger =
+                            ScaffoldMessenger.of(context);
                         controller
                             .vote(
                                 comment: comment,

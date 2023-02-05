@@ -154,7 +154,7 @@ Future<void> tryLocalAuth({
   VoidCallback? onSuccess,
   VoidCallback? onFailure,
 }) async {
-  final messenger = ScaffoldMessenger.of(context);
+  ScaffoldMessengerState messenger = ScaffoldMessenger.of(context);
   final LocalAuthentication localAuth = LocalAuthentication();
   await localAuth.stopAuthentication();
   try {

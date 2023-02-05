@@ -21,7 +21,7 @@ class PostsController extends PageClientDataController<Post>
     this.canSearch = true,
     this.filterMode = PostFilterMode.filtering,
   })  : _fetch = fetch,
-        search = ValueNotifier(sortTags(search ?? '')) {
+        search = ValueNotifier<String>(sortTags(search ?? '')) {
     this.denying = denying;
     _filterNotifiers.forEach((e) => e.addListener(refilter));
   }

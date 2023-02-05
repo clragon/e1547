@@ -18,7 +18,7 @@ abstract class DataController<KeyType, ItemType>
   }
 
   /// Ensures we do not request duplicate pages.
-  final PageLock _pageLock = PageLock();
+  final PageLock<KeyType> _pageLock = PageLock<KeyType>();
 
   /// Whether we are currently queuing a refresh.
   bool _isRefreshing = false;
@@ -404,7 +404,7 @@ mixin FilterableController<PageKeyType, ItemType>
 mixin SearchableController<PageKeyType, ItemType>
     on DataController<PageKeyType, ItemType> {
   /// The current search of this controller.
-  ValueNotifier<String> get search => ValueNotifier('');
+  ValueNotifier<String> get search => ValueNotifier<String>('');
 
   @override
   @protected

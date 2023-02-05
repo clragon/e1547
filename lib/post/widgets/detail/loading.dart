@@ -36,8 +36,9 @@ class SingleFuturePostsProvider
     extends SubProvider2<Client, DenylistService, Future<PostsController>> {
   SingleFuturePostsProvider({required int id, super.child, super.builder})
       : super(
-          create: (context, client, denylist) => Future(() async {
-            final controller = PostsController.single(
+          create: (context, client, denylist) =>
+              Future<PostsController>(() async {
+            PostsController controller = PostsController.single(
               id: id,
               client: client,
               denylist: denylist,

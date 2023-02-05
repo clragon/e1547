@@ -81,7 +81,7 @@ class VideoHandler extends ChangeNotifier {
   }
 }
 
-class VideoHandlerData extends InheritedNotifier {
+class VideoHandlerData extends InheritedNotifier<VideoHandler> {
   const VideoHandlerData({required this.handler, required super.child})
       : super(notifier: handler);
 

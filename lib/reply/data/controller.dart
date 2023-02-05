@@ -9,7 +9,7 @@ class RepliesController extends CursorClientDataController<Reply>
     required this.client,
     required this.topicId,
     bool orderByOldest = true,
-  }) : orderByOldest = ValueNotifier(orderByOldest);
+  }) : orderByOldest = ValueNotifier<bool>(orderByOldest);
 
   @override
   final Client client;

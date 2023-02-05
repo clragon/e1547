@@ -38,7 +38,8 @@ class PoolInfo extends StatelessWidget {
                   '#${pool.id}',
                 ),
                 onLongPress: () async {
-                  final messenger = ScaffoldMessenger.of(context);
+                  ScaffoldMessengerState messenger =
+                      ScaffoldMessenger.of(context);
                   Clipboard.setData(ClipboardData(
                     text: pool.id.toString(),
                   ));

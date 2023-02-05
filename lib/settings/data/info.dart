@@ -80,7 +80,7 @@ class AppInfo extends PackageInfo {
         List<dynamic> releases =
             await dio.get('repos/$github/releases').then((e) => e.data);
         _githubData = [];
-        for (Map release in releases) {
+        for (Map<String, dynamic> release in releases) {
           try {
             _githubData!.add(
               AppVersion(

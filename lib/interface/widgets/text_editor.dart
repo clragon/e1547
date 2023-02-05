@@ -72,7 +72,8 @@ class _TextEditorState extends State<TextEditor> {
           onPressed: isLoading
               ? null
               : () async {
-                  final messenger = ScaffoldMessenger.of(context);
+                  ScaffoldMessengerState messenger =
+                      ScaffoldMessenger.of(context);
                   String text = textController.text.trim();
                   setState(() {
                     isLoading = true;

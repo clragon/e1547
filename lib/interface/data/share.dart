@@ -6,7 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:share_plus/share_plus.dart' as plus;
 
 class Share {
-  static Future share(BuildContext context, String text) async {
+  static Future<void> share(BuildContext context, String text) async {
     if (Platform.isAndroid || Platform.isIOS) {
       return plus.Share.share(text);
     } else {

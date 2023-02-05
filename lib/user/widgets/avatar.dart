@@ -108,7 +108,7 @@ class UserAvatar extends StatelessWidget {
       return const EmptyAvatar();
     }
     return SubValueBuilder<Future<PostsController>>(
-      create: (context) => Future(() async {
+      create: (context) => Future<PostsController>(() async {
         await controller.loadFirstPage();
         return controller;
       }),

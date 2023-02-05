@@ -47,7 +47,7 @@ Future<bool> writeComment({
         title: Text('#$postId comment'),
         content: text ?? (comment?.body),
         onSubmit: (context, text) async {
-          final navigator = Navigator.of(context);
+          NavigatorState navigator = Navigator.of(context);
           if (text.isNotEmpty) {
             try {
               if (comment == null) {

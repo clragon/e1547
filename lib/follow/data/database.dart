@@ -30,7 +30,7 @@ class FollowsTable extends Table {
   DateTimeColumn get updated => dateTime().nullable()();
 
   @override
-  List<Set<Column>> get uniqueKeys => [
+  List<Set<Column<Object>>> get uniqueKeys => [
         {host, tags}
       ];
 }

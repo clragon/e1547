@@ -11,7 +11,7 @@ class HistoriesController extends DataController<int, History>
     required this.service,
     required this.host,
     HistoriesSearch? search,
-  })  : search = ValueNotifier(
+  })  : search = ValueNotifier<HistoriesSearch>(
           search ??
               HistoriesSearch(
                 searchFilters: HistorySearchFilter.values.toSet(),

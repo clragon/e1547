@@ -13,7 +13,7 @@ class FavoritePostsController extends PostsController {
               : null,
         );
 
-  final ValueNotifier<bool> orderFavorites = ValueNotifier(false);
+  final ValueNotifier<bool> orderFavorites = ValueNotifier<bool>(false);
 
   bool get isFavoriteSearch {
     Credentials? credentials = client.credentials;

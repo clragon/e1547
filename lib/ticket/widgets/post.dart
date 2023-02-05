@@ -85,7 +85,7 @@ class _PostReportScreenState extends State<PostReportScreen> {
         duration: defaultAnimationDuration,
         curve: Curves.easeInOut,
       );
-      final messenger = ScaffoldMessenger.of(context);
+      ScaffoldMessengerState messenger = ScaffoldMessenger.of(context);
       try {
         await context.read<Client>().reportPost(
               widget.post.id,
@@ -202,7 +202,7 @@ class _PostFlagScreenState extends State<PostFlagScreen> {
         duration: defaultAnimationDuration,
         curve: Curves.easeInOut,
       );
-      final messenger = ScaffoldMessenger.of(context);
+      ScaffoldMessengerState messenger = ScaffoldMessenger.of(context);
       try {
         await context.read<Client>().flagPost(
               widget.post.id,

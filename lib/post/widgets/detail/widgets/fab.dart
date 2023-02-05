@@ -14,7 +14,7 @@ class PostDetailFloatingActionButton extends StatelessWidget {
         context.watch<PostEditingController>();
 
     Future<void> editPost() async {
-      final messenger = ScaffoldMessenger.of(context);
+      ScaffoldMessengerState messenger = ScaffoldMessenger.of(context);
       editingController.setLoading(true);
       Map<String, String?>? body = editingController.value?.toForm();
       if (body != null) {

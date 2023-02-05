@@ -60,7 +60,7 @@ abstract class CursorClientDataController<T> extends DataController<String, T>
     with ClientDataController<String, T> {
   CursorClientDataController() : super(firstPageKey: _cursorFirstPage);
 
-  ValueNotifier<bool> orderByOldest = ValueNotifier(true);
+  ValueNotifier<bool> orderByOldest = ValueNotifier<bool>(true);
 
   static const String _cursorFirstPage = 'a0';
   static const String _indexFirstPage = '1';

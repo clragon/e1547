@@ -24,7 +24,8 @@ class PostFullscreenGallery extends StatefulWidget {
 class _PostFullscreenGalleryState extends State<PostFullscreenGallery> {
   late PageController pageController = widget.pageController ??
       PageController(initialPage: widget.initialPage ?? 0);
-  late ValueNotifier<int> currentPage = ValueNotifier(widget.initialPage ?? 0);
+  late ValueNotifier<int> currentPage =
+      ValueNotifier<int>(widget.initialPage ?? 0);
 
   @override
   Widget build(BuildContext context) {

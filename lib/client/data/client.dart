@@ -114,7 +114,7 @@ class Client {
     CancelToken? cancelToken,
   }) async {
     String? tags = search != null ? sortTags(search) : '';
-    Map body = await _dio
+    Map<String, dynamic> body = await _dio
         .get(
           'posts.json',
           queryParameters: {
@@ -263,7 +263,7 @@ class Client {
     bool? force,
     CancelToken? cancelToken,
   }) async {
-    Map body = await _dio
+    Map<String, dynamic> body = await _dio
         .get(
           'favorites.json',
           queryParameters: {
@@ -470,7 +470,7 @@ class Client {
   }
 
   Future<void> updateBlacklist(List<String> denylist) async {
-    Map<String, String?> body = {
+    Map<String, dynamic> body = {
       'user[blacklisted_tags]': denylist.join('\n'),
     };
 
@@ -484,7 +484,7 @@ class Client {
     bool? force,
     CancelToken? cancelToken,
   }) async {
-    final body = await _dio
+    Object body = await _dio
         .get(
           'tags.json',
           queryParameters: {
@@ -497,8 +497,9 @@ class Client {
           cancelToken: cancelToken,
         )
         .then((response) => response.data);
+
     List<Tag> tags = [];
-    if (body is List) {
+    if (body is List<dynamic>) {
       for (final tag in body) {
         tags.add(Tag.fromJson(tag));
       }
@@ -516,7 +517,7 @@ class Client {
       if (search.length < 3) {
         return [];
       }
-      final body = await _dio
+      Object body = await _dio
           .get(
             'tags/autocomplete.json',
             queryParameters: {
@@ -530,7 +531,7 @@ class Client {
           )
           .then((response) => response.data);
       List<TagSuggestion> tags = [];
-      if (body is List) {
+      if (body is List<dynamic>) {
         for (final tag in body) {
           tags.add(TagSuggestion.fromJson(tag));
         }
@@ -562,7 +563,7 @@ class Client {
     bool? force,
     CancelToken? cancelToken,
   }) async {
-    final body = await _dio
+    Object body = await _dio
         .get(
           'tag_aliases.json',
           queryParameters: {
@@ -578,7 +579,7 @@ class Client {
         )
         .then((value) => value.data);
 
-    if (body is List && body.isNotEmpty) {
+    if (body is List<dynamic> && body.isNotEmpty) {
       return body.first['consequent_name'];
     }
 
@@ -591,7 +592,7 @@ class Client {
     bool? force,
     CancelToken? cancelToken,
   }) async {
-    final body = await _dio
+    Object body = await _dio
         .get(
           'comments.json',
           queryParameters: {
@@ -608,7 +609,7 @@ class Client {
         .then((response) => response.data);
 
     List<Comment> comments = [];
-    if (body is List) {
+    if (body is List<dynamic>) {
       for (Map<String, dynamic> rawComment in body) {
         comments.add(Comment.fromJson(rawComment));
       }
@@ -704,7 +705,7 @@ class Client {
     CancelToken? cancelToken,
   }) async {
     String? title = search?.isNotEmpty ?? false ? search : null;
-    final body = await _dio
+    Object body = await _dio
         .get(
           'forum_topics.json',
           queryParameters: {
@@ -720,7 +721,7 @@ class Client {
         .then((response) => response.data);
 
     List<Topic> threads = [];
-    if (body is List) {
+    if (body is List<dynamic>) {
       for (Map<String, dynamic> raw in body) {
         threads.add(Topic.fromJson(raw));
       }
@@ -751,7 +752,7 @@ class Client {
     bool? force,
     CancelToken? cancelToken,
   }) async {
-    final body = await _dio
+    Object body = await _dio
         .get(
           'forum_posts.json',
           queryParameters: {
@@ -768,7 +769,7 @@ class Client {
         .then((response) => response.data);
 
     List<Reply> replies = [];
-    if (body is List) {
+    if (body is List<dynamic>) {
       for (Map<String, dynamic> raw in body) {
         replies.add(Reply.fromJson(raw));
       }

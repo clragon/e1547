@@ -16,7 +16,7 @@ class TopicsController extends PageClientDataController<Topic>
   @override
   late ValueNotifier<String> search;
 
-  final ValueNotifier<bool> hideTagEditing = ValueNotifier(true);
+  final ValueNotifier<bool> hideTagEditing = ValueNotifier<bool>(true);
 
   late final List<Listenable> _filterNotifiers = [hideTagEditing];
 

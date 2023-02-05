@@ -106,7 +106,7 @@ class _LoginPageState extends State<LoginPage> {
             icon: const Icon(Icons.content_paste),
             tooltip: 'Paste',
             onPressed: () async {
-              final messenger = ScaffoldMessenger.of(context);
+              ScaffoldMessengerState messenger = ScaffoldMessenger.of(context);
               ClipboardData? data = await Clipboard.getData('text/plain');
               if (data == null || data.text!.trim().isEmpty) {
                 messenger.showSnackBar(
@@ -334,7 +334,7 @@ class _LoginLoadingDialogState extends State<LoginLoadingDialog> {
   }
 
   Future<void> login() async {
-    final navigator = Navigator.of(context);
+    NavigatorState navigator = Navigator.of(context);
     bool valid = await context.read<ClientService>().login(
           Credentials(
             username: widget.username,

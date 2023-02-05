@@ -61,14 +61,14 @@ class FollowsUpdater extends ChangeNotifier {
     notifyListeners();
   }
 
-  List<dynamic> _dependencies = [];
+  List<Object?> _dependencies = [];
 
   Future<void> update({
     required Client client,
     required List<String> denylist,
     bool? force,
   }) async {
-    List<dynamic> dependencies = [client, denylist, force];
+    List<Object?> dependencies = [client, denylist, force];
     if (_runCompleter.isCompleted ||
         !const DeepCollectionEquality().equals(_dependencies, dependencies)) {
       _dependencies = dependencies;

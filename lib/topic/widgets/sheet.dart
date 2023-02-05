@@ -100,7 +100,8 @@ class TopicInfo extends StatelessWidget {
                   '#${topic.id}',
                 ),
                 onLongPress: () async {
-                  final messenger = ScaffoldMessenger.of(context);
+                  ScaffoldMessengerState messenger =
+                      ScaffoldMessenger.of(context);
                   Clipboard.setData(ClipboardData(
                     text: topic.id.toString(),
                   ));

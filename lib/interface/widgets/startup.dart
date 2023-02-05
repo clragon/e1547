@@ -30,7 +30,7 @@ class _StartupActionsState extends State<StartupActions> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       for (final element in widget.actions) {
-        Future(() async {
+        Future<void>(() async {
           try {
             await element(context);
           } catch (e) {

@@ -2,7 +2,7 @@ import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
 import 'package:sliding_sheet/sliding_sheet.dart';
 
-class SheetActions extends InheritedNotifier {
+class SheetActions extends InheritedNotifier<SheetActionController> {
   const SheetActions({required super.child, required this.controller})
       : super(notifier: controller);
 

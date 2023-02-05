@@ -73,7 +73,7 @@ class SelectionLayoutData<T> extends InheritedWidget {
       );
 
   @override
-  bool updateShouldNotify(covariant SelectionLayoutData oldWidget) =>
+  bool updateShouldNotify(covariant SelectionLayoutData<T> oldWidget) =>
       (oldWidget.selections != selections || oldWidget.onChanged != onChanged);
 }
 

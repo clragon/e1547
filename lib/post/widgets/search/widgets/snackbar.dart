@@ -60,7 +60,7 @@ Future<void> postFavoritingNotification(
         }
       } else {
         if (!post.isFavorited) {
-          return Future(() async {
+          return Future<bool>(() async {
             bool result = await controller.fav(post);
             if (result && upvote) {
               result = await controller.vote(

@@ -115,7 +115,7 @@ bool onPostTagsEdit(
   tags[category]!.sort();
   controller.value = controller.value!.copyWith(tags: tags);
   final client = context.read<Client>();
-  Future(() async {
+  Future<void>(() async {
     for (String tag in edited) {
       List<Tag> tags = await rateLimit(
         client.tags(tag),

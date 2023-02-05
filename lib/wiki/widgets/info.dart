@@ -39,7 +39,8 @@ class WikiInfo extends StatelessWidget {
                   '#${wiki.id}',
                 ),
                 onLongPress: () async {
-                  final messenger = ScaffoldMessenger.of(context);
+                  ScaffoldMessengerState messenger =
+                      ScaffoldMessenger.of(context);
                   Clipboard.setData(ClipboardData(
                     text: wiki.id.toString(),
                   ));

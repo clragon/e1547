@@ -22,7 +22,8 @@ class LikeDisplay extends StatelessWidget {
               score: post.score.total,
               onUpvote: (isLiked) async {
                 PostsController controller = context.read<PostsController>();
-                final messenger = ScaffoldMessenger.of(context);
+                ScaffoldMessengerState messenger =
+                    ScaffoldMessenger.of(context);
                 if (context.read<Client>().hasLogin) {
                   controller
                       .vote(post: post, upvote: true, replace: !isLiked)
@@ -41,7 +42,8 @@ class LikeDisplay extends StatelessWidget {
               },
               onDownvote: (isLiked) async {
                 PostsController controller = context.read<PostsController>();
-                final messenger = ScaffoldMessenger.of(context);
+                ScaffoldMessengerState messenger =
+                    ScaffoldMessenger.of(context);
                 if (context.read<Client>().hasLogin) {
                   controller
                       .vote(post: post, upvote: false, replace: !isLiked)
@@ -96,7 +98,7 @@ class FavoriteButton extends StatelessWidget {
         ),
         onTap: (isLiked) async {
           PostsController controller = context.read<PostsController>();
-          final messenger = ScaffoldMessenger.of(context);
+          ScaffoldMessengerState messenger = ScaffoldMessenger.of(context);
           if (isLiked) {
             controller.unfav(post).then((value) {
               if (!value) {

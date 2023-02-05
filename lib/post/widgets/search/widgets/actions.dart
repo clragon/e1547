@@ -155,9 +155,9 @@ class TagSearchActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder(
+    return ValueListenableBuilder<String>(
       valueListenable: controller.search,
-      builder: (context, String value, child) {
+      builder: (context, value, child) {
         if (!controller.canSearch || tag.contains(' ')) {
           return const SizedBox.shrink();
         }

@@ -19,7 +19,7 @@ class AppLinkHandler extends StatefulWidget {
 
 class _AppLinkHandlerState extends State<AppLinkHandler> {
   late AppLinks appLinks;
-  StreamSubscription? linkListener;
+  StreamSubscription<Uri>? linkListener;
 
   Future<void> onInitialLink(Uri? url) async {
     RouterDrawerController controller = context.read<RouterDrawerController>();
