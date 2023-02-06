@@ -69,7 +69,7 @@ class FavoritePostsController extends PostsController {
         search.value = 'fav:${client.credentials?.username}';
       }
     }
-    return super.refresh(background: background);
+    return super.refresh(background: background, force: force);
   }
 }
 
