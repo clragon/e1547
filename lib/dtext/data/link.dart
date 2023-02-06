@@ -9,7 +9,7 @@ import 'package:username_generator/username_generator.dart';
 final DTextParser linkParser = DTextParser(
   regex: RegExp(
     linkWrap(
-      r'(?<link>https?://(-\.)?([^\s/?\.#-]+\.?)+(/\S*))',
+      r'(?<link>(http(s)?):\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*))',
       false,
     ),
   ),
@@ -22,7 +22,7 @@ final DTextParser linkParser = DTextParser(
 );
 
 final DTextParser localLinkParser = DTextParser(
-  regex: RegExp(linkWrap(r'(?<link>/\S*)')),
+  regex: RegExp(linkWrap(r'(?<link>[-a-zA-Z0-9()@:%_\+.~#?&//=]*)')),
   tranformer: (context, match, state) => parseDTextLink(
     context: context,
     name: match.namedGroup('name'),
