@@ -87,18 +87,20 @@ class Tagset extends Iterable<StringTag> {
 
 @immutable
 class StringTag {
-  const StringTag(this.name, [this.value]);
+  const StringTag(this.name, [this._value]);
 
   factory StringTag.parse(String tag) {
-    if (tag.trim().isEmpty) throw ArgumentError('StringTag cannot be empty.');
-    List<String> parts = tag.trim().split(':');
-    String name = parts[0];
-    String? value = parts.sublist(1).join(':');
+    tag = tag.trim();
+    if (tag.isEmpty) throw ArgumentError('StringTag cannot be empty.');
+    List<String> parts = tag.split(':');
+    String name = parts.first;
+    String? value = parts.skip(1).join(':');
     return StringTag(name, value);
   }
 
   final String name;
-  final String? value;
+  final String? _value;
+  String? get value => _value?.isNotEmpty ?? false ? _value : null;
 
   @override
   String toString() => '$name${value != null ? ':$value' : ''}';
