@@ -27,6 +27,7 @@ class _PostsSearchPageState extends State<PostsSearchPage> {
   late bool readerMode = widget.readerMode;
   bool loadingInfo = true;
   Pool? pool;
+  Follow? follow;
 
   @override
   Widget build(BuildContext context) {
@@ -43,12 +44,12 @@ class _PostsSearchPageState extends State<PostsSearchPage> {
         child: Consumer2<PostsController, FollowsService>(
           builder: (context, controller, follows, child) {
             Future<void> updateFollow() async {
-              Follow? follow =
+              follow =
                   await follows.getFollow(client.host, controller.search.value);
               if (follow != null) {
-                Follow updated = follow;
+                Follow updated = follow!;
                 if (controller.itemList?.isNotEmpty ?? false) {
-                  updated = follow.withLatest(
+                  updated = follow!.withLatest(
                     controller.itemList!.first,
                     foreground: mounted,
                   );
@@ -59,6 +60,7 @@ class _PostsSearchPageState extends State<PostsSearchPage> {
                 if (updated != follow) {
                   await follows.replace(updated);
                 }
+                setState(() => follow = updated);
               }
             }
 
@@ -109,13 +111,9 @@ class _PostsSearchPageState extends State<PostsSearchPage> {
             }
 
             String getTitle() {
-              // TODO: reimplement this!
-              /*
-              Follow? follow = follows.getFollow(controller.search.value);
               if (follow != null) {
-                return follow.name;
+                return follow!.name;
               }
-               */
               if (pool != null) {
                 return tagToName(pool!.name);
               }
