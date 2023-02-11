@@ -11,13 +11,18 @@ mixin ClientDataController<KeyType, ItemType>
   @protected
   Future<List<ItemType>> fetch(KeyType page, bool force);
 
-  // TODO: actually only erase cache and do not refetch data
   @protected
   Future<void> evictCache() => fetch(firstPageKey, true);
 
-  final CancelToken _cancelToken = CancelToken();
-
+  CancelToken _cancelToken = CancelToken();
   CancelToken get cancelToken => ReadOnlyCancelToken(_cancelToken);
+
+  @override
+  void refresh({bool force = false, bool background = false}) {
+    _cancelToken.cancel('$runtimeType is refreshing');
+    _cancelToken = CancelToken();
+    super.refresh(force: force, background: background);
+  }
 
   @override
   void dispose() {
