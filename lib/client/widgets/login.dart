@@ -174,7 +174,7 @@ class _LoginPageState extends State<LoginPage> {
                     'e.g. $apiKeyExample';
               }
 
-              if (!RegExp(r'^[A-z0-9]{24,32}$').hasMatch(value)) {
+              if (!RegExp(r'^[A-z\d]{24,32}$').hasMatch(value)) {
                 return 'API key is a 24 or 32-character sequence of {A..z} and {0..9}\n'
                     'e.g. $apiKeyExample';
               }
