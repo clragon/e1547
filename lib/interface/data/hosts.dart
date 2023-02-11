@@ -16,6 +16,8 @@ final Map<IconData, List<String>> hostIcons = {
     '.deviantart.com',
     '.deviantart.net',
   ],
+  FontAwesomeIcons.paw: ['furaffinity.net'],
+  FontAwesomeIcons.p: ['pixiv.net'],
 };
 
 IconData? getHostIcon(String url) {

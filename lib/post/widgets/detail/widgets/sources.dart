@@ -104,34 +104,40 @@ class SourceCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (linkParser.regex.hasMatch(url)) {
-      IconData? icon = getHostIcon(url);
       return Card(
         child: InkWell(
           onTap: () => launch(url),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (icon != null)
-                Padding(
-                  padding: const EdgeInsets.only(left: 8),
-                  child: FaIcon(
-                    getHostIcon(url),
-                    size: 16,
-                    color: Colors.grey,
-                  ),
-                ),
-              Flexible(
-                child: Padding(
-                  padding: const EdgeInsets.all(6),
-                  child: Text(
-                    linkToDisplay(url),
-                    style: TextStyle(
-                      color: Colors.blue[400],
+          child: IntrinsicHeight(
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ConstrainedBox(
+                  constraints: const BoxConstraints(minWidth: 24),
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 8),
+                    child: Center(
+                      child: FaIcon(
+                        getHostIcon(url) ?? Icons.link,
+                        size: 16,
+                        color: Colors.grey,
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
+                const VerticalDivider(indent: 4, endIndent: 4),
+                Flexible(
+                  child: Padding(
+                    padding: const EdgeInsets.all(6),
+                    child: Text(
+                      linkToDisplay(url),
+                      style: TextStyle(
+                        color: Colors.blue[400],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       );
