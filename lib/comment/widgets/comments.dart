@@ -26,11 +26,14 @@ class PostCommentsPage extends StatelessWidget {
                   backgroundColor: Theme.of(context).cardColor,
                   child: Icon(Icons.comment,
                       color: Theme.of(context).iconTheme.color),
-                  // TODO: refresh controller?
                   onPressed: () => writeComment(
                     context: context,
                     postId: postId,
-                  ),
+                  ).then((value) {
+                    if (value) {
+                      controller.refresh();
+                    }
+                  }),
                 )
               : null,
           controller: controller,

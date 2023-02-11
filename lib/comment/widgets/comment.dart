@@ -158,7 +158,6 @@ class CommentTile extends StatelessWidget {
                   icon: Icons.reply,
                   value: () => guardWithLogin(
                     context: context,
-                    // TODO refresh controller
                     callback: () {
                       CommentsController controller =
                           context.read<CommentsController>();
