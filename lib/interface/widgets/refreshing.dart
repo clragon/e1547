@@ -1,5 +1,6 @@
 import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class RefreshableControllerPage<T extends RefreshableController>
@@ -176,28 +177,50 @@ class _RefreshablePageState extends State<RefreshablePage> {
   @override
   Widget build(BuildContext context) {
     WidgetChildBuilder builder = widget.builder ?? (context, child) => child;
-    return AdaptiveScaffold(
-      extendBodyBehindAppBar: widget.extendBodyBehindAppBar,
-      appBar: widget.appBar,
-      body: builder(
-        context,
-        Builder(
-          builder: (context) => SmartRefresher(
-            // Fix for SmartRefresher.didUpdateWidget accessing properties on disposed controllers
-            key: ValueKey(refreshController),
-            controller: refreshController,
-            onRefresh: widget.refresh,
-            header:
-                widget.refreshHeader ?? const RefreshablePageDefaultHeader(),
-            child: widget.child(context),
+    return Shortcuts(
+      shortcuts: const {
+        SingleActivator(LogicalKeyboardKey.f5): RefreshPageIntent(),
+      },
+      child: Actions(
+        actions: {
+          RefreshPageIntent: CallbackAction<RefreshPageIntent>(
+            onInvoke: (intent) => refreshController.requestRefresh(
+              duration: const Duration(milliseconds: 100),
+            ),
+          ),
+        },
+        child: Focus(
+          autofocus: true,
+          child: AdaptiveScaffold(
+            extendBodyBehindAppBar: widget.extendBodyBehindAppBar,
+            appBar: widget.appBar,
+            body: builder(
+              context,
+              Builder(
+                builder: (context) => SmartRefresher(
+                  // Fix for SmartRefresher.didUpdateWidget accessing properties on disposed controllers
+                  key: ValueKey(refreshController),
+                  controller: refreshController,
+                  onRefresh: widget.refresh,
+                  header: widget.refreshHeader ??
+                      const RefreshablePageDefaultHeader(),
+                  child: widget.child(context),
+                ),
+              ),
+            ),
+            drawer: widget.drawer,
+            endDrawer: widget.endDrawer,
+            floatingActionButton: widget.floatingActionButton,
           ),
         ),
       ),
-      drawer: widget.drawer,
-      endDrawer: widget.endDrawer,
-      floatingActionButton: widget.floatingActionButton,
     );
   }
+}
+
+class RefreshPageIntent extends Intent {
+  /// Called when a [RefreshablePage] should refresh its contents.
+  const RefreshPageIntent();
 }
 
 class RefreshablePageDefaultHeader extends StatelessWidget {
