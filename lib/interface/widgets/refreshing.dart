@@ -189,7 +189,7 @@ class _RefreshablePageState extends State<RefreshablePage> {
             ),
           ),
         },
-        child: Focus(
+        child: FocusScope(
           autofocus: true,
           child: AdaptiveScaffold(
             extendBodyBehindAppBar: widget.extendBodyBehindAppBar,
