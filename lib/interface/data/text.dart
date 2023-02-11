@@ -33,18 +33,19 @@ String formatTime(DateTime time) =>
     DateFormat.jm(Platform.localeName).format(time);
 
 String dateOrName(DateTime date) {
-  // TODO: add week days for current week.
-  String title = formatDate(date);
   DateTime today = DateUtils.dateOnly(DateTime.now());
   if (today.isAtSameMomentAs(DateUtils.dateOnly(date))) {
-    title = 'Today';
+    return 'Today';
   }
   if (today
       .subtract(const Duration(days: 1))
       .isAtSameMomentAs(DateUtils.dateOnly(date))) {
-    title = 'Yesterday';
+    return 'Yesterday';
   }
-  return title;
+  if (today.subtract(const Duration(days: 7)).isBefore(date)) {
+    return DateFormat.EEEE().format(date);
+  }
+  return formatDate(date);
 }
 
 extension Ellipse on String {
