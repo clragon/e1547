@@ -3,8 +3,8 @@ import 'dart:io';
 import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
 
-class GalleryButtonWrapper extends StatelessWidget {
-  const GalleryButtonWrapper({
+class GalleryButtons extends StatelessWidget {
+  const GalleryButtons({
     super.key,
     required this.child,
     required this.controller,

@@ -179,11 +179,11 @@ class _RefreshablePageState extends State<RefreshablePage> {
     WidgetChildBuilder builder = widget.builder ?? (context, child) => child;
     return Shortcuts(
       shortcuts: const {
-        SingleActivator(LogicalKeyboardKey.f5): RefreshPageIntent(),
+        SingleActivator(LogicalKeyboardKey.f5): _RefreshPageIntent(),
       },
       child: Actions(
         actions: {
-          RefreshPageIntent: CallbackAction<RefreshPageIntent>(
+          _RefreshPageIntent: CallbackAction<_RefreshPageIntent>(
             onInvoke: (intent) => refreshController.requestRefresh(
               duration: const Duration(milliseconds: 100),
             ),
@@ -218,9 +218,9 @@ class _RefreshablePageState extends State<RefreshablePage> {
   }
 }
 
-class RefreshPageIntent extends Intent {
+class _RefreshPageIntent extends Intent {
   /// Called when a [RefreshablePage] should refresh its contents.
-  const RefreshPageIntent();
+  const _RefreshPageIntent();
 }
 
 class RefreshablePageDefaultHeader extends StatelessWidget {

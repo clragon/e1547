@@ -49,7 +49,7 @@ class _PostFullscreenGalleryState extends State<PostFullscreenGallery> {
       child: ChangeNotifierProvider.value(
         value: widget.controller,
         child: Consumer<PostsController>(
-          builder: (context, controller, child) => GalleryButtonWrapper(
+          builder: (context, controller, child) => GalleryButtons(
             controller: pageController,
             child: PageView.builder(
               itemCount: controller.itemList?.length ?? 0,
