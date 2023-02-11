@@ -53,9 +53,12 @@ class TagSearchSheet extends StatelessWidget {
           tag: tag,
         ),
       ],
-      body: TagSearchInfo(
-        tag: tag,
-        controller: controller,
+      body: ConstrainedBox(
+        constraints: const BoxConstraints(minHeight: 600),
+        child: TagSearchInfo(
+          tag: tag,
+          controller: controller,
+        ),
       ),
     );
   }

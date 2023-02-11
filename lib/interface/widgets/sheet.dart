@@ -160,7 +160,9 @@ class _SheetFloatingActionButtonState extends State<SheetFloatingActionButton> {
 }
 
 Future<void> showDefaultSlidingBottomSheet(
-    BuildContext context, SheetBuilder builder) async {
+  BuildContext context,
+  SheetBuilder builder,
+) async {
   return showSlidingBottomSheet(
     context,
     builder: (context) => defaultSlidingSheetDialog(
@@ -171,7 +173,9 @@ Future<void> showDefaultSlidingBottomSheet(
 }
 
 SlidingSheetDialog defaultSlidingSheetDialog(
-    BuildContext context, SheetBuilder builder) {
+  BuildContext context,
+  SheetBuilder builder,
+) {
   return SlidingSheetDialog(
     scrollSpec: const ScrollSpec(physics: ClampingScrollPhysics()),
     duration: const Duration(milliseconds: 400),
@@ -179,8 +183,8 @@ SlidingSheetDialog defaultSlidingSheetDialog(
     isBackdropInteractable: true,
     cornerRadius: 16,
     cornerRadiusOnFullscreen: 0,
-    minHeight: 600,
     maxWidth: 600,
+    headerBuilder: (context, state) => const SheetHandle(),
     builder: builder,
     snapSpec: const SnapSpec(
       snappings: [
@@ -213,7 +217,6 @@ class DefaultSheetBody extends StatelessWidget {
             if (title != null || actions != null)
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Flexible(
                     child: Padding(
@@ -237,6 +240,28 @@ class DefaultSheetBody extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class SheetHandle extends StatelessWidget {
+  const SheetHandle({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Container(
+          margin: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(4),
+            color: Theme.of(context).iconTheme.color!,
+          ),
+          height: 3,
+          width: 32,
+        ),
+      ],
     );
   }
 }
