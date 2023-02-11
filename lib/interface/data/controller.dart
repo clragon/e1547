@@ -20,9 +20,6 @@ abstract class DataController<KeyType, ItemType>
   /// Ensures we do not request duplicate pages.
   final PageLock<KeyType> _pageLock = PageLock<KeyType>();
 
-  /// Whether we are currently queuing a refresh.
-  bool _isRefreshing = false;
-
   /// Used to prevent calling listeners after disposal.
   bool _disposed = false;
 
@@ -98,24 +95,8 @@ abstract class DataController<KeyType, ItemType>
   @mustCallSuper
   void success() {}
 
-  // TODO: replace all of this with a Queue
-  /// Checks if the controller can queue a refresh.
-  /// If there is currently a refresh queued, this returns false.
-  Future<bool> _canRefresh() async {
-    if (_pageLock.isLocked) {
-      if (_isRefreshing) return false;
-      _isRefreshing = true;
-      await _pageLock.wait();
-      _isRefreshing = false;
-      return true;
-    } else {
-      return true;
-    }
-  }
-
   @override
   void refresh({bool force = false, bool background = false}) async {
-    if (!await _canRefresh()) return;
     return loadPage(
       firstPageKey,
       reset: true,
@@ -259,8 +240,8 @@ class PageLock<KeyType> {
             'Attempted to release $key, but current key was $_currentKey!');
       }
       _used.add(key);
-      _currentKey = null;
     } finally {
+      _currentKey = null;
       _mutex.release();
     }
   }
@@ -278,19 +259,18 @@ class PageLock<KeyType> {
     Future<T> Function() criticalSection, {
     bool reset = false,
   }) async {
+    KeyType? outKey;
     try {
       await acquire(key, reset: reset);
       T result = await criticalSection();
-      release(key);
+      outKey = key;
       return result;
     } on KeyAlreadyUsedException<KeyType> {
       return null;
     } on KeyWasNotUsedException<KeyType> {
       return null;
     } finally {
-      if (_mutex.isLocked) {
-        release(null);
-      }
+      release(outKey);
     }
   }
 
