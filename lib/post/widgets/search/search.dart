@@ -109,6 +109,7 @@ class _PostsSearchPageState extends State<PostsSearchPage> {
             }
 
             String getTitle() {
+              // TODO: reimplement this!
               /*
               Follow? follow = follows.getFollow(controller.search.value);
               if (follow != null) {
