@@ -211,16 +211,6 @@ class TitleBarButton extends StatelessWidget {
       );
 }
 
-class PopRouteIntent extends Intent {
-  /// Called to signal that a route should be popped.
-  const PopRouteIntent();
-}
-
-class FullScreenIntent extends Intent {
-  /// Called when the application should go into fullscreen.
-  const FullScreenIntent();
-}
-
 class WindowShortcuts extends StatelessWidget {
   /// Provides common shortcuts for desktop apps.
   const WindowShortcuts({super.key, required this.child});
@@ -230,33 +220,23 @@ class WindowShortcuts extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Shortcuts(
-      shortcuts: const {
-        SingleActivator(LogicalKeyboardKey.escape): PopRouteIntent(),
-        SingleActivator(LogicalKeyboardKey.f11): FullScreenIntent(),
-      },
-      child: Actions(
-        actions: {
-          PopRouteIntent: CallbackAction<PopRouteIntent>(
-            onInvoke: (intent) => context
-                .read<RouterDrawerController>()
-                .navigatorKey
-                .currentState
-                ?.maybePop(),
-          ),
-          FullScreenIntent:
-              CallbackAction<FullScreenIntent>(onInvoke: (intent) async {
-            WindowManager? manager = context.read<WindowManager?>();
-            if (manager == null) return null;
-            if (await manager.isMaximized()) {
-              await manager.unmaximize();
-            }
-            await manager.setFullScreen(!await manager.isFullScreen());
-            return null;
-          })
+    return CallbackShortcuts(
+      bindings: {
+        const SingleActivator(LogicalKeyboardKey.escape): () => context
+            .read<RouterDrawerController>()
+            .navigatorKey
+            .currentState
+            ?.maybePop(),
+        const SingleActivator(LogicalKeyboardKey.f11): () async {
+          WindowManager? manager = context.read<WindowManager?>();
+          if (manager == null) return;
+          if (await manager.isMaximized()) {
+            await manager.unmaximize();
+          }
+          await manager.setFullScreen(!await manager.isFullScreen());
         },
-        child: child,
-      ),
+      },
+      child: child,
     );
   }
 }
