@@ -25,7 +25,6 @@ export 'widgets/ontap.dart';
 export 'widgets/padding.dart';
 export 'widgets/pagination.dart';
 export 'widgets/popups.dart';
-export 'widgets/prompt.dart';
 export 'widgets/provider.dart';
 export 'widgets/range_dialog.dart';
 export 'widgets/refreshing.dart';

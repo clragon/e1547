@@ -67,7 +67,7 @@ class RatingDisplay extends StatelessWidget {
                   ? rating.icon
                   : const Icon(Icons.lock),
               onTap: canEdit
-                  ? () => showRatingPrompt(
+                  ? () => showRatingDialog(
                       context: context,
                       onSelected: (value) {
                         editingController!.value =
@@ -83,16 +83,14 @@ class RatingDisplay extends StatelessWidget {
   }
 }
 
-Future<Rating?> showRatingPrompt({
+Future<Rating?> showRatingDialog({
   required BuildContext context,
   ValueChanged<Rating>? onSelected,
-  PromptType? type,
 }) async {
-  return showPrompt<Rating>(
+  return showDialog<Rating>(
     context: context,
-    type: type,
-    title: const Text('Rating'),
-    body: Column(
+    builder: (context) => SimpleDialog(
+      title: const Text('Rating'),
       children: Rating.values
           .map(
             (rating) => ListTile(

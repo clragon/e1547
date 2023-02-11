@@ -293,9 +293,8 @@ class _AdvancedTagInputState extends State<AdvancedTagInput> {
 
           switch (status[selection]) {
             case 'rating':
-              await showRatingPrompt(
+              await showRatingDialog(
                 context: context,
-                type: PromptType.dialog,
                 onSelected: (rating) {
                   key = 'rating';
                   value = rating.name;
