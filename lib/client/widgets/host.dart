@@ -80,6 +80,7 @@ class _HostPageState extends State<HostPage> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
           child: TextFormField(
+            autofocus: true,
             enabled: !loading,
             controller: controller,
             autocorrect: false,
