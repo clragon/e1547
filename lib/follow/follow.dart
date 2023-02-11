@@ -7,6 +7,7 @@ export 'data/updater.dart';
 // widgets
 export 'widgets/appbar.dart';
 export 'widgets/drawer.dart';
+export 'widgets/editor.dart';
 export 'widgets/folder.dart';
 export 'widgets/icon.dart';
 export 'widgets/switcher.dart';

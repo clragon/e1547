@@ -93,37 +93,3 @@ class FollowEditingTile extends StatelessWidget {
     );
   }
 }
-
-class FollowEditor extends StatefulWidget {
-  const FollowEditor({super.key});
-
-  @override
-  State<FollowEditor> createState() => _FollowEditorState();
-}
-
-class _FollowEditorState extends State<FollowEditor> {
-  late Client client = context.read<Client>();
-  late FollowsService service = context.read<FollowsService>();
-  late Future<List<String>> follows = service
-      .getAll(host: client.host)
-      .then((value) => value.map((e) => e.tags).toList());
-
-  @override
-  Widget build(BuildContext context) {
-    Widget title = const Text('Following');
-    return FutureLoadingPage<List<String>>(
-      title: title,
-      future: follows,
-      builder: (context, value) => TextEditor(
-        title: title,
-        content: value.join('\n'),
-        onSubmit: (context, value) async {
-          List<String> tags = value.split('\n').trim();
-          service.edit(client.host, tags);
-          Navigator.pop(context);
-          return null;
-        },
-      ),
-    );
-  }
-}

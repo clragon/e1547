@@ -94,9 +94,10 @@ class _DenyListPageState extends State<DenyListPage> {
             actions: [
               IconButton(
                 icon: const Icon(Icons.edit),
-                onPressed: () => showDialog(
-                  context: context,
-                  builder: (context) => const DenyListEditor(),
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const DenyListEditor(),
+                  ),
                 ),
               ),
             ],

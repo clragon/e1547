@@ -203,17 +203,18 @@ class _LoginPageState extends State<LoginPage> {
                     fontSize: 20,
                   ),
                 ),
-                IconButton(
-                  icon: const Icon(Icons.launch),
-                  color: Colors.grey,
-                  onPressed: () {
-                    if (usernameController.text.isNotEmpty) {
-                      launch(context.read<Client>().withHost(
-                          '/users/${usernameController.text}/api_key'));
-                    } else {
-                      launch(context.read<Client>().withHost('/session/new'));
-                    }
-                  },
+                DimSubtree(
+                  child: IconButton(
+                    icon: const Icon(Icons.launch),
+                    onPressed: () {
+                      if (usernameController.text.isNotEmpty) {
+                        launch(context.read<Client>().withHost(
+                            '/users/${usernameController.text}/api_key'));
+                      } else {
+                        launch(context.read<Client>().withHost('/session/new'));
+                      }
+                    },
+                  ),
                 ),
               ],
             ),
@@ -299,10 +300,11 @@ class _LoginPageState extends State<LoginPage> {
             },
           ),
           floatingActionButton: Builder(
-              builder: (context) => FloatingActionButton(
-                    child: const Icon(Icons.check),
-                    onPressed: () => saveAndTest(context),
-                  )),
+            builder: (context) => FloatingActionButton(
+              child: const Icon(Icons.check),
+              onPressed: () => saveAndTest(context),
+            ),
+          ),
         ),
       ),
     );
@@ -377,9 +379,9 @@ class _LoginLoadingDialogState extends State<LoginLoadingDialog> {
 }
 
 Future<void> logout(BuildContext context) async {
-  ClientService config = context.read<ClientService>();
-  String? name = config.credentials?.username;
-  config.logout();
+  ClientService service = context.read<ClientService>();
+  String? name = service.credentials?.username;
+  service.logout();
 
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(

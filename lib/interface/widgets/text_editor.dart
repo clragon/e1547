@@ -13,6 +13,7 @@ class TextEditor extends StatefulWidget {
     required this.onSubmit,
     this.title,
     this.content,
+    this.actionBuilder,
     this.previewBuilder,
     this.bottomSheetBuilder,
   });
@@ -22,6 +23,10 @@ class TextEditor extends StatefulWidget {
 
   final TextEditorSubmit onSubmit;
 
+  final List<Widget>? Function(
+    BuildContext context,
+    TextEditingController controller,
+  )? actionBuilder;
   final TextEditorBuilder? previewBuilder;
   final TextEditorBuilder? bottomSheetBuilder;
 
@@ -158,6 +163,8 @@ class _TextEditorState extends State<TextEditor> {
                         ? const CloseButton()
                         : null,
                     title: widget.title,
+                    actions:
+                        widget.actionBuilder?.call(context, textController),
                     bottom: tabs.length > 1
                         ? TabBar(
                             tabs: tabs.keys.toList(),

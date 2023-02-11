@@ -288,6 +288,11 @@ class DefaultSliverAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    List<Widget>? effectiveActions = actions;
+    if (actions != null) {
+      effectiveActions = [...actions!, const SizedBox(width: 8)];
+    }
+
     return SliverPadding(
       padding: EdgeInsets.zero,
       sliver: SliverLayoutBuilder(
@@ -312,7 +317,7 @@ class DefaultSliverAppBar extends StatelessWidget {
             floating: floating,
             pinned: pinned,
             snap: snap,
-            actions: actions,
+            actions: effectiveActions,
             bottom: bottom,
             flexibleSpace: ScrollToTop(
               controller: scrollController,
