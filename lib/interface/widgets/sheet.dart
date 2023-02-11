@@ -159,11 +159,11 @@ class _SheetFloatingActionButtonState extends State<SheetFloatingActionButton> {
   }
 }
 
-Future<void> showDefaultSlidingBottomSheet(
+Future<T?> showDefaultSlidingBottomSheet<T>(
   BuildContext context,
   SheetBuilder builder,
 ) async {
-  return showSlidingBottomSheet(
+  return showSlidingBottomSheet<T>(
     context,
     builder: (context) => defaultSlidingSheetDialog(
       context,
@@ -198,47 +198,35 @@ SlidingSheetDialog defaultSlidingSheetDialog(
 class DefaultSheetBody extends StatelessWidget {
   const DefaultSheetBody({
     this.title,
-    this.actions,
     required this.body,
   });
 
   final Widget? title;
-  final List<Widget>? actions;
   final Widget body;
 
   @override
   Widget build(BuildContext context) {
     return Material(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (title != null || actions != null)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (title != null)
+            Padding(
+              padding: const EdgeInsets.all(4),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Flexible(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                      child: DefaultTextStyle(
-                        style: Theme.of(context).textTheme.titleLarge!,
-                        child: title!,
-                      ),
+                    child: DefaultTextStyle(
+                      style: Theme.of(context).textTheme.titleLarge!,
+                      child: title!,
                     ),
                   ),
-                  if (actions != null)
-                    Row(
-                      children: actions!,
-                    ),
                 ],
               ),
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: body,
             ),
-          ],
-        ),
+          body,
+        ],
       ),
     );
   }

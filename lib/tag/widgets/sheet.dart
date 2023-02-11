@@ -32,32 +32,48 @@ class TagSearchSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DefaultSheetBody(
-      title: InkWell(
-        onTap: () {
-          Navigator.of(context).maybePop();
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => PostsSearchPage(tags: tag),
+      title: Padding(
+        padding: const EdgeInsets.all(8),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            InkWell(
+              onTap: () {
+                Navigator.of(context).maybePop();
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => PostsSearchPage(tags: tag),
+                  ),
+                );
+              },
+              child: Text(tagToName(tag)),
             ),
-          );
-        },
-        child: Text(tagToName(tag)),
-      ),
-      actions: [
-        if (controller != null)
-          TagSearchActions(
-            tag: tag,
-            controller: controller!,
-          ),
-        TagListActions(
-          tag: tag,
+            Flexible(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (controller != null)
+                    TagSearchActions(
+                      tag: tag,
+                      controller: controller!,
+                    ),
+                  TagListActions(
+                    tag: tag,
+                  ),
+                ],
+              ),
+            )
+          ],
         ),
-      ],
-      body: ConstrainedBox(
-        constraints: const BoxConstraints(minHeight: 600),
-        child: TagSearchInfo(
-          tag: tag,
-          controller: controller,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: 600),
+          child: TagSearchInfo(
+            tag: tag,
+            controller: controller,
+          ),
         ),
       ),
     );

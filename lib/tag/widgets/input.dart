@@ -293,14 +293,13 @@ class _AdvancedTagInputState extends State<AdvancedTagInput> {
 
           switch (status[selection]) {
             case 'rating':
-              await showDialog(
+              await showRatingPrompt(
                 context: context,
-                builder: (context) => RatingDialog(
-                  onTap: (rating) {
-                    key = 'rating';
-                    value = rating.name;
-                  },
-                ),
+                type: PromptType.dialog,
+                onSelected: (rating) {
+                  key = 'rating';
+                  value = rating.name;
+                },
               );
               break;
             case 'deleted':

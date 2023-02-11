@@ -25,26 +25,36 @@ class HistorySheet extends StatelessWidget {
   Widget build(BuildContext context) {
     VoidCallback? onTap = parseLinkOnTap(context, entry.link);
     return DefaultSheetBody(
-      title: InkWell(
-        onTap: onTap != null
-            ? () {
-                Navigator.of(context).maybePop();
-                onTap();
-              }
-            : null,
-        child: Text(entry.getName(context)),
-      ),
-      body: entry.subtitle != null
-          ? DText(entry.subtitle!)
-          : Center(
-              child: Text(
-                'no description',
-                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                      color: dimTextColor(context),
-                      fontStyle: FontStyle.italic,
-                    ),
-              ),
+      title: Padding(
+        padding: const EdgeInsets.all(8),
+        child: Row(
+          children: [
+            InkWell(
+              onTap: onTap != null
+                  ? () {
+                      Navigator.of(context).maybePop();
+                      onTap();
+                    }
+                  : null,
+              child: Text(entry.getName(context)),
             ),
+          ],
+        ),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+        child: entry.subtitle != null
+            ? DText(entry.subtitle!)
+            : Center(
+                child: Text(
+                  'no description',
+                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                        color: dimTextColor(context),
+                        fontStyle: FontStyle.italic,
+                      ),
+                ),
+              ),
+      ),
     );
   }
 }

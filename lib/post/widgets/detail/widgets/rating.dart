@@ -67,13 +67,12 @@ class RatingDisplay extends StatelessWidget {
                   ? rating.icon
                   : const Icon(Icons.lock),
               onTap: canEdit
-                  ? () => showDialog(
-                        context: context,
-                        builder: (context) => RatingDialog(
-                          onTap: (value) => editingController!.value =
-                              editingController.value!.copyWith(rating: value),
-                        ),
-                      )
+                  ? () => showRatingPrompt(
+                      context: context,
+                      onSelected: (value) {
+                        editingController!.value =
+                            editingController.value!.copyWith(rating: value);
+                      })
                   : null,
             ),
             const Divider(),
@@ -84,27 +83,28 @@ class RatingDisplay extends StatelessWidget {
   }
 }
 
-class RatingDialog extends StatelessWidget {
-  const RatingDialog({required this.onTap});
-
-  final void Function(Rating rating) onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return SimpleDialog(
-      title: const Text('Rating'),
+Future<Rating?> showRatingPrompt({
+  required BuildContext context,
+  ValueChanged<Rating>? onSelected,
+  PromptType? type,
+}) async {
+  return showPrompt<Rating>(
+    context: context,
+    type: type,
+    title: const Text('Rating'),
+    body: Column(
       children: Rating.values
           .map(
             (rating) => ListTile(
               title: Text(rating.title),
               leading: rating.icon,
               onTap: () {
-                onTap(rating);
-                Navigator.of(context).maybePop();
+                onSelected?.call(rating);
+                Navigator.of(context).pop(rating);
               },
             ),
           )
           .toList(),
-    );
-  }
+    ),
+  );
 }
