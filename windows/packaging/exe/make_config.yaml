@@ -2,7 +2,7 @@
 # flutter_distributor package --platform windows --targets exe
 app_id: 3476740f-3ce1-412e-b1e3-ba65615da738
 display_name: e1547
-publisher: Downpour Development
+publisher: clynamic
 publisher_url: https://clynamic.net/
 locales:
   - en
