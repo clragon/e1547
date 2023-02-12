@@ -69,6 +69,7 @@ unlinked_spec.ds
 **/android/**/GeneratedPluginRegistrant.java
 **/android/key.properties
 *.jks
+*.pkcs
 # playstore
 **/playstore.json
 
