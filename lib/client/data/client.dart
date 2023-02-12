@@ -361,6 +361,7 @@ class Client {
     CancelToken? cancelToken,
   }) async {
     if (tags.isEmpty) return [];
+    tags.removeWhere((e) => e.contains(' ') || e.contains(':'));
     int max = 40;
     int pages = (tags.length / max).ceil();
     int chunkSize = (tags.length / pages).ceil();
