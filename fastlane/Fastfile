@@ -1,6 +1,10 @@
 require 'fileutils'
 require 'yaml'
 
+add_extra_platforms(
+  platforms: [:windows]
+)
+
 default_platform(:android)
 
 platform :ios do
@@ -71,4 +75,18 @@ def populate_changelogs
       f << read_changelog(section_identifier: "[#{version}]")
     end
   end
+end
+
+# TODO: fix these lanes
+platform :windows do
+  desc "Ensures InnoSetup is installed"
+  lane :bootstrap do
+    sh("winget", "install", "--id", "JRSoftware.InnoSetup", "--silent", "--accept-package-agreements", "--accept-source-agreements", "--no-upgrade")
+  end
+
+  desc "Builds an exe installer with flutter_distributor and InnoSetup"
+    lane :exe do
+      sh(["flutter", "pub", "global", "activate", "flutter_distributor",])
+      sh(["flutter_distributor", "package", "--platform", "windows", "--targets", "exe"])
+    end
 end
