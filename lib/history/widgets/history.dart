@@ -101,8 +101,7 @@ class _HistoriesPageState extends State<HistoriesPage> {
                     );
                   },
                 ),
-                AnimatedSelector(
-                  selector: () => [controller.service.trimming],
+                AnimatedBuilder(
                   animation: controller.service,
                   builder: (context, child) => SwitchListTile(
                     value: controller.service.trimming,
@@ -113,8 +112,9 @@ class _HistoriesPageState extends State<HistoriesPage> {
                           builder: (context) => AlertDialog(
                             title: const Text('History limit'),
                             content: Text(
-                                'Enabling history limit means all history entries beyond ${NumberFormat.compact().format(controller.service.trimAmount)} '
-                                'and all entries older than ${controller.service.trimAge.inDays ~/ 30} months are automatically deleted.'),
+                              'Enabling history limit means all history entries beyond ${NumberFormat.compact().format(controller.service.trimAmount)} '
+                              'and all entries older than ${controller.service.trimAge.inDays ~/ 30} months are automatically deleted.',
+                            ),
                             actions: [
                               TextButton(
                                 onPressed: () =>
