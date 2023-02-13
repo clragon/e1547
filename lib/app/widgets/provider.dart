@@ -107,8 +107,9 @@ class DenylistProvider
               return user.blacklistedTags.split('\n');
             },
             push: (value) async {
+              settings.denylist.value = value;
+              if (!client.hasLogin) return;
               try {
-                settings.denylist.value = value;
                 await client.updateBlacklist(value);
               } on ClientException catch (e) {
                 if (!CancelToken.isCancel(e)) {
@@ -116,7 +117,7 @@ class DenylistProvider
                 }
               }
             },
-          ),
+          )..pull(),
         );
 }
 
