@@ -1,5 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:e1547/client/client.dart';
+import 'package:e1547/denylist/data/service.dart';
 import 'package:e1547/history/history.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
@@ -132,6 +133,7 @@ class PostHistoryConnector extends StatelessWidget {
         addToHistory: (context, service, item) => service.addPost(
           context.read<Client>().host,
           post,
+          denylist: context.read<DenylistService>().items,
         ),
         child: child,
       );
