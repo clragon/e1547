@@ -1,0 +1,16 @@
+Added
+- sheet handles
+- windows installer build files
+- new custom host screen
+- pageview buttons for desktops
+
+Fixed
+- search race condition
+- pool history
+- link ending parsing
+- refreshing favorites
+- follow timeline with multitag searches
+- blacklist sync
+- replying to comments with quotes
+- history adding blacklisted posts
+- layout in flag post screen
