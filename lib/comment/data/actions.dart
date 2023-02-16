@@ -12,8 +12,7 @@ Future<bool> replyComment({
   body = body
       .replaceFirstMapped(
         RegExp(
-          r'\[quote\]".*?":/user/show/[0-9]* said:.*\[/quote\]',
-          dotAll: true,
+          r'\[quote\]"[\S\s]*?":/user(s|/show)/\d* said:[\S\s]*?\[/quote\]',
         ),
         (match) => '',
       )
