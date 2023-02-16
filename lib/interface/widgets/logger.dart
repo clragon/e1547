@@ -261,10 +261,12 @@ class _LoggerErrorNotifierState extends State<LoggerErrorNotifier> {
 
   void onMessage(TalkerDataInterface event) {
     if (kReleaseMode) return;
+    ScaffoldMessengerState? messenger = ScaffoldMessenger.maybeOf(context);
+    if (messenger == null) return;
     if ([LogLevel.critical, LogLevel.error].contains(event.logLevel)) {
       Color background = event.logLevel.color;
-      ScaffoldMessenger.of(context).clearSnackBars();
-      ScaffoldMessenger.of(context).showSnackBar(
+      messenger.clearSnackBars();
+      messenger.showSnackBar(
         SnackBar(
           duration: const Duration(seconds: 3),
           content: Builder(
