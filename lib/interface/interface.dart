@@ -1,5 +1,6 @@
 // data
 export 'data/action.dart';
+export 'data/cache.dart';
 export 'data/collection.dart';
 export 'data/controller.dart';
 export 'data/converter.dart';

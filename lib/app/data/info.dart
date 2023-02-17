@@ -8,6 +8,7 @@ Future<AppInfo> initializeAppInfo() async => AppInfo.fromPlatform(
       github: 'clragon/e1547',
       discord: 'MRwKGqfmUz',
       website: 'e1547.clynamic.net',
+      kofi: 'binaryfloof',
       defaultHost: 'e926.net',
       allowedHosts: ['e621.net'],
     );

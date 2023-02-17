@@ -1,31 +1,38 @@
 import 'dart:io';
 
+import 'package:dio/dio.dart';
 import 'package:e1547/app/app.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:store_checker/store_checker.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-class AppIcon extends StatelessWidget {
-  const AppIcon({this.radius = 20});
-
-  final double radius;
+class AboutPage extends StatefulWidget {
+  const AboutPage();
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(shape: BoxShape.circle),
-      clipBehavior: Clip.antiAlias,
-      width: radius * 2,
-      height: radius * 2,
-      child: Image.asset('assets/icon/app/round.png'),
-    );
-  }
+  State<AboutPage> createState() => _AboutPageState();
 }
 
-class AboutPage extends StatelessWidget {
-  const AboutPage();
+class _AboutPageState extends State<AboutPage> {
+  final RefreshController refreshController = RefreshController();
+  late Future<List<AppVersion>> versions =
+      context.read<AppInfo>().getNewVersions();
+
+  Widget linkListTile({
+    Widget? leading,
+    required Widget title,
+    required String link,
+    String? extra,
+  }) {
+    return ListTile(
+      leading: leading,
+      title: title,
+      subtitle: Text(extra ?? link),
+      onTap: () => launch(link + (extra ?? '')),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,287 +41,238 @@ class AboutPage extends StatelessWidget {
         appBar: const DefaultAppBar(
           title: Text('About'),
           leading: BackButton(),
-          actions: [NewVersionsButton()],
         ),
-        body: Stack(
-          alignment: Alignment.center,
-          children: [
-            Center(
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 100),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const AppIcon(radius: 64),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 24, bottom: 12),
-                      child: Text(
-                        appInfo.appName,
-                        style: const TextStyle(
-                          fontSize: 22,
-                        ),
-                      ),
-                    ),
-                    Text(
-                      appInfo.version,
-                      style: const TextStyle(
-                        fontSize: 16,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            Positioned(
-              bottom: 0,
-              child: Material(
-                color: Theme.of(context).cardColor,
-                elevation: 6,
-                shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(5),
-                    topRight: Radius.circular(5),
-                  ),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
+        body: RefreshablePage(
+          refreshController: refreshController,
+          refresh: () async {
+            try {
+              setState(() {
+                versions = context.read<AppInfo>().getNewVersions(force: true);
+              });
+              await versions;
+              refreshController.refreshCompleted();
+            } on DioError {
+              refreshController.refreshFailed();
+            }
+          },
+          builder: (context, child) => LimitedWidthLayout(child: child),
+          child: (context) => ListView(
+            padding: LimitedWidthLayout.of(context).padding,
+            children: [
+              SizedBox(
+                height: 300,
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      if (appInfo.github != null)
-                        IconButton(
-                          icon: const FaIcon(FontAwesomeIcons.github),
-                          onPressed: () =>
-                              launch('https://github.com/${appInfo.github!}'),
-                        ),
-                      if (appInfo.discord != null)
-                        IconButton(
-                          icon: const FaIcon(FontAwesomeIcons.discord),
-                          onPressed: () => launch(
-                              'https://discord.com/invite/${appInfo.discord!}'),
-                        ),
-                      if (Platform.isAndroid) const PlaystoreButton(),
-                      if (appInfo.website != null)
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 4),
-                          child: IconButton(
-                            icon: const FaIcon(FontAwesomeIcons.globe),
-                            onPressed: () =>
-                                launch('https://${appInfo.website!}'),
+                      const AppIcon(radius: 64),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 24, bottom: 12),
+                        child: Text(
+                          appInfo.appName,
+                          style: const TextStyle(
+                            fontSize: 22,
                           ),
                         ),
+                      ),
+                      Text(
+                        appInfo.version,
+                        style: const TextStyle(
+                          fontSize: 16,
+                        ),
+                      ),
                     ],
                   ),
                 ),
               ),
-            )
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class NewVersionsButton extends StatefulWidget {
-  const NewVersionsButton();
-
-  @override
-  State<NewVersionsButton> createState() => _NewVersionsButtonState();
-}
-
-class _NewVersionsButtonState extends State<NewVersionsButton> {
-  late Future<List<AppVersion>?> newVersions =
-      context.read<AppInfo>().getNewVersions();
-
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder<List<AppVersion>?>(
-      future: newVersions,
-      builder: (context, snapshot) => CrossFade.builder(
-        showChild: snapshot.connectionState == ConnectionState.done,
-        builder: (context) => Stack(
-          children: [
-            IconButton(
-              icon: const Icon(Icons.update),
-              onPressed: () => showDialog(
-                context: context,
-                builder: (context) =>
-                    NewVersionsDialog(newVersions: snapshot.data),
-              ),
-            ),
-            if (snapshot.data?.isNotEmpty ?? false)
-              Positioned(
-                bottom: 12,
-                left: 12,
-                child: Container(
-                  height: 10,
-                  width: 10,
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.red,
-                  ),
-                ),
-              ),
-          ],
-        ),
-        secondChild: const CircularProgressIndicator(),
-      ),
-    );
-  }
-}
-
-class NewVersionsDialog extends StatelessWidget {
-  const NewVersionsDialog({required this.newVersions});
-
-  final List<AppVersion>? newVersions;
-
-  @override
-  Widget build(BuildContext context) {
-    Widget body;
-    List<Widget> actions = [
-      TextButton(
-        onPressed: Navigator.of(context).maybePop,
-        child: const Text('OK'),
-      )
-    ];
-
-    if (newVersions == null) {
-      body = Column(
-        mainAxisSize: MainAxisSize.min,
-        children: const [
-          IconMessage(
-            title: Text('Failed to retrieve version information'),
-            icon: Icon(Icons.warning_amber),
-          ),
-        ],
-      );
-    } else if (newVersions!.isEmpty) {
-      body = Text(
-          'You have the newest version (${context.watch<AppInfo>().version})');
-    } else {
-      body = SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'A newer version is available: ',
-              style: TextStyle(color: dimTextColor(context, 0.5)),
-            ),
-            ...newVersions!
-                .map(
-                  (release) => [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      child: Text(
-                        '${release.name} (${release.version})',
-                        style: Theme.of(context).textTheme.titleLarge,
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 32),
+                child: Card(
+                  child: Column(
+                    children: [
+                      _VersionTile(newVersions: versions),
+                      linkListTile(
+                        leading: const FaIcon(FontAwesomeIcons.github),
+                        title: const Text('GitHub'),
+                        link: 'https://github.com/',
+                        extra: appInfo.github,
                       ),
-                    ),
-                    Text(release.description!),
-                  ],
-                )
-                .reduce((a, b) => [...a, ...b]),
-          ],
-        ),
-      );
-      actions = [
-        TextButton(
-          child: const Text('CANCEL'),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        ),
-        TextButton(
-          child: const Text('DOWNLOAD'),
-          onPressed: () => launch(
-              'https://github.com/${context.watch<AppInfo>().github!}/releases/latest'),
-        )
-      ];
-    }
-
-    return LayoutBuilder(
-      builder: (context, constraints) => AlertDialog(
-        title: Text(context.watch<AppInfo>().appName),
-        content: ConstrainedBox(
-          constraints: BoxConstraints(
-            maxHeight: constraints.maxHeight * 0.5,
-          ),
-          child: body,
-        ),
-        actions: actions,
-      ),
-    );
-  }
-}
-
-class PlaystoreButton extends StatefulWidget {
-  const PlaystoreButton();
-
-  @override
-  State<PlaystoreButton> createState() => _PlaystoreButtonState();
-}
-
-class _PlaystoreButtonState extends State<PlaystoreButton> {
-  Future<Source> source = StoreChecker.getSource;
-
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder<Source>(
-      future: source,
-      builder: (context, snapshot) => CrossFade.builder(
-        showChild: snapshot.hasData &&
-            snapshot.data != Source.IS_INSTALLED_FROM_PLAY_STORE,
-        builder: (context) => IconButton(
-          icon: const Padding(
-            padding: EdgeInsets.only(left: 3),
-            child: FaIcon(FontAwesomeIcons.googlePlay),
-          ),
-          onPressed: () => launch(
-            'https://play.google.com/store/apps/details?id=${context.read<AppInfo>().packageName}',
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class DrawerUpdateIcon extends StatefulWidget {
-  @override
-  State<DrawerUpdateIcon> createState() => _DrawerUpdateIconState();
-}
-
-class _DrawerUpdateIconState extends State<DrawerUpdateIcon> {
-  late Future<List<AppVersion>?> newVersions =
-      context.read<AppInfo>().getNewVersions();
-
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder<List<AppVersion>?>(
-      future: newVersions,
-      builder: (context, snapshot) {
-        if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-          return Stack(
-            children: [
-              const Icon(Icons.update),
-              Positioned(
-                bottom: 0,
-                left: 0,
-                child: Container(
-                  height: 10,
-                  width: 10,
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.red,
+                      linkListTile(
+                        leading: const FaIcon(FontAwesomeIcons.discord),
+                        title: const Text('Discord'),
+                        link: 'https://discord.gg/',
+                        extra: appInfo.discord,
+                      ),
+                      if (appInfo.website != null)
+                        linkListTile(
+                          leading: const FaIcon(FontAwesomeIcons.house),
+                          title: const Text('Website'),
+                          link: 'https://',
+                          extra: appInfo.website,
+                        ),
+                      const Divider(),
+                      linkListTile(
+                        leading: const FaIcon(FontAwesomeIcons.googlePlay),
+                        title: const Text('Playstore'),
+                        link: Platform.isAndroid
+                            ? 'https://play.google.com/store/apps/details?id='
+                            : 'https://play.google.com/store/search?q=',
+                        extra: context.read<AppInfo>().packageName,
+                      ),
+                    ],
                   ),
                 ),
               ),
             ],
-          );
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _VersionTile extends StatelessWidget {
+  // ignore: unused_element
+  const _VersionTile({super.key, required this.newVersions});
+
+  final Future<List<AppVersion>> newVersions;
+
+  @override
+  Widget build(BuildContext context) {
+    void openGithub() => launch(
+        'https://github.com/${context.read<AppInfo>().github!}/releases/latest');
+
+    Widget changesDialog(List<AppVersion> versions) {
+      return AlertDialog(
+        title: Text(context.watch<AppInfo>().appName),
+        content: ConstrainedBox(
+          constraints: const BoxConstraints(maxHeight: 400),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'A newer version is available: ',
+                  style: TextStyle(color: dimTextColor(context, 0.5)),
+                ),
+                ...versions
+                    .map(
+                      (release) => [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          child: Text(
+                            '${release.name} (${release.version})',
+                            style: Theme.of(context).textTheme.titleLarge,
+                          ),
+                        ),
+                        Text(release.description!),
+                      ],
+                    )
+                    .reduce((a, b) => [...a, ...b]),
+              ],
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: Navigator.of(context).maybePop,
+            child: const Text('CANCEL'),
+          ),
+          TextButton(
+            onPressed: openGithub,
+            child: const Text('DOWNLOAD'),
+          )
+        ],
+      );
+    }
+
+    return FutureBuilder<List<AppVersion>?>(
+      future: newVersions,
+      builder: (context, snapshot) {
+        String message;
+        VoidCallback? onTap;
+        if (snapshot.connectionState != ConnectionState.done) {
+          message = 'Fetching updates...';
+        } else if (snapshot.data == null) {
+          message = 'Failed to check for updates';
+          onTap = openGithub;
+        } else if (snapshot.data!.isEmpty) {
+          message = 'You have the newest version';
         } else {
-          return const Icon(Icons.info);
+          message =
+              'A newer version is available: ${snapshot.data!.first.version}';
+          onTap = () => showDialog(
+                context: context,
+                builder: (context) => changesDialog(snapshot.data!),
+              );
         }
+
+        return Column(
+          children: [
+            Stack(
+              fit: StackFit.passthrough,
+              children: [
+                ListTile(
+                  leading: const FaIcon(FontAwesomeIcons.download),
+                  title: const Text('Update'),
+                  subtitle: Text(message),
+                  onTap: onTap,
+                ),
+                if (snapshot.data?.isNotEmpty ?? false)
+                  Positioned(
+                    top: 12,
+                    right: 12,
+                    child: Container(
+                      height: 10,
+                      width: 10,
+                      decoration: const BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.red,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+            const Divider(),
+          ],
+        );
       },
+    );
+  }
+}
+
+class DrawerUpdateIcon extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return SubValueBuilder<Future<List<AppVersion>>>(
+      create: (context) => context.read<AppInfo>().getNewVersions(),
+      builder: (context, newVersions) => FutureBuilder<List<AppVersion>>(
+        future: newVersions,
+        builder: (context, snapshot) {
+          if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+            return Stack(
+              children: [
+                const Icon(Icons.update),
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  child: Container(
+                    height: 10,
+                    width: 10,
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.red,
+                    ),
+                  ),
+                ),
+              ],
+            );
+          } else {
+            return const Icon(Icons.info);
+          }
+        },
+      ),
     );
   }
 }

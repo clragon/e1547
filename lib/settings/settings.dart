@@ -5,5 +5,6 @@ export 'data/settings.dart';
 export 'widgets/about.dart';
 export 'widgets/advanced.dart';
 export 'widgets/header.dart';
+export 'widgets/icon.dart';
 export 'widgets/settings.dart';
 export 'widgets/tile.dart';
