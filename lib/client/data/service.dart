@@ -22,17 +22,11 @@ class ClientService extends ChangeNotifier {
         _credentials = credentials,
         _cookies = cookies;
 
-  @override
-  void dispose() {
-    cache?.close();
-    super.dispose();
-  }
-
   final AppInfo appInfo;
   final String defaultHost;
   final List<String> allowedHosts;
 
-  CacheStore? cache;
+  final CacheStore? cache;
 
   String _host;
 
