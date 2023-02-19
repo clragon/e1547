@@ -3,6 +3,7 @@ export 'data/actions.dart';
 export 'data/cancel.dart';
 export 'data/client.dart';
 export 'data/controller.dart';
+export 'data/cookies.dart';
 export 'data/credentials.dart';
 export 'data/service.dart';
 // widgets

@@ -94,7 +94,7 @@ class _PostDetailImageToggleState extends State<PostDetailImageToggle> {
         Client unsafeClient = Client(
           host: service.customHost!,
           credentials: service.credentials,
-          appInfo: service.appInfo,
+          userAgent: service.userAgent,
           cache: service.cache,
         );
         try {
