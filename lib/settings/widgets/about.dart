@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:dio/dio.dart';
 import 'package:e1547/app/app.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/settings/settings.dart';
@@ -51,7 +50,7 @@ class _AboutPageState extends State<AboutPage> {
               });
               await versions;
               refreshController.refreshCompleted();
-            } on DioError {
+            } on AppInfoClientException {
               refreshController.refreshFailed();
             }
           },

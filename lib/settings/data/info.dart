@@ -198,6 +198,8 @@ class AppVersion {
   final List<String>? binaries;
 }
 
+typedef AppInfoClientException = DioError;
+
 extension StoreSource on Source {
   bool get isFromStore => ![
         Source.IS_INSTALLED_FROM_LOCAL_SOURCE,
