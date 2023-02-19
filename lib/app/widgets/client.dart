@@ -28,7 +28,7 @@ class ClientFailureResolver extends StatefulWidget {
 
 class _ClientFailureResolverState extends State<ClientFailureResolver> {
   Client? _client;
-  ClientService? _hostService;
+  ClientService? _clientService;
   CancelToken _cancelToken = CancelToken();
 
   Future<void> check() async {
@@ -58,9 +58,9 @@ class _ClientFailureResolverState extends State<ClientFailureResolver> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     bool changed = false;
-    ClientService hostService = context.watch<ClientService>();
-    if (_hostService != hostService) {
-      _hostService = hostService;
+    ClientService clientService = context.watch<ClientService>();
+    if (_clientService != clientService) {
+      _clientService = clientService;
       _client = null;
       changed = true;
     }
