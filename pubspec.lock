@@ -293,43 +293,44 @@ packages:
     dependency: "direct main"
     description:
       name: dio
-      sha256: "7d328c4d898a61efc3cd93655a0955858e29a0aa647f0f9e02d59b3bb275e2e8"
+      sha256: "9fdbf71baeb250fc9da847f6cb2052196f62c19906a3657adfc18631a667d316"
       url: "https://pub.dev"
     source: hosted
-    version: "4.0.6"
+    version: "5.0.0"
   dio_cache_interceptor:
     dependency: "direct main"
     description:
-      name: dio_cache_interceptor
-      sha256: "3f76df600621f3a8ed9c57db053f602b24c7e64c108fbc2791d0fe779c52b45b"
-      url: "https://pub.dev"
-    source: hosted
+      path: dio_cache_interceptor
+      ref: "00a8d60"
+      resolved-ref: "00a8d603a0c3b7a4768ece6d16d09591f85fd582"
+      url: "https://github.com/llfbandit/dio_cache_interceptor.git"
+    source: git
     version: "3.3.1"
   dio_cache_interceptor_db_store:
     dependency: "direct main"
     description:
       path: dio_cache_interceptor_db_store
-      ref: "5c8ea0f"
-      resolved-ref: "5c8ea0ff839babbd6247973025ae610b938a35c5"
+      ref: "00a8d60"
+      resolved-ref: "00a8d603a0c3b7a4768ece6d16d09591f85fd582"
       url: "https://github.com/llfbandit/dio_cache_interceptor.git"
     source: git
-    version: "5.0.0"
+    version: "5.1.0"
   drift:
     dependency: "direct main"
     description:
       name: drift
-      sha256: b8465fb684bae76ac98e102d831625bff32c0e802db38d9edff0fe338d915fd4
+      sha256: "2a16754641485ca4eaf31bb7961f3ec26bcddad1ce4869a37f238791e164c073"
       url: "https://pub.dev"
     source: hosted
-    version: "2.4.2"
+    version: "2.5.0"
   drift_dev:
     dependency: "direct dev"
     description:
       name: drift_dev
-      sha256: b237a939e9b4c55178187dacc78075e34184a0d6a3b2a7672fecc80a36dcf8f4
+      sha256: d71542e30e27c920d5a73ccad409a0828a0c9588f5bbbc58aad6407259299a8b
       url: "https://pub.dev"
     source: hosted
-    version: "2.4.1"
+    version: "2.5.2"
   expandable:
     dependency: "direct main"
     description:
@@ -1280,10 +1281,10 @@ packages:
     dependency: transitive
     description:
       name: sqlparser
-      sha256: "2740266bc5b200a71b52296b05985fd9b79cab41f510620d2f42dffab5875123"
+      sha256: "91f47610aa54d8abf9d795a7b4e49b2a788f65d7493d5a68fbf180c3cbcc6f38"
       url: "https://pub.dev"
     source: hosted
-    version: "0.26.1"
+    version: "0.27.0"
   stack_trace:
     dependency: transitive
     description:

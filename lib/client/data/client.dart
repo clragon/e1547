@@ -40,8 +40,8 @@ class Client {
           if (credentials != null)
             HttpHeaders.authorizationHeader: credentials!.basicAuth,
         },
-        sendTimeout: 30000,
-        connectTimeout: 30000,
+        sendTimeout: const Duration(seconds: 30),
+        connectTimeout: const Duration(seconds: 30),
       ),
     );
     if (cache != null) {
