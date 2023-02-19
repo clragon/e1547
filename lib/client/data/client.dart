@@ -11,7 +11,6 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/reply/reply.dart';
-import 'package:e1547/settings/settings.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:e1547/topic/topic.dart';
 import 'package:e1547/user/user.dart';
@@ -24,7 +23,7 @@ typedef ClientException = DioError;
 class Client {
   Client({
     required this.host,
-    required this.appInfo,
+    required this.userAgent,
     this.cache,
     this.credentials,
     this.cookies,
@@ -56,14 +55,11 @@ class Client {
   }
 
   final String host;
-  final AppInfo appInfo;
+  final String userAgent;
   final CacheStore? cache;
   final CacheStore _memoryCache = MemCacheStore();
   final Credentials? credentials;
   final List<Cookie>? cookies;
-
-  String get userAgent =>
-      '${appInfo.appName}/${appInfo.version} (${appInfo.developer})';
 
   late Dio _dio;
 
@@ -794,41 +790,4 @@ class Client {
 
     return Reply.fromJson(body);
   }
-}
-
-Future<bool> validateCall(Future<void> Function() call) async {
-  try {
-    await call();
-    return true;
-  } on ClientException {
-    return false;
-  }
-}
-
-Future<T> rateLimit<T>(Future<T> call, [Duration? duration]) => Future.wait(
-        [call, Future.delayed(duration ?? const Duration(milliseconds: 500))])
-    .then((value) => value[0]);
-
-class ClientProvider extends SubProvider<ClientService, Client> {
-  ClientProvider({super.child, super.builder})
-      : super(
-          create: (context, service) => Client(
-            host: service.host,
-            credentials: service.credentials,
-            appInfo: service.appInfo,
-            cache: service.cache,
-            cookies: service.cookies,
-          ),
-          selector: (context) {
-            ClientService service = context.watch<ClientService>();
-            return [
-              service.host,
-              service.credentials,
-              service.appInfo,
-              service.cache,
-              service.cookies,
-            ];
-          },
-          dispose: (context, client) => client.close(force: true),
-        );
 }

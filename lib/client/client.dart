@@ -1,4 +1,5 @@
 // data
+export 'data/actions.dart';
 export 'data/cancel.dart';
 export 'data/client.dart';
 export 'data/controller.dart';
@@ -7,3 +8,4 @@ export 'data/service.dart';
 // widgets
 export 'widgets/host.dart';
 export 'widgets/login.dart';
+export 'widgets/provider.dart';

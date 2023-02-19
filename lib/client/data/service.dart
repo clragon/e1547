@@ -56,6 +56,9 @@ class ClientService extends ChangeNotifier {
     notifyListeners();
   }
 
+  String get userAgent =>
+      '${appInfo.appName}/${appInfo.version} (${appInfo.developer})';
+
   Credentials? _credentials;
 
   Credentials? get credentials => _credentials;
