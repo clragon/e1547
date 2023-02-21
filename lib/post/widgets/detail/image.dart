@@ -1,6 +1,5 @@
 import 'package:cached_video_player/cached_video_player.dart';
 import 'package:e1547/app/app.dart';
-import 'package:e1547/client/client.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
@@ -64,81 +63,10 @@ class PostDetailVideo extends StatelessWidget {
   }
 }
 
-class PostDetailImageToggle extends StatefulWidget {
+class PostDetailImageToggle extends StatelessWidget {
   const PostDetailImageToggle({required this.post});
 
   final Post post;
-
-  @override
-  State<PostDetailImageToggle> createState() => _PostDetailImageToggleState();
-}
-
-class _PostDetailImageToggleState extends State<PostDetailImageToggle> {
-  bool loading = false;
-  Post? replacement;
-
-  Post get post => widget.post;
-
-  Future<void> onToggle() async {
-    PostsController controller = context.read<PostsController>();
-    ScaffoldMessengerState messenger = ScaffoldMessenger.of(context);
-    setState(() {
-      loading = true;
-    });
-    if (post.file.url == null) {
-      ClientService service = context.read<ClientService>();
-      if (!service.hasCustomHost) {
-        await setCustomHost(context);
-      }
-      if (service.hasCustomHost) {
-        Client unsafeClient = Client(
-          host: service.customHost!,
-          credentials: service.credentials,
-          userAgent: service.userAgent,
-          cache: service.cache,
-        );
-        try {
-          replacement = await unsafeClient.post(post.id);
-          Post updated = post.copyWith(
-            fileRaw: post.fileRaw.copyWith(url: replacement!.fileRaw.url),
-            preview: post.preview.copyWith(url: replacement!.preview.url),
-            sample: post.sample.copyWith(url: replacement!.sample.url),
-          );
-          controller.replacePost(updated);
-          if (!controller.isDenied(updated)) {
-            controller.allow(updated);
-          }
-        } on ClientException {
-          messenger.showSnackBar(
-            SnackBar(
-              duration: const Duration(seconds: 1),
-              content: Text('Failed to load unsafe image of Post #${post.id}'),
-              behavior: SnackBarBehavior.floating,
-            ),
-          );
-        }
-      }
-    } else {
-      if (controller.isAllowed(post)) {
-        controller.unallow(post);
-        if (replacement != null) {
-          controller.replacePost(
-            post.copyWith(
-              fileRaw: post.fileRaw.copyWith(url: null),
-              preview: post.preview.copyWith(url: null),
-              sample: post.sample.copyWith(url: null),
-            ),
-          );
-        }
-      } else {
-        controller.allow(post);
-      }
-      post.getVideo(context)?.pause();
-    }
-    setState(() {
-      loading = false;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -148,8 +76,7 @@ class _PostDetailImageToggleState extends State<PostDetailImageToggle> {
         if (post.flags.deleted) return const SizedBox.shrink();
         PostsController controller = context.watch<PostsController>();
         return CrossFade.builder(
-          showChild: post.file.url == null ||
-              (!post.isFavorited && controller.isDenied(post)) ||
+          showChild: (!post.isFavorited && controller.isDenied(post)) ||
               controller.isAllowed(post),
           duration: const Duration(milliseconds: 200),
           builder: (context) => Card(
@@ -158,7 +85,9 @@ class _PostDetailImageToggleState extends State<PostDetailImageToggle> {
                 : Colors.transparent,
             elevation: 0,
             child: InkWell(
-              onTap: onToggle,
+              onTap: () => controller.isAllowed(post)
+                  ? controller.unallow(post)
+                  : controller.allow(post),
               child: Padding(
                 padding: const EdgeInsets.all(8),
                 child: Row(
@@ -175,12 +104,6 @@ class _PostDetailImageToggleState extends State<PostDetailImageToggle> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 5),
                       child: Text(controller.isAllowed(post) ? 'hide' : 'show'),
-                    ),
-                    CrossFade(
-                      showChild: loading,
-                      child: const SizedCircularProgressIndicator(
-                        size: 16,
-                      ),
                     ),
                   ],
                 ),

@@ -124,7 +124,7 @@ class PostTileOverlay extends StatelessWidget {
           return const Center(child: Text('unsupported'));
         }
         if (post.file.url == null) {
-          return const Center(child: Text('unsafe'));
+          return const Center(child: Text('unavailable'));
         }
         if (controller?.isDenied(post) ?? false) {
           return const Center(child: Text('blacklisted'));
