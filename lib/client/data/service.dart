@@ -123,7 +123,7 @@ class ClientService extends ChangeNotifier {
   Future<bool> tryLogin(Credentials value) async {
     return validateCall(
       () async => _getClient().get(
-        'favorites.json',
+        '',
         options: Options(
           headers: {
             HttpHeaders.authorizationHeader: value.basicAuth,
