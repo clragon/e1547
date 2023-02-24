@@ -40,8 +40,8 @@ dependencies:
   collection: ^1.16.0
   crypto: ^3.0.1
   dio: ^5.0.0
-  dio_cache_interceptor: ^3.3.1
-  dio_cache_interceptor_db_store: ^5.0.0
+  dio_cache_interceptor: ^3.4.0
+  dio_cache_interceptor_db_store: ^5.1.0
   drift: ^2.3.0
   external_path: ^1.0.1
   filesize: ^2.0.1
@@ -82,16 +82,6 @@ dependency_overrides:
     git:
       url: https://github.com/clragon/infinite_scroll_pagination.git
       ref: 44f3eb
-  dio_cache_interceptor:
-    git:
-      url: https://github.com/llfbandit/dio_cache_interceptor.git
-      path: dio_cache_interceptor
-      ref: 00a8d60
-  dio_cache_interceptor_db_store:
-    git:
-      url: https://github.com/llfbandit/dio_cache_interceptor.git
-      path: dio_cache_interceptor_db_store
-      ref: 00a8d60
 
 dev_dependencies:
   flutter_lints: ^2.0.1

@@ -300,20 +300,18 @@ packages:
   dio_cache_interceptor:
     dependency: "direct main"
     description:
-      path: dio_cache_interceptor
-      ref: "00a8d60"
-      resolved-ref: "00a8d603a0c3b7a4768ece6d16d09591f85fd582"
-      url: "https://github.com/llfbandit/dio_cache_interceptor.git"
-    source: git
-    version: "3.3.1"
+      name: dio_cache_interceptor
+      sha256: "24f5fb2fbffea25325e9eabc1501b6582d0928b0ef5cb9127c920e58fbf6ca62"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.4.0"
   dio_cache_interceptor_db_store:
     dependency: "direct main"
     description:
-      path: dio_cache_interceptor_db_store
-      ref: "00a8d60"
-      resolved-ref: "00a8d603a0c3b7a4768ece6d16d09591f85fd582"
-      url: "https://github.com/llfbandit/dio_cache_interceptor.git"
-    source: git
+      name: dio_cache_interceptor_db_store
+      sha256: "2a3715c445ee7dc7dc232cded13d6502bb8b5c60250ca9b7fc475dd1b960db9c"
+      url: "https://pub.dev"
+    source: hosted
     version: "5.1.0"
   drift:
     dependency: "direct main"
