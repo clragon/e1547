@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [15.3.0+73] - 2023-02-24
+### Changed
+- about screen design
+- order of follows in folders and timeline
+
+### Fixed
+- cloudflare check when logged out
+- adding posts to wrong host history
+
 ## [15.2.0+72] - 2023-02-16
 ### Added
 - sheet handles
@@ -688,6 +697,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Fixed
 - API client bindings
 
+[15.3.0+73]: https://github.com/clragon/e1547/compare/15.2.0...15.3.0
 [15.2.0+72]: https://github.com/clragon/e1547/compare/15.1.0...15.2.0
 [15.1.0+71]: https://github.com/clragon/e1547/compare/15.0.1...15.1.0
 [15.0.1+70]: https://github.com/clragon/e1547/compare/15.0.0...15.0.1

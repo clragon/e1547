@@ -1,0 +1,7 @@
+Changed
+- about screen design
+- order of follows in folders and timeline
+
+Fixed
+- cloudflare check when logged out
+- adding posts to wrong host history
