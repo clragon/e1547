@@ -19,6 +19,7 @@ class FollowsFolderPage extends StatefulWidget {
 class _FollowsFolderPageState extends State<FollowsFolderPage> {
   final RefreshController refreshController = RefreshController();
   final SheetActionController sheetController = SheetActionController();
+  bool filterUnseen = false;
 
   @override
   void initState() {
@@ -73,8 +74,10 @@ class _FollowsFolderPageState extends State<FollowsFolderPage> {
         listenable: context.watch<FollowsUpdater>(),
         listener: updateRefresh,
         child: SubValueBuilder<Stream<List<Follow>>>(
-          create: (context) => service.watchAll(host: client.host),
-          selector: (context) => [client, service],
+          create: (context) => filterUnseen
+              ? service.watchUnseen(host: client.host)
+              : service.watchAll(host: client.host),
+          selector: (context) => [client, service, filterUnseen],
           builder: (context, value) =>
               SubValueBuilder<StreamSubscription<List<Follow>>>(
             create: (context) => value.listen((event) => update()),
@@ -136,7 +139,14 @@ class _FollowsFolderPageState extends State<FollowsFolderPage> {
                             const FollowSwitcherTile(),
                           const FollowEditingTile(),
                           const Divider(),
-                          const FollowMarkReadTile(),
+                          FollowFilterReadTile(
+                            filterUnseen: filterUnseen,
+                            onChanged: (value) =>
+                                setState(() => filterUnseen = value),
+                          ),
+                          FollowMarkReadTile(
+                            onTap: () => setState(() => filterUnseen = false),
+                          ),
                         ],
                       ),
                       floatingActionButton: SheetFloatingActionButton(

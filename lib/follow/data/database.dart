@@ -78,7 +78,6 @@ class FollowsDatabase extends _$FollowsDatabase {
   }) {
     final selectable = select(followsTable)
       ..orderBy([
-        (t) => OrderingTerm(expression: t.unseen, mode: OrderingMode.desc),
         (t) => OrderingTerm(expression: t.latest, mode: OrderingMode.desc),
         (t) => OrderingTerm(
             expression: coalesce([t.title, t.tags]), mode: OrderingMode.desc)

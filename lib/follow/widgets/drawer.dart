@@ -5,21 +5,21 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
 
-class FollowMarkReadTile extends StatefulWidget {
-  const FollowMarkReadTile();
+class FollowMarkReadTile extends StatelessWidget {
+  const FollowMarkReadTile({
+    this.onTap,
+  });
 
-  @override
-  State<FollowMarkReadTile> createState() => _FollowMarkReadTileState();
-}
+  final VoidCallback? onTap;
 
-class _FollowMarkReadTileState extends State<FollowMarkReadTile> {
   @override
   Widget build(BuildContext context) {
     return Consumer2<FollowsService, Client>(
       builder: (context, service, client, child) =>
           SubValueBuilder<Stream<int>>(
-        create: (context) =>
-            service.watchUnseen(host: client.host).map((e) => e.length),
+        create: (context) => service
+            .watchUnseen(host: client.host)
+            .map((e) => e.fold(0, (a, b) => a + b.unseen!)),
         selector: (context) => [service, client.host],
         builder: (context, stream) => AsyncBuilder<int>(
           stream: stream,
@@ -44,6 +44,32 @@ class _FollowMarkReadTileState extends State<FollowMarkReadTile> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class FollowFilterReadTile extends StatelessWidget {
+  const FollowFilterReadTile({
+    required this.filterUnseen,
+    required this.onChanged,
+  });
+
+  final bool filterUnseen;
+  final ValueChanged<bool> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return SwitchListTile(
+      value: filterUnseen,
+      onChanged: (value) {
+        Scaffold.of(context).closeEndDrawer();
+        onChanged(value);
+      },
+      secondary: Icon(filterUnseen ? Icons.mark_email_unread : Icons.email),
+      title: const Text('show unseen only'),
+      subtitle: filterUnseen
+          ? const Text('filtering for unseen')
+          : const Text('all posts shown'),
     );
   }
 }
