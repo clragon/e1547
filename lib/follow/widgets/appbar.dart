@@ -1,6 +1,6 @@
+import 'package:e1547/app/app.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/interface/interface.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class FollowSelectionAppBar extends StatelessWidget with AppBarBuilderWidget {
@@ -35,7 +35,7 @@ class FollowSelectionAppBar extends StatelessWidget with AppBarBuilderWidget {
         bool notified =
             data.selections.every((e) => e.type == FollowType.notify);
         return [
-          if (kDebugMode)
+          if (PlatformCapabilities.hasNotifications)
             IconButton(
               icon: Icon(
                 notified ? Icons.notifications_off : Icons.notifications_active,

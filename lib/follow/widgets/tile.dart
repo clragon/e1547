@@ -1,9 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:e1547/app/app.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/tag/tag.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class FollowTile extends StatelessWidget {
@@ -81,8 +81,7 @@ class FollowTile extends StatelessWidget {
         ),
         onSelected: (value) => value(),
         itemBuilder: (context) => [
-          // disabled
-          if (kDebugMode && !bookmarked)
+          if (PlatformCapabilities.hasNotifications && !bookmarked)
             PopupMenuTile(
               value: () => follows.replace(
                 follow.copyWith(
@@ -95,7 +94,7 @@ class FollowTile extends StatelessWidget {
                   ? Icons.notifications_off
                   : Icons.notifications_active,
             ),
-          if (!notified)
+          if (!PlatformCapabilities.hasNotifications || !notified)
             PopupMenuTile(
               value: () => follows.replace(
                 follow.copyWith(
@@ -238,15 +237,15 @@ class FollowTile extends StatelessWidget {
                         opacity: 0.7,
                         child: Row(
                           children: [
-                            CrossFade(
-                              showChild: follow.type != FollowType.update,
-                              child: Padding(
-                                padding: const EdgeInsets.only(right: 4),
-                                child: Icon(
-                                  getFollowIcon(follow.type),
+                            if (PlatformCapabilities.hasNotifications ||
+                                follow.type != FollowType.notify)
+                              CrossFade(
+                                showChild: follow.type != FollowType.update,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(right: 4),
+                                  child: follow.type.icon,
                                 ),
                               ),
-                            ),
                             Expanded(
                               child: CrossFade(
                                 style: FadeAnimationStyle.stacked,

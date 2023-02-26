@@ -79,11 +79,13 @@ class App extends StatelessWidget {
                           child: LockScreen(
                             child: ClientAvailabilityCheck(
                               child: AppLinkHandler(
-                                child: VideoHandlerData(
-                                  handler: VideoHandler(
-                                    muteVideos: settings.muteVideos.value,
+                                child: NotificationHandler(
+                                  child: VideoHandlerData(
+                                    handler: VideoHandler(
+                                      muteVideos: settings.muteVideos.value,
+                                    ),
+                                    child: child!,
                                   ),
-                                  child: child!,
                                 ),
                               ),
                             ),

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
+import 'package:e1547/app/app.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
@@ -261,7 +262,7 @@ extension PostTyping on Post {
     switch (file.ext) {
       case 'mp4':
       case 'webm':
-        if (Platform.isAndroid || Platform.isIOS) {
+        if (PlatformCapabilities.hasVideos) {
           return PostType.video;
         }
         return PostType.unsupported;

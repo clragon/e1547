@@ -51,5 +51,13 @@
 		<string>Downloaded images will be saved in the gallery</string>
 		<key>NSFaceIDUsageDescription</key>
 		<string>App can be locked with local authentication</string>
+		<key>UIBackgroundModes</key>
+		<array>
+			<string>processing</string>
+		</array>
+		<key>BGTaskSchedulerPermittedIdentifiers</key>
+		<array>
+			<string>net.clynamic.e1547.follows</string>
+		</array>
 	</dict>
 </plist>
