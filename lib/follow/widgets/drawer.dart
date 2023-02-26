@@ -40,6 +40,7 @@ class FollowMarkReadTile extends StatelessWidget {
             onTap: () {
               Scaffold.of(context).closeEndDrawer();
               service.markAsSeen();
+              onTap?.call();
             },
           ),
         ),
