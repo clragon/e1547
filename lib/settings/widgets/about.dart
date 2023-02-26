@@ -190,14 +190,18 @@ class _VersionTile extends StatelessWidget {
       future: newVersions,
       builder: (context, snapshot) {
         String message;
+        Widget icon;
         VoidCallback? onTap;
         if (snapshot.connectionState != ConnectionState.done) {
           message = 'Fetching updates...';
+          icon = const FaIcon(FontAwesomeIcons.clockRotateLeft);
         } else if (snapshot.data == null) {
           message = 'Failed to check for updates';
           onTap = openGithub;
+          icon = const FaIcon(FontAwesomeIcons.circleExclamation);
         } else if (snapshot.data!.isEmpty) {
           message = 'You have the newest version';
+          icon = const FaIcon(FontAwesomeIcons.clockRotateLeft);
         } else {
           message =
               'A newer version is available: ${snapshot.data!.first.version}';
@@ -205,6 +209,7 @@ class _VersionTile extends StatelessWidget {
                 context: context,
                 builder: (context) => changesDialog(snapshot.data!),
               );
+          icon = const FaIcon(FontAwesomeIcons.download);
         }
 
         return Column(
@@ -213,7 +218,7 @@ class _VersionTile extends StatelessWidget {
               fit: StackFit.passthrough,
               children: [
                 ListTile(
-                  leading: const FaIcon(FontAwesomeIcons.download),
+                  leading: icon,
                   title: const Text('Update'),
                   subtitle: Text(message),
                   onTap: onTap,
