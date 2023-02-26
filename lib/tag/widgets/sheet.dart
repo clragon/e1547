@@ -37,31 +37,31 @@ class TagSearchSheet extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            InkWell(
-              onTap: () {
-                Navigator.of(context).maybePop();
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => PostsSearchPage(tags: tag),
-                  ),
-                );
-              },
-              child: Text(tagToName(tag)),
-            ),
             Flexible(
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  if (controller != null)
-                    TagSearchActions(
-                      tag: tag,
-                      controller: controller!,
+              child: InkWell(
+                onTap: () {
+                  Navigator.of(context).maybePop();
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => PostsSearchPage(tags: tag),
                     ),
-                  TagListActions(
-                    tag: tag,
-                  ),
-                ],
+                  );
+                },
+                child: Text(tagToName(tag)),
               ),
+            ),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (controller != null)
+                  TagSearchActions(
+                    tag: tag,
+                    controller: controller!,
+                  ),
+                TagListActions(
+                  tag: tag,
+                ),
+              ],
             )
           ],
         ),
