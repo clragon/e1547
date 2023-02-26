@@ -78,7 +78,7 @@ class _TagInputState extends State<TagInput> {
       ],
       textInputAction: widget.textInputAction,
       onSuggestionSelected: (suggestion) {
-        List<String> tags = sortTags(controller.text).split(' ');
+        List<String> tags = controller.text.split(' ');
         List<String> before = [];
         for (String tag in tags) {
           before.add(tag);
@@ -91,7 +91,7 @@ class _TagInputState extends State<TagInput> {
             break;
           }
         }
-        controller.text = '${tags.join(' ')} ';
+        controller.text = '${sortTags(tags.join(' '))} ';
         controller.setFocusToEnd();
       },
       itemBuilder: (context, itemData) => Row(
