@@ -12,6 +12,7 @@ Future<void> main() async {
   AppDatabases databases = await initializeAppdatabases(info: appInfo);
   Logs logs = await initializeLogger(databases: databases);
   WindowManager? windowManager = await initializeWindowManager();
+  initializeBackgroundTasks();
   runApp(
     MultiProvider(
       providers: [

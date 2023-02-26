@@ -1,6 +1,6 @@
 name: e1547
 description: A mobile app for e621+e926.
-version: 15.4.2+77
+version: 16.0.0-beta.7+77
 publish_to: none
 
 environment:
@@ -46,6 +46,7 @@ dependencies:
   drift: ^2.3.0
   external_path: ^1.0.1
   filesize: ^2.0.1
+  flutter_local_notifications: ^12.0.3
   freezed_annotation: ^2.0.3
   image_gallery_saver: ^1.7.1
   intl: ^0.17.0
@@ -71,6 +72,7 @@ dependencies:
   wakelock: ^0.6.1+2
   webview_cookie_manager: ^2.0.6
   window_manager: ^0.3.1
+  workmanager: ^0.5.1
 
   username_generator:
     git: https://github.com/clragon/username_generator.git
@@ -85,6 +87,10 @@ dependency_overrides:
     git:
       url: https://github.com/clragon/infinite_scroll_pagination.git
       ref: 44f3eb
+  workmanager:
+    git:
+      url: https://github.com/clragon/flutter_workmanager.git
+      ref: ab7076f
 
 dev_dependencies:
   flutter_lints: ^2.0.1

@@ -1,13 +1,17 @@
 import 'package:e1547/follow/follow.dart';
 import 'package:flutter/material.dart';
 
-IconData getFollowIcon(FollowType type) {
-  switch (type) {
-    case FollowType.update:
-      return Icons.update;
-    case FollowType.notify:
-      return Icons.notifications_active;
-    case FollowType.bookmark:
-      return Icons.bookmark;
+extension FollowIcon on FollowType {
+  Widget get icon {
+    switch (this) {
+      case FollowType.update:
+        return const Icon(Icons.update);
+      case FollowType.notify:
+        return const Icon(Icons.notifications_active);
+      case FollowType.bookmark:
+        return const Icon(Icons.update_disabled);
+      default:
+        return const Icon(Icons.warning);
+    }
   }
 }
