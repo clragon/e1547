@@ -1,18 +1,15 @@
 import 'dart:io';
 
-import 'package:e1547/app/app.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
 import 'package:talker/talker.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
-Future<CookiesService> initializeCookiesService(AppInfo appInfo) async {
+Future<CookiesService> initializeCookiesService(List<String> hosts) async {
   final service = CookiesService();
   await service.loadAll(
-    {appInfo.defaultHost, ...appInfo.allowedHosts}
-        .map((e) => Uri.https(e).toString())
-        .toList(),
+    hosts.map((e) => Uri.https(e).toString()).toList(),
   );
   return service;
 }

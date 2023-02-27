@@ -9,6 +9,5 @@ Future<AppInfo> initializeAppInfo() async => AppInfo.fromPlatform(
       discord: 'MRwKGqfmUz',
       website: 'e1547.clynamic.net',
       kofi: 'binaryfloof',
-      defaultHost: 'e926.net',
-      allowedHosts: ['e621.net'],
+      allowedHosts: ['e926.net', 'e621.net'],
     );

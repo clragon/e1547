@@ -9,21 +9,18 @@ import 'package:flutter/foundation.dart';
 class ClientService extends ChangeNotifier {
   ClientService({
     required this.appInfo,
-    required this.defaultHost,
-    required List<String> allowedHosts,
+    required this.allowedHosts,
     String? host,
     String? customHost,
     this.cache,
     Credentials? credentials,
     List<Cookie> cookies = const [],
-  })  : allowedHosts = {defaultHost, ...allowedHosts}.toList(),
-        _host = host ?? defaultHost,
+  })  : _host = host ?? allowedHosts.first,
         _customHost = customHost,
         _credentials = credentials,
         _cookies = cookies;
 
   final AppInfo appInfo;
-  final String defaultHost;
   final List<String> allowedHosts;
 
   final CacheStore? cache;
@@ -31,6 +28,8 @@ class ClientService extends ChangeNotifier {
   String _host;
 
   String get host => _host;
+
+  String get defaultHost => allowedHosts.first;
 
   set host(String value) {
     if (_host == value) return;

@@ -19,7 +19,6 @@ class ClientServiceProvider extends SubChangeNotifierProvider4<AppInfo,
       : super(
           create: (context, appInfo, settings, databases, cookies) =>
               ClientService(
-            defaultHost: appInfo.defaultHost,
             allowedHosts: appInfo.allowedHosts,
             host: settings.host.value,
             customHost: settings.customHost.value,

@@ -16,7 +16,9 @@ Future<void> main() async {
         Provider.value(value: await initializeWindowManager()),
         Provider.value(value: talker),
         Provider.value(value: await initializeAppdatabases()),
-        Provider.value(value: await initializeCookiesService(appInfo)),
+        Provider.value(
+          value: await initializeCookiesService(appInfo.allowedHosts),
+        ),
       ],
       child: const App(),
     ),

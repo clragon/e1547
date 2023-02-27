@@ -16,7 +16,6 @@ class AppInfo extends PackageInfo {
     required this.discord,
     required this.website,
     required this.kofi,
-    required this.defaultHost,
     required this.allowedHosts,
     required this.source,
     required super.appName,
@@ -33,7 +32,6 @@ class AppInfo extends PackageInfo {
     required String? discord,
     required String? website,
     required String? kofi,
-    required String defaultHost,
     required List<String> allowedHosts,
   }) async {
     PackageInfo info = await PackageInfo.fromPlatform();
@@ -49,7 +47,6 @@ class AppInfo extends PackageInfo {
       discord: discord,
       website: website,
       kofi: kofi,
-      defaultHost: defaultHost,
       allowedHosts: allowedHosts,
       source: source,
       appName: info.appName,
@@ -78,10 +75,8 @@ class AppInfo extends PackageInfo {
   /// Source of installation.
   final Source source;
 
-  /// The default host of the app.
-  final String defaultHost;
-
   /// List of allow hosts for the app.
+  /// The first entry is used as default.
   final List<String> allowedHosts;
 
   /// Client for getting app versions from the internet.
