@@ -27,9 +27,7 @@ class FollowTile extends StatelessWidget {
           submit: (value) {
             String? title = value.trim();
             if (follow.title != value) {
-              if (value.isNotEmpty) {
-                title = value;
-              } else {
+              if (value.isEmpty) {
                 title = null;
               }
               follows.replace(follow.copyWith(
