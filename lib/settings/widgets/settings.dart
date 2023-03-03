@@ -12,14 +12,9 @@ import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:talker/talker.dart';
 
-class SettingsPage extends StatefulWidget {
+class SettingsPage extends StatelessWidget {
   const SettingsPage();
 
-  @override
-  State createState() => _SettingsPageState();
-}
-
-class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     return Consumer<Settings>(
@@ -185,9 +180,7 @@ class _SettingsPageState extends State<SettingsPage> {
                           valueListenable: settings.quilt,
                           builder: (context, value, child) => GridSettingsTile(
                             state: value,
-                            onChange: (state) => setState(() {
-                              settings.quilt.value = state;
-                            }),
+                            onChange: (state) => settings.quilt.value = state,
                           ),
                         ),
                       ],
