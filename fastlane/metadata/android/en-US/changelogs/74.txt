@@ -1,0 +1,5 @@
+Fixed
+- wiki sheet actions overflowing
+- removing unseen filter when marking all as read
+- autocomplete breaking tags when using negatives
+- autocomplete tapping on certain devices
