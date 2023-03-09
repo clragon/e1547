@@ -51,30 +51,36 @@ class App extends StatelessWidget {
                   GlobalCupertinoLocalizations.delegate,
                   RelativeTimeLocalizations.delegate,
                 ],
-                builder: (context, child) => WindowFrame(
-                  child: WindowShortcuts(
-                    child: StartupActions(
-                      actions: [
-                        (_) => initializeDateFormatting(),
-                        (_) => context.read<DenylistService>().pull(),
-                        (_) => context.read<FollowsUpdater>().update(
-                              client: context.read<Client>(),
-                              denylist: context.read<DenylistService>().items,
-                            ),
-                        initializeCurrentUserAvatar,
-                      ],
-                      onError: (context, error) {
-                        // errors in startup actions are ignored.
-                      },
-                      child: ErrorNotifier(
-                        child: LockScreen(
-                          child: ClientFailureResolver(
-                            child: AppLinkHandler(
-                              child: VideoHandlerData(
-                                handler: VideoHandler(
-                                  muteVideos: settings.muteVideos.value,
+                builder: (context, child) => MediaQuery(
+                  // Temporary hack to fix https://github.com/AbdulRahmanAlHamali/flutter_typeahead/issues/463
+                  data: MediaQuery.of(context).copyWith(
+                    accessibleNavigation: false,
+                  ),
+                  child: WindowFrame(
+                    child: WindowShortcuts(
+                      child: StartupActions(
+                        actions: [
+                          (_) => initializeDateFormatting(),
+                          (_) => context.read<DenylistService>().pull(),
+                          (_) => context.read<FollowsUpdater>().update(
+                                client: context.read<Client>(),
+                                denylist: context.read<DenylistService>().items,
+                              ),
+                          initializeCurrentUserAvatar,
+                        ],
+                        onError: (context, error) {
+                          // errors in startup actions are ignored.
+                        },
+                        child: ErrorNotifier(
+                          child: LockScreen(
+                            child: ClientFailureResolver(
+                              child: AppLinkHandler(
+                                child: VideoHandlerData(
+                                  handler: VideoHandler(
+                                    muteVideos: settings.muteVideos.value,
+                                  ),
+                                  child: child!,
                                 ),
-                                child: child!,
                               ),
                             ),
                           ),

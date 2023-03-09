@@ -31,45 +31,39 @@ class SearchInput<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MediaQuery(
-      // Temporary fix for https://github.com/AbdulRahmanAlHamali/flutter_typeahead/issues/463
-      data: MediaQuery.of(context).copyWith(
-        accessibleNavigation: false,
+    return TypeAheadField<T>(
+      direction: AxisDirection.up,
+      hideOnEmpty: true,
+      hideOnError: true,
+      hideKeyboard: readOnly,
+      keepSuggestionsOnSuggestionSelected: true,
+      // This implementation is very crude and will not react to FAB position changes
+      suggestionsBoxDecoration: Scaffold.of(context).hasFloatingActionButton
+          ? const SuggestionsBoxDecoration(
+              shape: SearchInputCutout(),
+              clipBehavior: Clip.antiAlias,
+            )
+          : const SuggestionsBoxDecoration(),
+      textFieldConfiguration: TextFieldConfiguration(
+        controller: controller,
+        autofocus: true,
+        inputFormatters: inputFormatters,
+        decoration: InputDecoration(labelText: labelText),
+        onSubmitted: submit,
+        textInputAction: textInputAction ?? TextInputAction.search,
       ),
-      child: TypeAheadField<T>(
-        direction: AxisDirection.up,
-        hideOnEmpty: true,
-        hideOnError: true,
-        hideKeyboard: readOnly,
-        keepSuggestionsOnSuggestionSelected: true,
-        // This implementation is very crude and will not react to FAB position changes
-        suggestionsBoxDecoration: Scaffold.of(context).hasFloatingActionButton
-            ? const SuggestionsBoxDecoration(
-                shape: SearchInputCutout(),
-                clipBehavior: Clip.antiAlias,
-              )
-            : const SuggestionsBoxDecoration(),
-        textFieldConfiguration: TextFieldConfiguration(
-          controller: controller,
-          autofocus: true,
-          inputFormatters: inputFormatters,
-          decoration: InputDecoration(labelText: labelText),
-          onSubmitted: submit,
-          textInputAction: textInputAction ?? TextInputAction.search,
+      loadingBuilder: (context) => const SizedBox(),
+      noItemsFoundBuilder: (context) => ListTile(
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: const [
+            SizedCircularProgressIndicator(size: 24),
+          ],
         ),
-        loadingBuilder: (context) => const SizedBox(),
-        noItemsFoundBuilder: (context) => ListTile(
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: const [
-              SizedCircularProgressIndicator(size: 24),
-            ],
-          ),
-        ),
-        onSuggestionSelected: onSuggestionSelected,
-        itemBuilder: itemBuilder,
-        suggestionsCallback: suggestionsCallback,
       ),
+      onSuggestionSelected: onSuggestionSelected,
+      itemBuilder: itemBuilder,
+      suggestionsCallback: suggestionsCallback,
     );
   }
 }
