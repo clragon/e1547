@@ -1,17 +1,28 @@
+import 'package:collection/collection.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/comment/comment.dart';
 import 'package:e1547/comment/data/comment.dart';
+import 'package:e1547/denylist/denylist.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
 
 class CommentsController extends CursorClientDataController<Comment>
-    with RefreshableController {
-  CommentsController({required this.client, required this.postId});
+    with RefreshableController, FilterableController {
+  CommentsController({
+    required this.client,
+    required this.postId,
+    required this.denylist,
+  }) {
+    _filterNotifiers.forEach((e) => e.addListener(refilter));
+  }
 
   @override
   final Client client;
 
   final int postId;
+
+  final DenylistService denylist;
+  late final List<Listenable> _filterNotifiers = [denylist];
 
   @override
   @protected
@@ -25,6 +36,10 @@ class CommentsController extends CursorClientDataController<Comment>
   @override
   @protected
   int getId(Comment item) => item.id;
+
+  @override
+  List<Comment> filter(List<Comment> items) =>
+      items.whereNot((e) => denylist.denies('user:${e.creatorId}')).toList();
 
   void replaceComment(Comment comment) {
     int index = itemList?.indexWhere((e) => e.id == comment.id) ?? -1;
@@ -88,14 +103,20 @@ class CommentsController extends CursorClientDataController<Comment>
       return false;
     }
   }
+
+  @override
+  void dispose() {
+    _filterNotifiers.forEach((e) => e.removeListener(refilter));
+    super.dispose();
+  }
 }
 
-class CommentsProvider
-    extends SubChangeNotifierProvider<Client, CommentsController> {
+class CommentsProvider extends SubChangeNotifierProvider2<Client,
+    DenylistService, CommentsController> {
   CommentsProvider({required int postId, super.child, super.builder})
       : super(
-          create: (context, client) =>
-              CommentsController(client: client, postId: postId),
+          create: (context, client, denylist) => CommentsController(
+              client: client, postId: postId, denylist: denylist),
           selector: (context) => [postId],
         );
 }

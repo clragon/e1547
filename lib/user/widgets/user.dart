@@ -164,8 +164,11 @@ class UserPage extends StatelessWidget {
                   ),
                 ],
               );
-              appbar = const DefaultAppBar(
-                actions: [ContextDrawerButton()],
+              appbar = DefaultAppBar(
+                actions: [
+                  _UserProfileActions(user: user),
+                  const ContextDrawerButton(),
+                ],
                 elevation: 0,
               );
             }
@@ -270,36 +273,62 @@ class UserSliverAppBar extends StatelessWidget {
             )
           : null,
       actions: [
-        PopupMenuButton<VoidCallback>(
-          icon: const Icon(Icons.more_vert),
-          onSelected: (value) => value(),
-          itemBuilder: (context) => [
-            PopupMenuTile(
-              title: 'Browse',
-              icon: Icons.open_in_browser,
-              value: () async => launch(
-                context.read<Client>().withHost(user.link),
-              ),
-            ),
-            PopupMenuTile(
-              title: 'Report',
-              icon: Icons.report,
-              value: () => guardWithLogin(
-                context: context,
-                callback: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => UserReportScreen(
-                        user: user,
-                      ),
-                    ),
-                  );
-                },
-                error: 'You must be logged in to report users!',
-              ),
-            ),
-          ],
+        _UserProfileActions(user: user),
+      ],
+    );
+  }
+}
+
+class _UserProfileActions extends StatelessWidget {
+  const _UserProfileActions({required this.user});
+
+  final User user;
+
+  @override
+  Widget build(BuildContext context) {
+    DenylistService? denylist = context.watch<DenylistService?>();
+    String userTag = 'user:${user.id}';
+    bool blocked = denylist?.denies(userTag) ?? false;
+    return PopupMenuButton<VoidCallback>(
+      icon: const Icon(Icons.more_vert),
+      onSelected: (value) => value(),
+      itemBuilder: (context) => [
+        PopupMenuTile(
+          title: 'Browse',
+          icon: Icons.open_in_browser,
+          value: () async => launch(
+            context.read<Client>().withHost(user.link),
+          ),
         ),
+        PopupMenuTile(
+          title: 'Report',
+          icon: Icons.report,
+          value: () => guardWithLogin(
+            context: context,
+            callback: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => UserReportScreen(
+                    user: user,
+                  ),
+                ),
+              );
+            },
+            error: 'You must be logged in to report users!',
+          ),
+        ),
+        if (denylist != null)
+          PopupMenuTile(
+            title: blocked ? 'Unblock' : 'Block',
+            icon: blocked ? Icons.check : Icons.block,
+            value: () {
+              if (blocked) {
+                denylist.remove(userTag);
+              } else {
+                denylist.add(userTag);
+              }
+            },
+          ),
       ],
     );
   }
