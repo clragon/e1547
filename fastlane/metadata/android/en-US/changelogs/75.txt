@@ -1,0 +1,5 @@
+Added
+- blocking users
+
+Fixed
+- tapping tag suggestions
