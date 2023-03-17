@@ -1,19 +1,16 @@
 import 'dart:io';
 
-import 'package:async_builder/async_builder.dart';
 import 'package:e1547/app/widgets/lock.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_sub/flutter_sub.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:shared_storage/saf.dart';
 
-class AdvancedSettingsPage extends StatefulWidget {
-  @override
-  State createState() => _AdvancedSettingsPageState();
-}
+class AdvancedSettingsPage extends StatelessWidget {
+  const AdvancedSettingsPage({super.key});
 
-class _AdvancedSettingsPageState extends State<AdvancedSettingsPage> {
   @override
   Widget build(BuildContext context) {
     return Consumer<Settings>(
@@ -101,26 +98,22 @@ class _AdvancedSettingsPageState extends State<AdvancedSettingsPage> {
                   },
                 ),
               ),
-              SubValueBuilder<Future<bool>>(
-                create: (context) => LocalAuthentication()
+              SubFuture<bool>(
+                create: () => LocalAuthentication()
                     .getAvailableBiometrics()
                     .then((e) => e.isNotEmpty),
-                builder: (context, future) => AsyncBuilder<bool>(
-                  future: future,
-                  builder: (context, canAuth) => CrossFade(
-                    showChild: canAuth ?? false,
-                    child: ValueListenableBuilder<bool>(
-                      valueListenable: settings.biometricAuth,
-                      builder: (context, value, child) => SwitchListTile(
-                        title: const Text('Biometric lock'),
-                        subtitle: Text(value
-                            ? 'biometrics enabled'
-                            : 'biometrics disabled'),
-                        secondary: const Icon(Icons.fingerprint),
-                        value: value,
-                        onChanged: (value) =>
-                            settings.biometricAuth.value = value,
-                      ),
+                builder: (context, snapshot) => CrossFade(
+                  showChild: snapshot.data ?? false,
+                  child: ValueListenableBuilder<bool>(
+                    valueListenable: settings.biometricAuth,
+                    builder: (context, value, child) => SwitchListTile(
+                      title: const Text('Biometric lock'),
+                      subtitle: Text(
+                          value ? 'biometrics enabled' : 'biometrics disabled'),
+                      secondary: const Icon(Icons.fingerprint),
+                      value: value,
+                      onChanged: (value) =>
+                          settings.biometricAuth.value = value,
                     ),
                   ),
                 ),

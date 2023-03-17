@@ -1,4 +1,3 @@
-import 'package:async_builder/async_builder.dart';
 import 'package:e1547/app/app.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/denylist/denylist.dart';
@@ -10,10 +9,11 @@ import 'package:e1547/settings/widgets/grid.dart';
 import 'package:e1547/user/user.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_sub/flutter_sub.dart';
 import 'package:talker/talker.dart';
 
 class SettingsPage extends StatelessWidget {
-  const SettingsPage();
+  const SettingsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -48,45 +48,41 @@ class SettingsPage extends StatelessWidget {
                 ),
               ),
               Consumer<Client>(
-                builder: (context, client, child) =>
-                    SubValueBuilder<Future<CurrentUser?>>(
-                  create: (context) => client.currentUser(),
-                  selector: (context) => [client],
-                  builder: (context, future) => FutureBuilder<CurrentUser?>(
-                    future: future,
-                    builder: (context, snapshot) => CrossFade.builder(
-                      duration: const Duration(milliseconds: 200),
-                      showChild: client.credentials != null,
-                      builder: (context) => DividerListTile(
-                        title: Text(client.credentials!.username),
-                        subtitle: snapshot.data?.levelString != null
-                            ? Text(snapshot.data!.levelString.toLowerCase())
-                            : null,
-                        leading: const IgnorePointer(
-                          child: CurrentUserAvatar(),
-                        ),
-                        separated: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 12),
-                          child: IgnorePointer(
-                            child: IconButton(
-                              icon: const Icon(Icons.exit_to_app),
-                              onPressed: () => logout(context),
-                            ),
+                builder: (context, client, child) => SubFuture<CurrentUser?>(
+                  create: () => client.currentUser(),
+                  keys: [client],
+                  builder: (context, snapshot) => CrossFade.builder(
+                    duration: const Duration(milliseconds: 200),
+                    showChild: client.credentials != null,
+                    builder: (context) => DividerListTile(
+                      title: Text(client.credentials!.username),
+                      subtitle: snapshot.data?.levelString != null
+                          ? Text(snapshot.data!.levelString.toLowerCase())
+                          : null,
+                      leading: const IgnorePointer(
+                        child: CurrentUserAvatar(),
+                      ),
+                      separated: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        child: IgnorePointer(
+                          child: IconButton(
+                            icon: const Icon(Icons.exit_to_app),
+                            onPressed: () => logout(context),
                           ),
                         ),
-                        onTap: () => Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                UserLoadingPage(client.credentials!.username),
-                          ),
+                      ),
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              UserLoadingPage(client.credentials!.username),
                         ),
-                        onTapSeparated: () => logout(context),
                       ),
-                      secondChild: ListTile(
-                        title: const Text('Login'),
-                        leading: const Icon(Icons.person_add),
-                        onTap: () => Navigator.pushNamed(context, '/login'),
-                      ),
+                      onTapSeparated: () => logout(context),
+                    ),
+                    secondChild: ListTile(
+                      title: const Text('Login'),
+                      leading: const Icon(Icons.person_add),
+                      onTap: () => Navigator.pushNamed(context, '/login'),
                     ),
                   ),
                 ),
@@ -192,25 +188,20 @@ class SettingsPage extends StatelessWidget {
               const Divider(),
               const SettingsHeader(title: 'Listing'),
               Consumer2<HistoriesService, Client>(
-                builder: (context, service, client, child) =>
-                    SubValueBuilder<Stream<int>>(
-                  create: (context) => service.watchLength(host: client.host),
-                  selector: (context) => [service, client.host],
-                  builder: (context, stream) => AsyncBuilder<int>(
-                    retain: true,
-                    stream: stream,
-                    builder: (context, value) => DividerListTile(
-                      title: const Text('History'),
-                      subtitle: service.enabled && value != null
-                          ? Text('$value pages visited')
-                          : null,
-                      leading: const Icon(Icons.history),
-                      onTap: () => Navigator.pushNamed(context, '/history'),
-                      onTapSeparated: () => service.enabled = !service.enabled,
-                      separated: Switch(
-                        value: service.enabled,
-                        onChanged: (value) => service.enabled = value,
-                      ),
+                builder: (context, service, client, child) => SubStream<int>(
+                  create: () => service.watchLength(host: client.host),
+                  keys: [service, client.host],
+                  builder: (context, snapshot) => DividerListTile(
+                    title: const Text('History'),
+                    subtitle: service.enabled && snapshot.data != null
+                        ? Text('${snapshot.data} pages visited')
+                        : null,
+                    leading: const Icon(Icons.history),
+                    onTap: () => Navigator.pushNamed(context, '/history'),
+                    onTapSeparated: () => service.enabled = !service.enabled,
+                    separated: Switch(
+                      value: service.enabled,
+                      onChanged: (value) => service.enabled = value,
                     ),
                   ),
                 ),
@@ -227,24 +218,19 @@ class SettingsPage extends StatelessWidget {
                 ),
               ),
               Consumer2<FollowsService, Client>(
-                builder: (context, service, client, child) =>
-                    SubValueBuilder<Stream<int>>(
-                  create: (context) => service.watchLength(host: client.host),
-                  selector: (context) => [service, client.host],
-                  builder: (context, stream) => AsyncBuilder<int>(
-                    retain: true,
-                    stream: stream,
-                    builder: (context, value) => ListTile(
-                      title: const Text('Following'),
-                      subtitle: value != null && value != 0
-                          ? Text('$value searches followed')
-                          : null,
-                      leading: const Icon(Icons.turned_in),
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const FollowsFolderPage(),
-                        ),
+                builder: (context, service, client, child) => SubStream<int>(
+                  create: () => service.watchLength(host: client.host),
+                  keys: [service, client.host],
+                  builder: (context, snapshot) => ListTile(
+                    title: const Text('Following'),
+                    subtitle: snapshot.data != null && snapshot.data != 0
+                        ? Text('${snapshot.data} searches followed')
+                        : null,
+                    leading: const Icon(Icons.turned_in),
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const FollowsFolderPage(),
                       ),
                     ),
                   ),
@@ -257,7 +243,7 @@ class SettingsPage extends StatelessWidget {
                 title: const Text('Advanced settings'),
                 onTap: () => Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => AdvancedSettingsPage(),
+                    builder: (context) => const AdvancedSettingsPage(),
                   ),
                 ),
               ),

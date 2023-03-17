@@ -46,7 +46,7 @@ class SingleFuturePostsProvider
             await controller.loadFirstPage();
             return controller;
           }),
-          selector: (context) => [id],
+          keys: (context) => [id],
           dispose: (context, value) async => (await value).dispose(),
         );
 }

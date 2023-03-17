@@ -64,6 +64,6 @@ class RepliesProvider extends SubChangeNotifierProvider2<Client,
             denylist: denylist,
             orderByOldest: orderByOldest,
           ),
-          selector: (context) => [topicId, orderByOldest],
+          keys: (context) => [topicId, orderByOldest],
         );
 }

@@ -4,6 +4,7 @@ import 'package:e1547/app/app.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_sub/flutter_sub.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -249,34 +250,32 @@ class _VersionTile extends StatelessWidget {
 class DrawerUpdateIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return SubValueBuilder<Future<List<AppVersion>>>(
-      create: (context) => context.read<AppInfo>().getNewVersions(),
-      builder: (context, newVersions) => FutureBuilder<List<AppVersion>>(
-        future: newVersions,
-        builder: (context, snapshot) {
-          if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-            return Stack(
-              children: [
-                const Icon(Icons.update),
-                Positioned(
-                  bottom: 0,
-                  left: 0,
-                  child: Container(
-                    height: 10,
-                    width: 10,
-                    decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.red,
-                    ),
+    return SubFuture<List<AppVersion>>(
+      create: () => context.read<AppInfo>().getNewVersions(),
+      keys: [context.watch<AppInfo>()],
+      builder: (context, snapshot) {
+        if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+          return Stack(
+            children: [
+              const Icon(Icons.update),
+              Positioned(
+                bottom: 0,
+                left: 0,
+                child: Container(
+                  height: 10,
+                  width: 10,
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.red,
                   ),
                 ),
-              ],
-            );
-          } else {
-            return const Icon(Icons.info);
-          }
-        },
-      ),
+              ),
+            ],
+          );
+        } else {
+          return const Icon(Icons.info);
+        }
+      },
     );
   }
 }

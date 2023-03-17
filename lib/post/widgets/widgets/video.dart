@@ -4,6 +4,7 @@ import 'package:cached_video_player/cached_video_player.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_sub/flutter_sub.dart';
 
 class VideoButton extends StatefulWidget {
   const VideoButton({super.key, required this.videoController, this.size = 54});
@@ -15,16 +16,13 @@ class VideoButton extends StatefulWidget {
   State<VideoButton> createState() => _VideoButtonState();
 }
 
-class _VideoButtonState extends State<VideoButton>
-    with SingleTickerProviderStateMixin {
+class _VideoButtonState extends State<VideoButton> {
   @override
   Widget build(BuildContext context) {
     ScaffoldFrameController? frameController = ScaffoldFrame.maybeOf(context);
-    return SubValueBuilder<AnimationController>(
-      create: (context) =>
-          AnimationController(vsync: this, duration: defaultAnimationDuration),
-      selector: (context) => [widget.videoController],
-      dispose: (context, value) => value.dispose(),
+    return SubAnimationController(
+      duration: defaultAnimationDuration,
+      keys: (context) => [widget.videoController],
       builder: (context, animationController) => AnimatedBuilder(
         animation: Listenable.merge([widget.videoController, frameController]),
         builder: (context, child) {

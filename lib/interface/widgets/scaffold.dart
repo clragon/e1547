@@ -508,6 +508,6 @@ class AdaptiveScaffoldScope
             isDrawerOpen: isDrawerOpen,
             isEndDrawerOpen: isEndDrawerOpen,
           ),
-          selector: (context) => [isDrawerOpen, isEndDrawerOpen],
+          keys: (context) => [isDrawerOpen, isEndDrawerOpen],
         );
 }

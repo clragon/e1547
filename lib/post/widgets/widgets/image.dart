@@ -282,7 +282,7 @@ class ImageCacheSizeProvider extends SubProvider0<ImageCacheSize> {
   ImageCacheSizeProvider({required int? size, super.child, super.builder})
       : super(
           create: (context) => ImageCacheSize(size),
-          selector: (context) => [size],
+          keys: (context) => [size],
         );
 
   /// Removes the cache size for images for a subtree.

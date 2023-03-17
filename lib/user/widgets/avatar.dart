@@ -5,6 +5,7 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_sub/flutter_sub.dart';
 
 Future<void> initializeCurrentUserAvatar(BuildContext context) async {
   PostsController? controller =
@@ -107,12 +108,12 @@ class UserAvatar extends StatelessWidget {
     if (id == null || controller == null) {
       return const EmptyAvatar();
     }
-    return SubValueBuilder<Future<PostsController>>(
-      create: (context) => Future<PostsController>(() async {
+    return SubFuture<PostsController>(
+      create: () => Future<PostsController>(() async {
         await controller.loadFirstPage();
         return controller;
       }),
-      selector: (context) => [controller],
+      keys: [controller],
       builder: (context, _) => PostsControllerConnector(
         id: id,
         controller: controller,

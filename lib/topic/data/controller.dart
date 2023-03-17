@@ -50,6 +50,6 @@ class TopicsProvider
       : super(
           create: (context, client) =>
               TopicsController(client: client, search: search),
-          selector: (context) => [search],
+          keys: (context) => [search],
         );
 }

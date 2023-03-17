@@ -68,7 +68,7 @@ class PoolsProvider extends SubChangeNotifierProvider2<Client, DenylistService,
             denylist: denylist,
             search: search,
           ),
-          selector: (context) => [search],
+          keys: (context) => [search],
         );
 }
 

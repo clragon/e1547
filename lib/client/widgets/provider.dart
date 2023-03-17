@@ -11,7 +11,7 @@ class ClientProvider extends SubProvider<ClientService, Client> {
             cache: service.cache,
             cookies: service.cookies,
           ),
-          selector: (context) {
+          keys: (context) {
             ClientService service = context.watch<ClientService>();
             return [
               service.host,

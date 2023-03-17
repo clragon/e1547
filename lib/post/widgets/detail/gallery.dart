@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_sub/flutter_sub.dart';
 
 class PostDetailGallery extends StatefulWidget {
   const PostDetailGallery({
@@ -60,9 +61,7 @@ class _PostDetailGalleryState extends State<PostDetailGallery> {
               controller: pageController,
               itemBuilder: (context, index) {
                 loadNextPage(index);
-                return SubValueBuilder<ScrollController>(
-                  create: (context) => ScrollController(),
-                  dispose: (context, value) => value.dispose(),
+                return SubScrollController(
                   builder: (context, scrollController) =>
                       PrimaryScrollController(
                     controller: scrollController,

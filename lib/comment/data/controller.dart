@@ -117,6 +117,6 @@ class CommentsProvider extends SubChangeNotifierProvider2<Client,
       : super(
           create: (context, client, denylist) => CommentsController(
               client: client, postId: postId, denylist: denylist),
-          selector: (context) => [postId],
+          keys: (context) => [postId],
         );
 }

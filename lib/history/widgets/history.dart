@@ -1,4 +1,3 @@
-import 'package:async_builder/async_builder.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/history/history.dart';
 import 'package:e1547/history/widgets/appbar.dart';
@@ -6,6 +5,7 @@ import 'package:e1547/history/widgets/list.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_sub/flutter_sub.dart';
 import 'package:grouped_list/grouped_list.dart';
 import 'package:intl/intl.dart';
 
@@ -83,23 +83,17 @@ class _HistoriesPageState extends State<HistoriesPage> {
               title: const Text('History'),
               children: [
                 Consumer2<HistoriesService, Client>(
-                  builder: (context, service, client, child) {
-                    return SubValueBuilder<Stream<int>>(
-                      create: (context) =>
-                          service.watchLength(host: client.host),
-                      selector: (context) => [service, client.host],
-                      builder: (context, stream) => AsyncBuilder<int>(
-                        stream: stream,
-                        builder: (context, value) => SwitchListTile(
-                          title: const Text('Enabled'),
-                          subtitle: Text('${value ?? 0} pages visited'),
-                          secondary: const Icon(Icons.history),
-                          value: service.enabled,
-                          onChanged: (value) => service.enabled = value,
-                        ),
-                      ),
-                    );
-                  },
+                  builder: (context, service, client, child) => SubStream<int>(
+                    create: () => service.watchLength(host: client.host),
+                    keys: [service, client.host],
+                    builder: (context, snapshot) => SwitchListTile(
+                      title: const Text('Enabled'),
+                      subtitle: Text('${snapshot.data ?? 0} pages visited'),
+                      secondary: const Icon(Icons.history),
+                      value: service.enabled,
+                      onChanged: (value) => service.enabled = value,
+                    ),
+                  ),
                 ),
                 AnimatedBuilder(
                   animation: controller.service,
