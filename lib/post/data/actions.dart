@@ -144,6 +144,9 @@ extension PostDownloading on Post {
         String downloadMime = await _throwOnNull(lookupMimeType(download.path),
             'Could not determine MIME of download!');
         Uri target = Uri.parse(settings.downloadPath.value);
+        if (target.path == '/tree/primary${Uri.encodeComponent(':Pictures')}') {
+          target = Uri(path: '${target.path}/${appInfo.appName}');
+        }
         if (!await isPersistedUri(target)) {
           target = await _throwOnNull(
             openDocumentTree(initialUri: target),
