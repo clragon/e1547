@@ -1,3 +1,5 @@
+export 'package:flutter_sub_provider/flutter_sub_provider.dart';
+
 // data
 export 'data/action.dart';
 export 'data/cache.dart';
@@ -25,7 +27,6 @@ export 'widgets/ontap.dart';
 export 'widgets/padding.dart';
 export 'widgets/pagination.dart';
 export 'widgets/popups.dart';
-export 'widgets/provider.dart';
 export 'widgets/range_dialog.dart';
 export 'widgets/refreshing.dart';
 export 'widgets/scaffold.dart';

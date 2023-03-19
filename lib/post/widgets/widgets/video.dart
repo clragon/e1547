@@ -22,7 +22,7 @@ class _VideoButtonState extends State<VideoButton> {
     ScaffoldFrameController? frameController = ScaffoldFrame.maybeOf(context);
     return SubAnimationController(
       duration: defaultAnimationDuration,
-      keys: (context) => [widget.videoController],
+      keys: [widget.videoController],
       builder: (context, animationController) => AnimatedBuilder(
         animation: Listenable.merge([widget.videoController, frameController]),
         builder: (context, child) {

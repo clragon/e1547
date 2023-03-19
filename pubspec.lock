@@ -527,10 +527,18 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_sub
-      sha256: dfc96157301fa5e00fb2a101f000be87f5cc44f615277f14179301965dae4ea9
+      sha256: e318b5122f02ec0b05506eb1945483027ba0dee9dceb1977ef5acad4bfcedada
       url: "https://pub.dev"
     source: hosted
-    version: "0.2.0+2"
+    version: "1.0.0"
+  flutter_sub_provider:
+    dependency: "direct main"
+    description:
+      name: flutter_sub_provider
+      sha256: f1313a386ee46edbc7e8d471bb717dc814a9e832346d7f305334f2804cdb0bec
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.0"
   flutter_test:
     dependency: transitive
     description: flutter
