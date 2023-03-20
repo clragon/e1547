@@ -74,6 +74,7 @@ class PostDetailImageToggle extends StatelessWidget {
       post: post,
       builder: (context, post) {
         if (post.flags.deleted) return const SizedBox.shrink();
+        if (post.file.url == null) return const SizedBox.shrink();
         PostsController controller = context.watch<PostsController>();
         return CrossFade.builder(
           showChild: (!post.isFavorited && controller.isDenied(post)) ||
