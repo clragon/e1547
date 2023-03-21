@@ -455,6 +455,7 @@ extension DataControllerLoading on DataController {
       }
     }
 
+    if (_disposed) return;
     addListener(onUpdate);
     onUpdate();
     return completer.future;
