@@ -98,7 +98,6 @@ class Client {
       .replace(
         scheme: 'https',
         host: host,
-        path: path,
       )
       .toString();
 
