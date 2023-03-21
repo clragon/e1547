@@ -18,7 +18,7 @@ class ClientService extends ChangeNotifier {
   })  : _host = host ?? allowedHosts.first,
         _customHost = customHost,
         _credentials = credentials,
-        _cookies = cookies;
+        _cookies = List.unmodifiable(cookies);
 
   final AppInfo appInfo;
   final List<String> allowedHosts;
@@ -66,11 +66,10 @@ class ClientService extends ChangeNotifier {
 
   List<Cookie> _cookies;
 
-  List<Cookie> get cookies => List.unmodifiable(_cookies);
+  List<Cookie> get cookies => _cookies;
 
   set cookies(List<Cookie> value) {
-    if (_cookies == value) return;
-    _cookies = value;
+    _cookies = List.unmodifiable(value);
     notifyListeners();
   }
 

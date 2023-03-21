@@ -535,10 +535,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_sub_provider
-      sha256: f1313a386ee46edbc7e8d471bb717dc814a9e832346d7f305334f2804cdb0bec
+      sha256: "2d8d34e598d8e654aeed76140a1ef52c7de5c37ba193e1f2a0f8692d07dd0840"
       url: "https://pub.dev"
     source: hosted
-    version: "0.1.0"
+    version: "0.3.0"
   flutter_test:
     dependency: transitive
     description: flutter
