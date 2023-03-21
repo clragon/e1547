@@ -41,13 +41,15 @@ class FavoritePostsController extends PostsController {
     if (!client.hasLogin) {
       throw NoUserLoginException('Cannot browse favorites without login');
     }
-    return client.posts(
+    List<Post> posts = await client.posts(
       page,
       search: search.value,
       orderFavorites: orderFavorites.value,
       force: force,
       cancelToken: cancelToken,
     );
+    posts.removeWhere((e) => e.file.url == null && !e.flags.deleted);
+    return posts;
   }
 
   @override
