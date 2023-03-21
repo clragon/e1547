@@ -81,46 +81,38 @@ class ArtistName extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    PostEditingController? editingController =
-        context.watch<PostEditingController?>();
+    Map<String, List<String>> tags =
+        context.select<PostEditingController?, Map<String, List<String>>>(
+            (value) => value?.value?.tags ?? post.tags);
 
-    return AnimatedSelector(
-      animation: Listenable.merge([editingController]),
-      selector: () => [
-        editingController?.value?.tags.hashCode,
-      ],
-      builder: (context, child) {
-        List<String> artists = filterArtists(
-            (editingController?.value?.tags ?? post.tags)['artist']!);
-        if (artists.isNotEmpty) {
-          List<InlineSpan> spans = [];
-          for (String artist in artists) {
-            if (artist != artists.first && artists.length > 1) {
-              spans.add(const TextSpan(text: ', '));
-            }
-            spans.add(
-              WidgetSpan(
-                child: TagGesture(
-                  tag: artist,
-                  child: Text(artist),
-                ),
-              ),
-            );
-          }
-          return Text.rich(
-            TextSpan(children: spans),
-            overflow: TextOverflow.fade,
-            style: const TextStyle(fontSize: 14),
-          );
-        } else {
-          return Text(
-            'no artist',
-            style: TextStyle(
-                color: Theme.of(context).textTheme.titleSmall!.color,
-                fontStyle: FontStyle.italic),
-          );
+    List<String> artists = filterArtists((tags)['artist']!);
+    if (artists.isNotEmpty) {
+      List<InlineSpan> spans = [];
+      for (String artist in artists) {
+        if (artist != artists.first && artists.length > 1) {
+          spans.add(const TextSpan(text: ', '));
         }
-      },
-    );
+        spans.add(
+          WidgetSpan(
+            child: TagGesture(
+              tag: artist,
+              child: Text(artist),
+            ),
+          ),
+        );
+      }
+      return Text.rich(
+        TextSpan(children: spans),
+        overflow: TextOverflow.fade,
+        style: const TextStyle(fontSize: 14),
+      );
+    } else {
+      return Text(
+        'no artist',
+        style: TextStyle(
+            color: Theme.of(context).textTheme.titleSmall!.color,
+            fontStyle: FontStyle.italic),
+      );
+    }
   }
 }

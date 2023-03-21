@@ -11,89 +11,82 @@ class TagDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Map<String, List<String>> tags =
+        context.select<PostEditingController?, Map<String, List<String>>>(
+            (value) => value?.value?.tags ?? post.tags);
+    bool editing = context.select<PostEditingController?, bool>(
+        (value) => value?.editing ?? false);
+    bool canEdit = context.select<PostEditingController?, bool>(
+        (value) => value?.canEdit ?? false);
     PostEditingController? editingController =
         context.watch<PostEditingController?>();
 
-    return AnimatedSelector(
-      animation: Listenable.merge([editingController]),
-      selector: () => [
-        editingController?.canEdit,
-        editingController?.value?.tags.hashCode,
-      ],
-      builder: (context, child) {
-        bool isEditing = (editingController?.editing ?? false);
-        Map<String, List<String>>? tags =
-            editingController?.value?.tags ?? post.tags;
-
-        Widget tagCategory(String category) {
-          return Wrap(
-            children: [
-              ...tags[category]!.map(
-                (tag) => TagCard(
-                  tag: tag,
-                  category: category,
-                  editing: isEditing,
-                  onRemove: editingController?.canEdit ?? false
-                      ? () {
-                          Map<String, List<String>> edited =
-                              Map.from(editingController!.value!.tags);
-                          edited[category]!.remove(tag);
-                          editingController.value =
-                              editingController.value!.copyWith(
-                            tags: edited,
-                          );
-                        }
-                      : null,
-                ),
+    Widget tagCategory(String category) {
+      return Wrap(
+        children: [
+          ...tags[category]!.map(
+            (tag) => TagCard(
+              tag: tag,
+              category: category,
+              editing: editing,
+              onRemove: canEdit
+                  ? () {
+                      Map<String, List<String>> edited =
+                          Map.from(editingController!.value!.tags);
+                      edited[category]!.remove(tag);
+                      editingController.value =
+                          editingController.value!.copyWith(
+                        tags: edited,
+                      );
+                    }
+                  : null,
+            ),
+          ),
+          if (category != 'invalid')
+            CrossFade.builder(
+              showChild: editing,
+              builder: (context) => TagAddCard(
+                category: category,
+                submit: canEdit
+                    ? (value) => onPostTagsEdit(
+                          context,
+                          editingController!,
+                          value,
+                          category,
+                        )
+                    : null,
               ),
-              if (category != 'invalid')
-                CrossFade.builder(
-                  showChild: isEditing,
-                  builder: (context) => TagAddCard(
-                    category: category,
-                    submit: editingController!.canEdit
-                        ? (value) => onPostTagsEdit(
-                              context,
-                              editingController,
-                              value,
-                              category,
-                            )
-                        : null,
-                  ),
-                ),
-            ],
-          );
-        }
+            ),
+        ],
+      );
+    }
 
-        Widget categoryTile(String category) {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                child: Text(
-                  '${category[0].toUpperCase()}${category.substring(1)}',
-                  style: const TextStyle(
-                    fontSize: 16,
-                  ),
-                ),
+    Widget categoryTile(String category) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+            child: Text(
+              '${category[0].toUpperCase()}${category.substring(1)}',
+              style: const TextStyle(
+                fontSize: 16,
               ),
-              Row(children: [Expanded(child: tagCategory(category))]),
-              const Divider(),
-            ],
-          );
-        }
+            ),
+          ),
+          Row(children: [Expanded(child: tagCategory(category))]),
+          const Divider(),
+        ],
+      );
+    }
 
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: TagCategory.names
-              .where((category) =>
-                  tags[category]!.isNotEmpty ||
-                  (isEditing && category != 'invalid'))
-              .map((category) => categoryTile(category))
-              .toList(),
-        );
-      },
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: TagCategory.names
+          .where((category) =>
+              tags[category]!.isNotEmpty || (editing && category != 'invalid'))
+          .map((category) => categoryTile(category))
+          .toList(),
     );
   }
 }

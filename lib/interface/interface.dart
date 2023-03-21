@@ -22,7 +22,6 @@ export 'widgets/input.dart';
 export 'widgets/loading.dart';
 export 'widgets/logger.dart';
 export 'widgets/navigation.dart';
-export 'widgets/notifiers.dart';
 export 'widgets/ontap.dart';
 export 'widgets/padding.dart';
 export 'widgets/pagination.dart';

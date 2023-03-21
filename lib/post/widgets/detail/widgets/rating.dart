@@ -33,52 +33,43 @@ class RatingDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    PostEditingController? editingController =
-        context.watch<PostEditingController?>();
+    Rating rating = context.select<PostEditingController?, Rating>(
+        (value) => value?.value?.rating ?? post.rating);
+    bool canEdit = context.select<PostEditingController?, bool>(
+        (value) => value?.canEdit ?? false);
 
-    return AnimatedSelector(
-      animation: Listenable.merge([editingController]),
-      selector: () => [
-        editingController?.canEdit,
-        editingController?.value?.rating,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: 4,
+            vertical: 2,
+          ),
+          child: Text(
+            'Rating',
+            style: TextStyle(
+              fontSize: 16,
+            ),
+          ),
+        ),
+        ListTile(
+          title: Text(rating.title),
+          leading:
+              !post.flags.ratingLocked ? rating.icon : const Icon(Icons.lock),
+          onTap: canEdit
+              ? () => showRatingDialog(
+                  context: context,
+                  onSelected: (value) {
+                    PostEditingController controller =
+                        context.read<PostEditingController>();
+                    controller.value =
+                        controller.value!.copyWith(rating: value);
+                  })
+              : null,
+        ),
+        const Divider(),
       ],
-      builder: (context, child) {
-        Rating rating = editingController?.value?.rating ?? post.rating;
-        bool canEdit =
-            (editingController?.canEdit ?? false) && !post.flags.ratingLocked;
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: 4,
-                vertical: 2,
-              ),
-              child: Text(
-                'Rating',
-                style: TextStyle(
-                  fontSize: 16,
-                ),
-              ),
-            ),
-            ListTile(
-              title: Text(rating.title),
-              leading: !post.flags.ratingLocked
-                  ? rating.icon
-                  : const Icon(Icons.lock),
-              onTap: canEdit
-                  ? () => showRatingDialog(
-                      context: context,
-                      onSelected: (value) {
-                        editingController!.value =
-                            editingController.value!.copyWith(rating: value);
-                      })
-                  : null,
-            ),
-            const Divider(),
-          ],
-        );
-      },
     );
   }
 }

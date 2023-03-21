@@ -11,106 +11,96 @@ class RelationshipDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    PostEditingController? editingController =
-        context.watch<PostEditingController?>();
-    return AnimatedSelector(
-      animation: Listenable.merge([editingController]),
-      selector: () => [
-        editingController?.canEdit,
-        editingController?.value?.parentId,
+    int? parentId = context.select<PostEditingController?, int?>(
+        (value) => value?.value?.parentId ?? post.relationships.parentId);
+    bool editing = context.select<PostEditingController?, bool>(
+        (value) => value?.editing ?? false);
+    bool canEdit = context.select<PostEditingController?, bool>(
+        (value) => value?.canEdit ?? false);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        CrossFade.builder(
+          showChild: parentId != null || editing,
+          builder: (context) => Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                child: Text(
+                  'Parent',
+                  style: TextStyle(fontSize: 16),
+                ),
+              ),
+              ListTile(
+                leading: const Icon(Icons.supervisor_account),
+                title: Text(parentId?.toString() ?? 'none'),
+                trailing: editing
+                    ? IconButton(
+                        icon: const Icon(Icons.edit),
+                        onPressed: canEdit
+                            ? () {
+                                PostEditingController controller =
+                                    context.read<PostEditingController>();
+                                controller.show(
+                                  context,
+                                  ParentEditor(
+                                    editingController: controller,
+                                  ),
+                                );
+                              }
+                            : null,
+                      )
+                    : const Icon(Icons.arrow_right),
+                onTap: parentId != null
+                    ? () => Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => PostLoadingPage(parentId),
+                          ),
+                        )
+                    : null,
+              ),
+              const Divider(),
+            ],
+          ),
+        ),
+        CrossFade.builder(
+          showChild: post.relationships.children.isNotEmpty &&
+              post.relationships.hasActiveChildren &&
+              !editing,
+          builder: (context) => Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: 4,
+                  vertical: 2,
+                ),
+                child: Text(
+                  'Children',
+                  style: TextStyle(
+                    fontSize: 16,
+                  ),
+                ),
+              ),
+              ...post.relationships.children.map(
+                (child) => ListTile(
+                  leading: const Icon(Icons.supervised_user_circle),
+                  title: Text(child.toString()),
+                  trailing: const Icon(Icons.arrow_right),
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => PostLoadingPage(child),
+                    ),
+                  ),
+                ),
+              ),
+              const Divider(),
+            ],
+          ),
+        ),
       ],
-      builder: (context, child) {
-        bool isEditing = editingController?.editing ?? false;
-        int? parentId;
-        if (isEditing) {
-          parentId = editingController?.value?.parentId;
-        } else {
-          parentId = post.relationships.parentId;
-        }
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            CrossFade.builder(
-              showChild: parentId != null || isEditing,
-              builder: (context) => Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                    child: Text(
-                      'Parent',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                  ),
-                  ListTile(
-                    leading: const Icon(Icons.supervisor_account),
-                    title: Text(parentId?.toString() ?? 'none'),
-                    trailing: isEditing && editingController != null
-                        ? IconButton(
-                            icon: const Icon(Icons.edit),
-                            onPressed: editingController.canEdit
-                                ? () {
-                                    editingController.show(
-                                      context,
-                                      ParentEditor(
-                                        editingController: editingController,
-                                      ),
-                                    );
-                                  }
-                                : null,
-                          )
-                        : const Icon(Icons.arrow_right),
-                    onTap: parentId != null
-                        ? () => Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    PostLoadingPage(parentId!),
-                              ),
-                            )
-                        : null,
-                  ),
-                  const Divider(),
-                ],
-              ),
-            ),
-            CrossFade.builder(
-              showChild: post.relationships.children.isNotEmpty &&
-                  post.relationships.hasActiveChildren &&
-                  !isEditing,
-              builder: (context) => Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 4,
-                      vertical: 2,
-                    ),
-                    child: Text(
-                      'Children',
-                      style: TextStyle(
-                        fontSize: 16,
-                      ),
-                    ),
-                  ),
-                  ...post.relationships.children.map(
-                    (child) => ListTile(
-                      leading: const Icon(Icons.supervised_user_circle),
-                      title: Text(child.toString()),
-                      trailing: const Icon(Icons.arrow_right),
-                      onTap: () => Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => PostLoadingPage(child),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const Divider(),
-                ],
-              ),
-            ),
-          ],
-        );
-      },
     );
   }
 }

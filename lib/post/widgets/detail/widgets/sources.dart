@@ -12,86 +12,81 @@ class SourceDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    PostEditingController? editingController =
-        context.watch<PostEditingController?>();
+    List<String> sources = context.select<PostEditingController?, List<String>>(
+        (value) => value?.value?.sources ?? post.sources);
+    bool editing = context.select<PostEditingController?, bool>(
+        (value) => value?.editing ?? false);
+    bool canEdit = context.select<PostEditingController?, bool>(
+        (value) => value?.canEdit ?? false);
 
-    return AnimatedSelector(
-      animation: Listenable.merge([editingController]),
-      selector: () => [
-        editingController?.canEdit,
-        editingController?.value?.sources,
-      ],
-      builder: (context, child) {
-        bool isEditing = editingController?.editing ?? false;
-        List<String> sources =
-            editingController?.value?.sources ?? post.sources;
-        return CrossFade(
-          showChild: sources.isNotEmpty || isEditing,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+    return CrossFade(
+      showChild: sources.isNotEmpty || editing,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                    child: Text(
-                      'Sources',
-                      style: TextStyle(
-                        fontSize: 16,
-                      ),
-                    ),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                child: Text(
+                  'Sources',
+                  style: TextStyle(
+                    fontSize: 16,
                   ),
-                  CrossFade.builder(
-                    showChild: isEditing,
-                    builder: (context) => IconButton(
-                      icon: const Icon(Icons.edit),
-                      onPressed: editingController!.canEdit
-                          ? () => Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) => TextEditor(
-                                    title: Text('#${post.id} sources'),
-                                    content: editingController.value!.sources
-                                        .join('\n'),
-                                    onSubmit: (context, text) {
-                                      editingController.value =
-                                          editingController.value!.copyWith(
-                                        sources: text.trim().split('\n'),
-                                      );
-                                      Navigator.of(context).maybePop();
-                                      return null;
-                                    },
-                                  ),
-                                ),
-                              )
-                          : null,
-                    ),
-                  ),
-                ],
+                ),
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                child: sources.join('\n').trim().isNotEmpty
-                    ? Wrap(
-                        children:
-                            sources.map((e) => SourceCard(url: e)).toList(),
-                      )
-                    : Padding(
-                        padding: const EdgeInsets.all(4),
-                        child: Text(
-                          'no sources',
-                          style: TextStyle(
-                            color: dimTextColor(context),
-                            fontStyle: FontStyle.italic,
-                          ),
-                        ),
-                      ),
+              CrossFade.builder(
+                showChild: editing,
+                builder: (context) => IconButton(
+                  icon: const Icon(Icons.edit),
+                  onPressed: canEdit
+                      ? () {
+                          PostEditingController editingController =
+                              context.watch<PostEditingController>();
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => TextEditor(
+                                title: Text('#${post.id} sources'),
+                                content:
+                                    editingController.value!.sources.join('\n'),
+                                onSubmit: (context, text) {
+                                  editingController.value =
+                                      editingController.value!.copyWith(
+                                    sources: text.trim().split('\n'),
+                                  );
+                                  Navigator.of(context).maybePop();
+                                  return null;
+                                },
+                              ),
+                            ),
+                          );
+                        }
+                      : null,
+                ),
               ),
-              const Divider(),
             ],
           ),
-        );
-      },
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+            child: sources.join('\n').trim().isNotEmpty
+                ? Wrap(
+                    children: sources.map((e) => SourceCard(url: e)).toList(),
+                  )
+                : Padding(
+                    padding: const EdgeInsets.all(4),
+                    child: Text(
+                      'no sources',
+                      style: TextStyle(
+                        color: dimTextColor(context),
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+                  ),
+          ),
+          const Divider(),
+        ],
+      ),
     );
   }
 }
