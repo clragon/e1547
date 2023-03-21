@@ -4,9 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [15.4.1+76] - 2023-03-22
 ### Fixed
 - duplicate download folders
+- history sharing
+- favorites displaying unavailable posts
 
 ## [15.4.0+75] - 2023-03-16
 ### Added
@@ -715,7 +717,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Fixed
 - API client bindings
 
-[Unreleased]: https://github.com/clragon/e1547/compare/15.4.0+75...HEAD
+[15.4.1+76]: https://github.com/clragon/e1547/compare/15.4.0...15.4.1
 [15.4.0+75]: https://github.com/clragon/e1547/compare/15.3.1...15.4.0
 [15.3.1+74]: https://github.com/clragon/e1547/compare/15.3.0...15.3.1
 [15.3.0+73]: https://github.com/clragon/e1547/compare/15.2.0...15.3.0

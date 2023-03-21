@@ -1,0 +1,4 @@
+Fixed
+- duplicate download folders
+- history sharing
+- favorites displaying unavailable posts
