@@ -4,6 +4,7 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/reply/reply.dart';
 import 'package:e1547/topic/topic.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_sub/flutter_sub.dart';
 
 class TopicsPage extends StatefulWidget {
   const TopicsPage({this.search});
@@ -20,7 +21,7 @@ class _TopicsPageState extends State<TopicsPage> with RouterDrawerEntry {
     return TopicsProvider(
       search: widget.search,
       child: Consumer<TopicsController>(
-        builder: (context, controller, child) => ListenableListener(
+        builder: (context, controller, child) => SubListener(
           initialize: true,
           listenable: controller.search,
           listener: () async {
@@ -37,7 +38,7 @@ class _TopicsPageState extends State<TopicsPage> with RouterDrawerEntry {
               return;
             }
           },
-          child: RefreshableControllerPage(
+          builder: (context) => RefreshableControllerPage(
             appBar: const DefaultAppBar(
               title: Text('Topics'),
               actions: [ContextDrawerButton()],

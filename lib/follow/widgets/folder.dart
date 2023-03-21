@@ -71,10 +71,10 @@ class _FollowsFolderPageState extends State<FollowsFolderPage> {
   @override
   Widget build(BuildContext context) {
     return Consumer2<FollowsService, Client>(
-      builder: (context, service, client, child) => ListenableListener(
+      builder: (context, service, client, child) => SubListener(
         listenable: context.watch<FollowsUpdater>(),
         listener: updateRefresh,
-        child: SubStream<List<Follow>>(
+        builder: (context) => SubStream<List<Follow>>(
           create: () {
             Stream<List<Follow>> stream = filterUnseen
                 ? service.watchUnseen(host: client.host)

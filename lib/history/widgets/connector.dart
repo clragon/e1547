@@ -1,6 +1,7 @@
 import 'package:e1547/history/history.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_sub/flutter_sub.dart';
 
 typedef HistoryConnector<T> = void Function(
   BuildContext context,
@@ -67,7 +68,7 @@ class _ControllerHistoryConnectorState<T extends DataController?>
     extends State<ControllerHistoryConnector<T>> {
   @override
   Widget build(BuildContext context) {
-    return ListenableListener(
+    return SubListener(
       initialize: true,
       listenable: Listenable.merge([widget.controller]),
       listener: () async {
@@ -85,7 +86,7 @@ class _ControllerHistoryConnectorState<T extends DataController?>
           widget.controller,
         );
       },
-      child: widget.child,
+      builder: (context) => widget.child,
     );
   }
 }

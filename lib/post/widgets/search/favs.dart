@@ -3,6 +3,7 @@ import 'package:e1547/interface/interface.dart';
 
 import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_sub/flutter_sub.dart';
 
 class FavPage extends StatefulWidget {
   const FavPage();
@@ -16,7 +17,7 @@ class _FavPageState extends State<FavPage> with RouterDrawerEntry {
   Widget build(BuildContext context) {
     return FavoritePostsProvider(
       child: Consumer<FavoritePostsController>(
-        builder: (context, controller, child) => ListenableListener(
+        builder: (context, controller, child) => SubListener(
           listener: () async {
             HistoriesService service = context.read<HistoriesService>();
             try {
@@ -31,7 +32,7 @@ class _FavPageState extends State<FavPage> with RouterDrawerEntry {
             }
           },
           listenable: controller.search,
-          child: LoadingPage(
+          builder: (context) => LoadingPage(
             isEmpty: controller.error is NoUserLoginException,
             isError: controller.error is NoUserLoginException,
             onError: Column(

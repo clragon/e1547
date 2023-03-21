@@ -4,6 +4,7 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/reply/reply.dart';
 import 'package:e1547/topic/topic.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_sub/flutter_sub.dart';
 
 class RepliesPage extends StatelessWidget {
   const RepliesPage({required this.topic, this.orderByOldest = true});
@@ -17,7 +18,7 @@ class RepliesPage extends StatelessWidget {
       topicId: topic.id,
       orderByOldest: orderByOldest,
       child: Consumer<RepliesController>(
-        builder: (context, controller, child) => ListenableListener(
+        builder: (context, controller, child) => SubListener(
           initialize: true,
           listenable: controller.orderByOldest,
           listener: () async {
@@ -34,7 +35,7 @@ class RepliesPage extends StatelessWidget {
               return;
             }
           },
-          child: RefreshableControllerPage(
+          builder: (context) => RefreshableControllerPage(
             appBar: DefaultAppBar(
               title: Text(topic.title),
               actions: [

@@ -5,6 +5,7 @@ import 'package:e1547/history/history.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_sub/flutter_sub.dart';
 
 class PostsRouteConnector extends StatefulWidget {
   const PostsRouteConnector({
@@ -44,11 +45,11 @@ class _PostsRouteConnectorState extends State<PostsRouteConnector> {
   }
 
   @override
-  Widget build(BuildContext context) => ListenableListener(
+  Widget build(BuildContext context) => SubListener(
         initialize: true,
         listener: updatePages,
         listenable: widget.controller,
-        child: ChangeNotifierProvider.value(
+        builder: (context) => ChangeNotifierProvider.value(
           value: widget.controller,
           child: widget.child,
         ),

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_sub/flutter_sub.dart';
 
 class ScaffoldFrameController extends ValueNotifier<bool> {
   ScaffoldFrameController({this.onToggle, this.visible = false})
@@ -195,11 +196,11 @@ class _ScaffoldFrameSystemUIState extends State<ScaffoldFrameSystemUI>
 
   @override
   Widget build(BuildContext context) {
-    return ListenableListener(
+    return SubListener(
       initialize: true,
       listenable: ScaffoldFrame.of(context),
       listener: () => toggleFrame(ScaffoldFrame.of(context).visible),
-      child: widget.child,
+      builder: (context) => widget.child,
     );
   }
 }

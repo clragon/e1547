@@ -5,6 +5,7 @@ import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screen_lock/flutter_screen_lock.dart';
+import 'package:flutter_sub/flutter_sub.dart';
 import 'package:local_auth/local_auth.dart';
 
 class LockScreen extends StatefulWidget {
@@ -70,13 +71,13 @@ class _LockScreenState extends State<LockScreen> {
 
     bool showLock = lock != null && enabled && locked;
 
-    return ListenableListener(
+    return SubListener(
       listener: this.lock,
       listenable: Listenable.merge([
         context.read<Settings>().appPin,
         context.read<Settings>().biometricAuth
       ]),
-      child: Stack(
+      builder: (context) => Stack(
         fit: StackFit.passthrough,
         children: [
           ExcludeFocus(
@@ -86,7 +87,7 @@ class _LockScreenState extends State<LockScreen> {
               child: widget.child,
             ),
           ),
-          if (showLock) KeyedSubtree(key: ObjectKey(_instance), child: lock)
+          if (showLock) KeyedSubtree(key: ObjectKey(_instance), child: lock!)
         ],
       ),
     );

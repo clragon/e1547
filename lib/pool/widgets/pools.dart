@@ -9,6 +9,7 @@ import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_sub/flutter_sub.dart';
 
 class PoolsPage extends StatefulWidget {
   const PoolsPage({this.search});
@@ -25,7 +26,7 @@ class _PoolsPageState extends State<PoolsPage> with RouterDrawerEntry {
     return PoolsProvider(
       search: widget.search,
       child: Consumer<PoolsController>(
-        builder: (context, controller, child) => ListenableListener(
+        builder: (context, controller, child) => SubListener(
           initialize: true,
           listenable: controller.search,
           listener: () async {
@@ -42,7 +43,7 @@ class _PoolsPageState extends State<PoolsPage> with RouterDrawerEntry {
               return;
             }
           },
-          child: RefreshableControllerPage.builder(
+          builder: (context) => RefreshableControllerPage.builder(
             appBar: const DefaultAppBar(
               title: Text('Pools'),
               actions: [ContextDrawerButton()],

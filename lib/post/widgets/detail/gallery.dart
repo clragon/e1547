@@ -48,14 +48,14 @@ class _PostDetailGalleryState extends State<PostDetailGallery> {
     return ChangeNotifierProvider.value(
       value: widget.controller,
       child: Consumer<PostsController>(
-        builder: (context, controller, child) => ListenableListener(
+        builder: (context, controller, child) => SubListener(
           listenable: controller,
           listener: () {
             if (widget.controller.value.status == PagingStatus.ongoing) {
               hasRequestedNextPage = false;
             }
           },
-          child: GalleryButtons(
+          builder: (context) => GalleryButtons(
             controller: pageController,
             child: PageView.builder(
               controller: pageController,

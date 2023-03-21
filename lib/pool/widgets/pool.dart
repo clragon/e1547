@@ -5,6 +5,7 @@ import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_sub/flutter_sub.dart';
 
 class PoolPage extends StatefulWidget {
   const PoolPage({required this.pool, this.oldestFirst = true});
@@ -32,7 +33,7 @@ class _PoolPageState extends State<PoolPage> {
       ),
       canSearch: false,
       child: Consumer<PostsController>(
-        builder: (context, controller, child) => ListenableListener(
+        builder: (context, controller, child) => SubListener(
           initialize: true,
           listenable: controller.search,
           listener: () async {
@@ -49,7 +50,7 @@ class _PoolPageState extends State<PoolPage> {
               return;
             }
           },
-          child: PostsPage(
+          builder: (context) => PostsPage(
             controller: controller,
             displayType: readerMode ? PostDisplayType.comic : null,
             appBar: DefaultAppBar(

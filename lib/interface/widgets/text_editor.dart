@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_sub/flutter_sub.dart';
 
 typedef TextEditorSubmit = FutureOr<String?> Function(
     BuildContext context, String value);
@@ -125,7 +126,7 @@ class _TextEditorState extends State<TextEditor> {
     return DefaultTabController(
       length: tabs.length,
       child: Builder(
-        builder: (context) => ListenableListener(
+        builder: (context) => SubListener(
           initialize: true,
           listenable: DefaultTabController.of(context),
           listener: () {
@@ -144,7 +145,7 @@ class _TextEditorState extends State<TextEditor> {
               }
             }
           },
-          child: Scaffold(
+          builder: (context) => Scaffold(
             floatingActionButton: fab(),
             bottomSheet: isLoading
                 ? loadingBar()

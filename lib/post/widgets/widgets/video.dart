@@ -62,7 +62,7 @@ class _VideoButtonState extends State<VideoButton> {
                     showChild:
                         !widget.videoController.value.isPlaying || !loading,
                     duration: const Duration(milliseconds: 100),
-                    child: ListenableListener(
+                    child: SubListener(
                       initialize: true,
                       listenable: widget.videoController,
                       listener: () {
@@ -72,7 +72,7 @@ class _VideoButtonState extends State<VideoButton> {
                           animationController.reverse();
                         }
                       },
-                      child: AnimatedBuilder(
+                      builder: (context) => AnimatedBuilder(
                         animation: animationController,
                         builder: (context, child) => AnimatedIcon(
                           icon: AnimatedIcons.play_pause,

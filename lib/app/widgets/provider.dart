@@ -12,6 +12,7 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:e1547/user/user.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_sub/flutter_sub.dart';
 
 class ClientServiceProvider extends SubChangeNotifierProvider4<AppInfo,
     Settings, AppDatabases, CookiesService, ClientService> {
@@ -27,7 +28,7 @@ class ClientServiceProvider extends SubChangeNotifierProvider4<AppInfo,
             cache: databases.httpCache,
             cookies: cookies.cookies,
           ),
-          builder: (context, child) => ListenableListener(
+          builder: (context, child) => SubListener(
             listenable: context.watch<ClientService>(),
             listener: () {
               ClientService service = context.read<ClientService>();
@@ -38,7 +39,7 @@ class ClientServiceProvider extends SubChangeNotifierProvider4<AppInfo,
               settings.credentials.value = service.credentials;
               cookies.save(service.cookies);
             },
-            child: ClientProvider(
+            builder: (context) => ClientProvider(
               builder: builder,
               child: child,
             ),
@@ -57,7 +58,7 @@ class HistoriesServiceProvider extends SubChangeNotifierProvider2<AppDatabases,
             enabled: settings.writeHistory.value,
             trimming: settings.trimHistory.value,
           ),
-          builder: (context, child) => ListenableListener(
+          builder: (context, child) => SubListener(
             listenable: context.watch<HistoriesService>(),
             listener: () {
               HistoriesService service = context.read<HistoriesService>();
@@ -65,7 +66,7 @@ class HistoriesServiceProvider extends SubChangeNotifierProvider2<AppDatabases,
               settings.writeHistory.value = service.enabled;
               settings.trimHistory.value = service.trimming;
             },
-            child: builder?.call(context, child) ?? child!,
+            builder: (context) => builder?.call(context, child) ?? child!,
           ),
         );
 }
@@ -78,7 +79,7 @@ class FollowsProvider extends SubProvider<AppDatabases, FollowsService> {
           create: (context, databases) => FollowsService(
             databases.followDb,
           ),
-          builder: (context, child) => ListenableListener(
+          builder: (context, child) => SubListener(
             listenable: context.watch<ClientService>(),
             listener: () {
               ClientService service = context.read<ClientService>();
@@ -86,7 +87,8 @@ class FollowsProvider extends SubProvider<AppDatabases, FollowsService> {
               settings.host.value = service.host;
               settings.customHost.value = service.customHost;
             },
-            child: SubChangeNotifierProvider<FollowsService, FollowsUpdater>(
+            builder: (context) =>
+                SubChangeNotifierProvider<FollowsService, FollowsUpdater>(
               create: (context, service) => FollowsUpdater(service: service),
               child: child,
             ),

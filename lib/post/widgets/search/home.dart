@@ -2,6 +2,7 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_sub/flutter_sub.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage();
@@ -19,12 +20,12 @@ class _HomePageState extends State<HomePage> with RouterDrawerEntry {
         builder: (context, controller, child) =>
             PostsControllerHistoryConnector(
           controller: controller,
-          child: ListenableListener(
+          child: SubListener(
             initialize: true,
             listenable: controller.search,
             listener: () => context.read<Settings>().homeTags.value =
                 controller.search.value,
-            child: PostsPage(
+            builder: (context) => PostsPage(
               appBar: const ContextSizedAppBar(
                 title: Text('Home'),
               ),
