@@ -245,28 +245,9 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
           ),
         ];
 
-        Widget? effectiveBody;
-        if (bodyChildren.isNotEmpty) {
-          effectiveBody = Row(
-            children: bodyChildren,
-          );
-        }
-
-        PreferredSizeWidget? effectiveAppBar;
-        if (widget.appBar != null) {
-          effectiveAppBar = AppBarBuilder(
-            child: widget.appBar!,
-            builder: (context, child) => KeyedSubtree(
-              key: ObjectKey(
-                  Object.hash(inlineDrawer, inlineEndDrawer, widget.body)),
-              child: child,
-            ),
-          );
-        }
-
         return _AdaptiveScaffoldBody(
-          appBar: effectiveAppBar,
-          body: effectiveBody,
+          appBar: widget.appBar,
+          body: Row(children: bodyChildren),
           floatingActionButton: widget.floatingActionButton,
           floatingActionButtonLocation: widget.floatingActionButtonLocation,
           floatingActionButtonAnimator: widget.floatingActionButtonAnimator,
