@@ -102,19 +102,17 @@ class AdvancedSettingsPage extends StatelessWidget {
                 create: () => LocalAuthentication()
                     .getAvailableBiometrics()
                     .then((e) => e.isNotEmpty),
-                builder: (context, snapshot) => CrossFade(
-                  showChild: snapshot.data ?? false,
-                  child: ValueListenableBuilder<bool>(
-                    valueListenable: settings.biometricAuth,
-                    builder: (context, value, child) => SwitchListTile(
-                      title: const Text('Biometric lock'),
-                      subtitle: Text(
-                          value ? 'biometrics enabled' : 'biometrics disabled'),
-                      secondary: const Icon(Icons.fingerprint),
-                      value: value,
-                      onChanged: (value) =>
-                          settings.biometricAuth.value = value,
-                    ),
+                builder: (context, snapshot) => ValueListenableBuilder<bool>(
+                  valueListenable: settings.biometricAuth,
+                  builder: (context, value, child) => SwitchListTile(
+                    title: const Text('Biometric lock'),
+                    subtitle: Text(
+                        value ? 'biometrics enabled' : 'biometrics disabled'),
+                    secondary: const Icon(Icons.fingerprint),
+                    value: value,
+                    onChanged: (snapshot.data ?? false)
+                        ? (value) => settings.biometricAuth.value = value
+                        : null,
                   ),
                 ),
               ),

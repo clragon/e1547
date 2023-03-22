@@ -58,7 +58,7 @@ class SettingsPage extends StatelessWidget {
                       title: Text(client.credentials!.username),
                       subtitle: snapshot.data?.levelString != null
                           ? Text(snapshot.data!.levelString.toLowerCase())
-                          : null,
+                          : const Text('user'),
                       leading: const IgnorePointer(
                         child: CurrentUserAvatar(),
                       ),
