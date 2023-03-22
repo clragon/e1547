@@ -3,35 +3,20 @@ import 'dart:io';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_sub/flutter_sub.dart';
 import 'package:talker/talker.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
-Future<CookiesService> initializeCookiesService(List<String> hosts) async {
-  final service = CookiesService();
-  await service.loadAll(
-    hosts.map((e) => Uri.https(e).toString()).toList(),
-  );
-  return service;
-}
-
-class ClientFailureResolver extends StatefulWidget {
-  const ClientFailureResolver({super.key, required this.child});
+class ClientAvailabilityCheck extends StatelessWidget {
+  const ClientAvailabilityCheck({super.key, required this.child});
 
   final Widget child;
 
-  @override
-  State<ClientFailureResolver> createState() => _ClientFailureResolverState();
-}
-
-class _ClientFailureResolverState extends State<ClientFailureResolver> {
-  Client? _client;
-  ClientService? _clientService;
-  CancelToken _cancelToken = CancelToken();
-
-  Future<void> check() async {
+  Future<void> check(BuildContext context) async {
     RouterDrawerController controller = context.read<RouterDrawerController>();
+    Client client = context.read<Client>();
     try {
-      await _client!.currentUser(cancelToken: _cancelToken);
+      await client.availability();
     } on ClientException catch (e) {
       if (CancelToken.isCancel(e)) {
         return;
@@ -40,7 +25,7 @@ class _ClientFailureResolverState extends State<ClientFailureResolver> {
         case HttpStatus.serviceUnavailable:
           controller.navigator!.push(
             MaterialPageRoute(
-              builder: (context) => const CloudflareCaptchaResolver(),
+              builder: (context) => const ClientAvailabilityResolver(),
             ),
           );
           break;
@@ -52,40 +37,26 @@ class _ClientFailureResolverState extends State<ClientFailureResolver> {
   }
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    bool changed = false;
-    ClientService clientService = context.watch<ClientService>();
-    if (_clientService != clientService) {
-      _clientService = clientService;
-      _client = null;
-      changed = true;
-    }
-    Client client = context.watch<Client>();
-    if (_client != client) {
-      _client = client;
-      changed = true;
-    }
-    if (changed) {
-      _cancelToken.cancel();
-      _cancelToken = CancelToken();
-      check();
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) => widget.child;
+  Widget build(BuildContext context) => SubEffect(
+        effect: () {
+          check(context);
+          return null;
+        },
+        keys: [context.watch<Client>()],
+        child: child,
+      );
 }
 
-class CloudflareCaptchaResolver extends StatefulWidget {
-  const CloudflareCaptchaResolver({super.key});
+class ClientAvailabilityResolver extends StatefulWidget {
+  const ClientAvailabilityResolver({super.key});
 
   @override
-  State<CloudflareCaptchaResolver> createState() =>
-      _CloudflareCaptchaResolverState();
+  State<ClientAvailabilityResolver> createState() =>
+      _ClientAvailabilityResolverState();
 }
 
-class _CloudflareCaptchaResolverState extends State<CloudflareCaptchaResolver> {
+class _ClientAvailabilityResolverState
+    extends State<ClientAvailabilityResolver> {
   late final WebViewController controller = WebViewController()
     ..setUserAgent(context.read<Client>().userAgent)
     ..setJavaScriptMode(JavaScriptMode.unrestricted)
@@ -124,13 +95,13 @@ class _CloudflareCaptchaResolverState extends State<CloudflareCaptchaResolver> {
                 ),
                 const SizedBox(height: 20),
                 Text(
-                  'It appears that ${context.watch<Client>().host} is either not available, or Cloudflare has blocked your access.',
+                  'It appears that ${context.watch<Client>().host} is not available!',
                 ),
                 const SizedBox(height: 16),
                 if (Platform.isAndroid || Platform.isIOS) ...[
                   const Text(
-                    'Please resolve the situation in the following browser window. '
-                    '\n\nCloudflare cookies will be retrieved when you are done to restore your access.',
+                    'If possible, please resolve the situation in the following browser window. '
+                    '\n\nCloudflare cookies will be saved to resolve Cloudflare issues. ',
                   ),
                   const SizedBox(height: 16),
                   TextButton(
@@ -140,7 +111,7 @@ class _CloudflareCaptchaResolverState extends State<CloudflareCaptchaResolver> {
                 ] else
                   DimSubtree(
                     child: Text(
-                      'Only Android and iOS devices are supported for resolving the Cloudflare captcha.'
+                      'Only Android and iOS devices are supported for resolving captchas in browser windows.'
                       '\nPlease wait for ${context.watch<Client>().host} to resolve the situation on their end.',
                     ),
                   ),

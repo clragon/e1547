@@ -2,11 +2,11 @@
 export 'data/database.dart';
 export 'data/info.dart';
 export 'data/link.dart';
+export 'data/client.dart';
 export 'data/navigation.dart';
 export 'data/theme.dart';
 // widgets
 export 'widgets/app.dart';
-export 'widgets/client.dart';
 export 'widgets/errors.dart';
 export 'widgets/frame.dart';
 export 'widgets/link.dart';

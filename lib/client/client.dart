@@ -7,6 +7,7 @@ export 'data/cookies.dart';
 export 'data/credentials.dart';
 export 'data/service.dart';
 // widgets
+export 'widgets/availability.dart';
 export 'widgets/host.dart';
 export 'widgets/login.dart';
 export 'widgets/provider.dart';

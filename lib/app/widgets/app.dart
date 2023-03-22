@@ -73,7 +73,7 @@ class App extends StatelessWidget {
                         },
                         child: ErrorNotifier(
                           child: LockScreen(
-                            child: ClientFailureResolver(
+                            child: ClientAvailabilityCheck(
                               child: AppLinkHandler(
                                 child: VideoHandlerData(
                                   handler: VideoHandler(

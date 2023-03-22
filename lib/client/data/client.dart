@@ -101,6 +101,8 @@ class Client {
       )
       .toString();
 
+  Future<void> availability() async => _dio.get('');
+
   Future<List<Post>> postsRaw(
     int page, {
     int? limit,
