@@ -1,0 +1,3 @@
+Fixed
+- performance
+- settings ui jumping

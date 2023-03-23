@@ -8,6 +8,7 @@ Changed
 Fixed
 - API client bindings
 
+[15.4.2+77]: https://github.com/clragon/e1547/compare/15.4.1...15.4.2
 [15.4.1+76]: https://github.com/clragon/e1547/compare/15.4.0...15.4.1
 [15.4.0+75]: https://github.com/clragon/e1547/compare/15.3.1...15.4.0
 [15.3.1+74]: https://github.com/clragon/e1547/compare/15.3.0...15.3.1
