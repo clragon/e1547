@@ -16,7 +16,7 @@ class _FollowsTimelinePageState extends State<FollowsTimelinePage> {
     return PostsProvider(
       fetch: (controller, search, page, force) async {
         FollowsService service = context.read<FollowsService>();
-        return controller.client.tagPosts(
+        return controller.client.postsByTags(
           (await service.getAll(host: controller.client.host))
               .map((e) => e.tags)
               .toList(),

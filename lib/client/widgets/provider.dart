@@ -16,7 +16,7 @@ class ClientProvider extends SubProvider<ClientService, Client> {
             return [
               service.host,
               service.credentials,
-              service.appInfo,
+              service.userAgent,
               service.cache,
               service.cookies,
             ];

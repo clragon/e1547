@@ -79,6 +79,8 @@ class AppInfo extends PackageInfo {
   /// The first entry is used as default.
   final List<String> allowedHosts;
 
+  String get userAgent => '$appName/$version ($developer)';
+
   /// Client for getting app versions from the internet.
   late final Dio _dio = Dio()
     ..interceptors.add(

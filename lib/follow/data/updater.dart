@@ -125,7 +125,7 @@ class FollowsUpdater extends ChangeNotifier {
         );
         previous = tags;
         int limit = chunk.length * refreshAmount;
-        List<Post> posts = await rateLimit(client.tagPosts(
+        List<Post> posts = await rateLimit(client.postsByTags(
           tags,
           1,
           limit: limit,
@@ -157,10 +157,11 @@ class FollowsUpdater extends ChangeNotifier {
       List<Follow> multiples = follows.whereNot(singles.contains).toList();
       if (multiples.isNotEmpty) {
         Follow follow = multiples.first;
-        List<Post> posts = await rateLimit(client.postsRaw(
+        List<Post> posts = await rateLimit(client.posts(
           1,
           search: follow.tags,
           limit: refreshAmount,
+          ordered: false,
           force: force,
         ));
         posts.removeWhere((element) => element.isDeniedBy(denylist));

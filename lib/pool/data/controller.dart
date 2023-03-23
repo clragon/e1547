@@ -99,7 +99,7 @@ class ThumbnailController extends PostsController {
     if (ids == null) return [];
     List<int> available = itemList?.map((e) => e.id).toList() ?? [];
     ids.removeWhere(available.contains);
-    return client.postsChunk(
+    return client.postsByIds(
       ids,
       force: force,
       cancelToken: cancelToken,

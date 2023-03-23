@@ -1,14 +1,13 @@
 import 'dart:io';
+import 'dart:math';
 
-import 'package:dio/dio.dart';
 import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
 import 'package:e1547/client/client.dart';
-import 'package:e1547/settings/settings.dart';
 import 'package:flutter/foundation.dart';
 
 class ClientService extends ChangeNotifier {
   ClientService({
-    required this.appInfo,
+    required this.userAgent,
     required this.allowedHosts,
     String? host,
     String? customHost,
@@ -20,7 +19,7 @@ class ClientService extends ChangeNotifier {
         _credentials = credentials,
         _cookies = List.unmodifiable(cookies);
 
-  final AppInfo appInfo;
+  final String userAgent;
   final List<String> allowedHosts;
 
   final CacheStore? cache;
@@ -47,9 +46,6 @@ class ClientService extends ChangeNotifier {
     notifyListeners();
   }
 
-  String get userAgent =>
-      '${appInfo.appName}/${appInfo.version} (${appInfo.developer})';
-
   Credentials? _credentials;
 
   Credentials? get credentials => _credentials;
@@ -73,39 +69,23 @@ class ClientService extends ChangeNotifier {
     notifyListeners();
   }
 
-  Dio _getClient() {
-    return Dio(
-      BaseOptions(
-        baseUrl: 'https://$host/',
-        headers: {
-          HttpHeaders.userAgentHeader: userAgent,
-        },
-        sendTimeout: const Duration(seconds: 30),
-        connectTimeout: const Duration(seconds: 30),
-      ),
-    );
-  }
-
-  Future<void> setCustomHost(String value) async {
-    if (value.isEmpty) {
+  Future<void> setCustomHost(String? value) async {
+    if (value == null || value.isEmpty) {
       if (host == customHost) {
         host = defaultHost;
       }
       customHost = null;
     } else {
-      try {
-        await _getClient().get('https://$value');
-        await Future.delayed(const Duration(seconds: 1));
-        if (value == defaultHost) {
-          throw CustomHostDefaultException(host: value);
-        } else if (allowedHosts.contains(value)) {
-          customHost = value;
-        } else {
-          throw CustomHostIncompatibleException(host: value);
-        }
-      } on ClientException {
-        throw CustomHostUnreachableException(host: value);
+      await Future.delayed(
+        Duration(seconds: 1, milliseconds: Random().nextInt(300)),
+      );
+      if (!allowedHosts.contains(value)) {
+        throw CustomHostIncompatibleException(host: value);
       }
+      if (value == defaultHost) {
+        throw CustomHostDefaultException(host: value);
+      }
+      customHost = value;
     }
   }
 
@@ -119,16 +99,19 @@ class ClientService extends ChangeNotifier {
   }
 
   Future<bool> tryLogin(Credentials value) async {
-    return validateCall(
-      () async => _getClient().get(
-        '',
-        options: Options(
-          headers: {
-            HttpHeaders.authorizationHeader: value.basicAuth,
-          },
-        ),
-      ),
+    Client client = Client(
+      host: host,
+      credentials: value,
+      userAgent: userAgent,
+      cache: cache,
+      cookies: cookies,
     );
+    try {
+      await client.currentUser();
+      return true;
+    } on ClientException {
+      return false;
+    }
   }
 
   Future<bool> login(Credentials value) async {
@@ -148,6 +131,9 @@ abstract class CustomHostException implements Exception {
 
   final String message;
   final String host;
+
+  @override
+  String toString() => '$runtimeType: $message';
 }
 
 class CustomHostDefaultException extends CustomHostException {

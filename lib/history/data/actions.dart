@@ -1,4 +1,4 @@
-import 'package:e1547/app/data/link.dart';
+import 'package:e1547/app/app.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/history/history.dart';
 import 'package:e1547/tag/tag.dart';

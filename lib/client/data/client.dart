@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 
-import 'package:collection/collection.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
 import 'package:e1547/client/client.dart';
@@ -103,13 +102,39 @@ class Client {
 
   Future<void> availability() async => _dio.get('');
 
-  Future<List<Post>> postsRaw(
+  Future<List<Post>> posts(
     int page, {
     int? limit,
     String? search,
+    bool? ordered,
+    bool? reversePools,
+    bool? orderFavorites,
     bool? force,
     CancelToken? cancelToken,
   }) async {
+    ordered ??= true;
+    if (ordered) {
+      Map<RegExp, Future<List<Post>> Function(RegExpMatch match)> redirects = {
+        poolRegex(): (match) => poolPosts(
+              int.parse(match.namedGroup('id')!),
+              page,
+              reverse: reversePools ?? false,
+              force: force,
+              cancelToken: cancelToken,
+            ),
+        if ((orderFavorites ?? false) && credentials?.username != null)
+          favRegex(credentials!.username): (match) =>
+              favorites(page, limit: limit, force: force),
+      };
+
+      for (final entry in redirects.entries) {
+        RegExpMatch? match = entry.key.firstMatch(search!.trim());
+        if (match != null) {
+          return entry.value(match);
+        }
+      }
+    }
+
     String? tags = search != null ? sortTags(search) : '';
     Map<String, dynamic> body = await _dio
         .get(
@@ -127,16 +152,23 @@ class Client {
         )
         .then((response) => response.data);
 
-    return List<Post>.from(body['posts'].map((e) => Post.fromJson(e)));
+    List<Post> posts =
+        List<Post>.from(body['posts'].map((e) => Post.fromJson(e)));
+
+    if (ordered) {
+      posts.removeWhere((e) => e.isIgnored());
+    }
+
+    return posts;
   }
 
-  Future<List<Post>> postsChunk(
+  Future<List<Post>> postsByIds(
     List<int> ids, {
-    int limit = 80,
+    int? limit,
     bool? force,
     CancelToken? cancelToken,
   }) async {
-    limit = max(0, min(limit, 100));
+    limit = max(0, min(limit ?? 80, 100));
 
     List<List<int>> chunks = [];
     while (true) {
@@ -148,9 +180,10 @@ class Client {
     for (final chunk in chunks) {
       if (chunk.isEmpty) continue;
       String filter = 'id:${chunk.join(',')}';
-      List<Post> part = await postsRaw(
+      List<Post> part = await posts(
         1,
         search: filter,
+        ordered: false,
         force: force,
         cancelToken: cancelToken,
       );
@@ -163,41 +196,37 @@ class Client {
     return result;
   }
 
-  Future<List<Post>> posts(
+  Future<List<Post>> postsByTags(
+    List<String> tags,
     int page, {
     int? limit,
-    String? search,
-    bool? reversePools,
-    bool? orderFavorites,
     bool? force,
     CancelToken? cancelToken,
   }) async {
-    Map<RegExp, Future<List<Post>> Function(RegExpMatch match)> redirects = {
-      poolRegex(): (match) => poolPosts(
-            int.parse(match.namedGroup('id')!),
-            page,
-            reverse: reversePools ?? false,
-            force: force,
-            cancelToken: cancelToken,
-          ),
-      if ((orderFavorites ?? false) && credentials?.username != null)
-        favRegex(credentials!.username): (match) =>
-            favorites(page, limit: limit, force: force),
-    };
+    if (tags.isEmpty) return [];
+    tags.removeWhere((e) => e.contains(' ') || e.contains(':'));
+    int max = 40;
+    int pages = (tags.length / max).ceil();
+    int chunkSize = (tags.length / pages).ceil();
 
-    for (final entry in redirects.entries) {
-      RegExpMatch? match = entry.key.firstMatch(search!.trim());
-      if (match != null) {
-        return entry.value(match);
-      }
-    }
+    int tagPage = page % pages != 0 ? page % pages : pages;
+    int sitePage = (page / pages).ceil();
 
-    return postsRaw(page, search: search, limit: limit, force: force)
-        .then((value) => value.whereNot((e) => e.isIgnored()).toList());
+    List<String> chunk =
+        tags.sublist((tagPage - 1) * chunkSize).take(chunkSize).toList();
+    String filter = chunk.map((e) => '~$e').join(' ');
+    return posts(
+      sitePage,
+      search: filter,
+      limit: limit,
+      ordered: false,
+      force: force,
+      cancelToken: cancelToken,
+    );
   }
 
   Future<Post> post(int postId, {bool? force, CancelToken? cancelToken}) async {
-    Map<String, dynamic> body = await _dio
+    Map<String, Object> body = await _dio
         .get(
           'posts/$postId.json',
           options: _options(force: force),
@@ -313,7 +342,7 @@ class Client {
         .then((response) => response.data);
 
     List<Pool> pools = [];
-    for (Map<String, dynamic> raw in body) {
+    for (Map<String, Object> raw in body) {
       Pool pool = Pool.fromJson(raw);
       pools.add(pool);
     }
@@ -322,7 +351,7 @@ class Client {
   }
 
   Future<Pool> pool(int poolId, {bool? force, CancelToken? cancelToken}) async {
-    Map<String, dynamic> body = await _dio
+    Map<String, Object> body = await _dio
         .get(
           'pools/$poolId.json',
           options: _options(force: force),
@@ -346,36 +375,8 @@ class Client {
     int lower = (page - 1) * limit;
     if (lower > ids.length) return [];
     ids = ids.sublist(lower).take(limit).toList();
-    return postsChunk(ids,
+    return postsByIds(ids,
         limit: limit, force: force, cancelToken: cancelToken);
-  }
-
-  Future<List<Post>> tagPosts(
-    List<String> tags,
-    int page, {
-    int? limit,
-    bool? force,
-    CancelToken? cancelToken,
-  }) async {
-    if (tags.isEmpty) return [];
-    tags.removeWhere((e) => e.contains(' ') || e.contains(':'));
-    int max = 40;
-    int pages = (tags.length / max).ceil();
-    int chunkSize = (tags.length / pages).ceil();
-
-    int tagPage = page % pages != 0 ? page % pages : pages;
-    int sitePage = (page / pages).ceil();
-
-    List<String> chunk =
-        tags.sublist((tagPage - 1) * chunkSize).take(chunkSize).toList();
-    String filter = chunk.map((e) => '~$e').join(' ');
-    return postsRaw(
-      sitePage,
-      search: filter,
-      limit: limit,
-      force: force,
-      cancelToken: cancelToken,
-    );
   }
 
   Future<List<Wiki>> wikis(
@@ -384,7 +385,7 @@ class Client {
     bool? force,
     CancelToken? cancelToken,
   }) async {
-    List<dynamic> body = await _dio
+    List<Object> body = await _dio
         .get(
           'wiki_pages.json',
           queryParameters: {
@@ -407,7 +408,7 @@ class Client {
     bool? force,
     CancelToken? cancelToken,
   }) async {
-    Map<String, dynamic> body = await _dio
+    Map<String, Object> body = await _dio
         .get(
           'wiki_pages/$name.json',
           options: _options(force: force),
@@ -423,7 +424,7 @@ class Client {
     bool? force,
     CancelToken? cancelToken,
   }) async {
-    Map<String, dynamic> body = await _dio
+    Map<String, Object> body = await _dio
         .get(
           'users/$name.json',
           options: _options(force: force),
@@ -453,7 +454,7 @@ class Client {
       return null;
     }
 
-    Map<String, dynamic> body = await _dio
+    Map<String, Object> body = await _dio
         .get(
           'users/${credentials!.username}.json',
           options: _options(
@@ -468,7 +469,7 @@ class Client {
   }
 
   Future<void> updateBlacklist(List<String> denylist) async {
-    Map<String, dynamic> body = {
+    Map<String, Object> body = {
       'user[blacklisted_tags]': denylist.join('\n'),
     };
 
@@ -497,7 +498,7 @@ class Client {
         .then((response) => response.data);
 
     List<Tag> tags = [];
-    if (body is List<dynamic>) {
+    if (body is List<Object>) {
       for (final tag in body) {
         tags.add(Tag.fromJson(tag));
       }
@@ -529,7 +530,7 @@ class Client {
           )
           .then((response) => response.data);
       List<TagSuggestion> tags = [];
-      if (body is List<dynamic>) {
+      if (body is List<Object>) {
         for (final tag in body) {
           tags.add(TagSuggestion.fromJson(tag));
         }
@@ -608,7 +609,7 @@ class Client {
 
     List<Comment> comments = [];
     if (body is List<dynamic>) {
-      for (Map<String, dynamic> rawComment in body) {
+      for (Map<String, Object> rawComment in body) {
         comments.add(Comment.fromJson(rawComment));
       }
     }
@@ -623,7 +624,7 @@ class Client {
   }) async {
     ensureLogin();
 
-    Map<String, dynamic> body = await _dio
+    Map<String, Object> body = await _dio
         .get(
           'comments.json/$commentId.json',
           options: _options(force: force),
@@ -641,7 +642,7 @@ class Client {
       queryParams: {'search[post_id]': postId.toString()},
     );
 
-    Map<String, dynamic> body = {
+    Map<String, Object> body = {
       'comment[body]': text,
       'comment[post_id]': postId,
       'commit': 'Submit',
@@ -661,7 +662,7 @@ class Client {
       RegExp(RegExp.escape('comments/$commentId.json')),
     );
 
-    Map<String, dynamic> body = {
+    Map<String, Object> body = {
       'comment[body]': text,
       'comment[post_id]': postId,
       'commit': 'Submit',
@@ -720,7 +721,7 @@ class Client {
 
     List<Topic> threads = [];
     if (body is List<dynamic>) {
-      for (Map<String, dynamic> raw in body) {
+      for (Map<String, Object> raw in body) {
         threads.add(Topic.fromJson(raw));
       }
     }
@@ -733,7 +734,7 @@ class Client {
     bool? force,
     CancelToken? cancelToken,
   }) async {
-    Map<String, dynamic> body = await _dio
+    Map<String, Object> body = await _dio
         .get(
           'forum_topics/$topicId.json',
           options: _options(force: force),
@@ -768,7 +769,7 @@ class Client {
 
     List<Reply> replies = [];
     if (body is List<dynamic>) {
-      for (Map<String, dynamic> raw in body) {
+      for (Map<String, Object> raw in body) {
         replies.add(Reply.fromJson(raw));
       }
     }
@@ -781,7 +782,7 @@ class Client {
     bool? force,
     CancelToken? cancelToken,
   }) async {
-    Map<String, dynamic> body = await _dio
+    Map<String, Object> body = await _dio
         .get(
           'forum_posts/$replyId.json',
           options: _options(force: force),

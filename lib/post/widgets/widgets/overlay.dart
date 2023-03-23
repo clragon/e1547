@@ -44,7 +44,7 @@ class ImageOverlay extends StatelessWidget {
               }
               if (service.hasCustomHost) {
                 ClientService otherService = ClientService(
-                  appInfo: service.appInfo,
+                  userAgent: service.userAgent,
                   allowedHosts: service.allowedHosts,
                   host: service.customHost,
                   customHost: service.customHost,

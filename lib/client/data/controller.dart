@@ -15,7 +15,7 @@ mixin ClientDataController<KeyType, ItemType>
   Future<void> evictCache() => fetch(firstPageKey, true);
 
   CancelToken _cancelToken = CancelToken();
-  CancelToken get cancelToken => ReadOnlyCancelToken(_cancelToken);
+  CancelToken get cancelToken => _cancelToken;
 
   @override
   void refresh({bool force = false, bool background = false}) {

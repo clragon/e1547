@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:e1547/client/client.dart';
-import 'package:e1547/denylist/data/service.dart';
+import 'package:e1547/denylist/denylist.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/tag/tag.dart';
