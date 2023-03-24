@@ -226,7 +226,7 @@ class Client {
   }
 
   Future<Post> post(int postId, {bool? force, CancelToken? cancelToken}) async {
-    Map<String, Object> body = await _dio
+    Map<String, dynamic> body = await _dio
         .get(
           'posts/$postId.json',
           options: _options(force: force),
@@ -342,7 +342,7 @@ class Client {
         .then((response) => response.data);
 
     List<Pool> pools = [];
-    for (Map<String, Object> raw in body) {
+    for (Map<String, dynamic> raw in body) {
       Pool pool = Pool.fromJson(raw);
       pools.add(pool);
     }
@@ -351,7 +351,7 @@ class Client {
   }
 
   Future<Pool> pool(int poolId, {bool? force, CancelToken? cancelToken}) async {
-    Map<String, Object> body = await _dio
+    Map<String, dynamic> body = await _dio
         .get(
           'pools/$poolId.json',
           options: _options(force: force),
@@ -385,7 +385,7 @@ class Client {
     bool? force,
     CancelToken? cancelToken,
   }) async {
-    List<Object> body = await _dio
+    List<dynamic> body = await _dio
         .get(
           'wiki_pages.json',
           queryParameters: {
@@ -408,7 +408,7 @@ class Client {
     bool? force,
     CancelToken? cancelToken,
   }) async {
-    Map<String, Object> body = await _dio
+    Map<String, dynamic> body = await _dio
         .get(
           'wiki_pages/$name.json',
           options: _options(force: force),
@@ -424,7 +424,7 @@ class Client {
     bool? force,
     CancelToken? cancelToken,
   }) async {
-    Map<String, Object> body = await _dio
+    Map<String, dynamic> body = await _dio
         .get(
           'users/$name.json',
           options: _options(force: force),
@@ -454,7 +454,7 @@ class Client {
       return null;
     }
 
-    Map<String, Object> body = await _dio
+    Map<String, dynamic> body = await _dio
         .get(
           'users/${credentials!.username}.json',
           options: _options(
@@ -469,7 +469,7 @@ class Client {
   }
 
   Future<void> updateBlacklist(List<String> denylist) async {
-    Map<String, Object> body = {
+    Map<String, dynamic> body = {
       'user[blacklisted_tags]': denylist.join('\n'),
     };
 
@@ -498,7 +498,7 @@ class Client {
         .then((response) => response.data);
 
     List<Tag> tags = [];
-    if (body is List<Object>) {
+    if (body is List<dynamic>) {
       for (final tag in body) {
         tags.add(Tag.fromJson(tag));
       }
@@ -530,7 +530,7 @@ class Client {
           )
           .then((response) => response.data);
       List<TagSuggestion> tags = [];
-      if (body is List<Object>) {
+      if (body is List<dynamic>) {
         for (final tag in body) {
           tags.add(TagSuggestion.fromJson(tag));
         }
@@ -609,7 +609,7 @@ class Client {
 
     List<Comment> comments = [];
     if (body is List<dynamic>) {
-      for (Map<String, Object> rawComment in body) {
+      for (Map<String, dynamic> rawComment in body) {
         comments.add(Comment.fromJson(rawComment));
       }
     }
@@ -624,7 +624,7 @@ class Client {
   }) async {
     ensureLogin();
 
-    Map<String, Object> body = await _dio
+    Map<String, dynamic> body = await _dio
         .get(
           'comments.json/$commentId.json',
           options: _options(force: force),
@@ -642,7 +642,7 @@ class Client {
       queryParams: {'search[post_id]': postId.toString()},
     );
 
-    Map<String, Object> body = {
+    Map<String, dynamic> body = {
       'comment[body]': text,
       'comment[post_id]': postId,
       'commit': 'Submit',
@@ -662,7 +662,7 @@ class Client {
       RegExp(RegExp.escape('comments/$commentId.json')),
     );
 
-    Map<String, Object> body = {
+    Map<String, dynamic> body = {
       'comment[body]': text,
       'comment[post_id]': postId,
       'commit': 'Submit',
@@ -721,7 +721,7 @@ class Client {
 
     List<Topic> threads = [];
     if (body is List<dynamic>) {
-      for (Map<String, Object> raw in body) {
+      for (Map<String, dynamic> raw in body) {
         threads.add(Topic.fromJson(raw));
       }
     }
@@ -734,7 +734,7 @@ class Client {
     bool? force,
     CancelToken? cancelToken,
   }) async {
-    Map<String, Object> body = await _dio
+    Map<String, dynamic> body = await _dio
         .get(
           'forum_topics/$topicId.json',
           options: _options(force: force),
@@ -769,7 +769,7 @@ class Client {
 
     List<Reply> replies = [];
     if (body is List<dynamic>) {
-      for (Map<String, Object> raw in body) {
+      for (Map<String, dynamic> raw in body) {
         replies.add(Reply.fromJson(raw));
       }
     }
@@ -782,7 +782,7 @@ class Client {
     bool? force,
     CancelToken? cancelToken,
   }) async {
-    Map<String, Object> body = await _dio
+    Map<String, dynamic> body = await _dio
         .get(
           'forum_posts/$replyId.json',
           options: _options(force: force),
