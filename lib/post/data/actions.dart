@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:cached_video_player/cached_video_player.dart';
+import 'package:video_player/video_player.dart';
 import 'package:crypto/crypto.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/interface/interface.dart';
@@ -281,7 +281,7 @@ extension PostVideoPlaying on Post {
         )
       : null;
 
-  CachedVideoPlayerController? getVideo(BuildContext context) {
+  VideoPlayerController? getVideo(BuildContext context) {
     if (videoConfig != null) {
       return VideoHandler.of(context).getVideo(videoConfig!);
     }

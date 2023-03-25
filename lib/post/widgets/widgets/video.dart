@@ -1,15 +1,15 @@
 import 'dart:async';
 
-import 'package:cached_video_player/cached_video_player.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sub/flutter_sub.dart';
+import 'package:video_player/video_player.dart';
 
 class VideoButton extends StatefulWidget {
   const VideoButton({super.key, required this.videoController, this.size = 54});
 
-  final CachedVideoPlayerController videoController;
+  final VideoPlayerController videoController;
   final double size;
 
   @override
@@ -96,7 +96,7 @@ class _VideoButtonState extends State<VideoButton> {
 class VideoBar extends StatelessWidget {
   const VideoBar({required this.videoController});
 
-  final CachedVideoPlayerController videoController;
+  final VideoPlayerController videoController;
 
   @override
   Widget build(BuildContext context) {
@@ -181,7 +181,7 @@ class VideoGesture extends StatefulWidget {
   const VideoGesture({required this.forward, required this.videoController});
 
   final bool forward;
-  final CachedVideoPlayerController videoController;
+  final VideoPlayerController videoController;
 
   @override
   State<VideoGesture> createState() => _VideoGestureState();
@@ -291,7 +291,7 @@ class VideoGestures extends StatefulWidget {
   const VideoGestures({required this.videoController, required this.child});
 
   final Widget child;
-  final CachedVideoPlayerController videoController;
+  final VideoPlayerController videoController;
 
   @override
   State<VideoGestures> createState() => _VideoGesturesState();
@@ -355,7 +355,7 @@ class PostVideoRoute extends StatefulWidget {
 }
 
 class PostVideoRouteState extends State<PostVideoRoute> with RouteAware {
-  late CachedVideoPlayerController? _videoController;
+  late VideoPlayerController? _videoController;
   late RouterDrawerController _navigation;
   late final bool _wasPlaying;
   bool _keepPlaying = false;
@@ -460,7 +460,7 @@ class PostVideoWidget extends StatelessWidget {
         builder: (context, child) => post.getVideo(context)!.value.isInitialized
             ? AspectRatio(
                 aspectRatio: post.getVideo(context)!.value.aspectRatio,
-                child: CachedVideoPlayer(post.getVideo(context)!),
+                child: VideoPlayer(post.getVideo(context)!),
               )
             : placeholder(),
       );

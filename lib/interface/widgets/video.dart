@@ -1,8 +1,8 @@
 import 'dart:math';
 
-import 'package:cached_video_player/cached_video_player.dart';
 import 'package:flutter/material.dart';
 import 'package:mutex/mutex.dart';
+import 'package:video_player/video_player.dart';
 import 'package:wakelock/wakelock.dart';
 
 class VideoHandler extends ChangeNotifier {
@@ -13,7 +13,7 @@ class VideoHandler extends ChangeNotifier {
 
   // To prevent the app from crashing due tue OutOfMemoryErrors,
   // the list of all loaded videos is global.
-  static final Map<VideoConfig, CachedVideoPlayerController> _videos = {};
+  static final Map<VideoConfig, VideoPlayerController> _videos = {};
 
   final int maxLoaded = 3;
 
@@ -32,9 +32,9 @@ class VideoHandler extends ChangeNotifier {
     notifyListeners();
   }
 
-  CachedVideoPlayerController getVideo(VideoConfig key) => _videos.putIfAbsent(
+  VideoPlayerController getVideo(VideoConfig key) => _videos.putIfAbsent(
         key,
-        () => CachedVideoPlayerController.network(
+        () => VideoPlayerController.network(
           key.url,
           videoPlayerOptions: VideoPlayerOptions(
             mixWithOthers: true,
@@ -44,14 +44,14 @@ class VideoHandler extends ChangeNotifier {
 
   Future<void> loadVideo(VideoConfig key) async {
     await _loadingLock.acquire();
-    CachedVideoPlayerController? controller = getVideo(key);
+    VideoPlayerController? controller = getVideo(key);
     if (controller.value.isInitialized) {
       _loadingLock.release();
       return;
     }
 
     while (true) {
-      Map<VideoConfig, CachedVideoPlayerController> loaded = Map.of(_videos)
+      Map<VideoConfig, VideoPlayerController> loaded = Map.of(_videos)
         ..removeWhere((key, value) => !value.value.isInitialized);
       int loadedSize =
           loaded.keys.fold<int>(0, (current, config) => current + config.size);
@@ -70,7 +70,7 @@ class VideoHandler extends ChangeNotifier {
   }
 
   Future<void> disposeVideo(VideoConfig key) async {
-    CachedVideoPlayerController? controller = _videos[key];
+    VideoPlayerController? controller = _videos[key];
     if (controller != null) {
       await controller.pause();
       controller.removeListener(controller.wakelock);
@@ -92,7 +92,7 @@ class VideoHandlerData extends InheritedNotifier<VideoHandler> {
       oldWidget.handler != handler;
 }
 
-extension Wake on CachedVideoPlayerController {
+extension Wake on VideoPlayerController {
   void wakelock() {
     value.isPlaying ? Wakelock.enable() : Wakelock.disable();
   }

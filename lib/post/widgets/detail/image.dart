@@ -1,4 +1,4 @@
-import 'package:cached_video_player/cached_video_player.dart';
+import 'package:video_player/video_player.dart';
 import 'package:e1547/app/app.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
@@ -27,7 +27,7 @@ class PostDetailVideo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    CachedVideoPlayerController? videoController = post.getVideo(context);
+    VideoPlayerController? videoController = post.getVideo(context);
     return PostVideoLoader(
       post: post,
       child: GestureDetector(
@@ -181,7 +181,7 @@ class PostDetailImageActions extends StatelessWidget {
           );
         }
 
-        CachedVideoPlayerController? videoController = post.getVideo(context);
+        VideoPlayerController? videoController = post.getVideo(context);
 
         return Stack(
           fit: StackFit.passthrough,
