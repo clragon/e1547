@@ -45,6 +45,7 @@ class ImageGrid extends StatelessWidget {
         return ScrollConfiguration(
           behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
           child: GridView.builder(
+            shrinkWrap: true,
             primary: false,
             physics: const NeverScrollableScrollPhysics(),
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -122,47 +123,50 @@ class ImageTile extends StatelessWidget {
         onTap: onTap,
         onLongPress: onLongPress,
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Stack(
-              fit: StackFit.passthrough,
-              children: [
-                SizedBox(
-                  height: images?.isNotEmpty ?? true ? 300 : 150,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      if (centerTitle)
-                        Expanded(
-                          child: Card(
-                            child: Padding(
-                              padding: const EdgeInsets.all(16),
-                              child: Center(
-                                child: DefaultTextStyle(
-                                  style:
-                                      Theme.of(context).textTheme.titleLarge!,
-                                  textAlign: TextAlign.center,
-                                  child: title,
+            Flexible(
+              child: Stack(
+                fit: StackFit.passthrough,
+                children: [
+                  LimitedBox(
+                    maxHeight: images?.isNotEmpty ?? true ? 300 : 150,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        if (centerTitle)
+                          Expanded(
+                            child: Card(
+                              child: Padding(
+                                padding: const EdgeInsets.all(16),
+                                child: Center(
+                                  child: DefaultTextStyle(
+                                    style:
+                                        Theme.of(context).textTheme.titleLarge!,
+                                    textAlign: TextAlign.center,
+                                    child: title,
+                                  ),
                                 ),
                               ),
                             ),
+                          )
+                        else
+                          Expanded(
+                            child: hero != null
+                                ? Hero(
+                                    tag: hero!,
+                                    child: ImageGrid(images: images),
+                                  )
+                                : ImageGrid(images: images),
                           ),
-                        )
-                      else
-                        Expanded(
-                          child: hero != null
-                              ? Hero(
-                                  tag: hero!,
-                                  child: ImageGrid(images: images),
-                                )
-                              : ImageGrid(images: images),
-                        ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-                const Positioned.fill(
-                  child: Material(type: MaterialType.transparency),
-                ),
-              ],
+                  const Positioned.fill(
+                    child: Material(type: MaterialType.transparency),
+                  ),
+                ],
+              ),
             ),
             if ((!centerTitle && (showTitle ?? true)) ||
                 subtitle != null ||
