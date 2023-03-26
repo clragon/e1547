@@ -44,7 +44,7 @@ class FavoritePostsController extends PostsController {
     List<Post> posts = await client.posts(
       page,
       search: search.value,
-      orderFavorites: orderFavorites.value,
+      orderFavoritesByAdded: orderFavorites.value,
       force: force,
       cancelToken: cancelToken,
     );

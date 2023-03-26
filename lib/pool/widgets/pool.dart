@@ -8,17 +8,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_sub/flutter_sub.dart';
 
 class PoolPage extends StatefulWidget {
-  const PoolPage({required this.pool, this.oldestFirst = true});
+  const PoolPage({required this.pool, this.orderByOldest});
 
   final Pool pool;
-  final bool oldestFirst;
+  final bool? orderByOldest;
 
   @override
   State<PoolPage> createState() => _PoolPageState();
 }
 
 class _PoolPageState extends State<PoolPage> {
-  late bool oldestFirst = widget.oldestFirst;
+  late bool orderByOldest = widget.orderByOldest ?? true;
   bool readerMode = true;
 
   @override
@@ -27,7 +27,7 @@ class _PoolPageState extends State<PoolPage> {
       fetch: (controller, tags, page, force) => controller.client.poolPosts(
         widget.pool.id,
         page,
-        reverse: !oldestFirst,
+        orderByOldest: orderByOldest,
         force: force,
         cancelToken: controller.cancelToken,
       ),
@@ -76,10 +76,10 @@ class _PoolPageState extends State<PoolPage> {
               ),
               Builder(
                 builder: (context) => PoolOrderSwitch(
-                  oldestFirst: oldestFirst,
+                  oldestFirst: orderByOldest,
                   onChange: (value) {
                     setState(() {
-                      oldestFirst = value;
+                      orderByOldest = value;
                     });
                     controller.refresh();
                     Scaffold.of(context).closeEndDrawer();

@@ -1,8 +1,8 @@
 // data
+export 'data/client.dart';
 export 'data/database.dart';
 export 'data/info.dart';
 export 'data/link.dart';
-export 'data/client.dart';
 export 'data/navigation.dart';
 export 'data/theme.dart';
 // widgets

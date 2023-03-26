@@ -107,8 +107,8 @@ class Client {
     int? limit,
     String? search,
     bool? ordered,
-    bool? reversePools,
-    bool? orderFavorites,
+    bool? orderPoolsByOldest,
+    bool? orderFavoritesByAdded,
     bool? force,
     CancelToken? cancelToken,
   }) async {
@@ -118,11 +118,11 @@ class Client {
         poolRegex(): (match) => poolPosts(
               int.parse(match.namedGroup('id')!),
               page,
-              reverse: reversePools ?? false,
+              orderByOldest: orderPoolsByOldest ?? true,
               force: force,
               cancelToken: cancelToken,
             ),
-        if ((orderFavorites ?? false) && credentials?.username != null)
+        if ((orderFavoritesByAdded ?? false) && credentials?.username != null)
           favRegex(credentials!.username): (match) =>
               favorites(page, limit: limit, force: force),
       };
@@ -365,13 +365,14 @@ class Client {
   Future<List<Post>> poolPosts(
     int poolId,
     int page, {
-    bool reverse = false,
+    bool orderByOldest = true,
     bool? force,
     CancelToken? cancelToken,
   }) async {
     int limit = 80;
     Pool pool = await this.pool(poolId, force: force, cancelToken: cancelToken);
-    List<int> ids = reverse ? pool.postIds.reversed.toList() : pool.postIds;
+    List<int> ids =
+        orderByOldest ? pool.postIds : pool.postIds.reversed.toList();
     int lower = (page - 1) * limit;
     if (lower > ids.length) return [];
     ids = ids.sublist(lower).take(limit).toList();
