@@ -11,8 +11,8 @@ class RepliesController extends CursorClientDataController<Reply>
     required this.client,
     required this.topicId,
     required this.denylist,
-    bool orderByOldest = true,
-  }) : orderByOldest = ValueNotifier<bool>(orderByOldest) {
+    bool? orderByOldest,
+  }) : orderByOldest = ValueNotifier<bool>(orderByOldest ?? true) {
     _filterNotifiers.forEach((e) => e.addListener(refilter));
   }
 
@@ -21,6 +21,7 @@ class RepliesController extends CursorClientDataController<Reply>
 
   final int topicId;
   @override
+  // ignore: overridden_fields
   final ValueNotifier<bool> orderByOldest;
 
   final DenylistService denylist;
@@ -54,7 +55,7 @@ class RepliesProvider extends SubChangeNotifierProvider2<Client,
     DenylistService, RepliesController> {
   RepliesProvider({
     required int topicId,
-    bool orderByOldest = true,
+    bool? orderByOldest,
     super.child,
     super.builder,
   }) : super(

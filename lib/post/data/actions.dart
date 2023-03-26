@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:video_player/video_player.dart';
 import 'package:crypto/crypto.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/interface/interface.dart';
@@ -16,6 +15,7 @@ import 'package:mime/mime.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_storage/shared_storage.dart';
+import 'package:video_player/video_player.dart';
 
 extension PostTagging on Post {
   bool hasTag(String tag) {

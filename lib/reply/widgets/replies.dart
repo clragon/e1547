@@ -7,10 +7,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_sub/flutter_sub.dart';
 
 class RepliesPage extends StatelessWidget {
-  const RepliesPage({required this.topic, this.orderByOldest = true});
+  const RepliesPage({required this.topic, this.orderByOldest});
 
   final Topic topic;
-  final bool orderByOldest;
+  final bool? orderByOldest;
 
   @override
   Widget build(BuildContext context) {

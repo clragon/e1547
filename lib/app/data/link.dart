@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
+import 'package:e1547/reply/reply.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:e1547/topic/topic.dart';
 import 'package:e1547/user/user.dart';
