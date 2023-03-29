@@ -185,7 +185,7 @@ class FollowTile extends StatelessWidget {
                         MaterialPageRoute(
                           builder: (context) => PostsSearchPage(
                             tags: follow.tags,
-                            reversePools: (follow.unseen ?? 0) > 0,
+                            orderPoolsByOldest: (follow.unseen ?? 0) == 0,
                             readerMode: poolRegex().hasMatch(follow.tags),
                           ),
                         ),
