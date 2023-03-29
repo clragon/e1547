@@ -5,11 +5,6 @@ on:
     types:
       - published
   workflow_dispatch:
-    inputs:
-      branch:
-        description: The branch to trigger the workflow on
-        required: false
-        default: master
 
 jobs:
   ios-build:
