@@ -2,7 +2,14 @@ name: Application Release
 
 on:
   release:
-    types: [published]
+    types:
+      - published
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: The branch to trigger the workflow on
+        required: false
+        default: master
 
 jobs:
   ios-build:
@@ -14,7 +21,15 @@ jobs:
       - name: setup flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: "stable"
+          channel: stable
+
+      - name: Cache flutter dependencies
+        uses: actions/cache@v2
+        with:
+          path: /Users/runner/hostedtoolcache/flutter
+          key: ${{ runner.os }}-flutter-${{ hashFiles('**/pubspec.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-flutter-
 
       - name: get dependencies
         run: flutter pub get
@@ -38,6 +53,7 @@ jobs:
 
       - name: upload release to assets
         uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
         with:
           files: e1547.ipa
         env:
@@ -52,13 +68,8 @@ jobs:
       - name: setup java
         uses: actions/setup-java@v2
         with:
-          distribution: "zulu"
-          java-version: "12"
-
-      - name: setup flutter
-        uses: subosito/flutter-action@v2
-        with:
-          channel: "stable"
+          distribution: zulu
+          java-version: '12'
 
       - name: configure release keys
         env:
@@ -68,6 +79,19 @@ jobs:
           mkdir -p android/keys
           echo "$KEYSTORE" | base64 -d > android/keys/key.pkcs
           echo "$KEYCONFIG" | base64 -d > android/keys/key.properties
+
+      - name: setup flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Cache flutter dependencies
+        uses: actions/cache@v2
+        with:
+          path: /Users/runner/hostedtoolcache/flutter
+          key: ${{ runner.os }}-flutter-${{ hashFiles('**/pubspec.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-flutter-
 
       - name: get dependencies
         run: flutter pub get
@@ -87,6 +111,7 @@ jobs:
 
       - name: upload release to assets
         uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
         with:
           files: e1547.apk
         env:
