@@ -11,12 +11,12 @@ import 'package:flutter_sub/flutter_sub.dart';
 class PostsSearchPage extends StatefulWidget {
   const PostsSearchPage({
     this.tags,
-    this.reversePools = false,
+    this.orderPoolsByOldest = true,
     this.readerMode = false,
   });
 
   final String? tags;
-  final bool reversePools;
+  final bool orderPoolsByOldest;
   final bool readerMode;
 
   @override
@@ -24,7 +24,7 @@ class PostsSearchPage extends StatefulWidget {
 }
 
 class _PostsSearchPageState extends State<PostsSearchPage> {
-  late bool reversePools = widget.reversePools;
+  late bool orderPoolsByOldest = widget.orderPoolsByOldest;
   late bool readerMode = widget.readerMode;
   bool loadingInfo = true;
   Pool? pool;
@@ -37,7 +37,7 @@ class _PostsSearchPageState extends State<PostsSearchPage> {
       fetch: (controller, tags, page, force) => controller.client.posts(
         page,
         search: tags,
-        reversePools: reversePools,
+        orderPoolsByOldest: orderPoolsByOldest,
         force: force,
         cancelToken: controller.cancelToken,
       ),
@@ -162,9 +162,9 @@ class _PostsSearchPageState extends State<PostsSearchPage> {
                 if (pool != null)
                   Builder(
                     builder: (context) => PoolOrderSwitch(
-                      oldestFirst: !reversePools,
+                      oldestFirst: !orderPoolsByOldest,
                       onChange: (value) {
-                        setState(() => reversePools = value);
+                        setState(() => orderPoolsByOldest = value);
                         controller.refresh();
                         Scaffold.of(context).closeEndDrawer();
                       },
