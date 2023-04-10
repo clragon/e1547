@@ -67,12 +67,6 @@ class Client {
 
   bool get hasLogin => credentials != null;
 
-  void ensureLogin() {
-    if (!hasLogin) {
-      throw StateError('User is not logged in!');
-    }
-  }
-
   String withHost(String path) => Uri.parse(path)
       .replace(
         scheme: 'https',
@@ -223,10 +217,7 @@ class Client {
   }
 
   Future<void> votePost(int postId, bool upvote, bool replace) async {
-    ensureLogin();
-
     await cache?.deleteFromPath(RegExp(RegExp.escape('posts/$postId.json')));
-
     await _dio.post('posts/$postId/votes.json', queryParameters: {
       'score': upvote ? 1 : -1,
       'no_unvote': replace,
@@ -282,18 +273,12 @@ class Client {
   }
 
   Future<void> addFavorite(int postId) async {
-    ensureLogin();
-
     await cache?.deleteFromPath(RegExp(RegExp.escape('posts/$postId.json')));
-
     await _dio.post('favorites.json', queryParameters: {'post_id': postId});
   }
 
   Future<void> removeFavorite(int postId) async {
-    ensureLogin();
-
     await cache?.deleteFromPath(RegExp(RegExp.escape('posts/$postId.json')));
-
     await _dio.delete('favorites/$postId.json');
   }
 
@@ -399,11 +384,7 @@ class Client {
     Map<String, dynamic> body = await _dio
         .get(
           'users/$name.json',
-          options: CacheConfig(
-            store: _memoryCache,
-            policy:
-                (force ?? false) ? CachePolicy.refresh : CachePolicy.request,
-          ).toOptions(),
+          options: forceOptions(force),
           cancelToken: cancelToken,
         )
         .then((response) => response.data);
@@ -433,7 +414,11 @@ class Client {
     Map<String, dynamic> body = await _dio
         .get(
           'users/${credentials!.username}.json',
-          options: forceOptions(force),
+          options: CacheConfig(
+            store: _memoryCache,
+            policy:
+                (force ?? false) ? CachePolicy.refresh : CachePolicy.request,
+          ).toOptions(),
           cancelToken: cancelToken,
         )
         .then((response) => response.data);
@@ -584,8 +569,6 @@ class Client {
     bool? force,
     CancelToken? cancelToken,
   }) async {
-    ensureLogin();
-
     Map<String, dynamic> body = await _dio
         .get(
           'comments.json/$commentId.json',
@@ -598,7 +581,6 @@ class Client {
   }
 
   Future<void> postComment(int postId, String text) async {
-    ensureLogin();
     await cache?.deleteFromPath(
       RegExp(RegExp.escape('comments.json')),
       queryParams: {'search[post_id]': postId.toString()},
@@ -614,7 +596,6 @@ class Client {
   }
 
   Future<void> updateComment(int commentId, int postId, String text) async {
-    ensureLogin();
     await cache?.deleteFromPath(
       RegExp(RegExp.escape('comments.json')),
       queryParams: {'search[post_id]': postId.toString()},
@@ -634,7 +615,6 @@ class Client {
   }
 
   Future<void> voteComment(int commentId, bool upvote, bool replace) async {
-    ensureLogin();
     await _dio.post(
       'comments/$commentId/votes.json',
       queryParameters: {
@@ -645,7 +625,6 @@ class Client {
   }
 
   Future<void> reportComment(int commentId, String reason) async {
-    ensureLogin();
     await _dio.post(
       'tickets',
       queryParameters: {
