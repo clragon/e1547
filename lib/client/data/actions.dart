@@ -1,4 +1,7 @@
-import 'package:e1547/client/client.dart';
+import 'package:dio/dio.dart';
+import 'package:e1547/interface/interface.dart';
+
+typedef ClientException = DioError;
 
 Future<bool> validateCall(Future<void> Function() call) async {
   try {
@@ -16,3 +19,9 @@ Future<bool> validateCall(Future<void> Function() call) async {
 Future<T> rateLimit<T>(Future<T> call, [Duration? duration]) => Future.wait(
         [call, Future.delayed(duration ?? const Duration(milliseconds: 500))])
     .then((value) => value[0]);
+
+Options forceOptions(bool? force) {
+  return CacheConfig(
+    policy: (force ?? false) ? CachePolicy.refresh : CachePolicy.request,
+  ).toOptions();
+}

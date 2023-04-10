@@ -3,7 +3,6 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:dio/dio.dart';
-import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/comment/comment.dart';
 import 'package:e1547/interface/interface.dart';
@@ -16,8 +15,6 @@ import 'package:e1547/user/user.dart';
 import 'package:e1547/wiki/wiki.dart';
 
 export 'package:dio/dio.dart' show CancelToken;
-
-typedef ClientException = DioError;
 
 class Client {
   Client({
@@ -45,8 +42,10 @@ class Client {
     if (cache != null) {
       _dio.interceptors.add(
         CacheInterceptor(
-          options: _defaultCacheOptions.copyWith(
+          options: CacheConfig(
             store: cache,
+            maxAge: const Duration(minutes: 5),
+            pageParam: 'page',
           ),
         ),
       );
@@ -61,25 +60,6 @@ class Client {
   final List<Cookie>? cookies;
 
   late Dio _dio;
-
-  final CacheConfig _defaultCacheOptions = CacheConfig(
-    maxAge: const Duration(minutes: 5),
-  );
-
-  Options _options({
-    bool? force,
-    Duration? maxAge,
-    Map<String, String?>? params,
-    CacheStore? store,
-  }) =>
-      _defaultCacheOptions
-          .copyWith(
-            maxAge: maxAge != null ? Nullable(maxAge) : null,
-            params: Nullable(params),
-            policy: (force ?? false) ? CachePolicy.refresh : null,
-            store: store,
-          )
-          .toOptions();
 
   void close({bool force = false}) {
     _dio.close(force: force);
@@ -144,10 +124,7 @@ class Client {
             'page': page,
             'limit': limit,
           },
-          options: _options(
-            params: {'tags': tags},
-            force: force,
-          ),
+          options: forceOptions(force),
           cancelToken: cancelToken,
         )
         .then((response) => response.data);
@@ -229,7 +206,7 @@ class Client {
     Map<String, dynamic> body = await _dio
         .get(
           'posts/$postId.json',
-          options: _options(force: force),
+          options: forceOptions(force),
           cancelToken: cancelToken,
         )
         .then((response) => response.data);
@@ -296,7 +273,7 @@ class Client {
             'page': page,
             'limit': limit,
           },
-          options: _options(force: force),
+          options: forceOptions(force),
           cancelToken: cancelToken,
         )
         .then((response) => response.data);
@@ -333,10 +310,7 @@ class Client {
             'search[name_matches]': search,
             'page': page,
           },
-          options: _options(
-            force: force,
-            params: {'search[name_matches]': search},
-          ),
+          options: forceOptions(force),
           cancelToken: cancelToken,
         )
         .then((response) => response.data);
@@ -354,7 +328,7 @@ class Client {
     Map<String, dynamic> body = await _dio
         .get(
           'pools/$poolId.json',
-          options: _options(force: force),
+          options: forceOptions(force),
           cancelToken: cancelToken,
         )
         .then((response) => response.data);
@@ -393,10 +367,7 @@ class Client {
             'search[title]': search,
             'page': page,
           },
-          options: _options(
-            force: force,
-            params: {'search[title]': search},
-          ),
+          options: forceOptions(force),
           cancelToken: cancelToken,
         )
         .then((response) => response.data);
@@ -412,7 +383,7 @@ class Client {
     Map<String, dynamic> body = await _dio
         .get(
           'wiki_pages/$name.json',
-          options: _options(force: force),
+          options: forceOptions(force),
           cancelToken: cancelToken,
         )
         .then((response) => response.data);
@@ -428,7 +399,11 @@ class Client {
     Map<String, dynamic> body = await _dio
         .get(
           'users/$name.json',
-          options: _options(force: force),
+          options: CacheConfig(
+            store: _memoryCache,
+            policy:
+                (force ?? false) ? CachePolicy.refresh : CachePolicy.request,
+          ).toOptions(),
           cancelToken: cancelToken,
         )
         .then((response) => response.data);
@@ -458,10 +433,7 @@ class Client {
     Map<String, dynamic> body = await _dio
         .get(
           'users/${credentials!.username}.json',
-          options: _options(
-            force: force,
-            store: _memoryCache,
-          ),
+          options: forceOptions(force),
           cancelToken: cancelToken,
         )
         .then((response) => response.data);
@@ -493,7 +465,7 @@ class Client {
             'search[order]': 'count',
             'limit': 3,
           },
-          options: _options(force: force),
+          options: forceOptions(force),
           cancelToken: cancelToken,
         )
         .then((response) => response.data);
@@ -523,10 +495,7 @@ class Client {
             queryParameters: {
               'search[name_matches]': search,
             },
-            options: _options(
-              force: force,
-              maxAge: const Duration(days: 7),
-            ),
+            options: forceOptions(force),
             cancelToken: cancelToken,
           )
           .then((response) => response.data);
@@ -569,12 +538,7 @@ class Client {
           queryParameters: {
             'search[antecedent_name]': tag,
           },
-          options: _options(
-            force: force,
-            params: {
-              'search[antecedent_name]': tag,
-            },
-          ),
+          options: forceOptions(force),
           cancelToken: cancelToken,
         )
         .then((value) => value.data);
@@ -600,10 +564,7 @@ class Client {
             'search[post_id]': postId,
             'page': page,
           },
-          options: _options(
-            force: force,
-            params: {'search[post_id]': postId.toString()},
-          ),
+          options: forceOptions(force),
           cancelToken: cancelToken,
         )
         .then((response) => response.data);
@@ -628,7 +589,7 @@ class Client {
     Map<String, dynamic> body = await _dio
         .get(
           'comments.json/$commentId.json',
-          options: _options(force: force),
+          options: forceOptions(force),
           cancelToken: cancelToken,
         )
         .then((response) => response.data);
@@ -712,10 +673,7 @@ class Client {
             'page': page,
             'search[title_matches]': title,
           },
-          options: _options(
-            force: force,
-            params: {'search[title_matches]': title},
-          ),
+          options: forceOptions(force),
           cancelToken: cancelToken,
         )
         .then((response) => response.data);
@@ -738,7 +696,7 @@ class Client {
     Map<String, dynamic> body = await _dio
         .get(
           'forum_topics/$topicId.json',
-          options: _options(force: force),
+          options: forceOptions(force),
           cancelToken: cancelToken,
         )
         .then((response) => response.data);
@@ -760,10 +718,7 @@ class Client {
             'search[topic_id]': topicId,
             'page': page,
           },
-          options: _options(
-            force: force,
-            params: {'search[topic_id]': topicId.toString()},
-          ),
+          options: forceOptions(force),
           cancelToken: cancelToken,
         )
         .then((response) => response.data);
@@ -786,7 +741,7 @@ class Client {
     Map<String, dynamic> body = await _dio
         .get(
           'forum_posts/$replyId.json',
-          options: _options(force: force),
+          options: forceOptions(force),
           cancelToken: cancelToken,
         )
         .then((response) => response.data);

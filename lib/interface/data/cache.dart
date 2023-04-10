@@ -3,13 +3,14 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
 
+export 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
+
 class CacheConfig extends CacheOptions {
   CacheConfig({
     super.policy,
     super.hitCacheOnErrorExcept,
     super.keyBuilder,
-    this.pattern,
-    this.params,
+    this.pageParam,
     this.maxAge,
     super.maxStale,
     super.priority,
@@ -21,13 +22,9 @@ class CacheConfig extends CacheOptions {
   /// Overrides the maxAge http directive.
   final Duration? maxAge;
 
-  /// Deletes matching cache entries when [policy] is [CachePolicy.refresh] or [CachePolicy.refreshForceCache].
-  final RegExp? pattern;
-
-  /// Deletes matching cache entries when [policy] is [CachePolicy.refresh] or [CachePolicy.refreshForceCache].
-  ///
-  /// If [pattern] is null but [params] is not, the path of the request will be used as pattern.
-  final Map<String, String?>? params;
+  /// If the request URL contains this param, it will be ignored during cache deletion.
+  /// This allows clearing all pages of an endpoint at once.
+  final String? pageParam;
 
   static CacheConfig? fromExtra(RequestOptions request) {
     final CacheOptions? config = CacheOptions.fromExtra(request);
@@ -43,8 +40,7 @@ class CacheConfig extends CacheOptions {
     CachePolicy? policy,
     Nullable<List<int>>? hitCacheOnErrorExcept,
     CacheKeyBuilder? keyBuilder,
-    Nullable<RegExp>? pattern,
-    Nullable<Map<String, String?>>? params,
+    Nullable<String>? pageParam,
     Nullable<Duration>? maxAge,
     Nullable<Duration>? maxStale,
     CachePriority? priority,
@@ -58,8 +54,7 @@ class CacheConfig extends CacheOptions {
             ? hitCacheOnErrorExcept.value
             : this.hitCacheOnErrorExcept,
         keyBuilder: keyBuilder ?? this.keyBuilder,
-        pattern: pattern != null ? pattern.value : this.pattern,
-        params: params != null ? params.value : this.params,
+        pageParam: pageParam != null ? pageParam.value : this.pageParam,
         maxAge: maxAge != null ? maxAge.value : this.maxAge,
         maxStale: maxStale != null ? maxStale.value : this.maxStale,
         priority: priority ?? this.priority,
@@ -94,12 +89,13 @@ class CacheInterceptor extends DioCacheInterceptor {
       CachePolicy.refreshForceCache
     ].contains(config.policy);
 
-    bool hasPatterns = config.pattern != null || config.params != null;
-
-    if (isForceRefreshing && hasPatterns) {
+    String? pageParam = config.pageParam ?? _options.pageParam;
+    if (isForceRefreshing && pageParam != null) {
+      Map<String, String?> params = Map.of(options.uri.queryParameters);
+      params.remove(pageParam);
       await _getCacheStore(config).deleteFromPath(
-        config.pattern ?? RegExp(RegExp.escape(options.uri.path)),
-        queryParams: config.params,
+        RegExp(RegExp.escape(options.uri.path)),
+        queryParams: params,
       );
     }
 
@@ -114,7 +110,10 @@ class CacheInterceptor extends DioCacheInterceptor {
       response.headers[HttpHeaders.cacheControlHeader],
     );
 
-    final int updatedMaxAge = config.maxAge?.inSeconds ?? cacheControl.maxAge;
+    int updatedMaxAge = config.maxAge?.inSeconds ?? cacheControl.maxAge;
+    if (updatedMaxAge == 0 && _options.maxAge?.inSeconds != null) {
+      updatedMaxAge = _options.maxAge!.inSeconds;
+    }
 
     final CacheControl updatedCacheControl = CacheControl(
       maxAge: updatedMaxAge,
