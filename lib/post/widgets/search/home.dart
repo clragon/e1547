@@ -25,7 +25,7 @@ class _HomePageState extends State<HomePage> with RouterDrawerEntry {
             listenable: controller.search,
             listener: () => context.read<Settings>().homeTags.value =
                 controller.search.value,
-            builder: (context) => PostsPage(
+            child: PostsPage(
               appBar: const ContextSizedAppBar(
                 title: Text('Home'),
               ),

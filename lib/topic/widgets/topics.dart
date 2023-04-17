@@ -38,7 +38,7 @@ class _TopicsPageState extends State<TopicsPage> with RouterDrawerEntry {
               return;
             }
           },
-          builder: (context) => RefreshableControllerPage(
+          child: RefreshableControllerPage(
             appBar: const DefaultAppBar(
               title: Text('Topics'),
               actions: [ContextDrawerButton()],

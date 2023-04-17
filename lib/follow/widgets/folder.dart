@@ -74,7 +74,7 @@ class _FollowsFolderPageState extends State<FollowsFolderPage> {
       builder: (context, service, client, child) => SubListener(
         listenable: context.watch<FollowsUpdater>(),
         listener: updateRefresh,
-        builder: (context) => SubStream<List<Follow>>(
+        child: SubStream<List<Follow>>(
           create: () {
             Stream<List<Follow>> stream = filterUnseen
                 ? service.watchUnseen(host: client.host)

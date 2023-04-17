@@ -39,7 +39,7 @@ class ClientServiceProvider extends SubChangeNotifierProvider4<AppInfo,
               settings.credentials.value = service.credentials;
               cookies.save(service.cookies);
             },
-            builder: (context) => ClientProvider(
+            child: ClientProvider(
               builder: builder,
               child: child,
             ),
@@ -66,7 +66,7 @@ class HistoriesServiceProvider extends SubChangeNotifierProvider2<AppDatabases,
               settings.writeHistory.value = service.enabled;
               settings.trimHistory.value = service.trimming;
             },
-            builder: (context) => builder?.call(context, child) ?? child!,
+            child: builder?.call(context, child) ?? child!,
           ),
         );
 }
@@ -87,8 +87,7 @@ class FollowsProvider extends SubProvider<AppDatabases, FollowsService> {
               settings.host.value = service.host;
               settings.customHost.value = service.customHost;
             },
-            builder: (context) =>
-                SubChangeNotifierProvider<FollowsService, FollowsUpdater>(
+            child: SubChangeNotifierProvider<FollowsService, FollowsUpdater>(
               create: (context, service) => FollowsUpdater(service: service),
               child: child,
             ),

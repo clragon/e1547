@@ -86,7 +86,7 @@ class _ControllerHistoryConnectorState<T extends DataController?>
           widget.controller,
         );
       },
-      builder: (context) => widget.child,
+      child: widget.child,
     );
   }
 }

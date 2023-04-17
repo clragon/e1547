@@ -32,7 +32,7 @@ class _FavPageState extends State<FavPage> with RouterDrawerEntry {
             }
           },
           listenable: controller.search,
-          builder: (context) => LoadingPage(
+          child: LoadingPage(
             isEmpty: controller.error is NoUserLoginException,
             isError: controller.error is NoUserLoginException,
             onError: Column(

@@ -77,7 +77,7 @@ class _LockScreenState extends State<LockScreen> {
         context.read<Settings>().appPin,
         context.read<Settings>().biometricAuth
       ]),
-      builder: (context) => Stack(
+      child: Stack(
         fit: StackFit.passthrough,
         children: [
           ExcludeFocus(
@@ -87,7 +87,7 @@ class _LockScreenState extends State<LockScreen> {
               child: widget.child,
             ),
           ),
-          if (showLock) KeyedSubtree(key: ObjectKey(_instance), child: lock!)
+          if (showLock) KeyedSubtree(key: ObjectKey(_instance), child: lock)
         ],
       ),
     );

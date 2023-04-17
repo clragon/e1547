@@ -35,7 +35,7 @@ class RepliesPage extends StatelessWidget {
               return;
             }
           },
-          builder: (context) => RefreshableControllerPage(
+          child: RefreshableControllerPage(
             appBar: DefaultAppBar(
               title: Text(topic.title),
               actions: [

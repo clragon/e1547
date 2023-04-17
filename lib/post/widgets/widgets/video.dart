@@ -72,7 +72,7 @@ class _VideoButtonState extends State<VideoButton> {
                           animationController.reverse();
                         }
                       },
-                      builder: (context) => AnimatedBuilder(
+                      child: AnimatedBuilder(
                         animation: animationController,
                         builder: (context, child) => AnimatedIcon(
                           icon: AnimatedIcons.play_pause,
