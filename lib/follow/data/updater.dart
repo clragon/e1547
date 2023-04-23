@@ -164,7 +164,7 @@ class FollowsUpdater extends ChangeNotifier {
           ordered: false,
           force: force,
         ));
-        posts.removeWhere((element) => element.isDeniedBy(denylist));
+        posts.removeWhere((e) => e.isIgnored() || e.isDeniedBy(denylist));
         follow = follow.withUnseen(posts);
         if (!follow.tags.contains(' ') && follow.title == null) {
           RegExpMatch? match = poolRegex().firstMatch(follow.tags);
