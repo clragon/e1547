@@ -1,4 +1,5 @@
 import 'package:e1547/dtext/dtext.dart';
+import 'package:e1547/interface/interface.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -25,13 +26,15 @@ class DText extends StatelessWidget {
     result = result.trim();
 
     try {
-      Widget child = SpoilerProvider(
-        builder: (context, child) => Text.rich(
-          parseDText(context, result, const TextStateStack()),
-          maxLines: maxLines,
-          overflow: overflow,
-          textAlign: textAlign,
-          softWrap: softWrap,
+      Widget child = Expandables(
+        child: SpoilerProvider(
+          builder: (context, child) => Text.rich(
+            parseDText(context, result, const TextStateStack()),
+            maxLines: maxLines,
+            overflow: overflow,
+            textAlign: textAlign,
+            softWrap: softWrap,
+          ),
         ),
       );
       if (style != null) {

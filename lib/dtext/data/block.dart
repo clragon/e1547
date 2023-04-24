@@ -1,4 +1,5 @@
 import 'package:e1547/dtext/dtext.dart';
+import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
 
 final DTextParser blockParser = DTextParser.builder(
@@ -58,6 +59,7 @@ final DTextParser blockParser = DTextParser.builder(
           break;
         case TextBlock.section:
           blocked = (context) => SectionWrap(
+                key: ValueKey(after),
                 title: tag.value,
                 expanded: tag.expanded,
                 child: Text.rich(parseDText(context, between, state)),
@@ -76,8 +78,10 @@ final DTextParser blockParser = DTextParser.builder(
         span: WidgetSpan(
           child: MediaQuery(
             data: MediaQuery.of(context).copyWith(textScaleFactor: 1),
-            child: SpoilerProvider(
-              builder: (context, child) => blocked(context),
+            child: Expandables(
+              child: SpoilerProvider(
+                builder: (context, child) => blocked(context),
+              ),
             ),
           ),
         ),

@@ -1,9 +1,9 @@
 import 'package:e1547/interface/interface.dart';
-import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 
 class SectionWrap extends StatelessWidget {
   const SectionWrap({
+    required Key super.key,
     required this.child,
     this.title,
     this.expanded = false,
@@ -22,7 +22,7 @@ class SectionWrap extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(left: 5),
             child: ExpandableNotifier(
-              initialExpanded: expanded,
+              controller: Expandables.of(context, key!, expanded: expanded),
               child: ExpandableTheme(
                 data: ExpandableThemeData(
                   iconColor: Theme.of(context).iconTheme.color,

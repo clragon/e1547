@@ -6,7 +6,6 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:e1547/wiki/wiki.dart';
-import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 
 Future<void> tagSearchSheet({
