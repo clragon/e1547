@@ -46,8 +46,7 @@ class MemoryLogs implements Logs, LoggyPrinter {
         (e) => e.where((v) => filter(v.level, v.runtimeType)).toList(),
       );
     }
-    return stream
-        .distinct((a, b) => !const DeepCollectionEquality().equals(a, b));
+    return stream.distinct(const DeepCollectionEquality().equals);
   }
 
   @override

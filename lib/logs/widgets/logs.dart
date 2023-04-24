@@ -24,12 +24,12 @@ class _LogsPageState extends State<LogsPage> {
   @override
   Widget build(BuildContext context) {
     return SubStream<List<LogRecord>>(
-      create: () => widget.logs.stream(
-        filter: (level, type) => levels.contains(level.priority),
-      ),
+      create: () => widget.logs
+          .stream(filter: (level, type) => levels.contains(level.priority))
+          .map((e) => e.reversed.toList()),
       keys: [levels],
       builder: (context, snapshot) {
-        List<LogRecord>? logs = snapshot.data?.reversed.toList();
+        List<LogRecord>? logs = snapshot.data;
         return SelectionLayout<LogRecord>(
           items: logs,
           child: Expandables(
