@@ -34,6 +34,7 @@ class LogSelectionAppBar extends StatelessWidget with AppBarBuilderWidget {
                 content: Text('Copied to clipboard'),
               ),
             );
+            data.onChanged({});
           },
         ),
       ],
