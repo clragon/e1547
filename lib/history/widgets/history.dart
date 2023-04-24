@@ -3,7 +3,6 @@ import 'package:e1547/history/history.dart';
 import 'package:e1547/history/widgets/appbar.dart';
 import 'package:e1547/history/widgets/list.dart';
 import 'package:e1547/interface/interface.dart';
-import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sub/flutter_sub.dart';
 import 'package:grouped_list/grouped_list.dart';
@@ -146,7 +145,7 @@ class _HistoriesPageState extends State<HistoriesPage> {
                 const Divider(),
                 const Padding(
                   padding: EdgeInsets.only(left: 12),
-                  child: SettingsHeader(title: 'Entries'),
+                  child: ListTileHeader(title: 'Entries'),
                 ),
                 for (final filter in HistorySearchFilter.values)
                   ValueListenableBuilder<HistoriesSearch>(
@@ -177,7 +176,7 @@ class _HistoriesPageState extends State<HistoriesPage> {
                   ),
                 const Padding(
                   padding: EdgeInsets.only(left: 12),
-                  child: SettingsHeader(title: 'Type'),
+                  child: ListTileHeader(title: 'Type'),
                 ),
                 for (final filter in HistoryTypeFilter.values)
                   ValueListenableBuilder<HistoriesSearch>(
@@ -218,7 +217,7 @@ class _HistoriesPageState extends State<HistoriesPage> {
               controller: PrimaryScrollController.of(context),
               groupBy: (element) => DateUtils.dateOnly(element.visitedAt),
               groupHeaderBuilder: (element) =>
-                  SettingsHeader(title: dateOrName(element.visitedAt)),
+                  ListTileHeader(title: dateOrName(element.visitedAt)),
               itemComparator: (a, b) => a.visitedAt.compareTo(b.visitedAt),
               builderDelegate: defaultPagedChildBuilderDelegate<History>(
                 pagingController: controller,

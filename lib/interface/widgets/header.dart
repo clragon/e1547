@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class SettingsHeader extends StatelessWidget {
-  const SettingsHeader({required this.title});
+class ListTileHeader extends StatelessWidget {
+  const ListTileHeader({required this.title});
 
   final String title;
 

@@ -27,7 +27,7 @@ class SettingsPage extends StatelessWidget {
             padding: defaultActionListPadding
                 .add(LimitedWidthLayout.of(context).padding),
             children: [
-              const SettingsHeader(title: 'Server'),
+              const ListTileHeader(title: 'Server'),
               Consumer<ClientService>(
                 builder: (context, service, child) => MouseCursorRegion(
                   behavior: HitTestBehavior.translucent,
@@ -87,7 +87,7 @@ class SettingsPage extends StatelessWidget {
                 ),
               ),
               const Divider(),
-              const SettingsHeader(title: 'Display'),
+              const ListTileHeader(title: 'Display'),
               ValueListenableBuilder<AppTheme>(
                 valueListenable: settings.theme,
                 builder: (context, value, child) => ListTile(
@@ -185,7 +185,7 @@ class SettingsPage extends StatelessWidget {
                 ),
               ),
               const Divider(),
-              const SettingsHeader(title: 'Listing'),
+              const ListTileHeader(title: 'Listing'),
               Consumer2<HistoriesService, Client>(
                 builder: (context, service, client, child) => SubStream<int>(
                   create: () => service.watchLength(host: client.host),
@@ -236,7 +236,7 @@ class SettingsPage extends StatelessWidget {
                 ),
               ),
               const Divider(),
-              const SettingsHeader(title: 'Other'),
+              const ListTileHeader(title: 'Other'),
               ListTile(
                 leading: const Icon(Icons.tune),
                 title: const Text('Advanced settings'),

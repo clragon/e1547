@@ -25,7 +25,7 @@ class AdvancedSettingsPage extends StatelessWidget {
             padding: defaultActionListPadding
                 .add(LimitedWidthLayout.of(context).padding),
             children: [
-              const SettingsHeader(title: 'Client'),
+              const ListTileHeader(title: 'Client'),
               ValueListenableBuilder<bool>(
                 valueListenable: settings.upvoteFavs,
                 builder: (context, value, child) => SwitchListTile(
@@ -54,7 +54,7 @@ class AdvancedSettingsPage extends StatelessWidget {
                   ),
                 ),
               const Divider(),
-              const SettingsHeader(title: 'Display'),
+              const ListTileHeader(title: 'Display'),
               ValueListenableBuilder<bool>(
                 valueListenable: settings.showPostInfo,
                 builder: (context, value, child) => SwitchListTile(
@@ -77,7 +77,7 @@ class AdvancedSettingsPage extends StatelessWidget {
                 ),
               ),
               const Divider(),
-              const SettingsHeader(title: 'Lockscreen'),
+              const ListTileHeader(title: 'Lockscreen'),
               ValueListenableBuilder<String?>(
                 valueListenable: settings.appPin,
                 builder: (context, value, child) => SwitchListTile(
@@ -117,7 +117,7 @@ class AdvancedSettingsPage extends StatelessWidget {
                 ),
               ),
               const Divider(),
-              const SettingsHeader(title: 'Beta'),
+              const ListTileHeader(title: 'Beta'),
               ValueListenableBuilder<bool>(
                 valueListenable: settings.showBeta,
                 builder: (context, value, child) => SwitchListTile(

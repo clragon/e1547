@@ -17,6 +17,7 @@ export 'widgets/divider_tile.dart';
 export 'widgets/drawer.dart';
 export 'widgets/expandable.dart';
 export 'widgets/gallery.dart';
+export 'widgets/header.dart';
 export 'widgets/input.dart';
 export 'widgets/loading.dart';
 export 'widgets/navigation.dart';
