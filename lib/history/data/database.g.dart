@@ -3,6 +3,132 @@
 part of 'database.dart';
 
 // ignore_for_file: type=lint
+class $HistoriesTableTable extends HistoriesTable
+    with TableInfo<$HistoriesTableTable, History> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $HistoriesTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _hostMeta = const VerificationMeta('host');
+  @override
+  late final GeneratedColumn<String> host = GeneratedColumn<String>(
+      'host', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _visitedAtMeta =
+      const VerificationMeta('visitedAt');
+  @override
+  late final GeneratedColumn<DateTime> visitedAt = GeneratedColumn<DateTime>(
+      'visited_at', aliasedName, false,
+      type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  static const VerificationMeta _linkMeta = const VerificationMeta('link');
+  @override
+  late final GeneratedColumn<String> link = GeneratedColumn<String>(
+      'link', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _thumbnailsMeta =
+      const VerificationMeta('thumbnails');
+  @override
+  late final GeneratedColumnWithTypeConverter<List<String>, String> thumbnails =
+      GeneratedColumn<String>('thumbnails', aliasedName, false,
+              type: DriftSqlType.string, requiredDuringInsert: true)
+          .withConverter<List<String>>(
+              $HistoriesTableTable.$converterthumbnails);
+  static const VerificationMeta _titleMeta = const VerificationMeta('title');
+  @override
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
+      'title', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _subtitleMeta =
+      const VerificationMeta('subtitle');
+  @override
+  late final GeneratedColumn<String> subtitle = GeneratedColumn<String>(
+      'subtitle', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, host, visitedAt, link, thumbnails, title, subtitle];
+  @override
+  String get aliasedName => _alias ?? 'histories_table';
+  @override
+  String get actualTableName => 'histories_table';
+  @override
+  VerificationContext validateIntegrity(Insertable<History> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('host')) {
+      context.handle(
+          _hostMeta, host.isAcceptableOrUnknown(data['host']!, _hostMeta));
+    } else if (isInserting) {
+      context.missing(_hostMeta);
+    }
+    if (data.containsKey('visited_at')) {
+      context.handle(_visitedAtMeta,
+          visitedAt.isAcceptableOrUnknown(data['visited_at']!, _visitedAtMeta));
+    } else if (isInserting) {
+      context.missing(_visitedAtMeta);
+    }
+    if (data.containsKey('link')) {
+      context.handle(
+          _linkMeta, link.isAcceptableOrUnknown(data['link']!, _linkMeta));
+    } else if (isInserting) {
+      context.missing(_linkMeta);
+    }
+    context.handle(_thumbnailsMeta, const VerificationResult.success());
+    if (data.containsKey('title')) {
+      context.handle(
+          _titleMeta, title.isAcceptableOrUnknown(data['title']!, _titleMeta));
+    }
+    if (data.containsKey('subtitle')) {
+      context.handle(_subtitleMeta,
+          subtitle.isAcceptableOrUnknown(data['subtitle']!, _subtitleMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  History map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return History(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      visitedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}visited_at'])!,
+      link: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}link'])!,
+      thumbnails: $HistoriesTableTable.$converterthumbnails.fromSql(
+          attachedDatabase.typeMapping.read(
+              DriftSqlType.string, data['${effectivePrefix}thumbnails'])!),
+      title: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}title']),
+      subtitle: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}subtitle']),
+    );
+  }
+
+  @override
+  $HistoriesTableTable createAlias(String alias) {
+    return $HistoriesTableTable(attachedDatabase, alias);
+  }
+
+  static TypeConverter<List<String>, String> $converterthumbnails =
+      const StringListConverter();
+}
+
 class HistoryCompanion extends UpdateCompanion<History> {
   final Value<int> id;
   final Value<String> host;
@@ -138,135 +264,8 @@ extension HistoryToInsertable on History {
   }
 }
 
-class $HistoriesTableTable extends HistoriesTable
-    with TableInfo<$HistoriesTableTable, History> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  $HistoriesTableTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
-  @override
-  late final GeneratedColumn<int> id = GeneratedColumn<int>(
-      'id', aliasedName, false,
-      hasAutoIncrement: true,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultConstraints:
-          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
-  static const VerificationMeta _hostMeta = const VerificationMeta('host');
-  @override
-  late final GeneratedColumn<String> host = GeneratedColumn<String>(
-      'host', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
-  static const VerificationMeta _visitedAtMeta =
-      const VerificationMeta('visitedAt');
-  @override
-  late final GeneratedColumn<DateTime> visitedAt = GeneratedColumn<DateTime>(
-      'visited_at', aliasedName, false,
-      type: DriftSqlType.dateTime, requiredDuringInsert: true);
-  static const VerificationMeta _linkMeta = const VerificationMeta('link');
-  @override
-  late final GeneratedColumn<String> link = GeneratedColumn<String>(
-      'link', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
-  static const VerificationMeta _thumbnailsMeta =
-      const VerificationMeta('thumbnails');
-  @override
-  late final GeneratedColumnWithTypeConverter<List<String>, String> thumbnails =
-      GeneratedColumn<String>('thumbnails', aliasedName, false,
-              type: DriftSqlType.string, requiredDuringInsert: true)
-          .withConverter<List<String>>(
-              $HistoriesTableTable.$converterthumbnails);
-  static const VerificationMeta _titleMeta = const VerificationMeta('title');
-  @override
-  late final GeneratedColumn<String> title = GeneratedColumn<String>(
-      'title', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
-  static const VerificationMeta _subtitleMeta =
-      const VerificationMeta('subtitle');
-  @override
-  late final GeneratedColumn<String> subtitle = GeneratedColumn<String>(
-      'subtitle', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
-  @override
-  List<GeneratedColumn> get $columns =>
-      [id, host, visitedAt, link, thumbnails, title, subtitle];
-  @override
-  String get aliasedName => _alias ?? 'histories_table';
-  @override
-  String get actualTableName => 'histories_table';
-  @override
-  VerificationContext validateIntegrity(Insertable<History> instance,
-      {bool isInserting = false}) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    }
-    if (data.containsKey('host')) {
-      context.handle(
-          _hostMeta, host.isAcceptableOrUnknown(data['host']!, _hostMeta));
-    } else if (isInserting) {
-      context.missing(_hostMeta);
-    }
-    if (data.containsKey('visited_at')) {
-      context.handle(_visitedAtMeta,
-          visitedAt.isAcceptableOrUnknown(data['visited_at']!, _visitedAtMeta));
-    } else if (isInserting) {
-      context.missing(_visitedAtMeta);
-    }
-    if (data.containsKey('link')) {
-      context.handle(
-          _linkMeta, link.isAcceptableOrUnknown(data['link']!, _linkMeta));
-    } else if (isInserting) {
-      context.missing(_linkMeta);
-    }
-    context.handle(_thumbnailsMeta, const VerificationResult.success());
-    if (data.containsKey('title')) {
-      context.handle(
-          _titleMeta, title.isAcceptableOrUnknown(data['title']!, _titleMeta));
-    }
-    if (data.containsKey('subtitle')) {
-      context.handle(_subtitleMeta,
-          subtitle.isAcceptableOrUnknown(data['subtitle']!, _subtitleMeta));
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {id};
-  @override
-  History map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return History(
-      id: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
-      visitedAt: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}visited_at'])!,
-      link: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}link'])!,
-      thumbnails: $HistoriesTableTable.$converterthumbnails.fromSql(
-          attachedDatabase.typeMapping.read(
-              DriftSqlType.string, data['${effectivePrefix}thumbnails'])!),
-      title: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}title']),
-      subtitle: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}subtitle']),
-    );
-  }
-
-  @override
-  $HistoriesTableTable createAlias(String alias) {
-    return $HistoriesTableTable(attachedDatabase, alias);
-  }
-
-  static TypeConverter<List<String>, String> $converterthumbnails =
-      const StringListConverter();
-}
-
 abstract class _$HistoriesDatabase extends GeneratedDatabase {
   _$HistoriesDatabase(QueryExecutor e) : super(e);
-  _$HistoriesDatabase.connect(DatabaseConnection c) : super.connect(c);
   late final $HistoriesTableTable historiesTable = $HistoriesTableTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>

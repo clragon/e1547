@@ -5,7 +5,6 @@ export 'data/action.dart';
 export 'data/cache.dart';
 export 'data/collection.dart';
 export 'data/controller.dart';
-export 'data/converter.dart';
 export 'data/database.dart';
 export 'data/error.dart';
 export 'data/hosts.dart';

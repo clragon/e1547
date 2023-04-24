@@ -25,11 +25,8 @@ mixin _$User {
   int get poolVersionCount => throw _privateConstructorUsedError;
   int get forumPostCount => throw _privateConstructorUsedError;
   int get commentCount => throw _privateConstructorUsedError;
-
   int get flagCount => throw _privateConstructorUsedError;
-
   int get favoriteCount => throw _privateConstructorUsedError;
-
   int get positiveFeedbackCount => throw _privateConstructorUsedError;
   int get neutralFeedbackCount => throw _privateConstructorUsedError;
   int get negativeFeedbackCount => throw _privateConstructorUsedError;
@@ -604,37 +601,26 @@ abstract class _User implements User {
 
   @override
   int get wikiPageVersionCount;
-
   @override
   int get artistVersionCount;
-
   @override
   int get poolVersionCount;
-
   @override
   int get forumPostCount;
-
   @override
   int get commentCount;
-
   @override
   int get flagCount;
-
   @override
   int get favoriteCount;
-
   @override
   int get positiveFeedbackCount;
-
   @override
   int get neutralFeedbackCount;
-
   @override
   int get negativeFeedbackCount;
-
   @override
   int get uploadLimit;
-
   @override
   int get id;
   @override

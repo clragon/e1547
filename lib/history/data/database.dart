@@ -1,10 +1,20 @@
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:drift/drift.dart';
 import 'package:e1547/history/history.dart';
-import 'package:e1547/interface/interface.dart';
 
 part 'database.g.dart';
+
+class StringListConverter extends TypeConverter<List<String>, String> {
+  const StringListConverter();
+
+  @override
+  List<String> fromSql(String fromDb) => json.decode(fromDb).cast<String>();
+
+  @override
+  String toSql(List<String> value) => json.encode(value);
+}
 
 @UseRowClass(History, generateInsertable: true)
 class HistoriesTable extends Table {
@@ -19,7 +29,7 @@ class HistoriesTable extends Table {
 
 @DriftDatabase(tables: [HistoriesTable])
 class HistoriesDatabase extends _$HistoriesDatabase {
-  HistoriesDatabase(super.e) : super.connect();
+  HistoriesDatabase(super.e);
 
   @override
   int get schemaVersion => 1;

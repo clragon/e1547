@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:drift/drift.dart';
 import 'package:e1547/follow/follow.dart';
-import 'package:e1547/interface/interface.dart';
 
 part 'database.g.dart';
 
@@ -18,8 +17,7 @@ class FollowsTable extends Table {
 
   TextColumn get alias => text().nullable()();
 
-  TextColumn get type =>
-      text().map(const StringEnumConverter(FollowType.values))();
+  TextColumn get type => textEnum<FollowType>()();
 
   IntColumn get latest => integer().nullable()();
 
@@ -37,7 +35,7 @@ class FollowsTable extends Table {
 
 @DriftDatabase(tables: [FollowsTable])
 class FollowsDatabase extends _$FollowsDatabase {
-  FollowsDatabase(super.e) : super.connect();
+  FollowsDatabase(super.e);
 
   @override
   int get schemaVersion => 1;
