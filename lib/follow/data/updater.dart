@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:collection/collection.dart';
+import 'package:dio/dio.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/logs/logs.dart';
@@ -175,10 +177,23 @@ class FollowsUpdater extends ChangeNotifier {
         if (!follow.tags.contains(' ') && follow.title == null) {
           RegExpMatch? match = poolRegex().firstMatch(follow.tags);
           if (match != null) {
-            follow = follow.withPool(
-              await client.pool(int.parse(match.namedGroup('id')!),
-                  force: force),
-            );
+            try {
+              follow = follow.withPool(
+                await client.pool(int.parse(match.namedGroup('id')!),
+                    force: force),
+              );
+            } on DioError catch (e) {
+              if (e.response?.statusCode == HttpStatus.notFound) {
+                follow = follow.copyWith(
+                  type: FollowType.bookmark,
+                );
+                loggy.info(
+                  'Follow update found no pool for ${follow.tags}. Set to bookmarked!',
+                );
+              } else {
+                rethrow;
+              }
+            }
           }
         }
         await service.replace(follow);
