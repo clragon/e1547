@@ -20,6 +20,7 @@ class ClientAvailabilityCheck extends StatelessWidget {
       loggy.info('Client is available!');
     } on ClientException catch (e, stacktrace) {
       if (CancelToken.isCancel(e)) {
+        loggy.debug('Client availability check cancelled!');
         return;
       }
       int? statusCode = e.response?.statusCode;
@@ -48,6 +49,7 @@ class ClientAvailabilityCheck extends StatelessWidget {
             builder: (context) => const HostUnvailablePage(),
           ),
         );
+        return;
       }
       loggy.error('Availability Check failed!', e, stacktrace);
     }
