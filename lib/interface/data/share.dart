@@ -14,7 +14,7 @@ class Share {
     }
   }
 
-  static Future<void> shareFile(
+  static Future<void> shareAsFile(
     BuildContext context,
     String text, {
     String? name,
@@ -28,6 +28,15 @@ class Share {
       await plus.Share.shareXFiles([file]);
     } else {
       return clipboard(context, text);
+    }
+  }
+
+  static Future<void> shareFile(BuildContext context, String path) async {
+    plus.XFile file = plus.XFile(path);
+    if (Platform.isAndroid || Platform.isIOS) {
+      await plus.Share.shareXFiles([file]);
+    } else {
+      return clipboard(context, await file.readAsString());
     }
   }
 
