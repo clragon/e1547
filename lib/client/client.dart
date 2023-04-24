@@ -4,7 +4,6 @@ export 'data/client.dart';
 export 'data/controller.dart';
 export 'data/cookies.dart';
 export 'data/credentials.dart';
-export 'data/logs.dart';
 export 'data/service.dart';
 // widgets
 export 'widgets/availability.dart';

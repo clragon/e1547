@@ -1,4 +1,5 @@
 import 'package:e1547/interface/interface.dart';
+import 'package:e1547/logs/logs.dart';
 import 'package:flutter/material.dart';
 
 class ErrorNotifier extends StatelessWidget {
@@ -18,7 +19,7 @@ class ErrorNotifier extends StatelessWidget {
           .currentState!
           .push(
             MaterialPageRoute(
-              builder: (context) => LoggerPage(logs: logs),
+              builder: (context) => LogsPage(logs: logs),
             ),
           ),
       child: child,

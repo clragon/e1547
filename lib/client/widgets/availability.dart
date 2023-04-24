@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:e1547/client/client.dart';
 import 'package:e1547/interface/interface.dart';
+import 'package:e1547/logs/logs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sub/flutter_sub.dart';
 import 'package:webview_flutter/webview_flutter.dart';

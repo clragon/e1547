@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:e1547/app/app.dart';
 import 'package:e1547/interface/interface.dart';
+import 'package:e1547/logs/logs.dart';
 import 'package:flutter/material.dart';
 
 Future<void> main() async {

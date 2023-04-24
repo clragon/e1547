@@ -4,10 +4,10 @@ import 'package:e1547/denylist/denylist.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/history/history.dart';
 import 'package:e1547/interface/interface.dart';
+import 'package:e1547/logs/logs.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:e1547/settings/widgets/grid.dart';
 import 'package:e1547/user/user.dart';
-import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sub/flutter_sub.dart';
 
@@ -261,7 +261,7 @@ class SettingsPage extends StatelessWidget {
                           : null,
                       onTap: () => Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (context) => LoggerPage(logs: logs),
+                          builder: (context) => LogsPage(logs: logs),
                         ),
                       ),
                     ),
