@@ -42,7 +42,10 @@ class App extends StatelessWidget {
                 title: appInfo.appName,
                 theme: value.data,
                 routes: navigation.routes,
-                navigatorObservers: [navigation.routeObserver],
+                navigatorObservers: [
+                  navigation.routeObserver,
+                  RouteLoggerObserver(),
+                ],
                 navigatorKey: navigation.navigatorKey,
                 scrollBehavior: AndroidStretchScrollBehaviour(),
                 localizationsDelegates: const [

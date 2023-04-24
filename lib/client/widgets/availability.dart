@@ -4,20 +4,20 @@ import 'package:e1547/client/client.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sub/flutter_sub.dart';
-import 'package:talker/talker.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class ClientAvailabilityCheck extends StatelessWidget {
-  const ClientAvailabilityCheck({super.key, required this.child});
+  ClientAvailabilityCheck({super.key, required this.child});
 
   final Widget child;
+  final Loggy loggy = Loggy('ClientAvailability');
 
   Future<void> check(BuildContext context) async {
     RouterDrawerController controller = context.read<RouterDrawerController>();
     Client client = context.read<Client>();
-    Talker talker = context.read<Talker>();
     try {
       await client.availability();
+      loggy.info('Client is available!');
     } on ClientException catch (e, stacktrace) {
       if (CancelToken.isCancel(e)) {
         return;
@@ -26,6 +26,7 @@ class ClientAvailabilityCheck extends StatelessWidget {
       if (statusCode == null) return;
       switch (statusCode) {
         case HttpStatus.serviceUnavailable:
+          loggy.warning('Client is unavailable, attempting resolve!');
           controller.navigator!.push(
             MaterialPageRoute(
               builder: (context) =>
@@ -34,19 +35,21 @@ class ClientAvailabilityCheck extends StatelessWidget {
           );
           return;
         case HttpStatus.forbidden:
+          loggy.warning('Client has denied access! Failing silently...');
           // This could potentially logout the user.
           // However, it might be returned during Cloudflare API blockages.
           // Logout the user, and if theyre already logged out, trigger Resolver?
           return;
       }
       if (500 <= statusCode && statusCode < 600) {
+        loggy.warning('Client is unavailable, resolve not possible!');
         controller.navigator!.push(
           MaterialPageRoute(
             builder: (context) => const HostUnvailablePage(),
           ),
         );
       }
-      talker.handle(e, stacktrace);
+      loggy.error('Availability Check failed!', e, stacktrace);
     }
   }
 

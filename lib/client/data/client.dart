@@ -50,6 +50,11 @@ class Client {
         ),
       );
     }
+    _dio.interceptors.add(LoggyDioInterceptor(
+      requestLevel: LogLevel.debug,
+      responseLevel: LogLevel.debug,
+      errorLevel: LogLevel.warning,
+    ));
   }
 
   final String host;

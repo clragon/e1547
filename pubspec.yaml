@@ -50,6 +50,8 @@ dependencies:
   image_gallery_saver: ^1.7.1
   intl: ^0.17.0
   json_annotation: ^4.6.0
+  loggy: ^2.0.3
+  flutter_loggy: ^2.0.2
   mime: ^1.0.2
   mutex: ^3.0.1
   notified_preferences: ^2.0.0
@@ -64,7 +66,6 @@ dependencies:
   shared_storage: ^0.7.0
   sqlite3_flutter_libs: ^0.5.13
   store_checker: ^1.1.0
-  talker: ^2.4.0
   url_launcher: ^6.1.10
   wakelock: ^0.6.1+2
   webview_cookie_manager: ^2.0.6

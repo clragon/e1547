@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:collection/collection.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/follow/follow.dart';
+import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
@@ -28,6 +29,8 @@ class FollowsUpdater extends ChangeNotifier {
 
   Object? get error => _error;
 
+  final Loggy loggy = Loggy('FollowUpdater');
+
   @override
   void dispose() {
     _canceling = true;
@@ -40,6 +43,7 @@ class FollowsUpdater extends ChangeNotifier {
     _error = exception;
     _runCompleter.completeError(exception);
     notifyListeners();
+    loggy.info('Follow update failed!', exception);
   }
 
   void _reset() {
@@ -54,6 +58,7 @@ class FollowsUpdater extends ChangeNotifier {
     _remaining = 0;
     _runCompleter.complete();
     notifyListeners();
+    loggy.info('Follow update finished!');
   }
 
   void _progress(int value) {
@@ -71,6 +76,7 @@ class FollowsUpdater extends ChangeNotifier {
     List<Object?> dependencies = [client, denylist, force];
     if (_runCompleter.isCompleted ||
         !const DeepCollectionEquality().equals(_dependencies, dependencies)) {
+      loggy.info('Follow update started!');
       _dependencies = dependencies;
       _canceling = true;
       await finish;
@@ -121,7 +127,7 @@ class FollowsUpdater extends ChangeNotifier {
         List<String> tags = chunk.map((e) => e.tags).toList();
         assert(
           !const DeepCollectionEquality().equals(previous, tags),
-          'Updater tried refreshing same follow chunk twice!',
+          'Follow update tried refreshing same follow chunk twice!',
         );
         previous = tags;
         int limit = chunk.length * refreshAmount;
@@ -233,6 +239,9 @@ class FollowsUpdater extends ChangeNotifier {
       if (alias != follow.alias) {
         Follow updated = follow.copyWith(alias: alias);
         result.add(updated);
+        loggy.info(
+          'Follow update corrected alias for ${follow.tags} to $alias',
+        );
       }
     }
     return result;

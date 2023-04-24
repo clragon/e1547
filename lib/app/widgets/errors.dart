@@ -1,6 +1,5 @@
 import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
-import 'package:talker/talker.dart';
 
 class ErrorNotifier extends StatelessWidget {
   const ErrorNotifier({super.key, required this.child});
@@ -9,21 +8,19 @@ class ErrorNotifier extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Talker? talker = context.read<Talker?>();
-    if (talker == null) return child;
+    Logs? logs = context.watch<Logs?>();
+    if (logs == null) return child;
     return LoggerErrorNotifier(
+      logs: logs,
       onOpenLogs: () => context
           .read<RouterDrawerController>()
           .navigatorKey
           .currentState!
           .push(
             MaterialPageRoute(
-              builder: (context) => LoggerPage(
-                talker: talker,
-              ),
+              builder: (context) => LoggerPage(logs: logs),
             ),
           ),
-      talker: talker,
       child: child,
     );
   }

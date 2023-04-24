@@ -2,13 +2,12 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
-import 'package:talker/talker.dart';
 
 Future<void> postDownloadingNotification(
   BuildContext context,
   Set<Post> items,
 ) async {
-  Talker? talker = context.read<Talker?>();
+  final loggy = Loggy('Post Downloader');
   return loadingNotification<Post>(
     context: context,
     icon: const Icon(Icons.download),
@@ -21,7 +20,7 @@ Future<void> postDownloadingNotification(
         );
         return true;
       } on PostDownloadException catch (exception, stacktrace) {
-        talker?.handle(exception, stacktrace);
+        loggy.error('Failed to download post', exception, stacktrace);
         return false;
       }
     },

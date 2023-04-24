@@ -6,8 +6,8 @@ export 'data/cache.dart';
 export 'data/collection.dart';
 export 'data/controller.dart';
 export 'data/database.dart';
-export 'data/error.dart';
 export 'data/hosts.dart';
+export 'data/logs.dart';
 export 'data/share.dart';
 export 'data/text.dart';
 // widgets
@@ -19,7 +19,7 @@ export 'widgets/drawer.dart';
 export 'widgets/gallery.dart';
 export 'widgets/input.dart';
 export 'widgets/loading.dart';
-export 'widgets/logger.dart';
+export 'widgets/logs.dart';
 export 'widgets/navigation.dart';
 export 'widgets/ontap.dart';
 export 'widgets/padding.dart';

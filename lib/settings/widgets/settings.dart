@@ -10,7 +10,6 @@ import 'package:e1547/user/user.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sub/flutter_sub.dart';
-import 'package:talker/talker.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
@@ -247,27 +246,25 @@ class SettingsPage extends StatelessWidget {
                   ),
                 ),
               ),
-              if (context.read<Talker?>() != null)
-                Consumer<Talker>(
-                  builder: (context, talker, child) =>
-                      StreamBuilder<TalkerDataInterface>(
-                    stream: talker.stream,
-                    builder: (context, snapshot) {
-                      return ListTile(
-                        leading: const Icon(Icons.format_list_numbered),
-                        title: const Text('Logs'),
-                        subtitle: talker.history.isNotEmpty
-                            ? Text('${talker.history.length} events logged')
-                            : null,
-                        onTap: () => Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => LoggerPage(
-                              talker: talker,
-                            ),
-                          ),
+              if (context.watch<Logs?>() != null)
+                Consumer<Logs>(
+                  builder: (context, logs, child) => SubStream<List<LogRecord>>(
+                    create: () => logs.stream(
+                        filter: (level, type) =>
+                            level.priority == logLevelCritical.priority ||
+                            level.priority == LogLevel.error.priority),
+                    builder: (context, snapshot) => ListTile(
+                      leading: const Icon(Icons.format_list_numbered),
+                      title: const Text('Logs'),
+                      subtitle: (snapshot.data?.isNotEmpty ?? false)
+                          ? Text('${snapshot.data!.length} errors logged')
+                          : null,
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => LoggerPage(logs: logs),
                         ),
-                      );
-                    },
+                      ),
+                    ),
                   ),
                 ),
             ],

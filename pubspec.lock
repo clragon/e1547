@@ -33,14 +33,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.7"
-  ansicolor:
-    dependency: transitive
-    description:
-      name: ansicolor
-      sha256: "607f8fa9786f392043f169898923e6c59b4518242b68b8862eb8a8b7d9c30b4a"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.0.1"
   app_links:
     dependency: "direct main"
     description:
@@ -467,6 +459,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_loggy:
+    dependency: "direct main"
+    description:
+      name: flutter_loggy
+      sha256: "21b515977deefe37817cce35b0e420c7cde930b9dcfdcbeb05730ed24ee74e3a"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.2"
   flutter_native_splash:
     dependency: "direct dev"
     description:
@@ -753,6 +753,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.1"
+  loggy:
+    dependency: "direct main"
+    description:
+      name: loggy
+      sha256: "981e03162bbd3a5a843026f75f73d26e4a0d8aa035ae060456ca7b30dfd1e339"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.3"
   matcher:
     dependency: transitive
     description:
@@ -1310,22 +1318,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.1"
-  talker:
-    dependency: "direct main"
-    description:
-      name: talker
-      sha256: e1149d5e38043cbbf3120935be50d3ecb01f9ed82f6fe117e4975b3780209f69
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.4.0"
-  talker_logger:
-    dependency: transitive
-    description:
-      name: talker_logger
-      sha256: "6550a1bbdfe82b8c7cea1d9fc98faabd8996b7b3a64d7c1edbd5faf7a7831470"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.2.1"
   term_glyph:
     dependency: transitive
     description:
