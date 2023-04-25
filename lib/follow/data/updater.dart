@@ -45,7 +45,7 @@ class FollowsUpdater extends ChangeNotifier {
     _error = exception;
     _runCompleter.completeError(exception);
     notifyListeners();
-    loggy.info('Follow update failed!', exception);
+    loggy.error('Follow update failed!', exception);
   }
 
   void _reset() {
