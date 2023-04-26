@@ -67,7 +67,7 @@ class FilePrinter implements LoggyPrinter {
 
   @override
   void onLog(LogRecord record) => file.writeAsString(
-        record.toFullString(),
+        '${record.toFullString()}\n',
         mode: FileMode.append,
       );
 }
