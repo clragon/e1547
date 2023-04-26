@@ -22,6 +22,7 @@ class Client {
     required this.host,
     required this.userAgent,
     this.cache,
+    this.memoryCache,
     this.credentials,
     this.cookies,
   }) {
@@ -61,7 +62,7 @@ class Client {
   final String host;
   final String userAgent;
   final CacheStore? cache;
-  final CacheStore _memoryCache = MemCacheStore();
+  final CacheStore? memoryCache;
   final Credentials? credentials;
   final List<Cookie>? cookies;
 
@@ -421,7 +422,7 @@ class Client {
         .get(
           'users/${credentials!.username}.json',
           options: CacheConfig(
-            store: _memoryCache,
+            store: memoryCache,
             policy:
                 (force ?? false) ? CachePolicy.refresh : CachePolicy.request,
           ).toOptions(),

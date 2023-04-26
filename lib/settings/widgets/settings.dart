@@ -261,7 +261,7 @@ class SettingsPage extends StatelessWidget {
                           : null,
                       onTap: () => Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (context) => LogsPage(logs: logs),
+                          builder: (context) => LogRecordsPage(logs: logs),
                         ),
                       ),
                     ),

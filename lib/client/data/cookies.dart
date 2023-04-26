@@ -3,6 +3,14 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:webview_cookie_manager/webview_cookie_manager.dart';
 
+Future<CookiesService> initializeCookiesService(List<String> hosts) async {
+  final service = CookiesService();
+  await service.loadAll(
+    hosts.map((e) => Uri.https(e).toString()).toList(),
+  );
+  return service;
+}
+
 class CookiesService {
   CookiesService({
     WebviewCookieManager? cookieManager,

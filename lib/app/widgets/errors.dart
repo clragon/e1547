@@ -19,7 +19,7 @@ class ErrorNotifier extends StatelessWidget {
           .currentState!
           .push(
             MaterialPageRoute(
-              builder: (context) => LogsPage(logs: logs),
+              builder: (context) => LogRecordsPage(logs: logs),
             ),
           ),
       child: child,

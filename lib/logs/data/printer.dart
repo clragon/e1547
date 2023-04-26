@@ -61,15 +61,24 @@ class MemoryLogs implements Logs, LoggyPrinter {
 }
 
 class FilePrinter implements LoggyPrinter {
-  FilePrinter(this.file);
+  FilePrinter(this.file) {
+    _write();
+  }
 
   final File file;
+  final StreamController<LogRecord> _stream = StreamController();
 
-  @override
-  void onLog(LogRecord record) => file.writeAsString(
+  void _write() async {
+    await for (final record in _stream.stream) {
+      await file.writeAsString(
         '${record.toFullString()}\n',
         mode: FileMode.append,
       );
+    }
+  }
+
+  @override
+  void onLog(LogRecord record) => _stream.add(record);
 }
 
 const LogLevel logLevelCritical = LogLevel('Critical', 32);

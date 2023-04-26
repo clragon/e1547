@@ -9,6 +9,7 @@ class ClientProvider extends SubProvider<ClientService, Client> {
             credentials: service.credentials,
             userAgent: service.userAgent,
             cache: service.cache,
+            memoryCache: service.memoryCache,
             cookies: service.cookies,
           ),
           keys: (context) {
@@ -18,6 +19,7 @@ class ClientProvider extends SubProvider<ClientService, Client> {
               service.credentials,
               service.userAgent,
               service.cache,
+              service.memoryCache,
               service.cookies,
             ];
           },

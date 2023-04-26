@@ -1,43 +1,48 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/logs/logs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sub/flutter_sub.dart';
 
 class LogsPage extends StatefulWidget {
-  const LogsPage({super.key, required this.logs});
+  const LogsPage({
+    super.key,
+    required this.load,
+    this.title,
+    this.actions,
+  });
 
-  final Logs logs;
+  final Stream<List<LogString>> Function(List<int> levels) load;
+  final Widget? title;
+  final List<Widget>? actions;
 
   @override
   State<LogsPage> createState() => _LogsPageState();
 }
 
 class _LogsPageState extends State<LogsPage> {
-  List<int> levels = [
-    LogLevel.debug.priority,
-    LogLevel.info.priority,
-    LogLevel.warning.priority,
-    LogLevel.error.priority,
-    logLevelCritical.priority,
-  ];
+  List<int> levels = logLevels.map((e) => e.priority).toList();
 
   @override
   Widget build(BuildContext context) {
-    return SubStream<List<LogRecord>>(
-      create: () => widget.logs
-          .stream(filter: (level, type) => levels.contains(level.priority))
-          .map((e) => e.reversed.toList()),
+    return SubStream<List<LogString>>(
+      create: () => widget.load(levels),
       keys: [levels],
       builder: (context, snapshot) {
-        List<LogRecord>? logs = snapshot.data;
-        return SelectionLayout<LogRecord>(
+        List<LogString>? logs = snapshot.data;
+        return SelectionLayout<LogString>(
           items: logs,
           child: Expandables(
             child: Scaffold(
-              appBar: const LogSelectionAppBar(
+              appBar: LogSelectionAppBar(
                 child: DefaultAppBar(
-                  title: Text('Logs'),
-                  actions: [ContextDrawerButton()],
+                  title: widget.title ?? const Text('Logs'),
+                  actions: [
+                    if (widget.actions != null) ...widget.actions!,
+                    const ContextDrawerButton(),
+                  ],
                 ),
               ),
               body: Builder(builder: (context) {
@@ -62,10 +67,10 @@ class _LogsPageState extends State<LogsPage> {
                         .add(defaultActionListPadding),
                     itemCount: logs.length,
                     itemBuilder: (context, index) =>
-                        SelectionItemOverlay<LogRecord>(
+                        SelectionItemOverlay<LogString>(
                       item: logs[index],
                       padding: const EdgeInsets.all(4),
-                      child: LogRecordCard(
+                      child: LogStringCard(
                         item: logs[index],
                       ),
                     ),
@@ -76,8 +81,8 @@ class _LogsPageState extends State<LogsPage> {
                   ? FloatingActionButton(
                       onPressed: () => Share.shareAsFile(
                         context,
-                        logs!.map((e) => e.toFullString()).join('\n'),
-                        name: '${DateTime.now().toIso8601String()}.log',
+                        logs!.map((e) => e.toString()).join('\n'),
+                        name: '${logFileDateFormat.format(DateTime.now())}.log',
                       ),
                       child: const Icon(Icons.file_download),
                     )
@@ -90,6 +95,65 @@ class _LogsPageState extends State<LogsPage> {
           ),
         );
       },
+    );
+  }
+}
+
+class LogFilePage extends StatelessWidget {
+  const LogFilePage({super.key, required this.path});
+
+  final String path;
+
+  Future<List<LogString>> _read(File file, List<int> levels) async =>
+      LogString.parse(await file.readAsString())
+          .where((e) => levels.contains(e.level.priority))
+          .toList()
+          .reversed
+          .toList();
+
+  @override
+  Widget build(BuildContext context) {
+    return LogsPage(
+      title: Text('Logs - ${getLogFileName(path)}'),
+      load: (levels) {
+        File file = File(path);
+        late StreamController<List<LogString>> controller;
+        controller = StreamController(
+            onListen: () async {
+              controller.add(await _read(file, levels));
+              controller.addStream(
+                file
+                    .watch(events: FileSystemEvent.modify)
+                    .asyncMap((_) async => _read(file, levels)),
+              );
+            },
+            onCancel: () => controller.close());
+        return controller.stream;
+      },
+    );
+  }
+}
+
+class LogRecordsPage extends StatelessWidget {
+  const LogRecordsPage({super.key, required this.logs});
+
+  final Logs logs;
+
+  @override
+  Widget build(BuildContext context) {
+    return LogsPage(
+      load: (levels) => logs
+          .stream(filter: (level, type) => levels.contains(level.priority))
+          .map((e) => e.reversed.map((e) => LogString.fromRecord(e)).toList()),
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.folder),
+          onPressed: () => showDialog(
+            context: context,
+            builder: (context) => const LogFileDialog(),
+          ),
+        ),
+      ],
     );
   }
 }

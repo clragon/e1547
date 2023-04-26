@@ -1,5 +1,4 @@
 // data
-export 'data/client.dart';
 export 'data/database.dart';
 export 'data/info.dart';
 export 'data/link.dart';

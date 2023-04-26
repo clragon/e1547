@@ -12,6 +12,7 @@ class ClientService extends ChangeNotifier {
     String? host,
     String? customHost,
     this.cache,
+    this.memoryCache,
     Credentials? credentials,
     List<Cookie> cookies = const [],
   })  : _host = host ?? allowedHosts.first,
@@ -23,6 +24,7 @@ class ClientService extends ChangeNotifier {
   final List<String> allowedHosts;
 
   final CacheStore? cache;
+  final CacheStore? memoryCache;
 
   String _host;
 
@@ -104,6 +106,7 @@ class ClientService extends ChangeNotifier {
       credentials: value,
       userAgent: userAgent,
       cache: cache,
+      memoryCache: memoryCache,
       cookies: cookies,
     );
     try {

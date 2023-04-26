@@ -26,6 +26,7 @@ class ClientServiceProvider extends SubChangeNotifierProvider4<AppInfo,
             credentials: settings.credentials.value,
             userAgent: appInfo.userAgent,
             cache: databases.httpCache,
+            memoryCache: databases.httpMemoryCache,
             cookies: cookies.cookies,
           ),
           builder: (context, child) => SubListener(

@@ -18,7 +18,9 @@ class AboutPage extends StatefulWidget {
 class _AboutPageState extends State<AboutPage> {
   final RefreshController refreshController = RefreshController();
   late Future<List<AppVersion>> versions =
-      context.read<AppInfo>().getNewVersions();
+      context.read<AppInfo>().getNewVersions(
+            cache: context.read<AppDatabases>().httpMemoryCache,
+          );
 
   Widget linkListTile({
     Widget? leading,
@@ -36,8 +38,8 @@ class _AboutPageState extends State<AboutPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<AppInfo>(
-      builder: (context, appInfo, child) => Scaffold(
+    return Consumer2<AppInfo, AppDatabases>(
+      builder: (context, appInfo, databases, child) => Scaffold(
         appBar: const DefaultAppBar(
           title: Text('About'),
           leading: BackButton(),
@@ -47,7 +49,10 @@ class _AboutPageState extends State<AboutPage> {
           refresh: () async {
             try {
               setState(() {
-                versions = context.read<AppInfo>().getNewVersions(force: true);
+                versions = appInfo.getNewVersions(
+                  cache: databases.httpMemoryCache,
+                  force: true,
+                );
               });
               await versions;
               refreshController.refreshCompleted();
@@ -252,7 +257,9 @@ class DrawerUpdateIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SubFuture<List<AppVersion>>(
-      create: () => context.read<AppInfo>().getNewVersions(),
+      create: () => context.read<AppInfo>().getNewVersions(
+            cache: context.read<AppDatabases>().httpMemoryCache,
+          ),
       keys: [context.watch<AppInfo>()],
       builder: (context, snapshot) {
         if (snapshot.hasData && snapshot.data!.isNotEmpty) {

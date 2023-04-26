@@ -13,10 +13,10 @@ class LogSelectionAppBar extends StatelessWidget with AppBarBuilderWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SelectionAppBar<LogRecord>(
+    return SelectionAppBar<LogString>(
       child: child,
       titleBuilder: (context, data) => data.selections.length == 1
-          ? Text(data.selections.first.message, maxLines: 1)
+          ? Text(data.selections.first.body, maxLines: 1)
           : Text('${data.selections.length} logs'),
       actionBuilder: (context, data) => [
         IconButton(
@@ -25,7 +25,7 @@ class LogSelectionAppBar extends StatelessWidget with AppBarBuilderWidget {
           onPressed: () {
             Clipboard.setData(
               ClipboardData(
-                text: data.selections.map((e) => e.toFullString()).join('\n'),
+                text: data.selections.map((e) => e.toString()).join('\n'),
               ),
             );
             ScaffoldMessenger.of(context).showSnackBar(

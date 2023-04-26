@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:e1547/interface/interface.dart';
+import 'package:e1547/logs/logs.dart';
 import 'package:flutter/foundation.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pub_semver/pub_semver.dart';
@@ -80,27 +81,30 @@ class AppInfo extends PackageInfo {
 
   String get userAgent => '$appName/$version ($developer)';
 
-  /// Client for getting app versions from the internet.
-  late final Dio _dio = Dio()
-    ..interceptors.add(
-      CacheInterceptor(options: _cacheConfig),
-    );
-
-  /// Cache configuration for client.
-  final CacheConfig _cacheConfig = CacheConfig(
-    store: MemCacheStore(),
-  );
-
   /// Retrieves all app versions from github.
-  Future<List<AppVersion>> getVersions({bool force = false}) async {
+  /// This call is expensive. Provide a cache when possible!
+  Future<List<AppVersion>> getVersions({
+    CacheStore? cache,
+    bool force = false,
+  }) async {
     // We do not want to exhaust the GitHub API during testing
     if (kDebugMode) return [];
-    List<dynamic> releases = await _dio
+    Dio dio = Dio(
+      BaseOptions(headers: {HttpHeaders.userAgentHeader: userAgent}),
+    );
+    dio.interceptors.add(CacheInterceptor(options: CacheConfig(store: cache)));
+    dio.interceptors.add(LoggyDioInterceptor(
+      requestLevel: LogLevel.debug,
+      responseLevel: LogLevel.debug,
+      errorLevel: LogLevel.warning,
+    ));
+    List<dynamic> releases = await dio
         .get(
           'https://api.github.com/repos/$github/releases',
-          options: _cacheConfig
-              .copyWith(policy: force ? CachePolicy.refresh : null)
-              .toOptions(),
+          options: CacheConfig(
+            store: cache,
+            policy: force ? CachePolicy.refresh : CachePolicy.request,
+          ).toOptions(),
         )
         .then((e) => e.data);
     List<AppVersion> versions = [];
@@ -125,22 +129,23 @@ class AppInfo extends PackageInfo {
   }
 
   /// Retrieves versions which are newer than the currently installed one.
+  /// This call is expensive. Provide a cache when possible!
   Future<List<AppVersion>> getNewVersions({
+    CacheStore? cache,
     bool force = false,
     bool beta = false,
   }) async {
-    List<AppVersion> releases = await getVersions(force: force);
-    releases = List.from(releases);
+    List<AppVersion> versions = await getVersions(cache: cache, force: force);
     AppVersion current = AppVersion(version: Version.parse(version));
 
-    // Remove prior releases
-    releases.removeWhere(
+    // Remove prior versions
+    versions.removeWhere(
       (e) =>
           e.version.compareTo(current.version) < 1 ||
           (!beta && Version.prioritize(e.version, current.version) < 1),
     );
 
-    // Remove releases which do not contain our desired binary
+    // Remove versions which do not contain our desired binary
     String? binary;
     if (Platform.isAndroid) {
       binary = 'apk';
@@ -151,19 +156,19 @@ class AppInfo extends PackageInfo {
       // binary = 'exe';
     }
     if (binary != null) {
-      releases.removeWhere((e) => !(e.binaries?.contains(binary) ?? false));
+      versions.removeWhere((e) => !(e.binaries?.contains(binary) ?? false));
     }
 
-    // Remove releases newer than 7 days if the app has been installed from a store
+    // Remove versions newer than 7 days if the app has been installed from a store
     if (source.isFromStore) {
-      releases.removeWhere((e) =>
+      versions.removeWhere((e) =>
           (e.date?.isBefore(
             DateTime.now().subtract(const Duration(days: 7)),
           )) ??
           false);
     }
 
-    return releases;
+    return versions;
   }
 }
 

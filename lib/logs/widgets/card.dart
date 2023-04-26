@@ -2,14 +2,14 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/logs/logs.dart';
 import 'package:flutter/material.dart';
 
-class LogRecordCard extends StatelessWidget {
-  const LogRecordCard({
+class LogStringCard extends StatelessWidget {
+  const LogStringCard({
     super.key,
     required this.item,
     this.expanded = false,
   });
 
-  final LogRecord item;
+  final LogString item;
   final bool expanded;
 
   @override
@@ -20,16 +20,16 @@ class LogRecordCard extends StatelessWidget {
       color: item.level.color,
       title: Text(item.title),
       content: Text(short),
-      fullContent: short != item.body ? LogRecordBody(item: item) : null,
+      fullContent: short != item.body ? LogStringBody(item: item) : null,
       expanded: expanded,
     );
   }
 }
 
-class LogRecordBody extends StatelessWidget {
-  const LogRecordBody({super.key, required this.item});
+class LogStringBody extends StatelessWidget {
+  const LogStringBody({super.key, required this.item});
 
-  final LogRecord item;
+  final LogString item;
 
   @override
   Widget build(BuildContext context) {
