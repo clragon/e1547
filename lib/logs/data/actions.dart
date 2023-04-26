@@ -47,6 +47,7 @@ String getLogFileName(String path) {
   String raw = basenameWithoutExtension(path);
   String type = extension(raw);
   if (type.isNotEmpty) {
+    type = type.substring(1);
     raw = basenameWithoutExtension(raw);
   }
   DateTime date = logFileDateFormat.parse(raw);
