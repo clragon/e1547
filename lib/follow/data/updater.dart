@@ -174,25 +174,25 @@ class FollowsUpdater extends ChangeNotifier {
         ));
         posts.removeWhere((e) => e.isIgnored() || e.isDeniedBy(denylist));
         follow = follow.withUnseen(posts);
-        if (!follow.tags.contains(' ') && follow.title == null) {
-          RegExpMatch? match = poolRegex().firstMatch(follow.tags);
-          if (match != null) {
-            try {
-              follow = follow.withPool(
-                await client.pool(int.parse(match.namedGroup('id')!),
-                    force: force),
+        RegExpMatch? match = poolRegex().firstMatch(follow.tags);
+        if (follow.title == null && match != null) {
+          try {
+            follow = follow.withPool(
+              await client.pool(
+                int.parse(match.namedGroup('id')!),
+                force: force,
+              ),
+            );
+          } on DioError catch (e) {
+            if (e.response?.statusCode == HttpStatus.notFound) {
+              follow = follow.copyWith(
+                type: FollowType.bookmark,
               );
-            } on DioError catch (e) {
-              if (e.response?.statusCode == HttpStatus.notFound) {
-                follow = follow.copyWith(
-                  type: FollowType.bookmark,
-                );
-                loggy.info(
-                  'Follow update found no pool for ${follow.tags}. Set to bookmarked!',
-                );
-              } else {
-                rethrow;
-              }
+              loggy.info(
+                'Follow update found no pool for ${follow.tags}. Set to bookmarked!',
+              );
+            } else {
+              rethrow;
             }
           }
         }

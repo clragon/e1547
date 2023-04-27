@@ -6,7 +6,6 @@ import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sub/flutter_sub.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class AboutPage extends StatefulWidget {
   const AboutPage();
@@ -16,7 +15,6 @@ class AboutPage extends StatefulWidget {
 }
 
 class _AboutPageState extends State<AboutPage> {
-  final RefreshController refreshController = RefreshController();
   late Future<List<AppVersion>> versions =
       context.read<AppInfo>().getNewVersions(
             cache: context.read<AppDatabases>().httpMemoryCache,
@@ -45,8 +43,7 @@ class _AboutPageState extends State<AboutPage> {
           leading: BackButton(),
         ),
         body: RefreshablePage(
-          refreshController: refreshController,
-          refresh: () async {
+          refresh: (refreshController) async {
             try {
               setState(() {
                 versions = appInfo.getNewVersions(

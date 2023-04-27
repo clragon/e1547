@@ -12,7 +12,7 @@ class FavPage extends StatefulWidget {
   State<FavPage> createState() => _FavPageState();
 }
 
-class _FavPageState extends State<FavPage> with RouterDrawerEntry {
+class _FavPageState extends State<FavPage> with RouterDrawerEntryWidget {
   @override
   Widget build(BuildContext context) {
     return FavoritePostsProvider(

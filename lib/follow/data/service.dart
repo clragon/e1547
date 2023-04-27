@@ -20,9 +20,12 @@ class FollowsService extends FollowsDatabase {
   Stream<bool> watchFollows(String host, String tag) =>
       watchFollow(host, tag).map((e) => e != null);
 
-  Future<void> addTag(String host, String tag) => add(
+  Future<void> addTag(String host, String tag, {FollowType? type}) => add(
         host,
-        FollowRequest(tags: tag),
+        FollowRequest(
+          tags: tag,
+          type: type ?? FollowType.update,
+        ),
       );
 
   Future<void> removeTag(String host, String tag) => transaction(

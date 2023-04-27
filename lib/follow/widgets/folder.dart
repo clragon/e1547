@@ -17,9 +17,9 @@ class FollowsFolderPage extends StatefulWidget {
   State<FollowsFolderPage> createState() => _FollowsFolderPageState();
 }
 
-class _FollowsFolderPageState extends State<FollowsFolderPage> {
+class _FollowsFolderPageState extends State<FollowsFolderPage>
+    with RouterDrawerEntryWidget {
   final RefreshController refreshController = RefreshController();
-  final SheetActionController sheetController = SheetActionController();
   bool filterUnseen = false;
 
   @override
@@ -88,7 +88,6 @@ class _FollowsFolderPageState extends State<FollowsFolderPage> {
             return SelectionLayout<Follow>(
               items: follows,
               child: SheetActions(
-                controller: sheetController,
                 child: RefreshableLoadingPage(
                   onEmpty: const Text('No follows'),
                   onError: const Text('Failed to load follows'),
@@ -119,7 +118,7 @@ class _FollowsFolderPageState extends State<FollowsFolderPage> {
                       actions: [ContextDrawerButton()],
                     ),
                   ),
-                  refresh: () async {
+                  refresh: (refreshController) async {
                     try {
                       await update(true);
                       refreshController.refreshCompleted();

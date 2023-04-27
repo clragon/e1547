@@ -45,7 +45,7 @@ class RefreshableControllerPage<T extends RefreshableController>
       appBar: appBar,
       floatingActionButton: floatingActionButton,
       refreshController: controller.refreshController,
-      refresh: () => controller.refresh(force: true, background: true),
+      refresh: (_) => controller.refresh(force: true, background: true),
       builder: builder,
       child: child,
     );
@@ -93,7 +93,7 @@ class RefreshableLoadingPage extends StatelessWidget {
   final PreferredSizeWidget? appBar;
   final RefreshController? refreshController;
   final ScrollController? scrollController;
-  final VoidCallback refresh;
+  final void Function(RefreshController controller) refresh;
 
   @override
   Widget build(BuildContext context) {
@@ -145,7 +145,7 @@ class RefreshablePage extends StatefulWidget {
   final bool extendBodyBehindAppBar;
   final PreferredSizeWidget? appBar;
   final RefreshController? refreshController;
-  final VoidCallback refresh;
+  final void Function(RefreshController controller) refresh;
 
   @override
   State<RefreshablePage> createState() => _RefreshablePageState();
@@ -196,7 +196,7 @@ class _RefreshablePageState extends State<RefreshablePage> {
                 // Fix for SmartRefresher.didUpdateWidget accessing properties on disposed controllers
                 key: ValueKey(refreshController),
                 controller: refreshController,
-                onRefresh: widget.refresh,
+                onRefresh: () => widget.refresh(refreshController),
                 header: widget.refreshHeader ??
                     const RefreshablePageDefaultHeader(),
                 child: widget.child(context),

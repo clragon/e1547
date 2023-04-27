@@ -20,7 +20,7 @@ class PoolsPage extends StatefulWidget {
   State<StatefulWidget> createState() => _PoolsPageState();
 }
 
-class _PoolsPageState extends State<PoolsPage> with RouterDrawerEntry {
+class _PoolsPageState extends State<PoolsPage> with RouterDrawerEntryWidget {
   @override
   Widget build(BuildContext context) {
     return PoolsProvider(

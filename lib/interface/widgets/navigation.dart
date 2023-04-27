@@ -147,12 +147,37 @@ class RouterDrawer extends StatelessWidget {
   }
 }
 
-mixin RouterDrawerEntry<T extends StatefulWidget> on State<T> {
+mixin RouterDrawerEntryWidget<T extends StatefulWidget> on State<T> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (ModalRoute.of(context)!.isFirst) {
       context.watch<RouterDrawerController?>()?.setDrawerSelection<T>();
     }
+  }
+}
+
+class RouterDrawerEntry<T extends Widget> extends StatefulWidget {
+  const RouterDrawerEntry({super.key, required this.child});
+
+  final Widget child;
+
+  @override
+  State<RouterDrawerEntry<T>> createState() => _RouterDrawerEntryState<T>();
+}
+
+class _RouterDrawerEntryState<T extends Widget>
+    extends State<RouterDrawerEntry<T>> {
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (ModalRoute.of(context)!.isFirst) {
+      context.watch<RouterDrawerController?>()?.setDrawerSelection<T>();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return widget.child;
   }
 }

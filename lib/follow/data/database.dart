@@ -70,7 +70,7 @@ class FollowsDatabase extends _$FollowsDatabase {
     String? host,
     String? tagRegex,
     String? titleRegex,
-    FollowType? type,
+    List<FollowType>? types,
     int? limit,
     int? offset,
   }) {
@@ -89,8 +89,8 @@ class FollowsDatabase extends _$FollowsDatabase {
       selectable
           .where((tbl) => tbl.title.regexp(titleRegex, caseSensitive: false));
     }
-    if (type != null) {
-      selectable.where((tbl) => tbl.type.equals(type.name));
+    if (types != null) {
+      selectable.where((tbl) => tbl.type.isIn(types.map((e) => e.name)));
     }
     assert(
       offset == null || limit != null,
@@ -108,7 +108,7 @@ class FollowsDatabase extends _$FollowsDatabase {
     String? host,
     String? tagRegex,
     String? titleRegex,
-    FollowType? type,
+    List<FollowType>? types,
   }) {
     limit ??= 80;
     int offset = (max(1, page) - 1) * limit;
@@ -116,7 +116,7 @@ class FollowsDatabase extends _$FollowsDatabase {
       host: host,
       tagRegex: tagRegex,
       titleRegex: titleRegex,
-      type: type,
+      types: types,
       limit: limit,
       offset: offset,
     ).get();
@@ -126,14 +126,14 @@ class FollowsDatabase extends _$FollowsDatabase {
     String? host,
     String? tagRegex,
     String? titleRegex,
-    FollowType? type,
+    List<FollowType>? types,
     int? limit,
   }) =>
       _queryExpression(
         host: host,
         tagRegex: tagRegex,
         titleRegex: titleRegex,
-        type: type,
+        types: types,
         limit: limit,
       ).get();
 
@@ -141,14 +141,14 @@ class FollowsDatabase extends _$FollowsDatabase {
     String? host,
     String? tagRegex,
     String? titleRegex,
-    FollowType? type,
+    List<FollowType>? types,
     int? limit,
   }) =>
       _queryExpression(
         host: host,
         tagRegex: tagRegex,
         titleRegex: titleRegex,
-        type: type,
+        types: types,
         limit: limit,
       ).watch();
 

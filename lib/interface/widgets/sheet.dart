@@ -1,18 +1,39 @@
 import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_sub/flutter_sub.dart';
 import 'package:sliding_sheet/sliding_sheet.dart';
 
-class SheetActions extends InheritedNotifier<SheetActionController> {
-  const SheetActions({required super.child, required this.controller})
+class _SheetActions extends InheritedNotifier<SheetActionController> {
+  const _SheetActions({required super.child, required this.controller})
       : super(notifier: controller);
 
   final SheetActionController controller;
+}
+
+class SheetActions extends StatelessWidget {
+  const SheetActions({super.key, required this.child, this.controller});
+
+  final Widget child;
+  final SheetActionController? controller;
 
   static SheetActionController of(BuildContext context) =>
-      context.dependOnInheritedWidgetOfExactType<SheetActions>()!.controller;
+      context.dependOnInheritedWidgetOfExactType<_SheetActions>()!.controller;
 
   static SheetActionController? maybeOf(BuildContext context) =>
-      context.dependOnInheritedWidgetOfExactType<SheetActions>()?.controller;
+      context.dependOnInheritedWidgetOfExactType<_SheetActions>()?.controller;
+
+  @override
+  Widget build(BuildContext context) {
+    return SubValue<SheetActionController?>(
+      create: () => controller == null ? SheetActionController() : null,
+      dispose: (value) => value?.dispose(),
+      keys: [controller],
+      builder: (context, controller) => _SheetActions(
+        controller: this.controller ?? controller!,
+        child: child,
+      ),
+    );
+  }
 }
 
 class SheetActionController extends ActionController {

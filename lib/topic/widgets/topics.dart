@@ -15,7 +15,7 @@ class TopicsPage extends StatefulWidget {
   State<TopicsPage> createState() => _TopicsPageState();
 }
 
-class _TopicsPageState extends State<TopicsPage> with RouterDrawerEntry {
+class _TopicsPageState extends State<TopicsPage> with RouterDrawerEntryWidget {
   @override
   Widget build(BuildContext context) {
     return TopicsProvider(

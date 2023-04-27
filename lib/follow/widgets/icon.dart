@@ -8,8 +8,6 @@ IconData getFollowIcon(FollowType type) {
     case FollowType.notify:
       return Icons.notifications_active;
     case FollowType.bookmark:
-      return Icons.update_disabled;
-    default:
-      return Icons.warning;
+      return Icons.bookmark;
   }
 }

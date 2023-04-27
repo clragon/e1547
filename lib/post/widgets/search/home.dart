@@ -11,7 +11,7 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> with RouterDrawerEntry {
+class _HomePageState extends State<HomePage> with RouterDrawerEntryWidget {
   @override
   Widget build(BuildContext context) {
     return PostsProvider(

@@ -3,7 +3,6 @@ import 'package:e1547/denylist/denylist.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class DenyListPage extends StatefulWidget {
   const DenyListPage();
@@ -16,7 +15,6 @@ class DenyListPage extends StatefulWidget {
 
 class _DenyListPageState extends State<DenyListPage> {
   final SheetActionController sheetController = SheetActionController();
-  final RefreshController refreshController = RefreshController();
 
   void edit({
     required BuildContext context,
@@ -53,7 +51,6 @@ class _DenyListPageState extends State<DenyListPage> {
           isLoading: false,
           isBuilt: true,
           isEmpty: denylist.items.isEmpty,
-          refreshController: refreshController,
           refreshHeader: const RefreshablePageDefaultHeader(
             completeText: 'refreshed blacklist',
             refreshingText: 'refreshing blacklist',
@@ -128,7 +125,7 @@ class _DenyListPageState extends State<DenyListPage> {
               ),
             ),
           ),
-          refresh: () async {
+          refresh: (refreshController) async {
             try {
               await denylist.pull();
               refreshController.refreshCompleted();

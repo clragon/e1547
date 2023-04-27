@@ -12,7 +12,7 @@ class FollowsSwitcherPage extends StatefulWidget {
 }
 
 class _FollowsSwitcherPageState extends State<FollowsSwitcherPage>
-    with RouterDrawerEntry {
+    with RouterDrawerEntryWidget {
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder<bool>(
