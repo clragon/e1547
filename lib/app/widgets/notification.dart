@@ -88,7 +88,7 @@ class _NotificationHandlerState extends State<NotificationHandler> {
             .pushNamedAndRemoveUntil(destination.path, (_) => false);
 
         // This is very specific. Find a way to make it more systematic.
-        if (url.path == '/follows' &&
+        if (url.path == '/subscriptions' &&
             url.queryParameters['tags'] != null &&
             url.queryParameters['tags']!.split(' ').length == 1) {
           controller.navigator!.push(

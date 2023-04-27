@@ -94,7 +94,7 @@ Future<void> updateFollowNotifications({
       title,
       description,
       notificationDetails,
-      payload: Uri(path: '/follows', queryParameters: {
+      payload: Uri(path: '/subscriptions', queryParameters: {
         'tags': follow.tags,
       }).toString(),
     );
@@ -114,7 +114,7 @@ Future<void> updateFollowNotifications({
           'New posts!',
           null,
           notificationDetails,
-          payload: Uri(path: '/follows').toString(),
+          payload: Uri(path: '/subscriptions').toString(),
         );
       } else {
         notifications.cancel(followsBackgroundTaskKey.hashCode);

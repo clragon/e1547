@@ -7,9 +7,11 @@ export 'data/service.dart';
 export 'data/updater.dart';
 // widgets
 export 'widgets/appbar.dart';
+export 'widgets/bookmark.dart';
 export 'widgets/drawer.dart';
 export 'widgets/editor.dart';
-export 'widgets/folder.dart';
 export 'widgets/icon.dart';
+export 'widgets/subscriptions.dart';
 export 'widgets/tile.dart';
 export 'widgets/timeline.dart';
+export 'widgets/updates.dart';

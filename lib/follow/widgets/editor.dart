@@ -19,7 +19,7 @@ class _FollowEditorState extends State<FollowEditor> {
 
   @override
   Widget build(BuildContext context) {
-    Widget title = const Text('Following');
+    Widget title = const Text('Edit follows');
     return FutureLoadingPage<List<String>>(
       title: title,
       future: follows,

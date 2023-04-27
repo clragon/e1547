@@ -2,8 +2,8 @@ import 'package:e1547/client/client.dart';
 import 'package:e1547/dtext/dtext.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/pool/pool.dart';
-import 'package:e1547/pool/widgets/actions.dart';
 import 'package:e1547/pool/widgets/info.dart';
+import 'package:e1547/post/post.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 
@@ -40,6 +40,11 @@ class PoolSheet extends StatelessWidget {
                     ),
                   ),
                 ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
                 IconButton(
                   icon: const Icon(Icons.share),
                   onPressed: () async => Share.share(
@@ -48,7 +53,7 @@ class PoolSheet extends StatelessWidget {
                   ),
                   tooltip: 'Share',
                 ),
-                PoolFollowButton(pool),
+                TagListActions(tag: 'pool:${pool.id}'),
               ],
             ),
             Padding(

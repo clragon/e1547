@@ -164,6 +164,14 @@ class FollowsDatabase extends _$FollowsDatabase {
                 tbl.updated.isNull()))
           .get();
 
+  Future<List<Follow>> getFresh({
+    String? host,
+    List<FollowType>? types,
+  }) =>
+      (_queryExpression(host: host, types: types)
+            ..where((tbl) => tbl.updated.isNull()))
+          .get();
+
   Future<List<Follow>> getUnseen({
     String? host,
   }) =>

@@ -2,6 +2,7 @@ import 'package:e1547/app/app.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/denylist/denylist.dart';
 import 'package:e1547/follow/follow.dart';
+import 'package:e1547/follow/widgets/folder.dart';
 import 'package:e1547/history/history.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/logs/logs.dart';
@@ -221,7 +222,7 @@ class SettingsPage extends StatelessWidget {
                   create: () => service.watchLength(host: client.host),
                   keys: [service, client.host],
                   builder: (context, snapshot) => ListTile(
-                    title: const Text('Following'),
+                    title: const Text('Follows'),
                     subtitle: snapshot.data != null && snapshot.data != 0
                         ? Text('${snapshot.data} searches followed')
                         : null,

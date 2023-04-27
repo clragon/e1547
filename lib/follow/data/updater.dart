@@ -148,11 +148,18 @@ class FollowUpdate with ObjectLoggy {
       }
 
       while (!cancelled) {
-        List<Follow> follows = await service.getOutdated(
+        List<Follow> follows = [];
+
+        follows.addAll(await service.getOutdated(
           host: client.host,
           minAge: refreshRate,
           types: [FollowType.notify, FollowType.update],
-        );
+        ));
+
+        follows.addAll(await service.getFresh(
+          host: client.host,
+          types: [FollowType.bookmark],
+        ));
 
         _remaining.add(follows.length);
 

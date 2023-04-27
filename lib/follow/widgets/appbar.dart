@@ -60,8 +60,8 @@ class FollowSelectionAppBar extends StatelessWidget with AppBarBuilderWidget {
               },
             ),
           IconButton(
-            icon: Icon(bookmarked ? Icons.update : Icons.update_disabled),
-            tooltip: bookmarked ? 'Enable updates' : 'Disable updates',
+            icon: Icon(bookmarked ? Icons.person_add : Icons.bookmark),
+            tooltip: bookmarked ? 'Subscribe' : 'Bookmark',
             onPressed: () async {
               if (bookmarked) {
                 update(

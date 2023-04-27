@@ -33,22 +33,30 @@ class TagSearchSheet extends StatelessWidget {
     return DefaultSheetBody(
       title: Padding(
         padding: const EdgeInsets.all(8),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Flexible(
-              child: InkWell(
-                onTap: () {
-                  Navigator.of(context).maybePop();
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => PostsSearchPage(tags: tag),
+            Row(
+              children: [
+                Flexible(
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.of(context).maybePop();
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => PostsSearchPage(tags: tag),
+                        ),
+                      );
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      child: Text(tagToName(tag)),
                     ),
-                  );
-                },
-                child: Text(tagToName(tag)),
-              ),
+                  ),
+                ),
+              ],
             ),
+            const SizedBox(height: 8),
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [

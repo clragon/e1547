@@ -18,63 +18,122 @@ class TagListActions extends StatelessWidget {
       return const SizedBox.shrink();
     }
     return Consumer3<FollowsService, Client, DenylistService>(
-      builder: (context, follows, client, denylist, child) => SubStream<bool>(
-        create: () => follows.watchFollows(client.host, tag),
+      builder: (context, follows, client, denylist, child) =>
+          SubStream<Follow?>(
+        create: () => follows.watchFollow(client.host, tag),
         keys: [follows, client, tag],
         builder: (context, snapshot) {
-          bool? following = snapshot.data;
-          bool denied = denylist.denies(tag);
           return AnimatedSwitcher(
             duration: defaultAnimationDuration,
-            child: following == null
+            child: [ConnectionState.none, ConnectionState.waiting]
+                    .contains(snapshot.connectionState)
                 ? const SizedBox.shrink()
-                : Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      CrossFade(
-                        showChild: !denied,
-                        child: IconButton(
-                          onPressed: () {
-                            if (following) {
-                              follows.removeTag(client.host, tag);
-                            } else {
-                              follows.addTag(client.host, tag);
+                : Builder(builder: (context) {
+                    Follow? follow = snapshot.data;
+                    bool hasFollow = follow != null;
+
+                    bool following = [FollowType.update, FollowType.notify]
+                        .contains(follow?.type);
+
+                    bool notifying = follow?.type == FollowType.notify;
+                    bool bookmarked = follow?.type == FollowType.bookmark;
+                    bool denied = denylist.denies(tag);
+
+                    VoidCallback followBookmarkToggle(FollowType type) {
+                      return () {
+                        if (hasFollow) {
+                          if ([FollowType.update, FollowType.bookmark]
+                                  .contains(follow.type) &&
+                              follow.type != type) {
+                            follows.replace(follow.copyWith(type: type));
+                          } else {
+                            follows.removeTag(client.host, tag);
+                          }
+                        } else {
+                          follows.addTag(client.host, tag, type: type);
+                          if (denied) {
+                            denylist.remove(tag);
+                          }
+                        }
+                      };
+                    }
+
+                    return Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        CrossFade(
+                          showChild: !denied,
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                onPressed:
+                                    followBookmarkToggle(FollowType.update),
+                                icon: following
+                                    ? const Icon(Icons.person_remove_alt_1)
+                                    : const Icon(Icons.person_add_alt_1),
+                                tooltip:
+                                    following ? 'Unfollow tag' : 'Follow tag',
+                              ),
+                              CrossFade(
+                                showChild: following,
+                                child: IconButton(
+                                  onPressed: () {
+                                    if (notifying) {
+                                      follows.replace(follow!.copyWith(
+                                        type: FollowType.update,
+                                      ));
+                                    } else {
+                                      follows.replace(follow!.copyWith(
+                                        type: FollowType.notify,
+                                      ));
+                                    }
+                                  },
+                                  icon: notifying
+                                      ? const Icon(Icons.notifications_active)
+                                      : const Icon(Icons.notifications_none),
+                                  tooltip: notifying
+                                      ? 'Do not notify for tag'
+                                      : 'Notify for tag',
+                                ),
+                              ),
+                              IconButton(
+                                onPressed:
+                                    followBookmarkToggle(FollowType.bookmark),
+                                icon: bookmarked
+                                    ? const Icon(Icons.turned_in)
+                                    : const Icon(Icons.turned_in_not),
+                                tooltip: bookmarked
+                                    ? 'Unbookmark tag'
+                                    : 'Bookmark tag',
+                              ),
+                            ],
+                          ),
+                        ),
+                        CrossFade(
+                          showChild: !hasFollow,
+                          child: IconButton(
+                            onPressed: () {
                               if (denied) {
                                 denylist.remove(tag);
+                              } else {
+                                if (hasFollow) {
+                                  follows.removeTag(client.host, tag);
+                                }
+                                denylist.add(tag);
                               }
-                            }
-                          },
-                          icon: CrossFade(
-                            showChild: following,
-                            secondChild: const Icon(Icons.person_add),
-                            child: const Icon(Icons.person_remove),
+                            },
+                            icon: CrossFade(
+                              showChild: denied,
+                              secondChild: const Icon(Icons.block),
+                              child: const Icon(Icons.check),
+                            ),
+                            tooltip: denied ? 'Unblock tag' : 'Block tag',
                           ),
-                          tooltip: following ? 'Unfollow tag' : 'Follow tag',
                         ),
-                      ),
-                      CrossFade(
-                        showChild: !following,
-                        child: IconButton(
-                          onPressed: () {
-                            if (denied) {
-                              denylist.remove(tag);
-                            } else {
-                              if (following) {
-                                follows.removeTag(client.host, tag);
-                              }
-                              denylist.add(tag);
-                            }
-                          },
-                          icon: CrossFade(
-                            showChild: denied,
-                            secondChild: const Icon(Icons.block),
-                            child: const Icon(Icons.check),
-                          ),
-                          tooltip: denied ? 'Unblock tag' : 'Block tag',
-                        ),
-                      ),
-                    ],
-                  ),
+                      ],
+                    );
+                  }),
           );
         },
       ),

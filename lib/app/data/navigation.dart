@@ -10,6 +10,7 @@ import 'package:e1547/topic/topic.dart';
 import 'package:flutter/material.dart';
 
 const String _drawerSearchGroup = 'search';
+const String _drawerFollowsGroup = 'follows';
 const String _drawerCollectionsGroup = 'collections';
 const String _drawerSettingsGroup = 'settings';
 
@@ -43,7 +44,7 @@ final List<RouterDrawerDestination> rootDestintations = [
     icon: const Icon(Icons.favorite),
     builder: (context) => const FavPage(),
     unique: true,
-    group: _drawerCollectionsGroup,
+    group: _drawerFollowsGroup,
   ),
   NamedRouterDrawerDestination(
     path: '/timeline',
@@ -51,15 +52,23 @@ final List<RouterDrawerDestination> rootDestintations = [
     icon: const Icon(Icons.feed),
     builder: (context) => const FollowsTimelinePage(),
     unique: true,
-    group: _drawerCollectionsGroup,
+    group: _drawerFollowsGroup,
   ),
   NamedRouterDrawerDestination(
-    path: '/follows',
-    name: 'Follows',
+    path: '/subscriptions',
+    name: 'Subscriptions',
     icon: const Icon(Icons.person_add),
-    builder: (context) => const FollowsFolderPage(),
+    builder: (context) => const FollowsSubscriptionsPage(),
     unique: true,
-    group: _drawerCollectionsGroup,
+    group: _drawerFollowsGroup,
+  ),
+  NamedRouterDrawerDestination(
+    path: '/bookmarks',
+    name: 'Bookmarks',
+    icon: const Icon(Icons.bookmark),
+    builder: (context) => const FollowsBookmarkPage(),
+    unique: true,
+    group: _drawerFollowsGroup,
   ),
   NamedRouterDrawerDestination(
     path: '/pools',

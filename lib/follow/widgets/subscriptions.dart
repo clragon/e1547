@@ -7,8 +7,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_sub/flutter_sub.dart';
 
-class FollowsFolderPage extends StatelessWidget {
-  const FollowsFolderPage({super.key});
+class FollowsSubscriptionsPage extends StatefulWidget {
+  const FollowsSubscriptionsPage({super.key});
+
+  @override
+  State<FollowsSubscriptionsPage> createState() =>
+      _FollowsSubscriptionsPageState();
+}
+
+class _FollowsSubscriptionsPageState extends State<FollowsSubscriptionsPage>
+    with RouterDrawerEntryWidget {
+  bool filterUnseen = false;
 
   @override
   Widget build(BuildContext context) {
@@ -21,19 +30,22 @@ class FollowsFolderPage extends StatelessWidget {
     return Consumer2<FollowsService, Client>(
       builder: (context, service, client, child) => FollowUpdates(
         builder: (context, refreshController) => SubStream<List<Follow>>(
-          create: () => service.watchAll(
-            host: client.host,
-          ),
+          create: () => filterUnseen
+              ? service.watchUnseen(host: client.host)
+              : service.watchAll(
+                  host: client.host,
+                  types: [FollowType.update, FollowType.notify],
+                ),
           listener: (event) => update(),
-          keys: [client, service],
+          keys: [client, service, filterUnseen],
           builder: (context, snapshot) {
             List<Follow>? follows = snapshot.data;
             return SelectionLayout<Follow>(
               items: follows,
               child: SheetActions(
                 child: RefreshableLoadingPage(
-                  onEmpty: const Text('No follows'),
-                  onError: const Text('Failed to load follows'),
+                  onEmpty: const Text('No subscriptions'),
+                  onError: const Text('Failed to load subscriptions'),
                   isError: snapshot.hasError,
                   isBuilt: follows != null,
                   isLoading: follows == null,
@@ -62,16 +74,25 @@ class FollowsFolderPage extends StatelessWidget {
                   appBar: FollowSelectionAppBar(
                     service: service,
                     child: const DefaultAppBar(
-                      title: Text('Follows'),
+                      title: Text('Subscriptions'),
                       actions: [ContextDrawerButton()],
                     ),
                   ),
                   refresh: (refreshController) => update(true),
                   drawer: const RouterDrawer(),
-                  endDrawer: const ContextDrawer(
-                    title: Text('Follows'),
+                  endDrawer: ContextDrawer(
+                    title: const Text('Subscriptions'),
                     children: [
-                      FollowEditingTile(),
+                      const FollowEditingTile(),
+                      const Divider(),
+                      FollowFilterReadTile(
+                        filterUnseen: filterUnseen,
+                        onChanged: (value) =>
+                            setState(() => filterUnseen = value),
+                      ),
+                      FollowMarkReadTile(
+                        onTap: () => setState(() => filterUnseen = false),
+                      ),
                     ],
                   ),
                   floatingActionButton: SheetFloatingActionButton(
@@ -91,7 +112,7 @@ class FollowsFolderPage extends StatelessWidget {
                       builder: (context, controller, submit) => TagInput(
                         controller: controller,
                         textInputAction: TextInputAction.done,
-                        labelText: 'Add to follows',
+                        labelText: 'Add to subscriptions',
                         submit: submit,
                       ),
                     ),

@@ -101,8 +101,8 @@ class FollowTile extends StatelessWidget {
                   type: !bookmarked ? FollowType.bookmark : FollowType.update,
                 ),
               ),
-              title: bookmarked ? 'Enable updates' : 'Disable updates',
-              icon: bookmarked ? Icons.update : Icons.update_disabled,
+              title: bookmarked ? 'Subscribe' : 'Bookmark',
+              icon: bookmarked ? Icons.person_add : Icons.bookmark,
             ),
           if (sheetController != null && follow.tags.split(' ').length > 1)
             PopupMenuTile(
