@@ -114,7 +114,7 @@ class LogFilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return LogsPage(
-      title: Text('Logs - ${getLogFileName(path)}'),
+      title: Text('Logs - ${LogFileInfo.parse(path)}'),
       load: (levels) {
         File file = File(path);
         late StreamController<List<LogString>> controller;

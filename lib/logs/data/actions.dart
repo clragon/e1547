@@ -41,15 +41,33 @@ void registerFlutterErrorHandler(
   FlutterError.onError = (details) => handler(details.exception, details.stack);
 }
 
-final DateFormat logFileDateFormat = DateFormat('yyyy-MM-dd-hh-mm-ss-SSS');
+final DateFormat logFileDateFormat = DateFormat('yyyy-MM-dd-HH-mm-ss-SSS');
 
-String getLogFileName(String path) {
-  String raw = basenameWithoutExtension(path);
-  String type = extension(raw);
-  if (type.isNotEmpty) {
-    type = type.substring(1);
-    raw = basenameWithoutExtension(raw);
+class LogFileInfo {
+  LogFileInfo({
+    required this.path,
+    required this.date,
+    required this.type,
+  });
+
+  factory LogFileInfo.parse(String path) {
+    String raw = basenameWithoutExtension(path);
+    String? type = extension(raw);
+    if (type.isNotEmpty) {
+      type = type.substring(1);
+      raw = basenameWithoutExtension(raw);
+    } else {
+      type = null;
+    }
+    DateTime date = logFileDateFormat.parse(raw);
+    return LogFileInfo(path: path, date: date, type: type);
   }
-  DateTime date = logFileDateFormat.parse(raw);
-  return '${formatDateTime(date)} ${type.isNotEmpty ? ' ($type)' : ''}';
+
+  final String path;
+  final DateTime date;
+  final String? type;
+
+  @override
+  String toString() =>
+      '${formatDateTime(date)} ${type != null ? ' ($type)' : ''}';
 }

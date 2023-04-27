@@ -43,26 +43,29 @@ class LogFileDialog extends StatelessWidget {
               );
             }
             return Column(
-              children: files.sorted((a, b) => b.path.compareTo(a.path)).map(
-                (file) {
-                  return ListTile(
-                    title: Text(
-                      getLogFileName(file.path),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+              children: files
+                  .map((e) => LogFileInfo.parse(e.path))
+                  .sorted((a, b) => b.date.compareTo(a.date))
+                  .map(
+                    (file) => ListTile(
+                      title: Text(
+                        formatDateTime(file.date),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      subtitle: file.type != null ? Text(file.type!) : null,
+                      onTap: () async {
+                        NavigatorState navigator = Navigator.of(context);
+                        await navigator.maybePop();
+                        navigator.push(
+                          MaterialPageRoute(
+                            builder: (context) => LogFilePage(path: file.path),
+                          ),
+                        );
+                      },
                     ),
-                    onTap: () async {
-                      NavigatorState navigator = Navigator.of(context);
-                      await navigator.maybePop();
-                      navigator.push(
-                        MaterialPageRoute(
-                          builder: (context) => LogFilePage(path: file.path),
-                        ),
-                      );
-                    },
-                  );
-                },
-              ).toList(),
+                  )
+                  .toList(),
             );
           }),
         ),
