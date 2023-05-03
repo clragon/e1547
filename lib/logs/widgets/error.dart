@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:e1547/logs/logs.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -96,9 +94,10 @@ class LoggerErrorNotifier extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) => SubValue<StreamSubscription>(
-        create: () => logs.stream().listen((e) => onMessage(context, e)),
+  Widget build(BuildContext context) => SubStream<List<LogRecord>>(
+        create: () => logs.stream(),
+        listener: (e) => onMessage(context, e),
         keys: [logs],
-        builder: (context, _) => child,
+        builder: (context, value) => child,
       );
 }
