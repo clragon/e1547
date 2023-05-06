@@ -36,7 +36,7 @@ class DescriptionDisplay extends StatelessWidget {
                   onPressed: canEdit
                       ? () {
                           PostEditingController editingController =
-                              context.watch<PostEditingController>();
+                              context.read<PostEditingController>();
                           Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (context) => DTextEditor(
