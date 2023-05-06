@@ -246,7 +246,7 @@ class _LoginPageState extends State<LoginPage> {
           ),
           body: LayoutBuilder(
             builder: (context, constraints) {
-              if (constraints.maxWidth < 1100 || constraints.maxHeight > 800) {
+              if (constraints.maxWidth < 1100) {
                 return LimitedWidthLayout.builder(
                   builder: (context) => ListView(
                     padding: LimitedWidthLayout.of(context)
