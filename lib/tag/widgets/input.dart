@@ -78,7 +78,7 @@ class _TagInputState extends State<TagInput> {
       ],
       textInputAction: widget.textInputAction,
       onSuggestionSelected: (suggestion) {
-        List<String> tags = controller.text.split(' ');
+        List<String> tags = controller.text.split(' ').trim();
         List<String> before = [];
         for (String tag in tags) {
           before.add(tag);

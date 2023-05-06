@@ -125,7 +125,7 @@ class ActionBottomSheet extends StatelessWidget {
   }
 }
 
-class SheetFloatingActionButton extends StatefulWidget {
+class SheetFloatingActionButton extends StatelessWidget {
   const SheetFloatingActionButton({
     required this.builder,
     required this.actionIcon,
@@ -140,41 +140,24 @@ class SheetFloatingActionButton extends StatefulWidget {
       builder;
 
   @override
-  State<SheetFloatingActionButton> createState() =>
-      _SheetFloatingActionButtonState();
-}
-
-class _SheetFloatingActionButtonState extends State<SheetFloatingActionButton> {
-  late SheetActionController controller;
-
-  @override
-  void initState() {
-    super.initState();
-    controller = widget.controller ?? SheetActionController();
-  }
-
-  @override
-  void didUpdateWidget(covariant SheetFloatingActionButton oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.controller != widget.controller) {
-      controller = widget.controller ?? SheetActionController();
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: controller,
-      builder: (context, child) => FloatingActionButton(
-        onPressed: controller.isLoading
-            ? null
-            : () => controller.actionOrShow(
-                  context,
-                  widget.builder(context, controller),
-                ),
-        child: controller.isShown
-            ? Icon(widget.confirmIcon ?? Icons.check)
-            : Icon(widget.actionIcon),
+    return SubDefault<SheetActionController>(
+      value: controller ?? SheetActions.maybeOf(context),
+      create: () => SheetActionController(),
+      dispose: (value) => value.dispose(),
+      builder: (context, controller) => AnimatedBuilder(
+        animation: controller,
+        builder: (context, child) => FloatingActionButton(
+          onPressed: controller.isLoading
+              ? null
+              : () => controller.actionOrShow(
+                    context,
+                    builder(context, controller),
+                  ),
+          child: controller.isShown
+              ? Icon(confirmIcon ?? Icons.check)
+              : Icon(actionIcon),
+        ),
       ),
     );
   }
