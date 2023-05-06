@@ -19,7 +19,7 @@ Future<bool> backgroundUpdateFollows({
   FollowsService service = updater.service;
   List<Follow> previous = await service.getAll(
     host: client.host,
-    type: FollowType.notify,
+    types: [FollowType.notify],
   );
 
   await updater.update(
@@ -30,7 +30,7 @@ Future<bool> backgroundUpdateFollows({
 
   List<Follow> next = await service.getAll(
     host: client.host,
-    type: FollowType.notify,
+    types: [FollowType.notify],
   );
 
   Map<Follow, int> updated = {};

@@ -98,8 +98,7 @@ class _NotificationHandlerState extends State<NotificationHandler> {
       SubValue<StreamSubscription<List<Follow>>>(
         create: () => context
             .watch<FollowsService>()
-            .watchAll(type: FollowType.notify)
-            .listen(setupFollowBackground),
+            .watchAll(types: [FollowType.notify]).listen(setupFollowBackground),
         keys: [context.watch<FollowsService>()],
         dispose: (value) => value.cancel(),
         builder: (context, stream) => widget.child,

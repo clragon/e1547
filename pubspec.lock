@@ -1659,9 +1659,9 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: ab7076f
-      resolved-ref: ab7076fe9b432bec75ffc2e230ac4f043c30cadc
-      url: "https://github.com/clragon/flutter_workmanager.git"
+      ref: "544a80f"
+      resolved-ref: "544a80f403770b4e543426a80e5d4ca13ef7bc42"
+      url: "https://github.com/fluttercommunity/flutter_workmanager.git"
     source: git
     version: "0.5.1"
   xdg_directories:

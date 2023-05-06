@@ -14,9 +14,8 @@ void executeBackgroundTasks() => Workmanager().executeTask(
             FlutterLocalNotificationsPlugin notifications =
                 await initializeNotifications();
             // this ensures continued scheduling on iOS.
-            bundle.follows
-                .watchAll(type: FollowType.notify)
-                .listen(registerFollowBackgroundTask);
+            bundle.follows.watchAll(types: [FollowType.notify]).listen(
+                registerFollowBackgroundTask);
             return backgroundUpdateFollows(
               updater: FollowsUpdater(service: bundle.follows),
               // We only update the current host as of right now

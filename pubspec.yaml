@@ -89,8 +89,8 @@ dependency_overrides:
       ref: 44f3eb
   workmanager:
     git:
-      url: https://github.com/clragon/flutter_workmanager.git
-      ref: ab7076f
+      url: https://github.com/fluttercommunity/flutter_workmanager.git
+      ref: 544a80f
 
 dev_dependencies:
   flutter_lints: ^2.0.1
