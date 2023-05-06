@@ -543,10 +543,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_sub
-      sha256: "9b9b4383deee3047558affd8724bdfc16a24d0b52bc937b7bf81f593f3c098c6"
+      sha256: "6fa90ce67df5ad888b1d2a304aa36ea6cf5dcd62a08d421c8b5d636f4863d6f5"
       url: "https://pub.dev"
     source: hosted
-    version: "2.1.0"
+    version: "2.1.1"
   flutter_sub_provider:
     dependency: "direct main"
     description:

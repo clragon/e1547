@@ -121,11 +121,15 @@ class LogFilePage extends StatelessWidget {
         controller = StreamController(
             onListen: () async {
               controller.add(await _read(file, levels));
-              controller.addStream(
-                file
-                    .watch(events: FileSystemEvent.modify)
-                    .asyncMap((_) async => _read(file, levels)),
-              );
+              try {
+                controller.addStream(
+                  file.watch(events: FileSystemEvent.modify).asyncMap(
+                        (_) async => _read(file, levels),
+                      ),
+                );
+              } on FileSystemException {
+                controller.addStream(Stream.value(await _read(file, levels)));
+              }
             },
             onCancel: () => controller.close());
         return controller.stream;
