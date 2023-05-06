@@ -1,7 +1,6 @@
 import 'package:e1547/client/client.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/interface/interface.dart';
-import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sub/flutter_sub.dart';
 
@@ -67,32 +66,6 @@ class FollowFilterReadTile extends StatelessWidget {
       subtitle: filterUnseen
           ? const Text('filtering for unseen')
           : const Text('all posts shown'),
-    );
-  }
-}
-
-class FollowSwitcherTile extends StatefulWidget {
-  const FollowSwitcherTile();
-
-  @override
-  State<FollowSwitcherTile> createState() => _FollowSwitcherTileState();
-}
-
-class _FollowSwitcherTileState extends State<FollowSwitcherTile> {
-  @override
-  Widget build(BuildContext context) {
-    return ValueListenableBuilder<bool>(
-      valueListenable: context.watch<Settings>().splitFollows,
-      builder: (context, value, child) => SwitchListTile(
-        secondary: Icon(value ? Icons.view_comfy : Icons.view_list),
-        title: const Text('Split searches'),
-        subtitle: value ? const Text('folders') : const Text('timeline'),
-        value: value,
-        onChanged: (value) async {
-          Scaffold.of(context).closeEndDrawer();
-          context.read<Settings>().splitFollows.value = value;
-        },
-      ),
     );
   }
 }

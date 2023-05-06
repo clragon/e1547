@@ -127,10 +127,6 @@ class _FollowsFolderPageState extends State<FollowsFolderPage>
                   endDrawer: ContextDrawer(
                     title: const Text('Follows'),
                     children: [
-                      if (context.findAncestorWidgetOfExactType<
-                              FollowsSwitcherPage>() !=
-                          null)
-                        const FollowSwitcherTile(),
                       const FollowEditingTile(),
                       const Divider(),
                       FollowFilterReadTile(
