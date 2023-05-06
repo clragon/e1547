@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:isolate';
 
 import 'package:collection/collection.dart';
 import 'package:e1547/logs/logs.dart';
@@ -63,54 +62,24 @@ class MemoryLogs implements Logs, LoggyPrinter {
 
 class FilePrinter implements LoggyPrinter {
   FilePrinter(this.file) {
-    _initialize();
+    _write();
   }
 
   final File file;
   final StreamController<LogRecord> _stream = StreamController();
 
-  Future<void> _initialize() async {
-    ReceivePort receivePort = ReceivePort();
-    Isolate isolate = await Isolate.spawn(
-      _write,
-      _FilePrinterConfig(port: receivePort.sendPort, file: file),
-    );
-    SendPort sendPort = await receivePort.first;
-    receivePort.close();
-    _stream.stream.listen(
-      (event) => sendPort.send(event.toFullString()),
-      onDone: () {
-        isolate.kill();
-      },
-    );
-  }
-
-  static void _write(_FilePrinterConfig config) async {
-    ReceivePort port = ReceivePort();
-    config.port.send(port.sendPort);
-    IOSink sink = config.file.openWrite(mode: FileMode.append);
-    await for (final message in port) {
-      sink.writeln(message);
+  void _write() async {
+    IOSink sink = file.openWrite(mode: FileMode.append);
+    await for (final record in _stream.stream) {
+      sink.writeln(record.toFullString());
     }
-    await sink.flush();
-    await sink.close();
-    port.close();
+    sink.close();
   }
 
   @override
   void onLog(LogRecord record) => _stream.add(record);
 
   void close() => _stream.close();
-}
-
-class _FilePrinterConfig {
-  _FilePrinterConfig({
-    required this.port,
-    required this.file,
-  });
-
-  final SendPort port;
-  final File file;
 }
 
 const LogLevel logLevelCritical = LogLevel('Critical', 32);
