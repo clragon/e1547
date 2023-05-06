@@ -225,7 +225,7 @@ class SettingsPage extends StatelessWidget {
                     subtitle: snapshot.data != null && snapshot.data != 0
                         ? Text('${snapshot.data} searches followed')
                         : null,
-                    leading: const Icon(Icons.turned_in),
+                    leading: const Icon(Icons.person_add),
                     onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(

@@ -4,12 +4,12 @@ import 'package:flutter/material.dart';
 extension FollowIcon on FollowType {
   Widget get icon {
     switch (this) {
-      case FollowType.update:
-        return const Icon(Icons.update);
       case FollowType.notify:
         return const Icon(Icons.notifications_active);
+      case FollowType.update:
+        return const Icon(Icons.person_add);
       case FollowType.bookmark:
-        return const Icon(Icons.update_disabled);
+        return const Icon(Icons.bookmark);
       default:
         return const Icon(Icons.warning);
     }

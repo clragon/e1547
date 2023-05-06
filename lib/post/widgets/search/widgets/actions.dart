@@ -46,8 +46,8 @@ class TagListActions extends StatelessWidget {
                           },
                           icon: CrossFade(
                             showChild: following,
-                            secondChild: const Icon(Icons.turned_in_not),
-                            child: const Icon(Icons.turned_in),
+                            secondChild: const Icon(Icons.person_add),
+                            child: const Icon(Icons.person_remove),
                           ),
                           tooltip: following ? 'Unfollow tag' : 'Follow tag',
                         ),

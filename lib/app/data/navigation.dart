@@ -48,7 +48,7 @@ final List<RouterDrawerDestination> rootDestintations = [
   NamedRouterDrawerDestination(
     path: '/follows',
     name: 'Follows',
-    icon: const Icon(Icons.turned_in),
+    icon: const Icon(Icons.person_add),
     builder: (context) => const FollowsSwitcherPage(),
     unique: true,
     group: _drawerCollectionsGroup,

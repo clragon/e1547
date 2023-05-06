@@ -119,7 +119,7 @@ class FollowTile extends StatelessWidget {
           PopupMenuTile(
             value: () => follows.remove(follow),
             title: 'Unfollow',
-            icon: Icons.bookmark_border,
+            icon: Icons.person_remove,
           ),
         ],
       );

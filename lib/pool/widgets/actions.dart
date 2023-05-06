@@ -17,30 +17,28 @@ class PoolFollowButton extends StatelessWidget {
       builder: (context, follows, client, child) => SubStream<bool>(
         create: () => follows.watchFollows(client.host, tag),
         keys: [follows, client, tag],
-        builder: (context, snapshot) => AnimatedSwitcher(
-          duration: defaultAnimationDuration,
-          child: snapshot.data == null
-              ? const SizedBox.shrink()
-              : Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IconButton(
-                      onPressed: () {
-                        if (snapshot.data!) {
-                          follows.removeTag(client.host, tag);
-                        } else {
-                          follows.addTag(client.host, tag);
-                        }
-                      },
-                      icon: CrossFade(
-                        showChild: snapshot.data!,
-                        secondChild: const Icon(Icons.turned_in_not),
-                        child: const Icon(Icons.turned_in),
-                      ),
-                      tooltip: snapshot.data! ? 'unfollow tag' : 'follow tag',
-                    ),
-                  ],
+        builder: (context, snapshot) => CrossFade(
+          showChild: snapshot.data != null,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              IconButton(
+                onPressed: () {
+                  if (snapshot.data!) {
+                    follows.removeTag(client.host, tag);
+                  } else {
+                    follows.addTag(client.host, tag);
+                  }
+                },
+                icon: CrossFade(
+                  showChild: snapshot.data!,
+                  secondChild: const Icon(Icons.person_add),
+                  child: const Icon(Icons.person_remove),
                 ),
+                tooltip: snapshot.data! ? 'Unfollow pool' : 'Follow pool',
+              ),
+            ],
+          ),
         ),
       ),
     );
