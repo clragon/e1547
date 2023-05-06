@@ -232,7 +232,7 @@ class PostDetailImageDisplay extends StatelessWidget {
     return PostDetailImageActions(
       onOpen: onTap,
       post: post,
-      child: ImageOverlay(
+      child: PostImageOverlay(
         post: post,
         builder: (context) => Center(
           child: Hero(

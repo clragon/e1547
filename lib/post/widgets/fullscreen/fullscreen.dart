@@ -17,7 +17,7 @@ class PostFullscreen extends StatelessWidget {
         child: PostVideoRoute(
           post: post,
           stopOnDispose: false,
-          child: ImageOverlay(
+          child: PostImageOverlay(
             post: post,
             builder: (context) {
               switch (post.type) {

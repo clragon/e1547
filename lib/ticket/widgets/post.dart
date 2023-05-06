@@ -35,7 +35,7 @@ class PostReportImage extends StatelessWidget {
             clipBehavior: Clip.antiAlias,
             child: ReportLoadingOverlay(
               isLoading: isLoading,
-              child: ImageOverlay(
+              child: PostImageOverlay(
                 post: post,
                 builder: (context) => Hero(
                   tag: post.link,

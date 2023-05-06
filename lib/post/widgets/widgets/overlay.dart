@@ -4,8 +4,8 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 
-class ImageOverlay extends StatelessWidget {
-  const ImageOverlay({
+class PostImageOverlay extends StatelessWidget {
+  const PostImageOverlay({
     required this.post,
     required this.builder,
   });
@@ -52,7 +52,7 @@ class ImageOverlay extends StatelessWidget {
                   credentials: service.credentials,
                   cookies: service.cookies,
                 );
-                navigator.push(
+                navigator.pushReplacement(
                   MaterialPageRoute(
                     builder: (context) =>
                         ChangeNotifierProvider<ClientService>.value(
