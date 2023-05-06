@@ -76,7 +76,7 @@ class ThumbnailController extends PostsController {
   ThumbnailController({
     required super.client,
     required super.denylist,
-  }) : super(filterMode: PostFilterMode.plain);
+  });
 
   Map<int, List<int>> _ids = {};
 
