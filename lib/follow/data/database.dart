@@ -155,8 +155,9 @@ class FollowsDatabase extends _$FollowsDatabase {
   Future<List<Follow>> getOutdated({
     String? host,
     required Duration minAge,
+    List<FollowType>? types,
   }) =>
-      (_queryExpression(host: host)
+      (_queryExpression(host: host, types: types)
             ..where((tbl) =>
                 (tbl.updated
                     .isSmallerThanValue(DateTime.now().subtract(minAge))) |

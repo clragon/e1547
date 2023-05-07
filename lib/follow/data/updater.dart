@@ -66,6 +66,7 @@ class FollowsUpdater extends ChangeNotifier {
   void _progress(int value) {
     _remaining = value;
     notifyListeners();
+    loggy.debug('Updating $_remaining follows...');
   }
 
   List<Object?> _dependencies = [];
@@ -118,8 +119,8 @@ class FollowsUpdater extends ChangeNotifier {
       List<Follow> follows = await service.getOutdated(
         host: client.host,
         minAge: refreshRate,
+        types: [FollowType.notify, FollowType.update],
       );
-      follows = follows.whereNot((e) => e.type == FollowType.bookmark).toList();
       _progress(follows.length);
       List<Follow> singles = follows
           .whereNot((e) => e.tags.contains(' ') || e.tags.contains(':'))
