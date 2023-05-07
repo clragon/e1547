@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:e1547/logs/logs.dart';
 import 'package:flutter/material.dart';
 import 'package:mutex/mutex.dart';
 import 'package:video_player/video_player.dart';
@@ -14,6 +15,8 @@ class VideoHandler extends ChangeNotifier {
   // To prevent the app from crashing due tue OutOfMemoryErrors,
   // the list of all loaded videos is global.
   static final Map<VideoConfig, VideoPlayerController> _videos = {};
+
+  final Loggy _loggy = Loggy('Videos');
 
   final int maxLoaded = 3;
 
@@ -30,6 +33,7 @@ class VideoHandler extends ChangeNotifier {
     _muteVideos = value;
     _videos.values.forEach((e) => e.setVolume(muteVideos ? 0 : 1));
     notifyListeners();
+    _loggy.debug('${_muteVideos ? 'Muted' : 'Unmuted'} all controllers');
   }
 
   VideoPlayerController getVideo(VideoConfig key) => _videos.putIfAbsent(
@@ -42,32 +46,31 @@ class VideoHandler extends ChangeNotifier {
         ),
       );
 
-  Future<void> loadVideo(VideoConfig key) async {
-    await _loadingLock.acquire();
-    VideoPlayerController? controller = getVideo(key);
-    if (controller.value.isInitialized) {
-      _loadingLock.release();
-      return;
-    }
+  Future<void> loadVideo(VideoConfig key) async =>
+      _loadingLock.protect(() async {
+        VideoPlayerController? controller = getVideo(key);
+        if (controller.value.isInitialized) return;
 
-    while (true) {
-      Map<VideoConfig, VideoPlayerController> loaded = Map.of(_videos)
-        ..removeWhere((key, value) => !value.value.isInitialized);
-      int loadedSize =
-          loaded.keys.fold<int>(0, (current, config) => current + config.size);
-      if (loaded.length < maxLoaded && loadedSize < maxSize) {
-        break;
-      }
-      await disposeVideo(loaded.keys.first);
-    }
+        while (true) {
+          Map<VideoConfig, VideoPlayerController> loaded = Map.of(_videos)
+            ..removeWhere((key, value) => !value.value.isInitialized);
+          int loadedSize = loaded.keys
+              .fold<int>(0, (current, config) => current + config.size);
+          if (loaded.length < maxLoaded && loadedSize < maxSize) {
+            break;
+          }
+          _loggy.debug(
+              'Too many (${loaded.length}) or too large ($loadedSize) videos loaded!');
+          await disposeVideo(loaded.keys.first);
+        }
 
-    controller.addListener(controller.wakelock);
-    await controller.setLooping(true);
-    await controller.setVolume(muteVideos ? 0 : 1);
-    await controller.initialize();
-    _loadingLock.release();
-    notifyListeners();
-  }
+        controller.addListener(controller.wakelock);
+        await controller.setLooping(true);
+        await controller.setVolume(muteVideos ? 0 : 1);
+        await controller.initialize();
+        notifyListeners();
+        _loggy.debug('Loaded $key');
+      });
 
   Future<void> disposeVideo(VideoConfig key) async {
     VideoPlayerController? controller = _videos[key];
@@ -77,6 +80,7 @@ class VideoHandler extends ChangeNotifier {
       await controller.dispose();
       _videos.remove(key);
       notifyListeners();
+      _loggy.debug('Unloaded $key');
     }
   }
 }
@@ -137,4 +141,7 @@ class VideoConfig {
 
   @override
   int get hashCode => Object.hash(url.hashCode, size.hashCode);
+
+  @override
+  String toString() => 'Video($url)';
 }
