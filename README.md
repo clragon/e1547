@@ -108,10 +108,6 @@ I spend alot of time trying to build this app, so all support is welcome.
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/Q5Q22W6FW)
 
 #### Thanks to:  
-- [cynder](https://github.com/cxnder) for iOS publishing.
-    
 - [Miyoyo](https://github.com/miyoyo) for performance optimisations.
-    
-- [bitWolfy](https://github.com/bitWolfy) for code review.
-
+  
 - [Perlatus](https://github.com/perlatus) for writing the original code base.

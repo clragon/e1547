@@ -4,7 +4,7 @@ Added
 - double tap appbar to scroll to top
 
 Changed
-- switched version number format to more closely resemble semantic versioning (1.9.10 -&gt; 9.10.0)
+- switched version number format to more closely resemble semantic versioning (1.9.10 -> 9.10.0)
 - hiding post children if all are deleted
 
 Fixed

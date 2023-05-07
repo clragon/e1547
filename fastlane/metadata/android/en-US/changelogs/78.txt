@@ -1,0 +1,14 @@
+Added
+- notifications for follows
+- log files
+- more log entries
+- log entry multi-select
+- better server status catching
+
+Changed
+- split timeline and follows
+- hide blacklisted pool thumbnails
+
+Fixed
+- editing follows
+- app layout when opening virtual keyboards
