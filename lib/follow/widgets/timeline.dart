@@ -25,7 +25,7 @@ class FollowsTimelinePage extends StatelessWidget {
         child: Consumer<PostsController>(
           builder: (context, controller, child) => PostsPage(
             appBar: const DefaultAppBar(
-              title: Text('Follows'),
+              title: Text('Timeline'),
               actions: [ContextDrawerButton()],
             ),
             controller: controller,
