@@ -25,7 +25,7 @@
 - Download Images
 - Upvote and downvote posts
 - Access to Hot and your favourites
-- Follow tags (notifications planned)
+- Follow tags and receive notifications
 - Display post info, launch searches from tags
 - View tag wiki entries by long-pressing 
 - Local blacklist

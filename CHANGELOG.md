@@ -4,6 +4,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Added
+- notifications for follows
+- log files
+- more log entries
+- log entry multi-select
+- better server status catching
+
+### Changed
+- split timeline and follows
+- hide blacklisted pool thumbnails
+
+### Fixed
+- editing follows
+- app layout when opening virtual keyboards
+
 ## [15.4.2+77] - 2023-03-23
 ### Fixed
 - performance
@@ -247,7 +263,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - double tap appbar to scroll to top
 
 ### Changed
-- switched version number format to more closely resemble semantic versioning (1.9.10 -&gt; 9.10.0)
+- switched version number format to more closely resemble semantic versioning (1.9.10 -> 9.10.0)
 - hiding post children if all are deleted
 
 ### Fixed
@@ -722,6 +738,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Fixed
 - API client bindings
 
+[Unreleased]: https://github.com/clragon/e1547/compare/15.4.2+77...HEAD
 [15.4.2+77]: https://github.com/clragon/e1547/compare/15.4.1...15.4.2
 [15.4.1+76]: https://github.com/clragon/e1547/compare/15.4.0...15.4.1
 [15.4.0+75]: https://github.com/clragon/e1547/compare/15.3.1...15.4.0
