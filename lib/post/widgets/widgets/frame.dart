@@ -47,7 +47,7 @@ class ScaffoldFrameController extends ValueNotifier<bool> {
   }
 }
 
-class ScaffoldFrame extends StatefulWidget {
+class ScaffoldFrame extends StatelessWidget {
   const ScaffoldFrame({super.key, required this.child, this.controller});
 
   final Widget child;
@@ -62,36 +62,13 @@ class ScaffoldFrame extends StatefulWidget {
       ?.notifier;
 
   @override
-  State<ScaffoldFrame> createState() => _ScaffoldFrameState();
-}
-
-class _ScaffoldFrameState extends State<ScaffoldFrame> {
-  late ScaffoldFrameController controller =
-      widget.controller ?? ScaffoldFrameController();
-
-  @override
-  void didUpdateWidget(covariant ScaffoldFrame oldWidget) {
-    if (oldWidget.controller != widget.controller) {
-      if (oldWidget.controller == null) {
-        controller.dispose();
-      }
-      controller = widget.controller ?? ScaffoldFrameController();
-    }
-    super.didUpdateWidget(oldWidget);
-  }
-
-  @override
-  void dispose() {
-    if (widget.controller == null) {
-      controller.dispose();
-    }
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) => _ScaffoldFrameData(
-        controller: controller,
-        child: widget.child,
+  Widget build(BuildContext context) => SubDefault<ScaffoldFrameController>(
+        value: controller,
+        create: () => ScaffoldFrameController(),
+        builder: (context, controller) => _ScaffoldFrameData(
+          controller: controller,
+          child: child,
+        ),
       );
 }
 
