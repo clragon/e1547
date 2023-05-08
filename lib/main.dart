@@ -11,6 +11,7 @@ Future<void> main() async {
   AppInfo appInfo = await initializeAppInfo();
   AppDatabases databases = await initializeAppdatabases(info: appInfo);
   Logs logs = await initializeLogger(databases: databases);
+  CookiesService cookies = await initializeCookiesService(appInfo.allowedHosts);
   WindowManager? windowManager = await initializeWindowManager();
   initializeBackgroundTasks();
   runApp(
@@ -20,9 +21,7 @@ Future<void> main() async {
         Provider.value(value: databases),
         Provider.value(value: logs),
         Provider.value(value: windowManager),
-        Provider.value(
-          value: await initializeCookiesService(appInfo.allowedHosts),
-        ),
+        Provider.value(value: cookies),
       ],
       child: const App(),
     ),
