@@ -1,7 +1,7 @@
 import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
 
-abstract class AppBarBuilderWidget implements PreferredSizeWidget {
+mixin AppBarBuilderWidget implements PreferredSizeWidget {
   abstract final PreferredSizeWidget child;
 
   @override
@@ -89,7 +89,7 @@ IconData getPlatformBackIcon(BuildContext context) {
   }
 }
 
-class DefaultAppBar extends StatelessWidget with PreferredSizeWidget {
+class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
   /// A preconfigured appbar.
   ///
   /// Contains extra behaviour such as:

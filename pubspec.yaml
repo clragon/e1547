@@ -4,7 +4,7 @@ version: 16.0.0+78
 publish_to: none
 
 environment:
-  sdk: '>=2.17.0 <3.0.0'
+  sdk: '>=3.0.0 <4.0.0'
   flutter: '>=3.7.0 <4.0.0'
 
 dependencies:
@@ -31,7 +31,10 @@ dependencies:
   photo_view: ^0.14.0
   provider: ^6.0.4
   pull_to_refresh: ^2.0.0
-  sliding_sheet: ^0.5.0
+  sliding_sheet:
+    git:
+      url: https://github.com/clragon/sliding_sheet.git
+      ref: be64d6d
   sliver_tools: ^0.2.9
   webview_flutter: ^4.0.5
 
@@ -49,7 +52,7 @@ dependencies:
   flutter_local_notifications: ^12.0.3
   freezed_annotation: ^2.0.3
   image_gallery_saver: ^1.7.1
-  intl: ^0.17.0
+  intl: ^0.18.0
   json_annotation: ^4.6.0
   loggy: ^2.0.3
   flutter_loggy: ^2.0.2
@@ -69,13 +72,14 @@ dependencies:
   sqlite3_flutter_libs: ^0.5.13
   store_checker: ^1.1.0
   url_launcher: ^6.1.10
+  username_generator:
+    git:
+      url: https://github.com/clragon/username_generator.git
+      ref: 16badbb
   wakelock: ^0.6.1+2
   webview_cookie_manager: ^2.0.6
   window_manager: ^0.3.1
   workmanager: ^0.5.1
-
-  username_generator:
-    git: https://github.com/clragon/username_generator.git
 
   flutter:
     sdk: flutter
