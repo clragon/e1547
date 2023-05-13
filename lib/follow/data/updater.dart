@@ -103,22 +103,11 @@ class FollowsUpdater extends ChangeNotifier {
     required List<String> denylist,
     bool? force,
   }) async {
-    if (force ?? false) {
-      await service.transaction(() async {
-        List<Follow> follows = await service.getAll(host: client.host);
-        for (final follow in follows) {
-          await service.replace(follow.copyWith(
-            updated: null,
-          ));
-        }
-      });
-    }
-
     List<String> previous = [];
     while (!_canceling) {
       List<Follow> follows = await service.getOutdated(
         host: client.host,
-        minAge: refreshRate,
+        minAge: (force ?? false) ? Duration.zero : refreshRate,
         types: [FollowType.notify, FollowType.update],
       );
       _progress(follows.length);
