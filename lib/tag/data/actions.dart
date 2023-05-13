@@ -20,6 +20,8 @@ String tagToName(String tags) =>
 /// Removes underscores and prefixes from tags
 String tagToTitle(String tags) => tagToName(tagToRaw(tags));
 
+bool tagIsSingle(String tags) => tags.contains(' ') || tags.contains(':');
+
 enum TagCategory {
   general,
   species,

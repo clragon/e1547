@@ -6,6 +6,8 @@ import 'package:e1547/tag/tag.dart';
 extension Updating on Follow {
   String get name => title ?? tagToName(tags);
 
+  bool get isSingle => tagIsSingle(tags);
+
   Follow withTitle(String title) {
     Follow updated = this;
     if (this.title != title) {

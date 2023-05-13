@@ -111,9 +111,7 @@ class FollowsUpdater extends ChangeNotifier {
         types: [FollowType.notify, FollowType.update],
       );
       _progress(follows.length);
-      List<Follow> singles = follows
-          .whereNot((e) => e.tags.contains(' ') || e.tags.contains(':'))
-          .toList();
+      List<Follow> singles = follows.whereNot((e) => e.isSingle).toList();
       if (singles.isNotEmpty) {
         List<Follow> chunk = singles.take(40).toList();
         List<String> tags = chunk.map((e) => e.tags).toList();
@@ -236,7 +234,7 @@ class FollowsUpdater extends ChangeNotifier {
   }) async {
     List<Follow> result = [];
     for (final follow in follows) {
-      if (follow.tags.contains(' ') || follow.tags.contains(':')) {
+      if (follow.isSingle) {
         result.add(follow);
         continue;
       }
