@@ -11,7 +11,6 @@ import 'package:workmanager/workmanager.dart';
 
 export 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
-const String followsBackgroundTask = 'net.clynamic.e1547.follows';
 final Loggy _loggy = Loggy('BackgroundTask');
 
 /// Prepares controller objects necessary to run various tasks in a background isolate.
@@ -96,13 +95,13 @@ Future<void> registerFollowBackgroundTask(List<Follow> follows) async {
   if (!PlatformCapabilities.hasBackgroundWorker) return;
   if (follows.where((e) => e.type == FollowType.notify).isEmpty) {
     _loggy.debug('Cancelled background tasks!');
-    return Workmanager().cancelByUniqueName(followsBackgroundTask);
+    return Workmanager().cancelByUniqueName(followsBackgroundTaskKey);
   }
   if (Platform.isIOS) {
     _loggy.debug('Registered iOS one-off task!');
     Workmanager().registerOneOffTask(
-      followsBackgroundTask,
-      followsBackgroundTask,
+      followsBackgroundTaskKey,
+      followsBackgroundTaskKey,
       initialDelay: const Duration(hours: 1),
       existingWorkPolicy: ExistingWorkPolicy.replace,
       constraints: Constraints(networkType: NetworkType.connected),
@@ -110,8 +109,8 @@ Future<void> registerFollowBackgroundTask(List<Follow> follows) async {
   } else if (Platform.isAndroid) {
     _loggy.debug('Registered Android periodic task!');
     await Workmanager().registerPeriodicTask(
-      followsBackgroundTask,
-      followsBackgroundTask,
+      followsBackgroundTaskKey,
+      followsBackgroundTaskKey,
       initialDelay: const Duration(hours: 1),
       frequency: const Duration(hours: 1),
       existingWorkPolicy: ExistingWorkPolicy.update,

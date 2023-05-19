@@ -8,7 +8,7 @@ import 'package:workmanager/workmanager.dart';
 void executeBackgroundTasks() => Workmanager().executeTask(
       (task, inputData) async {
         switch (task) {
-          case followsBackgroundTask:
+          case followsBackgroundTaskKey:
             ControllerBundle bundle = await prepareBackgroundIsolate();
             FlutterLocalNotificationsPlugin notifications =
                 await initializeNotifications();

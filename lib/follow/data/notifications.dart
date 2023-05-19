@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:collection/collection.dart';
 import 'package:e1547/app/app.dart';
 import 'package:e1547/client/client.dart';
@@ -6,6 +8,8 @@ import 'package:e1547/follow/follow.dart';
 import 'package:e1547/logs/logs.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+
+const String followsBackgroundTaskKey = 'net.clynamic.e1547.follows';
 
 Future<bool> backgroundUpdateFollows({
   required FollowsService service,
@@ -73,25 +77,8 @@ Future<void> sendFollowNotifications({
 
     loggy.debug('${follow.tags} has $unseen new posts!');
 
-    NotificationDetails notificationDetails = NotificationDetails(
-      android: AndroidNotificationDetails(
-        'follows',
-        'Followed Tags',
-        channelDescription: 'Notifications for tags you are following',
-        largeIcon: picture != null ? FilePathAndroidBitmap(picture) : null,
-        styleInformation: picture != null
-            ? BigPictureStyleInformation(
-                FilePathAndroidBitmap(picture),
-                hideExpandedLargeIcon: true,
-              )
-            : null,
-      ),
-      iOS: DarwinNotificationDetails(
-        attachments: [
-          if (picture != null) DarwinNotificationAttachment(picture),
-        ],
-      ),
-    );
+    NotificationDetails notificationDetails =
+        _createNotificationDetails(thumbnailPath: picture);
 
     String title = '$unseen new posts!';
     if (unseen == 1) {
@@ -113,6 +100,41 @@ Future<void> sendFollowNotifications({
       }).toString(),
     );
 
+    if (Platform.isAndroid) {
+      NotificationDetails notificationDetails =
+          _createNotificationDetails(summary: true);
+      await notifications.show(0, 'New posts!', null, notificationDetails);
+    }
+
     loggy.info('Sent notification, title: $title\nbody: $description');
   }
+}
+
+NotificationDetails _createNotificationDetails({
+  String? thumbnailPath,
+  bool? summary,
+}) {
+  return NotificationDetails(
+    android: AndroidNotificationDetails(
+      'follows',
+      'Followed Tags',
+      channelDescription: 'Notifications for tags you are following',
+      largeIcon:
+          thumbnailPath != null ? FilePathAndroidBitmap(thumbnailPath) : null,
+      styleInformation: thumbnailPath != null
+          ? BigPictureStyleInformation(
+              FilePathAndroidBitmap(thumbnailPath),
+              hideExpandedLargeIcon: true,
+            )
+          : null,
+      groupKey: followsBackgroundTaskKey,
+      setAsGroupSummary: summary ?? false,
+    ),
+    iOS: DarwinNotificationDetails(
+      threadIdentifier: followsBackgroundTaskKey,
+      attachments: [
+        if (thumbnailPath != null) DarwinNotificationAttachment(thumbnailPath),
+      ],
+    ),
+  );
 }
