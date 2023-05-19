@@ -2,209 +2,208 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:collection/collection.dart';
-import 'package:dio/dio.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/logs/logs.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/tag/tag.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-class FollowsUpdater extends ChangeNotifier {
-  FollowsUpdater({required this.service});
+class FollowsUpdater extends ValueNotifier<FollowUpdate?> {
+  FollowsUpdater({required this.service}) : super(null);
 
-  final int refreshAmount = 5;
-  final Duration refreshRate = const Duration(hours: 1);
   final FollowsService service;
 
-  Completer<void> _runCompleter = Completer()..complete();
+  final StreamController<int> _remaining = StreamController.broadcast();
+  Stream<int> get remaining => _remaining.stream;
 
-  Future<void> get finish => _runCompleter.future;
+  late StreamSubscription<int> _remainingCurrent;
 
-  bool _canceling = false;
+  @override
+  set value(FollowUpdate? value) {
+    List<Object?> previous = [
+      this.value?.client,
+      this.value?.denylist,
+      this.value?.force,
+    ];
+    List<Object?> current = [
+      value?.client,
+      value?.denylist,
+      value?.force,
+    ];
+    bool noneRunning = this.value?.completed ?? true;
+    bool dependenciesChanged =
+        !const DeepCollectionEquality().equals(previous, current);
+    if (noneRunning || dependenciesChanged) {
+      if (this.value != null) {
+        this.value!.cancel();
+        _remainingCurrent.cancel();
+      }
+      super.value = value;
+      if (value != null) {
+        _remainingCurrent = value.remaining.listen(
+          _remaining.add,
+          onError: _remaining.addError,
+        );
+        value.run();
+      }
+    }
+  }
 
-  int _remaining = 0;
+  void update({
+    required Client client,
+    required List<String> denylist,
+    bool? force,
+  }) =>
+      value = FollowUpdate(
+        service: service,
+        client: client,
+        denylist: denylist,
+        force: force,
+      );
 
-  int get remaining => _remaining;
-
-  Object? _error;
-
-  Object? get error => _error;
-
-  final Loggy loggy = Loggy('FollowUpdater');
+  void cancel() => value = null;
 
   @override
   void dispose() {
-    _canceling = true;
-    _runCompleter.complete();
+    value?.cancel();
+    _remaining.close();
     super.dispose();
   }
+}
 
-  void _fail(Exception exception) {
-    _remaining = 0;
-    _error = exception;
-    _runCompleter.completeError(exception);
-    notifyListeners();
-    loggy.error('Follow update failed!', exception);
+class FollowUpdate with ObjectLoggy {
+  FollowUpdate({
+    required this.service,
+    required this.client,
+    required this.denylist,
+    this.force,
+    this.refreshAmount = 5,
+    this.refreshRate = const Duration(hours: 1),
+  });
+
+  final int refreshAmount;
+  final Duration refreshRate;
+
+  final FollowsService service;
+  final Client client;
+  final List<String> denylist;
+  final bool? force;
+
+  bool _running = false;
+  bool get running => _running;
+
+  bool _cancelled = false;
+  bool get cancelled => _cancelled;
+
+  void cancel() {
+    loggy.debug('Follow update cancelled!');
+    _cancelled = true;
   }
 
-  void _reset() {
-    _remaining = 0;
-    _canceling = false;
-    _error = null;
-    _runCompleter = Completer();
-    notifyListeners();
+  Object? _error;
+  Object? get error => _error;
+
+  late final StreamController<int> _remaining = StreamController.broadcast()
+    ..stream.listen(
+      (value) => loggy.debug('Updating $value follows...'),
+      onError: (exception, stacktrace) =>
+          loggy.error('Follow update failed!', exception, stacktrace),
+      onDone: () => loggy.info('Follow update finished!'),
+    );
+
+  Stream<int> get remaining => _remaining.stream;
+
+  bool get completed => _remaining.isClosed;
+
+  List<String> _previousTags = [];
+
+  void _assertNoDuplicates(List<String> tags) {
+    bool tagsAreDifferent =
+        !const DeepCollectionEquality().equals(_previousTags, tags);
+    assert(
+      tagsAreDifferent,
+      'Follow update tried refreshing same follows twice!',
+    );
+    _previousTags = tags;
   }
 
-  void _complete() {
-    _remaining = 0;
-    _runCompleter.complete();
-    notifyListeners();
-    loggy.info('Follow update finished!');
-  }
-
-  void _progress(int value) {
-    _remaining = value;
-    notifyListeners();
-    loggy.debug('Updating $_remaining follows...');
-  }
-
-  List<Object?> _dependencies = [];
-
-  Future<void> update({
-    required Client client,
-    required List<String> denylist,
-    bool? force,
-  }) async {
-    List<Object?> dependencies = [client, denylist, force];
-    if (_runCompleter.isCompleted ||
-        !const DeepCollectionEquality().equals(_dependencies, dependencies)) {
-      loggy.info('Follow update started!');
-      _dependencies = dependencies;
-      _canceling = true;
-      await finish;
-      _reset();
-      try {
-        await _updateFollows(
-          client: client,
-          denylist: denylist,
-          force: force,
-        );
-        _complete();
-      } on ClientException catch (e) {
-        _fail(e);
-      }
-    }
-    return finish;
-  }
-
-  Future<void> _updateFollows({
-    required Client client,
-    required List<String> denylist,
-    bool? force,
-  }) async {
-    List<String> previous = [];
-    while (!_canceling) {
-      List<Follow> follows = await service.getOutdated(
-        host: client.host,
-        minAge: (force ?? false) ? Duration.zero : refreshRate,
-        types: [FollowType.notify, FollowType.update],
-      );
-      _progress(follows.length);
-      List<Follow> singles = follows.whereNot((e) => e.isSingle).toList();
-      if (singles.isNotEmpty) {
-        List<Follow> chunk = singles.take(40).toList();
-        List<String> tags = chunk.map((e) => e.tags).toList();
-        assert(
-          !const DeepCollectionEquality().equals(previous, tags),
-          'Follow update tried refreshing same follow chunk twice!',
-        );
-        previous = tags;
-        int limit = chunk.length * refreshAmount;
-        List<Post> posts = await rateLimit(client.postsByTags(
-          tags,
-          1,
-          limit: limit,
-          force: force,
-        ));
-        bool isDepleted = posts.length < limit;
-        Map<Follow, List<Post>> updates = await _assignFollowUpdates(
-            follows: chunk, posts: posts, client: client);
+  Future<void> run() async {
+    if (_running) return;
+    _running = true;
+    loggy.info('Follow update started!');
+    try {
+      if (force ?? false) {
+        loggy.debug('Force refreshing follows...');
         await service.transaction(() async {
-          if (isDepleted) {
-            for (final follow in chunk) {
-              await service.replace(follow.withTimestamp());
-            }
-          }
-          for (final entry in updates.entries) {
-            Follow follow = entry.key;
-            List<Post> posts = entry.value;
-            if (posts.length >= 5 ||
-                posts.any((e) => e.id == follow.latest) ||
-                (posts.isNotEmpty && follow.latest == null) ||
-                isDepleted) {
-              posts.removeWhere((e) => e.isIgnored() || e.isDeniedBy(denylist));
-              await service.replace(follow.withUnseen(posts));
-            }
+          List<Follow> follows = await service.getAll(host: client.host);
+          for (final follow in follows) {
+            await service.replace(follow.copyWith(
+              updated: null,
+            ));
           }
         });
-        continue;
       }
-      List<Follow> multiples = follows.whereNot(singles.contains).toList();
-      if (multiples.isNotEmpty) {
-        Follow follow = multiples.first;
-        List<Post> posts = await rateLimit(client.posts(
-          1,
-          search: follow.tags,
-          limit: refreshAmount,
-          ordered: false,
-          force: force,
-        ));
-        posts.removeWhere((e) => e.isIgnored() || e.isDeniedBy(denylist));
-        follow = follow.withUnseen(posts);
-        RegExpMatch? match = poolRegex().firstMatch(follow.tags);
-        if (follow.title == null && match != null) {
-          try {
-            follow = follow.withPool(
-              await client.pool(
-                int.parse(match.namedGroup('id')!),
-                force: force,
-              ),
-            );
-          } on DioError catch (e) {
-            if (e.response?.statusCode == HttpStatus.notFound) {
-              follow = follow.copyWith(
-                type: FollowType.bookmark,
-              );
-              loggy.info(
-                'Follow update found no pool for ${follow.tags}. Set to bookmarked!',
-              );
-            } else {
-              rethrow;
+
+      while (!cancelled) {
+        List<Follow> follows = await service.getOutdated(
+          host: client.host,
+          minAge: refreshRate,
+          types: [FollowType.notify, FollowType.update],
+        );
+
+        _remaining.add(follows.length);
+
+        List<Follow> singles = follows.where((e) => e.isSingle).toList();
+        if (singles.isNotEmpty) {
+          List<Follow> updates = await _refreshSingles(singles);
+          await service.transaction(() async {
+            for (final update in updates) {
+              await service.replace(update);
             }
-          }
+          });
+          continue;
         }
-        await service.replace(follow);
-        continue;
+
+        List<Follow> multiples = follows.whereNot(singles.contains).toList();
+        if (multiples.isNotEmpty) {
+          Follow update = await _refreshMultiples(multiples);
+          await service.replace(update);
+          continue;
+        }
+
+        break;
       }
-      break;
+    } on ClientException catch (error, stacktrace) {
+      _remaining.addError(error, stacktrace);
+    } finally {
+      _remaining.close();
     }
   }
 
-  Future<Map<Follow, List<Post>>> _assignFollowUpdates({
-    required List<Follow> follows,
-    required List<Post> posts,
-    required Client client,
-  }) async {
+  Future<List<Follow>> _refreshSingles(List<Follow> singles) async {
+    List<Follow> follows = singles.take(40).toList();
+    List<String> tags = follows.map((e) => e.tags).toList();
+    _assertNoDuplicates(tags);
+
+    int limit = follows.length * refreshAmount;
+    List<Post> allPosts = await rateLimit(client.postsByTags(
+      tags,
+      1,
+      limit: limit,
+      force: force,
+    ));
+
     Map<Follow, List<Post>> assign(List<Follow> follows, List<Post> posts) {
       Map<Follow, List<Post>> result = {};
       for (final follow in follows) {
+        result.putIfAbsent(follow, () => []);
         for (final post in posts) {
           if (post.hasTag(follow.alias ?? follow.tags)) {
             result.update(
               follow,
               (value) => value..add(post),
-              ifAbsent: () => [post],
             );
           }
         }
@@ -212,41 +211,82 @@ class FollowsUpdater extends ChangeNotifier {
       return result;
     }
 
-    Map<Follow, List<Post>> updates = {};
-    updates.addAll(assign(follows, posts));
-    List<Post> picked = updates.values.flattened.toList();
-    List<Post> leftovers = posts.whereNot(picked.contains).toList();
-    if (leftovers.isNotEmpty) {
-      List<Follow> offenders =
-          follows.where((e) => updates[e] == null).toList();
-      offenders = await _fixFollowAliases(
-        follows: offenders,
-        client: client,
-      );
-      updates.addAll(assign(offenders, leftovers));
-    }
-    return updates;
-  }
+    Map<Follow, List<Post>> updates = assign(follows, allPosts);
 
-  Future<List<Follow>> _fixFollowAliases({
-    required List<Follow> follows,
-    required Client client,
-  }) async {
-    List<Follow> result = [];
-    for (final follow in follows) {
-      if (follow.isSingle) {
-        result.add(follow);
-        continue;
+    bool hasLeftovers() {
+      List<Post> picked = updates.values.flattened.toList();
+      List<Post> leftovers = allPosts.whereNot(picked.contains).toList();
+      return leftovers.isNotEmpty;
+    }
+
+    if (hasLeftovers()) {
+      for (final update in Map.from(updates).entries) {
+        Follow follow = update.key;
+        List<Post> posts = update.value;
+        if (posts.isNotEmpty) continue;
+        String? alias = await rateLimit(client.getTagAlias(follow.tags));
+        if (alias != follow.alias) {
+          Follow updated = follow.copyWith(alias: alias);
+          updates[updated] = updates.remove(follow)!;
+          loggy.info(
+            'Follow update corrected alias for ${follow.tags} to $alias',
+          );
+          updates = assign(updates.keys.toList(), allPosts);
+          if (!hasLeftovers()) break;
+        }
       }
-      String? alias = await client.getTagAlias(follow.tags);
-      if (alias != follow.alias) {
-        Follow updated = follow.copyWith(alias: alias);
-        result.add(updated);
-        loggy.info(
-          'Follow update corrected alias for ${follow.tags} to $alias',
-        );
+    }
+
+    List<Follow> result = [];
+    for (final update in updates.entries) {
+      Follow follow = update.key;
+      List<Post> posts = update.value;
+      bool limitReached = posts.length >= 5;
+      bool latestReached = posts.any((e) => e.id == follow.latest);
+      bool depleted = allPosts.length < limit;
+      if ([limitReached, latestReached, depleted].any((e) => e)) {
+        posts.removeWhere((e) => e.isIgnored() || e.isDeniedBy(denylist));
+        result.add(follow.withUnseen(posts));
       }
     }
     return result;
+  }
+
+  Future<Follow> _refreshMultiples(List<Follow> multiples) async {
+    Follow follow = multiples.first;
+    _assertNoDuplicates([follow.tags]);
+
+    List<Post> posts = await rateLimit(client.posts(
+      1,
+      search: follow.tags,
+      limit: refreshAmount,
+      ordered: false,
+      force: force,
+    ));
+    posts.removeWhere((e) => e.isIgnored() || e.isDeniedBy(denylist));
+    follow = follow.withUnseen(posts);
+    RegExpMatch? match = poolRegex().firstMatch(follow.tags);
+    if (follow.title == null && match != null) {
+      try {
+        follow = follow.withPool(
+          await client.pool(
+            int.parse(match.namedGroup('id')!),
+            force: force,
+          ),
+        );
+      } on ClientException catch (e) {
+        if (e.response?.statusCode == HttpStatus.notFound) {
+          follow = follow.copyWith(
+            type: FollowType.bookmark,
+          );
+          loggy.info(
+            'Follow update found no pool for ${follow.tags}. Set to bookmarked!',
+          );
+        } else {
+          rethrow;
+        }
+      }
+    }
+    return follow;
   }
 }

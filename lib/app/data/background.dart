@@ -1,6 +1,5 @@
 import 'package:e1547/app/app.dart';
 import 'package:e1547/client/client.dart';
-import 'package:e1547/follow/data/background.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:workmanager/workmanager.dart';
 
@@ -17,7 +16,7 @@ void executeBackgroundTasks() => Workmanager().executeTask(
             bundle.follows.watchAll(types: [FollowType.notify]).listen(
                 registerFollowBackgroundTask);
             return backgroundUpdateFollows(
-              updater: FollowsUpdater(service: bundle.follows),
+              service: bundle.follows,
               // We only update the current host as of right now
               // If we ever support hosts which arent partial mirrors of each other,
               // We will have to switch to updating all hosts.
@@ -27,7 +26,7 @@ void executeBackgroundTasks() => Workmanager().executeTask(
                 userAgent: bundle.clients.userAgent,
                 cache: bundle.clients.cache,
               ),
-              denylist: bundle.denylist.items,
+              denylist: bundle.denylist,
               notifications: notifications,
             );
           default:

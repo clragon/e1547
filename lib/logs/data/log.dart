@@ -1,4 +1,5 @@
 import 'package:e1547/logs/logs.dart';
+import 'package:flutter/cupertino.dart';
 
 export 'package:flutter_loggy_dio/flutter_loggy_dio.dart';
 export 'package:loggy/loggy.dart';
@@ -17,6 +18,7 @@ abstract class Logs {
 
 /// Provides a logger that identifies its class by its hashCode.
 mixin ObjectLoggy implements LoggyType {
+  @protected
   @override
   Loggy<ObjectLoggy> get loggy => Loggy<ObjectLoggy>('$runtimeType#$hashCode');
 }

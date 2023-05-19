@@ -95,11 +95,11 @@ Future<void> initializeBackgroundTasks() async {
 Future<void> registerFollowBackgroundTask(List<Follow> follows) async {
   if (!PlatformCapabilities.hasBackgroundWorker) return;
   if (follows.where((e) => e.type == FollowType.notify).isEmpty) {
-    _loggy.info('Cancelled background tasks!');
+    _loggy.debug('Cancelled background tasks!');
     return Workmanager().cancelByUniqueName(followsBackgroundTask);
   }
   if (Platform.isIOS) {
-    _loggy.info('Registered iOS one-off task!');
+    _loggy.debug('Registered iOS one-off task!');
     Workmanager().registerOneOffTask(
       followsBackgroundTask,
       followsBackgroundTask,
@@ -108,7 +108,7 @@ Future<void> registerFollowBackgroundTask(List<Follow> follows) async {
       constraints: Constraints(networkType: NetworkType.connected),
     );
   } else if (Platform.isAndroid) {
-    _loggy.info('Registered Android periodic task!');
+    _loggy.debug('Registered Android periodic task!');
     await Workmanager().registerPeriodicTask(
       followsBackgroundTask,
       followsBackgroundTask,

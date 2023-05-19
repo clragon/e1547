@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:e1547/client/client.dart';
 import 'package:e1547/denylist/denylist.dart';
 import 'package:e1547/follow/follow.dart';
@@ -25,55 +23,59 @@ class _FollowsFolderPageState extends State<FollowsFolderPage>
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback(
-      (_) => update(),
-    );
+    WidgetsBinding.instance.addPostFrameCallback((_) => update());
   }
 
-  Future<void> update([bool? force]) async =>
-      context.read<FollowsUpdater>().update(
-            client: context.read<Client>(),
-            denylist: context.read<DenylistService>().items,
-            force: force,
-          );
+  void update([bool? force]) => context.read<FollowsUpdater>().update(
+        client: context.read<Client>(),
+        denylist: context.read<DenylistService>().items,
+        force: force,
+      );
 
-  Future<void> updateRefresh() async {
-    FollowsUpdater updater = context.read<FollowsUpdater>();
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      if (updater.remaining > 0 && mounted) {
-        if (refreshController.headerMode?.value == RefreshStatus.idle) {
-          await refreshController.requestRefresh(
-            needCallback: false,
-            duration: const Duration(milliseconds: 100),
-          );
-          await updater.finish;
-          if (mounted) {
-            ScrollController scrollController =
-                PrimaryScrollController.of(context);
-            if (scrollController.hasClients) {
-              scrollController.animateTo(
-                0,
-                duration: defaultAnimationDuration,
-                curve: Curves.easeInOut,
+  void onRemaining(int remaining) =>
+      WidgetsBinding.instance.addPostFrameCallback(
+        (_) {
+          bool collapsed =
+              refreshController.headerMode?.value == RefreshStatus.idle;
+          if (remaining > 0) {
+            if (collapsed) {
+              refreshController.requestRefresh(
+                needCallback: false,
+                duration: const Duration(milliseconds: 100),
               );
             }
-            if (updater.error == null) {
+          } else {
+            if (!collapsed) {
               refreshController.refreshCompleted();
-            } else {
-              refreshController.refreshFailed();
+              ScrollController scrollController =
+                  PrimaryScrollController.of(context);
+              if (scrollController.hasClients) {
+                scrollController.animateTo(
+                  0,
+                  duration: defaultAnimationDuration,
+                  curve: Curves.easeInOut,
+                );
+              }
             }
           }
-        }
-      }
-    });
-  }
+        },
+      );
+
+  void onFailure(Object exception) => refreshController.refreshFailed();
 
   @override
   Widget build(BuildContext context) {
     return Consumer2<FollowsService, Client>(
-      builder: (context, service, client, child) => SubListener(
-        listenable: context.watch<FollowsUpdater>(),
-        listener: updateRefresh,
+      builder: (context, service, client, child) => SubEffect(
+        effect: () => context
+            .read<FollowsUpdater>()
+            .remaining
+            .listen(
+              onRemaining,
+              onError: onFailure,
+            )
+            .cancel,
+        keys: [context.watch<FollowsUpdater>().value],
         child: SubStream<List<Follow>>(
           create: () => filterUnseen
               ? service.watchUnseen(host: client.host)
@@ -93,9 +95,14 @@ class _FollowsFolderPageState extends State<FollowsFolderPage>
                   isLoading: follows == null,
                   isEmpty: follows?.isEmpty ?? false,
                   refreshController: refreshController,
-                  refreshHeader: RefreshablePageDefaultHeader(
-                    refreshingText:
-                        'Refreshing ${context.watch<FollowsUpdater>().remaining} follows...',
+                  refreshHeader: SubStream<int>(
+                    create: () => context.read<FollowsUpdater>().remaining,
+                    keys: [context.watch<FollowsUpdater>()],
+                    builder: (context, snapshot) =>
+                        RefreshablePageDefaultHeader(
+                      refreshingText:
+                          'Refreshing ${snapshot.data ?? 0} follows...',
+                    ),
                   ),
                   builder: (context, child) => TileLayout(child: child),
                   child: (context) => AlignedGridView.count(
@@ -115,14 +122,7 @@ class _FollowsFolderPageState extends State<FollowsFolderPage>
                       actions: [ContextDrawerButton()],
                     ),
                   ),
-                  refresh: (refreshController) async {
-                    try {
-                      await update(true);
-                      refreshController.refreshCompleted();
-                    } on ClientException {
-                      refreshController.refreshFailed();
-                    }
-                  },
+                  refresh: (refreshController) => update(true),
                   drawer: const RouterDrawer(),
                   endDrawer: ContextDrawer(
                     title: const Text('Follows'),

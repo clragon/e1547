@@ -2,6 +2,7 @@
 export 'data/actions.dart';
 export 'data/database.dart';
 export 'data/follow.dart';
+export 'data/notifications.dart';
 export 'data/service.dart';
 export 'data/updater.dart';
 // widgets

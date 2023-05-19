@@ -1,57 +1,77 @@
 import 'package:collection/collection.dart';
+import 'package:e1547/app/app.dart';
 import 'package:e1547/client/client.dart';
+import 'package:e1547/denylist/denylist.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/logs/logs.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
-final Loggy _loggy = Loggy('BackgroundFollows');
-
 Future<bool> backgroundUpdateFollows({
-  required FollowsUpdater updater,
+  required FollowsService service,
   required Client client,
-  required List<String> denylist,
+  required DenylistService denylist,
   required FlutterLocalNotificationsPlugin notifications,
 }) async {
-  _loggy.info('Starting follow update');
+  final Loggy loggy = Loggy('BackgroundFollows');
 
-  FollowsService service = updater.service;
+  loggy.info('Starting follow update');
+
   List<Follow> previous = await service.getAll(
     host: client.host,
     types: [FollowType.notify],
   );
 
-  await updater.update(
+  await FollowUpdate(
+    service: service,
     client: client,
     force: true,
-    denylist: denylist,
-  );
+    denylist: denylist.items,
+  ).run();
 
-  List<Follow> next = await service.getAll(
+  List<Follow> updated = await service.getAll(
     host: client.host,
     types: [FollowType.notify],
   );
 
-  Map<Follow, int> updated = {};
+  loggy.info('Completed follow update');
 
-  for (Follow next in next) {
-    Follow? old = previous.firstWhereOrNull((e) => e.tags == next.tags);
+  await sendFollowNotifications(
+    previous: previous,
+    updated: updated,
+    notifications: notifications,
+  );
+
+  return true;
+}
+
+Future<void> sendFollowNotifications({
+  required List<Follow> previous,
+  required List<Follow> updated,
+  required FlutterLocalNotificationsPlugin notifications,
+}) async {
+  final Loggy loggy = Loggy('Notifications');
+
+  Map<Follow, int> updates = {};
+
+  for (Follow update in updated) {
+    Follow? old = previous.firstWhereOrNull((e) => e.tags == update.tags);
     if (old == null) continue;
     int previousUnseen = old.unseen ?? 0;
-    int nextUnseen = next.unseen ?? 0;
+    int nextUnseen = update.unseen ?? 0;
     if (previousUnseen < nextUnseen) {
-      updated[next] = nextUnseen - previousUnseen;
+      updates[update] = nextUnseen - previousUnseen;
     }
   }
 
-  if (updated.isEmpty) {
-    _loggy.info('No updates, exiting.');
-    return true;
+  if (updates.isEmpty) {
+    loggy.debug('No changes in follows, done.');
+    return;
   }
 
-  int total = updated.values.reduce((value, element) => value + element);
-  Follow presenter = updated.entries
+  int total = updates.values.reduce((value, element) => value + element);
+  Follow presenter = updates.entries
       .reduce((value, element) => value.value > element.value ? value : element)
       .key;
   String? thumbnail = presenter.thumbnail;
@@ -60,10 +80,9 @@ Future<bool> backgroundUpdateFollows({
     picture = (await DefaultCacheManager().getSingleFile(thumbnail)).path;
   }
 
-  Set<String> tags = updated.keys.map((e) => e.tags).toSet();
+  Set<String> tags = updates.keys.map((e) => e.tags).toSet();
 
-  _loggy.info('Received $total updated posts!');
-  _loggy.info('Updated followed tags:\n$tags');
+  loggy.debug('Received $total updated posts,\nfrom these tags: $tags!');
 
   NotificationDetails notificationDetails = NotificationDetails(
     android: AndroidNotificationDetails(
@@ -79,7 +98,9 @@ Future<bool> backgroundUpdateFollows({
           : null,
     ),
     iOS: DarwinNotificationDetails(
-      attachments: [if (picture != null) DarwinNotificationAttachment(picture)],
+      attachments: [
+        if (picture != null) DarwinNotificationAttachment(picture),
+      ],
     ),
   );
 
@@ -106,7 +127,5 @@ Future<bool> backgroundUpdateFollows({
     }).toString(),
   );
 
-  _loggy.info('Sent notification, title: $title\nbody: $description');
-
-  return true;
+  loggy.info('Sent notification, title: $title\nbody: $description');
 }
