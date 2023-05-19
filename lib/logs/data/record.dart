@@ -74,7 +74,7 @@ class LogString {
   String get title => '$level | ${logStringDateFormat.format(time)}';
 
   @override
-  String toString() => '$title | $body';
+  String toString() => '$title | $loggerName: $body';
 }
 
 final DateFormat logStringDateFormat = DateFormat('HH:mm:ss.SSS');
