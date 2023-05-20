@@ -80,14 +80,10 @@ Future<void> sendFollowNotifications({
     NotificationDetails notificationDetails =
         _createNotificationDetails(thumbnailPath: picture);
 
-    String title = '$unseen new posts!';
+    String title = follow.name;
+    String description = 'has $unseen new posts!';
     if (unseen == 1) {
-      title = 'A new post!';
-    }
-
-    String description = 'from these tags: ${follow.tags}';
-    if (follow.isSingle) {
-      description = 'from ${follow.tags}';
+      description = 'has a new post!';
     }
 
     await notifications.show(
@@ -101,9 +97,25 @@ Future<void> sendFollowNotifications({
     );
 
     if (Platform.isAndroid) {
-      NotificationDetails notificationDetails =
-          _createNotificationDetails(summary: true);
-      await notifications.show(0, 'New posts!', null, notificationDetails);
+      List<ActiveNotification> active =
+          await notifications.getActiveNotifications();
+
+      List<ActiveNotification> grouped =
+          active.where((e) => e.groupKey == followsBackgroundTaskKey).toList();
+
+      if (grouped.length > 3) {
+        NotificationDetails notificationDetails =
+            _createNotificationDetails(summary: true);
+        await notifications.show(
+          followsBackgroundTaskKey.hashCode,
+          'New posts!',
+          null,
+          notificationDetails,
+          payload: Uri(path: '/follows').toString(),
+        );
+      } else {
+        notifications.cancel(followsBackgroundTaskKey.hashCode);
+      }
     }
 
     loggy.info('Sent notification, title: $title\nbody: $description');
