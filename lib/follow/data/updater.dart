@@ -9,13 +9,14 @@ import 'package:e1547/post/post.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:rxdart/rxdart.dart';
 
 class FollowsUpdater extends ValueNotifier<FollowUpdate?> {
   FollowsUpdater({required this.service}) : super(null);
 
   final FollowsService service;
 
-  final StreamController<int> _remaining = StreamController.broadcast();
+  final StreamController<int> _remaining = BehaviorSubject();
   Stream<int> get remaining => _remaining.stream;
 
   late StreamSubscription<int> _remainingCurrent;
@@ -105,7 +106,7 @@ class FollowUpdate with ObjectLoggy {
   Object? _error;
   Object? get error => _error;
 
-  late final StreamController<int> _remaining = StreamController.broadcast()
+  late final StreamController<int> _remaining = BehaviorSubject()
     ..stream.listen(
       (value) => loggy.debug('Updating $value follows...'),
       onError: (exception, stacktrace) =>
