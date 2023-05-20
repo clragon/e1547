@@ -64,7 +64,7 @@ class _NotificationHandlerState extends State<NotificationHandler> {
   Future<void> sendNotifications(List<Follow> follows) async {
     if (!PlatformCapabilities.hasNotifications) return;
     if (previousFollows != null) {
-      await sendFollowNotifications(
+      await updateFollowNotifications(
         previous: previousFollows!,
         updated: follows,
         notifications: await notifications,

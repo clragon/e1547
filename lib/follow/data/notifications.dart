@@ -40,7 +40,7 @@ Future<bool> backgroundUpdateFollows({
 
   loggy.info('Completed follow update');
 
-  await sendFollowNotifications(
+  await updateFollowNotifications(
     previous: previous,
     updated: updated,
     notifications: notifications,
@@ -49,7 +49,7 @@ Future<bool> backgroundUpdateFollows({
   return true;
 }
 
-Future<void> sendFollowNotifications({
+Future<void> updateFollowNotifications({
   required List<Follow> previous,
   required List<Follow> updated,
   required FlutterLocalNotificationsPlugin notifications,
@@ -57,6 +57,7 @@ Future<void> sendFollowNotifications({
   final Loggy loggy = Loggy('Notifications');
 
   Map<Follow, int> updates = {};
+  List<Follow> seen = [];
 
   for (final update in updated) {
     Follow? old = previous.firstWhereOrNull((e) => e.tags == update.tags);
@@ -65,6 +66,8 @@ Future<void> sendFollowNotifications({
     int nextUnseen = update.unseen ?? 0;
     if (previousUnseen < nextUnseen) {
       updates[update] = nextUnseen - previousUnseen;
+    } else if (previousUnseen > 0 && nextUnseen <= 0) {
+      seen.add(update);
     }
   }
 
@@ -119,6 +122,10 @@ Future<void> sendFollowNotifications({
     }
 
     loggy.info('Sent notification, title: $title\nbody: $description');
+  }
+
+  for (final follow in seen) {
+    notifications.cancel(follow.id);
   }
 }
 
