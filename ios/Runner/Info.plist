@@ -45,6 +45,8 @@
 		<false/>
 		<key>CADisableMinimumFrameDurationOnPhone</key>
 		<true/>
+		<key>UIApplicationSupportsIndirectInputEvents</key>
+		<true/>
 		<key>UIStatusBarHidden</key>
 		<false/>
 		<key>NSPhotoLibraryAddUsageDescription</key>
