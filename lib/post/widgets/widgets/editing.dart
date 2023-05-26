@@ -16,24 +16,26 @@ class PostEditor extends StatelessWidget {
     return SubChangeNotifierProvider0<PostEditingController>(
       create: (context) => PostEditingController(post: post),
       update: (context, value) => value..post = post,
-      builder: (context, child) => WillPopScope(
-        child: SheetActions(
-          controller: context.watch<PostEditingController>(),
-          child: child!,
-        ),
-        onWillPop: () async {
-          PostEditingController controller =
-              context.read<PostEditingController>();
-          if (controller.isShown) {
+      builder: (context, child) {
+        PostEditingController controller =
+            context.watch<PostEditingController>();
+        return WillPopScope(
+          child: SheetActions(
+            controller: controller,
+            child: child!,
+          ),
+          onWillPop: () async {
+            if (controller.isShown) {
+              return true;
+            }
+            if (controller.editing) {
+              controller.stopEditing();
+              return false;
+            }
             return true;
-          }
-          if (controller.editing) {
-            controller.stopEditing();
-            return false;
-          }
-          return true;
-        },
-      ),
+          },
+        );
+      },
       child: child,
     );
   }
