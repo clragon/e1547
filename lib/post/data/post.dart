@@ -12,7 +12,8 @@ class Post with _$Post {
     required int id,
     required DateTime createdAt,
     required DateTime? updatedAt,
-    @JsonKey(name: 'file') required PostSourceFile fileRaw,
+    @JsonKey(name: 'file')
+        required PostSourceFile fileRaw,
     required PostPreviewFile preview,
     required PostSampleFile sample,
     required Score score,
@@ -32,7 +33,9 @@ class Post with _$Post {
     required bool isFavorited,
     required bool hasNotes,
     required double? duration,
-    @JsonKey(ignore: true) @Default(VoteStatus.unknown) VoteStatus voteStatus,
+    @JsonKey(includeFromJson: false, includeToJson: false)
+    @Default(VoteStatus.unknown)
+        VoteStatus voteStatus,
   }) = _Post;
   const Post._();
 

@@ -22,7 +22,9 @@ class Comment with _$Comment {
     required int? warningUserId,
     required String creatorName,
     required String updaterName,
-    @JsonKey(ignore: true) @Default(VoteStatus.unknown) VoteStatus voteStatus,
+    @JsonKey(includeFromJson: false, includeToJson: false)
+    @Default(VoteStatus.unknown)
+        VoteStatus voteStatus,
   }) = _Comment;
 
   factory Comment.fromJson(dynamic json) => _$CommentFromJson(json);

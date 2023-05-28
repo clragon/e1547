@@ -72,9 +72,17 @@ def populate_changelogs
   fetch_versions.each do |version|
     build_number = version.split("+")[1]
     File.open("#{changelogs}/#{build_number}.txt", 'w') do |f|
-      f << read_changelog(section_identifier: "[#{version}]")
+      full_changelog = read_changelog(section_identifier: "[#{version}]")
+      f << strip_links_from_changelog(full_changelog)
     end
   end
+end
+
+# removes the unwanted link section from the changelog
+def strip_links_from_changelog(changelog)
+  changelog.split("\n").reject do |line|
+    line =~ /^\[\d+\.\d+\.\d+(\+\d+)?\]:\s*https?:\/\/.*$/
+  end.join("\n")
 end
 
 # TODO: fix these lanes

@@ -1,0 +1,10 @@
+Added
+- Grouping notifications
+- Notifications in foreground
+
+Changed
+- Split notifications per tag
+- Split Follows into Subscriptions and Bookmarks
+
+Fixed
+- Pool order switch

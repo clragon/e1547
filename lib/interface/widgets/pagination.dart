@@ -29,10 +29,10 @@ PagedChildBuilderDelegate<T> defaultPagedChildBuilderDelegate<T>({
 }) {
   return PagedChildBuilderDelegate<T>(
     itemBuilder: itemBuilder,
-    firstPageProgressIndicatorBuilder: (context) => Material(
+    firstPageProgressIndicatorBuilder: (context) => const Material(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: const [
+        children: [
           CircularProgressIndicator(),
         ],
       ),

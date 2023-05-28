@@ -118,19 +118,19 @@ class DrawerTagCounterBody extends StatelessWidget {
                     ),
                     secondChild: CrossFade(
                       showChild: controller?.error != null,
-                      secondChild: Row(
+                      secondChild: const Row(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
+                        children: [
                           Padding(
                             padding: EdgeInsets.all(8),
                             child: SizedCircularProgressIndicator(size: 24),
                           ),
                         ],
                       ),
-                      child: DimSubtree(
+                      child: const DimSubtree(
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
-                          children: const [
+                          children: [
                             Icon(Icons.warning_amber, size: 12),
                             Padding(
                               padding: EdgeInsets.all(8),

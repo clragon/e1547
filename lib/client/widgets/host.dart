@@ -64,10 +64,10 @@ class _HostPageState extends State<HostPage> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 32, right: 32, bottom: 12),
+        const Padding(
+          padding: EdgeInsets.only(left: 32, right: 32, bottom: 12),
           child: Row(
-            children: const [
+            children: [
               Text(
                 'Custom Host',
                 style: TextStyle(

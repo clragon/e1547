@@ -44,7 +44,7 @@ mixin _$Post {
   bool get isFavorited => throw _privateConstructorUsedError;
   bool get hasNotes => throw _privateConstructorUsedError;
   double? get duration => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   VoteStatus get voteStatus => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -61,7 +61,8 @@ abstract class $PostCopyWith<$Res> {
       {int id,
       DateTime createdAt,
       DateTime? updatedAt,
-      @JsonKey(name: 'file') PostSourceFile fileRaw,
+      @JsonKey(name: 'file')
+          PostSourceFile fileRaw,
       PostPreviewFile preview,
       PostSampleFile sample,
       Score score,
@@ -81,7 +82,8 @@ abstract class $PostCopyWith<$Res> {
       bool isFavorited,
       bool hasNotes,
       double? duration,
-      @JsonKey(ignore: true) VoteStatus voteStatus});
+      @JsonKey(includeFromJson: false, includeToJson: false)
+          VoteStatus voteStatus});
 
   $PostSourceFileCopyWith<$Res> get fileRaw;
   $PostPreviewFileCopyWith<$Res> get preview;
@@ -288,7 +290,8 @@ abstract class _$$_PostCopyWith<$Res> implements $PostCopyWith<$Res> {
       {int id,
       DateTime createdAt,
       DateTime? updatedAt,
-      @JsonKey(name: 'file') PostSourceFile fileRaw,
+      @JsonKey(name: 'file')
+          PostSourceFile fileRaw,
       PostPreviewFile preview,
       PostSampleFile sample,
       Score score,
@@ -308,7 +311,8 @@ abstract class _$$_PostCopyWith<$Res> implements $PostCopyWith<$Res> {
       bool isFavorited,
       bool hasNotes,
       double? duration,
-      @JsonKey(ignore: true) VoteStatus voteStatus});
+      @JsonKey(includeFromJson: false, includeToJson: false)
+          VoteStatus voteStatus});
 
   @override
   $PostSourceFileCopyWith<$Res> get fileRaw;
@@ -466,7 +470,8 @@ class _$_Post extends _Post {
       {required this.id,
       required this.createdAt,
       required this.updatedAt,
-      @JsonKey(name: 'file') required this.fileRaw,
+      @JsonKey(name: 'file')
+          required this.fileRaw,
       required this.preview,
       required this.sample,
       required this.score,
@@ -486,7 +491,8 @@ class _$_Post extends _Post {
       required this.isFavorited,
       required this.hasNotes,
       required this.duration,
-      @JsonKey(ignore: true) this.voteStatus = VoteStatus.unknown})
+      @JsonKey(includeFromJson: false, includeToJson: false)
+          this.voteStatus = VoteStatus.unknown})
       : _tags = tags,
         _lockedTags = lockedTags,
         _sources = sources,
@@ -569,7 +575,7 @@ class _$_Post extends _Post {
   @override
   final double? duration;
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   final VoteStatus voteStatus;
 
   @override
@@ -671,7 +677,8 @@ abstract class _Post extends Post {
       {required final int id,
       required final DateTime createdAt,
       required final DateTime? updatedAt,
-      @JsonKey(name: 'file') required final PostSourceFile fileRaw,
+      @JsonKey(name: 'file')
+          required final PostSourceFile fileRaw,
       required final PostPreviewFile preview,
       required final PostSampleFile sample,
       required final Score score,
@@ -691,7 +698,8 @@ abstract class _Post extends Post {
       required final bool isFavorited,
       required final bool hasNotes,
       required final double? duration,
-      @JsonKey(ignore: true) final VoteStatus voteStatus}) = _$_Post;
+      @JsonKey(includeFromJson: false, includeToJson: false)
+          final VoteStatus voteStatus}) = _$_Post;
   const _Post._() : super._();
 
   factory _Post.fromJson(Map<String, dynamic> json) = _$_Post.fromJson;
@@ -744,7 +752,7 @@ abstract class _Post extends Post {
   @override
   double? get duration;
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   VoteStatus get voteStatus;
   @override
   @JsonKey(ignore: true)

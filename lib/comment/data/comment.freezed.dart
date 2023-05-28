@@ -35,7 +35,7 @@ mixin _$Comment {
   int? get warningUserId => throw _privateConstructorUsedError;
   String get creatorName => throw _privateConstructorUsedError;
   String get updaterName => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   VoteStatus get voteStatus => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -64,7 +64,8 @@ abstract class $CommentCopyWith<$Res> {
       int? warningUserId,
       String creatorName,
       String updaterName,
-      @JsonKey(ignore: true) VoteStatus voteStatus});
+      @JsonKey(includeFromJson: false, includeToJson: false)
+          VoteStatus voteStatus});
 }
 
 /// @nodoc
@@ -189,7 +190,8 @@ abstract class _$$_CommentCopyWith<$Res> implements $CommentCopyWith<$Res> {
       int? warningUserId,
       String creatorName,
       String updaterName,
-      @JsonKey(ignore: true) VoteStatus voteStatus});
+      @JsonKey(includeFromJson: false, includeToJson: false)
+          VoteStatus voteStatus});
 }
 
 /// @nodoc
@@ -307,7 +309,8 @@ class _$_Comment implements _Comment {
       required this.warningUserId,
       required this.creatorName,
       required this.updaterName,
-      @JsonKey(ignore: true) this.voteStatus = VoteStatus.unknown});
+      @JsonKey(includeFromJson: false, includeToJson: false)
+          this.voteStatus = VoteStatus.unknown});
 
   factory _$_Comment.fromJson(Map<String, dynamic> json) =>
       _$$_CommentFromJson(json);
@@ -343,7 +346,7 @@ class _$_Comment implements _Comment {
   @override
   final String updaterName;
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   final VoteStatus voteStatus;
 
   @override
@@ -438,7 +441,8 @@ abstract class _Comment implements Comment {
       required final int? warningUserId,
       required final String creatorName,
       required final String updaterName,
-      @JsonKey(ignore: true) final VoteStatus voteStatus}) = _$_Comment;
+      @JsonKey(includeFromJson: false, includeToJson: false)
+          final VoteStatus voteStatus}) = _$_Comment;
 
   factory _Comment.fromJson(Map<String, dynamic> json) = _$_Comment.fromJson;
 
@@ -473,7 +477,7 @@ abstract class _Comment implements Comment {
   @override
   String get updaterName;
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   VoteStatus get voteStatus;
   @override
   @JsonKey(ignore: true)

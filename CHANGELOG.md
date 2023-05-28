@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [16.1.0+79] - 2023-05-28
+### Added
+- Grouping notifications
+- Notifications in foreground
+
+### Changed
+- Split notifications per tag
+- Split Follows into Subscriptions and Bookmarks
+
+### Fixed
+- Pool order switch
+
 ## [16.0.0+78] - 2023-05-07
 ### Added
 - notifications for follows
@@ -738,6 +750,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Fixed
 - API client bindings
 
+[16.1.0+79]: https://github.com/clragon/e1547/compare/16.0.0...16.1.0
 [16.0.0+78]: https://github.com/clragon/e1547/compare/15.4.2...16.0.0
 [15.4.2+77]: https://github.com/clragon/e1547/compare/15.4.1...15.4.2
 [15.4.1+76]: https://github.com/clragon/e1547/compare/15.4.0...15.4.1

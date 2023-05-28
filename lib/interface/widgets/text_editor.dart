@@ -102,11 +102,11 @@ class _TextEditorState extends State<TextEditor> {
     }
 
     Widget loadingBar() {
-      return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+      return const Padding(
+        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 16),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
+          children: [
             SizedCircularProgressIndicator(size: 24),
           ],
         ),

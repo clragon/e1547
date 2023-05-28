@@ -53,10 +53,10 @@ class SearchInput<T> extends StatelessWidget {
         textInputAction: textInputAction ?? TextInputAction.search,
       ),
       loadingBuilder: (context) => const SizedBox(),
-      noItemsFoundBuilder: (context) => ListTile(
+      noItemsFoundBuilder: (context) => const ListTile(
         title: Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
+          children: [
             SizedCircularProgressIndicator(size: 24),
           ],
         ),
