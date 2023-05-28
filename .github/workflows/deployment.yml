@@ -121,7 +121,7 @@ jobs:
 
   release:
     needs: [android-build, ios-build]
-    if: env.VERSION_BUMP != 'none'
+    if: ${{ env.VERSION_BUMP != 'none' }}
     runs-on: ubuntu-latest
     steps:
       - name: setup actions
