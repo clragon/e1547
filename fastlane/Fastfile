@@ -38,20 +38,38 @@ platform :android do
     flutter_build(build: 'apk')
   end
 
-  desc "Writes playstore changelogs from Changelog.md"
-  lane :changelog do
-    populate_changelogs
+  desc "Build aab file"
+  lane :build_aab do
+    flutter_build(build: 'appbundle')
   end
 
-  desc "Build appbundle and upload to playstore"
-  lane :deploy do
-    populate_changelogs
-    flutter_build(build: 'appbundle')
+  desc "Writes playstore changelogs from CHANGELOG.md"
+  lane :changelog do
+    changelogs = "./metadata/android/en-US/changelogs"
+    FileUtils.mkdir_p(changelogs)
+    fetch_versions.each do |version|
+      build_number = version.split("+")[1]
+      File.open("#{changelogs}/#{build_number}.txt", 'w') do |f|
+        full_changelog = read_changelog(section_identifier: "[#{version}]")
+        f << strip_links_from_changelog(full_changelog)
+      end
+    end
+  end
+
+  desc "Uploads appbundle to playstore"
+  lane :upload do
     build_number = fetch_current_version.split("+")[1]
     upload_to_play_store(
       aab: "build/app/outputs/bundle/release/app-release.aab",
       version_code: build_number,
     )
+  end
+
+  desc "Build appbundle and upload to playstore"
+  lane :deploy do
+    build_aab
+    changelog
+    upload
   end
 end
 
@@ -66,19 +84,6 @@ def fetch_versions
   content.scan(regex).map(&:first)
 end
 
-def populate_changelogs
-  changelogs = "./metadata/android/en-US/changelogs"
-  FileUtils.mkdir_p(changelogs)
-  fetch_versions.each do |version|
-    build_number = version.split("+")[1]
-    File.open("#{changelogs}/#{build_number}.txt", 'w') do |f|
-      full_changelog = read_changelog(section_identifier: "[#{version}]")
-      f << strip_links_from_changelog(full_changelog)
-    end
-  end
-end
-
-# removes the unwanted link section from the changelog
 def strip_links_from_changelog(changelog)
   changelog.split("\n").reject do |line|
     line =~ /^\[\d+\.\d+\.\d+(\+\d+)?\]:\s*https?:\/\/.*$/
