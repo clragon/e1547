@@ -519,7 +519,7 @@ class Client {
     }
   }
 
-  Future<String?> getTagAlias(
+  Future<String?> tagAlias(
     String tag, {
     bool? force,
     CancelToken? cancelToken,
