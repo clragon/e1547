@@ -41,6 +41,11 @@ class Client {
         connectTimeout: const Duration(seconds: 30),
       ),
     );
+    _dio.interceptors.add(LoggyDioInterceptor(
+      requestLevel: LogLevel.debug,
+      responseLevel: LogLevel.debug,
+      errorLevel: LogLevel.warning,
+    ));
     if (cache != null) {
       _dio.interceptors.add(
         CacheInterceptor(
@@ -52,11 +57,6 @@ class Client {
         ),
       );
     }
-    _dio.interceptors.add(LoggyDioInterceptor(
-      requestLevel: LogLevel.debug,
-      responseLevel: LogLevel.debug,
-      errorLevel: LogLevel.warning,
-    ));
   }
 
   final String host;

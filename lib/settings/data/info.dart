@@ -92,12 +92,12 @@ class AppInfo extends PackageInfo {
     Dio dio = Dio(
       BaseOptions(headers: {HttpHeaders.userAgentHeader: userAgent}),
     );
-    dio.interceptors.add(CacheInterceptor(options: CacheConfig(store: cache)));
     dio.interceptors.add(LoggyDioInterceptor(
       requestLevel: LogLevel.debug,
       responseLevel: LogLevel.debug,
       errorLevel: LogLevel.warning,
     ));
+    dio.interceptors.add(CacheInterceptor(options: CacheConfig(store: cache)));
     List<dynamic> releases = await dio
         .get(
           'https://api.github.com/repos/$github/releases',
