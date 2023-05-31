@@ -39,6 +39,7 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: stable
+          cache: true
 
       - name: cache flutter dependencies
         uses: actions/cache@v3
@@ -85,16 +86,11 @@ jobs:
       - name: setup actions
         uses: actions/checkout@v3
 
-      - name: setup ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: '3.0'
-          bundler-cache: true
-
       - name: setup flutter
         uses: subosito/flutter-action@v2
         with:
           channel: stable
+          cache: true
 
       - name: cache flutter dependencies
         uses: actions/cache@v3
