@@ -42,12 +42,14 @@ class TagListActions extends StatelessWidget {
                     VoidCallback followBookmarkToggle(FollowType type) {
                       return () {
                         if (hasFollow) {
-                          if ([FollowType.update, FollowType.bookmark]
-                                  .contains(follow.type) &&
-                              follow.type != type) {
-                            follows.replace(follow.copyWith(type: type));
-                          } else {
+                          if (follow.type == type) {
                             follows.removeTag(client.host, tag);
+                          }
+                          if (follow.type == FollowType.notify &&
+                              type == FollowType.update) {
+                            follows.removeTag(client.host, tag);
+                          } else {
+                            follows.replace(follow.copyWith(type: type));
                           }
                         } else {
                           follows.addTag(client.host, tag, type: type);
