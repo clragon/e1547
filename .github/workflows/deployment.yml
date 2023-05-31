@@ -92,6 +92,12 @@ jobs:
           ruby-version: '2.7'
           bundler-cache: true
 
+      - name: (re)install cocoapods
+        run: |
+          gem uninstall cocoapods --all --executables
+          gem install cocoapods
+          pod setup
+
       - name: setup flutter
         uses: subosito/flutter-action@v2
         with:
