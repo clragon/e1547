@@ -81,6 +81,14 @@ class FollowTile extends StatelessWidget {
         ),
         onSelected: (value) => value(),
         itemBuilder: (context) => [
+          if ((follow.unseen ?? 0) > 0)
+            PopupMenuTile(
+              value: () => follows.replace(
+                follow.withSeen(),
+              ),
+              title: 'Mark as read',
+              icon: Icons.mark_email_read,
+            ),
           if (PlatformCapabilities.hasNotifications && !bookmarked)
             PopupMenuTile(
               value: () => follows.replace(
