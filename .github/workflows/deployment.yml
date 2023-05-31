@@ -32,7 +32,7 @@ jobs:
       - name: setup ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '2.7'
+          ruby-version: '3.0'
           bundler-cache: true
 
       - name: setup flutter
@@ -86,13 +86,6 @@ jobs:
       - name: setup actions
         uses: actions/checkout@v3
 
-      - name: setup system Ruby
-        run: |
-          echo "export PATH=/usr/local/opt/ruby/bin:$PATH" >> $GITHUB_ENV
-          /usr/bin/ruby -v
-          gem install bundler
-          bundle install --path vendor/bundle
-
       - name: setup flutter
         uses: subosito/flutter-action@v2
         with:
@@ -107,7 +100,7 @@ jobs:
           restore-keys: ${{ runner.os }}-flutter-
 
       - name: build IPA
-        run: bundle exec fastlane ios build
+        run: fastlane ios build
 
       - name: package release
         run: |
