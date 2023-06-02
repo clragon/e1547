@@ -86,6 +86,12 @@ jobs:
       - name: setup actions
         uses: actions/checkout@v3
 
+      - name: setup ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.0'
+          bundler-cache: true
+
       - name: setup flutter
         uses: subosito/flutter-action@v2
         with:
@@ -100,14 +106,10 @@ jobs:
           restore-keys: ${{ runner.os }}-flutter-
 
       - name: build IPA
-        run: fastlane ios build
+        run: bundle exec fastlane ios build
 
       - name: package release
-        run: |
-          cd build/ios/iphoneos
-          mkdir Payload
-          mv Runner.app Payload/Runner.app
-          zip -r Runner.ipa Payload
+        run: mv ./build/Runner.ipa Runner.ipa
 
       - name: upload IPA to artifacts
         uses: actions/upload-artifact@v2

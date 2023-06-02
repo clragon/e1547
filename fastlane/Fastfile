@@ -15,9 +15,18 @@ platform :ios do
 
   desc "Build ipa file"
   lane :build do
-    flutter_build(
-        build_args: ['--no-codesign'],
-        build: 'ipa',
+    gym(
+      workspace: "ios/Runner.xcworkspace",
+      scheme: "Runner",
+      clean: true,
+      output_directory: "./build",
+      output_name: "Runner.ipa",
+      export_options: {
+        method: "development",
+        signingStyle: "automatic",
+        stripSwiftSymbols: true,
+        compileBitcode: false,
+      }
     )
   end
 end
