@@ -21,9 +21,10 @@ platform :ios do
       clean: true,
       output_directory: "./build",
       output_name: "Runner.ipa",
+      skip_codesigning: true,
       export_options: {
-        method: "development",
-        signingStyle: "automatic",
+        method: "ad-hoc",
+        signingStyle: "manual",
         stripSwiftSymbols: true,
         compileBitcode: false,
       }
