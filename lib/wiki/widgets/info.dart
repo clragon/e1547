@@ -29,7 +29,7 @@ class WikiInfo extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          textInfoRow('category', TagCategory.byId(wiki.categoryName).name),
+          textInfoRow('category', TagCategory.byId(wiki.categoryId).name),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [

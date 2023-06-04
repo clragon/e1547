@@ -17,7 +17,7 @@ class Wiki with _$Wiki {
     required bool isDeleted,
     required List<String> otherNames,
     required String creatorName,
-    required int categoryName,
+    required int categoryId,
   }) = _Wiki;
 
   factory Wiki.fromJson(dynamic json) => _$WikiFromJson(json);

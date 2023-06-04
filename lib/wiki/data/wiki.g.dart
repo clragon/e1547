@@ -22,7 +22,7 @@ _$_Wiki _$$_WikiFromJson(Map<String, dynamic> json) => _$_Wiki(
           .map((e) => e as String)
           .toList(),
       creatorName: json['creator_name'] as String,
-      categoryName: json['category_name'] as int,
+      categoryId: json['category_id'] as int,
     );
 
 Map<String, dynamic> _$$_WikiToJson(_$_Wiki instance) => <String, dynamic>{
@@ -37,5 +37,5 @@ Map<String, dynamic> _$$_WikiToJson(_$_Wiki instance) => <String, dynamic>{
       'is_deleted': instance.isDeleted,
       'other_names': instance.otherNames,
       'creator_name': instance.creatorName,
-      'category_name': instance.categoryName,
+      'category_id': instance.categoryId,
     };

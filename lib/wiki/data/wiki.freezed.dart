@@ -31,7 +31,7 @@ mixin _$Wiki {
   bool get isDeleted => throw _privateConstructorUsedError;
   List<String> get otherNames => throw _privateConstructorUsedError;
   String get creatorName => throw _privateConstructorUsedError;
-  int get categoryName => throw _privateConstructorUsedError;
+  int get categoryId => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -55,7 +55,7 @@ abstract class $WikiCopyWith<$Res> {
       bool isDeleted,
       List<String> otherNames,
       String creatorName,
-      int categoryName});
+      int categoryId});
 }
 
 /// @nodoc
@@ -82,7 +82,7 @@ class _$WikiCopyWithImpl<$Res, $Val extends Wiki>
     Object? isDeleted = null,
     Object? otherNames = null,
     Object? creatorName = null,
-    Object? categoryName = null,
+    Object? categoryId = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -129,9 +129,9 @@ class _$WikiCopyWithImpl<$Res, $Val extends Wiki>
           ? _value.creatorName
           : creatorName // ignore: cast_nullable_to_non_nullable
               as String,
-      categoryName: null == categoryName
-          ? _value.categoryName
-          : categoryName // ignore: cast_nullable_to_non_nullable
+      categoryId: null == categoryId
+          ? _value.categoryId
+          : categoryId // ignore: cast_nullable_to_non_nullable
               as int,
     ) as $Val);
   }
@@ -155,7 +155,7 @@ abstract class _$$_WikiCopyWith<$Res> implements $WikiCopyWith<$Res> {
       bool isDeleted,
       List<String> otherNames,
       String creatorName,
-      int categoryName});
+      int categoryId});
 }
 
 /// @nodoc
@@ -178,7 +178,7 @@ class __$$_WikiCopyWithImpl<$Res> extends _$WikiCopyWithImpl<$Res, _$_Wiki>
     Object? isDeleted = null,
     Object? otherNames = null,
     Object? creatorName = null,
-    Object? categoryName = null,
+    Object? categoryId = null,
   }) {
     return _then(_$_Wiki(
       id: null == id
@@ -225,9 +225,9 @@ class __$$_WikiCopyWithImpl<$Res> extends _$WikiCopyWithImpl<$Res, _$_Wiki>
           ? _value.creatorName
           : creatorName // ignore: cast_nullable_to_non_nullable
               as String,
-      categoryName: null == categoryName
-          ? _value.categoryName
-          : categoryName // ignore: cast_nullable_to_non_nullable
+      categoryId: null == categoryId
+          ? _value.categoryId
+          : categoryId // ignore: cast_nullable_to_non_nullable
               as int,
     ));
   }
@@ -248,7 +248,7 @@ class _$_Wiki implements _Wiki {
       required this.isDeleted,
       required final List<String> otherNames,
       required this.creatorName,
-      required this.categoryName})
+      required this.categoryId})
       : _otherNames = otherNames;
 
   factory _$_Wiki.fromJson(Map<String, dynamic> json) => _$$_WikiFromJson(json);
@@ -282,11 +282,11 @@ class _$_Wiki implements _Wiki {
   @override
   final String creatorName;
   @override
-  final int categoryName;
+  final int categoryId;
 
   @override
   String toString() {
-    return 'Wiki(id: $id, createdAt: $createdAt, updatedAt: $updatedAt, title: $title, body: $body, creatorId: $creatorId, isLocked: $isLocked, updaterId: $updaterId, isDeleted: $isDeleted, otherNames: $otherNames, creatorName: $creatorName, categoryName: $categoryName)';
+    return 'Wiki(id: $id, createdAt: $createdAt, updatedAt: $updatedAt, title: $title, body: $body, creatorId: $creatorId, isLocked: $isLocked, updaterId: $updaterId, isDeleted: $isDeleted, otherNames: $otherNames, creatorName: $creatorName, categoryId: $categoryId)';
   }
 
   @override
@@ -313,8 +313,8 @@ class _$_Wiki implements _Wiki {
                 .equals(other._otherNames, _otherNames) &&
             (identical(other.creatorName, creatorName) ||
                 other.creatorName == creatorName) &&
-            (identical(other.categoryName, categoryName) ||
-                other.categoryName == categoryName));
+            (identical(other.categoryId, categoryId) ||
+                other.categoryId == categoryId));
   }
 
   @JsonKey(ignore: true)
@@ -332,7 +332,7 @@ class _$_Wiki implements _Wiki {
       isDeleted,
       const DeepCollectionEquality().hash(_otherNames),
       creatorName,
-      categoryName);
+      categoryId);
 
   @JsonKey(ignore: true)
   @override
@@ -361,7 +361,7 @@ abstract class _Wiki implements Wiki {
       required final bool isDeleted,
       required final List<String> otherNames,
       required final String creatorName,
-      required final int categoryName}) = _$_Wiki;
+      required final int categoryId}) = _$_Wiki;
 
   factory _Wiki.fromJson(Map<String, dynamic> json) = _$_Wiki.fromJson;
 
@@ -388,7 +388,7 @@ abstract class _Wiki implements Wiki {
   @override
   String get creatorName;
   @override
-  int get categoryName;
+  int get categoryId;
   @override
   @JsonKey(ignore: true)
   _$$_WikiCopyWith<_$_Wiki> get copyWith => throw _privateConstructorUsedError;
