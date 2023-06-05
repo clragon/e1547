@@ -10,9 +10,11 @@ on:
         default: 'none'
         options:
           - none
-          - patch
-          - minor
           - major
+          - minor
+          - patch
+          - pre
+          - release
       release_title:
         description: 'Release title'
         type: string
@@ -29,24 +31,11 @@ jobs:
       - name: setup actions
         uses: actions/checkout@v3
 
-      - name: setup ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: '3.0'
-          bundler-cache: true
-
       - name: setup flutter
         uses: subosito/flutter-action@v2
         with:
           channel: stable
           cache: true
-
-      - name: cache flutter dependencies
-        uses: actions/cache@v3
-        with:
-          path: ${{ env.PUB_CACHE }}
-          key: ${{ runner.os }}-flutter-${{ hashFiles('**/pubspec.lock') }}
-          restore-keys: ${{ runner.os }}-flutter-
 
       - name: configure release keys
         env:
@@ -57,11 +46,21 @@ jobs:
           echo "$KEYSTORE" | base64 -d > android/keys/key.pkcs
           echo "$KEYCONFIG" | base64 -d > android/keys/key.properties
 
+      - name: cache flutter dependencies
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.PUB_CACHE }}
+          key: ${{ runner.os }}-flutter-${{ hashFiles('**/pubspec.lock') }}
+          restore-keys: ${{ runner.os }}-flutter-
+
+      - name: get flutter dependencies
+        run: flutter pub get
+
       - name: build APK
-        run: bundle exec fastlane android build
+        run: flutter build apk
 
       - name: build AAB
-        run: bundle exec fastlane android build_aab
+        run: flutter build aab
 
       - name: package release
         run: |
@@ -86,12 +85,6 @@ jobs:
       - name: setup actions
         uses: actions/checkout@v3
 
-      - name: setup ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: '3.0'
-          bundler-cache: true
-
       - name: setup flutter
         uses: subosito/flutter-action@v2
         with:
@@ -105,11 +98,21 @@ jobs:
           key: ${{ runner.os }}-flutter-${{ hashFiles('**/pubspec.lock') }}
           restore-keys: ${{ runner.os }}-flutter-
 
+      - name: get flutter dependencies
+        run: flutter pub get
+
       - name: build IPA
-        run: bundle exec fastlane ios build
+        run: flutter build ios
 
       - name: package release
-        run: mv ./build/Runner.ipa Runner.ipa
+        run: |
+          cd build/ios/iphoneos
+          xcrun bitcode_strip -r Runner.app/Frameworks/Flutter.framework/Flutter -o Runner.app/Frameworks/Flutter.framework/FlutterStrip 
+          mv Runner.app/Frameworks/Flutter.framework/FlutterStrip Runner.app/Frameworks/Flutter.framework/Flutter
+          mkdir Payload
+          mv Runner.app Payload/Runner.app
+          zip -9 -r Runner.zip Payload
+          mv Runner.zip ../../../Runner.ipa
 
       - name: upload IPA to artifacts
         uses: actions/upload-artifact@v2
@@ -124,12 +127,6 @@ jobs:
     steps:
       - name: setup actions
         uses: actions/checkout@v3
-
-      - name: setup ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: '3.0'
-          bundler-cache: true
 
       - name: setup flutter
         uses: subosito/flutter-action@v2
@@ -149,7 +146,19 @@ jobs:
         run: echo "::set-output name=VERSION::$(cider version)"
 
       - name: write playstore changelogs
-        run: fastlane android changelog
+        run: |
+          while IFS= read -r line
+          do
+            if [[ $line == "## ["* ]]
+            then
+              version=$(echo $line | cut -d'[' -f 2 | cut -d']' -f 1)
+              build_number=$(echo $version | cut -d'+' -f 2)
+              description=$(cider describe $version)
+              changelog_dir="./fastlane/metadata/android/en-US/changelogs"
+              mkdir -p $changelog_dir
+              echo $description > "${changelog_dir}/${build_number}.txt"
+            fi
+          done < CHANGELOG.md
 
       - name: commit version increase
         uses: EndBug/add-and-commit@v9
