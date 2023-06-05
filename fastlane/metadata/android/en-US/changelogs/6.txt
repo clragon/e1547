@@ -1,2 +1,5 @@
-Fixed
+## [1.1.2+6] - 2020-04-10
+### Fixed
 - Fixed hiding webms
+
+[1.1.2+6]: https://github.com/clragon/e1547/compare/1.1.1...1.1.2

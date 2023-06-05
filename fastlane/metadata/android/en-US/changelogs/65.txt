@@ -1,6 +1,9 @@
-Added
+## [13.0.0+65] - 2022-10-09
+### Added
 - follow timeline screen
 
-Fixed
+### Fixed
 - performance issues with favoriting
 - video mute button
+
+[13.0.0+65]: https://github.com/clragon/e1547/compare/12.2.0...13.0.0

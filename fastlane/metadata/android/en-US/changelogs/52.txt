@@ -1,2 +1,5 @@
-Fixed
+## [1.9.9+52] - 2021-11-25
+### Fixed
 - gallery desynchronisation issue
+
+[1.9.9+52]: https://github.com/clragon/e1547/compare/1.9.7...1.9.9

@@ -1,7 +1,10 @@
-Added
+## [1.4.3+29] - 2020-07-11
+### Added
 - warning about host switching
 - replacing underscores with spaces in tags
 
-Fixed
+### Fixed
 - multiple artists bug
 - alignment of large images
+
+[1.4.3+29]: https://github.com/clragon/e1547/compare/1.4.2...1.4.3

@@ -1,13 +1,16 @@
-Added
+## [1.7.4+40] - 2021-05-27
+### Added
 - video support on iOS
 - image downloads for iOS
 - blacklisting with \~
 
-Changed
+### Changed
 - dtext parsing
 - error message design
 - light theme design
 
-Fixed
+### Fixed
 - image zoom reset
 - wiki dialog tag subtraction
+
+[1.7.4+40]: https://github.com/clragon/e1547/compare/1.7.3...1.7.4

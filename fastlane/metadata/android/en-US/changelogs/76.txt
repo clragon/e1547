@@ -1,4 +1,7 @@
-Fixed
+## [15.4.1+76] - 2023-03-22
+### Fixed
 - duplicate download folders
 - history sharing
 - favorites displaying unavailable posts
+
+[15.4.1+76]: https://github.com/clragon/e1547/compare/15.4.0...15.4.1

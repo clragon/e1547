@@ -1,6 +1,9 @@
-Changed
+## [10.1.2+58] - 2022-04-15
+### Changed
 - history screen is no longer a root view
 
-Fixed
+### Fixed
 - lag when deleting history entries
 - deleting history entries over limit
+
+[10.1.2+58]: https://github.com/clragon/e1547/compare/10.1.1...10.1.2

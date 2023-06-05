@@ -1,16 +1,19 @@
-Added
+## [1.9.6+49] - 2021-11-23
+### Added
 - user profiles
 - voting on comments
 - reporting comments
 - scroll to top button
 
-Changed
+### Changed
 - target sdk to 30
 
-Fixed
+### Fixed
 - post duplication
 - video ui
 - forum usernames
 
-Removed
+### Removed
 - double tapping appbar to scroll to top
+
+[1.9.6+49]: https://github.com/clragon/e1547/compare/1.9.5...1.9.6

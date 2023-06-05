@@ -1,9 +1,12 @@
-Added
+## [1.6.1+34] - 2020-09-15
+### Added
 - image preloading
 
-Changed
+### Changed
 - appbar design to floating
 
-Fixed
+### Fixed
 - lag when swiping
 - keyboard closing when choosing autocomplete
+
+[1.6.1+34]: https://github.com/clragon/e1547/compare/1.6.0...1.6.1

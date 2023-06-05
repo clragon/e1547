@@ -1,11 +1,14 @@
-Added
+## [1.9.5+48] - 2021-11-16
+### Added
 - context (right side) drawer buttons in appbars
 - jump to last page button for topics
 
-Changed
+### Changed
 - appbar design
 - grid stagger settings name
 
-Fixed
+### Fixed
 - logging in
 - dtext links
+
+[1.9.5+48]: https://github.com/clragon/e1547/compare/1.9.4...1.9.5

@@ -1,4 +1,7 @@
-Fixed
+## [1.9.3+46] - 2021-11-07
+### Fixed
 - android apk being invalid
 - sending comments
 - mass-favoriting
+
+[1.9.3+46]: https://github.com/clragon/e1547/compare/1.9.2...1.9.3

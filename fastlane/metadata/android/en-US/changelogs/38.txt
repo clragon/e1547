@@ -1,7 +1,10 @@
-Added
+## [1.7.2+38] - 2020-11-16
+### Added
 - better tag search
 
-Fixed
+### Fixed
 - performance issues
 - webm issues
 - favorite / blacklist issues
+
+[1.7.2+38]: https://github.com/clragon/e1547/compare/1.7.1...1.7.2

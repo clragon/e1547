@@ -1,19 +1,22 @@
-Added
+## [12.0.0+61] - 2022-07-31
+### Added
 - infinite history
 - more history entry types
 - pool search suggestions
 - better link parsing
 
-Changed
+### Changed
 - search button is no longer behind autocomplete
 
-Fixed
+### Fixed
 - detail gallery swiping requesting new pages
 - duplicate posts
 - log file exports
 - editing posts
 - blacklisting avatars
 
-Removed
+### Removed
 - "tiles adapt their size" grid option
 - tap comment to reply
+
+[12.0.0+61]: https://github.com/clragon/e1547/compare/11.0.0...12.0.0

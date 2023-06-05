@@ -1,4 +1,5 @@
-Added
+## [1.2.2+12] - 2020-04-14
+### Added
 - sharing post links
 - sharing pool links
 - long press tags to view wiki
@@ -6,9 +7,11 @@ Added
 - more dtext support
 - addvanced pool information
 
-Fixed
+### Fixed
 - settings refreshing the correct page
 - downloading posts
 - dtext parsing links
 - opening posts from a different post causing infinite load
 - post duplicates in pools
+
+[1.2.2+12]: https://github.com/clragon/e1547/compare/1.2.1...1.2.2

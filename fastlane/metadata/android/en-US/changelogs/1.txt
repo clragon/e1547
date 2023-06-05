@@ -1,9 +1,12 @@
-Added
+## [1.0.0+1] - 2020-03-08
+### Added
 - favorites and hot screens in drawer
 
-Changed
+### Changed
 - post detail design
 - favorite button to be floating
 
-Fixed
+### Fixed
 - API client bindings
+
+[1.0.0+1]: https://github.com/clragon/e1547/releases/tag/1.0.0

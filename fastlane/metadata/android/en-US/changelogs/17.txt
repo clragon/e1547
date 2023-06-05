@@ -1,6 +1,9 @@
-Added
+## [1.2.7+17] - 2020-04-21
+### Added
 - blocking tags in wiki dialog
 - dtext parsing
 
-Fixed
+### Fixed
 - wiki dialog overflow
+
+[1.2.7+17]: https://github.com/clragon/e1547/compare/1.2.6...1.2.7

@@ -1,12 +1,15 @@
-Added
+## [1.8.0+41] - 2021-06-19
+### Added
 - following screen
 
-Changed
+### Changed
 - pool ordering
 - progress indicators
 - landscape mode
 - performance
 
-Fixed
+### Fixed
 - iOS video playing
 - editing posts
+
+[1.8.0+41]: https://github.com/clragon/e1547/compare/1.7.4...1.8.0

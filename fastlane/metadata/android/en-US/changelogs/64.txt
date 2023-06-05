@@ -1,5 +1,8 @@
-Added
+## [12.2.0+64] - 2022-09-06
+### Added
 - pool reader mode
 
-Fixed
+### Fixed
 - history mass-deleting
+
+[12.2.0+64]: https://github.com/clragon/e1547/compare/12.1.1...12.2.0

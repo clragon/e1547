@@ -1,11 +1,14 @@
-Added
+## [10.1.1+57] - 2022-04-06
+### Added
 - history link in drawer
 
-Changed
+### Changed
 - dtext parsing
 
-Fixed
+### Fixed
 - unable to read follows while refreshing
 
-Removed
+### Removed
 - fullscreen UI setting
+
+[10.1.1+57]: https://github.com/clragon/e1547/compare/10.1.0...10.1.1

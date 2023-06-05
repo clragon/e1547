@@ -1,17 +1,20 @@
-Added
+## [15.0.0+69] - 2022-11-28
+### Added
 - multi-select for follows
 - pool thumbnails
 - cancelling requests
 
-Changed
+### Changed
 - dtext spoiler design
 - dtext parsing
 - pool tile design
 - topic tile design
 
-Fixed
+### Fixed
 - saving logins
 - parsing comments and replies with warnings
 
-Removed
+### Removed
 - follows migration
+
+[15.0.0+69]: https://github.com/clragon/e1547/compare/14.0.1...15.0.0

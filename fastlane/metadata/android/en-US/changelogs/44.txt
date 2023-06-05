@@ -1,10 +1,13 @@
-Added
+## [1.9.1+44] - 2021-10-30
+### Added
 - video mute button
 - mute video settings
 
-Changed
+### Changed
 - video skip animation
 
-Fixed
+### Fixed
 - login update
 - blacklist editor
+
+[1.9.1+44]: https://github.com/clragon/e1547/compare/1.9.0...1.9.1

@@ -1,3 +1,6 @@
-Fixed
+## [15.4.2+77] - 2023-03-23
+### Fixed
 - performance
 - settings ui jumping
+
+[15.4.2+77]: https://github.com/clragon/e1547/compare/15.4.1...15.4.2

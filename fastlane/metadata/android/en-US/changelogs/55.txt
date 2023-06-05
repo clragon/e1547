@@ -1,17 +1,20 @@
-Added
+## [10.0.1+55] - 2022-03-14
+### Added
 - history for posts, pools and tags
 - http request caching
 - double tap appbar to scroll to top
 
-Changed
+### Changed
 - switched version number format to more closely resemble semantic versioning (1.9.10 -> 9.10.0)
 - hiding post children if all are deleted
 
-Fixed
+### Fixed
 - downloaded posts not showing in gallery (android)
 - blacklist syncrhonisation
 - comment parsing
 - follow tiles not updating during refresh
 
-Removed
+### Removed
 - scroll to top button
+
+[10.0.1+55]: https://github.com/clragon/e1547/compare/1.9.10...10.0.1

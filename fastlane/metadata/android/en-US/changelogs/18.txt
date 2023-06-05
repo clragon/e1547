@@ -1,2 +1,5 @@
-Changed
+## [1.2.8+18] - 2020-04-22
+### Changed
 - dtext parsing
+
+[1.2.8+18]: https://github.com/clragon/e1547/compare/1.2.7...1.2.8

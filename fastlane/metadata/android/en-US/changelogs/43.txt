@@ -1,4 +1,5 @@
-Added
+## [1.9.0+43] - 2021-10-27
+### Added
 - blacklist sync with server (please backup your blacklist)
 - advanced settings menu
 - auto-upvote when favoriting
@@ -9,15 +10,17 @@ Added
 - right side drawer actions for comment order
 - loading screens for dtext links
 
-Changed
+### Changed
 - settings options order
 - app icon
 - app theme colors
 - dtext link parsing
 
-Fixed
+### Fixed
 - swiping on videos
 - posts not refreshing on login/logout
 - post tile size not updating
 - hero animations in landscape
 - updating user avatar
+
+[1.9.0+43]: https://github.com/clragon/e1547/compare/1.8.1...1.9.0

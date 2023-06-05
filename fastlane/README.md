@@ -29,7 +29,15 @@ Ensures flutter is installed
 [bundle exec] fastlane ios build
 ```
 
-Build ipa file
+Build ios archive
+
+### ios package_release
+
+```sh
+[bundle exec] fastlane ios package_release
+```
+
+Package ios archive into ipa
 
 ----
 
@@ -66,7 +74,7 @@ Build aab file
 [bundle exec] fastlane android changelog
 ```
 
-Writes playstore changelogs from Changelog.md
+Writes playstore changelogs from CHANGELOG.md
 
 ### android upload
 
@@ -97,10 +105,10 @@ Build appbundle and upload to playstore
 
 Ensures InnoSetup is installed
 
-### windows exe
+### windows build
 
 ```sh
-[bundle exec] fastlane windows exe
+[bundle exec] fastlane windows build
 ```
 
 Builds an exe installer with flutter_distributor and InnoSetup

@@ -1,10 +1,13 @@
-Added
+## [1.2.1+11] - 2020-04-13
+### Added
 - post parent links
 - post children links
 - clickable links in post descriptions
 
-Fixed
+### Fixed
 - pool page lag
 - post blackscreens
 - favorite button while logged out
 - settings changes refreshing the app
+
+[1.2.1+11]: https://github.com/clragon/e1547/compare/1.2.0...1.2.1

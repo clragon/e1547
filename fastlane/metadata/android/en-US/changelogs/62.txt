@@ -1,16 +1,17 @@
-Added
+## [12.1.0+62] - 2022-09-05
+### Added
 - better tablet layouts
 - infinite history
 - more history entry types
 - pool search suggestions
 - better link parsing
 
-Changed
+### Changed
 - history filter drawer
 - login screen design
 - search button is no longer behind autocomplete
 
-Fixed
+### Fixed
 - history performance
 - large image grid performance
 - mass-favoriting
@@ -22,6 +23,8 @@ Fixed
 - editing posts
 - blacklisting avatars
 
-Removed
+### Removed
 - "tiles adapt their size" grid option
 - tap comment to reply
+
+[12.1.0+62]: https://github.com/clragon/e1547/compare/12.0.0...12.1.0

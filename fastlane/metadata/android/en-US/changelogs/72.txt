@@ -1,10 +1,11 @@
-Added
+## [15.2.0+72] - 2023-02-16
+### Added
 - sheet handles
 - windows installer build files
 - new custom host screen
 - pageview buttons for desktops
 
-Fixed
+### Fixed
 - search race condition
 - pool history
 - link ending parsing
@@ -14,3 +15,5 @@ Fixed
 - replying to comments with quotes
 - history adding blacklisted posts
 - layout in flag post screen
+
+[15.2.0+72]: https://github.com/clragon/e1547/compare/15.1.0...15.2.0

@@ -1,2 +1,5 @@
-Fixed
+## [1.5.1+31] - 2020-07-21
+### Fixed
 - post editing
+
+[1.5.1+31]: https://github.com/clragon/e1547/compare/1.5.0...1.5.1

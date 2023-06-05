@@ -13,22 +13,21 @@ platform :ios do
     flutter_bootstrap(flutter_channel: 'stable')
   end
 
-  desc "Build ipa file"
+  desc "Build ios archive"
   lane :build do
-    gym(
-      workspace: "ios/Runner.xcworkspace",
-      scheme: "Runner",
-      clean: true,
-      output_directory: "./build",
-      output_name: "Runner.ipa",
-      skip_codesigning: true,
-      export_options: {
-        method: "ad-hoc",
-        signingStyle: "manual",
-        stripSwiftSymbols: true,
-        compileBitcode: false,
-      }
+    flutter_build(
+        build_args: ['--no-codesign'],
+        build: 'ios',
     )
+  end
+
+  desc "Package ios archive into ipa"
+  lane :package_release do
+    Dir.chdir("build/ios/iphoneos") do
+      sh(["mkdir", "Payload"])
+      sh(["mv", "Runner", ".app", "Payload/Runner.app"])
+      sh(["zip", "-9", "-r", "Runner.ipa", "Payload"])
+    end
   end
 end
 
@@ -55,13 +54,18 @@ platform :android do
 
   desc "Writes playstore changelogs from CHANGELOG.md"
   lane :changelog do
-    changelogs = "./metadata/android/en-US/changelogs"
-    FileUtils.mkdir_p(changelogs)
-    fetch_versions.each do |version|
-      build_number = version.split("+")[1]
-      File.open("#{changelogs}/#{build_number}.txt", 'w') do |f|
-        full_changelog = read_changelog(section_identifier: "[#{version}]")
-        f << strip_links_from_changelog(full_changelog)
+    sh(['dart', 'pub', 'global', 'activate', 'cider'])
+    versions = fetch_versions
+    versions.each do |version|
+      if version == 'Unreleased'
+        next
+      end
+      build_number = version.split('+').last
+      description = sh(['cider', 'describe', version])
+      changelogs = "./metadata/android/en-US/changelogs"
+      FileUtils.mkdir_p(changelogs)
+      File.open("#{changelogs}/#{build_number}.txt", 'w') do |file|
+        file.write(description)
       end
     end
   end
@@ -94,13 +98,6 @@ def fetch_versions
   content.scan(regex).map(&:first)
 end
 
-def strip_links_from_changelog(changelog)
-  changelog.split("\n").reject do |line|
-    line =~ /^\[\d+\.\d+\.\d+(\+\d+)?\]:\s*https?:\/\/.*$/
-  end.join("\n")
-end
-
-# TODO: fix these lanes
 platform :windows do
   desc "Ensures InnoSetup is installed"
   lane :bootstrap do
@@ -108,8 +105,10 @@ platform :windows do
   end
 
   desc "Builds an exe installer with flutter_distributor and InnoSetup"
-    lane :exe do
+    lane :build do
       sh(["flutter", "pub", "global", "activate", "flutter_distributor",])
-      sh(["flutter_distributor", "package", "--platform", "windows", "--targets", "exe"])
+      Dir.chdir("../") do
+        sh(["flutter_distributor", "package", "--platform", "windows", "--targets", "exe", "--skip-clean"])
+      end
     end
 end

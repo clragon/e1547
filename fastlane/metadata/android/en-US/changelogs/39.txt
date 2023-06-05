@@ -1,11 +1,14 @@
-Added
+## [1.7.3+39] - 2021-04-15
+### Added
 - blacklist drawer
 - multi-tag following
 - adding tags to the current search
 - more post tile grid options
 
-Changed
+### Changed
 - wiki dialog design
 - video player UI design
 - dtext parsing
 - themes
+
+[1.7.3+39]: https://github.com/clragon/e1547/compare/1.7.2...1.7.3

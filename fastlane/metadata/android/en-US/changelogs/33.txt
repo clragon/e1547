@@ -1,9 +1,12 @@
-Added
+## [1.6.0+33] - 2020-08-10
+### Added
 - writing comments
 - editing comments
 - replying to comments
 - swichting host without page resets
 
-Fixed
+### Fixed
 - blacklist ignoring rating
 - pool duplicate pages
+
+[1.6.0+33]: https://github.com/clragon/e1547/compare/1.5.2...1.6.0

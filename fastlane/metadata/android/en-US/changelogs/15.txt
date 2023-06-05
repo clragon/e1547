@@ -1,6 +1,9 @@
-Added
+## [1.2.5+15] - 2020-04-19
+### Added
 - local blacklist
 - comment age and edited status
 
-Changed
+### Changed
 - refreshing is now pull to refresh
+
+[1.2.5+15]: https://github.com/clragon/e1547/compare/1.2.4...1.2.5

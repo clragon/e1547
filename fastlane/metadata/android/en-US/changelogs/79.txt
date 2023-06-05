@@ -1,10 +1,13 @@
-Added
+## [16.1.0+79] - 2023-05-28
+### Added
 - Grouping notifications
 - Notifications in foreground
 
-Changed
+### Changed
 - Split notifications per tag
 - Split Follows into Subscriptions and Bookmarks
 
-Fixed
+### Fixed
 - Pool order switch
+
+[16.1.0+79]: https://github.com/clragon/e1547/compare/16.0.0...16.1.0

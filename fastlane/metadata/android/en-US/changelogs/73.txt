@@ -1,7 +1,10 @@
-Changed
+## [15.3.0+73] - 2023-02-24
+### Changed
 - about screen design
 - order of follows in folders and timeline
 
-Fixed
+### Fixed
 - cloudflare check when logged out
 - adding posts to wrong host history
+
+[15.3.0+73]: https://github.com/clragon/e1547/compare/15.2.0...15.3.0

@@ -1,11 +1,14 @@
-Added
+## [1.7.1+37] - 2020-11-16
+### Added
 - post tile size configuration
 - post tile staggering
 - multiselecting post tiles with longpress
 
-Changed
+### Changed
 - tag input design
 - comments to be sorted oldest first
 
-Fixed
+### Fixed
 - tag input issues
+
+[1.7.1+37]: https://github.com/clragon/e1547/compare/1.7.0...1.7.1

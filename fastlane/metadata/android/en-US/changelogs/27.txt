@@ -1,5 +1,8 @@
-Changed
+## [1.4.2+27] - 2020-06-23
+### Changed
 - changelog to display all new versions
 
-Fixed
+### Fixed
 - update notification
+
+[1.4.2+27]: https://github.com/clragon/e1547/compare/1.4.1...1.4.2

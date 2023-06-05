@@ -1,12 +1,15 @@
-Added
+## [15.1.0+71] - 2022-12-28
+### Added
 - cloudflare cookie resolving
 - favorite counts on user page
 
-Changed
+### Changed
 - user page layouts for wide screens
 - appbar design
 
-Fixed
+### Fixed
 - favorites for users without login
 - comment upvoting
 - loading parent/child posts
+
+[15.1.0+71]: https://github.com/clragon/e1547/compare/15.0.1...15.1.0

@@ -1,10 +1,13 @@
-Added
+## [1.1.5+9] - 2020-04-11
+### Added
 - more dtext support for pool descriptions
 - version check on about screen
 
-Changed
+### Changed
 - settings design
 - app reloading after settings change
 
-Fixed
+### Fixed
 - network interupts causing infinite loading
+
+[1.1.5+9]: https://github.com/clragon/e1547/compare/1.1.4...1.1.5

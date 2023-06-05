@@ -1,3 +1,6 @@
-Added
+## [1.1.0+4] - 2020-04-10
+### Added
 - pool search
 - clicking on artist names to launch a search
+
+[1.1.0+4]: https://github.com/clragon/e1547/compare/1.0.1...1.1.0
