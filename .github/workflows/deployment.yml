@@ -102,7 +102,7 @@ jobs:
         run: flutter pub get
 
       - name: build IPA
-        run: flutter build ios
+        run: flutter build ios --no-codesign
 
       - name: package release
         run: |
