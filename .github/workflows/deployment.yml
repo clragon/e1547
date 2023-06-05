@@ -60,7 +60,7 @@ jobs:
         run: flutter build apk
 
       - name: build AAB
-        run: flutter build aab
+        run: flutter build appbundle
 
       - name: package release
         run: |
@@ -107,8 +107,6 @@ jobs:
       - name: package release
         run: |
           cd build/ios/iphoneos
-          xcrun bitcode_strip -r Runner.app/Frameworks/Flutter.framework/Flutter -o Runner.app/Frameworks/Flutter.framework/FlutterStrip 
-          mv Runner.app/Frameworks/Flutter.framework/FlutterStrip Runner.app/Frameworks/Flutter.framework/Flutter
           mkdir Payload
           mv Runner.app Payload/Runner.app
           zip -9 -r Runner.zip Payload
