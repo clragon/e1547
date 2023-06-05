@@ -138,7 +138,7 @@ jobs:
           channel: stable
 
       - name: setup cider
-        run: pub global activate cider
+        run: dart pub global activate cider
 
       - name: bump and release version
         run: |
