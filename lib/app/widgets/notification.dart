@@ -5,6 +5,7 @@ import 'package:e1547/app/app.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
+import 'package:e1547/tag/data/regex.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sub/flutter_sub.dart';
 
@@ -88,16 +89,27 @@ class _NotificationHandlerState extends State<NotificationHandler> {
             .pushNamedAndRemoveUntil(destination.path, (_) => false);
 
         // This is very specific. Find a way to make it more systematic.
-        if (url.path == '/subscriptions' &&
-            url.queryParameters['tags'] != null &&
-            url.queryParameters['tags']!.split(' ').length == 1) {
-          controller.navigator!.push(
-            MaterialPageRoute(
-              builder: (context) => PostsSearchPage(
-                tags: url.queryParameters['tags'],
+        String? tags = url.queryParameters['tags'];
+        int? id = int.tryParse(url.queryParameters['id'] ?? '');
+        if (url.path == '/subscriptions') {
+          if (tags != null) {
+            controller.navigator!.push(
+              MaterialPageRoute(
+                builder: (context) => PostsSearchPage(
+                  tags: url.queryParameters['tags'],
+                  orderPoolsByOldest: false,
+                  readerMode: poolRegex().hasMatch(tags),
+                ),
               ),
-            ),
-          );
+            );
+          }
+          if (id != null) {
+            controller.navigator!.push(
+              MaterialPageRoute(
+                builder: (context) => PostLoadingPage(id),
+              ),
+            );
+          }
         }
       } else {
         controller.navigator!.pushNamed(destination.path);

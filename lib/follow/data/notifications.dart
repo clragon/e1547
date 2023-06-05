@@ -96,6 +96,7 @@ Future<void> updateFollowNotifications({
       notificationDetails,
       payload: Uri(path: '/subscriptions', queryParameters: {
         'tags': follow.tags,
+        if (unseen == 1) 'id': follow.latest,
       }).toString(),
     );
 
