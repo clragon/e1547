@@ -13,35 +13,6 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 
 # Available Actions
 
-## iOS
-
-### ios bootstrap
-
-```sh
-[bundle exec] fastlane ios bootstrap
-```
-
-Ensures flutter is installed
-
-### ios build
-
-```sh
-[bundle exec] fastlane ios build
-```
-
-Build ios archive
-
-### ios package_release
-
-```sh
-[bundle exec] fastlane ios package_release
-```
-
-Package ios archive into ipa
-
-----
-
-
 ## Android
 
 ### android bootstrap
@@ -91,6 +62,35 @@ Uploads appbundle to playstore
 ```
 
 Build appbundle and upload to playstore
+
+----
+
+
+## iOS
+
+### ios bootstrap
+
+```sh
+[bundle exec] fastlane ios bootstrap
+```
+
+Ensures flutter is installed
+
+### ios build
+
+```sh
+[bundle exec] fastlane ios build
+```
+
+Build ios archive
+
+### ios package_release
+
+```sh
+[bundle exec] fastlane ios package_release
+```
+
+Package ios archive into ipa
 
 ----
 

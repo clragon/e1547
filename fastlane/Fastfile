@@ -7,28 +7,15 @@ add_extra_platforms(
 
 default_platform(:android)
 
-platform :ios do
-  desc "Ensures flutter is installed"
-  lane :bootstrap do
-    flutter_bootstrap(flutter_channel: 'stable')
-  end
+def fetch_current_version
+    YAML.safe_load(File.read('../pubspec.yaml'))['version']
+end
 
-  desc "Build ios archive"
-  lane :build do
-    flutter_build(
-        build_args: ['--no-codesign'],
-        build: 'ios',
-    )
-  end
-
-  desc "Package ios archive into ipa"
-  lane :package_release do
-    Dir.chdir("build/ios/iphoneos") do
-      sh(["mkdir", "Payload"])
-      sh(["mv", "Runner", ".app", "Payload/Runner.app"])
-      sh(["zip", "-9", "-r", "Runner.ipa", "Payload"])
-    end
-  end
+def fetch_versions
+  path = "../CHANGELOG.md"
+  content = File.read(path)
+  regex = /## \[(.+\+\d+)\]/
+  content.scan(regex).map(&:first)
 end
 
 platform :android do
@@ -54,14 +41,14 @@ platform :android do
 
   desc "Writes playstore changelogs from CHANGELOG.md"
   lane :changelog do
-    sh(['dart', 'pub', 'global', 'activate', 'cider'])
+    sh("dart pub global activate cider")
     versions = fetch_versions
     versions.each do |version|
       if version == 'Unreleased'
         next
       end
       build_number = version.split('+').last
-      description = sh(['cider', 'describe', version])
+      description = sh("cider describe #{version}")
       changelogs = "./metadata/android/en-US/changelogs"
       FileUtils.mkdir_p(changelogs)
       File.open("#{changelogs}/#{build_number}.txt", 'w') do |file|
@@ -87,28 +74,41 @@ platform :android do
   end
 end
 
-def fetch_current_version
-    YAML.safe_load(File.read('../pubspec.yaml'))['version']
-end
+platform :ios do
+  desc "Ensures flutter is installed"
+  lane :bootstrap do
+    flutter_bootstrap(flutter_channel: 'stable')
+  end
 
-def fetch_versions
-  path = "../CHANGELOG.md"
-  content = File.read(path)
-  regex = /## \[(.+\+\d+)\]/
-  content.scan(regex).map(&:first)
+  desc "Build ios archive"
+  lane :build do
+    flutter_build(
+        build_args: ['--no-codesign'],
+        build: 'ios',
+    )
+  end
+
+  desc "Package ios archive into ipa"
+  lane :package_release do
+    Dir.chdir("build/ios/iphoneos") do
+      sh("mkdir Payload")
+      sh("mv Runner.app Payload/Runner.app")
+      sh("zip -9 -r Runner.ipa Payload")
+    end
+  end
 end
 
 platform :windows do
   desc "Ensures InnoSetup is installed"
   lane :bootstrap do
-    sh("winget", "install", "--id", "JRSoftware.InnoSetup", "--silent", "--accept-package-agreements", "--accept-source-agreements", "--no-upgrade")
+    sh("winget install --id JRSoftware.InnoSetup --silent --accept-package-agreements --accept-source-agreements --no-upgrade")
   end
 
   desc "Builds an exe installer with flutter_distributor and InnoSetup"
     lane :build do
-      sh(["flutter", "pub", "global", "activate", "flutter_distributor",])
+      sh("flutter pub global activate flutter_distributor")
       Dir.chdir("../") do
-        sh(["flutter_distributor", "package", "--platform", "windows", "--targets", "exe", "--skip-clean"])
+        sh("flutter_distributor package --platform windows --targets exe --skip-clean")
       end
     end
 end
