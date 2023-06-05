@@ -101,7 +101,17 @@ end
 platform :windows do
   desc "Ensures InnoSetup is installed"
   lane :bootstrap do
-    sh("winget install --id JRSoftware.InnoSetup --silent --accept-package-agreements --accept-source-agreements --no-upgrade")
+    sh(
+      "winget install --id JRSoftware.InnoSetup --silent --accept-package-agreements --accept-source-agreements --no-upgrade",
+      error_callback: proc { |result, return_code|
+        # APPINSTALLER_CLI_ERROR_PACKAGE_ALREADY_INSTALLED
+        if return_code == -1978335135
+          true
+        else
+          false
+        end
+      }
+    )
   end
 
   desc "Builds an exe installer with flutter_distributor and InnoSetup"
