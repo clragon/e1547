@@ -36,7 +36,7 @@
 ## Screenshots
 
 <p align="center">
-  <img src="assets/screenshots/old/1547.gif">
+  <img src="assets/screenshots/promo.gif">
 </p>
 
 v1.5.2 GIF by [cynder](https://github.com/cxnder) on iOS
