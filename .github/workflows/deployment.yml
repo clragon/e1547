@@ -194,7 +194,8 @@ jobs:
 
       - name: arrange asset files
         run: |
-          mv app-release.aab e1547.aab
+          mkdir -p build/app/outputs/bundle/release
+          mv app-release.aab build/app/outputs/bundle/release/
           mv app-release.apk e1547.apk
           mv Runner.ipa e1547.ipa
 
