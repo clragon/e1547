@@ -1,4 +1,3 @@
-
 <table>
   <tr>
     <td width="20%">
@@ -6,17 +5,17 @@
     </td>
     <td width="80%">
       <h1>e1547</h1>
-      <h4>A mobile app to browse e621 and e926.</h4>
+      <h4>A sophisticated e621 browser</h4>
       <a href="https://github.com/clragon/e1547/commits/master"><img src="https://badgen.net/github/commits/clragon/e1547"></a>
       <a href="https://github.com/clragon/e1547/commits/master"><img src="https://badgen.net/github/last-commit/clragon/e1547"></a>
       <a href="blob/master/LICENSE"><img src="https://img.shields.io/github/license/clragon/e1547"></a>
       <a href="https://discord.gg/MRwKGqfmUz"><img src="https://img.shields.io/discord/763321712766877727.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2"></a>
+      <a href="https://e1547.clynamic.net"><img src="https://badgen.net/badge/website/clynamic?color=FDB245&icon=https://upload.wikimedia.org/wikipedia/commons/f/f7/Bananas.svg"></a>
     </td>
   </tr>
 </table>
 
-
-## Features  
+## Features
 
 - Browse and search posts
 - Browse and search pools
@@ -27,16 +26,15 @@
 - Access to Hot and your favourites
 - Follow tags and receive notifications
 - Display post info, launch searches from tags
-- View tag wiki entries by long-pressing 
+- View tag wiki entries by long-pressing
 - Local blacklist
 - DText parsing
 - Video support
 - Automatic update check
 - Multiple App Themes
- 
 
-## Screenshots  
-  
+## Screenshots
+
 <p align="center">
   <img src="assets/screenshots/old/1547.gif">
 </p>
@@ -72,7 +70,7 @@ or
 - Follow the instructions on [AltStore](https://altstore.io/)
 - An altstore source file for automatic updates can be found on [e1547.clynamic.net](https://e1547.clynamic.net/assets/altstore.json)
 
-or 
+or
 
 1. Jailbreak your iPhone
 2. Install [AppSync Unified](https://cydia.akemi.ai/) in Cydia
@@ -86,28 +84,29 @@ You can compile the app from source:
 2. Clone this github repository
 3. Run `flutter build <file>` where `<file>` is either `apk` or `ipa`
 
-
 ## Status
-Is the app currently under development?  
-  
+
+Is the app currently under development?
+
 <a href="https://github.com/clragon/e1547/commits/master"><img src="https://badgen.net/github/last-commit/clragon/e1547"></a>
 
-If you want to participate in development decisions, you can join the discord:  
+If you want to participate in development decisions, you can join the discord:
 
-[![Discord](https://img.shields.io/discord/763321712766877727.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/MRwKGqfmUz)  
+[![Discord](https://img.shields.io/discord/763321712766877727.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/MRwKGqfmUz)
 
 You can also post on the [e926 forum thread](https://e926.net/forum_topics/25854).  
 If you notice something not working, feel free to open a github issue.
 
 ## Credit
+
 Code is written by me, [clragon](https://github.com/clragon).
-    
+
 if you feel like supporting the development, you can donate a couple of monies.  
-I spend alot of time trying to build this app, so all support is welcome. 
-    
+I spend alot of time trying to build this app, so all support is welcome.
+
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/Q5Q22W6FW)
 
-#### Thanks to:  
+#### Thanks to:
+
 - [Miyoyo](https://github.com/miyoyo) for performance optimisations.
-  
 - [Perlatus](https://github.com/perlatus) for writing the original code base.
