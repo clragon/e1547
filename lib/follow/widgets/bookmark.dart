@@ -23,7 +23,10 @@ class FollowsBookmarkPage extends StatelessWidget {
             return null;
           },
           child: SubStream<List<Follow>>(
-            create: () => service.watchAll(types: [FollowType.bookmark]),
+            create: () => service.watchAll(
+              host: client.host,
+              types: [FollowType.bookmark],
+            ),
             keys: [client, service],
             builder: (context, snapshot) {
               List<Follow>? follows = snapshot.data;
