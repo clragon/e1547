@@ -80,7 +80,7 @@ jobs:
           path: app-release.apk
 
       - name: upload AAB to artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: release-aab
           path: app-release.aab
@@ -125,7 +125,7 @@ jobs:
           mv Runner.zip ../../../Runner.ipa
 
       - name: upload IPA to artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: release-ios
           path: Runner.ipa
