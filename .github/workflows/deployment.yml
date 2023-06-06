@@ -142,7 +142,7 @@ jobs:
           KEYSTORE: ${{ secrets.PLAYSTORE }}
         run: |
           mkdir -p android/keys
-          echo "$KEYSTORE" | base64 -d > android/keys/playstore.json
+          echo "$KEYSTORE" > android/keys/playstore.json
 
       - name: setup cider
         run: dart pub global activate cider
