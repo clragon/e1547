@@ -1,9 +1,6 @@
-## [1.2.3+13] - 2020-04-16
 ### Added
 - opening deleted post children
 
 ### Fixed
 - pool pages loading
 - displaying onsite links
-
-[1.2.3+13]: https://github.com/clragon/e1547/compare/1.2.2...1.2.3

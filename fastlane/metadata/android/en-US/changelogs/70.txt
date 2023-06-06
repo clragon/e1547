@@ -1,4 +1,3 @@
-## [15.0.1+70] - 2022-12-11
 ### Changed
 - pool reader mode now enabled by default
 
@@ -6,5 +5,3 @@
 - error displays for when the site is down
 - retrying loading items
 - favorite and upvote setting
-
-[15.0.1+70]: https://github.com/clragon/e1547/compare/15.0.0...15.0.1

@@ -48,7 +48,12 @@ platform :android do
         next
       end
       build_number = version.split('+').last
-      description = sh("cider describe #{version}")
+      full_description = sh("cider describe #{version}")
+      description_lines = full_description.split("\n")
+      # removes header and link, primitively. update this later?
+      description_lines.shift
+      description_lines.pop(2)
+      description = description_lines.join("\n")
       changelogs = "./metadata/android/en-US/changelogs"
       FileUtils.mkdir_p(changelogs)
       File.open("#{changelogs}/#{build_number}.txt", 'w') do |file|

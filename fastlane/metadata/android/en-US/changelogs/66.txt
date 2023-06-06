@@ -1,7 +1,4 @@
-## [13.0.1+66] - 2022-10-23
 ### Fixed
 - pool parsing
 - auto-vote on favoriting
 - comment upvoting
-
-[13.0.1+66]: https://github.com/clragon/e1547/compare/13.0.0...13.0.1

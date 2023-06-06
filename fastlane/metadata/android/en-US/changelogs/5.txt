@@ -1,4 +1,3 @@
-## [1.1.1+5] - 2020-04-10
 ### Added
 - logout button in drawer
 - setting to hide webms
@@ -11,5 +10,3 @@
 
 ### Fixed
 - pool order
-
-[1.1.1+5]: https://github.com/clragon/e1547/compare/1.1.0...1.1.1

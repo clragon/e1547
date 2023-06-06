@@ -1,9 +1,6 @@
-## [1.2.4+14] - 2020-04-17
 ### Added
 - voting on posts
 - viewing post comments
 
 ### Fixed
 - displaying quotes
-
-[1.2.4+14]: https://github.com/clragon/e1547/compare/1.2.3...1.2.4

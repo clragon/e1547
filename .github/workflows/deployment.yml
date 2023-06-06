@@ -158,8 +158,13 @@ jobs:
           cider release
 
       - name: get new version
-        id: get_version
-        run: echo "::set-output name=VERSION::$(cider version)"
+        run: echo "VERSION=$(cider version)" >> $GITHUB_ENV
+
+      - name: get new build number
+        run: |
+          VERSION=${{ env.VERSION }}
+          BUILD_NUMBER=${VERSION#*+}
+          echo "BUILD_NUMBER=$BUILD_NUMBER" >> $GITHUB_ENV
 
       - name: write playstore changelogs
         run: bundle exec fastlane android changelog
@@ -171,11 +176,8 @@ jobs:
           default_author: github_actions
           add: |
             pubspec.yaml
+            CHANGELOG.md
             fastlane
-
-      - name: get release notes for new version
-        id: get_notes
-        run: echo "::set-output name=NOTES::$(cider describe ${{ steps.get_version.outputs.VERSION }})"
 
       - name: download APK from artifacts
         uses: actions/download-artifact@v3
@@ -214,9 +216,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ steps.get_version.outputs.VERSION }}
+          tag_name: ${{ env.VERSION }}
           name: ${{ env.RELEASE_TITLE }}
-          body: ${{ steps.get_notes.outputs.NOTES }}
+          body_path: ./fastlane/metadata/android/en-US/changelogs/${{ env.BUILD_NUMBER }}.txt
           files: |
             e1547.apk
             e1547.ipa

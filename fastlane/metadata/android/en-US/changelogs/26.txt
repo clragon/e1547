@@ -1,5 +1,2 @@
-## [1.4.1+26] - 2020-06-23
 ### Fixed
 - system ui color changing
-
-[1.4.1+26]: https://github.com/clragon/e1547/compare/1.4.0...1.4.1

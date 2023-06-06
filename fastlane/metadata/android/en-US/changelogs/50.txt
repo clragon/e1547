@@ -1,8 +1,5 @@
-## [1.9.7+50] - 2021-11-24
 ### Changed
 - logged in user only actions are now always visible
 
 ### Fixed
 - detail view swiping requesting pages
-
-[1.9.7+50]: https://github.com/clragon/e1547/compare/1.9.6...1.9.7

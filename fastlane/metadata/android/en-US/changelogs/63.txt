@@ -1,5 +1,2 @@
-## [12.1.1+63] - 2022-09-06
 ### Fixed
 - deleting history entries
-
-[12.1.1+63]: https://github.com/clragon/e1547/compare/12.1.0...12.1.1

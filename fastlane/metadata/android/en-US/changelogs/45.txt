@@ -1,7 +1,4 @@
-## [1.9.2+45] - 2021-11-01
 ### Fixed
 - blacklisting follows
 - download indicators
 - downloads failing
-
-[1.9.2+45]: https://github.com/clragon/e1547/compare/1.9.1...1.9.2

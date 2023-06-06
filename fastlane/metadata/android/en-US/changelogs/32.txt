@@ -1,5 +1,2 @@
-## [1.5.2+32] - 2020-07-26
 ### Changed
 - following screen design
-
-[1.5.2+32]: https://github.com/clragon/e1547/compare/1.5.1...1.5.2
