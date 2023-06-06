@@ -137,6 +137,13 @@ jobs:
         with:
           channel: stable
 
+      - name: configure release keys
+        env:
+          KEYSTORE: ${{ secrets.PLAYSTORE }}
+        run: |
+          mkdir -p android/keys
+          echo "$KEYSTORE" | base64 -d > android/keys/playstore.json
+
       - name: setup cider
         run: dart pub global activate cider
 
@@ -157,6 +164,9 @@ jobs:
         with:
           message: increased version
           default_author: github_actions
+          add: |
+            pubspec.yaml
+            fastlane
 
       - name: get release notes for new version
         id: get_notes
