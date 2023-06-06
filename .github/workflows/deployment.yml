@@ -37,15 +37,6 @@ jobs:
           channel: stable
           cache: true
 
-      - name: configure release keys
-        env:
-          KEYSTORE: ${{ secrets.KEYSTORE }}
-          KEYCONFIG: ${{ secrets.KEYCONFIG }}
-        run: |
-          mkdir -p android/keys
-          echo "$KEYSTORE" | base64 -d > android/keys/key.pkcs
-          echo "$KEYCONFIG" | base64 -d > android/keys/key.properties
-
       - name: cache flutter dependencies
         uses: actions/cache@v3
         with:
@@ -55,6 +46,21 @@ jobs:
 
       - name: get flutter dependencies
         run: flutter pub get
+
+      - name: bump version
+        if: ${{ github.event.inputs.version != 'none' }}
+        run: |
+          dart pub global activate cider
+          cider bump --bump-build ${{ env.VERSION_BUMP }}
+
+      - name: configure release keys
+        env:
+          KEYSTORE: ${{ secrets.KEYSTORE }}
+          KEYCONFIG: ${{ secrets.KEYCONFIG }}
+        run: |
+          mkdir -p android/keys
+          echo "$KEYSTORE" | base64 -d > android/keys/key.pkcs
+          echo "$KEYCONFIG" | base64 -d > android/keys/key.properties
 
       - name: build APK
         run: flutter build apk
@@ -101,6 +107,12 @@ jobs:
       - name: get flutter dependencies
         run: flutter pub get
 
+      - name: bump version
+        if: ${{ github.event.inputs.version != 'none' }}
+        run: |
+          dart pub global activate cider
+          cider bump --bump-build ${{ env.VERSION_BUMP }}
+
       - name: build IPA
         run: flutter build ios --no-codesign
 
@@ -136,13 +148,6 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: stable
-
-      - name: configure release keys
-        env:
-          KEYSTORE: ${{ secrets.PLAYSTORE }}
-        run: |
-          mkdir -p android/keys
-          echo "$KEYSTORE" > android/keys/playstore.json
 
       - name: setup cider
         run: dart pub global activate cider
@@ -189,10 +194,16 @@ jobs:
 
       - name: arrange asset files
         run: |
-          mkdir -p build/app/outputs/bundle/release
-          mv app-release.aab build/app/outputs/bundle/release/
+          mv app-release.aab e1547.aab
           mv app-release.apk e1547.apk
           mv Runner.ipa e1547.ipa
+
+      - name: configure playstore keys
+        env:
+          KEYSTORE: ${{ secrets.PLAYSTORE }}
+        run: |
+          mkdir -p android/keys
+          echo "$KEYSTORE" > android/keys/playstore.json
 
       - name: publish to Play Store
         run: bundle exec fastlane android upload
