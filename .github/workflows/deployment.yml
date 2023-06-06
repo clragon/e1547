@@ -132,7 +132,7 @@ jobs:
 
   release:
     needs: [android-build, ios-build]
-    if: ${{ github.event.inputs.version != 'none' }}
+    if: ${{ github.ref == 'refs/heads/master' && github.event.inputs.version != 'none' }}
     runs-on: ubuntu-latest
     steps:
       - name: setup actions
