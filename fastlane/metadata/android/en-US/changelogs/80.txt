@@ -1,0 +1,10 @@
+## [16.2.0+80] - 2023-06-06
+### Added
+- mark as read option for follow tiles
+- opening posts from notifications
+
+### Fixed
+- wiki dialogs
+- bookmarks appearing in timeline
+
+[16.2.0+80]: https://github.com/clragon/e1547/compare/16.1.0+79...16.2.0+80
