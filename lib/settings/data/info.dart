@@ -136,7 +136,8 @@ class AppInfo extends PackageInfo {
     bool beta = false,
   }) async {
     List<AppVersion> versions = await getVersions(cache: cache, force: force);
-    AppVersion current = AppVersion(version: Version.parse(version));
+    AppVersion current =
+        AppVersion(version: Version.parse('$version+$buildNumber'));
 
     // Remove prior versions
     versions.removeWhere(
