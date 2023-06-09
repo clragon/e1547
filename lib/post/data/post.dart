@@ -37,6 +37,7 @@ class Post with _$Post {
     @Default(VoteStatus.unknown)
         VoteStatus voteStatus,
   }) = _Post;
+
   const Post._();
 
   factory Post.fromJson(dynamic json) => _$PostFromJson(json);
@@ -44,7 +45,7 @@ class Post with _$Post {
   PostSourceFile get file => Platform.isIOS && fileRaw.ext == 'webm'
       ? fileRaw.copyWith(
           ext: 'mp4',
-          url: fileRaw.url!.replaceAll('.webm', '.mp4'),
+          url: fileRaw.url?.replaceAll('.webm', '.mp4'),
         )
       : fileRaw;
 }
