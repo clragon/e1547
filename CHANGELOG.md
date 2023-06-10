@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Fixed
+- bookmarks showing incorrect data
+- notifications failing to send
+
 ## [16.2.0+80] - 2023-06-06
 ### Added
 - mark as read option for follow tiles
@@ -759,7 +764,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Fixed
 - API client bindings
 
-[16.2.0+80]: https://github.com/clragon/e1547/compare/16.1.0...16.2.0+80
+[Unreleased]: https://github.com/clragon/e1547/compare/16.2.0+80...HEAD
+[16.2.0+80]: https://github.com/clragon/e1547/compare/16.1.0...16.2.0
 [16.1.0+79]: https://github.com/clragon/e1547/compare/16.0.0...16.1.0
 [16.0.0+78]: https://github.com/clragon/e1547/compare/15.4.2...16.0.0
 [15.4.2+77]: https://github.com/clragon/e1547/compare/15.4.1...15.4.2
