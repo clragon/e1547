@@ -1,0 +1,3 @@
+### Fixed
+- bookmarks showing incorrect data
+- notifications failing to send
