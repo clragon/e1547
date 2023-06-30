@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [16.2.2+82] - 2023-06-30
 ### Fixed
 - bookmarks showing incorrect data
 - notifications failing to send
@@ -769,7 +769,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Fixed
 - API client bindings
 
-[Unreleased]: https://github.com/clragon/e1547/compare/16.2.1+81...HEAD
+[16.2.2+82]: https://github.com/clragon/e1547/compare/16.2.1+81...16.2.2+82
 [16.2.1+81]: https://github.com/clragon/e1547/compare/16.2.0+80...16.2.1+81
 [16.2.0+80]: https://github.com/clragon/e1547/compare/16.1.0...16.2.0
 [16.1.0+79]: https://github.com/clragon/e1547/compare/16.0.0...16.1.0
