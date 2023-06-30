@@ -6,8 +6,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [16.2.2+82] - 2023-06-30
 ### Fixed
-- bookmarks showing incorrect data
-- notifications failing to send
+- bookmarks unintentionally being refreshed
+- downloads crashing on some android devices
 
 ## [16.2.1+81] - 2023-06-10
 ### Fixed
