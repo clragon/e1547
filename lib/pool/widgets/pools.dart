@@ -28,7 +28,7 @@ class _PoolsPageState extends State<PoolsPage> with RouterDrawerEntryWidget {
       child: Consumer<PoolsController>(
         builder: (context, controller, child) => SubListener(
           initialize: true,
-          listenable: controller.search,
+          listenable: controller,
           listener: () async {
             HistoriesService service = context.read<HistoriesService>();
             Client client = context.read<Client>();
@@ -36,14 +36,14 @@ class _PoolsPageState extends State<PoolsPage> with RouterDrawerEntryWidget {
               await controller.waitForFirstPage();
               await service.addPoolSearch(
                 client.host,
-                controller.search.value,
-                pools: controller.itemList,
+                controller.search,
+                pools: controller.items,
               );
             } on ClientException {
               return;
             }
           },
-          builder: (context) => RefreshableControllerPage.builder(
+          builder: (context) => RefreshableDataPage.builder(
             appBar: const DefaultAppBar(
               title: Text('Pools'),
               actions: [ContextDrawerButton()],
@@ -80,11 +80,11 @@ class _PoolsPageState extends State<PoolsPage> with RouterDrawerEntryWidget {
               showNewPageErrorIndicatorAsGridChild: false,
               showNoMoreItemsIndicatorAsGridChild: false,
               padding: defaultListPadding,
-              pagingController: controller,
+              pagingController: controller.paging,
               crossAxisCount:
                   (TileLayout.of(context).crossAxisCount * 0.5).round(),
               builderDelegate: defaultPagedChildBuilderDelegate<Pool>(
-                pagingController: controller,
+                pagingController: controller.paging,
                 itemBuilder: (context, item, index) => ImageCacheSizeProvider(
                   size: TileLayout.of(context).tileSize * 4,
                   child: PoolTile(

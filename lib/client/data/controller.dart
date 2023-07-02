@@ -4,9 +4,14 @@ import 'package:e1547/client/client.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:flutter/foundation.dart';
 
-mixin ClientDataController<KeyType, ItemType>
-    on DataController<KeyType, ItemType> {
+abstract class ClientDataController<KeyType, ItemType>
+    extends DataController<KeyType, ItemType> {
+  ClientDataController({required super.firstPageKey});
+
   Client get client;
+
+  CancelToken _cancelToken = CancelToken();
+  CancelToken get cancelToken => _cancelToken;
 
   @protected
   Future<List<ItemType>> fetch(KeyType page, bool force);
@@ -14,20 +19,13 @@ mixin ClientDataController<KeyType, ItemType>
   @protected
   Future<void> evictCache() => fetch(firstPageKey, true);
 
-  CancelToken _cancelToken = CancelToken();
-  CancelToken get cancelToken => _cancelToken;
-
   @override
-  void refresh({bool force = false, bool background = false}) {
-    _cancelToken.cancel('$runtimeType is refreshing');
-    _cancelToken = CancelToken();
-    super.refresh(force: force, background: background);
-  }
-
-  @override
-  void dispose() {
-    _cancelToken.cancel('$runtimeType was disposed');
-    super.dispose();
+  Future<void> getNextPage({bool reset = false, bool background = false}) {
+    if (reset) {
+      // _cancelToken.cancel('$runtimeType is refreshing');
+      _cancelToken = CancelToken();
+    }
+    return super.getNextPage(reset: reset, background: background);
   }
 
   @protected
@@ -40,15 +38,24 @@ mixin ClientDataController<KeyType, ItemType>
       return PageResponse.error(error: e);
     }
   }
+
+  @override
+  void dispose() {
+    _cancelToken.cancel('$runtimeType was disposed');
+    super.dispose();
+  }
 }
 
-abstract class PageClientDataController<T> extends DataController<int, T>
-    with ClientDataController<int, T> {
+abstract class PageClientDataController<T>
+    extends ClientDataController<int, T> {
   /// A [DataController] that uses positive integers as page keys.
   PageClientDataController({super.firstPageKey = 1});
 
   @override
-  Future<PageResponse<int, T>> requestPage(int page, bool force) async =>
+  Future<PageResponse<int, T>> performRequest(
+    int page,
+    bool force,
+  ) async =>
       withError(
         () async {
           List<T> items = await fetch(page, force);
@@ -61,27 +68,40 @@ abstract class PageClientDataController<T> extends DataController<int, T>
       );
 }
 
-abstract class CursorClientDataController<T> extends DataController<String, T>
-    with ClientDataController<String, T> {
-  CursorClientDataController() : super(firstPageKey: _cursorFirstPage);
+abstract class CursorClientDataController<T>
+    extends ClientDataController<String, T> {
+  CursorClientDataController() : super(firstPageKey: _defaultPage);
 
-  ValueNotifier<bool> orderByOldest = ValueNotifier<bool>(true);
-
+  static const String _defaultPage = 'default';
   static const String _cursorFirstPage = 'a0';
   static const String _indexFirstPage = '1';
 
-  @override
-  String get firstPageKey =>
-      orderByOldest.value ? _cursorFirstPage : _indexFirstPage;
+  bool _orderByOldest = true;
+  bool get orderByOldest => _orderByOldest;
+  set orderByOldest(bool value) {
+    if (_orderByOldest == value) return;
+    _orderByOldest = value;
+    notifyListeners();
+    refresh();
+  }
 
   @protected
   int getId(T item);
 
   @override
-  Future<PageResponse<String, T>> requestPage(String page, bool force) async =>
+  Future<PageResponse<String, T>> performRequest(
+    String page,
+    bool force,
+  ) async =>
       withError(
         () async {
+          if (page == _defaultPage) {
+            page = orderByOldest ? _cursorFirstPage : _indexFirstPage;
+          }
           List<T> items = await fetch(page, force);
+          if (orderByOldest) {
+            items.sort((a, b) => getId(a).compareTo(getId(b)));
+          }
           if (items.isEmpty) {
             return PageResponse.last(itemList: items);
           } else {
@@ -94,29 +114,11 @@ abstract class CursorClientDataController<T> extends DataController<String, T>
       );
 
   String _getNextpageKey(String current, List<T> items) {
-    if (orderByOldest.value) {
+    if (orderByOldest) {
       if (items.isEmpty) return _cursorFirstPage;
       return 'a${items.map((e) => getId(e)).reduce(max)}';
     } else {
       return (int.parse(current) + 1).toString();
     }
-  }
-
-  @override
-  @protected
-  List<Listenable> getRefreshListeners() =>
-      super.getRefreshListeners()..add(orderByOldest);
-
-  @override
-  set value(PagingState<String, T> state) {
-    List<T>? newItems = state.itemList;
-    if (newItems != null && orderByOldest.value) {
-      newItems.sort((a, b) => getId(a).compareTo(getId(b)));
-    }
-    super.value = PagingState(
-      nextPageKey: state.nextPageKey,
-      itemList: newItems,
-      error: state.error,
-    );
   }
 }

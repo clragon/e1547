@@ -24,7 +24,6 @@ class PostsSearchPage extends StatefulWidget {
 }
 
 class _PostsSearchPageState extends State<PostsSearchPage> {
-  late bool orderPoolsByOldest = widget.orderPoolsByOldest;
   late bool readerMode = widget.readerMode;
   bool loadingInfo = true;
   Pool? pool;
@@ -34,23 +33,16 @@ class _PostsSearchPageState extends State<PostsSearchPage> {
   Widget build(BuildContext context) {
     return PostsProvider(
       search: widget.tags,
-      fetch: (controller, tags, page, force) => controller.client.posts(
-        page,
-        search: tags,
-        orderPoolsByOldest: orderPoolsByOldest,
-        force: force,
-        cancelToken: controller.cancelToken,
-      ),
+      orderPools: widget.orderPoolsByOldest,
       child: Consumer3<PostsController, FollowsService, Client>(
         builder: (context, controller, follows, client, child) {
           Future<void> updateFollow() async {
-            follow =
-                await follows.getFollow(client.host, controller.search.value);
+            follow = await follows.getFollow(client.host, controller.search);
             if (follow != null) {
               Follow updated = follow!;
-              if (controller.itemList?.isNotEmpty ?? false) {
+              if (controller.items?.isNotEmpty ?? false) {
                 updated = follow!.withLatest(
-                  controller.itemList!.first,
+                  controller.items!.first,
                   foreground: mounted,
                 );
               }
@@ -69,7 +61,7 @@ class _PostsSearchPageState extends State<PostsSearchPage> {
             setState(() {
               loadingInfo = true;
             });
-            Tagset input = Tagset.parse(controller.search.value);
+            Tagset input = Tagset.parse(controller.search);
             RegExpMatch? match = poolRegex().firstMatch(input.toString());
             if (input.length == 1 && match != null) {
               if (match.namedGroup('id')! != pool?.id.toString()) {
@@ -101,10 +93,10 @@ class _PostsSearchPageState extends State<PostsSearchPage> {
             }
             await updateFollow();
             if (pool != null) {
-              historiesService.addPool(host, pool!, posts: controller.itemList);
+              historiesService.addPool(host, pool!, posts: controller.items);
             } else {
-              historiesService.addPostSearch(host, controller.search.value,
-                  posts: controller.itemList);
+              historiesService.addPostSearch(host, controller.search,
+                  posts: controller.items);
             }
           }
 
@@ -115,8 +107,8 @@ class _PostsSearchPageState extends State<PostsSearchPage> {
             if (pool != null) {
               return tagToName(pool!.name);
             }
-            if (Tagset.parse(controller.search.value).length == 1) {
-              return tagToName(controller.search.value);
+            if (Tagset.parse(controller.search).length == 1) {
+              return tagToName(controller.search);
             }
             return 'Search';
           }
@@ -134,14 +126,14 @@ class _PostsSearchPageState extends State<PostsSearchPage> {
                 actions: [
                   CrossFade(
                     showChild: !loadingInfo &&
-                        Tagset.parse(controller.search.value).isNotEmpty,
+                        Tagset.parse(controller.search).isNotEmpty,
                     child: IconButton(
                       icon: const Icon(Icons.info_outline),
                       onPressed: pool != null
                           ? () => poolSheet(context, pool!)
                           : () => tagSearchSheet(
                                 context: context,
-                                tag: controller.search.value,
+                                tag: controller.search,
                               ),
                     ),
                   ),
@@ -160,12 +152,12 @@ class _PostsSearchPageState extends State<PostsSearchPage> {
                     ),
                   ),
                 if (pool != null)
-                  Builder(
-                    builder: (context) => PoolOrderSwitch(
-                      oldestFirst: orderPoolsByOldest,
+                  AnimatedBuilder(
+                    animation: controller,
+                    builder: (context, child) => PoolOrderSwitch(
+                      oldestFirst: controller.orderPools,
                       onChange: (value) {
-                        setState(() => orderPoolsByOldest = value);
-                        controller.refresh();
+                        controller.orderPools = value;
                         Scaffold.of(context).closeEndDrawer();
                       },
                     ),

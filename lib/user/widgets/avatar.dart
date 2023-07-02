@@ -10,7 +10,7 @@ import 'package:flutter_sub/flutter_sub.dart';
 Future<void> initializeCurrentUserAvatar(BuildContext context) async {
   PostsController? controller =
       await context.read<CurrentUserAvatarValue>().controller;
-  Post? avatar = controller?.itemList?.first;
+  Post? avatar = controller?.items?.first;
   if (avatar?.sample.url != null) {
     // The buildcontext used here comes from MaterialApp,
     // therefore if it goes invalid, the app is already closed.
@@ -40,7 +40,7 @@ class CurrentUserAvatar extends StatelessWidget {
           }
 
           return UserAvatar(
-            id: snapshot.data?.itemList!.first.id,
+            id: snapshot.data?.items!.first.id,
             controller: snapshot.data,
           );
         },
@@ -65,13 +65,13 @@ class CurrentUserAvatarValue {
     try {
       int? id = (await client.currentUser())?.avatarId;
       if (id != null) {
-        PostsController controller = PostsController.single(
+        PostsController controller = SinglePostController(
           client: client,
           denylist: denylist,
           id: id,
           filterMode: PostFilterMode.unavailable,
         );
-        await controller.loadFirstPage();
+        await controller.waitForFirstPage();
         return controller;
       }
     } on Exception {
@@ -110,7 +110,7 @@ class UserAvatar extends StatelessWidget {
     }
     return SubFuture<PostsController>(
       create: () => Future<PostsController>(() async {
-        await controller.loadFirstPage();
+        await controller.waitForFirstPage();
         return controller;
       }),
       keys: [controller],
@@ -149,7 +149,7 @@ class PostAvatar extends StatelessWidget {
     if (id == null) {
       return const EmptyAvatar();
     } else {
-      return PostsProvider.single(
+      return SinglePostProvider(
         id: id!,
         child: Consumer<PostsController>(
           builder: (context, controller, child) =>

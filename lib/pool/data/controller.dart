@@ -5,13 +5,12 @@ import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 
-class PoolsController extends PageClientDataController<Pool>
-    with SearchableController, RefreshableController {
+class PoolsController extends PageClientDataController<Pool> {
   PoolsController({
     required this.client,
     required this.denylist,
     String? search,
-  })  : search = ValueNotifier<String>(search ?? ''),
+  })  : _search = search ?? '',
         thumbnails = ThumbnailController(
           client: client,
           denylist: denylist,
@@ -21,31 +20,29 @@ class PoolsController extends PageClientDataController<Pool>
   final Client client;
   final DenylistService denylist;
 
-  @override
-  late ValueNotifier<String> search;
-
   final ThumbnailController thumbnails;
 
-  @override
-  @protected
-  void reset({bool hasLoaded = false}) {
-    if (!hasLoaded) {
-      thumbnails.reset();
-    }
-    super.reset(hasLoaded: hasLoaded);
+  String _search = '';
+  String get search => _search;
+  set search(String value) {
+    if (value == _search) return;
+    _search = value;
+    refresh();
   }
 
   @override
   @protected
-  List<Listenable> getRefreshListeners() =>
-      super.getRefreshListeners()..add(search);
+  void reset() {
+    thumbnails.reset();
+    super.reset();
+  }
 
   @override
   @protected
   Future<List<Pool>> fetch(int page, bool force) async {
     List<Pool> pools = await client.pools(
       page,
-      search: search.value,
+      search: search,
       force: force,
       cancelToken: cancelToken,
     );
@@ -81,15 +78,16 @@ class ThumbnailController extends PostsController {
   Map<int, List<int>> _ids = {};
 
   @override
-  void reset({bool hasLoaded = false}) {
+  @protected
+  @mustCallSuper
+  void reset() {
     _ids = {};
-    super.reset(hasLoaded: hasLoaded);
+    super.reset();
   }
 
   Future<void> loadIds(List<int> ids, {bool force = false}) async {
-    int index = _ids.length;
-    _ids[index] = ids;
-    await loadPage(index, force: force);
+    _ids[_ids.length] = ids;
+    await getNextPage();
   }
 
   @override
@@ -97,7 +95,7 @@ class ThumbnailController extends PostsController {
   Future<List<Post>> fetch(int page, bool force) async {
     List<int>? ids = _ids[page];
     if (ids == null) return [];
-    List<int> available = itemList?.map((e) => e.id).toList() ?? [];
+    List<int> available = rawItems?.map((e) => e.id).toList() ?? [];
     ids.removeWhere(available.contains);
     return client.postsByIds(
       ids,
@@ -105,4 +103,28 @@ class ThumbnailController extends PostsController {
       cancelToken: cancelToken,
     );
   }
+}
+
+class PoolController extends PostsController {
+  PoolController({
+    required super.client,
+    required super.denylist,
+    required this.pool,
+    bool orderByOldest = true,
+  }) : super(
+          orderPools: orderByOldest,
+          canSearch: false,
+        );
+
+  final Pool pool;
+
+  @override
+  @protected
+  Future<List<Post>> fetch(int page, bool force) async => client.poolPosts(
+        pool.id,
+        page,
+        orderByOldest: orderPools,
+        force: force,
+        cancelToken: cancelToken,
+      );
 }

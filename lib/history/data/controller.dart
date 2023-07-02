@@ -3,48 +3,41 @@ import 'package:drift/isolate.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/history/history.dart';
 import 'package:e1547/interface/interface.dart';
-import 'package:flutter/material.dart';
 
-class HistoriesController extends DataController<int, History>
-    with RefreshableController {
+class HistoriesController extends DataController<int, History> {
   HistoriesController({
     required this.service,
     required this.host,
     HistoriesSearch? search,
-  })  : search = ValueNotifier<HistoriesSearch>(
-          search ??
-              HistoriesSearch(
-                searchFilters: HistorySearchFilter.values.toSet(),
-                typeFilters: HistoryTypeFilter.values.toSet(),
-              ),
-        ),
+  })  : _search = search ??
+            HistoriesSearch(
+              searchFilters: HistorySearchFilter.values.toSet(),
+              typeFilters: HistoryTypeFilter.values.toSet(),
+            ),
         super(firstPageKey: 1);
 
   final HistoriesService service;
   final String host;
 
-  final ValueNotifier<HistoriesSearch> search;
-
-  @override
-  @protected
-  List<Listenable> getRefreshListeners() =>
-      super.getRefreshListeners()..add(search);
-
-  @override
-  void dispose() {
-    search.dispose();
-    super.dispose();
+  HistoriesSearch _search;
+  HistoriesSearch get search => _search;
+  set search(HistoriesSearch value) {
+    if (_search == value) return;
+    _search = value;
+    notifyListeners();
+    refresh();
   }
 
   @override
-  Future<PageResponse<int, History>> requestPage(int page, bool force) async {
+  Future<PageResponse<int, History>> performRequest(
+      int page, bool force) async {
     try {
       List<History> items = await service
           .page(
             host: host,
             page: page,
-            day: search.value.date,
-            linkRegex: search.value.buildLinkFilter(),
+            day: search.date,
+            linkRegex: search.buildLinkFilter(),
           )
           .first;
       if (items.isEmpty) {
@@ -62,11 +55,7 @@ class HistoriesController extends DataController<int, History>
   Future<void> remove(History item) async {
     assertOwnsItem(item);
     await service.remove(item);
-    value = PagingState(
-      itemList: List.of(itemList!)..remove(item),
-      nextPageKey: value.nextPageKey,
-      error: value.error,
-    );
+    rawItems = rawItems!.toList()..remove(item);
   }
 
   Future<void> removeAll(List<History> items) async {
@@ -74,11 +63,7 @@ class HistoriesController extends DataController<int, History>
       assertOwnsItem(item);
     }
     await service.removeAll(items);
-    value = PagingState(
-      itemList: List.of(itemList!)..removeWhere((e) => items.contains(e)),
-      nextPageKey: value.nextPageKey,
-      error: value.error,
-    );
+    rawItems = rawItems!.toList()..removeWhere(items.contains);
   }
 }
 
@@ -93,7 +78,7 @@ class HistoriesProvider extends SubChangeNotifierProvider2<HistoriesService,
           ),
           update: (context, service, client, controller) {
             if (search != null) {
-              controller.search.value = search;
+              controller.search = search;
             }
             return controller;
           },

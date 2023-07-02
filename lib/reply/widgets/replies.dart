@@ -20,7 +20,7 @@ class RepliesPage extends StatelessWidget {
       child: Consumer<RepliesController>(
         builder: (context, controller, child) => SubListener(
           initialize: true,
-          listenable: controller.orderByOldest,
+          listenable: controller,
           listener: () async {
             HistoriesService service = context.read<HistoriesService>();
             Client client = context.read<Client>();
@@ -29,13 +29,13 @@ class RepliesPage extends StatelessWidget {
               await service.addTopic(
                 client.host,
                 topic,
-                replies: controller.itemList!,
+                replies: controller.items!,
               );
             } on ClientException {
               return;
             }
           },
-          builder: (context) => RefreshableControllerPage(
+          builder: (context) => RefreshableDataPage(
             appBar: DefaultAppBar(
               title: Text(topic.title),
               actions: [
@@ -52,15 +52,17 @@ class RepliesPage extends StatelessWidget {
             endDrawer: ContextDrawer(
               title: const Text('Replies'),
               children: [
-                ValueListenableBuilder<bool>(
-                  valueListenable: controller.orderByOldest,
-                  builder: (context, value, child) => SwitchListTile(
+                AnimatedBuilder(
+                  animation: controller,
+                  builder: (context, child) => SwitchListTile(
                     secondary: const Icon(Icons.sort),
                     title: const Text('Reply order'),
-                    subtitle: Text(value ? 'oldest first' : 'newest first'),
-                    value: value,
+                    subtitle: Text(controller.orderByOldest
+                        ? 'oldest first'
+                        : 'newest first'),
+                    value: controller.orderByOldest,
                     onChanged: (value) {
-                      controller.orderByOldest.value = value;
+                      controller.orderByOldest = value;
                       Navigator.of(context).maybePop();
                     },
                   ),
@@ -70,9 +72,9 @@ class RepliesPage extends StatelessWidget {
             child: PagedListView(
               primary: true,
               padding: defaultActionListPadding,
-              pagingController: controller,
+              pagingController: controller.paging,
               builderDelegate: defaultPagedChildBuilderDelegate<Reply>(
-                pagingController: controller,
+                pagingController: controller.paging,
                 itemBuilder: (context, item, index) =>
                     ReplyTile(reply: item, topic: topic),
                 onEmpty: const Text('No replies'),

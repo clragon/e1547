@@ -2,128 +2,142 @@ import 'package:e1547/client/client.dart';
 import 'package:e1547/denylist/denylist.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
-import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 
 class PostsController extends PageClientDataController<Post>
-    with
-        PostsActionController,
-        SearchableController,
-        FilterableController,
-        PostFilterableController,
-        RefreshableController {
+    with PostsActionController, PostFilterableController {
   PostsController({
     required this.client,
     required this.denylist,
-    PostFetchCallback? fetch,
     String? search,
+    bool orderFavorites = false,
+    bool orderPools = true,
     bool denying = true,
     this.canSearch = true,
     this.filterMode = PostFilterMode.filtering,
-  })  : _fetch = fetch,
-        search = ValueNotifier<String>(sortTags(search ?? '')) {
+  })  : _search = search ?? '',
+        _orderFavorites = orderFavorites,
+        _orderPools = orderPools {
     this.denying = denying;
-    _filterNotifiers.forEach((e) => e.addListener(refilter));
-  }
-
-  factory PostsController.single({
-    required int id,
-    required Client client,
-    required DenylistService denylist,
-    PostFilterMode filterMode = PostFilterMode.plain,
-  }) {
-    late PostsController controller;
-    return controller = PostsController(
-      client: client,
-      denylist: denylist,
-      fetch: (search, page, force) async => [
-        if (page == controller.firstPageKey)
-          await controller.client.post(id, force: force),
-      ],
-      canSearch: false,
-      filterMode: filterMode,
-    );
+    denylist.addListener(applyFilter);
   }
 
   @override
   final Client client;
-  final PostFetchCallback? _fetch;
 
-  @override
-  final ValueNotifier<String> search;
   final bool canSearch;
+  String _search = '';
+  String get search => _search;
+  set search(String value) {
+    if (value == _search) return;
+    _search = value;
+    refresh();
+  }
 
   @override
   final PostFilterMode filterMode;
   @override
   final DenylistService denylist;
-  late final List<Listenable> _filterNotifiers = [denylist];
 
-  @override
-  @protected
-  Future<List<Post>> fetch(int page, bool force) async {
-    if (_fetch != null) {
-      return _fetch!(search.value, page, force);
-    } else {
-      return client.posts(
-        page,
-        search: search.value,
-        force: force,
-        cancelToken: cancelToken,
-      );
-    }
+  bool _orderFavorites;
+
+  /// Order posts by when they were added to favorites.
+  bool get orderFavorites => _orderFavorites;
+  set orderFavorites(bool value) {
+    if (value == _orderFavorites) return;
+    _orderFavorites = value;
+    refresh();
+  }
+
+  bool _orderPools;
+
+  /// Order posts by pool order.
+  bool get orderPools => _orderPools;
+  set orderPools(bool value) {
+    if (value == _orderPools) return;
+    _orderPools = value;
+    refresh();
   }
 
   @override
+  @protected
+  Future<List<Post>> fetch(int page, bool force) async => client.posts(
+        page,
+        search: search,
+        force: force,
+        orderPoolsByOldest: orderPools,
+        orderFavoritesByAdded: orderFavorites,
+        cancelToken: cancelToken,
+      );
+
+  @override
   void dispose() {
-    _filterNotifiers.forEach((e) => e.removeListener(refilter));
+    denylist.removeListener(applyFilter);
     super.dispose();
   }
 }
 
-typedef PostFetchCallback = Future<List<Post>> Function(
-    String search, int page, bool force);
+class SinglePostController extends PostsController {
+  SinglePostController({
+    required this.id,
+    required super.client,
+    required super.denylist,
+    super.filterMode = PostFilterMode.plain,
+  }) : super(canSearch: false);
+
+  final int id;
+
+  @override
+  Future<List<Post>> fetch(int page, bool force) async => [
+        if (page == firstPageKey)
+          await client.post(
+            id,
+            force: force,
+            cancelToken: cancelToken,
+          ),
+      ];
+}
 
 class PostsProvider extends SubChangeNotifierProvider2<Client, DenylistService,
     PostsController> {
   PostsProvider({
-    Future<List<Post>> Function(
-      PostsController controller,
-      String search,
-      int page,
-      bool force,
-    )? fetch,
     String? search,
+    bool orderFavorites = false,
+    bool orderPools = true,
     bool denying = true,
     bool canSearch = true,
     PostFilterMode filterMode = PostFilterMode.filtering,
     super.child,
     super.builder,
   }) : super(
-          create: (context, client, denylist) {
-            late PostsController controller;
-            return controller = PostsController(
-              client: client,
-              denylist: denylist,
-              fetch: fetch != null
-                  ? (search, page, force) =>
-                      fetch(controller, search, page, force)
-                  : null,
-              search: search,
-              denying: denying,
-              canSearch: canSearch,
-              filterMode: filterMode,
-            );
-          },
+          create: (context, client, denylist) => PostsController(
+            client: client,
+            denylist: denylist,
+            search: search,
+            orderFavorites: orderFavorites,
+            orderPools: orderPools,
+            denying: denying,
+            canSearch: canSearch,
+            filterMode: filterMode,
+          ),
         );
 
-  PostsProvider.single({
+  PostsProvider.builder({
+    required super.create,
+    super.keys,
+    super.child,
+    super.builder,
+  });
+}
+
+class SinglePostProvider extends PostsProvider {
+  SinglePostProvider({
     required int id,
     PostFilterMode filterMode = PostFilterMode.plain,
     super.child,
     super.builder,
-  }) : super(
-          create: (context, client, denylist) => PostsController.single(
+  }) : super.builder(
+          create: (context, client, denylist) => SinglePostController(
             id: id,
             client: client,
             denylist: denylist,

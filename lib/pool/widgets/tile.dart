@@ -47,7 +47,7 @@ class PoolTile extends StatelessWidget {
 
     if (pool.postIds.isNotEmpty && controller != null) {
       int thumbnail = pool.postIds.first;
-      Post? post = controller.thumbnails.itemList
+      Post? post = controller.thumbnails.items
           ?.firstWhereOrNull((e) => e.id == thumbnail);
       if (post != null) {
         image = ChangeNotifierProvider<PostsController>.value(

@@ -178,7 +178,7 @@ class UserPage extends StatelessWidget {
               addToHistory: (context, service, data) => service.addUser(
                 context.read<Client>().host,
                 user,
-                avatar: data?.itemList?.first,
+                avatar: data?.items?.first,
               ),
               child: DefaultTabController(
                 length: tabs.length,
@@ -373,7 +373,7 @@ class _UserPageProvider
               canSearch: false,
             ),
             profilePost: user.avatarId != null
-                ? PostsController.single(
+                ? SinglePostController(
                     client: client,
                     denylist: denylist,
                     id: user.avatarId!,

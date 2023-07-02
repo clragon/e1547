@@ -229,7 +229,7 @@ void defaultPushPostDetail(BuildContext context, Post post) {
                 controller: controller,
                 child: PostDetailGallery(
                   controller: controller,
-                  initialPage: controller.itemList!.indexOf(post),
+                  initialPage: controller.items!.indexOf(post),
                 ),
               )
             : PostDetail(post: post),

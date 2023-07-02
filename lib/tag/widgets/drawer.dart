@@ -13,7 +13,7 @@ class DrawerTagCounter extends StatelessWidget {
     return AnimatedBuilder(
       animation: controller,
       builder: (context, child) => DrawerTagCounterBody(
-        posts: controller.itemList,
+        posts: controller.items,
         controller: controller,
       ),
     );
@@ -32,9 +32,9 @@ class DrawerMultiTagCounter extends StatelessWidget {
       builder: (context, child) {
         List<Post>? posts;
         for (PostsController controller in controllers) {
-          if (controller.itemList != null) {
+          if (controller.items != null) {
             posts ??= [];
-            posts.addAll(controller.itemList!);
+            posts.addAll(controller.items!);
           }
         }
         return DrawerTagCounterBody(posts: posts);

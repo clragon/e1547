@@ -33,10 +33,11 @@ class _PostDetailGalleryState extends State<PostDetailGallery> {
   void loadNextPage(int index) {
     if (!hasRequestedNextPage) {
       int newPageRequestTriggerIndex =
-          max(0, ((widget.controller.itemList?.length ?? 0) - 3) - 1);
+          max(0, ((widget.controller.items?.length ?? 0) - 3) - 1);
       if (widget.controller.nextPageKey != null &&
           index >= newPageRequestTriggerIndex) {
-        WidgetsBinding.instance.addPostFrameCallback((_) => widget.controller
+        WidgetsBinding.instance.addPostFrameCallback((_) => widget
+            .controller.paging
             .notifyPageRequestListeners(widget.controller.nextPageKey!));
         hasRequestedNextPage = true;
       }
@@ -51,7 +52,7 @@ class _PostDetailGalleryState extends State<PostDetailGallery> {
         builder: (context, controller, child) => SubListener(
           listenable: controller,
           listener: () {
-            if (widget.controller.value.status == PagingStatus.ongoing) {
+            if (widget.controller.paging.value.status == PagingStatus.ongoing) {
               hasRequestedNextPage = false;
             }
           },
@@ -66,7 +67,7 @@ class _PostDetailGalleryState extends State<PostDetailGallery> {
                       PrimaryScrollController(
                     controller: scrollController,
                     child: PostDetail(
-                      post: controller.itemList![index],
+                      post: controller.items![index],
                       onTapImage: () => Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (context) => PostsRouteConnector(
@@ -83,13 +84,13 @@ class _PostDetailGalleryState extends State<PostDetailGallery> {
                   ),
                 );
               },
-              itemCount: controller.itemList?.length ?? 0,
+              itemCount: controller.items?.length ?? 0,
               onPageChanged: (index) {
                 widget.onPageChanged?.call(index);
                 preloadPostImages(
                   context: context,
                   index: index,
-                  posts: controller.itemList!,
+                  posts: controller.items!,
                   size: PostImageSize.sample,
                 );
               },

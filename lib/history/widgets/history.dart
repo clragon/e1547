@@ -7,21 +7,16 @@ import 'package:flutter_sub/flutter_sub.dart';
 import 'package:grouped_list/grouped_list.dart';
 import 'package:intl/intl.dart';
 
-class HistoriesPage extends StatefulWidget {
+class HistoriesPage extends StatelessWidget {
   const HistoriesPage();
 
-  @override
-  State<HistoriesPage> createState() => _HistoriesPageState();
-}
-
-class _HistoriesPageState extends State<HistoriesPage> {
   @override
   Widget build(BuildContext context) {
     return HistoriesProvider(
       child: Consumer<HistoriesController>(
         builder: (context, controller, child) => SelectionLayout<History>(
-          items: controller.itemList,
-          child: RefreshableControllerPage.builder(
+          items: controller.items,
+          child: RefreshableDataPage.builder(
             appBar: HistorySelectionAppBar(
               child: DefaultAppBar(
                 title: Column(
@@ -29,9 +24,9 @@ class _HistoriesPageState extends State<HistoriesPage> {
                   children: [
                     const Text('History'),
                     CrossFade.builder(
-                      showChild: controller.search.value.date != null,
+                      showChild: controller.search.date != null,
                       builder: (context) => Text(
-                        dateOrName(controller.search.value.date!),
+                        dateOrName(controller.search.date!),
                         style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                               color:
                                   Theme.of(context).textTheme.bodySmall!.color,
@@ -61,7 +56,7 @@ class _HistoriesPageState extends State<HistoriesPage> {
 
                 DateTime? result = await showDatePicker(
                   context: context,
-                  initialDate: controller.search.value.date ?? DateTime.now(),
+                  initialDate: controller.search.date ?? DateTime.now(),
                   firstDate: dates.first,
                   lastDate: dates.last,
                   locale: locale,
@@ -75,7 +70,7 @@ class _HistoriesPageState extends State<HistoriesPage> {
                   ScrollController scrollController =
                       PrimaryScrollController.of(context);
 
-                  if (result != controller.search.value.date &&
+                  if (result != controller.search.date &&
                       scrollController.hasClients) {
                     scrollController.animateTo(0,
                         duration: defaultAnimationDuration,
@@ -83,8 +78,7 @@ class _HistoriesPageState extends State<HistoriesPage> {
                   }
                 }
 
-                controller.search.value =
-                    controller.search.value.copyWith(date: result);
+                controller.search = controller.search.copyWith(date: result);
               },
             ),
             drawer: const RouterDrawer(),
@@ -157,26 +151,24 @@ class _HistoriesPageState extends State<HistoriesPage> {
                   child: ListTileHeader(title: 'Entries'),
                 ),
                 for (final filter in HistorySearchFilter.values)
-                  ValueListenableBuilder<HistoriesSearch>(
-                    valueListenable: controller.search,
-                    builder: (context, search, child) => Padding(
+                  AnimatedBuilder(
+                    animation: controller,
+                    builder: (context, child) => Padding(
                       padding: const EdgeInsets.only(left: 16),
                       child: CheckboxListTile(
                         secondary: filter.icon,
                         title: Text(filter.title),
-                        value: search.searchFilters.contains(filter),
+                        value: controller.search.searchFilters.contains(filter),
                         onChanged: (value) {
-                          if (value == null) {
-                            return;
-                          }
+                          if (value == null) return;
                           Set<HistorySearchFilter> filters =
-                              Set.of(search.searchFilters);
+                              Set.of(controller.search.searchFilters);
                           if (value) {
                             filters.add(filter);
                           } else {
                             filters.remove(filter);
                           }
-                          controller.search.value = search.copyWith(
+                          controller.search = controller.search.copyWith(
                             searchFilters: filters,
                           );
                         },
@@ -188,26 +180,26 @@ class _HistoriesPageState extends State<HistoriesPage> {
                   child: ListTileHeader(title: 'Type'),
                 ),
                 for (final filter in HistoryTypeFilter.values)
-                  ValueListenableBuilder<HistoriesSearch>(
-                    valueListenable: controller.search,
-                    builder: (context, search, child) => Padding(
+                  AnimatedBuilder(
+                    animation: controller,
+                    builder: (context, child) => Padding(
                       padding: const EdgeInsets.only(left: 16),
                       child: CheckboxListTile(
                         secondary: filter.icon,
                         title: Text(filter.title),
-                        value: search.typeFilters.contains(filter),
+                        value: controller.search.typeFilters.contains(filter),
                         onChanged: (value) {
                           if (value == null) {
                             return;
                           }
                           Set<HistoryTypeFilter> filters =
-                              Set.of(search.typeFilters);
+                              Set.of(controller.search.typeFilters);
                           if (value) {
                             filters.add(filter);
                           } else {
                             filters.remove(filter);
                           }
-                          controller.search.value = search.copyWith(
+                          controller.search = controller.search.copyWith(
                             typeFilters: filters,
                           );
                         },
@@ -221,7 +213,7 @@ class _HistoriesPageState extends State<HistoriesPage> {
             child: (context) => PagedGroupedListView<int, History, DateTime>(
               padding: defaultActionListPadding
                   .add(LimitedWidthLayout.of(context).padding),
-              pagingController: controller,
+              pagingController: controller.paging,
               order: GroupedListOrder.DESC,
               controller: PrimaryScrollController.of(context),
               groupBy: (element) => DateUtils.dateOnly(element.visitedAt),
@@ -229,7 +221,7 @@ class _HistoriesPageState extends State<HistoriesPage> {
                   ListTileHeader(title: dateOrName(element.visitedAt)),
               itemComparator: (a, b) => a.visitedAt.compareTo(b.visitedAt),
               builderDelegate: defaultPagedChildBuilderDelegate<History>(
-                pagingController: controller,
+                pagingController: controller.paging,
                 onEmpty: const Text('Your history is empty'),
                 onError: const Text('Failed to load history'),
                 itemBuilder: (context, item, index) => HistoryTile(entry: item),

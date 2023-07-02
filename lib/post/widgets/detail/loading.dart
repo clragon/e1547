@@ -38,12 +38,12 @@ class SingleFuturePostsProvider
       : super(
           create: (context, client, denylist) =>
               Future<PostsController>(() async {
-            PostsController controller = PostsController.single(
+            PostsController controller = SinglePostController(
               id: id,
               client: client,
               denylist: denylist,
             );
-            await controller.loadFirstPage();
+            await controller.waitForFirstPage();
             return controller;
           }),
           keys: (context) => [id],

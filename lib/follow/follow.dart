@@ -1,5 +1,6 @@
 // data
 export 'data/actions.dart';
+export 'data/controller.dart';
 export 'data/database.dart';
 export 'data/follow.dart';
 export 'data/notifications.dart';

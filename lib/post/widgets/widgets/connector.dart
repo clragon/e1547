@@ -22,7 +22,7 @@ class PostsRouteConnector extends StatefulWidget {
 }
 
 class _PostsRouteConnectorState extends State<PostsRouteConnector> {
-  late List<Post>? pageItems = widget.controller.itemList;
+  late List<Post>? pageItems = widget.controller.items;
 
   void popOrRemove() {
     if (ModalRoute.of(context)!.isCurrent) {
@@ -33,15 +33,15 @@ class _PostsRouteConnectorState extends State<PostsRouteConnector> {
   }
 
   void updatePages() {
-    if (pageItems == null || widget.controller.itemList == null) {
+    if (pageItems == null || widget.controller.items == null) {
       return popOrRemove();
     }
     for (int i = 0; i < pageItems!.length; i++) {
-      if (pageItems![i].id != widget.controller.itemList![i].id) {
+      if (pageItems![i].id != widget.controller.items![i].id) {
         return popOrRemove();
       }
     }
-    pageItems = widget.controller.itemList;
+    pageItems = widget.controller.items;
   }
 
   @override
@@ -67,7 +67,7 @@ class PostsIdConnector extends StatelessWidget {
     PostsController? controller = context.watch<PostsController>();
     return builder(
       context,
-      controller.itemList?.firstWhereOrNull((e) => e.id == id),
+      controller.items?.firstWhereOrNull((e) => e.id == id),
     );
   }
 }
@@ -156,8 +156,8 @@ class PostsControllerHistoryConnector extends StatelessWidget {
         controller: controller,
         addToHistory: (context, service, data) => service.addPostSearch(
           data.client.host,
-          data.search.value,
-          posts: data.itemList,
+          data.search,
+          posts: data.items,
         ),
         child: child,
       );

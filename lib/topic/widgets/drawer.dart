@@ -8,20 +8,20 @@ class TopicTagEditingTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder<bool>(
-      valueListenable: controller.hideTagEditing,
-      builder: (context, value, child) => SwitchListTile(
+    return AnimatedBuilder(
+      animation: controller,
+      builder: (context, child) => SwitchListTile(
         secondary: const Icon(Icons.inventory_outlined),
         title: const Text('hide tags edits'),
         subtitle: Text(
-          value
+          controller.hideTagEditing
               ? 'hide tag alias and implications'
               : 'show tag alias and implications',
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
-        value: value,
-        onChanged: (value) => controller.hideTagEditing.value = value,
+        value: controller.hideTagEditing,
+        onChanged: (value) => controller.hideTagEditing = value,
       ),
     );
   }

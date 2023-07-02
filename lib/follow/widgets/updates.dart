@@ -48,8 +48,6 @@ class _FollowUpdatesState extends State<FollowUpdates> {
         },
       );
 
-  void onFailure(Object exception) => refreshController.refreshFailed();
-
   @override
   Widget build(BuildContext context) {
     return SubEffect(
@@ -69,7 +67,7 @@ class _FollowUpdatesState extends State<FollowUpdates> {
             .remaining
             .listen(
               onRemaining,
-              onError: onFailure,
+              onError: (exception) => refreshController.refreshFailed(),
             )
             .cancel,
         keys: [context.watch<FollowsUpdater>().value],

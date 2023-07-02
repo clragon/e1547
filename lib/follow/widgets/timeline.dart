@@ -14,22 +14,13 @@ class _FollowsTimelinePageState extends State<FollowsTimelinePage> {
   @override
   Widget build(BuildContext context) {
     return RouterDrawerEntry<FollowsTimelinePage>(
-      child: PostsProvider(
-        fetch: (controller, search, page, force) async {
-          FollowsService service = context.read<FollowsService>();
-          return controller.client.postsByTags(
-            (await service.all(
-              host: controller.client.host,
-              types: [FollowType.update, FollowType.notify],
-            ).first)
-                .map((e) => e.tags)
-                .toList(),
-            page,
-            force: force,
-            cancelToken: controller.cancelToken,
-          );
-        },
-        canSearch: false,
+      child: PostsProvider.builder(
+        create: (context, client, denylist) => FollowTimelineController(
+          client: client,
+          denylist: denylist,
+          follows: context.read<FollowsService>(),
+        ),
+        keys: (context) => [context.watch<FollowsService>()],
         child: Consumer<PostsController>(
           builder: (context, controller, child) => PostsPage(
             appBar: const DefaultAppBar(

@@ -41,7 +41,7 @@ class _PoolSearchInputState extends State<PoolSearchInput> {
   @override
   void initState() {
     super.initState();
-    String text = widget.controller.search.value.trim();
+    String text = widget.controller.search.trim();
     if (text.isNotEmpty) {
       text = '$text ';
     }
@@ -52,7 +52,7 @@ class _PoolSearchInputState extends State<PoolSearchInput> {
   Widget build(BuildContext context) {
     return ControlledTextWrapper(
       textController: textController,
-      submit: (value) => widget.controller.search.value = value.trim(),
+      submit: (value) => widget.controller.search = value.trim(),
       actionController: widget.actionController,
       builder: (context, controller, submit) => SearchInput<_PoolSearchResult>(
         submit: submit,

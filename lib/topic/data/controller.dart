@@ -3,44 +3,45 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/topic/topic.dart';
 import 'package:flutter/material.dart';
 
-class TopicsController extends PageClientDataController<Topic>
-    with RefreshableController, SearchableController, FilterableController {
+class TopicsController extends PageClientDataController<Topic> {
   TopicsController({required this.client, String? search})
-      : search = ValueNotifier<String>(search ?? '') {
-    _filterNotifiers.forEach((e) => e.addListener(refilter));
-  }
+      : _search = search ?? '';
 
   @override
   final Client client;
 
-  @override
-  late ValueNotifier<String> search;
+  String _search = '';
+  String get search => _search;
+  set search(String value) {
+    if (value == _search) return;
+    _search = value;
+    refresh();
+  }
 
-  final ValueNotifier<bool> hideTagEditing = ValueNotifier<bool>(true);
-
-  late final List<Listenable> _filterNotifiers = [hideTagEditing];
+  bool _hideTagEditing = true;
+  bool get hideTagEditing => _hideTagEditing;
+  set hideTagEditing(bool value) {
+    if (value == _hideTagEditing) return;
+    _hideTagEditing = value;
+    applyFilter();
+  }
 
   @override
   @protected
   Future<List<Topic>> fetch(int page, bool force) => client.topics(
         page,
-        search: search.value,
+        search: search,
         force: force,
         cancelToken: cancelToken,
       );
 
   @override
-  List<Topic> filter(List<Topic> items) {
-    if (hideTagEditing.value) {
-      return items.where((e) => e.categoryId != 2).toList();
+  List<Topic>? filter(List<Topic>? items) {
+    List<Topic>? result = super.filter(items);
+    if (hideTagEditing) {
+      return result?.where((e) => e.categoryId != 2).toList();
     }
-    return items;
-  }
-
-  @override
-  void dispose() {
-    _filterNotifiers.forEach((e) => e.removeListener(refilter));
-    super.dispose();
+    return result;
   }
 }
 

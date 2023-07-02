@@ -185,20 +185,17 @@ extension PostLinking on Post {
 
 mixin PostsActionController<KeyType> on ClientDataController<KeyType, Post> {
   Post? postById(int id) {
-    int index = itemList?.indexWhere((e) => e.id == id) ?? -1;
+    int index = rawItems?.indexWhere((e) => e.id == id) ?? -1;
     if (index == -1) {
       return null;
     }
-    return itemList![index];
+    return rawItems![index];
   }
 
-  void replacePost(Post post) {
-    int index = itemList?.indexWhere((e) => e.id == post.id) ?? -1;
-    if (index == -1) {
-      throw StateError('Post isnt owned by this controller');
-    }
-    updateItem(index, post);
-  }
+  void replacePost(Post post) => updateItem(
+        rawItems?.indexWhere((e) => e.id == post.id) ?? -1,
+        post,
+      );
 
   Future<bool> fav(Post post) async {
     assertOwnsItem(post);

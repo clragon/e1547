@@ -31,18 +31,18 @@ class PostFullscreenGallery extends StatelessWidget {
             builder: (context, controller, child) => GalleryButtons(
               controller: pageController,
               child: PageView.builder(
-                itemCount: controller.itemList?.length ?? 0,
+                itemCount: controller.items?.length ?? 0,
                 controller: pageController,
                 itemBuilder: (context, index) => PostFullscreen(
-                  post: controller.itemList![index],
+                  post: controller.items![index],
                 ),
                 onPageChanged: (index) {
                   onPageChanged?.call(index);
-                  if (controller.itemList != null) {
+                  if (controller.items != null) {
                     preloadPostImages(
                       context: context,
                       index: index,
-                      posts: controller.itemList!,
+                      posts: controller.items!,
                       size: PostImageSize.file,
                     );
                   }

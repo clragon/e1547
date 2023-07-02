@@ -156,9 +156,9 @@ class RemoveTagAction extends StatelessWidget {
       tooltip: 'Remove from search',
       onPressed: () {
         Navigator.of(context).maybePop();
-        List<String> result = controller.search.value.split(' ');
+        List<String> result = controller.search.split(' ');
         result.removeWhere((element) => element == tag);
-        controller.search.value = sortTags(result.join(' '));
+        controller.search = sortTags(result.join(' '));
       },
     );
   }
@@ -177,8 +177,7 @@ class AddTagAction extends StatelessWidget {
       tooltip: 'Add to search',
       onPressed: () {
         Navigator.of(context).maybePop();
-        controller.search.value =
-            sortTags([controller.search.value, tag].join(' '));
+        controller.search = sortTags([controller.search, tag].join(' '));
       },
     );
   }
@@ -197,8 +196,7 @@ class SubtractTagAction extends StatelessWidget {
       tooltip: 'Subtract from search',
       onPressed: () {
         Navigator.of(context).maybePop();
-        controller.search.value =
-            sortTags([controller.search.value, '-$tag'].join(' '));
+        controller.search = sortTags([controller.search, '-$tag'].join(' '));
       },
     );
   }
@@ -212,14 +210,14 @@ class TagSearchActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder<String>(
-      valueListenable: controller.search,
-      builder: (context, value, child) {
+    return AnimatedBuilder(
+      animation: controller,
+      builder: (context, child) {
         if (!controller.canSearch || tag.contains(' ')) {
           return const SizedBox.shrink();
         }
 
-        bool isSearched = controller.search.value
+        bool isSearched = controller.search
             .split(' ')
             .any((element) => tagToRaw(element) == tag);
 

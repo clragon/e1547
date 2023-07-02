@@ -95,15 +95,15 @@ class PostDetailCommentsWrapper extends StatelessWidget {
                               PopupMenuTile(
                                 title: 'Refresh',
                                 icon: Icons.refresh,
-                                value: () => controller.refresh(force: true),
+                                value: () => controller.refresh(),
                               ),
                               PopupMenuTile(
                                 icon: Icons.sort,
-                                title: controller.orderByOldest.value
+                                title: controller.orderByOldest
                                     ? 'Newest first'
                                     : 'Oldest first',
-                                value: () => controller.orderByOldest.value =
-                                    !controller.orderByOldest.value,
+                                value: () => controller.orderByOldest =
+                                    !controller.orderByOldest,
                               ),
                               PopupMenuTile(
                                 title: 'Comment',
@@ -143,9 +143,9 @@ class PostDetailCommentsWrapper extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 12)
                   .add(const EdgeInsets.only(bottom: 30)),
               sliver: PagedSliverList<String, Comment>(
-                pagingController: controller,
+                pagingController: controller.paging,
                 builderDelegate: defaultPagedChildBuilderDelegate(
-                  pagingController: controller,
+                  pagingController: controller.paging,
                   itemBuilder: (context, item, index) =>
                       CommentTile(comment: item),
                   onEmpty: const Text('No comments'),

@@ -18,24 +18,21 @@ class PoolPage extends StatefulWidget {
 }
 
 class _PoolPageState extends State<PoolPage> {
-  late bool orderByOldest = widget.orderByOldest ?? true;
   bool readerMode = true;
 
   @override
   Widget build(BuildContext context) {
-    return PostsProvider(
-      fetch: (controller, tags, page, force) => controller.client.poolPosts(
-        widget.pool.id,
-        page,
-        orderByOldest: orderByOldest,
-        force: force,
-        cancelToken: controller.cancelToken,
+    return PostsProvider.builder(
+      create: (context, client, denylist) => PoolController(
+        client: client,
+        denylist: denylist,
+        pool: widget.pool,
+        orderByOldest: widget.orderByOldest ?? true,
       ),
-      canSearch: false,
       child: Consumer<PostsController>(
         builder: (context, controller, child) => SubListener(
           initialize: true,
-          listenable: controller.search,
+          listenable: controller,
           listener: () async {
             HistoriesService service = context.read<HistoriesService>();
             Client client = context.read<Client>();
@@ -44,7 +41,7 @@ class _PoolPageState extends State<PoolPage> {
               await service.addPool(
                 client.host,
                 widget.pool,
-                posts: controller.itemList,
+                posts: controller.items,
               );
             } on ClientException {
               return;
@@ -74,14 +71,12 @@ class _PoolPageState extends State<PoolPage> {
                   },
                 ),
               ),
-              Builder(
-                builder: (context) => PoolOrderSwitch(
-                  oldestFirst: orderByOldest,
+              AnimatedBuilder(
+                animation: controller,
+                builder: (context, child) => PoolOrderSwitch(
+                  oldestFirst: controller.orderPools,
                   onChange: (value) {
-                    setState(() {
-                      orderByOldest = value;
-                    });
-                    controller.refresh();
+                    controller.orderPools = value;
                     Scaffold.of(context).closeEndDrawer();
                   },
                 ),

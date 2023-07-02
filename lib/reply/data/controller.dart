@@ -1,31 +1,24 @@
-import 'package:collection/collection.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/denylist/denylist.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/reply/reply.dart';
 import 'package:flutter/material.dart';
 
-class RepliesController extends CursorClientDataController<Reply>
-    with RefreshableController, FilterableController {
+class RepliesController extends CursorClientDataController<Reply> {
   RepliesController({
     required this.client,
     required this.topicId,
     required this.denylist,
     bool? orderByOldest,
-  }) : orderByOldest = ValueNotifier<bool>(orderByOldest ?? true) {
-    _filterNotifiers.forEach((e) => e.addListener(refilter));
+  }) {
+    this.orderByOldest = orderByOldest ?? true;
+    denylist.addListener(applyFilter);
   }
 
   @override
   final Client client;
-
   final int topicId;
-  @override
-  // ignore: overridden_fields
-  final ValueNotifier<bool> orderByOldest;
-
   final DenylistService denylist;
-  late final List<Listenable> _filterNotifiers = [denylist];
 
   @override
   @protected
@@ -41,12 +34,8 @@ class RepliesController extends CursorClientDataController<Reply>
   int getId(Reply item) => item.id;
 
   @override
-  List<Reply> filter(List<Reply> items) =>
-      items.whereNot((e) => denylist.denies('user:${e.creatorId}')).toList();
-
-  @override
   void dispose() {
-    _filterNotifiers.forEach((e) => e.removeListener(refilter));
+    denylist.removeListener(applyFilter);
     super.dispose();
   }
 }

@@ -23,7 +23,7 @@ class _TopicsPageState extends State<TopicsPage> with RouterDrawerEntryWidget {
       child: Consumer<TopicsController>(
         builder: (context, controller, child) => SubListener(
           initialize: true,
-          listenable: controller.search,
+          listenable: controller,
           listener: () async {
             HistoriesService service = context.read<HistoriesService>();
             Client client = context.read<Client>();
@@ -31,14 +31,14 @@ class _TopicsPageState extends State<TopicsPage> with RouterDrawerEntryWidget {
               await controller.waitForFirstPage();
               await service.addTopicSearch(
                 client.host,
-                controller.search.value,
-                topics: controller.itemList!,
+                controller.search,
+                topics: controller.items!,
               );
             } on ClientException {
               return;
             }
           },
-          builder: (context) => RefreshableControllerPage(
+          builder: (context) => RefreshableDataPage(
             appBar: const DefaultAppBar(
               title: Text('Topics'),
               actions: [ContextDrawerButton()],
@@ -48,9 +48,8 @@ class _TopicsPageState extends State<TopicsPage> with RouterDrawerEntryWidget {
               builder: (context, actionController) => ControlledTextField(
                 labelText: 'Topic title',
                 actionController: actionController,
-                textController:
-                    TextEditingController(text: controller.search.value),
-                submit: (value) => controller.search.value = value,
+                textController: TextEditingController(text: controller.search),
+                submit: (value) => controller.search = value,
               ),
             ),
             drawer: const RouterDrawer(),
@@ -62,9 +61,9 @@ class _TopicsPageState extends State<TopicsPage> with RouterDrawerEntryWidget {
             child: PagedListView(
               primary: true,
               padding: defaultListPadding,
-              pagingController: controller,
+              pagingController: controller.paging,
               builderDelegate: defaultPagedChildBuilderDelegate<Topic>(
-                pagingController: controller,
+                pagingController: controller.paging,
                 itemBuilder: (context, item, index) => TopicTile(
                   topic: item,
                   onPressed: () => Navigator.of(context).push(

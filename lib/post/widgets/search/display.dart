@@ -31,7 +31,7 @@ Widget postGrid({
   PagedChildBuilderDelegate<Post> buildBuilderDelegate(
           ItemWidgetBuilder<Post> itemBuilder) =>
       defaultPagedChildBuilderDelegate<Post>(
-        pagingController: controller,
+        pagingController: controller.paging,
         onEmpty: const Text('No posts'),
         onError: const Text('Failed to load posts'),
         itemBuilder: itemBuilder,
@@ -50,7 +50,7 @@ Widget postGrid({
         showNewPageProgressIndicatorAsGridChild: false,
         showNoMoreItemsIndicatorAsGridChild: false,
         padding: defaultListPadding,
-        pagingController: controller,
+        pagingController: controller.paging,
         builderDelegate: buildBuilderDelegate(itemBuilder),
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: TileLayout.of(context).crossAxisCount,
@@ -64,7 +64,7 @@ Widget postGrid({
         showNewPageProgressIndicatorAsGridChild: false,
         showNoMoreItemsIndicatorAsGridChild: false,
         padding: defaultListPadding,
-        pagingController: controller,
+        pagingController: controller.paging,
         builderDelegate: buildBuilderDelegate(
           (context, item, index) => AspectRatio(
             aspectRatio: 1 / (item.sample.height / item.sample.width),
@@ -84,9 +84,9 @@ Widget postComic({
     primary: true,
     padding: defaultActionListPadding
         .add(LimitedWidthLayout.maybeOf(context)?.padding ?? EdgeInsets.zero),
-    pagingController: controller,
+    pagingController: controller.paging,
     builderDelegate: defaultPagedChildBuilderDelegate<Post>(
-      pagingController: controller,
+      pagingController: controller.paging,
       onEmpty: const Text('No posts'),
       onError: const Text('Failed to load posts'),
       itemBuilder: (context, item, index) => ImageCacheSizeProvider(
@@ -105,9 +105,9 @@ Widget postTimeline({
     primary: true,
     padding: defaultActionListPadding
         .add(LimitedWidthLayout.maybeOf(context)?.padding ?? EdgeInsets.zero),
-    pagingController: controller,
+    pagingController: controller.paging,
     builderDelegate: defaultPagedChildBuilderDelegate<Post>(
-      pagingController: controller,
+      pagingController: controller.paging,
       onEmpty: const Text('No posts'),
       onError: const Text('Failed to load posts'),
       itemBuilder: (context, item, index) => ImageCacheSizeProvider(

@@ -33,8 +33,8 @@ class _PostsPageState extends State<PostsPage> {
           builder: (context, actionController) => ControlledTextWrapper(
             actionController: actionController,
             textController:
-                TextEditingController(text: widget.controller.search.value),
-            submit: (value) => widget.controller.search.value = sortTags(value),
+                TextEditingController(text: widget.controller.search),
+            submit: (value) => widget.controller.search = sortTags(value),
             builder: (context, controller, submit) => AdvancedTagInput(
               textInputAction: TextInputAction.search,
               labelText: 'Tags',
@@ -73,8 +73,8 @@ class _PostsPageState extends State<PostsPage> {
       child: Consumer<PostsController>(
         builder: (context, controller, child) => SelectionLayout<Post>(
           enabled: widget.canSelect,
-          items: controller.itemList,
-          child: RefreshableControllerPage.builder(
+          items: controller.items,
+          child: RefreshableDataPage.builder(
             appBar: PostSelectionAppBar(
               controller: widget.controller,
               child: widget.appBar,

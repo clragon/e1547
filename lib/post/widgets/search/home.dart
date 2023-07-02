@@ -22,9 +22,9 @@ class _HomePageState extends State<HomePage> with RouterDrawerEntryWidget {
           controller: controller,
           child: SubListener(
             initialize: true,
-            listenable: controller.search,
-            listener: () => context.read<Settings>().homeTags.value =
-                controller.search.value,
+            listenable: controller,
+            listener: () =>
+                context.read<Settings>().homeTags.value = controller.search,
             builder: (context) => PostsPage(
               appBar: const ContextSizedAppBar(
                 title: Text('Home'),

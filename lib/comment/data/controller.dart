@@ -5,27 +5,27 @@ import 'package:e1547/denylist/denylist.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
 
-class CommentsController extends CursorClientDataController<Comment>
-    with RefreshableController, FilterableController {
+class CommentsController extends CursorClientDataController<Comment> {
   CommentsController({
     required this.client,
     required this.postId,
     required this.denylist,
   }) {
-    _filterNotifiers.forEach((e) => e.addListener(refilter));
+    denylist.addListener(applyFilter);
   }
 
   @override
   final Client client;
-
   final int postId;
-
   final DenylistService denylist;
-  late final List<Listenable> _filterNotifiers = [denylist];
 
   @override
   @protected
-  Future<List<Comment>> fetch(String page, bool force) => client.comments(
+  Future<List<Comment>> fetch(
+    String page,
+    bool force,
+  ) =>
+      client.comments(
         postId,
         page,
         force: force,
@@ -37,16 +37,13 @@ class CommentsController extends CursorClientDataController<Comment>
   int getId(Comment item) => item.id;
 
   @override
-  List<Comment> filter(List<Comment> items) =>
-      items.whereNot((e) => denylist.denies('user:${e.creatorId}')).toList();
+  List<Comment>? filter(List<Comment>? items) => super.filter(
+      items?.whereNot((e) => denylist.denies('user:${e.creatorId}')).toList());
 
-  void replaceComment(Comment comment) {
-    int index = itemList?.indexWhere((e) => e.id == comment.id) ?? -1;
-    if (index == -1) {
-      throw StateError('Comment isnt owned by this controller');
-    }
-    updateItem(index, comment);
-  }
+  void replaceComment(Comment comment) => updateItem(
+        items?.indexWhere((e) => e.id == comment.id) ?? -1,
+        comment,
+      );
 
   Future<bool> vote({
     required Comment comment,
@@ -105,7 +102,7 @@ class CommentsController extends CursorClientDataController<Comment>
 
   @override
   void dispose() {
-    _filterNotifiers.forEach((e) => e.removeListener(refilter));
+    denylist.removeListener(applyFilter);
     super.dispose();
   }
 }
