@@ -16,12 +16,15 @@ class FollowsBookmarkPage extends StatelessWidget {
       child: Consumer2<FollowsService, Client>(
         builder: (context, service, client, child) => SubEffect(
           effect: () {
-            context.read<FollowsUpdater>().update(
-                  client: context.read<Client>(),
-                  denylist: context.read<DenylistService>().items,
-                );
+            WidgetsBinding.instance.addPostFrameCallback(
+              (_) => context.read<FollowsUpdater>().update(
+                    client: context.read<Client>(),
+                    denylist: context.read<DenylistService>().items,
+                  ),
+            );
             return null;
           },
+          keys: const [],
           child: SubStream<List<Follow>>(
             create: () => service.watchAll(
               host: client.host,

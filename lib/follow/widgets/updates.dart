@@ -54,12 +54,15 @@ class _FollowUpdatesState extends State<FollowUpdates> {
   Widget build(BuildContext context) {
     return SubEffect(
       effect: () {
-        context.read<FollowsUpdater>().update(
-              client: context.read<Client>(),
-              denylist: context.read<DenylistService>().items,
-            );
+        WidgetsBinding.instance.addPostFrameCallback(
+          (_) => context.read<FollowsUpdater>().update(
+                client: context.read<Client>(),
+                denylist: context.read<DenylistService>().items,
+              ),
+        );
         return null;
       },
+      keys: const [],
       child: SubEffect(
         effect: () => context
             .read<FollowsUpdater>()
