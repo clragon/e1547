@@ -700,7 +700,6 @@ class Client {
         .get(
           'forum_posts.json',
           queryParameters: {
-            'commit': 'Search',
             'search[topic_id]': topicId,
             'page': page,
           },
