@@ -1,4 +1,3 @@
-import 'package:e1547/client/client.dart';
 import 'package:e1547/history/history.dart';
 import 'package:e1547/history/widgets/appbar.dart';
 import 'package:e1547/history/widgets/list.dart';
@@ -50,7 +49,8 @@ class _HistoriesPageState extends State<HistoriesPage> {
                 Locale locale = Localizations.localeOf(context);
 
                 // awaiting this here means the UI might not react immediately
-                List<DateTime> dates = await controller.service.dates().first;
+                List<DateTime> dates =
+                    await controller.service.dates(host: controller.host).first;
                 if (dates.isEmpty) {
                   dates.add(DateTime.now());
                 }
@@ -91,17 +91,16 @@ class _HistoriesPageState extends State<HistoriesPage> {
             endDrawer: ContextDrawer(
               title: const Text('History'),
               children: [
-                Consumer2<HistoriesService, Client>(
-                  builder: (context, service, client, child) => SubStream<int>(
-                    create: () => service.length(host: client.host),
-                    keys: [service, client.host],
-                    builder: (context, snapshot) => SwitchListTile(
-                      title: const Text('Enabled'),
-                      subtitle: Text('${snapshot.data ?? 0} pages visited'),
-                      secondary: const Icon(Icons.history),
-                      value: service.enabled,
-                      onChanged: (value) => service.enabled = value,
-                    ),
+                SubStream<int>(
+                  create: () =>
+                      controller.service.length(host: controller.host),
+                  keys: [controller.service, controller.host],
+                  builder: (context, snapshot) => SwitchListTile(
+                    title: const Text('Enabled'),
+                    subtitle: Text('${snapshot.data ?? 0} pages visited'),
+                    secondary: const Icon(Icons.history),
+                    value: controller.service.enabled,
+                    onChanged: (value) => controller.service.enabled = value,
                   ),
                 ),
                 AnimatedBuilder(

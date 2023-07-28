@@ -51,17 +51,19 @@ class HistoriesDatabase extends _$HistoriesDatabase {
       _lengthExpression(host: host).watchSingle();
 
   Stream<List<DateTime>> dates({String? host}) {
-    final Expression<String> dateOnly = historiesTable.visitedAt.date;
+    final Expression<DateTime> time = historiesTable.visitedAt;
+    final Expression<String> date = historiesTable.visitedAt.date;
     final Expression<bool> hosted = _hostQuery(historiesTable, host);
 
     return (selectOnly(historiesTable)
           ..where(hosted)
-          ..orderBy([OrderingTerm(expression: dateOnly)])
-          ..groupBy([dateOnly])
-          ..addColumns([dateOnly]))
-        .map((row) => DateTime.parse(row.read(dateOnly)!))
-        .watch()
-        .map((e) => e.cast<DateTime>());
+          ..orderBy([OrderingTerm(expression: time)])
+          ..groupBy([date])
+          ..addColumns([time]))
+        .map((row) {
+      DateTime source = row.read(time)!;
+      return DateTime(source.year, source.month, source.day);
+    }).watch();
   }
 
   Selectable<History> _itemExpression(int id) =>
