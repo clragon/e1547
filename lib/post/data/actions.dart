@@ -53,10 +53,14 @@ extension PostTagging on Post {
           }
           break;
         case 'score':
-          bool greater = value.contains('>');
-          bool smaller = value.contains('<');
-          bool equal = value.contains('=');
-          int? score = int.tryParse(value.replaceAll(RegExp(r'[<>=]'), ''));
+          RegExpMatch? match = RegExp(
+            r'^(?<direction>[<>])?(?<equals>=)?(?<score>d+)\$',
+          ).firstMatch(value);
+          if (match == null) return false;
+          bool greater = match.namedGroup('direction') == '>';
+          bool smaller = match.namedGroup('direction') == '<';
+          bool equal = match.namedGroup('equals') == '=';
+          int? score = int.tryParse(match.namedGroup('score')!);
           if (score != null) {
             if (greater) {
               if (equal) {
