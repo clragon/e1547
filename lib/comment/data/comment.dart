@@ -24,7 +24,7 @@ class Comment with _$Comment {
     required String updaterName,
     @JsonKey(includeFromJson: false, includeToJson: false)
     @Default(VoteStatus.unknown)
-        VoteStatus voteStatus,
+    VoteStatus voteStatus,
   }) = _Comment;
 
   factory Comment.fromJson(dynamic json) => _$CommentFromJson(json);

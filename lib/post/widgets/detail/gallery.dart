@@ -55,7 +55,7 @@ class _PostDetailGalleryState extends State<PostDetailGallery> {
               hasRequestedNextPage = false;
             }
           },
-          child: GalleryButtons(
+          builder: (context) => GalleryButtons(
             controller: pageController,
             child: PageView.builder(
               controller: pageController,

@@ -49,7 +49,7 @@ class _PostsRouteConnectorState extends State<PostsRouteConnector> {
         initialize: true,
         listener: updatePages,
         listenable: widget.controller,
-        child: ChangeNotifierProvider.value(
+        builder: (context) => ChangeNotifierProvider.value(
           value: widget.controller,
           child: widget.child,
         ),

@@ -466,10 +466,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_local_notifications
-      sha256: "12f8abacca8bf29c042ec50c554f967da4c6f88ec99fc215e0325e5b43a25188"
+      sha256: "3cc40fe8c50ab8383f3e053a499f00f975636622ecdc8e20a77418ece3b1e975"
       url: "https://pub.dev"
     source: hosted
-    version: "14.1.0"
+    version: "15.1.0+1"
   flutter_local_notifications_linux:
     dependency: transitive
     description:
@@ -543,26 +543,26 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_sub
-      sha256: "6fa90ce67df5ad888b1d2a304aa36ea6cf5dcd62a08d421c8b5d636f4863d6f5"
+      sha256: "56a7cf25b35c69bfc8ffbf1481da27320b17f5b19121972641be9910d95b4e0c"
       url: "https://pub.dev"
     source: hosted
-    version: "2.1.1"
+    version: "3.0.0"
   flutter_sub_provider:
     dependency: "direct main"
     description:
       name: flutter_sub_provider
-      sha256: "674e679978f7381922352d2551605f72a6bc379d7fefa3801d2f64748fed85e2"
+      sha256: ac1f7dd7c057d463b0d8b36d75179a21f2931386798ee9f8f39fee0a7ead9bd7
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.0"
+    version: "3.0.0"
   flutter_typeahead:
     dependency: "direct main"
     description:
       name: flutter_typeahead
-      sha256: "986143baa65734d02b494ffb8c4e22fc1065d272ded050e7229b81e37aed316e"
+      sha256: a3539f7a90246b152f569029dedcf0b842532d3f2a440701b520e0bf2acbcf42
       url: "https://pub.dev"
     source: hosted
-    version: "4.4.0"
+    version: "4.6.2"
   flutter_web_plugins:
     dependency: transitive
     description: flutter
@@ -668,10 +668,10 @@ packages:
     dependency: "direct main"
     description:
       name: image_gallery_saver
-      sha256: be812580c7a320d3bf583af89cac6b376f170d48000aca75215a73285a3223a0
+      sha256: "0aba74216a4d9b0561510cb968015d56b701ba1bd94aace26aacdd8ae5761816"
       url: "https://pub.dev"
     source: hosted
-    version: "1.7.1"
+    version: "2.0.3"
   infinite_scroll_pagination:
     dependency: "direct main"
     description:
@@ -1041,6 +1041,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.4"
+  pointer_interceptor:
+    dependency: transitive
+    description:
+      name: pointer_interceptor
+      sha256: "6aa680b30d96dccef496933d00208ad25f07e047f644dc98ce03ec6141633a9a"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.9.3+4"
   pointycastle:
     dependency: transitive
     description:

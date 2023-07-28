@@ -43,7 +43,7 @@ class _PoolsPageState extends State<PoolsPage> with RouterDrawerEntryWidget {
               return;
             }
           },
-          child: RefreshableControllerPage.builder(
+          builder: (context) => RefreshableControllerPage.builder(
             appBar: const DefaultAppBar(
               title: Text('Pools'),
               actions: [ContextDrawerButton()],

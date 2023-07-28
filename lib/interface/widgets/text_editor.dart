@@ -145,7 +145,7 @@ class _TextEditorState extends State<TextEditor> {
               }
             }
           },
-          child: Scaffold(
+          builder: (context) => Scaffold(
             floatingActionButton: fab(),
             bottomSheet: isLoading
                 ? loadingBar()

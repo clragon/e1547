@@ -177,7 +177,7 @@ class _ScaffoldFrameSystemUIState extends State<ScaffoldFrameSystemUI>
       initialize: true,
       listenable: ScaffoldFrame.of(context),
       listener: () => toggleFrame(ScaffoldFrame.of(context).visible),
-      child: widget.child,
+      builder: (context) => widget.child,
     );
   }
 }

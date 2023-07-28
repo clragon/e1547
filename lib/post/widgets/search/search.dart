@@ -126,7 +126,7 @@ class _PostsSearchPageState extends State<PostsSearchPage> {
             listenable: controller,
             listener: () => WidgetsBinding.instance
                 .addPostFrameCallback((_) => updateSearch()),
-            child: PostsPage(
+            builder: (context) => PostsPage(
               controller: controller,
               displayType: readerMode ? PostDisplayType.comic : null,
               appBar: DefaultAppBar(

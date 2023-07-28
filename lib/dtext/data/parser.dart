@@ -11,8 +11,7 @@ class DTextParser {
       BuildContext context,
       RegExpMatch match,
       TextStateStack state,
-    )
-        tranformer,
+    ) tranformer,
   }) =>
       DTextParser.builder(
         regex: regex,

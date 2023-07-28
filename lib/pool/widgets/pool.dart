@@ -50,7 +50,7 @@ class _PoolPageState extends State<PoolPage> {
               return;
             }
           },
-          child: PostsPage(
+          builder: (context) => PostsPage(
             controller: controller,
             displayType: readerMode ? PostDisplayType.comic : null,
             appBar: DefaultAppBar(
