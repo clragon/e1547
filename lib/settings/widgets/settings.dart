@@ -188,7 +188,7 @@ class SettingsPage extends StatelessWidget {
               const ListTileHeader(title: 'Listing'),
               Consumer2<HistoriesService, Client>(
                 builder: (context, service, client, child) => SubStream<int>(
-                  create: () => service.watchLength(host: client.host),
+                  create: () => service.length(host: client.host),
                   keys: [service, client.host],
                   builder: (context, snapshot) => DividerListTile(
                     title: const Text('History'),

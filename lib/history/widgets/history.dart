@@ -48,13 +48,17 @@ class _HistoriesPageState extends State<HistoriesPage> {
               child: const Icon(Icons.search),
               onPressed: () async {
                 Locale locale = Localizations.localeOf(context);
-                ScrollController scrollController =
-                    PrimaryScrollController.of(context);
-                List<DateTime> dates = await controller.service.dates();
+
+                // awaiting this here means the UI might not react immediately
+                List<DateTime> dates = await controller.service.dates().first;
                 if (dates.isEmpty) {
                   dates.add(DateTime.now());
                 }
-                if (!mounted) return;
+
+                // the lint is broken
+                // ignore: use_build_context_synchronously
+                if (!context.mounted) return;
+
                 DateTime? result = await showDatePicker(
                   context: context,
                   initialDate: controller.search.value.date ?? DateTime.now(),
@@ -62,15 +66,21 @@ class _HistoriesPageState extends State<HistoriesPage> {
                   lastDate: dates.last,
                   locale: locale,
                   initialEntryMode: DatePickerEntryMode.calendarOnly,
-                  selectableDayPredicate: (value) =>
-                      dates.any((e) => DateUtils.isSameDay(value, e)),
+                  selectableDayPredicate: (value) => dates.any(
+                    (e) => DateUtils.isSameDay(value, e),
+                  ),
                 );
 
-                if (result != controller.search.value.date &&
-                    scrollController.hasClients) {
-                  scrollController.animateTo(0,
-                      duration: defaultAnimationDuration,
-                      curve: Curves.easeInOut);
+                if (context.mounted) {
+                  ScrollController scrollController =
+                      PrimaryScrollController.of(context);
+
+                  if (result != controller.search.value.date &&
+                      scrollController.hasClients) {
+                    scrollController.animateTo(0,
+                        duration: defaultAnimationDuration,
+                        curve: Curves.easeInOut);
+                  }
                 }
 
                 controller.search.value =
@@ -83,7 +93,7 @@ class _HistoriesPageState extends State<HistoriesPage> {
               children: [
                 Consumer2<HistoriesService, Client>(
                   builder: (context, service, client, child) => SubStream<int>(
-                    create: () => service.watchLength(host: client.host),
+                    create: () => service.length(host: client.host),
                     keys: [service, client.host],
                     builder: (context, snapshot) => SwitchListTile(
                       title: const Text('Enabled'),
