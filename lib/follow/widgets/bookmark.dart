@@ -26,7 +26,7 @@ class FollowsBookmarkPage extends StatelessWidget {
           },
           keys: const [],
           child: SubStream<List<Follow>>(
-            create: () => service.watchAll(
+            create: () => service.all(
               host: client.host,
               types: [FollowType.bookmark],
             ),

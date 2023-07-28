@@ -9,7 +9,7 @@ class FollowsService extends FollowsDatabase {
   Future<Follow?> getFollow(String host, String tag) =>
       watchFollow(host, tag).first;
 
-  Stream<Follow?> watchFollow(String host, String tag) => watchAll(
+  Stream<Follow?> watchFollow(String host, String tag) => all(
         host: host,
         tagRegex: r'^' + RegExp.escape(tag) + r'$',
       ).map((e) => e.firstOrNull);
@@ -30,16 +30,16 @@ class FollowsService extends FollowsDatabase {
 
   Future<void> removeTag(String host, String tag) => transaction(
         () async => removeAll(
-          await getAll(
+          await all(
             host: host,
             tagRegex: r'^' + RegExp.escape(tag) + r'$',
-          ),
+          ).first,
         ),
       );
 
   Future<void> edit(String host, List<String> update) async =>
       transaction(() async {
-        List<Follow> follows = await getAll(host: host);
+        List<Follow> follows = await all(host: host).first;
         List<Follow> removed =
             follows.whereNot((e) => update.contains(e.tags)).toList();
         List<String> tags = follows.map((e) => e.tags).toList();

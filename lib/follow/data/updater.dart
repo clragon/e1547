@@ -138,10 +138,10 @@ class FollowUpdate with ObjectLoggy {
       if (force ?? false) {
         loggy.debug('Force refreshing follows...');
         await service.transaction(() async {
-          List<Follow> follows = await service.getAll(
+          List<Follow> follows = await service.all(
             host: client.host,
             types: [FollowType.notify, FollowType.update],
-          );
+          ).first;
           for (final follow in follows) {
             await service.replace(follow.copyWith(
               updated: null,
@@ -153,16 +153,16 @@ class FollowUpdate with ObjectLoggy {
       while (!cancelled) {
         List<Follow> follows = [];
 
-        follows.addAll(await service.getOutdated(
+        follows.addAll(await service.outdated(
           host: client.host,
           minAge: refreshRate,
           types: [FollowType.notify, FollowType.update],
-        ));
+        ).first);
 
-        follows.addAll(await service.getFresh(
+        follows.addAll(await service.fresh(
           host: client.host,
           types: [FollowType.bookmark],
-        ));
+        ).first);
 
         _remaining.add(follows.length);
 

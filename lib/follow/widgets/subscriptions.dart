@@ -31,8 +31,8 @@ class _FollowsSubscriptionsPageState extends State<FollowsSubscriptionsPage>
       builder: (context, service, client, child) => FollowUpdates(
         builder: (context, refreshController) => SubStream<List<Follow>>(
           create: () => filterUnseen
-              ? service.watchUnseen(host: client.host)
-              : service.watchAll(
+              ? service.unseen(host: client.host)
+              : service.all(
                   host: client.host,
                   types: [FollowType.update, FollowType.notify],
                 ),

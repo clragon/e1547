@@ -8,23 +8,14 @@ part 'database.g.dart';
 @UseRowClass(Follow, generateInsertable: true)
 class FollowsTable extends Table {
   IntColumn get id => integer().autoIncrement()();
-
   TextColumn get host => text()();
-
   TextColumn get tags => text()();
-
   TextColumn get title => text().nullable()();
-
   TextColumn get alias => text().nullable()();
-
   TextColumn get type => textEnum<FollowType>()();
-
   IntColumn get latest => integer().nullable()();
-
   IntColumn get unseen => integer().nullable()();
-
   TextColumn get thumbnail => text().nullable()();
-
   DateTimeColumn get updated => dateTime().nullable()();
 
   @override
@@ -53,18 +44,13 @@ class FollowsDatabase extends _$FollowsDatabase {
         .map((row) => row.read(count)!);
   }
 
-  Future<int> length({String? host}) =>
-      _lengthExpression(host: host).getSingle();
-
-  Stream<int> watchLength({String? host}) =>
+  Stream<int> length({String? host}) =>
       _lengthExpression(host: host).watchSingle();
 
   Selectable<Follow> _itemExpression(int id) =>
       (select(followsTable)..where((tbl) => tbl.id.equals(id)));
 
-  Future<Follow> get(int id) async => _itemExpression(id).getSingle();
-
-  Stream<Follow> watch(int id) => _itemExpression(id).watchSingle();
+  Stream<Follow> get(int id) => _itemExpression(id).watchSingle();
 
   SimpleSelectStatement<FollowsTable, Follow> _queryExpression({
     String? host,
@@ -102,7 +88,7 @@ class FollowsDatabase extends _$FollowsDatabase {
     return selectable;
   }
 
-  Future<List<Follow>> page({
+  Stream<List<Follow>> page({
     required int page,
     int? limit,
     String? host,
@@ -119,25 +105,10 @@ class FollowsDatabase extends _$FollowsDatabase {
       types: types,
       limit: limit,
       offset: offset,
-    ).get();
+    ).watch();
   }
 
-  Future<List<Follow>> getAll({
-    String? host,
-    String? tagRegex,
-    String? titleRegex,
-    List<FollowType>? types,
-    int? limit,
-  }) =>
-      _queryExpression(
-        host: host,
-        tagRegex: tagRegex,
-        titleRegex: titleRegex,
-        types: types,
-        limit: limit,
-      ).get();
-
-  Stream<List<Follow>> watchAll({
+  Stream<List<Follow>> all({
     String? host,
     String? tagRegex,
     String? titleRegex,
@@ -152,7 +123,7 @@ class FollowsDatabase extends _$FollowsDatabase {
         limit: limit,
       ).watch();
 
-  Future<List<Follow>> getOutdated({
+  Stream<List<Follow>> outdated({
     String? host,
     required Duration minAge,
     List<FollowType>? types,
@@ -162,22 +133,19 @@ class FollowsDatabase extends _$FollowsDatabase {
                 (tbl.updated
                     .isSmallerThanValue(DateTime.now().subtract(minAge))) |
                 tbl.updated.isNull()))
-          .get();
+          .watch();
 
-  Future<List<Follow>> getFresh({
+  Stream<List<Follow>> fresh({
     String? host,
     List<FollowType>? types,
   }) =>
       (_queryExpression(host: host, types: types)
             ..where((tbl) => tbl.updated.isNull()))
-          .get();
+          .watch();
 
-  Future<List<Follow>> getUnseen({
+  Stream<List<Follow>> unseen({
     String? host,
   }) =>
-      watchUnseen(host: host).first;
-
-  Stream<List<Follow>> watchUnseen({String? host}) =>
       (_queryExpression(host: host)
             ..where((tbl) => (tbl.unseen.isBiggerThanValue(0))))
           .watch();

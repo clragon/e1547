@@ -14,7 +14,8 @@ class _FollowEditorState extends State<FollowEditor> {
   late Client client = context.read<Client>();
   late FollowsService service = context.read<FollowsService>();
   late Future<List<String>> follows = service
-      .getAll(host: client.host)
+      .all(host: client.host)
+      .first
       .then((value) => value.map((e) => e.tags).toList());
 
   @override

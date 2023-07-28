@@ -21,10 +21,10 @@ Future<bool> backgroundUpdateFollows({
 
   loggy.info('Starting follow update');
 
-  List<Follow> previous = await service.getAll(
+  List<Follow> previous = await service.all(
     host: client.host,
     types: [FollowType.notify],
-  );
+  ).first;
 
   await FollowUpdate(
     service: service,
@@ -33,10 +33,10 @@ Future<bool> backgroundUpdateFollows({
     denylist: denylist.items,
   ).run();
 
-  List<Follow> updated = await service.getAll(
+  List<Follow> updated = await service.all(
     host: client.host,
     types: [FollowType.notify],
-  );
+  ).first;
 
   loggy.info('Completed follow update');
 

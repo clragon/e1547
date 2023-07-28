@@ -218,7 +218,7 @@ class SettingsPage extends StatelessWidget {
               ),
               Consumer2<FollowsService, Client>(
                 builder: (context, service, client, child) => SubStream<int>(
-                  create: () => service.watchLength(host: client.host),
+                  create: () => service.length(host: client.host),
                   keys: [service, client.host],
                   builder: (context, snapshot) => ListTile(
                     title: const Text('Follows'),
