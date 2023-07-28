@@ -138,7 +138,10 @@ class FollowUpdate with ObjectLoggy {
       if (force ?? false) {
         loggy.debug('Force refreshing follows...');
         await service.transaction(() async {
-          List<Follow> follows = await service.getAll(host: client.host);
+          List<Follow> follows = await service.getAll(
+            host: client.host,
+            types: [FollowType.notify, FollowType.update],
+          );
           for (final follow in follows) {
             await service.replace(follow.copyWith(
               updated: null,
