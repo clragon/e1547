@@ -6,7 +6,7 @@ import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sub/flutter_sub.dart';
 import 'package:local_auth/local_auth.dart';
-import 'package:shared_storage/saf.dart';
+import 'package:shared_storage/shared_storage.dart';
 
 class AdvancedSettingsPage extends StatelessWidget {
   const AdvancedSettingsPage({super.key});
