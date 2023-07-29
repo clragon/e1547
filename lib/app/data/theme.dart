@@ -111,6 +111,8 @@ ThemeData prepareTheme(ThemeData theme) => theme.copyWith(
       tooltipTheme: theme.tooltipTheme.copyWith(
         waitDuration: const Duration(milliseconds: 400),
       ),
+      pageTransitionsTheme:
+          SnapshotlessPageTransitionTheme(parent: theme.pageTransitionsTheme),
     );
 
 class AndroidStretchScrollBehaviour extends ScrollBehavior {
@@ -124,5 +126,48 @@ class AndroidStretchScrollBehaviour extends ScrollBehavior {
       );
     }
     return super.buildOverscrollIndicator(context, child, details);
+  }
+}
+
+class SnapshotlessPageTransitionTheme extends PageTransitionsTheme {
+  const SnapshotlessPageTransitionTheme({
+    this.parent,
+  });
+
+  final PageTransitionsTheme? parent;
+
+  @override
+  Map<TargetPlatform, PageTransitionsBuilder> get builders =>
+      _transformBuilders(parent);
+
+  Map<TargetPlatform, PageTransitionsBuilder> _transformBuilders(
+      PageTransitionsTheme? parent) {
+    Map<TargetPlatform, PageTransitionsBuilder> builders = {};
+    if (parent != null) {
+      builders.addAll(Map.fromEntries(
+        parent.builders.entries.map(
+          (e) {
+            if (e.value is ZoomPageTransitionsBuilder) {
+              return MapEntry(
+                e.key,
+                const ZoomPageTransitionsBuilder(
+                  allowSnapshotting: false,
+                ),
+              );
+            } else {
+              return e;
+            }
+          },
+        ),
+      ));
+    }
+    for (final platform in TargetPlatform.values) {
+      if (builders[platform] == null) {
+        builders[platform] = const ZoomPageTransitionsBuilder(
+          allowSnapshotting: false,
+        );
+      }
+    }
+    return builders;
   }
 }
