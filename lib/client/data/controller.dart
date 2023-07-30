@@ -60,9 +60,9 @@ abstract class PageClientDataController<T>
         () async {
           List<T> items = await fetch(page, force);
           if (items.isEmpty) {
-            return PageResponse.last(itemList: items);
+            return PageResponse.last(items: items);
           } else {
-            return PageResponse(itemList: items, nextPageKey: page + 1);
+            return PageResponse(items: items, nextPageKey: page + 1);
           }
         },
       );
@@ -103,10 +103,10 @@ abstract class CursorClientDataController<T>
             items.sort((a, b) => getId(a).compareTo(getId(b)));
           }
           if (items.isEmpty) {
-            return PageResponse.last(itemList: items);
+            return PageResponse.last(items: items);
           } else {
             return PageResponse(
-              itemList: items,
+              items: items,
               nextPageKey: _getNextpageKey(page, items),
             );
           }

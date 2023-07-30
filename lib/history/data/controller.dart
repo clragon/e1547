@@ -41,9 +41,9 @@ class HistoriesController extends DataController<int, History> {
           )
           .first;
       if (items.isEmpty) {
-        return PageResponse.last(itemList: items);
+        return PageResponse.last(items: items);
       } else {
-        return PageResponse(itemList: items, nextPageKey: page + 1);
+        return PageResponse(items: items, nextPageKey: page + 1);
       }
     } on DriftWrappedException catch (e) {
       return PageResponse.error(error: e);

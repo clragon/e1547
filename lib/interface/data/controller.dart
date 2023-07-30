@@ -98,7 +98,7 @@ abstract class DataController<KeyType, ItemType> with ChangeNotifier {
         return;
       }
       if (reset && background) this.reset();
-      rawItems = [if (rawItems != null) ...rawItems!, ...response.itemList!];
+      rawItems = [if (rawItems != null) ...rawItems!, ...response.items!];
       _nextPageKey = response.nextPageKey;
     } finally {
       _fetching = false;
@@ -162,7 +162,7 @@ abstract class DataController<KeyType, ItemType> with ChangeNotifier {
 class PageResponse<KeyType, ItemType> {
   /// The response for a page request.
   const PageResponse({
-    required List<ItemType> this.itemList,
+    required List<ItemType> this.items,
     required this.nextPageKey,
   }) : error = null;
 
@@ -170,7 +170,7 @@ class PageResponse<KeyType, ItemType> {
   ///
   /// Is treated as the last page to be added.
   const PageResponse.last({
-    required List<ItemType> this.itemList,
+    required List<ItemType> this.items,
   })  : nextPageKey = null,
         error = null;
 
@@ -179,7 +179,7 @@ class PageResponse<KeyType, ItemType> {
   /// Is treated as a failed page request.
   const PageResponse.error({
     required Object this.error,
-  })  : itemList = null,
+  })  : items = null,
         nextPageKey = null;
 
   /// The key for the next page.
@@ -188,7 +188,7 @@ class PageResponse<KeyType, ItemType> {
   final KeyType? nextPageKey;
 
   /// The list of items for this page.
-  final List<ItemType>? itemList;
+  final List<ItemType>? items;
 
   /// The error that was thrown during loading this page.
   final Object? error;
